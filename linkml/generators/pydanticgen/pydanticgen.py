@@ -28,8 +28,8 @@ from linkml_runtime.linkml_model.meta import (
 )
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, underscore
-from linkml_runtime.utils.yamlutils import remove_empty_items
 from linkml_runtime.utils.schemaview import SchemaView
+from linkml_runtime.utils.yamlutils import remove_empty_items
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml._version import __version__
@@ -38,6 +38,7 @@ from linkml.generators.common.type_designators import (
     get_type_designator_value,
 )
 from linkml.generators.oocodegen import OOCodeGenerator
+from linkml.generators.pydanticgen import includes
 from linkml.generators.pydanticgen.array import ArrayRangeGenerator, ArrayRepresentation
 from linkml.generators.pydanticgen.build import SlotResult
 from linkml.generators.pydanticgen.template import (
@@ -51,7 +52,6 @@ from linkml.generators.pydanticgen.template import (
     PydanticModule,
     TemplateModel,
 )
-from linkml.generators.pydanticgen import includes
 from linkml.utils.generator import shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration
 
@@ -108,10 +108,7 @@ DEFAULT_IMPORTS = (
     )
 )
 
-DEFAULT_INJECTS = {
-    1: [includes.LinkMLMeta_v1],
-    2: [includes.LinkMLMeta_v2]
-}
+DEFAULT_INJECTS = {1: [includes.LinkMLMeta_v1], 2: [includes.LinkMLMeta_v2]}
 
 
 @dataclass
@@ -663,11 +660,15 @@ class PydanticGenerator(OOCodeGenerator):
                     predef_slot = str(predef_slot)
                 new_fields["predefined"] = predef_slot
                 new_fields["name"] = attr_name
-                attr_meta = {k:v for k,v in remove_empty_items(src_attr).items() if k not in PydanticAttribute.exclude_from_meta() }
+                attr_meta = {
+                    k: v
+                    for k, v in remove_empty_items(src_attr).items()
+                    if k not in PydanticAttribute.exclude_from_meta()
+                }
 
                 attrs[attr_name] = PydanticAttribute(**new_fields, pydantic_ver=self.pydantic_version, meta=attr_meta)
 
-            class_meta = {k:v for k,v in remove_empty_items(c).items() if k not in PydanticClass.exclude_from_meta() }
+            class_meta = {k: v for k, v in remove_empty_items(c).items() if k not in PydanticClass.exclude_from_meta()}
 
             new_class = PydanticClass(
                 name=k, attributes=attrs, description=c.description, pydantic_ver=self.pydantic_version, meta=class_meta
@@ -676,7 +677,9 @@ class PydanticGenerator(OOCodeGenerator):
                 new_class.bases = bases[k]
             classes[k] = new_class
 
-        schema_meta = {k:v for k,v in remove_empty_items(schema).items() if k not in PydanticModule.exclude_from_meta() }
+        schema_meta = {
+            k: v for k, v in remove_empty_items(schema).items() if k not in PydanticModule.exclude_from_meta()
+        }
 
         module = PydanticModule(
             pydantic_ver=self.pydantic_version,
@@ -687,7 +690,7 @@ class PydanticGenerator(OOCodeGenerator):
             injected_classes=injected_classes,
             enums=enums,
             classes=classes,
-            meta=schema_meta
+            meta=schema_meta,
         )
         return module
 
@@ -748,7 +751,7 @@ Available templates to override:
     "--black",
     is_flag=True,
     default=False,
-    help="Format generated models with black (must be present in the environment)"
+    help="Format generated models with black (must be present in the environment)",
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command()
@@ -763,7 +766,7 @@ def cli(
     array_representations=list("list"),
     pydantic_version=1,
     extra_fields: Literal["allow", "forbid", "ignore"] = "forbid",
-    black:bool=False,
+    black: bool = False,
     **args,
 ):
     """Generate pydantic classes to represent a LinkML model"""

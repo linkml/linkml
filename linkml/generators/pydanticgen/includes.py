@@ -1,9 +1,9 @@
 """
 Classes to inject in generated pydantic models
 """
-from typing import Dict, Any
-from pydantic import BaseModel
+
 from pydantic.version import VERSION
+
 PYDANTIC_VERSION = int(VERSION[0])
 
 
