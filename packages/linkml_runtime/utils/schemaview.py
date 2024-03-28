@@ -802,7 +802,7 @@ class SchemaView(object):
         :param is_a: include is_a parents (default is True)
         :return: all direct child slot names (is_a and mixins)
         """
-        elts = [self.get_slot(x) for x in self.all_slots(imports)]
+        elts = [self.get_slot(x) for x in self.all_slots(imports=imports)]
         return [x.name for x in elts if (x.is_a == slot_name and is_a) or (mixins and slot_name in x.mixins)]
 
     @lru_cache(None)
