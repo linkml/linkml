@@ -22,6 +22,7 @@ jobs:
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v3
+        id: setup-python
         with:
           python-version: "3.12"
 
@@ -43,7 +44,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .venv
-          key: venv-${{ matrix.python-version }}-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+          key: venv-${{ steps.setup-python.outputs.python-version }}-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
 
       #----------------------------------------------
       # install dependencies if cache does not exist
