@@ -550,7 +550,6 @@
             <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">nu_typ</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">):</span>
                 <span class="c1"># TODO: make more efficient</span>
                 <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="n">typ</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
-                    <span class="c1"># print(f&#39;Creating {nu_typ} from: {inst_args}&#39;)</span>
                     <span class="n">nu_obj</span> <span class="o">=</span> <span class="n">nu_typ</span><span class="p">(</span><span class="o">**</span><span class="n">inst_args</span><span class="p">)</span>
                     <span class="k">return</span> <span class="n">nu_obj</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find </span><span class="si">{</span><span class="n">typ</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -589,9 +588,7 @@
             <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">nu_typ</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">native_module</span><span class="p">):</span>
                 <span class="c1"># TODO: make more efficient</span>
                 <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="n">typ</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
-                    <span class="c1"># print(f&#39;CREATING {nu_typ} FROM {inst_args}&#39;)</span>
                     <span class="n">nu_obj</span> <span class="o">=</span> <span class="n">nu_typ</span><span class="p">(</span><span class="o">**</span><span class="n">inst_args</span><span class="p">)</span>
-                    <span class="c1"># print(f&#39;CREATED {nu_obj}&#39;)</span>
                     <span class="k">return</span> <span class="n">nu_obj</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find </span><span class="si">{</span><span class="n">typ</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">native_module</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
