@@ -850,7 +850,7 @@ this domain.</p>
 <p>Mappings can be established for exact equivalences, close, related, narrow and broad equivalences
 For more detail on the kinds of mappings (and their mappings to SKOS), see <a class="reference external" href="https://w3id.org/linkml/mappings">linkml:mappings</a></p>
 <p>Mappings are an entire optional feature, you can create a schema without any mappings. However, we encourage their use, and we
-encourage adding them <em>prospectively</em> as you build our your data model, rather than doing this <em>retrospectively</em>. Thinking about mappings
+encourage adding them <em>prospectively</em> as you build your data model, rather than doing this <em>retrospectively</em>. Thinking about mappings
 will help you think about how your modeling relates to the modeling done by others as part of other databases or standards.</p>
 </section>
 <section id="how-do-i-represent-relationships-in-linkml">
@@ -859,7 +859,7 @@ will help you think about how your modeling relates to the modeling done by othe
 isolation, and do not need to be related. For example, for a simple
 database of material samples (biosamples, geosamples, etc), each
 sample may be considered a standalone entity described with an
-identifier, and various properties.</p>
+identifier and various properties.</p>
 <p>However, more often then not, your objects need to be
 inter-related. Here there are a number of modeling questions that you
 will need to answer:</p>
@@ -872,9 +872,9 @@ will need to answer:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://w3id.org/linkml/range">range</a> constraints, which can refer to classes</p></li>
 <li><p>the ability to assign a slot as an <a class="reference external" href="https://w3id.org/linkml/identifier">identifier</a>, allowing other objects to link to it</p></li>
-<li><p><a class="reference external" href="https://w3id.org/linkml/inlining">inlining</a> which determines how relationships are serialized in formats like JSON</p></li>
+<li><p><a class="reference internal" href="../schemas/inlining.html"><span class="doc std std-doc">inlining</span></a>, which determines how relationships are serialized in formats like JSON</p></li>
 </ul>
-<p>Other more advanced constructs are also possible to allow you to treat relationships as first-class entities</p>
+<p>Other more advanced constructs are also possible to allow you to treat relationships as first-class entities.</p>
 </section>
 </section>
 
