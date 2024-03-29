@@ -618,6 +618,6 @@ Depending on the answer, LinkML has different modeling constructs to help you, i
 
 - [range](https://w3id.org/linkml/range) constraints, which can refer to classes
 - the ability to assign a slot as an [identifier](https://w3id.org/linkml/identifier), allowing other objects to link to it
-- [inlining](https://linkml.io/linkml/schemas/inlining.html), which determines how relationships are serialized in formats like JSON
+- [inlining](../schemas/inlining), which determines how relationships are serialized in formats like JSON
 
 Other more advanced constructs are also possible to allow you to treat relationships as first-class entities.
