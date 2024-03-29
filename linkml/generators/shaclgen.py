@@ -56,7 +56,6 @@ class ShaclGenerator(Generator):
         for pfx in self.schema.prefixes.values():
             g.bind(str(pfx.prefix_prefix), pfx.prefix_reference)
 
-        print(f"# class suffix: {self.suffix}")
         for c in sv.all_classes().values():
 
             def shape_pv(p, v):
