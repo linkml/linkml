@@ -25,10 +25,12 @@
          "@id": "skos:closeMatch"
       },
       "deprecated_element_has_exact_replacement": {
-         "@type": "@id"
+         "@type": "@id",
+         "@id": "deprecated_element_has_exact_replacement"
       },
       "deprecated_element_has_possible_replacement": {
-         "@type": "@id"
+         "@type": "@id",
+         "@id": "deprecated_element_has_possible_replacement"
       },
       "exact_mappings": {
          "@type": "@id",

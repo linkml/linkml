@@ -8,14 +8,26 @@
       "linkml": "https://w3id.org/linkml/",
       "@vocab": "https://w3id.org/linkml/",
       "tag": {
-         "@type": "@id"
+         "@type": "@id",
+         "@id": "tag"
       },
       "value": {
-         "@type": "@id"
+         "@type": "@id",
+         "@id": "value"
       },
       "extensions": {
-         "@type": "@id"
+         "@type": "@id",
+         "@id": "extensions"
       },
-      "@base": "https://w3id.org/linkml/"
+      "@base": "https://w3id.org/linkml/",
+      "AnyValue": {
+         "@id": "Any"
+      },
+      "Extensible": {
+         "@id": "Extensible"
+      },
+      "Extension": {
+         "@id": "Extension"
+      }
    }
 }

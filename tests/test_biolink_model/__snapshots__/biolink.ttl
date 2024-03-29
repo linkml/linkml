@@ -87,254 +87,254 @@
 
 biolink:Biolink-Model a linkml:SchemaDefinition ;
     dcterms:description "Entity and association taxonomy and datamodel for life-sciences data" ;
-    dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
-    pav:version "3.1.2" ;
-    sh:declare [ sh:namespace WIKIDATA: ;
-            sh:prefix "WIKIDATA" ],
-        [ sh:namespace METANETX.REACTION: ;
-            sh:prefix "METANETX.REACTION" ],
-        [ sh:namespace <http://ctdbase.org/detail.go?type=chem&acc=> ;
-            sh:prefix "CTD.CHEMICAL" ],
-        [ sh:namespace <https://scholar.google.com/citations?user=> ;
-            sh:prefix "GSID" ],
-        [ sh:namespace PomBase: ;
-            sh:prefix "PomBase" ],
-        [ sh:namespace MSigDB: ;
-            sh:prefix "MSigDB" ],
-        [ sh:namespace CHADO: ;
-            sh:prefix "CHADO" ],
-        [ sh:namespace CHEMBL.MECHANISM: ;
-            sh:prefix "CHEMBL.MECHANISM" ],
-        [ sh:namespace SEED.REACTION: ;
-            sh:prefix "SEED.REACTION" ],
-        [ sh:namespace linkml: ;
-            sh:prefix "linkml" ],
-        [ sh:namespace <http://www.ebi.ac.uk/ancestro/ancestro_> ;
-            sh:prefix "HANCESTRO" ],
-        [ sh:namespace <http://reg.clinicalgenome.org/redmine/projects/registry/genboree_registry/by_caid?caid=> ;
-            sh:prefix "CAID" ],
-        [ sh:namespace KEGG.RCLASS: ;
-            sh:prefix "KEGG.DGROUP" ],
-        [ sh:namespace <https://mor.nlm.nih.gov/RxNav/search?searchBy=RXCUI&searchTerm=> ;
-            sh:prefix "RXCUI" ],
-        [ sh:namespace schema1: ;
-            sh:prefix "schema" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/WBBT_> ;
-            sh:prefix "WBbt" ],
-        [ sh:namespace gff3: ;
-            sh:prefix "gff3" ],
-        [ sh:namespace KEGG.RCLASS: ;
-            sh:prefix "KEGG.GENE" ],
-        [ sh:namespace NDDF: ;
-            sh:prefix "NDDF" ],
-        [ sh:namespace foaf: ;
-            sh:prefix "foaf" ],
-        [ sh:namespace <http://edamontology.org/topic_> ;
-            sh:prefix "EDAM-TOPIC" ],
-        [ sh:namespace SPDI: ;
-            sh:prefix "SPDI" ],
-        [ sh:namespace bioschemas: ;
-            sh:prefix "bioschemas" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/MMUSDV_> ;
+    sh:declare [ sh:namespace <http://purl.obolibrary.org/obo/MMUSDV_> ;
             sh:prefix "MmusDv" ],
-        [ sh:namespace ncats.drug: ;
-            sh:prefix "ncats.drug" ],
-        [ sh:namespace HCPCS: ;
-            sh:prefix "HCPCS" ],
-        [ sh:namespace UO-PROPERTY: ;
-            sh:prefix "UO-PROPERTY" ],
-        [ sh:namespace LOINC: ;
-            sh:prefix "LOINC" ],
-        [ sh:namespace <https://lhncbc.nlm.nih.gov/semanticnetwork/download/sg_archive/SemGroups-v04.txt> ;
-            sh:prefix "UMLSSG" ],
-        [ sh:namespace mmmp.biomaps: ;
-            sh:prefix "mmmp.biomaps" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/GOREL_> ;
-            sh:prefix "GOREL" ],
-        [ sh:namespace dcid: ;
-            sh:prefix "dcid" ],
-        [ sh:namespace dcat: ;
-            sh:prefix "dcat" ],
-        [ sh:namespace CPT: ;
-            sh:prefix "CPT" ],
-        [ sh:namespace <http://identifiers.org/mirbase> ;
-            sh:prefix "mirbase" ],
-        [ sh:namespace <http://ctdbase.org/detail.go?type=disease&db=MESH&acc=> ;
-            sh:prefix "CTD.DISEASE" ],
-        [ sh:namespace <http://www.pantherdb.org/panther/family.do?clsAccession=> ;
-            sh:prefix "PANTHER.FAMILY" ],
-        [ sh:namespace <http://bio2rdf.org/wormbase_vocabulary> ;
-            sh:prefix "WBVocab" ],
-        [ sh:namespace NCBIGene: ;
-            sh:prefix "NCBIGene" ],
-        [ sh:namespace RXNORM: ;
-            sh:prefix "RXNORM" ],
-        [ sh:namespace GOP: ;
-            sh:prefix "GOP" ],
-        [ sh:namespace <http://translator.ncats.nih.gov/ICD9_> ;
-            sh:prefix "ICD9" ],
-        [ sh:namespace <http://www.xenbase.org/gene/showgene.do?method=display&geneId=> ;
-            sh:prefix "Xenbase" ],
-        [ sh:namespace COAR_RESOURCE: ;
-            sh:prefix "COAR_RESOURCE" ],
-        [ sh:namespace SNOMEDCT: ;
-            sh:prefix "SNOMEDCT" ],
-        [ sh:namespace dcterms: ;
-            sh:prefix "dct" ],
-        [ sh:namespace pav: ;
-            sh:prefix "pav" ],
-        [ sh:namespace medgen: ;
-            sh:prefix "medgen" ],
-        [ sh:namespace gtpo: ;
-            sh:prefix "gtpo" ],
-        [ sh:namespace ResearchID: ;
-            sh:prefix "ResearchID" ],
-        [ sh:namespace <https://www.scopus.com/authid/detail.uri?authorId=> ;
-            sh:prefix "ScopusID" ],
-        [ sh:namespace COG: ;
-            sh:prefix "COG" ],
-        [ sh:namespace foodb.compound: ;
-            sh:prefix "foodb.compound" ],
         [ sh:namespace <http://purl.obolibrary.org/obo/MI_> ;
             sh:prefix "MI" ],
-        [ sh:namespace ORCID: ;
-            sh:prefix "ORCID" ],
-        [ sh:namespace isbn: ;
-            sh:prefix "isbn" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/XPO_> ;
-            sh:prefix "XPO" ],
-        [ sh:namespace PathWhiz: ;
-            sh:prefix "PathWhiz" ],
-        [ sh:namespace <https://www.ncbi.nlm.nih.gov/nlmcatalog/?term=> ;
-            sh:prefix "NLMID" ],
-        [ sh:namespace VANDF: ;
-            sh:prefix "VANDF" ],
-        [ sh:namespace <http://www.w3.org/2003/01/geo/wgs84_pos> ;
-            sh:prefix "wgs" ],
-        [ sh:namespace UBERON_CORE: ;
-            sh:prefix "UBERON_CORE" ],
-        [ sh:namespace <http://edamontology.org/operation_> ;
-            sh:prefix "EDAM-OPERATION" ],
-        [ sh:namespace <http://semanticscience.org/resource/SIO_> ;
-            sh:prefix "SIO" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/ExO_> ;
-            sh:prefix "ExO" ],
-        [ sh:namespace <http://www.orpha.net/ORDO/Orphanet_> ;
-            sh:prefix "orphanet" ],
-        [ sh:namespace isni: ;
-            sh:prefix "isni" ],
-        [ sh:namespace MESH: ;
-            sh:prefix "MESH" ],
-        [ sh:namespace <https://github.com/cmungall/owlstar/blob/master/owlstar.ttl> ;
-            sh:prefix "os" ],
-        [ sh:namespace DOID-PROPERTY: ;
-            sh:prefix "DOID-PROPERTY" ],
-        [ sh:namespace OBAN: ;
-            sh:prefix "OBAN" ],
-        [ sh:namespace <https://skr3.nlm.nih.gov/SemMedDB> ;
-            sh:prefix "SEMMEDDB" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/FYPO_> ;
-            sh:prefix "FYPO" ],
-        [ sh:namespace foodb.food: ;
-            sh:prefix "foodb.food" ],
-        [ sh:namespace <http://chembank.broadinstitute.org/chemistry/viewMolecule.htm?cbid=> ;
-            sh:prefix "ChemBank" ],
-        [ sh:namespace prov: ;
-            sh:prefix "prov" ],
-        [ sh:namespace metacyc.reaction: ;
-            sh:prefix "metacyc.reaction" ],
-        [ sh:namespace CID: ;
-            sh:prefix "CID" ],
-        [ sh:namespace <https://www.dgidb.org/interaction_types> ;
-            sh:prefix "DGIdb" ],
-        [ sh:namespace ComplexPortal: ;
-            sh:prefix "ComplexPortal" ],
-        [ sh:namespace KEGG.RCLASS: ;
-            sh:prefix "KEGG.BRITE" ],
-        [ sh:namespace NBO-PROPERTY: ;
-            sh:prefix "NBO-PROPERTY" ],
-        [ sh:namespace UBERGRAPH: ;
-            sh:prefix "UBERGRAPH" ],
-        [ sh:namespace interpro: ;
-            sh:prefix "interpro" ],
-        [ sh:namespace NCIT-OBO: ;
-            sh:prefix "NCIT-OBO" ],
-        [ sh:namespace <http://identifiers.org/clinvar> ;
-            sh:prefix "CLINVAR" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/ECTO_> ;
-            sh:prefix "ECTO" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/RO_> ;
-            sh:prefix "RO" ],
-        [ sh:namespace <http://www.aspergillusgenome.org/cgi-bin/locus.pl?dbid=> ;
-            sh:prefix "AspGD" ],
-        [ sh:namespace GTEx: ;
-            sh:prefix "GTEx" ],
-        [ sh:namespace <http://pharos.nih.gov> ;
-            sh:prefix "PHAROS" ],
-        [ sh:namespace ICD10: ;
-            sh:prefix "ICD10" ],
-        [ sh:namespace OMIM.PS: ;
-            sh:prefix "OMIM.PS" ],
-        [ sh:namespace doi: ;
-            sh:prefix "doi" ],
-        [ sh:namespace CTD: ;
-            sh:prefix "CTD" ],
-        [ sh:namespace issn: ;
-            sh:prefix "issn" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/WBBL_> ;
-            sh:prefix "WBls" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/MAXO_> ;
-            sh:prefix "MAXO" ],
-        [ sh:namespace fabio: ;
-            sh:prefix "fabio" ],
         [ sh:namespace VMC: ;
             sh:prefix "VMC" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/HsapDv_> ;
-            sh:prefix "HsapDv" ],
-        [ sh:namespace UBERON_NONAMESPACE: ;
-            sh:prefix "UBERON_NONAMESPACE" ],
-        [ sh:namespace KEGG.PATHWAY: ;
-            sh:prefix "KEGG.PATHWAY" ],
-        [ sh:namespace AGRKB: ;
-            sh:prefix "AGRKB" ],
-        [ sh:namespace REPODB: ;
-            sh:prefix "REPODB" ],
-        [ sh:namespace <http://edamontology.org/data_> ;
-            sh:prefix "EDAM-DATA" ],
-        [ sh:namespace <https://github.com/GMOD/Apollo> ;
-            sh:prefix "apollo" ],
-        [ sh:namespace <http://www.ebi.ac.uk/efo/EFO_> ;
-            sh:prefix "EFO" ],
-        [ sh:namespace oboformat: ;
-            sh:prefix "oboformat" ],
-        [ sh:namespace gpi: ;
-            sh:prefix "gpi" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/INO_> ;
-            sh:prefix "INO" ],
-        [ sh:namespace <http://ctdbase.org/detail.go?type=gene&acc=> ;
-            sh:prefix "CTD.GENE" ],
-        [ sh:namespace WIKIDATA_PROPERTY: ;
-            sh:prefix "WIKIDATA_PROPERTY" ],
-        [ sh:namespace DrugCentral: ;
-            sh:prefix "DrugCentral" ],
-        [ sh:namespace qud: ;
-            sh:prefix "qud" ],
-        [ sh:namespace STY: ;
-            sh:prefix "STY" ],
-        [ sh:namespace <https://tripod.nih.gov/bioplanet/detail.jsp?pid=> ;
-            sh:prefix "ncats.bioplanet" ],
-        [ sh:namespace <http://edamontology.org/format_> ;
-            sh:prefix "EDAM-FORMAT" ],
-        [ sh:namespace FYECO: ;
-            sh:prefix "FYECO" ],
+        [ sh:namespace LOINC: ;
+            sh:prefix "LOINC" ],
+        [ sh:namespace <http://reg.clinicalgenome.org/redmine/projects/registry/genboree_registry/by_caid?caid=> ;
+            sh:prefix "CAID" ],
+        [ sh:namespace ICD10: ;
+            sh:prefix "ICD10" ],
+        [ sh:namespace HCPCS: ;
+            sh:prefix "HCPCS" ],
+        [ sh:namespace CHEMBL.MECHANISM: ;
+            sh:prefix "CHEMBL.MECHANISM" ],
         [ sh:namespace biolink: ;
             sh:prefix "biolink" ],
+        [ sh:namespace schema1: ;
+            sh:prefix "schema" ],
+        [ sh:namespace MESH: ;
+            sh:prefix "MESH" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/XPO_> ;
+            sh:prefix "XPO" ],
+        [ sh:namespace <http://www.orpha.net/ORDO/Orphanet_> ;
+            sh:prefix "orphanet" ],
+        [ sh:namespace PomBase: ;
+            sh:prefix "PomBase" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/MAXO_> ;
+            sh:prefix "MAXO" ],
+        [ sh:namespace GOP: ;
+            sh:prefix "GOP" ],
+        [ sh:namespace dcid: ;
+            sh:prefix "dcid" ],
+        [ sh:namespace linkml: ;
+            sh:prefix "linkml" ],
+        [ sh:namespace prov: ;
+            sh:prefix "prov" ],
+        [ sh:namespace RXNORM: ;
+            sh:prefix "RXNORM" ],
+        [ sh:namespace WIKIDATA_PROPERTY: ;
+            sh:prefix "WIKIDATA_PROPERTY" ],
+        [ sh:namespace ResearchID: ;
+            sh:prefix "ResearchID" ],
+        [ sh:namespace COAR_RESOURCE: ;
+            sh:prefix "COAR_RESOURCE" ],
+        [ sh:namespace <http://translator.ncats.nih.gov/ICD9_> ;
+            sh:prefix "ICD9" ],
+        [ sh:namespace <http://ctdbase.org/detail.go?type=gene&acc=> ;
+            sh:prefix "CTD.GENE" ],
+        [ sh:namespace UBERON_NONAMESPACE: ;
+            sh:prefix "UBERON_NONAMESPACE" ],
+        [ sh:namespace isni: ;
+            sh:prefix "isni" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/HsapDv_> ;
+            sh:prefix "HsapDv" ],
+        [ sh:namespace SPDI: ;
+            sh:prefix "SPDI" ],
+        [ sh:namespace <http://pharos.nih.gov> ;
+            sh:prefix "PHAROS" ],
+        [ sh:namespace METANETX.REACTION: ;
+            sh:prefix "METANETX.REACTION" ],
+        [ sh:namespace <http://edamontology.org/format_> ;
+            sh:prefix "EDAM-FORMAT" ],
+        [ sh:namespace <http://identifiers.org/mirbase> ;
+            sh:prefix "mirbase" ],
+        [ sh:namespace <http://www.w3.org/2003/01/geo/wgs84_pos> ;
+            sh:prefix "wgs" ],
+        [ sh:namespace CID: ;
+            sh:prefix "CID" ],
+        [ sh:namespace NDDF: ;
+            sh:prefix "NDDF" ],
+        [ sh:namespace <https://www.ncbi.nlm.nih.gov/nlmcatalog/?term=> ;
+            sh:prefix "NLMID" ],
+        [ sh:namespace <http://www.ebi.ac.uk/ancestro/ancestro_> ;
+            sh:prefix "HANCESTRO" ],
+        [ sh:namespace <https://www.dgidb.org/interaction_types> ;
+            sh:prefix "DGIdb" ],
+        [ sh:namespace KEGG.PATHWAY: ;
+            sh:prefix "KEGG.PATHWAY" ],
+        [ sh:namespace <https://mor.nlm.nih.gov/RxNav/search?searchBy=RXCUI&searchTerm=> ;
+            sh:prefix "RXCUI" ],
+        [ sh:namespace KEGG.RCLASS: ;
+            sh:prefix "KEGG.BRITE" ],
+        [ sh:namespace <https://tripod.nih.gov/bioplanet/detail.jsp?pid=> ;
+            sh:prefix "ncats.bioplanet" ],
+        [ sh:namespace DrugCentral: ;
+            sh:prefix "DrugCentral" ],
+        [ sh:namespace NCIT-OBO: ;
+            sh:prefix "NCIT-OBO" ],
+        [ sh:namespace <http://edamontology.org/operation_> ;
+            sh:prefix "EDAM-OPERATION" ],
+        [ sh:namespace NCBIGene: ;
+            sh:prefix "NCBIGene" ],
+        [ sh:namespace <https://github.com/GMOD/Apollo> ;
+            sh:prefix "apollo" ],
+        [ sh:namespace STY: ;
+            sh:prefix "STY" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/INO_> ;
+            sh:prefix "INO" ],
+        [ sh:namespace <https://skr3.nlm.nih.gov/SemMedDB> ;
+            sh:prefix "SEMMEDDB" ],
+        [ sh:namespace medgen: ;
+            sh:prefix "medgen" ],
+        [ sh:namespace <http://www.ebi.ac.uk/efo/EFO_> ;
+            sh:prefix "EFO" ],
+        [ sh:namespace foodb.food: ;
+            sh:prefix "foodb.food" ],
+        [ sh:namespace dcat: ;
+            sh:prefix "dcat" ],
+        [ sh:namespace REPODB: ;
+            sh:prefix "REPODB" ],
         [ sh:namespace KEGG.RCLASS: ;
             sh:prefix "KEGG.RCLASS" ],
+        [ sh:namespace PathWhiz: ;
+            sh:prefix "PathWhiz" ],
+        [ sh:namespace <https://scholar.google.com/citations?user=> ;
+            sh:prefix "GSID" ],
+        [ sh:namespace qud: ;
+            sh:prefix "qud" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/GOREL_> ;
+            sh:prefix "GOREL" ],
+        [ sh:namespace GTEx: ;
+            sh:prefix "GTEx" ],
+        [ sh:namespace <http://www.pantherdb.org/panther/family.do?clsAccession=> ;
+            sh:prefix "PANTHER.FAMILY" ],
+        [ sh:namespace COG: ;
+            sh:prefix "COG" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/FYPO_> ;
+            sh:prefix "FYPO" ],
+        [ sh:namespace gff3: ;
+            sh:prefix "gff3" ],
+        [ sh:namespace gpi: ;
+            sh:prefix "gpi" ],
+        [ sh:namespace dcterms: ;
+            sh:prefix "dct" ],
+        [ sh:namespace ORCID: ;
+            sh:prefix "ORCID" ],
+        [ sh:namespace <http://edamontology.org/topic_> ;
+            sh:prefix "EDAM-TOPIC" ],
+        [ sh:namespace oboformat: ;
+            sh:prefix "oboformat" ],
+        [ sh:namespace <http://www.xenbase.org/gene/showgene.do?method=display&geneId=> ;
+            sh:prefix "Xenbase" ],
+        [ sh:namespace NBO-PROPERTY: ;
+            sh:prefix "NBO-PROPERTY" ],
+        [ sh:namespace KEGG.RCLASS: ;
+            sh:prefix "KEGG.DGROUP" ],
+        [ sh:namespace OMIM.PS: ;
+            sh:prefix "OMIM.PS" ],
+        [ sh:namespace isbn: ;
+            sh:prefix "isbn" ],
+        [ sh:namespace <https://www.scopus.com/authid/detail.uri?authorId=> ;
+            sh:prefix "ScopusID" ],
+        [ sh:namespace <http://chembank.broadinstitute.org/chemistry/viewMolecule.htm?cbid=> ;
+            sh:prefix "ChemBank" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/ExO_> ;
+            sh:prefix "ExO" ],
+        [ sh:namespace OBAN: ;
+            sh:prefix "OBAN" ],
+        [ sh:namespace <http://edamontology.org/data_> ;
+            sh:prefix "EDAM-DATA" ],
+        [ sh:namespace SNOMEDCT: ;
+            sh:prefix "SNOMEDCT" ],
+        [ sh:namespace ComplexPortal: ;
+            sh:prefix "ComplexPortal" ],
+        [ sh:namespace <http://bio2rdf.org/wormbase_vocabulary> ;
+            sh:prefix "WBVocab" ],
+        [ sh:namespace CPT: ;
+            sh:prefix "CPT" ],
+        [ sh:namespace UBERON_CORE: ;
+            sh:prefix "UBERON_CORE" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/WBBT_> ;
+            sh:prefix "WBbt" ],
+        [ sh:namespace <http://semanticscience.org/resource/SIO_> ;
+            sh:prefix "SIO" ],
+        [ sh:namespace <http://www.aspergillusgenome.org/cgi-bin/locus.pl?dbid=> ;
+            sh:prefix "AspGD" ],
+        [ sh:namespace UO-PROPERTY: ;
+            sh:prefix "UO-PROPERTY" ],
+        [ sh:namespace ncats.drug: ;
+            sh:prefix "ncats.drug" ],
+        [ sh:namespace MSigDB: ;
+            sh:prefix "MSigDB" ],
+        [ sh:namespace <https://github.com/cmungall/owlstar/blob/master/owlstar.ttl> ;
+            sh:prefix "os" ],
+        [ sh:namespace <http://identifiers.org/clinvar> ;
+            sh:prefix "CLINVAR" ],
+        [ sh:namespace pav: ;
+            sh:prefix "pav" ],
+        [ sh:namespace <https://lhncbc.nlm.nih.gov/semanticnetwork/download/sg_archive/SemGroups-v04.txt> ;
+            sh:prefix "UMLSSG" ],
         [ sh:namespace <https://www.guidetopharmacology.org/GRAC/LigandDisplayForward?ligandId=> ;
             sh:prefix "GTOPDB" ],
+        [ sh:namespace bioschemas: ;
+            sh:prefix "bioschemas" ],
+        [ sh:namespace CTD: ;
+            sh:prefix "CTD" ],
+        [ sh:namespace <http://ctdbase.org/detail.go?type=chem&acc=> ;
+            sh:prefix "CTD.CHEMICAL" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/RO_> ;
+            sh:prefix "RO" ],
+        [ sh:namespace FYECO: ;
+            sh:prefix "FYECO" ],
+        [ sh:namespace AGRKB: ;
+            sh:prefix "AGRKB" ],
         [ sh:namespace KEGG.RCLASS: ;
-            sh:prefix "KEGG.ENZYME" ] ;
+            sh:prefix "KEGG.GENE" ],
+        [ sh:namespace <http://ctdbase.org/detail.go?type=disease&db=MESH&acc=> ;
+            sh:prefix "CTD.DISEASE" ],
+        [ sh:namespace DOID-PROPERTY: ;
+            sh:prefix "DOID-PROPERTY" ],
+        [ sh:namespace gtpo: ;
+            sh:prefix "gtpo" ],
+        [ sh:namespace KEGG.RCLASS: ;
+            sh:prefix "KEGG.ENZYME" ],
+        [ sh:namespace CHADO: ;
+            sh:prefix "CHADO" ],
+        [ sh:namespace interpro: ;
+            sh:prefix "interpro" ],
+        [ sh:namespace mmmp.biomaps: ;
+            sh:prefix "mmmp.biomaps" ],
+        [ sh:namespace WIKIDATA: ;
+            sh:prefix "WIKIDATA" ],
+        [ sh:namespace doi: ;
+            sh:prefix "doi" ],
+        [ sh:namespace VANDF: ;
+            sh:prefix "VANDF" ],
+        [ sh:namespace metacyc.reaction: ;
+            sh:prefix "metacyc.reaction" ],
+        [ sh:namespace fabio: ;
+            sh:prefix "fabio" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/WBBL_> ;
+            sh:prefix "WBls" ],
+        [ sh:namespace UBERGRAPH: ;
+            sh:prefix "UBERGRAPH" ],
+        [ sh:namespace issn: ;
+            sh:prefix "issn" ],
+        [ sh:namespace foodb.compound: ;
+            sh:prefix "foodb.compound" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/ECTO_> ;
+            sh:prefix "ECTO" ],
+        [ sh:namespace foaf: ;
+            sh:prefix "foaf" ],
+        [ sh:namespace SEED.REACTION: ;
+            sh:prefix "SEED.REACTION" ] ;
+    biolink:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
+    biolink:version "3.1.2" ;
     linkml:classes biolink:Activity,
         biolink:ActivityAndBehavior,
         biolink:AdministrativeEntity,
@@ -2336,9 +2336,9 @@ biolink:chemical_affects_gene_association_species_context_qualifier a linkml:Slo
     linkml:domain biolink:ChemicalAffectsGeneAssociation ;
     linkml:domain_of biolink:ChemicalAffectsGeneAssociation ;
     linkml:examples [ a linkml:Example ;
-            skos:example "zebrafish" ],
+            skos:example "human" ],
         [ a linkml:Example ;
-            skos:example "human" ] ;
+            skos:example "zebrafish" ] ;
     linkml:is_a biolink:species_context_qualifier ;
     linkml:is_usage_slot true ;
     linkml:owner biolink:ChemicalAffectsGeneAssociation ;
@@ -3192,11 +3192,11 @@ biolink:disease_or_phenotypic_feature_to_entity_association_mixin_subject a link
     linkml:domain biolink:DiseaseOrPhenotypicFeatureToEntityAssociationMixin ;
     linkml:domain_of biolink:DiseaseOrPhenotypicFeatureToEntityAssociationMixin ;
     linkml:examples [ a linkml:Example ;
-            dcterms:description "abnormal brain ventricle size" ;
-            skos:example "MP:0013229" ],
-        [ a linkml:Example ;
             dcterms:description "Ehlers-Danlos syndrome, vascular type" ;
-            skos:example "MONDO:0017314" ] ;
+            skos:example "MONDO:0017314" ],
+        [ a linkml:Example ;
+            dcterms:description "abnormal brain ventricle size" ;
+            skos:example "MP:0013229" ] ;
     linkml:is_a biolink:subject ;
     linkml:is_usage_slot true ;
     linkml:local_names [ linkml:ga4gh [ skos:altLabel "annotation subject" ;
@@ -3574,14 +3574,14 @@ biolink:entity_to_phenotypic_feature_association_mixin_object a linkml:SlotDefin
     linkml:domain biolink:EntityToPhenotypicFeatureAssociationMixin ;
     linkml:domain_of biolink:EntityToPhenotypicFeatureAssociationMixin ;
     linkml:examples [ a linkml:Example ;
-            dcterms:description "axon morphology variant" ;
-            skos:example "WBPhenotype:0000180" ],
+            dcterms:description "Hyperkinesis" ;
+            skos:example "HP:0002487" ],
         [ a linkml:Example ;
             dcterms:description "abnormal circulating bilirubin level" ;
             skos:example "MP:0001569" ],
         [ a linkml:Example ;
-            dcterms:description "Hyperkinesis" ;
-            skos:example "HP:0002487" ] ;
+            dcterms:description "axon morphology variant" ;
+            skos:example "WBPhenotype:0000180" ] ;
     linkml:is_a biolink:object ;
     linkml:is_usage_slot true ;
     linkml:local_names [ linkml:ga4gh [ skos:altLabel "descriptor" ;
@@ -6135,11 +6135,11 @@ biolink:variant_to_entity_association_mixin_subject a linkml:SlotDefinition ;
     linkml:domain biolink:VariantToEntityAssociationMixin ;
     linkml:domain_of biolink:VariantToEntityAssociationMixin ;
     linkml:examples [ a linkml:Example ;
-            dcterms:description "CLINVAR representation of NM_000059.3(BRCA2):c.7007G>A (p.Arg2336His)" ;
-            skos:example "CLINVAR:38077" ],
-        [ a linkml:Example ;
             dcterms:description "chr13:g.32921033G>C (hg19) in ClinGen" ;
-            skos:example "ClinGen:CA024716" ] ;
+            skos:example "ClinGen:CA024716" ],
+        [ a linkml:Example ;
+            dcterms:description "CLINVAR representation of NM_000059.3(BRCA2):c.7007G>A (p.Arg2336His)" ;
+            skos:example "CLINVAR:38077" ] ;
     linkml:is_a biolink:subject ;
     linkml:is_usage_slot true ;
     linkml:local_names [ linkml:ga4gh [ skos:altLabel "annotation subject" ;
@@ -8232,11 +8232,11 @@ biolink:sequence_variant_id a linkml:SlotDefinition ;
     linkml:domain biolink:SequenceVariant ;
     linkml:domain_of biolink:SequenceVariant ;
     linkml:examples [ a linkml:Example ;
-            dcterms:description "NM_007294.3(BRCA1):c.2521C>T (p.Arg841Trp)" ;
-            skos:example "CLINVAR:17681" ],
-        [ a linkml:Example ;
             dcterms:description "ti282a allele from ZFIN" ;
-            skos:example "ZFIN:ZDB-ALT-980203-1091" ] ;
+            skos:example "ZFIN:ZDB-ALT-980203-1091" ],
+        [ a linkml:Example ;
+            dcterms:description "NM_007294.3(BRCA1):c.2521C>T (p.Arg841Trp)" ;
+            skos:example "CLINVAR:17681" ] ;
     linkml:identifier true ;
     linkml:is_a biolink:id ;
     linkml:is_usage_slot true ;
@@ -8405,14 +8405,6 @@ biolink:AdministrativeEntity a linkml:ClassDefinition ;
         biolink:provided_by,
         biolink:type,
         biolink:xref .
-
-biolink:Annotation a linkml:ClassDefinition ;
-    dcterms:description "Biolink Model root class for entity annotations." ;
-    skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:abstract true ;
-    linkml:class_uri biolink:Annotation ;
-    linkml:definition_uri biolink:Annotation ;
-    linkml:slot_usage [ ] .
 
 biolink:Behavior a linkml:ClassDefinition ;
     skos:exactMatch <go:0007610>,
@@ -9194,7 +9186,7 @@ biolink:binds a linkml:SlotDefinition ;
     dcterms:description "A causal mechanism mediated by the direct contact between effector and target chemical or biomolecular entity,  which form a stable physical interaction." ;
     skos:closeMatch <https://www.dgidb.org/interaction_typesbinder> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:binds ;
@@ -9286,7 +9278,7 @@ biolink:chemically_similar_to a linkml:SlotDefinition ;
         <http://purl.obolibrary.org/obo/CHEBI_is_enantiomer_of>,
         <http://purl.obolibrary.org/obo/CHEBI_is_tautomer_of>,
         <http://purl.obolibrary.org/obo/NCIT_has_salt_form> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:chemically_similar_to ;
@@ -9325,7 +9317,7 @@ biolink:colocalizes_with a linkml:SlotDefinition ;
     oboformat:inSubset biolink:translator_minimal ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_00002325> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:colocalizes_with ;
@@ -9422,7 +9414,7 @@ biolink:end_interbase_coordinate a linkml:SlotDefinition ;
     dcterms:description "The position at which the subject nucleic acid entity ends on the chromosome or other entity to which it is located on." ;
     skos:closeMatch faldo:end ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example "start interbase coordinate" ;
             linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:end_interbase_coordinate ;
@@ -9510,7 +9502,7 @@ biolink:genetically_interacts_with a linkml:SlotDefinition ;
     oboformat:inSubset biolink:translator_minimal ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0002435> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:genetically_interacts_with ;
@@ -9699,7 +9691,7 @@ biolink:in_cell_population_with a linkml:SlotDefinition ;
     dcterms:description "holds between two genes or gene products that are expressed in the same cell type or population" ;
     oboformat:inSubset biolink:translator_minimal ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:in_cell_population_with ;
@@ -9719,7 +9711,7 @@ biolink:in_complex_with a linkml:SlotDefinition ;
     skos:broadMatch <http://semanticscience.org/resource/SIO_010285> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:relatedMatch <http://semanticscience.org/resource/SIO_010497> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:in_complex_with ;
@@ -9737,7 +9729,7 @@ biolink:in_linkage_disequilibrium_with a linkml:SlotDefinition ;
     dcterms:description "holds between two sequence variants, the presence of which are correlated in a population" ;
     skos:exactMatch <http://purl.obolibrary.org/obo/NCIT_C16798> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:in_linkage_disequilibrium_with ;
@@ -9755,7 +9747,7 @@ biolink:in_pathway_with a linkml:SlotDefinition ;
     oboformat:inSubset biolink:translator_minimal ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:relatedMatch <http://semanticscience.org/resource/SIO_010532> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:in_pathway_with ;
@@ -9771,7 +9763,7 @@ biolink:in_pathway_with a linkml:SlotDefinition ;
 
 biolink:indirectly_physically_interacts_with a linkml:SlotDefinition ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:indirectly_physically_interacts_with ;
@@ -9871,10 +9863,10 @@ biolink:negatively_correlated_with a linkml:SlotDefinition ;
     oboformat:inSubset biolink:translator_minimal ;
     skos:exactMatch CTD:negative_correlation ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ],
-        [ a linkml:Annotation ;
+        [ a biolink:Annotation ;
             skos:example "positively correlated with" ;
             linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:negatively_correlated_with ;
@@ -9914,7 +9906,7 @@ biolink:occurs_together_in_literature_with a linkml:SlotDefinition ;
     dcterms:description "holds between two entities where their co-occurrence is correlated by counts of publications in which both occur, using some threshold of occurrence as defined by the edge provider." ;
     oboformat:inSubset biolink:translator_minimal ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:occurs_together_in_literature_with ;
@@ -9977,7 +9969,7 @@ biolink:orthologous_to a linkml:SlotDefinition ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_HOM0000017>,
         WIKIDATA_PROPERTY:P684 ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:orthologous_to ;
@@ -9995,7 +9987,7 @@ biolink:paralogous_to a linkml:SlotDefinition ;
     oboformat:inSubset biolink:translator_minimal ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_HOM0000011> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:paralogous_to ;
@@ -10013,12 +10005,12 @@ biolink:positively_correlated_with a linkml:SlotDefinition ;
     oboformat:inSubset biolink:translator_minimal ;
     skos:exactMatch CTD:positive_correlation ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
-            skos:example true ;
-            linkml:tag biolink:canonical_predicate ],
-        [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example "negatively correlated with" ;
-            linkml:tag biolink:opposite_of ] ;
+            linkml:tag biolink:opposite_of ],
+        [ a biolink:Annotation ;
+            skos:example true ;
+            linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:positively_correlated_with ;
     linkml:domain biolink:NamedThing ;
     linkml:inherited true ;
@@ -10124,7 +10116,7 @@ biolink:same_as a linkml:SlotDefinition ;
         WIKIDATA_PROPERTY:P2888 ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch DRUGBANK:external-identifier ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:same_as ;
@@ -10175,7 +10167,7 @@ biolink:start_interbase_coordinate a linkml:SlotDefinition ;
     dcterms:description "The position at which the subject nucleic acid entity starts on the chromosome or other entity to which it is located on. (ie: the start of the sequence being referenced is 0)." ;
     skos:closeMatch faldo:begin ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example "end interbase coordinate" ;
             linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:start_interbase_coordinate ;
@@ -10422,7 +10414,7 @@ biolink:xenologous_to a linkml:SlotDefinition ;
     oboformat:inSubset biolink:translator_minimal ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_HOM0000018> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:xenologous_to ;
@@ -10671,7 +10663,7 @@ biolink:active_in a linkml:SlotDefinition ;
     owl:inverseOf biolink:has_active_component ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0002432> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:active_in ;
@@ -10687,7 +10679,7 @@ biolink:acts_upstream_of_negative_effect a linkml:SlotDefinition ;
     owl:inverseOf biolink:has_negative_upstream_actor ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0004035> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:acts_upstream_of_negative_effect ;
@@ -10703,7 +10695,7 @@ biolink:acts_upstream_of_or_within_negative_effect a linkml:SlotDefinition ;
     owl:inverseOf biolink:has_negative_upstream_or_within_actor ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0004033> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:acts_upstream_of_or_within_negative_effect ;
@@ -10719,7 +10711,7 @@ biolink:acts_upstream_of_or_within_positive_effect a linkml:SlotDefinition ;
     owl:inverseOf biolink:has_positive_upstream_or_within_actor ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0004032> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:acts_upstream_of_or_within_positive_effect ;
@@ -10735,7 +10727,7 @@ biolink:acts_upstream_of_positive_effect a linkml:SlotDefinition ;
     owl:inverseOf biolink:has_positive_upstream_actor ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0004034> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:acts_upstream_of_positive_effect ;
@@ -10800,7 +10792,7 @@ biolink:associated_with_decreased_likelihood_of a linkml:SlotDefinition ;
     dcterms:description "Expresses a relationship between two named things where the relationship is typically generated statistically and the state or fact of something is less probable." ;
     owl:inverseOf biolink:decreased_likelihood_associated_with ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:associated_with_decreased_likelihood_of ;
@@ -10816,7 +10808,7 @@ biolink:associated_with_increased_likelihood_of a linkml:SlotDefinition ;
     dcterms:description "Expresses a relationship between two named things where the relationship is typically generated statistically and the state or fact of something is more probable." ;
     owl:inverseOf biolink:increased_likelihood_associated_with ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:associated_with_increased_likelihood_of ;
@@ -10832,7 +10824,7 @@ biolink:associated_with_resistance_to a linkml:SlotDefinition ;
     dcterms:description "A relation that holds between a named thing and a chemical that specifies that the change in the named thing is found to be associated with the degree of resistance to treatment by the chemical." ;
     owl:inverseOf biolink:resistance_associated_with ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:associated_with_resistance_to ;
@@ -10850,7 +10842,7 @@ biolink:associated_with_sensitivity_to a linkml:SlotDefinition ;
     skos:broadMatch <http://purl.obolibrary.org/obo/PATO_0000085> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch SNOMEDCT:418038007 ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:associated_with_sensitivity_to ;
@@ -10890,7 +10882,7 @@ biolink:biomarker_for a linkml:SlotDefinition ;
         <http://purl.obolibrary.org/obo/NCIT_genetic_biomarker_related_to>,
         <http://purl.obolibrary.org/obo/NCIT_is_molecular_abnormality_of_disease>,
         <http://www.orpha.net/ORDO/Orphanet_465410> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:biomarker_for ;
@@ -10909,10 +10901,10 @@ biolink:broad_match a linkml:SlotDefinition ;
     skos:exactMatch skos:broadMatch,
         WIKIDATA:Q39894595 ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ],
-        [ a linkml:Annotation ;
+        [ a biolink:Annotation ;
             skos:example "narrow match" ;
             linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:broad_match ;
@@ -10946,7 +10938,7 @@ biolink:capable_of a linkml:SlotDefinition ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_R52>,
         <http://purl.obolibrary.org/obo/RO_0002500> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:capable_of ;
@@ -10962,7 +10954,7 @@ biolink:capable_of a linkml:SlotDefinition ;
 biolink:catalyzes a linkml:SlotDefinition ;
     owl:inverseOf biolink:has_catalyst ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:catalyzes ;
@@ -11034,7 +11026,7 @@ biolink:close_match a linkml:SlotDefinition ;
         <http://purl.obolibrary.org/obo/CHEBI_is_tautomer_of>,
         oboformat:hasDbXref,
         oboformat:xref ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:close_match ;
@@ -11050,7 +11042,7 @@ biolink:close_match a linkml:SlotDefinition ;
 biolink:coexpressed_with a linkml:SlotDefinition ;
     dcterms:description "holds between any two genes or gene products, in which both are generally expressed within a single defined experimental context." ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:coexpressed_with ;
@@ -11082,7 +11074,7 @@ biolink:composed_primarily_of a linkml:SlotDefinition ;
     owl:inverseOf biolink:primarily_composed_of ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0002473> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:composed_primarily_of ;
@@ -11126,7 +11118,7 @@ biolink:consumes a linkml:SlotDefinition ;
     owl:inverseOf biolink:consumed_by ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/RO_0004009> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:consumes ;
@@ -11156,10 +11148,10 @@ biolink:contraindicated_for a linkml:SlotDefinition ;
     owl:inverseOf biolink:has_contraindication ;
     skos:exactMatch <http://purl.obolibrary.org/obo/NCIT_C37933> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example "treats" ;
             linkml:tag biolink:opposite_of ],
-        [ a linkml:Annotation ;
+        [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:contraindicated_for ;
@@ -11218,12 +11210,12 @@ biolink:decreases_response_to a linkml:SlotDefinition ;
     skos:exactMatch CTD:decreases_response_to ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch CTD:decreases_response_to_substance ;
-    linkml:annotations [ a linkml:Annotation ;
-            skos:example "increases response to" ;
-            linkml:tag biolink:opposite_of ],
-        [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
-            linkml:tag biolink:canonical_predicate ] ;
+            linkml:tag biolink:canonical_predicate ],
+        [ a biolink:Annotation ;
+            skos:example "increases response to" ;
+            linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:decreases_response_to ;
     linkml:domain biolink:ChemicalEntityOrGeneOrGeneProduct ;
     linkml:inherited true ;
@@ -11254,7 +11246,7 @@ biolink:diagnoses a linkml:SlotDefinition ;
     skos:exactMatch DrugCentral:5271,
         <https://skr3.nlm.nih.gov/SemMedDBDIAGNOSES> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:diagnoses ;
@@ -11276,7 +11268,7 @@ biolink:directly_physically_interacts_with a linkml:SlotDefinition ;
         DRUGBANK:chelator,
         <http://pharos.nih.govdrug_targets>,
         <https://www.dgidb.org/interaction_typescofactor> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:directly_physically_interacts_with ;
@@ -11295,7 +11287,7 @@ biolink:disease_has_basis_in a linkml:SlotDefinition ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/MONDO_disease_has_basis_in_accumulation_of>,
         <http://purl.obolibrary.org/obo/MONDO_disease_has_basis_in_development_of> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:disease_has_basis_in ;
@@ -11345,12 +11337,12 @@ biolink:disrupts a linkml:SlotDefinition ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/RO_0004024>,
         <http://purl.obolibrary.org/obo/RO_0004025> ;
-    linkml:annotations [ a linkml:Annotation ;
-            skos:example true ;
-            linkml:tag biolink:canonical_predicate ],
-        [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example "enables" ;
-            linkml:tag biolink:opposite_of ] ;
+            linkml:tag biolink:opposite_of ],
+        [ a biolink:Annotation ;
+            skos:example true ;
+            linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:disrupts ;
     linkml:domain biolink:NamedThing ;
     linkml:inherited true ;
@@ -11380,12 +11372,12 @@ biolink:enables a linkml:SlotDefinition ;
     owl:inverseOf biolink:enabled_by ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0002327> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
-            skos:example true ;
-            linkml:tag biolink:canonical_predicate ],
-        [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example "prevents" ;
-            linkml:tag biolink:opposite_of ] ;
+            linkml:tag biolink:opposite_of ],
+        [ a biolink:Annotation ;
+            skos:example true ;
+            linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:enables ;
     linkml:domain biolink:PhysicalEntity ;
     linkml:inherited true ;
@@ -11401,7 +11393,7 @@ biolink:exacerbates a linkml:SlotDefinition ;
     skos:broadMatch <https://skr3.nlm.nih.gov/SemMedDBCOMPLICATES> ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0003309> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:exacerbates ;
@@ -11420,7 +11412,7 @@ biolink:exact_match a linkml:SlotDefinition ;
         WIKIDATA:P2888,
         WIKIDATA:Q39893449 ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:exact_match ;
@@ -11461,7 +11453,7 @@ biolink:gene_associated_with_condition a linkml:SlotDefinition ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_R175>,
         <http://purl.obolibrary.org/obo/NCIT_R38>,
         <http://purl.obolibrary.org/obo/NCIT_R48> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:gene_associated_with_condition ;
@@ -11479,7 +11471,7 @@ biolink:gene_product_of a linkml:SlotDefinition ;
     owl:inverseOf biolink:has_gene_product ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0002204> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:gene_product_of ;
@@ -11557,10 +11549,10 @@ biolink:has_active_ingredient a linkml:SlotDefinition ;
     owl:inverseOf biolink:is_active_ingredient_of ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:mappingRelation <http://purl.obolibrary.org/obo/RO_0002248> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ],
-        [ a linkml:Annotation ;
+        [ a biolink:Annotation ;
             skos:example "is excipient of" ;
             linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:has_active_ingredient ;
@@ -11618,12 +11610,12 @@ biolink:has_completed a linkml:SlotDefinition ;
     owl:inverseOf biolink:completed_by ;
     skos:exactMatch <http://purl.obolibrary.org/obo/CL_has_completed> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
-            skos:example "has not completed" ;
-            linkml:tag biolink:opposite_of ],
-        [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
-            linkml:tag biolink:canonical_predicate ] ;
+            linkml:tag biolink:canonical_predicate ],
+        [ a biolink:Annotation ;
+            skos:example "has not completed" ;
+            linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:has_completed ;
     linkml:domain biolink:NamedThing ;
     linkml:inherited true ;
@@ -11649,12 +11641,12 @@ biolink:has_decreased_amount a linkml:SlotDefinition ;
     owl:inverseOf biolink:decreased_amount_in ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/CL_has_low_plasma_membrane_amount> ;
-    linkml:annotations [ a linkml:Annotation ;
-            skos:example true ;
-            linkml:tag biolink:canonical_predicate ],
-        [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example "has increased amount" ;
-            linkml:tag biolink:opposite_of ] ;
+            linkml:tag biolink:opposite_of ],
+        [ a biolink:Annotation ;
+            skos:example true ;
+            linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:has_decreased_amount ;
     linkml:domain biolink:NamedThing ;
     linkml:inherited true ;
@@ -11682,7 +11674,7 @@ biolink:has_excipient a linkml:SlotDefinition ;
     owl:inverseOf biolink:is_excipient_of ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:mappingRelation WIKIDATA:Q902638 ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:has_excipient ;
@@ -11713,12 +11705,12 @@ biolink:has_increased_amount a linkml:SlotDefinition ;
     owl:inverseOf biolink:increased_amount_of ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/CL_has_high_plasma_membrane_amount> ;
-    linkml:annotations [ a linkml:Annotation ;
-            skos:example true ;
-            linkml:tag biolink:canonical_predicate ],
-        [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example "has decreased amount" ;
-            linkml:tag biolink:opposite_of ] ;
+            linkml:tag biolink:opposite_of ],
+        [ a biolink:Annotation ;
+            skos:example true ;
+            linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:has_increased_amount ;
     linkml:domain biolink:NamedThing ;
     linkml:inherited true ;
@@ -11751,7 +11743,7 @@ biolink:has_metabolite a linkml:SlotDefinition ;
     skos:exactMatch <http://purl.obolibrary.org/obo/CHEBI_25212> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:note "The CHEBI ID represents a role rather than a predicate" ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:has_metabolite ;
@@ -11781,7 +11773,7 @@ biolink:has_molecular_consequence a linkml:SlotDefinition ;
     skos:altLabel "allele has activity" ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_allele_has_activity> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:has_molecular_consequence ;
@@ -11865,10 +11857,10 @@ biolink:has_not_completed a linkml:SlotDefinition ;
     owl:inverseOf biolink:not_completed_by ;
     skos:exactMatch <http://purl.obolibrary.org/obo/CL_has_not_completed> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ],
-        [ a linkml:Annotation ;
+        [ a biolink:Annotation ;
             skos:example "has completed" ;
             linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:has_not_completed ;
@@ -11886,7 +11878,7 @@ biolink:has_nutrient a linkml:SlotDefinition ;
     owl:inverseOf biolink:nutrient_of ;
     skos:exactMatch WIKIDATA:Q181394 ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:has_nutrient ;
@@ -11904,7 +11896,7 @@ biolink:has_plasma_membrane_part a linkml:SlotDefinition ;
     owl:inverseOf biolink:plasma_membrane_part_of ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0002104> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:has_plasma_membrane_part ;
@@ -11996,7 +11988,7 @@ biolink:has_splice_site_variant a linkml:SlotDefinition ;
 biolink:has_substrate a linkml:SlotDefinition ;
     owl:inverseOf biolink:is_substrate_of ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:has_substrate ;
@@ -12090,12 +12082,12 @@ biolink:increases_response_to a linkml:SlotDefinition ;
     owl:inverseOf biolink:response_increased_by ;
     skos:exactMatch CTD:increases_response_to ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
-            skos:example true ;
-            linkml:tag biolink:canonical_predicate ],
-        [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example "decreases response to" ;
-            linkml:tag biolink:opposite_of ] ;
+            linkml:tag biolink:opposite_of ],
+        [ a biolink:Annotation ;
+            skos:example true ;
+            linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:increases_response_to ;
     linkml:domain biolink:ChemicalEntityOrGeneOrGeneProduct ;
     linkml:inherited true ;
@@ -12182,7 +12174,7 @@ biolink:is_frameshift_variant_of a linkml:SlotDefinition ;
         "stop lost" ;
     skos:exactMatch <http://purl.obolibrary.org/obo/SO_0001589> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:is_frameshift_variant_of ;
@@ -12216,7 +12208,7 @@ biolink:is_missense_variant_of a linkml:SlotDefinition ;
     owl:inverseOf biolink:has_missense_variant ;
     skos:exactMatch <http://purl.obolibrary.org/obo/SO_0001583> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:is_missense_variant_of ;
@@ -12245,7 +12237,7 @@ biolink:is_nearby_variant_of a linkml:SlotDefinition ;
     dcterms:description "holds between a sequence variant and a gene sequence that the variant is genomically close to." ;
     owl:inverseOf biolink:has_nearby_variant ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:is_nearby_variant_of ;
@@ -12262,7 +12254,7 @@ biolink:is_non_coding_variant_of a linkml:SlotDefinition ;
     dcterms:description "holds between a sequence variant and a gene, where the variant does not affect the coding sequence" ;
     owl:inverseOf biolink:has_non_coding_variant ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:is_non_coding_variant_of ;
@@ -12280,7 +12272,7 @@ biolink:is_nonsense_variant_of a linkml:SlotDefinition ;
     owl:inverseOf biolink:has_nonsense_variant ;
     skos:broadMatch <http://purl.obolibrary.org/obo/SO_0002054> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:is_nonsense_variant_of ;
@@ -12324,7 +12316,7 @@ biolink:is_splice_site_variant_of a linkml:SlotDefinition ;
     owl:inverseOf biolink:has_splice_site_variant ;
     skos:exactMatch <http://purl.obolibrary.org/obo/SO_0001629> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:is_splice_site_variant_of ;
@@ -12354,7 +12346,7 @@ biolink:is_synonymous_variant_of a linkml:SlotDefinition ;
     owl:inverseOf biolink:has_synonymous_variant ;
     skos:exactMatch <http://purl.obolibrary.org/obo/SO_0001819> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:is_synonymous_variant_of ;
@@ -12373,12 +12365,12 @@ biolink:lacks_part a linkml:SlotDefinition ;
         <http://purl.obolibrary.org/obo/PR_lacks_part> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/CL_lacks_plasma_membrane_part> ;
-    linkml:annotations [ a linkml:Annotation ;
-            skos:example "has part" ;
-            linkml:tag biolink:opposite_of ],
-        [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
-            linkml:tag biolink:canonical_predicate ] ;
+            linkml:tag biolink:canonical_predicate ],
+        [ a biolink:Annotation ;
+            skos:example "has part" ;
+            linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:lacks_part ;
     linkml:domain biolink:NamedThing ;
     linkml:inherited true ;
@@ -12504,7 +12496,7 @@ biolink:narrow_match a linkml:SlotDefinition ;
     skos:exactMatch skos:narrowMatch,
         WIKIDATA:Q39893967 ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example "broad match" ;
             linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:narrow_match ;
@@ -12564,7 +12556,7 @@ biolink:occurs_in a linkml:SlotDefinition ;
         PathWhiz:in_species,
         <https://skr3.nlm.nih.gov/SemMedDBOCCURS_IN>,
         <https://skr3.nlm.nih.gov/SemMedDBPROCESS_OF> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:occurs_in ;
@@ -12684,7 +12676,7 @@ biolink:precedes a linkml:SlotDefinition ;
         <http://purl.obolibrary.org/obo/RO_0002090>,
         <http://purl.obolibrary.org/obo/RO_0002411>,
         <http://purl.obolibrary.org/obo/RO_0002412> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:precedes ;
@@ -12703,10 +12695,10 @@ biolink:predisposes a linkml:SlotDefinition ;
     owl:inverseOf biolink:has_predisposing_factor ;
     skos:exactMatch <https://skr3.nlm.nih.gov/SemMedDBPREDISPOSES> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ],
-        [ a linkml:Annotation ;
+        [ a biolink:Annotation ;
             skos:example "prevents" ;
             linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:predisposes ;
@@ -12722,7 +12714,7 @@ biolink:prevented_by a linkml:SlotDefinition ;
     dcterms:description "holds between a potential outcome of which the likelihood was reduced by the application or use of an entity." ;
     owl:inverseOf biolink:prevents ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example "enabled by" ;
             linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:prevented_by ;
@@ -12741,12 +12733,12 @@ biolink:prevents a linkml:SlotDefinition ;
     skos:exactMatch <https://skr3.nlm.nih.gov/SemMedDBPREVENTS> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/RO_0002599> ;
-    linkml:annotations [ a linkml:Annotation ;
-            skos:example true ;
-            linkml:tag biolink:canonical_predicate ],
-        [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example "predisposes" ;
-            linkml:tag biolink:opposite_of ] ;
+            linkml:tag biolink:opposite_of ],
+        [ a biolink:Annotation ;
+            skos:example true ;
+            linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:prevents ;
     linkml:domain biolink:NamedThing ;
     linkml:inherited true ;
@@ -12793,7 +12785,7 @@ biolink:produces a linkml:SlotDefinition ;
         <http://purl.obolibrary.org/obo/SNOMED_has_process_output>,
         <http://purl.obolibrary.org/obo/SNOMED_specimen_procedure_of> ;
     skos:relatedMatch <http://purl.obolibrary.org/obo/GOREL_0001010> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:produces ;
@@ -13019,7 +13011,7 @@ biolink:subclass_of a linkml:SlotDefinition ;
         <http://purl.obolibrary.org/obo/SNOMED_entire_anatomy_structure_of>,
         <http://purl.obolibrary.org/obo/SNOMED_has_dose_form>,
         rdfs:subPropertyOf ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:subclass_of ;
@@ -13087,7 +13079,7 @@ biolink:transcribed_from a linkml:SlotDefinition ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0002510>,
         <http://semanticscience.org/resource/SIO_010081> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:transcribed_from ;
@@ -13120,7 +13112,7 @@ biolink:translates_to a linkml:SlotDefinition ;
     skos:closeMatch <http://purl.obolibrary.org/obo/RO_0002513>,
         <http://semanticscience.org/resource/SIO_010082> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:translates_to ;
@@ -13198,10 +13190,10 @@ biolink:treats a linkml:SlotDefinition ;
         <http://purl.obolibrary.org/obo/RO_0002606>,
         <http://purl.obolibrary.org/obo/SNOMED_plays_role> ;
     skos:relatedMatch <http://purl.obolibrary.org/obo/MONDO_disease_responds_to> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example "contraindicated for" ;
             linkml:tag biolink:opposite_of ],
-        [ a linkml:Annotation ;
+        [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:treats ;
@@ -14239,7 +14231,7 @@ biolink:actively_involved_in a linkml:SlotDefinition ;
         <http://www.orpha.net/ORDO/Orphanet_317348>,
         <http://www.orpha.net/ORDO/Orphanet_317349>,
         <http://www.orpha.net/ORDO/Orphanet_327767> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:actively_involved_in ;
@@ -14271,12 +14263,12 @@ biolink:ameliorates a linkml:SlotDefinition ;
     owl:inverseOf biolink:is_ameliorated_by ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0003307> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
-            skos:example true ;
-            linkml:tag biolink:canonical_predicate ],
-        [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example "exacerbates" ;
-            linkml:tag biolink:opposite_of ] ;
+            linkml:tag biolink:opposite_of ],
+        [ a biolink:Annotation ;
+            skos:example true ;
+            linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:ameliorates ;
     linkml:domain biolink:NamedThing ;
     linkml:inherited true ;
@@ -14294,13 +14286,13 @@ biolink:aspect_qualifier a linkml:SlotDefinition ;
     linkml:definition_uri biolink:aspect_qualifier ;
     linkml:domain biolink:Association ;
     linkml:examples [ a linkml:Example ;
-            skos:example "stability" ],
+            skos:example "exposure" ],
         [ a linkml:Example ;
-            skos:example "expression" ],
+            skos:example "stability" ],
         [ a linkml:Example ;
             skos:example "abundance" ],
         [ a linkml:Example ;
-            skos:example "exposure" ] ;
+            skos:example "expression" ] ;
     linkml:is_a biolink:association_slot ;
     linkml:owner biolink:aspect_qualifier ;
     linkml:range biolink:string ;
@@ -14311,7 +14303,7 @@ biolink:assesses a linkml:SlotDefinition ;
     owl:inverseOf biolink:is_assessed_by ;
     skos:altLabel "was assayed against" ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:assesses ;
@@ -14405,12 +14397,12 @@ biolink:causes a linkml:SlotDefinition ;
         <http://www.orpha.net/ORDO/Orphanet_317346>,
         <http://www.orpha.net/ORDO/Orphanet_410295>,
         <http://www.orpha.net/ORDO/Orphanet_410296> ;
-    linkml:annotations [ a linkml:Annotation ;
-            skos:example true ;
-            linkml:tag biolink:canonical_predicate ],
-        [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example "prevents" ;
-            linkml:tag biolink:opposite_of ] ;
+            linkml:tag biolink:opposite_of ],
+        [ a biolink:Annotation ;
+            skos:example true ;
+            linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:causes ;
     linkml:domain biolink:NamedThing ;
     linkml:inherited true ;
@@ -14427,9 +14419,9 @@ biolink:context_qualifier a linkml:SlotDefinition ;
     linkml:definition_uri biolink:context_qualifier ;
     linkml:domain biolink:Association ;
     linkml:examples [ a linkml:Example ;
-            skos:example "cohort x (e.g. a specific population, referenced by an identifier)" ],
+            skos:example "gut microbiome" ],
         [ a linkml:Example ;
-            skos:example "gut microbiome" ] ;
+            skos:example "cohort x (e.g. a specific population, referenced by an identifier)" ] ;
     linkml:is_a biolink:association_slot ;
     linkml:owner biolink:context_qualifier ;
     linkml:range biolink:string ;
@@ -14473,7 +14465,7 @@ biolink:develops_from a linkml:SlotDefinition ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/RO_0002207>,
         <http://purl.obolibrary.org/obo/RO_0002225>,
         <http://purl.obolibrary.org/obo/RO_0002226> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:develops_from ;
@@ -14505,7 +14497,7 @@ biolink:expressed_in a linkml:SlotDefinition ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_R46>,
         <http://purl.obolibrary.org/obo/NCIT_R49> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:expressed_in ;
@@ -14555,13 +14547,13 @@ biolink:form_or_variant_qualifier a linkml:SlotDefinition ;
     linkml:examples [ a linkml:Example ;
             skos:example "severe" ],
         [ a linkml:Example ;
-            skos:example "mutation" ],
-        [ a linkml:Example ;
             skos:example "late stage" ],
         [ a linkml:Example ;
             skos:example "chemical analog" ],
         [ a linkml:Example ;
-            skos:example "transplant" ] ;
+            skos:example "transplant" ],
+        [ a linkml:Example ;
+            skos:example "mutation" ] ;
     linkml:is_a biolink:association_slot ;
     linkml:owner biolink:form_or_variant_qualifier ;
     linkml:range biolink:string ;
@@ -14578,11 +14570,11 @@ biolink:functional_association_object a linkml:SlotDefinition ;
     linkml:domain biolink:FunctionalAssociation ;
     linkml:domain_of biolink:FunctionalAssociation ;
     linkml:examples [ a linkml:Example ;
-            dcterms:description "postsynaptic membrane" ;
-            skos:example "GO:0045211" ],
-        [ a linkml:Example ;
             dcterms:description "kinase activity" ;
-            skos:example "GO:0016301" ] ;
+            skos:example "GO:0016301" ],
+        [ a linkml:Example ;
+            dcterms:description "postsynaptic membrane" ;
+            skos:example "GO:0045211" ] ;
     linkml:is_a biolink:object ;
     linkml:is_usage_slot true ;
     linkml:local_names [ linkml:ga4gh [ skos:altLabel "descriptor" ;
@@ -14673,7 +14665,7 @@ biolink:has_adverse_event a linkml:SlotDefinition ;
     owl:inverseOf biolink:adverse_event_of ;
     skos:altLabel "adverse effect" ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:has_adverse_event ;
@@ -14690,7 +14682,7 @@ biolink:has_food_component a linkml:SlotDefinition ;
     oboformat:inSubset biolink:translator_minimal ;
     owl:inverseOf biolink:food_component_of ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:has_food_component ;
@@ -14751,7 +14743,7 @@ biolink:has_mode_of_inheritance a linkml:SlotDefinition ;
     oboformat:inSubset biolink:translator_minimal ;
     owl:inverseOf biolink:mode_of_inheritance_of ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:has_mode_of_inheritance ;
@@ -14776,7 +14768,7 @@ biolink:has_phenotype a linkml:SlotDefinition ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_R89>,
         <http://purl.obolibrary.org/obo/RO_0004022>,
         DOID-PROPERTY:has_symptom ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:has_phenotype ;
@@ -14793,7 +14785,7 @@ biolink:has_sequence_location a linkml:SlotDefinition ;
     owl:inverseOf biolink:sequence_location_of ;
     skos:exactMatch faldo:location ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:has_sequence_location ;
@@ -14812,7 +14804,7 @@ biolink:has_side_effect a linkml:SlotDefinition ;
     skos:editorialNote "Side effects are listed on drug labels. There can be positive side effects, while adverse events are always negative. Aeolus, Sider are both resources that provide side effects." ;
     skos:exactMatch <http://purl.obolibrary.org/obo/NCIT_C2861> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:has_side_effect ;
@@ -14829,7 +14821,7 @@ biolink:has_variant_part a linkml:SlotDefinition ;
     owl:inverseOf biolink:variant_part_of ;
     skos:exactMatch <http://purl.obolibrary.org/obo/GENO_0000382> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:has_variant_part ;
@@ -14954,7 +14946,7 @@ biolink:located_in a linkml:SlotDefinition ;
         UBERON_CORE:in_innermost_side_of,
         UBERON_CORE:in_outermost_side_of,
         <http://www.ebi.ac.uk/efo/EFO_0000784> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:located_in ;
@@ -14996,7 +14988,7 @@ biolink:manifestation_of a linkml:SlotDefinition ;
         <https://skr3.nlm.nih.gov/SemMedDBMANIFESTATION_OF> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/SNOMED_has_definitional_manifestation> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:manifestation_of ;
@@ -15046,7 +15038,7 @@ biolink:model_of a linkml:SlotDefinition ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0003301> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/FOODON_00001301> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:model_of ;
@@ -15068,7 +15060,7 @@ biolink:overlaps a linkml:SlotDefinition ;
         <http://purl.obolibrary.org/obo/RO_0002102>,
         <http://purl.obolibrary.org/obo/RO_0002433>,
         CHEMBL.MECHANISM:overlaps_with ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:overlaps ;
@@ -15101,9 +15093,9 @@ biolink:part_qualifier a linkml:SlotDefinition ;
     linkml:definition_uri biolink:part_qualifier ;
     linkml:domain biolink:Association ;
     linkml:examples [ a linkml:Example ;
-            skos:example "upstream control region" ],
+            skos:example "polyA tail" ],
         [ a linkml:Example ;
-            skos:example "polyA tail" ] ;
+            skos:example "upstream control region" ] ;
     linkml:is_a biolink:association_slot ;
     linkml:owner biolink:part_qualifier ;
     linkml:range biolink:string ;
@@ -15215,7 +15207,7 @@ biolink:regulates a linkml:SlotDefinition ;
     skos:editorialNote "The RO definition of 'directly regulates the activity of' is an exact_mapping here because  it describes genetic regulation from the point of view of one genetic entity regulating another, as opposed to \"RO:0002211\" which describes process to process regulation." ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0002448> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:regulates ;
@@ -15232,7 +15224,7 @@ biolink:regulates a linkml:SlotDefinition ;
 biolink:related_condition a linkml:SlotDefinition ;
     skos:exactMatch <http://purl.obolibrary.org/obo/GENO_0000790> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:related_condition ;
@@ -15251,7 +15243,7 @@ biolink:similar_to a linkml:SlotDefinition ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_HOM0000000>,
         <http://purl.obolibrary.org/obo/SO_similar_to> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:similar_to ;
@@ -15268,7 +15260,7 @@ biolink:target_for a linkml:SlotDefinition ;
     dcterms:description "A gene is a target of a disease when its products are druggable and when a drug interaction with the gene product could have a therapeutic effect" ;
     owl:inverseOf biolink:has_target ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:target_for ;
@@ -15298,7 +15290,7 @@ biolink:temporally_related_to a linkml:SlotDefinition ;
         <http://purl.obolibrary.org/obo/RO_0002493>,
         <http://purl.obolibrary.org/obo/RO_0002496>,
         <http://purl.obolibrary.org/obo/RO_0002497> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:temporally_related_to ;
@@ -15545,7 +15537,7 @@ biolink:acts_upstream_of_or_within a linkml:SlotDefinition ;
     owl:inverseOf biolink:has_upstream_or_within_actor ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0002264> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:acts_upstream_of_or_within ;
@@ -15562,7 +15554,7 @@ biolink:affects_response_to a linkml:SlotDefinition ;
     owl:inverseOf biolink:response_affected_by ;
     skos:exactMatch CTD:affects_response_to ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:affects_response_to ;
@@ -15580,7 +15572,7 @@ biolink:affects_risk_for a linkml:SlotDefinition ;
     oboformat:inSubset biolink:translator_minimal ;
     owl:inverseOf biolink:risk_affected_by ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:affects_risk_for ;
@@ -15596,7 +15588,7 @@ biolink:associated_with_likelihood_of a linkml:SlotDefinition ;
     dcterms:description "A a relationship that holds between two concepts represented by variables for which a statistical  dependence is demonstrated, wherein the state or value of one variable predicts the future state  or value of the other.  E.g. the statement “An Atrial Fibrillation (Afib) diagnosis is associated  with likelihood of a Myocardial Infarction (MI) diagnosis” asserts that the state of having Afib  is associated with an increased or decreased likelihood that a patient will later exhibit MI." ;
     owl:inverseOf biolink:likelihood_associated_with ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:associated_with_likelihood_of ;
@@ -15631,7 +15623,7 @@ biolink:contributes_to a linkml:SlotDefinition ;
         <http://purl.obolibrary.org/obo/MONDO_predisposes_towards>,
         <http://purl.obolibrary.org/obo/RO_0002255>,
         <http://purl.obolibrary.org/obo/RO_0003304> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:contributes_to ;
@@ -15654,7 +15646,7 @@ biolink:derives_from a linkml:SlotDefinition ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/CHEBI_has_functional_parent>,
         <http://purl.obolibrary.org/obo/SNOMED_has_specimen_source_topography> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:derives_from ;
@@ -15699,7 +15691,7 @@ biolink:genetic_association a linkml:SlotDefinition ;
     dcterms:description "Co-occurrence of a certain allele of a genetic marker and the phenotype of interest in the same individuals at above-chance level" ;
     skos:exactMatch WIKIDATA_PROPERTY:P2293 ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:genetic_association ;
@@ -15764,7 +15756,7 @@ biolink:physically_interacts_with a linkml:SlotDefinition ;
         <http://purl.obolibrary.org/obo/FMA_adheres_to>,
         <http://purl.obolibrary.org/obo/NCIT_A7>,
         <http://purl.obolibrary.org/obo/PR_non-covalently_bound_to> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:physically_interacts_with ;
@@ -16082,7 +16074,7 @@ biolink:acts_upstream_of a linkml:SlotDefinition ;
     owl:inverseOf biolink:has_upstream_actor ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0002263> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:acts_upstream_of ;
@@ -16288,7 +16280,7 @@ biolink:coexists_with a linkml:SlotDefinition ;
         UBERON_CORE:transitively_connected_to,
         UBERON_CORE:transitively_distally_connected_to,
         UBERON_CORE:transitively_proximally_connected_to ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:coexists_with ;
@@ -16323,7 +16315,7 @@ biolink:homologous_to a linkml:SlotDefinition ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch UBERON_CORE:sexually_homologous_to ;
     skos:note "typically used to describe homology relationships between genes or gene products" ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:homologous_to ;
@@ -17279,9 +17271,9 @@ biolink:anatomical_context_qualifier a linkml:SlotDefinition ;
         biolink:ChemicalGeneInteractionAssociation,
         biolink:PredicateMapping ;
     linkml:examples [ a linkml:Example ;
-            skos:example "blood" ],
+            skos:example "cerebral cortext" ],
         [ a linkml:Example ;
-            skos:example "cerebral cortext" ] ;
+            skos:example "blood" ] ;
     linkml:is_a biolink:statement_qualifier ;
     linkml:owner biolink:ChemicalAffectsGeneAssociation ;
     linkml:range biolink:AnatomicalContextQualifierEnum ;
@@ -17328,7 +17320,7 @@ biolink:correlated_with a linkml:SlotDefinition ;
     skos:exactMatch <http://purl.obolibrary.org/obo/PATO_correlates_with>,
         <http://purl.obolibrary.org/obo/RO_0002610> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:correlated_with ;
@@ -17401,10 +17393,10 @@ biolink:has_part a linkml:SlotDefinition ;
         <http://purl.obolibrary.org/obo/SNOMED_has_component>,
         PathWhiz:has_element_in_bound,
         PathWhiz:has_protein_in_complex ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example "lacks part" ;
             linkml:tag biolink:opposite_of ],
-        [ a linkml:Annotation ;
+        [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:has_part ;
@@ -17579,7 +17571,7 @@ biolink:related_to a linkml:SlotDefinition ;
         <https://skr3.nlm.nih.gov/SemMedDBlower_than>,
         CPT:has_add_on_code,
         CPT:mapped_to ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:related_to ;
@@ -17886,7 +17878,7 @@ biolink:has_participant a linkml:SlotDefinition ;
         PathWhiz:has_nucleic_acid,
         PathWhiz:has_protein,
         PathWhiz:has_reaction ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:has_participant ;
@@ -18685,7 +18677,7 @@ biolink:associated_with a linkml:SlotDefinition ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/RO_0004029>,
         SNOMEDCT:47429007 ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:associated_with ;
@@ -18718,7 +18710,7 @@ biolink:is_sequence_variant_of a linkml:SlotDefinition ;
         "gene product variant of gene product" ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch WIKIDATA:P3433 ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:is_sequence_variant_of ;
@@ -18814,7 +18806,7 @@ biolink:part_of a linkml:SlotDefinition ;
 biolink:related_to_at_concept_level a linkml:SlotDefinition ;
     dcterms:description "Represents a relationship held between terminology components that describe the conceptual model of a domain." ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:related_to_at_concept_level ;
@@ -19089,7 +19081,7 @@ biolink:enabled_by a linkml:SlotDefinition ;
     owl:inverseOf biolink:enables ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0002333> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example "prevented by" ;
             linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:enabled_by ;
@@ -19119,12 +19111,12 @@ biolink:has_output a linkml:SlotDefinition ;
         <http://purl.obolibrary.org/obo/RO_0002588>,
         <http://purl.obolibrary.org/obo/RO_0004008>,
         PathWhiz:has_right_element ;
-    linkml:annotations [ a linkml:Annotation ;
-            skos:example "has input" ;
-            linkml:tag biolink:opposite_of ],
-        [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
-            linkml:tag biolink:canonical_predicate ] ;
+            linkml:tag biolink:canonical_predicate ],
+        [ a biolink:Annotation ;
+            skos:example "has input" ;
+            linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:has_output ;
     linkml:domain biolink:BiologicalProcessOrActivity ;
     linkml:domain_of biolink:BiologicalProcessOrActivity ;
@@ -19268,7 +19260,7 @@ biolink:affects a linkml:SlotDefinition ;
         UBERGRAPH:is_increase_of,
         <https://skr3.nlm.nih.gov/SemMedDBADMINISTERED_TO> ;
     skos:relatedMatch DRUGBANK:pathway ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:affects ;
@@ -19301,10 +19293,10 @@ biolink:has_input a linkml:SlotDefinition ;
         <http://purl.obolibrary.org/obo/SNOMED_uses_energy>,
         <http://purl.obolibrary.org/obo/SNOMED_uses_substance>,
         PathWhiz:has_left_element ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ],
-        [ a linkml:Annotation ;
+        [ a biolink:Annotation ;
             skos:example "has output" ;
             linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:has_input ;
@@ -20710,7 +20702,7 @@ biolink:opposite_of a linkml:SlotDefinition ;
         <https://github.com/biolink/biolink-model/issues/657> ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0002604> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:opposite_of ;
@@ -20802,11 +20794,11 @@ biolink:SequenceVariant a linkml:ClassDefinition ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:note "This class is for modeling the specific state at a locus. A single DBSNP rs ID could correspond to more than one sequence variants (e.g CIViC:1252 and CIViC:1253, two distinct BRCA2 alleles for rs28897743)" ;
     linkml:alt_descriptions [ a linkml:AltDescription ;
-            dcterms:description "A contiguous change at a Location" ;
-            dcterms:source biolink:VMC ],
-        [ a linkml:AltDescription ;
             dcterms:description "An entity that describes a single affected, endogenous allele. These can be of any type that matches that definition" ;
-            dcterms:source biolink:AGR ] ;
+            dcterms:source biolink:AGR ],
+        [ a linkml:AltDescription ;
+            dcterms:description "A contiguous change at a Location" ;
+            dcterms:source biolink:VMC ] ;
     linkml:class_uri biolink:SequenceVariant ;
     linkml:definition_uri biolink:SequenceVariant ;
     linkml:id_prefixes "AGRKB",
@@ -20966,7 +20958,7 @@ biolink:in_taxon a linkml:SlotDefinition ;
         WIKIDATA_PROPERTY:P703 ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/RO_0002160> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:in_taxon ;
@@ -21090,7 +21082,7 @@ biolink:association_type a linkml:SlotDefinition ;
 biolink:related_to_at_instance_level a linkml:SlotDefinition ;
     dcterms:description "Represents a relationship held between two instances of a data classes.  Much like an assertion component, in an ABox, these represent facts associated with the conceptual model." ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:annotations [ a linkml:Annotation ;
+    linkml:annotations [ a biolink:Annotation ;
             skos:example true ;
             linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:related_to_at_instance_level ;
@@ -21341,15 +21333,23 @@ biolink:predicate a linkml:SlotDefinition ;
         biolink:PredicateMapping ;
     linkml:is_a biolink:association_slot ;
     linkml:local_names [ a linkml:LocalName ;
-            skos:altLabel "annotation predicate" ;
-            linkml:local_name_source "ga4gh" ],
-        [ a linkml:LocalName ;
             skos:altLabel "predicate" ;
-            linkml:local_name_source "translator" ] ;
+            linkml:local_name_source "translator" ],
+        [ a linkml:LocalName ;
+            skos:altLabel "annotation predicate" ;
+            linkml:local_name_source "ga4gh" ] ;
     linkml:owner biolink:Association ;
     linkml:range biolink:predicate_type ;
     linkml:required true ;
     linkml:slot_uri rdf:predicate .
+
+biolink:Annotation a linkml:ClassDefinition ;
+    dcterms:description "Biolink Model root class for entity annotations." ;
+    skos:inScheme <https://w3id.org/biolink/biolink-model> ;
+    linkml:abstract true ;
+    linkml:class_uri biolink:Annotation ;
+    linkml:definition_uri biolink:Annotation ;
+    linkml:slot_usage [ ] .
 
 biolink:Association a linkml:ClassDefinition ;
     dcterms:description "A typed association between two entities, supported by evidence" ;
@@ -21395,11 +21395,11 @@ biolink:object a linkml:SlotDefinition ;
     linkml:domain_of biolink:Association ;
     linkml:is_a biolink:association_slot ;
     linkml:local_names [ a linkml:LocalName ;
-            skos:altLabel "descriptor" ;
-            linkml:local_name_source "ga4gh" ],
-        [ a linkml:LocalName ;
             skos:altLabel "node with incoming relationship" ;
-            linkml:local_name_source "neo4j" ] ;
+            linkml:local_name_source "neo4j" ],
+        [ a linkml:LocalName ;
+            skos:altLabel "descriptor" ;
+            linkml:local_name_source "ga4gh" ] ;
     linkml:owner biolink:Association ;
     linkml:range biolink:NamedThing ;
     linkml:required true ;
@@ -21526,11 +21526,11 @@ biolink:subject a linkml:SlotDefinition ;
     linkml:domain_of biolink:Association ;
     linkml:is_a biolink:association_slot ;
     linkml:local_names [ a linkml:LocalName ;
-            skos:altLabel "node with outgoing relationship" ;
-            linkml:local_name_source "neo4j" ],
-        [ a linkml:LocalName ;
             skos:altLabel "annotation subject" ;
-            linkml:local_name_source "ga4gh" ] ;
+            linkml:local_name_source "ga4gh" ],
+        [ a linkml:LocalName ;
+            skos:altLabel "node with outgoing relationship" ;
+            linkml:local_name_source "neo4j" ] ;
     linkml:owner biolink:Association ;
     linkml:range biolink:NamedThing ;
     linkml:required true ;

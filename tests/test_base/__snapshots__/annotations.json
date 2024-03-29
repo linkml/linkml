@@ -490,16 +490,35 @@
       "linkml": "https://w3id.org/linkml/",
       "@vocab": "https://w3id.org/linkml/",
       "annotations": {
-        "@type": "@id"
+        "@type": "@id",
+        "@id": "annotations"
       },
       "tag": {
-        "@type": "@id"
+        "@type": "@id",
+        "@id": "tag"
       },
       "value": {
-        "@type": "@id"
+        "@type": "@id",
+        "@id": "value"
       },
       "extensions": {
-        "@type": "@id"
+        "@type": "@id",
+        "@id": "extensions"
+      },
+      "Annotatable": {
+        "@id": "Annotatable"
+      },
+      "Annotation": {
+        "@id": "Annotation"
+      },
+      "AnyValue": {
+        "@id": "Any"
+      },
+      "Extensible": {
+        "@id": "Extensible"
+      },
+      "Extension": {
+        "@id": "Extension"
       }
     },
     "https://w3id.org/linkml/types.context.jsonld",
