@@ -223,7 +223,6 @@ class SQLStore:
             for n, nu_typ in inspect.getmembers(self.module):
                 # TODO: make more efficient
                 if n == typ.__name__:
-                    # print(f'Creating {nu_typ} from: {inst_args}')
                     nu_obj = nu_typ(**inst_args)
                     return nu_obj
             raise ValueError(f"Cannot find {typ.__name__} in {self.module}")
@@ -262,9 +261,7 @@ class SQLStore:
             for n, nu_typ in inspect.getmembers(self.native_module):
                 # TODO: make more efficient
                 if n == typ.__name__:
-                    # print(f'CREATING {nu_typ} FROM {inst_args}')
                     nu_obj = nu_typ(**inst_args)
-                    # print(f'CREATED {nu_obj}')
                     return nu_obj
             raise ValueError(f"Cannot find {typ.__name__} in {self.native_module}")
         else:
