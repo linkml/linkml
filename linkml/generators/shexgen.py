@@ -165,7 +165,7 @@ class ShExGenerator(Generator):
         shex = as_json_1(self.shex)
         if self.format == "rdf":
             g = Graph()
-            g.parse(data=shex, format="json-ld")
+            g.parse(data=shex, format="json-ld", version="1.1")
             g.bind("owl", OWL)
             shex = g.serialize(format="turtle")
         elif self.format == "shex":

@@ -219,8 +219,17 @@ class StandardNamingRule(LinterRule):
         self.config = config
 
     def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
-        class_pattern = self.PATTERNS["uppercamel"]
-        slot_pattern = self.PATTERNS["snake"]
+        class_pattern = (
+            self.PATTERNS["uppercamel"]
+            if not self.config.class_pattern
+            else self.PATTERNS.get(self.config.class_pattern, re.compile(self.config.class_pattern))
+        )
+        slot_pattern = (
+            self.PATTERNS["snake"]
+            if not self.config.slot_pattern
+            else self.PATTERNS.get(self.config.slot_pattern, re.compile(self.config.slot_pattern))
+        )
+
         enum_pattern = self.PATTERNS["uppercamel"]
         permissible_value_pattern = (
             self.PATTERNS["uppersnake"] if self.config.permissible_values_upper_case else self.PATTERNS["snake"]

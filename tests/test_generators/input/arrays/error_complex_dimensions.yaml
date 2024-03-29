@@ -1,0 +1,25 @@
+id: error_complex_dimensions
+name: error_complex_dimensions
+title: error_complex_dimensions
+imports:
+  - linkml:types
+
+classes:
+  ComplexTooLowExactShapeArray:
+    description: |
+      When exact_number_dimensions is below the number of parameterized dimensions, we should throw an error
+    attributes:
+      array:
+        range: integer
+        array:
+          exact_number_dimensions: 2
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: min_card
+              minimum_cardinality: 2
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6

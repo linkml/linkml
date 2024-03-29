@@ -118,7 +118,7 @@ class SchemaLoader:
             sname = self.importmap.get(str(sname), sname)  # It may also use URI or other forms
             import_schemadefinition = load_raw_schema(
                 sname + ".yaml",
-                base_dir=os.path.dirname(self.schema.source_file) if self.schema.source_file else None,
+                base_dir=os.path.dirname(self.schema.source_file) if self.schema.source_file else self.base_dir,
                 merge_modules=self.merge_modules,
                 emit_metadata=self.emit_metadata,
             )

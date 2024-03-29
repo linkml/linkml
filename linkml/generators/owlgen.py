@@ -22,6 +22,7 @@ from linkml_runtime.linkml_model.meta import (
     EnumDefinition,
     EnumDefinitionName,
     PermissibleValue,
+    SchemaDefinitionName,
     SlotDefinition,
     SlotDefinitionName,
     TypeDefinition,
@@ -199,6 +200,12 @@ class OwlSchemaGenerator(Generator):
         for enm in sv.all_enums(imports=mergeimports).values():
             self.add_enum(enm)
 
+        if not mergeimports:
+            for imp in schema.imports:
+                if imp == "linkml:types":
+                    continue
+                graph.add((base, OWL.imports, self._schema_uri(imp)))
+
         # Add metadata as annotation properties
         self.add_metadata(schema, base)
         return graph
@@ -267,6 +274,8 @@ class OwlSchemaGenerator(Generator):
                 self.graph.add((uri, metaslot_uri, obj))
 
         for k, v in e.annotations.items():
+            if isinstance(v, dict) or isinstance(v, list):
+                continue
             if ":" not in k:
                 default_prefix = this_sv.schema.default_prefix
                 if default_prefix in this_sv.schema.prefixes:
@@ -1128,6 +1137,13 @@ class OwlSchemaGenerator(Generator):
             # TODO: fix this upstream in schemaview
             default_prefix = self.schemaview.schema.default_prefix or ""
             return URIRef(self.schemaview.expand_curie(f"{default_prefix}:{underscore(p.name)}"))
+
+    def _schema_uri(self, scn: Union[str, SchemaDefinitionName]) -> URIRef:
+        if ":" in scn:
+            return URIRef(self.schemaview.expand_curie(scn))
+        else:
+            default_prefix = self.schemaview.schema.default_prefix or ""
+            return URIRef(self.schemaview.expand_curie(f"{default_prefix}:{scn}"))
 
     def _type_uri(self, tn: TypeDefinitionName, native: bool = None) -> URIRef:
         if native is None:
