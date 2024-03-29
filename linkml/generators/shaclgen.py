@@ -213,6 +213,7 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
 
 
 @shared_arguments(ShaclGenerator)
+@click.command()
 @click.option(
     "--closed/--non-closed",
     default=True,
@@ -227,7 +228,6 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     help="Use --suffix to append given string to SHACL class name (e. g. --suffix Shape: Person becomes PersonShape).",
 )
 @click.version_option(__version__, "-V", "--version")
-@click.command()
 def cli(yamlfile, **args):
     """Generate SHACL turtle from a LinkML model"""
     gen = ShaclGenerator(yamlfile, **args)
