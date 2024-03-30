@@ -573,11 +573,17 @@ class PydanticGenerator(OOCodeGenerator):
         elif self.metadata_mode in (MetadataMode.AUTO, MetadataMode.AUTO.value):
             meta = {k: v for k, v in remove_empty_items(source).items() if k not in model.exclude_from_meta()}
         elif self.metadata_mode in (MetadataMode.EXCEPT_CHILDREN, MetadataMode.EXCEPT_CHILDREN.value):
-            meta = {
-                k: v
-                for k, v in remove_empty_items(source).items()
-                if not isinstance(getattr(model, k, None), TemplateModel)
-            }
+            meta = {}
+            for k,v in remove_empty_items(source).items():
+                if not hasattr(model, k):
+                    meta[k] = v
+                elif isinstance(getattr(model, k), list) and not any([isinstance(item, TemplateModel) for item in getattr(model, k)]):
+                    meta[k] = v
+                elif isinstance(getattr(model, k), dict) and not any([isinstance(item, TemplateModel) for item in getattr(model, k).values()]):
+                    meta[k] = v
+                elif not isinstance(getattr(model, k), TemplateModel):
+                    meta[k] = v
+
         elif self.metadata_mode in (MetadataMode.FULL, MetadataMode.FULL.value):
             meta = remove_empty_items(source)
         else:
