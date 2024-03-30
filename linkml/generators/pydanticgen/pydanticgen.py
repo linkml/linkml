@@ -5,17 +5,10 @@ import textwrap
 from collections import defaultdict
 from copy import copy, deepcopy
 from dataclasses import dataclass, field
+from enum import Enum, auto
 from pathlib import Path
 from types import ModuleType
-from typing import (
-    Dict,
-    List,
-    Literal,
-    Optional,
-    Set,
-    Type,
-    Union,
-)
+from typing import Dict, List, Literal, Optional, Set, Type, TypeVar, Union, overload
 
 import click
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader
@@ -27,7 +20,7 @@ from linkml_runtime.linkml_model.meta import (
     TypeDefinition,
 )
 from linkml_runtime.utils.compile_python import compile_python
-from linkml_runtime.utils.formatutils import camelcase, underscore, remove_empty_items
+from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
@@ -108,6 +101,31 @@ DEFAULT_IMPORTS = (
 )
 
 DEFAULT_INJECTS = {1: [includes.LinkMLMeta_v1], 2: [includes.LinkMLMeta_v2]}
+
+
+class MetadataMode(Enum):
+    FULL = auto()
+    """
+    all metadata from the source schema will be included, even if it is represented by the template classes, 
+    and even if it is represented by some child class (eg. "classes" will be included with schema metadata
+    """
+    EXCEPT_CHILDREN = auto()
+    """
+    all metadata from the source schema will be included, even if it is represented by the template classes,
+    except if it is represented by some child template class (eg. "classes" will be excluded from schema metadata)
+    """
+    AUTO = auto()
+    """
+    Only the metadata that isn't represented by the template classes or excluded with ``meta_exclude`` will be included 
+    """
+    NONE = None
+    """
+    No metadata will be included.
+    """
+
+
+DefinitionType = TypeVar("DefinitionType", bound=Union[SchemaDefinition, ClassDefinition, SlotDefinition])
+TemplateType = TypeVar("TemplateType", bound=Union[PydanticModule, PydanticClass, PydanticAttribute])
 
 
 @dataclass
@@ -211,6 +229,12 @@ class PydanticGenerator(OOCodeGenerator):
         else:
             from typing_extensions import Literal
         
+    """
+    metadata_mode: MetadataMode = MetadataMode.AUTO
+    """
+    How to include schema metadata in generated pydantic models.
+    
+    See :class:`.MetadataMode` for mode documentation
     """
 
     # ObjectVars (identical to pythongen)
@@ -525,6 +549,43 @@ class PydanticGenerator(OOCodeGenerator):
 
         return array_reps
 
+    @overload
+    def include_metadata(self, model: PydanticModule, source: SchemaDefinition) -> PydanticModule: ...
+
+    @overload
+    def include_metadata(self, model: PydanticClass, source: ClassDefinition) -> PydanticClass: ...
+
+    @overload
+    def include_metadata(self, model: PydanticAttribute, source: SlotDefinition) -> PydanticAttribute: ...
+
+    def include_metadata(self, model: TemplateType, source: DefinitionType) -> TemplateType:
+        """
+        Include metadata from the source schema that is otherwise not represented in the pydantic template models.
+
+        Metadata inclusion mode is dependent on :attr:`.metadata_mode` - see:
+
+        - :enum:`.MetadataMode`
+        - :meth:`.TemplateModel.exclude_from_meta`
+
+        """
+        if self.metadata_mode is None or self.metadata_mode == MetadataMode.NONE:
+            return model
+        elif self.metadata_mode in (MetadataMode.AUTO, MetadataMode.AUTO.value):
+            meta = {k: v for k, v in remove_empty_items(source).items() if k not in model.exclude_from_meta()}
+        elif self.metadata_mode in (MetadataMode.EXCEPT_CHILDREN, MetadataMode.EXCEPT_CHILDREN.value):
+            meta = {
+                k: v
+                for k, v in remove_empty_items(source).items()
+                if not isinstance(getattr(model, k, None), TemplateModel)
+            }
+        elif self.metadata_mode in (MetadataMode.FULL, MetadataMode.FULL.value):
+            meta = remove_empty_items(source)
+        else:
+            raise ValueError("Unknown metadata mode, needs to be one of MetadataMode")
+
+        model.meta = meta
+        return model
+
     def render(self) -> PydanticModule:
         sv: SchemaView
         sv = self.schemaview
@@ -659,19 +720,14 @@ class PydanticGenerator(OOCodeGenerator):
                     predef_slot = str(predef_slot)
                 new_fields["predefined"] = predef_slot
                 new_fields["name"] = attr_name
-                attr_meta = {
-                    k: v
-                    for k, v in remove_empty_items(src_attr).items()
-                    if k not in PydanticAttribute.exclude_from_meta()
-                }
 
-                attrs[attr_name] = PydanticAttribute(**new_fields, pydantic_ver=self.pydantic_version, meta=attr_meta)
-
-            class_meta = {k: v for k, v in remove_empty_items(c).items() if k not in PydanticClass.exclude_from_meta()}
+                attrs[attr_name] = PydanticAttribute(**new_fields, pydantic_ver=self.pydantic_version)
+                attrs[attr_name] = self.include_metadata(attrs[attr_name], src_attr)
 
             new_class = PydanticClass(
-                name=k, attributes=attrs, description=c.description, pydantic_ver=self.pydantic_version, meta=class_meta
+                name=k, attributes=attrs, description=c.description, pydantic_ver=self.pydantic_version
             )
+            new_class = self.include_metadata(new_class, c)
             if k in bases:
                 new_class.bases = bases[k]
             classes[k] = new_class
@@ -691,6 +747,7 @@ class PydanticGenerator(OOCodeGenerator):
             classes=classes,
             meta=schema_meta,
         )
+        module = self.include_metadata(module, pyschema)
         return module
 
     def serialize(self) -> str:
