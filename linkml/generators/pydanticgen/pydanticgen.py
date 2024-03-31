@@ -76,6 +76,7 @@ DEFAULT_IMPORTS = (
     + Import(module="decimal", objects=[ObjectImport(name="Decimal")])
     + Import(module="enum", objects=[ObjectImport(name="Enum")])
     + Import(module="re")
+    + Import(module="sys")
     + Import(
         module="typing",
         objects=[
