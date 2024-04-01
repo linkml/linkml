@@ -16,13 +16,13 @@ jobs:
     - name: Set up python
       uses: actions/setup-python@v5
       with:
-        python-version: "3.10"
+        python-version: "3.11"
     - name: Install Poetry
       uses: snok/install-poetry@v1
     - name: Show current deps
       shell: bash
       run: |
-        BEFORE=$(echo "$(poetry show)" | awk '{print $1,$2}')
+        BEFORE=$(echo "$(poetry show)" | awk '{print $1,$3}')
         echo "$BEFORE"
         {
           echo 'BEFORE<<EOF'
@@ -36,7 +36,7 @@ jobs:
     - name: Diff updated packages
       shell: bash
       run: |
-        AFTER=$(echo "$(poetry show)" | awk '{print $1,$2}')
+        AFTER=$(echo "$(poetry show)" | awk '{print $1,$3}')
         BEFORE=$(echo "${{ env.BEFORE }}")
         diff -y --suppress-common-lines -W 80 <(echo "$BEFORE") <(echo "$AFTER")
         UPDATE_MSG=$(diff -y --suppress-common-lines -W 80 <(echo "$BEFORE") <(echo "$AFTER"))
