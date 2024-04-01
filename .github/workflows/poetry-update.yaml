@@ -40,11 +40,7 @@ jobs:
         BEFORE=$(echo "${{ env.BEFORE }}")
         diff -y --suppress-common-lines -W 80 <(echo "$BEFORE") <(echo "$AFTER")
         UPDATE_MSG=$(diff -y --suppress-common-lines -W 80 <(echo "$BEFORE") <(echo "$AFTER"))
-        {
-          echo 'UPDATE_MSG<<EOF'
-          echo "$UPDATE_MSG"
-          echo EOF
-        } >> "$GITHUB_ENV"
+
 
     - name: Create pull request
       uses: peter-evans/create-pull-request@v6
