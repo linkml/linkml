@@ -564,7 +564,7 @@ class PydanticGenerator(OOCodeGenerator):
 
         Metadata inclusion mode is dependent on :attr:`.metadata_mode` - see:
 
-        - :enum:`.MetadataMode`
+        - :class:`.MetadataMode`
         - :meth:`.TemplateModel.exclude_from_meta`
 
         """
@@ -574,12 +574,16 @@ class PydanticGenerator(OOCodeGenerator):
             meta = {k: v for k, v in remove_empty_items(source).items() if k not in model.exclude_from_meta()}
         elif self.metadata_mode in (MetadataMode.EXCEPT_CHILDREN, MetadataMode.EXCEPT_CHILDREN.value):
             meta = {}
-            for k,v in remove_empty_items(source).items():
+            for k, v in remove_empty_items(source).items():
                 if not hasattr(model, k):
                     meta[k] = v
-                elif isinstance(getattr(model, k), list) and not any([isinstance(item, TemplateModel) for item in getattr(model, k)]):
+                elif isinstance(getattr(model, k), list) and not any(
+                    [isinstance(item, TemplateModel) for item in getattr(model, k)]
+                ):
                     meta[k] = v
-                elif isinstance(getattr(model, k), dict) and not any([isinstance(item, TemplateModel) for item in getattr(model, k).values()]):
+                elif isinstance(getattr(model, k), dict) and not any(
+                    [isinstance(item, TemplateModel) for item in getattr(model, k).values()]
+                ):
                     meta[k] = v
                 elif not isinstance(getattr(model, k), TemplateModel):
                     meta[k] = v
