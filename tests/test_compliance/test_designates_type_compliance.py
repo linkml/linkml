@@ -83,9 +83,7 @@ def test_designates_type(framework, description, type_range, object, is_valid, o
                     "range": type_range,
                     "_mappings": {
                         PYDANTIC: (
-                            f'{SLOT_TYPE}: Literal["{CLASS_C1}"] = Field("{CLASS_C1}")'
-                            if type_range == "string"
-                            else ""
+                            f'{SLOT_TYPE}: Literal["{CLASS_C1}"] = Field("{CLASS_C1}"' if type_range == "string" else ""
                         ),
                     },
                 },

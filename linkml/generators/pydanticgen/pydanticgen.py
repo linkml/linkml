@@ -5,7 +5,7 @@ import textwrap
 from collections import defaultdict
 from copy import copy, deepcopy
 from dataclasses import dataclass, field
-from enum import Enum, auto
+from enum import Enum
 from pathlib import Path
 from types import ModuleType
 from typing import Dict, List, Literal, Optional, Set, Type, TypeVar, Union, overload
@@ -103,18 +103,18 @@ DEFAULT_IMPORTS = (
 DEFAULT_INJECTS = {1: [includes.LinkMLMeta_v1], 2: [includes.LinkMLMeta_v2]}
 
 
-class MetadataMode(Enum):
-    FULL = auto()
+class MetadataMode(str, Enum):
+    FULL = "full"
     """
     all metadata from the source schema will be included, even if it is represented by the template classes, 
     and even if it is represented by some child class (eg. "classes" will be included with schema metadata
     """
-    EXCEPT_CHILDREN = auto()
+    EXCEPT_CHILDREN = "except_children"
     """
     all metadata from the source schema will be included, even if it is represented by the template classes,
     except if it is represented by some child template class (eg. "classes" will be excluded from schema metadata)
     """
-    AUTO = auto()
+    AUTO = "auto"
     """
     Only the metadata that isn't represented by the template classes or excluded with ``meta_exclude`` will be included 
     """
@@ -591,7 +591,10 @@ class PydanticGenerator(OOCodeGenerator):
         elif self.metadata_mode in (MetadataMode.FULL, MetadataMode.FULL.value):
             meta = remove_empty_items(source)
         else:
-            raise ValueError("Unknown metadata mode, needs to be one of MetadataMode")
+            raise ValueError(
+                f"Unknown metadata mode '{self.metadata_mode}', needs to be one of "
+                f"{[mode.value for mode in MetadataMode]}"
+            )
 
         model.meta = meta
         return model

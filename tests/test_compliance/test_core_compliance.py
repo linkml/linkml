@@ -89,7 +89,7 @@ def test_attributes(framework, description, object, is_valid):
             "attributes": {
                 SLOT_S1: {
                     "_mappings": {
-                        PYDANTIC: "s1: Optional[str] = Field(None)",
+                        PYDANTIC: "s1: Optional[str] = Field(None",
                         PYTHON_DATACLASSES: "s1: Optional[str] = None",
                     }
                 },
@@ -456,10 +456,10 @@ def test_cardinality(framework, multivalued, required, data_name, value):
     :return:
     """
     choices = {
-        (PYDANTIC, False, False): "Optional[str] = Field(None)",
-        (PYDANTIC, False, True): "str = Field(...)",
-        (PYDANTIC, True, False): "Optional[List[str]] = Field(default_factory=list)",
-        (PYDANTIC, True, True): "List[str] = Field(default_factory=list)",
+        (PYDANTIC, False, False): "Optional[str] = Field(None",
+        (PYDANTIC, False, True): "str = Field(...",
+        (PYDANTIC, True, False): "Optional[List[str]] = Field(default_factory=list",
+        (PYDANTIC, True, True): "List[str] = Field(default_factory=list",
         # TODO: values
         (PYTHON_DATACLASSES, False, False): "",
         (PYTHON_DATACLASSES, False, True): "",
