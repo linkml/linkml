@@ -45,10 +45,10 @@ class ShaclValidationPlugin(ValidationPlugin):
         return g
 
     def process(self, instance: Any, context: ValidationContext) -> Iterator[ValidationResult]:
-        """Perform JSON Schema validation on the provided instance
+        """Perform SHACL Schema validation on the provided instance
 
         :param instance: The instance to validate
-        :param context: The validation context which provides a JSON Schema artifact
+        :param context: The validation context which provides a SHACL artifact
         :return: Iterator over validation results
         :rtype: Iterator[ValidationResult]
         """

@@ -1,14 +1,24 @@
-from typing import TYPE_CHECKING, Any, ClassVar, Dict, Generator, List, Literal, Optional, Union, overload
+from importlib.util import find_spec
+from typing import Any, ClassVar, Dict, Generator, List, Literal, Optional, Union, overload
 
 from jinja2 import Environment, PackageLoader
 from pydantic import BaseModel, Field
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
+try:
+    if find_spec("black") is not None:
+        from linkml.generators.pydanticgen.black import format_black
+    else:
+        # no warning, having black is optional, we only warn when someone tries to import it explicitly
+        format_black = None
+except ImportError:
+    # we can also get an import error from find_spec during testing because that's how we mock not having it installed
+    format_black = None
+
 if int(PYDANTIC_VERSION[0]) >= 2:
     from pydantic import computed_field
 else:
-    if TYPE_CHECKING:  # pragma: no cover
-        from pydantic.fields import ModelField
+    from pydantic.fields import ModelField
 
 
 class TemplateModel(BaseModel):
@@ -22,12 +32,31 @@ class TemplateModel(BaseModel):
     to already be rendered to strings - ie. rather than the ``class.py.jinja``
     template receiving a full :class:`.PydanticAttribute` object or dictionary,
     it receives it having already been rendered to a string. See the :meth:`.render` method.
+
+    .. admonition:: Black Formatting
+
+        Template models will try to use ``black`` to format results when it is available in the
+        environment when render is called with ``black = True`` . If it isn't, then the string is
+        returned without any formatting beyond the template.
+        This is mostly important for complex annotations like those produced for arrays,
+        as otherwise the templates are acceptable looking.
+
+        To install linkml with black, use the extra ``black`` dependency.
+
+        e.g. with pip::
+
+            pip install linkml[black]
+
+        or with poetry::
+
+            poetry install -E black
+
     """
 
     template: ClassVar[str]
     pydantic_ver: int = int(PYDANTIC_VERSION[0])
 
-    def render(self, environment: Optional[Environment] = None) -> str:
+    def render(self, environment: Optional[Environment] = None, black: bool = False) -> str:
         """
         Recursively render a template model to a string.
 
@@ -35,6 +64,10 @@ class TemplateModel(BaseModel):
         using the template set in :attr:`.TemplateModel.template` , but preserving the structure
         of lists and dictionaries. Regular :class:`.BaseModel` s are rendered to dictionaries.
         Any other value is passed through unchanged.
+
+        Args:
+            environment (:class:`jinja2.Environment`): Template environment - see :meth:`.environment`
+            black (bool): if ``True`` , format template with black. (default False)
         """
         if environment is None:
             environment = TemplateModel.environment()
@@ -46,7 +79,17 @@ class TemplateModel(BaseModel):
 
         data = {k: _render(getattr(self, k, None), environment) for k in fields}
         template = environment.get_template(self.template)
-        return template.render(**data)
+        rendered = template.render(**data)
+        if format_black is not None and black:
+            try:
+                return format_black(rendered)
+            except Exception:
+                # TODO: it would nice to have a standard logging module here ;)
+                return rendered
+        elif black and format_black is None:
+            raise ValueError("black formatting was requested, but black is not installed in this environment")
+        else:
+            return rendered
 
     @classmethod
     def environment(cls) -> Environment:
@@ -147,6 +190,17 @@ class PydanticBaseModel(TemplateModel):
     """
     Extra fields that are typically injected into the base model via
     :attr:`~linkml.generators.pydanticgen.PydanticGenerator.injected_fields`
+    """
+    strict: bool = False
+    """
+    Enable strict mode in the base model.
+    
+    .. note::
+    
+        Pydantic 2 only! Pydantic 1 only has strict types, not strict mode. See: https://github.com/linkml/linkml/issues/1955
+    
+    References:
+        https://docs.pydantic.dev/latest/concepts/strict_mode
     """
 
 
@@ -252,11 +306,11 @@ class PydanticClass(TemplateModel):
             super(PydanticClass, self).__init__(**kwargs)
             self.validators = self._validators()
 
-        def render(self, environment: Optional[Environment] = None) -> str:
+        def render(self, environment: Optional[Environment] = None, black: bool = False) -> str:
             """Overridden in pydantic 1 to ensure that validators are regenerated at rendering time"""
             # refresh in case attributes have changed since init
             self.validators = self._validators()
-            return super(PydanticClass, self).render(environment)
+            return super(PydanticClass, self).render(environment, black)
 
 
 class ObjectImport(BaseModel):
@@ -320,6 +374,10 @@ class Import(TemplateModel):
             return [self, other]
 
         # handle conditionals
+        if isinstance(self, ConditionalImport) and isinstance(other, ConditionalImport):
+            # If our condition is the same, return the newer version
+            if self.condition == other.condition:
+                return [other]
         if isinstance(self, ConditionalImport) or isinstance(other, ConditionalImport):
             # we don't have a good way of combining conditionals, just return both
             return [self, other]
@@ -430,9 +488,20 @@ class Imports(TemplateModel):
 
     imports: List[Union[Import, ConditionalImport]] = Field(default_factory=list)
 
-    def __add__(self, other: Import) -> "Imports":
+    def __add__(self, other: Union[Import, "Imports", List[Import]]) -> "Imports":
+        if isinstance(other, Imports) or (isinstance(other, list) and all([isinstance(i, Import) for i in other])):
+            if hasattr(self, "model_copy"):
+                self_copy = self.model_copy(deep=True)
+            else:
+                self_copy = self.copy()
+
+            for i in other:
+                self_copy += i
+            return self_copy
+
         # check if we have one of these already
         imports = self.imports.copy()
+
         existing = [i for i in imports if i.module == other.module]
 
         # if we have nothing importing from this module yet, add it!
@@ -454,6 +523,10 @@ class Imports(TemplateModel):
                         merged = e.merge(other)
                         imports.extend(merged)
                         break
+
+        # SPECIAL CASE - __future__ annotations must happen at the top of a file
+        imports = sorted(imports, key=lambda i: i.module == "__future__", reverse=True)
+
         return Imports(imports=imports)
 
     def __len__(self) -> int:
@@ -495,10 +568,10 @@ class PydanticModule(TemplateModel):
             super(PydanticModule, self).__init__(**kwargs)
             self.class_names = [c.name for c in self.classes.values()]
 
-        def render(self, environment: Optional[Environment] = None) -> str:
+        def render(self, environment: Optional[Environment] = None, black: bool = False) -> str:
             """
             Trivial override of parent method for pydantic 1 to ensure that
             :attr:`.class_names` are correct at render time
             """
             self.class_names = [c.name for c in self.classes.values()]
-            return super(PydanticModule, self).render(environment)
+            return super(PydanticModule, self).render(environment, black)

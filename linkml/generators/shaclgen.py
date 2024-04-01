@@ -172,7 +172,7 @@ class ShaclGenerator(Generator):
                     if s.pattern:
                         prop_pv(SH.pattern, Literal(s.pattern))
 
-                ifabsent_processor.process_slot(prop_pv, s)
+                ifabsent_processor.process_slot(prop_pv, s, class_uri)
 
         return g
 
