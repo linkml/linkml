@@ -59,6 +59,8 @@ jobs:
         body: |
           Update poetry dependencies: 
           
+          | Current | Updated |
+          | ------- | ------- |
           ${{ env.UPDATE_MSG }}
           
         
