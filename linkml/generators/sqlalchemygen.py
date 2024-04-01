@@ -121,6 +121,7 @@ class SQLAlchemyGenerator(Generator):
             is_join_table=lambda c: any(tag for tag in c.annotations.keys() if tag == "linkml:derived_from"),
             classes=rel_schema_classes_ordered,
         )
+        logging.debug(f"# Generated code:\n{code}")
         return code
 
     def serialize(self, **kwargs) -> str:
