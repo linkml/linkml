@@ -22,7 +22,6 @@ jobs:
     - name: Show current deps
       shell: bash
       run: |
-        poetry install
         BEFORE=$(echo "$(poetry show)" | awk '{print $1,$2}')
         echo "$BEFORE"
         {
