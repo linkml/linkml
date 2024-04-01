@@ -37,8 +37,9 @@ jobs:
       shell: bash
       run: |
         AFTER=$(echo "$(poetry show)" | awk '{print $1,$2}')
-        diff -y --suppress-common-lines -W 80 <(echo "${{ env.BEFORE }}") <(echo "$AFTER")
-        UPDATE_MSG=$(diff -y --suppress-common-lines -W 80 <(echo "${{ env.BEFORE }}") <(echo "$AFTER"))
+        BEFORE=$(echo "${{ env.BEFORE }}")
+        diff -y --suppress-common-lines -W 80 <(echo "$BEFORE") <(echo "$AFTER")
+        UPDATE_MSG=$(diff -y --suppress-common-lines -W 80 <(echo "$BEFORE") <(echo "$AFTER"))
         {
           echo 'UPDATE_MSG<<EOF'
           echo "$UPDATE_MSG"
