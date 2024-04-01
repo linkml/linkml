@@ -19,15 +19,27 @@ jobs:
         python-version: "3.10"
     - name: Install Poetry
       uses: snok/install-poetry@v1
-    - name: Install current deps
+    - name: Show current deps
       shell: bash
       run: |
         poetry install
+        BEFORE=$(echo "$(poetry show)" | awk '{print $1,$2}')
+        echo "$BEFORE"
+        {
+          echo 'BEFORE<<EOF'
+          echo "$BEFORE"
+          echo EOF
+        } >> "$GITHUB_ENV"
     - name: Update lockfile
       id: lockfile-update
       shell: bash
+      run: poetry lock
+    - name: Diff updated packages
+      shell: bash
       run: |
-        UPDATE_MSG=$(poetry update)
+        AFTER=$(echo "$(poetry show)" | awk '{print $1,$2}')
+        diff -y --suppress-common-lines -W 80 <(echo "${{ env.BEFORE }}") <(echo "$AFTER")
+        UPDATE_MSG=$(diff -y --suppress-common-lines -W 80 <(echo "${{ env.BEFORE }}") <(echo "$AFTER"))
         {
           echo 'UPDATE_MSG<<EOF'
           echo "$UPDATE_MSG"
