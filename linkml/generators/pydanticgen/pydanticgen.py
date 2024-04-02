@@ -507,11 +507,11 @@ class PydanticGenerator(OOCodeGenerator):
                 imports += i
 
         sorted_classes = sv.ordered(sv.all_classes(), "inheritance")
-        self.sorted_class_names = [camelcase(c.name) for c in sorted_classes]
+        self.sorted_class_names = [camelcase(c.name) for c in sorted_classes.values()]
 
         # Don't want to generate classes when class_uri is linkml:Any, will
         # just swap in typing.Any instead down below
-        sorted_classes = [c for c in sorted_classes if c.class_uri != "linkml:Any"]
+        sorted_classes = [c for c in sorted_classes.values() if c.class_uri != "linkml:Any"]
 
         for class_original in sorted_classes:
             class_def: ClassDefinition

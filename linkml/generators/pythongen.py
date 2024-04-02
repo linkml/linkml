@@ -314,7 +314,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
     def gen_references(self) -> str:
         """Generate python type declarations for all identifiers (primary keys)"""
         rval = []
-        for cls in self.schemaview.ordered(self.schema.classes, "inheritance"):
+        for cls_name, cls in self.schemaview.ordered(self.schema.classes, "inheritance").items():
             if not cls.imported_from:
                 pkeys = self.primary_keys_for(cls)
                 if pkeys:
@@ -376,8 +376,8 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         """Create class definitions for all non-mixin classes in the model
         Note that apply_to classes are transformed to mixins
         """
-        clist = self.schemaview.ordered(self.schema.classes.values(), "inheritance")
-        return "\n".join([self.gen_classdef(v) for v in clist if not v.imported_from])
+        clist = self.schemaview.ordered(self.schema.classes, "inheritance")
+        return "\n".join([self.gen_classdef(v) for v in clist.values() if not v.imported_from])
 
     def gen_classdef(self, cls: ClassDefinition) -> str:
         """Generate python definition for class cls"""
@@ -943,7 +943,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             return False
         if slot_range in self.schema.enums:
             return True
-        clist = [x.name for x in self.schemaview.ordered(self.schema.classes, "inheritance")]
+        clist = [x.name for x in self.schemaview.ordered(self.schema.classes, "inheritance").values()]
         for cname in clist:
             if cname == owning_class:
                 logging.info(f"TRUE: OCCURS SAME: {cname} == {slot_range} owning: {owning_class}")
