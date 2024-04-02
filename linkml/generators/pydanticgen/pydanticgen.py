@@ -230,7 +230,7 @@ class PydanticGenerator(OOCodeGenerator):
             from typing_extensions import Literal
         
     """
-    metadata_mode: MetadataMode = MetadataMode.AUTO
+    metadata_mode: Union[MetadataMode, str, None] = MetadataMode.AUTO
     """
     How to include schema metadata in generated pydantic models.
     
