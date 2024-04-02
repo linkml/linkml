@@ -23,7 +23,7 @@ jobs:
           version: 1.3.2
 
       - name: install
-        run: poetry install --with docs
+        run: poetry install --with docs --all-extras
 
       - name: Build documentation.
         run: |

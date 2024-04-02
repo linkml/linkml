@@ -116,7 +116,7 @@ class DataCheck(BaseModel):
     data_name: str
     framework: str
     expected_behavior: ValidationBehavior
-    description: str = None
+    description: Optional[str] = None
     notes: Optional[str] = None
 
 
@@ -303,6 +303,8 @@ def _generate_framework_output(schema: Dict, framework: str, mappings: List = No
         for context, impdict in mappings:
             if framework in impdict:
                 expected = impdict[framework]
+                if expected is None:
+                    continue
                 if isinstance(expected, (list, str)) and framework in [SHACL, OWL]:
                     assert compare_rdf(expected, output, subsumes=framework in [OWL]) == set()
                 elif isinstance(expected, str):

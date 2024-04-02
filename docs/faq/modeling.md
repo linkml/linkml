@@ -595,7 +595,7 @@ Mappings can be established for exact equivalences, close, related, narrow and b
 For more detail on the kinds of mappings (and their mappings to SKOS), see [linkml:mappings](https://w3id.org/linkml/mappings)
 
 Mappings are an entire optional feature, you can create a schema without any mappings. However, we encourage their use, and we
-encourage adding them *prospectively* as you build our your data model, rather than doing this *retrospectively*. Thinking about mappings
+encourage adding them *prospectively* as you build your data model, rather than doing this *retrospectively*. Thinking about mappings
 will help you think about how your modeling relates to the modeling done by others as part of other databases or standards.
 
 ## How do I represent relationships in LinkML?
@@ -604,7 +604,7 @@ For some use cases, objects described using LinkML can stand in
 isolation, and do not need to be related. For example, for a simple
 database of material samples (biosamples, geosamples, etc), each
 sample may be considered a standalone entity described with an
-identifier, and various properties.
+identifier and various properties.
 
 However, more often then not, your objects need to be
 inter-related. Here there are a number of modeling questions that you
@@ -618,6 +618,6 @@ Depending on the answer, LinkML has different modeling constructs to help you, i
 
 - [range](https://w3id.org/linkml/range) constraints, which can refer to classes
 - the ability to assign a slot as an [identifier](https://w3id.org/linkml/identifier), allowing other objects to link to it
-- [inlining](https://w3id.org/linkml/inlining) which determines how relationships are serialized in formats like JSON
+- [inlining](../schemas/inlining), which determines how relationships are serialized in formats like JSON
 
-Other more advanced constructs are also possible to allow you to treat relationships as first-class entities
+Other more advanced constructs are also possible to allow you to treat relationships as first-class entities.

@@ -101,6 +101,7 @@ def test_alias(framework, class_uri, slot_uri, slot_alias, type_uri, data_name, 
     # TODO: add typeof inference to ContextGenerator
     expected_jsonld_context = {
         expected_slot_name: {
+            "@id": expected_slot_name,
             "@type": type_uri if type_uri else "xsd:integer",
         },
     }
