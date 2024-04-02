@@ -211,7 +211,22 @@ class SQLTableGenerator(Generator):
                         col.comment = s.description
                     cols.append(col)
                 for uc_name, uc in c.unique_keys.items():
-                    sql_uc = UniqueConstraint(*[sql_name(sn) for sn in uc.unique_key_slots])
+
+                    def _sql_name(sn: str):
+                        if sn in c.attributes:
+                            return sql_name(sn)
+                        else:
+                            # for candidate in c.attributes.values():
+                            #    if "original_slot" in candidate.annotations:
+                            #        original = candidate.annotations["original_slot"]
+                            #        if original.value == sn:
+                            #            return sql_name(candidate.name)
+                            return None
+
+                    sql_names = [_sql_name(sn) for sn in uc.unique_key_slots]
+                    if any(sn is None for sn in sql_names):
+                        continue
+                    sql_uc = UniqueConstraint(*sql_names)
                     cols.append(sql_uc)
                 Table(sql_name(cn), schema_metadata, *cols, comment=str(c.description))
         schema_metadata.create_all(engine)
