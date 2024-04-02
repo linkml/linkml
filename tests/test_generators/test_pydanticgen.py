@@ -1672,7 +1672,7 @@ def test_template_black(array_complex):
                 min_items=2,
                 max_items=5,
                 item_type=conlist(
-                    min_items=6, max_items=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]],
+                    min_items=6, max_items=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]]
                 ),
             ),
         ),
