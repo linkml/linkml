@@ -22,7 +22,7 @@ class ShaclGenerator(Generator):
     # ClassVars
     closed: bool = True
     """True means add 'sh:closed=true' to all shapes, except of mixin shapes and shapes, that have parents"""
-    suffix: str = ""
+    suffix: str = None
     """parameterized suffix to be appended. No suffix per default."""
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
@@ -63,7 +63,9 @@ class ShaclGenerator(Generator):
                     g.add((class_uri_with_suffix, p, v))
 
             class_uri = URIRef(sv.get_uri(c, expand=True))
-            class_uri_with_suffix = class_uri + self.suffix
+            class_uri_with_suffix = class_uri
+            if self.suffix is not None:
+                class_uri_with_suffix += self.suffix
             shape_pv(RDF.type, SH.NodeShape)
             shape_pv(SH.targetClass, class_uri)  # TODO
             if self.closed:
@@ -223,9 +225,10 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
 @click.option(
     "-s",
     "--suffix",
-    default="",
+    default=None,
     show_default=True,
-    help="Use --suffix to append given string to SHACL class name (e. g. --suffix Shape: Person becomes PersonShape).",
+    help="Use optional --suffix to append given string to SHACL class name (e. g. --suffix Shape: Person becomes "
+         "PersonShape).",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
