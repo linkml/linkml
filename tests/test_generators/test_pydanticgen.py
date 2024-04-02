@@ -939,7 +939,7 @@ def test_template_models_templates():
     for model in TemplateModel.__subclasses__():
         assert hasattr(model, "template")
         assert isinstance(model.template, str)
-        env = model.environment
+        env = model.environment()
         template = env.get_template(model.template)
         assert isinstance(template, Template)
 
@@ -948,7 +948,7 @@ def test_default_environment():
     """
     Check that the default environment has the configuration for our templates
     """
-    env = TemplateModel.environment
+    env = TemplateModel.environment()
     assert env.trim_blocks
     assert env.lstrip_blocks
 

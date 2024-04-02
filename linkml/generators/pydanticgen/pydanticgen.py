@@ -499,7 +499,7 @@ class PydanticGenerator(OOCodeGenerator):
         return None
 
     def _template_environment(self) -> Environment:
-        env = TemplateModel.environment
+        env = TemplateModel.environment()
         if self.template_dir is not None:
             loader = ChoiceLoader([FileSystemLoader(self.template_dir), env.loader])
             env.loader = loader

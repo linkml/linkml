@@ -7,15 +7,15 @@ Generate a JSON LD representation of the model
 
 import os
 import urllib.parse as urlparse
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import List, Optional
-from copy import deepcopy
 
 import click
+from linkml_runtime.linkml_model import SchemaDefinition
 from rdflib import Graph
 from rdflib.plugin import Parser as rdflib_Parser
 from rdflib.plugin import plugins as rdflib_plugins
-from linkml_runtime.linkml_model import SchemaDefinition
 
 from linkml import METAMODEL_CONTEXT_URI
 from linkml._version import __version__
