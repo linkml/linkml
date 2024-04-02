@@ -41,10 +41,7 @@ jobs:
       #----------------------------------------------
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction -E black
-
-      - name: install pydantic 2
-        run: poetry run pip install 'pydantic>=2'
+        run: poetry install --no-interaction --with docs -E black
 
       - name: Build docs
         working-directory: docs
