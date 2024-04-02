@@ -2,16 +2,9 @@ import json
 
 import pytest
 from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition, SlotDefinition
-from linkml_runtime.loaders import yaml_loader
 
 from linkml.validator.plugins import JsonschemaValidationPlugin
 from linkml.validator.validation_context import ValidationContext
-
-
-@pytest.fixture
-def validation_context(input_path) -> ValidationContext:
-    schema = yaml_loader.load(input_path("personinfo.yaml"), SchemaDefinition)
-    return ValidationContext(schema, "Person")
 
 
 def test_valid_instance(validation_context):

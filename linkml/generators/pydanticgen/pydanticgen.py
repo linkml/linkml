@@ -499,7 +499,7 @@ class PydanticGenerator(OOCodeGenerator):
         return None
 
     def _template_environment(self) -> Environment:
-        env = TemplateModel.environment()
+        env = TemplateModel.environment
         if self.template_dir is not None:
             loader = ChoiceLoader([FileSystemLoader(self.template_dir), env.loader])
             env.loader = loader
@@ -644,10 +644,11 @@ class PydanticGenerator(OOCodeGenerator):
         for k, c in pyschema.classes.items():
             attrs = {}
             for attr_name, src_attr in c.attributes.items():
+                src_attr = src_attr._as_dict
                 new_fields = {
-                    k: src_attr._as_dict.get(k, None)
+                    k: src_attr.get(k, None)
                     for k in PydanticAttribute.model_fields.keys()
-                    if src_attr._as_dict.get(k, None) is not None
+                    if src_attr.get(k, None) is not None
                 }
                 predef_slot = predefined.get(k, {}).get(attr_name, None)
                 if predef_slot is not None:
