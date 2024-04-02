@@ -5,7 +5,6 @@ import enum
 import json
 import logging
 import os
-import pdb
 import shutil
 import subprocess
 import tempfile
@@ -792,7 +791,7 @@ def check_data(
             context_dir = _schema_out_path(schema) / "generated" / "jsonld_context.context.jsonld"
             if not context_dir.exists() and tests.WITH_OUTPUT:
                 raise AssertionError(f"Could not find {context_dir}")
-            context = json.loads(cached_generator_output[(schema['name'], 'jsonld_context')][1])['@context']
+            context = json.loads(cached_generator_output[(schema["name"], "jsonld_context")][1])["@context"]
             json_object = copy(object_to_validate)
             json_object["@context"] = context
             jsonld_path = out_dir / f"{data_name}.jsonld"
