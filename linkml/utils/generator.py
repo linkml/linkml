@@ -30,7 +30,6 @@ from typing import Callable, ClassVar, Dict, List, Mapping, Optional, Set, TextI
 import click
 from click import Argument, Command, Option
 from linkml_runtime import SchemaView
-from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
