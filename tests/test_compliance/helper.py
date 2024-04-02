@@ -29,6 +29,12 @@ from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.yamlutils import YAMLRoot
 from pydantic import BaseModel
 
+try:
+    from yaml import CSafeDumper as SafeDumper
+except ImportError:
+    from yaml import SafeDumper
+
+
 import tests
 from linkml import generators as generators
 from linkml.generators import (
@@ -616,7 +622,7 @@ def _extract_mappings(schema: Dict) -> Iterator[Tuple[Dict, List]]:
 
 def _as_compact_yaml(obj: Union[YAMLRoot, BaseModel, Dict]) -> str:
     if isinstance(obj, dict):
-        ys = yaml.dump(_clean_dict(obj), sort_keys=False)
+        ys = yaml.dump(_clean_dict(obj), sort_keys=False, Dumper=SafeDumper)
         ys = ys.replace("{}", "")
         return ys
     return yaml_dumper.dumps(obj)
@@ -772,7 +778,6 @@ def check_data(
                             py_inst = py_cls(**object_to_validate)
                             logging.info(f"Unexpectedly instantiated {py_inst}")
             if py_inst is not None:
-                yaml.safe_load(yaml_dumper.dumps(py_inst))
                 # assert roundtripped.items() == object_to_validate.items()
                 if valid and not exclude_rdf:
                     if isinstance(gen, PythonGenerator):
