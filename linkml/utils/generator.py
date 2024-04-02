@@ -225,8 +225,7 @@ class Generator(metaclass=abc.ABCMeta):
                 # schemaloader based methods require schemas to have been created via SchemaLoader,
                 # which prepopulates some fields (e.g. definition_url). If the schema has not been processed through the
                 # loader, then roundtrip
-                if any(c for c in schema.classes.values() if not c.definition_uri):
-                    schema = yaml_dumper.dumps(schema)
+                schema = schema._as_dict
             loader = SchemaLoader(
                 schema,
                 self.base_dir,
