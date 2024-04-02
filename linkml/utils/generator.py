@@ -199,7 +199,7 @@ class Generator(metaclass=abc.ABCMeta):
         else:
             logging.info(f"Using SchemaView with im={self.importmap} // base_dir={self.base_dir}")
             self.schemaview = SchemaView(schema, importmap=self.importmap, base_dir=self.base_dir)
-            self.schema = self.schemaview.schema
+            self.schema: SchemaDefinition = self.schemaview.schema
         self._init_namespaces()
 
     def _initialize_using_schemaloader(self, schema: Union[str, TextIO, SchemaDefinition, "Generator"]):
