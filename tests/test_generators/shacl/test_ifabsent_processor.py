@@ -23,6 +23,9 @@ classes:
       - name: presence
         range: PresenceEnum
         ifabsent: PresenceEnum(Missing)
+      - name: thisURI
+        range: uriorcurie
+        ifabsent: class_curie
       - name: missing
         range: string
         ifabsent:
@@ -54,6 +57,17 @@ def test_process_ifabsent_literal():
     processor.process_slot(add_prop, schema_view.all_slots()["studentName"])
 
     assert (attribute_node, SH.defaultValue, Literal("N/A", datatype=ShaclDataType.STRING.uri_ref)) in graph
+
+
+def test_process_class_curie():
+    add_prop, attribute_node, graph, schema_view = initialize_graph()
+
+    cls_uri = URIRef("https://example.org/Student")
+    add_prop(SH.path, URIRef("ex:thisURI"))
+    processor = IfAbsentProcessor(schema_view)
+    processor.process_slot(add_prop, schema_view.all_slots()["thisURI"], cls_uri)
+
+    assert (attribute_node, SH.defaultValue, URIRef(cls_uri)) in graph
 
 
 def test_process_ifabsent_enum():

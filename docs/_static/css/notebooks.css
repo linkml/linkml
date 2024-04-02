@@ -1,0 +1,27 @@
+div.cell.tag_hide-cell details.above-input > summary,
+div.cell.tag_hide-input details.above-input > summary,
+div.cell.tag_hide-output details.below-input > summary{
+    background-color: var(--color-admonition-title-background--admonition-todo);
+    color: var(--color-content-foreground);
+    border: unset;
+    border-left: 2px solid var(--mystnb-source-margin-color);
+    opacity: unset;
+    padding: 0.25em 0 0.25em 1em;
+}
+
+div.cell.tag_hide-cell details.above-input > summary > span,
+div.cell.tag_hide-input details.above-input > summary > span,
+div.cell.tag_hide-output details.below-input > summary > span
+{
+    opacity: unset;
+}
+
+div.cell details.above-input div.cell_input {
+    border: unset;
+    background-color: unset;
+    border-left: 2px solid var(--mystnb-source-margin-color);
+}
+
+div.cell details.above-input div.cell_input div.highlight {
+    background: var(--color-admonition-background);
+}

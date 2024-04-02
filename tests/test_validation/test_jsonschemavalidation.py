@@ -114,7 +114,7 @@ class JsonSchemaValidatorTestCase(unittest.TestCase):
         generate_mock.reset_mock()
         obj = yaml_loader.load(source=PERSON_1, target_class=mod.Person)
         v.validate_object(obj, target_class=mod.Person)
-        generate_mock.called_once()
+        generate_mock.asset_called_once()
 
 
 if __name__ == "__main__":
