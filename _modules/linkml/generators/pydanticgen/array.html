@@ -357,7 +357,7 @@
     <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
 
 <span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen.build</span> <span class="kn">import</span> <span class="n">SlotResult</span>
-<span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen.template</span> <span class="kn">import</span> <span class="n">Import</span><span class="p">,</span> <span class="n">Imports</span><span class="p">,</span> <span class="n">ObjectImport</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen.template</span> <span class="kn">import</span> <span class="n">ConditionalImport</span><span class="p">,</span> <span class="n">Import</span><span class="p">,</span> <span class="n">Imports</span><span class="p">,</span> <span class="n">ObjectImport</span>
 
 
 <div class="viewcode-block" id="ArrayRepresentation"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRepresentation">[docs]</a><span class="k">class</span> <span class="nc">ArrayRepresentation</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
@@ -381,7 +381,14 @@
             <span class="n">item_schema</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">generate_schema</span><span class="p">(</span><span class="n">item_type</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">item_schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;any&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;any&quot;</span><span class="p">:</span>
                 <span class="n">item_schema</span><span class="p">[</span><span class="s2">&quot;strict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">array_ref</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;any-shape-array-</span><span class="si">{</span><span class="n">item_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="k">if</span> <span class="n">item_type</span> <span class="ow">is</span> <span class="n">Any</span><span class="p">:</span>
+                <span class="c1"># Before python 3.11, `Any` type was a special object without a __name__</span>
+                <span class="n">item_name</span> <span class="o">=</span> <span class="s2">&quot;Any&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">item_name</span> <span class="o">=</span> <span class="n">item_type</span><span class="o">.</span><span class="vm">__name__</span>
+
+            <span class="n">array_ref</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;any-shape-array-</span><span class="si">{</span><span class="n">item_name</span><span class="si">}</span><span class="s2">&quot;</span>
 
             <span class="n">schema</span> <span class="o">=</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">definitions_schema</span><span class="p">(</span>
                 <span class="n">core_schema</span><span class="o">.</span><span class="n">list_schema</span><span class="p">(</span><span class="n">core_schema</span><span class="o">.</span><span class="n">definition_reference_schema</span><span class="p">(</span><span class="n">array_ref</span><span class="p">)),</span>
@@ -405,13 +412,18 @@
         <span class="o">+</span> <span class="n">Import</span><span class="p">(</span>
             <span class="n">module</span><span class="o">=</span><span class="s2">&quot;typing&quot;</span><span class="p">,</span>
             <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
-                <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Annotated&quot;</span><span class="p">),</span>
                 <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Generic&quot;</span><span class="p">),</span>
                 <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Iterable&quot;</span><span class="p">),</span>
                 <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;TypeVar&quot;</span><span class="p">),</span>
                 <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Union&quot;</span><span class="p">),</span>
                 <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;get_args&quot;</span><span class="p">),</span>
             <span class="p">],</span>
+        <span class="p">)</span>
+        <span class="o">+</span> <span class="n">ConditionalImport</span><span class="p">(</span>
+            <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;sys.version_info.minor &gt; 8&quot;</span><span class="p">,</span>
+            <span class="n">module</span><span class="o">=</span><span class="s2">&quot;typing&quot;</span><span class="p">,</span>
+            <span class="n">objects</span><span class="o">=</span><span class="p">[</span><span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Annotated&quot;</span><span class="p">)],</span>
+            <span class="n">alternative</span><span class="o">=</span><span class="n">Import</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="s2">&quot;typing_extensions&quot;</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="p">[</span><span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Annotated&quot;</span><span class="p">)]),</span>
         <span class="p">)</span>
         <span class="o">+</span> <span class="n">Import</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="s2">&quot;pydantic&quot;</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="p">[</span><span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;GetCoreSchemaHandler&quot;</span><span class="p">)])</span>
         <span class="o">+</span> <span class="n">Import</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="s2">&quot;pydantic_core&quot;</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="p">[</span><span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;CoreSchema&quot;</span><span class="p">),</span> <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;core_schema&quot;</span><span class="p">)])</span>
