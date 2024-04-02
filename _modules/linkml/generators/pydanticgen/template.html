@@ -325,7 +325,8 @@
         </div>
         <article role="main">
           <h1>Source code for linkml.generators.pydanticgen.template</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">importlib.util</span> <span class="kn">import</span> <span class="n">find_spec</span>
+<span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">importlib.util</span> <span class="kn">import</span> <span class="n">find_spec</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
 
 <span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">PackageLoader</span>
@@ -381,6 +382,10 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">template</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">_environment</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">Environment</span><span class="p">]</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span>
+        <span class="n">loader</span><span class="o">=</span><span class="n">PackageLoader</span><span class="p">(</span><span class="s2">&quot;linkml.generators.pydanticgen&quot;</span><span class="p">,</span> <span class="s2">&quot;templates&quot;</span><span class="p">),</span> <span class="n">trim_blocks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lstrip_blocks</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+
     <span class="n">pydantic_ver</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">PYDANTIC_VERSION</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
 <div class="viewcode-block" id="TemplateModel.render"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.template.TemplateModel.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Environment</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">black</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -422,14 +427,11 @@
     <span class="k">def</span> <span class="nf">environment</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Environment</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Default environment for Template models.</span>
-
 <span class="sd">        uses a :class:`jinja2.PackageLoader` for the templates directory within this module</span>
 <span class="sd">        with the ``trim_blocks`` and ``lstrip_blocks`` parameters set to ``True`` so that the</span>
 <span class="sd">        default templates could be written in a more readable way.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Environment</span><span class="p">(</span>
-            <span class="n">loader</span><span class="o">=</span><span class="n">PackageLoader</span><span class="p">(</span><span class="s2">&quot;linkml.generators.pydanticgen&quot;</span><span class="p">,</span> <span class="s2">&quot;templates&quot;</span><span class="p">),</span> <span class="n">trim_blocks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lstrip_blocks</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">copy</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_environment</span><span class="p">)</span></div>
 
     <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">PYDANTIC_VERSION</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="c1"># simulate pydantic 2&#39;s model_fields behavior</span>
