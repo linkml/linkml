@@ -227,7 +227,7 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     "--suffix",
     default=None,
     show_default=True,
-    help="Use optional --suffix to append given string to SHACL class name (e. g. --suffix Shape: Person becomes PersonShape).",
+    help="Use --suffix to append given string to SHACL class name (e. g. --suffix Shape: Person becomes PersonShape).",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
