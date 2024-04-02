@@ -1,18 +1,9 @@
 import pytest
-from linkml_runtime.linkml_model import SchemaDefinition
-from linkml_runtime.loaders import yaml_loader
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml.validator.plugins.pydantic_validation_plugin import PydanticValidationPlugin
-from linkml.validator.validation_context import ValidationContext
 
 IS_PYDANTIC_V1 = PYDANTIC_VERSION[0] == "1"
-
-
-@pytest.fixture
-def validation_context(input_path):
-    schema = yaml_loader.load(input_path("personinfo.yaml"), SchemaDefinition)
-    return ValidationContext(schema, "Person")
 
 
 @pytest.mark.parametrize(
