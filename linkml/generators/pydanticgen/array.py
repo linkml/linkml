@@ -30,7 +30,7 @@ else:
     from typing import Annotated
 
 from linkml.generators.pydanticgen.build import SlotResult
-from linkml.generators.pydanticgen.template import Import, Imports, ObjectImport
+from linkml.generators.pydanticgen.template import ConditionalImport, Import, Imports, ObjectImport
 
 
 class ArrayRepresentation(Enum):
@@ -54,7 +54,14 @@ if int(PYDANTIC_VERSION[0]) >= 2:
             item_schema = handler.generate_schema(item_type)
             if item_schema.get("type", "any") != "any":
                 item_schema["strict"] = True
-            array_ref = f"any-shape-array-{item_type.__name__}"
+
+            if item_type is Any:
+                # Before python 3.11, `Any` type was a special object without a __name__
+                item_name = "Any"
+            else:
+                item_name = item_type.__name__
+
+            array_ref = f"any-shape-array-{item_name}"
 
             schema = core_schema.definitions_schema(
                 core_schema.list_schema(core_schema.definition_reference_schema(array_ref)),
@@ -78,13 +85,18 @@ if int(PYDANTIC_VERSION[0]) >= 2:
         + Import(
             module="typing",
             objects=[
-                ObjectImport(name="Annotated"),
                 ObjectImport(name="Generic"),
                 ObjectImport(name="Iterable"),
                 ObjectImport(name="TypeVar"),
                 ObjectImport(name="Union"),
                 ObjectImport(name="get_args"),
             ],
+        )
+        + ConditionalImport(
+            condition="sys.version_info.minor > 8",
+            module="typing",
+            objects=[ObjectImport(name="Annotated")],
+            alternative=Import(module="typing_extensions", objects=[ObjectImport(name="Annotated")]),
         )
         + Import(module="pydantic", objects=[ObjectImport(name="GetCoreSchemaHandler")])
         + Import(module="pydantic_core", objects=[ObjectImport(name="CoreSchema"), ObjectImport(name="core_schema")])
