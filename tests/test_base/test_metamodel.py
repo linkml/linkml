@@ -1,3 +1,4 @@
+import platform
 from pathlib import Path
 
 import pytest
@@ -19,7 +20,15 @@ from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum
     "generator,extension,serialize_kwargs",
     [
         (MarkdownGenerator, "markdown", {}),
-        (OwlSchemaGenerator, ".owl", {}),
+        pytest.param(
+            OwlSchemaGenerator,
+            ".owl",
+            {},
+            marks=pytest.mark.skipif(
+                platform.system() == "Windows",
+                reason="prefix expansion issue. see: https://github.com/RDFLib/rdflib/issues/2606",
+            ),
+        ),
         (RDFGenerator, ".ttl", {"context": LOCAL_METAMODEL_LDCONTEXT_FILE}),
         (ContextGenerator, ".context.jsonld", {"base": METAMODEL_NAMESPACE}),
         (JSONLDGenerator, ".json", {"base": METAMODEL_NAMESPACE}),

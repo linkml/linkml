@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 import pytest
@@ -26,7 +27,16 @@ BIOLINK_NS = Namespace("https://w3id.org/biolink/vocab/")
     [
         # (MarkdownGenerator, "markdown", {}, {"image_dir": False}),
         (OwlSchemaGenerator, ".owl.ttl", {"useuris": False}, {}),
-        (RDFGenerator, ".ttl", {}, {}),
+        pytest.param(
+            RDFGenerator,
+            ".ttl",
+            {},
+            {},
+            marks=pytest.mark.skipif(
+                sys.version_info < (3, 9),
+                reason="prefix expansion issue. see: https://github.com/RDFLib/rdflib/issues/2606.",
+            ),
+        ),
         (ContextGenerator, ".context.jsonld", {"useuris": False}, {}),
         (JSONLDGenerator, ".json", {}, {}),
         (PythonGenerator, ".py", {}, {}),
