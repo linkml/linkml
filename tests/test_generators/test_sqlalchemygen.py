@@ -90,21 +90,6 @@ def test_sqla_basic_declatative(schema):
         assert expected in tables
 
 
-def test_sqla_declarative_on_metamodel():
-    """
-    test on metamodel
-    """
-    sv = package_schemaview("linkml_runtime.linkml_model.meta")
-    gen = SQLAlchemyGenerator(sv.schema)
-    code = gen.generate_sqla(template=TemplateEnum.DECLARATIVE)
-    assert "class ClassDefinition(" in code
-    assert "class Annotation(" in code
-    gen.compile_sqla(template=TemplateEnum.DECLARATIVE)
-    # TODO: investigate unusual SQL-Alchemy error messages
-    # c = mod.ClassDefinition(name="c1")
-    # s = mod.SchemaDefinition(id='S1', name='S1')
-
-
 def test_mixin():
     b = SchemaBuilder()
     b.add_slot(SlotDefinition("ref_to_c1", range="my_class1", multivalued=True))

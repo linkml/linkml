@@ -23,7 +23,7 @@ def normalize_line_endings(string: str):
 
 class Snapshot(ABC):
     def __init__(self, path: Path, config: pytest.Config) -> None:
-        self.path = path
+        self.path = Path(path)
         self.config = config
         self.eq_state = ""
 

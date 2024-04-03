@@ -198,10 +198,10 @@ linkml:types a linkml:SchemaDefinition ;
     skos:definition "Shared type definitions for the core LinkML mode and metamodel" ;
     sh:declare [ sh:namespace <http://www.w3.org/ns/shex#> ;
             sh:prefix "shex" ],
-        [ sh:namespace xsd: ;
-            sh:prefix "xsd" ],
         [ sh:namespace linkml: ;
             sh:prefix "linkml" ],
+        [ sh:namespace xsd: ;
+            sh:prefix "xsd" ],
         [ sh:namespace schema1: ;
             sh:prefix "schema" ] ;
     linkml:default_prefix "linkml" ;

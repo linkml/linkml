@@ -11,6 +11,7 @@ from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.shexgen import ShExGenerator
+from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum
 
 
 @pytest.mark.slow
@@ -23,6 +24,7 @@ from linkml.generators.shexgen import ShExGenerator
         (ContextGenerator, ".context.jsonld", {"base": METAMODEL_NAMESPACE}),
         (JSONLDGenerator, ".json", {"base": METAMODEL_NAMESPACE}),
         (PythonGenerator, ".py", {}),
+        (SQLAlchemyGenerator, ".sqla.py", {'template': TemplateEnum.DECLARATIVE})
     ],
 )
 def test_metamodel(generator, extension, serialize_kwargs, temp_dir, snapshot):
@@ -33,8 +35,8 @@ def test_metamodel(generator, extension, serialize_kwargs, temp_dir, snapshot):
         assert temp_dir == snapshot(str(output_dir))
     else:
         generated = generator(LOCAL_METAMODEL_YAML_FILE).serialize(**serialize_kwargs)
-        output_file = "meta" + extension
-        if extension == ".py":
+        output_file = Path("meta").with_suffix(extension)
+        if extension.endswith('.py'):
             compile_python(generated, "test")
         assert generated == snapshot(output_file)
 
