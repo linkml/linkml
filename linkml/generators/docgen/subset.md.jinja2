@@ -43,20 +43,18 @@ URI: {{ gen.link(element) }}
 
 | Class | Description |
 | --- | --- |
-{% for c in gen.all_class_objects()|sort(attribute=sort_by) -%}
+{% for c in classes_in_subset -%}
 {%- if element.name in c.in_subset -%}
 | {{gen.link(c)}} | {{c.description|enshorten}} |
 {% endif -%}
 {% endfor %}
 
-{% for c in gen.all_class_objects()|sort(attribute=sort_by) -%}
+{% for c in classes_in_subset -%}
 {%- if element.name in c.in_subset -%}
-### {{ gen.name(c) }}
 
-{{c.description}}
+{% set induced_slots = gen.class_induced_slots(c.name)|sort(attribute=sort_by) %}
 
 {%- set filtered_slots = [] -%}
-
 {%- for s in induced_slots|sort(attribute=sort_by) -%}
     {%- if element.name in s.in_subset or element.name in schemaview.get_slot(s.name).in_subset -%}
         {% set _ = filtered_slots.append(s) %}
@@ -64,10 +62,12 @@ URI: {{ gen.link(element) }}
 {%- endfor %}
 
 {%- if filtered_slots|length > 0 -%}
-| Name | Cardinality and Range  | Description  |
+### Slots from {{ gen.link(c) }} also in _{{ element.name }}_
+
+| Name | Cardinality and Range | Description |
 | ---  | ---  | --- |
 {% for s in filtered_slots -%}
-| {{gen.link(s)}} | {{ gen.cardinality(s) }} <br/> {{gen.link(s.range)}}  | {{s.description|enshorten}} {% if s.identifier %}**identifier**{% endif %}  |
+| {{gen.link(s)}} | {{ gen.cardinality(s) }} <br/> {{gen.link(s.range)}} | {{s.description|enshorten}} {% if s.identifier %}**identifier**{% endif %} |
 {% endfor %}
 {%- endif %}
 
