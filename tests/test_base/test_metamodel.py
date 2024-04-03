@@ -20,7 +20,7 @@ from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum
     [
         (MarkdownGenerator, "markdown", {}),
         (OwlSchemaGenerator, ".owl", {}),
-        (RDFGenerator, ".ttl", {"context": "file://" + LOCAL_METAMODEL_LDCONTEXT_FILE}),
+        (RDFGenerator, ".ttl", {"context": LOCAL_METAMODEL_LDCONTEXT_FILE}),
         (ContextGenerator, ".context.jsonld", {"base": METAMODEL_NAMESPACE}),
         (JSONLDGenerator, ".json", {"base": METAMODEL_NAMESPACE}),
         (PythonGenerator, ".py", {}),
