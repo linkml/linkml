@@ -1,9 +1,9 @@
-# Auto generated from notebook_model_4.yaml by pythongen.py version: 0.0.1
-# Generation date: 2024-03-29T10:54:52
+# Auto generated from notebook_model_2.yaml by pythongen.py version: 0.0.1
+# Generation date: 2024-04-03T09:29:38
 # Schema: simple
 #
 # id: http://example.org/test/simple
-# description: Very simple enumeration
+# description: Enumeration with some non-std values
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
@@ -31,8 +31,6 @@ version = None
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
-CS = CurieNamespace('CS', 'http://ontologies-r.us/codesystem/')
-SCT = CurieNamespace('SCT', 'http://snomed.info/id/')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 PLAY = CurieNamespace('play', 'http://example.org/test/play/')
 DEFAULT_ = PLAY
@@ -41,38 +39,42 @@ DEFAULT_ = PLAY
 # Types
 
 # Class references
-class FavoriteColorId(extended_str):
+class SampleId(extended_str):
     pass
 
 
 @dataclass
-class FavoriteColor(YAMLRoot):
-    id: Union[str, FavoriteColorId] = None
-    position: Union[str, "Colors"] = None
+class Sample(YAMLRoot):
+    id: Union[str, SampleId] = None
+    position: Union[Union[str, "UnusualEnumPatterns"], List[Union[str, "UnusualEnumPatterns"]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
-        if not isinstance(self.id, FavoriteColorId):
-            self.id = FavoriteColorId(self.id)
+        if not isinstance(self.id, SampleId):
+            self.id = SampleId(self.id)
 
         if self._is_empty(self.position):
             self.MissingRequiredField("position")
-        if not isinstance(self.position, Colors):
-            self.position = Colors(self.position)
+        if not isinstance(self.position, list):
+            self.position = [self.position] if self.position is not None else []
+        self.position = [v if isinstance(v, UnusualEnumPatterns) else UnusualEnumPatterns(v) for v in self.position]
 
         super().__post_init__(**kwargs)
 
 
 # Enumerations
-class Colors(EnumDefinitionImpl):
+class UnusualEnumPatterns(EnumDefinitionImpl):
     """
-    Color values, mapped to SNOMED CT
+    Very odd enumeration
     """
+    M = PermissibleValue(
+        text="M",
+        description="Normal selection")
+
     _defn = EnumDefinition(
-        name="Colors",
-        description="Color values, mapped to SNOMED CT",
-        code_set=CS["SCT"],
+        name="UnusualEnumPatterns",
+        description="Very odd enumeration",
     )
 
     @classmethod
@@ -80,25 +82,18 @@ class Colors(EnumDefinitionImpl):
         setattr(cls, "1",
             PermissibleValue(
                 text="1",
-                description="Red",
-                meaning=SCT["371240000"]))
-        setattr(cls, "2",
+                description="Numeric selection"))
+        setattr(cls, "def",
             PermissibleValue(
-                text="2",
-                description="Yellow",
-                meaning=SCT["371244009"]))
-        setattr(cls, "3",
+                text="def",
+                description="Python reserved word"))
+        setattr(cls, "embedded space",
             PermissibleValue(
-                text="3",
-                meaning=SCT["405738005"]))
-        setattr(cls, "4",
+                text="embedded space",
+                description="Embedded space"))
+        setattr(cls, "% ! -- whoo",
             PermissibleValue(
-                text="4",
-                description="Muted",
-                meaning=SCT["abcde"]))
-        setattr(cls, "9",
-            PermissibleValue(
-                text="9",
-                description="Muddy"))
+                text="% ! -- whoo",
+                description="Really weird stuff"))
 
 # Slots

@@ -1,5 +1,5 @@
-# Auto generated from notebook_model_3.yaml by pythongen.py version: 0.0.1
-# Generation date: 2024-03-29T10:54:52
+# Auto generated from notebook_model_4.yaml by pythongen.py version: 0.0.1
+# Generation date: 2024-04-03T09:29:38
 # Schema: simple
 #
 # id: http://example.org/test/simple
@@ -31,6 +31,7 @@ version = None
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
+CS = CurieNamespace('CS', 'http://ontologies-r.us/codesystem/')
 SCT = CurieNamespace('SCT', 'http://snomed.info/id/')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 PLAY = CurieNamespace('play', 'http://example.org/test/play/')
@@ -71,6 +72,7 @@ class Colors(EnumDefinitionImpl):
     _defn = EnumDefinition(
         name="Colors",
         description="Color values, mapped to SNOMED CT",
+        code_set=CS["SCT"],
     )
 
     @classmethod
