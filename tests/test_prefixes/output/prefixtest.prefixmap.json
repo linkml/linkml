@@ -1,0 +1,26 @@
+{
+   "BFO": "http://purl.obolibrary.org/obo/BFO_",
+   "CL": "http://purl.obolibrary.org/obo/CL_",
+   "GO": "http://purl.obolibrary.org/obo/GO_",
+   "PR": "http://purl.obolibrary.org/obo/PR_",
+   "SIO": "http://semanticscience.org/resource/SIO_",
+   "SO": "http://purl.obolibrary.org/obo/SO_",
+   "biolink": "https://w3id.org/biolink/",
+   "dbont": "http://dbpedia.org/ontology/",
+   "dce": "http://purl.org/dc/elements/1.1/",
+   "lego": "http://geneontology.org/lego/",
+   "linkml": "https://w3id.org/linkml/",
+   "owl": "http://www.w3.org/2002/07/owl#",
+   "pav": "http://purl.org/pav/",
+   "prefixtest": "https://w3id.org/linkml/tests/prefixtest/",
+   "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+   "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+   "sdo": "http://schema.org/",
+   "wd": "https://www.wikidata.org/wiki/",
+   "Class": {
+      "@id": "owl:Class"
+   },
+   "Gene": {
+      "@id": "biolink:Gene"
+   }
+}

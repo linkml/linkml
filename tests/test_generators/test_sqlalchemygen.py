@@ -4,7 +4,6 @@ from collections import Counter
 
 import pytest
 from linkml_runtime.linkml_model import SlotDefinition
-from linkml_runtime.utils.introspection import package_schemaview
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
