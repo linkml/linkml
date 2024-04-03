@@ -1,3 +1,4 @@
+from copy import copy
 from importlib.util import find_spec
 from typing import Any, ClassVar, Dict, Generator, List, Literal, Optional, Union, overload
 
@@ -54,6 +55,10 @@ class TemplateModel(BaseModel):
     """
 
     template: ClassVar[str]
+    _environment: ClassVar[Environment] = Environment(
+        loader=PackageLoader("linkml.generators.pydanticgen", "templates"), trim_blocks=True, lstrip_blocks=True
+    )
+
     pydantic_ver: int = int(PYDANTIC_VERSION[0])
 
     def render(self, environment: Optional[Environment] = None, black: bool = False) -> str:
@@ -95,14 +100,11 @@ class TemplateModel(BaseModel):
     def environment(cls) -> Environment:
         """
         Default environment for Template models.
-
         uses a :class:`jinja2.PackageLoader` for the templates directory within this module
         with the ``trim_blocks`` and ``lstrip_blocks`` parameters set to ``True`` so that the
         default templates could be written in a more readable way.
         """
-        return Environment(
-            loader=PackageLoader("linkml.generators.pydanticgen", "templates"), trim_blocks=True, lstrip_blocks=True
-        )
+        return copy(cls._environment)
 
     if int(PYDANTIC_VERSION[0]) < 2:
         # simulate pydantic 2's model_fields behavior

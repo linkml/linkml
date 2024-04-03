@@ -28,6 +28,14 @@ EXPECTED_closed = [
     ),
 ]
 
+EXPECTED_suffix = [
+    (
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/PersonShape"),
+        rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+        rdflib.term.URIRef("http://www.w3.org/ns/shacl#NodeShape"),
+    ),
+]
+
 EXPECTED_any_of = [
     (
         rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType"),
@@ -108,20 +116,55 @@ EXPECTED_any_of = [
     ),
 ]
 
+EXPECTED_any_of_with_suffix = [
+    (
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleTypeShape"),
+        [
+            (
+                rdflib.term.URIRef("http://www.w3.org/ns/shacl#datatype"),
+                rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer"),
+            ),
+            (
+                rdflib.term.URIRef("http://www.w3.org/ns/shacl#datatype"),
+                rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#string"),
+            ),
+        ],
+    ),
+    (
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfClassesShape"),
+        [
+            (
+                rdflib.term.URIRef("http://www.w3.org/ns/shacl#class"),
+                rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Person"),
+            ),
+            (
+                rdflib.term.URIRef("http://www.w3.org/ns/shacl#class"),
+                rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Organization"),
+            ),
+        ],
+    ),
+]
+
 
 def test_shacl(kitchen_sink_path):
     """tests shacl generation"""
     shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True).serialize()
-    do_test(shaclstr, EXPECTED)
+    do_test(shaclstr, EXPECTED, EXPECTED_any_of)
 
 
 def test_shacl_closed(kitchen_sink_path):
     """tests shacl generation"""
     shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True, closed=False).serialize()
-    do_test(shaclstr, EXPECTED_closed)
+    do_test(shaclstr, EXPECTED_closed, EXPECTED_any_of)
 
 
-def do_test(shaclstr, expected):
+def test_shacl_suffix(kitchen_sink_path):
+    """tests shacl generation with suffix option"""
+    shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True, closed=True, suffix="Shape").serialize()
+    do_test(shaclstr, EXPECTED_suffix, EXPECTED_any_of_with_suffix)
+
+
+def do_test(shaclstr, expected, expected_any_of):
     g = rdflib.Graph()
     g.parse(data=shaclstr)
     triples = list(g.triples((None, None, None)))
@@ -129,7 +172,7 @@ def do_test(shaclstr, expected):
         assert et in triples
     # TODO: test shacl validation; pyshacl requires rdflib6
 
-    assert_any_of(EXPECTED_any_of, triples)
+    assert_any_of(expected_any_of, triples)
 
 
 def assert_any_of(

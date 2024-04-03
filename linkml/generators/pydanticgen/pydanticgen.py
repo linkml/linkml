@@ -76,6 +76,7 @@ DEFAULT_IMPORTS = (
     + Import(module="decimal", objects=[ObjectImport(name="Decimal")])
     + Import(module="enum", objects=[ObjectImport(name="Enum")])
     + Import(module="re")
+    + Import(module="sys")
     + Import(
         module="typing",
         objects=[
@@ -644,10 +645,11 @@ class PydanticGenerator(OOCodeGenerator):
         for k, c in pyschema.classes.items():
             attrs = {}
             for attr_name, src_attr in c.attributes.items():
+                src_attr = src_attr._as_dict
                 new_fields = {
-                    k: src_attr._as_dict.get(k, None)
+                    k: src_attr.get(k, None)
                     for k in PydanticAttribute.model_fields.keys()
-                    if src_attr._as_dict.get(k, None) is not None
+                    if src_attr.get(k, None) is not None
                 }
                 predef_slot = predefined.get(k, {}).get(attr_name, None)
                 if predef_slot is not None:

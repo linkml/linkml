@@ -124,6 +124,7 @@ sqlalchemy = ">=1.4.31"
 watchdog = ">=0.9.0"
 pyshacl = { version = "^0.25.0", optional = true }
 black = { version=">=24.0.0", optional = true }
+typing-extensions = { version=">=4.4.0", python="<3.9" }
 
 [tool.poetry.group.dev.dependencies]
 chardet = "*"
@@ -133,12 +134,6 @@ nbconvert = "*"
 nbformat = "*"
 coverage = "^6.4.1"
 tox = "^4"
-furo = {version = "^2023.03.27", extras = ["docs"]}
-sphinxcontrib-mermaid = {version = "^0.7.1", extras = ["docs"]}
-sphinx = "*"
-sphinx-click = "*"
-sphinx-rtd-theme = "*"
-myst-parser = "*"
 requests-cache = "^1.2.0"
 myst-nb = {version=">=1.0.0", python=">=3.9"}
 sphinx-design = "^0.5.0"
@@ -156,6 +151,17 @@ numpy = [
 black = ["black"]
 shacl = ["pyshacl"]
 tests = ["black", "pyshacl"]
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+furo = {version = "^2023.03.27", extras = ["docs"]}
+sphinxcontrib-mermaid = {version = "^0.7.1", extras = ["docs"]}
+sphinx = "*"
+sphinx-click = "*"
+sphinx-rtd-theme = "*"
+myst-parser = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]

@@ -1,5 +1,5 @@
 # Auto generated from simple_example.yaml by pythongen.py version: 0.0.1
-# Generation date: 2024-03-15T20:20:34
+# Generation date: 2024-03-29T10:54:52
 # Schema: example.org
 #
 # id: http://example.org

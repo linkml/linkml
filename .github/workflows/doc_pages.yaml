@@ -23,10 +23,7 @@ jobs:
           version: 1.3.2
 
       - name: install
-        run: poetry install -E black
-
-      - name: install pydantic 2
-        run: poetry run pip install 'pydantic>=2'
+        run: poetry install --with docs --all-extras
 
       - name: Build documentation.
         run: |

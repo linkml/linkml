@@ -1,5 +1,5 @@
 # Auto generated from python_lists_and_keys.yaml by pythongen.py version: 0.0.1
-# Generation date: 2024-03-15T20:11:09
+# Generation date: 2024-03-29T10:54:52
 # Schema: lists_and_keys
 #
 # id: http://examples.org/linkml/test/lists_and_keys

@@ -1,5 +1,5 @@
 # Auto generated from alternatives.yaml by pythongen.py version: 0.0.1
-# Generation date: 2024-03-15T20:11:09
+# Generation date: 2024-03-29T10:54:52
 # Schema: alternatives
 #
 # id: http://example.org/test/alternatives

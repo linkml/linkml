@@ -60,8 +60,8 @@ class JSONLDGenerator(Generator):
     """Path to a JSONLD context file"""
 
     def __post_init__(self) -> None:
-        super().__post_init__()
         self.original_schema = deepcopy(self.schema)
+        super().__post_init__()
 
     def _add_type(self, node: YAMLRoot) -> dict:
         if self.format == "jsonld":
