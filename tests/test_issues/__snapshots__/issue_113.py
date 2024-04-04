@@ -50,7 +50,7 @@ class NamedThing(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = URIRef("https://microbiomedata/schema/NamedThing")
 
 
-@dataclass
+@dataclass(repr=False)
 class TestClass(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 

@@ -59,7 +59,7 @@ class SequenceVariantId(NamedThingId):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class NamedThing(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = ["node_property", "id"]
 
@@ -87,7 +87,7 @@ class NamedThing(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class SequenceVariant(NamedThing):
     _inherited_slots: ClassVar[List[str]] = ["id", "node_property"]
 

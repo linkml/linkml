@@ -204,7 +204,7 @@ class IriType(Uriorcurie):
 
 
 
-@dataclass
+@dataclass(repr=False)
 class NamedThing(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 

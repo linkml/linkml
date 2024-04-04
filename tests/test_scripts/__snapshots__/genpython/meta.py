@@ -121,7 +121,7 @@ class AgentId(extended_str):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class AnyOfSimpleType(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -139,7 +139,7 @@ class AnyOfSimpleType(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class AnyOfClasses(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -157,7 +157,7 @@ class AnyOfClasses(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class AnyOfEnums(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -175,7 +175,7 @@ class AnyOfEnums(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class AnyOfMix(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -193,7 +193,7 @@ class AnyOfMix(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class HasAliases(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -212,7 +212,7 @@ class HasAliases(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Friend(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -230,7 +230,7 @@ class Friend(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Person(YAMLRoot):
     """
     A person, living or dead
@@ -302,7 +302,7 @@ class Person(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Organization(YAMLRoot):
     """
     An organization.
@@ -343,7 +343,7 @@ class Organization(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Place(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -372,7 +372,7 @@ class Place(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Address(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -398,7 +398,7 @@ class Address(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Concept(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -426,7 +426,7 @@ class Concept(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class DiagnosisConcept(Concept):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -446,7 +446,7 @@ class DiagnosisConcept(Concept):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ProcedureConcept(Concept):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -466,7 +466,7 @@ class ProcedureConcept(Concept):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Event(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -493,7 +493,7 @@ class Event(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Relationship(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -527,7 +527,7 @@ class Relationship(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class FamilialRelationship(Relationship):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -560,7 +560,7 @@ class FamilialRelationship(Relationship):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class BirthEvent(Event):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -578,7 +578,7 @@ class BirthEvent(Event):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class EmploymentEvent(Event):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -600,7 +600,7 @@ class EmploymentEvent(Event):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class MedicalEvent(Event):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -626,7 +626,7 @@ class MedicalEvent(Event):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class WithLocation(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -644,7 +644,7 @@ class WithLocation(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class MarriageEvent(Event):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -666,7 +666,7 @@ class MarriageEvent(Event):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Company(Organization):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -690,7 +690,7 @@ class Company(Organization):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class CodeSystem(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -714,7 +714,7 @@ class CodeSystem(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Dataset(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -741,7 +741,7 @@ class Dataset(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class FakeClass(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -759,7 +759,7 @@ class FakeClass(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ClassWithSpaces(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -777,7 +777,7 @@ class ClassWithSpaces(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class SubclassTest(ClassWithSpaces):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -818,7 +818,7 @@ class TubSubClass1(SubclassTest):
 
 AnyObject = Any
 
-@dataclass
+@dataclass(repr=False)
 class Activity(YAMLRoot):
     """
     a provence-generating activity
@@ -865,7 +865,7 @@ class Activity(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Agent(YAMLRoot):
     """
     a provence-generating agent

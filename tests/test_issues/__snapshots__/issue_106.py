@@ -48,7 +48,7 @@ class String(str):
 
 
 
-@dataclass
+@dataclass(repr=False)
 class C1(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -70,7 +70,7 @@ class C1(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class C2(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
