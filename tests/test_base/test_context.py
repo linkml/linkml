@@ -1,70 +1,16 @@
-import unittest
+from pathlib import Path
 
-from linkml import (
-    LOCAL_ANNOTATIONS_YAML_FILE,
-    LOCAL_EXTENSIONS_YAML_FILE,
-    LOCAL_MAPPINGS_YAML_FILE,
-    LOCAL_TYPES_YAML_FILE,
-    METAANNOTATIONS_NAMESPACE,
-    METAEXTENSIONS_NAMESPACE,
-    METAMAPPING_NAMESPACE,
-    METATYPE_NAMESPACE,
-)
+import pytest
+
 from linkml.generators.jsonldcontextgen import ContextGenerator
-from tests.test_base.environment import env
-from tests.utils.filters import ldcontext_metadata_filter
-from tests.utils.generatortestcase import GeneratorTestCase
+from tests import (
+    LOCAL_MODEL_YAML_NO_META,
+    METAMODEL_NAMESPACE,
+)
 
 
-class ContextTestCase(GeneratorTestCase):
-    """Generate the context.jsonld for all of the models and compare them against what has been published"""
-
-    env = env
-
-    def test_types_context(self):
-        """Build types.context.jsonld"""
-        self.model_name = "types"
-        self.single_file_generator(
-            "context.jsonld",
-            ContextGenerator,
-            yaml_file=LOCAL_TYPES_YAML_FILE,
-            serialize_args=dict(base=str(METATYPE_NAMESPACE)),
-            filtr=ldcontext_metadata_filter,
-        )
-
-    def test_mappings_context(self):
-        """Build mappings.context.jsonld"""
-        self.model_name = "mappings"
-        self.single_file_generator(
-            "context.jsonld",
-            ContextGenerator,
-            yaml_file=LOCAL_MAPPINGS_YAML_FILE,
-            serialize_args=dict(base=METAMAPPING_NAMESPACE),
-            filtr=ldcontext_metadata_filter,
-        )
-
-    def test_extensions_context(self):
-        """Build includes/extensions.context.jsonld"""
-        self.model_name = "extensions"
-        self.single_file_generator(
-            "context.jsonld",
-            ContextGenerator,
-            yaml_file=LOCAL_EXTENSIONS_YAML_FILE,
-            serialize_args=dict(base=METAEXTENSIONS_NAMESPACE),
-            filtr=ldcontext_metadata_filter,
-        )
-
-    def test_annotations_context(self):
-        """Build includes/annotations.context.jsonld"""
-        self.model_name = "annotations"
-        self.single_file_generator(
-            "context.jsonld",
-            ContextGenerator,
-            yaml_file=LOCAL_ANNOTATIONS_YAML_FILE,
-            serialize_args=dict(base=METAANNOTATIONS_NAMESPACE),
-            filtr=ldcontext_metadata_filter,
-        )
-
-
-if __name__ == "__main__":
-    unittest.main()
+@pytest.mark.parametrize("model", LOCAL_MODEL_YAML_NO_META)
+def test_models_jsonld_context(model, snapshot):
+    generated = ContextGenerator(model).serialize(base=METAMODEL_NAMESPACE)
+    output_file = Path(model).with_suffix(".context.jsonld").name
+    assert generated == snapshot(output_file)

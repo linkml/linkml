@@ -24,10 +24,10 @@ this:C3 a owl:Class ;
             owl:maxCardinality 1 ;
             owl:onProperty this:a ],
         [ a owl:Restriction ;
-            owl:minCardinality 0 ;
+            owl:allValuesFrom this:C1 ;
             owl:onProperty this:a ],
         [ a owl:Restriction ;
-            owl:allValuesFrom this:C1 ;
+            owl:minCardinality 0 ;
             owl:onProperty this:a ] ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
