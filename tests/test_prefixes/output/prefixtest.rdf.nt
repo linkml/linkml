@@ -241,5 +241,3 @@ _:Nd86feb8fa05d4085afb34f751da30ba7 <https://w3id.org/linkml/prefix_reference> <
 <https://w3id.org/linkml/tests/prefixtest/Foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/ClassDefinition> .
 <https://w3id.org/linkml/tests/prefixtest/datetime> <https://w3id.org/linkml/imported_from> "linkml:types" .
 <https://w3id.org/linkml/tests/prefixtest/Gene> <https://w3id.org/linkml/class_uri> <https://w3id.org/biolink/Gene> .
-
-

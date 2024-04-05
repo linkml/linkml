@@ -226,6 +226,7 @@ class RelationalModelTransformer:
 
         # TODO: separate out the logic into separate testable methods
         target_sv.set_modified()
+        multivalued_slots_original = []
         # post-process target schema
         for cn, c in target_sv.all_classes().items():
             if self.foreign_key_policy == ForeignKeyPolicy.NO_FOREIGN_KEYS:
@@ -243,6 +244,7 @@ class RelationalModelTransformer:
                     slot.inlined or slot.inlined_as_list or "shared" in slot.annotations
                 )
                 if slot.multivalued:
+                    multivalued_slots_original.append(slot.name)
                     slot.multivalued = False
                     slot_name = slot.name
                     sn_singular = slot.singular_name if slot.singular_name else slot.name
@@ -332,6 +334,7 @@ class RelationalModelTransformer:
         # add PK and FK anns
         target_sv.set_modified()
         fk_policy = self.foreign_key_policy
+        forward_map = {}
         for c in target.classes.values():
             if self.foreign_key_policy == ForeignKeyPolicy.NO_FOREIGN_KEYS:
                 continue
@@ -356,14 +359,31 @@ class RelationalModelTransformer:
                         # if it is already an injected backref, no need to re-inject
                         if "backref" not in a.annotations:
                             del c.attributes[a.name]
+                            original_name = a.name
                             if "forwardref" not in a.annotations:
-                                add_annotation(a, "original_slot", a.name)
+                                add_annotation(a, "original_slot", original_name)
                             a.alias = f"{a.name}_{tc_pk_slot.name}"
                             a.name = a.alias
                             c.attributes[a.name] = a
+                            forward_map[original_name] = a.name
                     ann = Annotation("foreign_key", f"{tc.name}.{tc_pk_slot.name}")
                     a.annotations[ann.tag] = ann
                     target_sv.set_modified()
+            # Rewrite unique key constraints
+            # - if a slot has a range of object, it may be renamed, e.g. person => person_id
+            # - if a slot is multivalued then it is translated to backref and the UC must be dropped
+            removed_ucs = []
+            for uc_name, uc in c.unique_keys.items():
+                if any(sn in multivalued_slots_original for sn in uc.unique_key_slots):
+                    logging.warning(
+                        f"Cannot represent uniqueness constraint {uc_name}. "
+                        f"one of the slots {uc.unique_key_slots} is multivalued"
+                    )
+                    removed_ucs.append(uc_name)
+                new_slot_names = [forward_map.get(sn, sn) for sn in uc.unique_key_slots]
+                uc.unique_key_slots = new_slot_names
+            for uc_name in removed_ucs:
+                del c.unique_keys[uc_name]
 
         result = TransformationResult(target, mappings=mappings)
         return result

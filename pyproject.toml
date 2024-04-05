@@ -35,7 +35,8 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11"
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 
 packages = [
@@ -106,11 +107,11 @@ jinja2 = ">= 3.1.0"
 jsonasobj2 = "==1.*,>=1.0.0,>=1.0.3"
 jsonschema = {extras = ["format"], version = ">=4.0.0"}
 linkml-dataops = "*"
-linkml-runtime = ">=1.7.0"
+linkml-runtime = ">=1.7.4"
 openpyxl = "*"
 parse = "*"
 prefixcommons = ">=0.1.7"
-prefixmaps = ">=0.1.3"
+prefixmaps = ">=0.2.2"
 pydantic = ">=1.0.0,<3.0.0"
 pyjsg = ">=0.11.6"
 pyshex = ">=0.7.20"
@@ -121,7 +122,9 @@ rdflib = ">=6.0.0"
 requests = ">=2.22"
 sqlalchemy = ">=1.4.31"
 watchdog = ">=0.9.0"
-typing-extensions = {version = "^4.5.0", python = "3.7"}
+pyshacl = { version = "^0.25.0", optional = true }
+black = { version=">=24.0.0", optional = true }
+typing-extensions = { version=">=4.4.0", python="<3.9" }
 
 [tool.poetry.group.dev.dependencies]
 chardet = "*"
@@ -131,23 +134,37 @@ nbconvert = "*"
 nbformat = "*"
 coverage = "^6.4.1"
 tox = "^4"
+requests-cache = "^1.2.0"
+myst-nb = {version=">=1.0.0", python=">=3.9"}
+sphinx-design = "^0.5.0"
+rich = "^13.7.1"
+
+[tool.poetry.group.tests.dependencies]
+pytest = "^7.4.0"
+pytest-subtests = "^0.11.0"
+numpy = [
+  { "version" = ">=1.24.3", "python" = "<3.12" },
+  { "version" = ">=1.25.2", "python" = ">=3.12" }
+]
+requests-cache = "^1.2.0"
+
+[tool.poetry.extras]
+black = ["black"]
+shacl = ["pyshacl"]
+tests = ["black", "pyshacl"]
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
 furo = {version = "^2023.03.27", extras = ["docs"]}
 sphinxcontrib-mermaid = {version = "^0.7.1", extras = ["docs"]}
 sphinx = "*"
 sphinx-click = "*"
 sphinx-rtd-theme = "*"
 myst-parser = "*"
-requests-cache = "^1.2.0"
 matplotlib = ">=3.7"
 sphinx-jinja = "^2.0.2"
-
-[tool.poetry.group.tests.dependencies]
-pytest = "^7.4.0"
-pytest-subtests = "^0.11.0"
-numpy = ">=1.24.3"
-
-[tool.poetry.group.shacl.dependencies]
-pyshacl = "^0.25.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
@@ -185,7 +202,9 @@ filterwarnings = [
 ]
 markers = [
   "network: mark tests that make external network requests",
-  "slow: mark test as slow to run"
+  "slow: mark test as slow to run",
+  "no_asserts: tests that don't have meaningful asserts, but are only snapshot comparisons, or historically had print statements, or other non-erroring behavior",
+  "strcmp: tests that compare stringified values rather than the values themselves"
 ]
 
 [tool.ruff]

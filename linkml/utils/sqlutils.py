@@ -58,16 +58,22 @@ class SQLStore:
     - mapping your data/objects in any LinkML compliant data format (json. yaml, rdf) into ORM objects
     """
 
-    schema: Union[str, SchemaDefinition] = None
-    schemaview: SchemaView = None
-    engine: Engine = None
-    database_path: str = None
+    schema: Optional[Union[str, Path, SchemaDefinition]] = None
+    schemaview: Optional[SchemaView] = None
+    engine: Optional[Engine] = None
+    database_path: Union[str, Path] = None
     use_memory: bool = False
     """https://docs.sqlalchemy.org/en/20/dialects/sqlite.html#using-a-memory-database-in-multiple-threads"""
 
-    module: ModuleType = None
-    native_module: ModuleType = None
-    include_schema_in_database: bool = None
+    module: Optional[ModuleType] = None
+    native_module: Optional[ModuleType] = None
+    include_schema_in_database: bool = False
+
+    def __post_init__(self):
+        if self.database_path is None and not self.use_memory:
+            raise ValueError("Must have database path or use_memory must be True")
+        if self.schema is not None and self.schemaview is None:
+            self.schemaview = SchemaView(self.schema)
 
     def db_exists(self, create=True, force=False) -> Optional[str]:
         """
@@ -117,8 +123,6 @@ class SQLStore:
         """
         gen = SQLAlchemyGenerator(self.schema)
         self.module = gen.compile_sqla(template=TemplateEnum.DECLARATIVE)
-        if self.schemaview is None:
-            self.schemaview = SchemaView(self.schema)
         return self.module
 
     def compile_native(self) -> ModuleType:
@@ -223,7 +227,6 @@ class SQLStore:
             for n, nu_typ in inspect.getmembers(self.module):
                 # TODO: make more efficient
                 if n == typ.__name__:
-                    # print(f'Creating {nu_typ} from: {inst_args}')
                     nu_obj = nu_typ(**inst_args)
                     return nu_obj
             raise ValueError(f"Cannot find {typ.__name__} in {self.module}")
@@ -237,8 +240,6 @@ class SQLStore:
         :param obj: sqla object
         :return: native dataclass object
         """
-        if self.schemaview is None:
-            self.schemaview = SchemaView(self.schema)
         typ = type(obj)
         nm = self.schemaview.class_name_mappings()
         if typ.__name__ in nm:
@@ -262,9 +263,7 @@ class SQLStore:
             for n, nu_typ in inspect.getmembers(self.native_module):
                 # TODO: make more efficient
                 if n == typ.__name__:
-                    # print(f'CREATING {nu_typ} FROM {inst_args}')
                     nu_obj = nu_typ(**inst_args)
-                    # print(f'CREATED {nu_obj}')
                     return nu_obj
             raise ValueError(f"Cannot find {typ.__name__} in {self.native_module}")
         else:
@@ -324,9 +323,15 @@ def main(verbose: int, quiet: bool, csv_field_size_limit: int):
     show_default=True,
     help="Force creation of a database if it does not exist",
 )
-@click.argument("input")
+@click.option(
+    "--glob/--no-glob",
+    default=False,
+    show_default=True,
+    help="Treat input as a quoted glob expression, e.g. 'data/*.json'",
+)
+@click.argument("inputs", nargs=-1)
 def dump(
-    input,
+    inputs,
     module,
     db,
     target_class,
@@ -334,6 +339,7 @@ def dump(
     schema=None,
     validate=None,
     force: bool = None,
+    glob: bool = None,
     index_slot=None,
 ) -> None:
     """
@@ -359,34 +365,41 @@ def dump(
     if target_class is None:
         raise Exception("target class not specified and could not be inferred")
     py_target_class = python_module.__dict__[target_class]
-    input_format = _get_format(input, input_format)
-    loader = get_loader(input_format)
-
-    inargs = {}
-    if datautils._is_rdf_format(input_format):
-        if sv is None:
-            raise Exception("Must pass schema arg")
-        inargs["schemaview"] = sv
-        inargs["fmt"] = input_format
-    if _is_xsv(input_format):
-        if index_slot is None:
-            index_slot = infer_index_slot(sv, target_class)
-            if index_slot is None:
-                raise Exception("--index-slot is required for CSV input")
-        inargs["index_slot"] = index_slot
-        inargs["schema"] = schema
-    obj = loader.load(source=input, target_class=py_target_class, **inargs)
-    if validate:
-        if schema is None:
-            raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
-        # TODO: use validator framework
-        validation.validate_object(obj, schema)
 
     endpoint = SQLStore(schema, database_path=db, include_schema_in_database=False)
     endpoint.native_module = python_module
     endpoint.db_exists(force=force)
     endpoint.compile()
-    endpoint.dump(obj)
+
+    if glob:
+        import glob
+
+        inputs = [item for input in inputs for item in glob.glob(input)]
+    for input in inputs:
+        logging.info(f"Loading: {input}")
+        input_format = _get_format(input, input_format)
+        loader = get_loader(input_format)
+
+        inargs = {}
+        if datautils._is_rdf_format(input_format):
+            if sv is None:
+                raise Exception("Must pass schema arg")
+            inargs["schemaview"] = sv
+            inargs["fmt"] = input_format
+        if _is_xsv(input_format):
+            if index_slot is None:
+                index_slot = infer_index_slot(sv, target_class)
+                if index_slot is None:
+                    raise Exception("--index-slot is required for CSV input")
+            inargs["index_slot"] = index_slot
+            inargs["schema"] = schema
+        obj = loader.load(source=input, target_class=py_target_class, **inargs)
+        if validate:
+            if schema is None:
+                raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
+            # TODO: use validator framework
+            validation.validate_object(obj, schema)
+        endpoint.dump(obj)
 
 
 @main.command()

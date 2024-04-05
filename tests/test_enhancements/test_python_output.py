@@ -1,12 +1,11 @@
-import unittest
-from typing import Type
+import re
+from pathlib import Path
+from types import ModuleType
 
+import pytest
 from linkml_runtime.utils.compile_python import compile_python
 
 from linkml.generators.pythongen import PythonGenerator
-from tests.test_enhancements.environment import env
-from tests.utils.python_comparator import compare_python
-from tests.utils.test_environment import TestEnvironmentTestCase
 
 
 class NonStr:
@@ -17,15 +16,35 @@ class NonStr:
         return self.v
 
 
-python_types_entries = {
-    "Strings": [
+@pytest.fixture(scope="module")
+def python_types(input_path) -> ModuleType:
+    generated = PythonGenerator(
+        Path(input_path("python_generation")) / "python_types.yaml", mergeimports=False
+    ).serialize()
+    mod = compile_python(generated)
+    return mod
+
+
+def test_python_types_snapshot(input_path, snapshot):
+    generated = PythonGenerator(
+        Path(input_path("python_generation")) / "python_types.yaml", mergeimports=False
+    ).serialize()
+    assert generated == snapshot(Path("python_generation") / "python_types.py")
+
+
+@pytest.mark.strcmp
+@pytest.mark.parametrize(
+    "cls_name,args,argv,expected,err",
+    [
         [
+            "Strings",
             ("s1", "s2", "s3", "s4"),
             {},
             "Strings(mand_string='s1', mand_multi_string=['s2'], opt_string='s3', opt_multi_string=['s4'])",
             None,
         ],
         [
+            "Strings",
             ("s1", ["s21", "s22"], "s3", ["s41", "s42"]),
             {},
             (
@@ -35,18 +54,21 @@ python_types_entries = {
             None,
         ],
         [
+            "Strings",
             ("s1", ["s21", "s22"], None, None),
             {},
             "Strings(mand_string='s1', mand_multi_string=['s21', 's22'], opt_string=None, opt_multi_string=[])",
             None,
         ],
         [
+            "Strings",
             (NonStr("s1"), NonStr("s2"), NonStr("s3"), NonStr("s4")),
             {},
             "Strings(mand_string='s1', mand_multi_string=['s2'], opt_string='s3', opt_multi_string=['s4'])",
             None,
         ],
         [
+            "Strings",
             (
                 NonStr("s1"),
                 [NonStr("s21"), NonStr("s22")],
@@ -60,12 +82,11 @@ python_types_entries = {
             ),
             None,
         ],
-        [(), {}, "mand_string must be supplied", ValueError],
-        [("s1",), {}, "mand_multi_string must be supplied", ValueError],
-        [("s1", []), {}, "mand_multi_string must be supplied", ValueError],
-    ],
-    "Booleans": [
+        ["Strings", (), {}, "mand_string must be supplied", ValueError],
+        ["Strings", ("s1",), {}, "mand_multi_string must be supplied", ValueError],
+        ["Strings", ("s1", []), {}, "mand_multi_string must be supplied", ValueError],
         [
+            "Booleans",
             ("True", "false", 1, [1, 0, True, False]),
             {},
             (
@@ -73,98 +94,48 @@ python_types_entries = {
                 "opt_multi_boolean=[True, False, True, False])"
             ),
             None,
-        ]
-    ],
-    "Integers": [
+        ],
         [
+            "Integers",
             ("17", -2, 12 + 3, [42, "17"]),
             {},
             "Integers(mand_integer=17, mand_multi_integer=[-2], opt_integer=15, opt_multi_integer=[42, 17])",
             None,
         ],
         [
+            "Integers",
             ("17e", 1, 2, 3),
             {},
             "invalid literal for int() with base 10: '17e'",
             ValueError,
         ],
     ],
-}
+)
+def test_python_types(cls_name, args, argv, expected, err, python_types):
+    cls = getattr(python_types, cls_name)
+    if err:
+        with pytest.raises(err, match=re.escape(expected)):
+            cls(*args, **argv)
+    else:
+        inst = cls(*args, **argv)
+        assert str(inst) == expected
 
 
-class PythonOutputTestCase(TestEnvironmentTestCase):
-    env = env
+@pytest.mark.no_asserts
+def test_python_complex_ranges(input_path, snapshot):
+    """description"""
 
-    def check_expecteds(self, constructor: Type, check_entries: str) -> None:
-        checks = python_types_entries[check_entries]
-        for args, argv, expected, err in checks:
-            if not err:
-                inst = constructor(*args, **argv)
-                self.assertEqual(expected, str(inst))
-            else:
-                with self.assertRaises(err) as e:
-                    constructor(*args, **argv)
-                self.assertEqual(expected, str(e.exception))
-
-    def test_python_types(self):
-        """description"""
-        test_dir = "python_generation"
-        test_name = "python_types"
-        python_name = f"{test_dir}/{test_name}.py"
-
-        env.generate_single_file(
-            python_name,
-            lambda: PythonGenerator(
-                env.input_path(test_dir, f"{test_name}.yaml"),
-                importmap=env.import_map,
-                mergeimports=False,
-            ).serialize(),
-            comparator=lambda expected, actual: compare_python(expected, actual, env.expected_path(python_name)),
-            value_is_returned=True,
-        )
-
-        module = compile_python(env.expected_path(python_name))
-        from tests.test_enhancements.output.python_generation.python_types import Strings
-
-        self.check_expecteds(Strings, "Strings")
-        self.check_expecteds(module.Strings, "Strings")
-        self.check_expecteds(module.Booleans, "Booleans")
-        self.check_expecteds(module.Integers, "Integers")
-
-    def test_python_complex_ranges(self):
-        """description"""
-        test_dir = "python_generation"
-        test_name = "python_complex_ranges"
-
-        env.generate_single_file(
-            f"{test_dir}/{test_name}.py",
-            lambda: PythonGenerator(
-                env.input_path(test_dir, f"{test_name}.yaml"),
-                importmap=env.import_map,
-                mergeimports=False,
-            ).serialize(),
-            comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path(f"{test_dir}/{test_name}.py")),
-            value_is_returned=True,
-        )
-
-    @staticmethod
-    def test_python_lists_and_keys():
-        """description"""
-        test_dir = "python_generation"
-        test_name = "python_lists_and_keys"
-        test_path = f"{test_dir}/{test_name}.py"
-
-        env.generate_single_file(
-            test_path,
-            lambda: PythonGenerator(
-                env.input_path(test_dir, f"{test_name}.yaml"),
-                importmap=env.import_map,
-                mergeimports=False,
-            ).serialize(),
-            comparator=lambda expected, actual: compare_python(expected, actual, env.expected_path(test_path)),
-            value_is_returned=True,
-        )
+    generated = PythonGenerator(
+        Path(input_path("python_generation")) / "python_complex_ranges.yaml", mergeimports=False
+    ).serialize()
+    assert generated == snapshot(Path("python_generation") / "python_complex_ranges.py")
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.mark.no_asserts
+def test_python_lists_and_keys(input_path, snapshot):
+    """description"""
+
+    generated = PythonGenerator(
+        Path(input_path("python_generation")) / "python_lists_and_keys.yaml", mergeimports=False
+    ).serialize()
+    assert generated == snapshot(Path("python_generation") / "python_lists_and_keys.py")

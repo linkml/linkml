@@ -118,7 +118,7 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
                     "_mappings": {
                         PYDANTIC: f"{SLOT_S1}: Optional[Union[D, int]]",
                         JSON_SCHEMA: expected_json_schema,
-                        JSONLD_CONTEXT: {"s1": {"@type": "@id"}},
+                        JSONLD_CONTEXT: {"s1": {"@id": "s1", "@type": "@id"}},
                     },
                 },
             },

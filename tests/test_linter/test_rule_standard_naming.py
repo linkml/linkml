@@ -82,3 +82,61 @@ class TestStandardNamingRule(unittest.TestCase):
         self.assertIn("Enum has name 'bad_enum'", messages)
         self.assertIn("Permissible value of Enum 'bad_enum' has name 'good_lower_pv'", messages)
         self.assertIn("Permissible value of Enum 'bad_enum' has name 'great_lower_pv'", messages)
+
+    def test_standard_naming_slot_pattern(self):
+        config = StandardNamingConfig(level=RuleLevel.error.text, slot_pattern="uppercamel")
+
+        rule = StandardNamingRule(config)
+        problems = list(rule.check(self.schema_view))
+
+        self.assertEqual(len(problems), 10)
+
+        messages = [p.message for p in problems]
+        self.assertIn("Class has name 'bad class'", messages)
+        self.assertIn("Class has name '0worseclass'", messages)
+        # BadSlot no longer bad
+        self.assertIn("Slot has name 'worse slot'", messages)
+        self.assertIn("Permissible value of Enum 'GoodEnumWithBadPV' has name 'Bad_PV'", messages)
+        self.assertIn(
+            "Permissible value of Enum 'GoodEnumUpperPV' has name 'GOOD_UPPER_PV'",
+            messages,
+        )
+        self.assertIn(
+            "Permissible value of Enum 'GoodEnumUpperPV' has name 'GREAT_UPPER_PV'",
+            messages,
+        )
+        self.assertIn(
+            "Permissible value of Enum 'GoodEnumBadUpperPV' has name 'GOOD_UPPER_PV'",
+            messages,
+        )
+        self.assertIn("Enum has name 'bad_enum'", messages)
+
+    def test_standard_naming_class_pattern(self):
+        config = StandardNamingConfig(level=RuleLevel.error.text, class_pattern=r"[_a-z0-9]+")
+
+        rule = StandardNamingRule(config)
+        problems = list(rule.check(self.schema_view))
+
+        self.assertEqual(len(problems), 9)
+
+        messages = [p.message for p in problems]
+        print(messages)
+        self.assertIn("Class has name 'GoodClass'", messages)
+        self.assertIn("Class has name 'bad class'", messages)
+        # '0worseclass' now longer bad in the context of the given regular expression
+        self.assertIn("Slot has name 'BadSlot'", messages)
+        self.assertIn("Slot has name 'worse slot'", messages)
+        self.assertIn("Permissible value of Enum 'GoodEnumWithBadPV' has name 'Bad_PV'", messages)
+        self.assertIn(
+            "Permissible value of Enum 'GoodEnumUpperPV' has name 'GOOD_UPPER_PV'",
+            messages,
+        )
+        self.assertIn(
+            "Permissible value of Enum 'GoodEnumUpperPV' has name 'GREAT_UPPER_PV'",
+            messages,
+        )
+        self.assertIn(
+            "Permissible value of Enum 'GoodEnumBadUpperPV' has name 'GOOD_UPPER_PV'",
+            messages,
+        )
+        self.assertIn("Enum has name 'bad_enum'", messages)

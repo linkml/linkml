@@ -1,0 +1,13 @@
+# metamodel_version: 1.7.0id: Place
+schema_generating: true
+display_name: Place
+document_category: Place
+weight: 20
+fields:
+- id: id
+  display_name: id
+- id: name
+  display_name: name
+- id: aliases
+  display_name: hasAliases__aliases
+  cardinality: multi

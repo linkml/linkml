@@ -4,6 +4,7 @@ import os
 import re
 from copy import copy
 from dataclasses import dataclass
+from pathlib import Path
 from types import ModuleType
 from typing import Callable, Dict, Iterator, List, Optional, Set, Tuple, Union
 
@@ -36,11 +37,7 @@ from rdflib import URIRef
 import linkml
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
-from linkml.utils.ifabsent_functions import (
-    default_curie_or_uri,
-    ifabsent_postinit_declaration,
-    ifabsent_value_declaration,
-)
+from linkml.utils.ifabsent_functions import ifabsent_postinit_declaration, ifabsent_value_declaration
 
 
 @dataclass
@@ -66,8 +63,10 @@ class PythonGenerator(Generator):
     emit_metadata: bool = True
 
     def __post_init__(self) -> None:
+        if isinstance(self.schema, Path):
+            self.schema = str(self.schema)
         self.sourcefile = self.schema
-        self.schemaview = SchemaView(self.schema)
+        self.schemaview = SchemaView(self.schema, base_dir=self.base_dir)
         super().__post_init__()
         if self.format is None:
             self.format = self.valid_formats[0]
@@ -151,6 +150,7 @@ import re
 from jsonasobj2 import JsonObj, as_dict
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
+from datetime import date, datetime
 {enumimports}
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
@@ -294,7 +294,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         return rval.values()
 
     def gen_namespaces(self) -> str:
-        dflt_prefix = default_curie_or_uri(self)
+        dflt_prefix = self._default_curie_or_uri()
         dflt = f"CurieNamespace('', '{sfx(dflt_prefix)}')" if ":/" in dflt_prefix else dflt_prefix.upper()
         curienamespace_defs = [
             {
@@ -641,6 +641,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         for slot in self.domain_slots(cls):
             if slot.ifabsent:
                 dflt = ifabsent_postinit_declaration(slot.ifabsent, self, cls, slot)
+
                 if dflt and dflt != "None":
                     post_inits_pre_super.append(f"if self.{self.slot_name(slot.name)} is None:")
                     post_inits_pre_super.append(f"\tself.{self.slot_name(slot.name)} = {dflt}")
@@ -1169,6 +1170,14 @@ class {enum_name}(EnumDefinitionImpl):
             return f'{prefix_string}"{string}"'
 
         return f'{prefix_string}"""{string}"""'
+
+    def _default_curie_or_uri(self) -> str:
+        dflt = self.schema.default_prefix if self.schema.default_prefix else sfx(self.schema.id)
+        if ":/" in dflt:
+            prefix = self.namespaces.prefix_for(self.schema.default_prefix)
+            if prefix:
+                dflt = prefix
+        return dflt
 
 
 @shared_arguments(PythonGenerator)

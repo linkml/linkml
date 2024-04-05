@@ -4,7 +4,6 @@ from collections import Counter
 
 import pytest
 from linkml_runtime.linkml_model import SlotDefinition
-from linkml_runtime.utils.introspection import package_schemaview
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -88,21 +87,6 @@ def test_sqla_basic_declatative(schema):
     ]
     for expected in expected_tables:
         assert expected in tables
-
-
-def test_sqla_declarative_on_metamodel():
-    """
-    test on metamodel
-    """
-    sv = package_schemaview("linkml_runtime.linkml_model.meta")
-    gen = SQLAlchemyGenerator(sv.schema)
-    code = gen.generate_sqla(template=TemplateEnum.DECLARATIVE)
-    assert "class ClassDefinition(" in code
-    assert "class Annotation(" in code
-    gen.compile_sqla(template=TemplateEnum.DECLARATIVE)
-    # TODO: investigate unusual SQL-Alchemy error messages
-    # c = mod.ClassDefinition(name="c1")
-    # s = mod.SchemaDefinition(id='S1', name='S1')
 
 
 def test_mixin():

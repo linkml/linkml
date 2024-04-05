@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import tempfile
 from collections import defaultdict
-from copy import deepcopy
+from copy import copy, deepcopy
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Tuple, Type, Union
@@ -21,7 +21,7 @@ import rdflib
 import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import rdflib_dumper, yaml_dumper
-from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.linkml_model import Decimal, SchemaDefinition
 from linkml_runtime.linkml_model import meta as meta
 from linkml_runtime.loaders import rdflib_loader
 from linkml_runtime.utils.compile_python import compile_python
@@ -29,9 +29,16 @@ from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.yamlutils import YAMLRoot
 from pydantic import BaseModel
 
+try:
+    from yaml import CSafeDumper as SafeDumper
+except ImportError:
+    from yaml import SafeDumper
+
+
 import tests
 from linkml import generators as generators
 from linkml.generators import (
+    ContextGenerator,
     JsonSchemaGenerator,
     OwlSchemaGenerator,
     PydanticGenerator,
@@ -44,7 +51,6 @@ from linkml.utils.generator import Generator
 from linkml.utils.sqlutils import SQLStore
 from linkml.validator import JsonschemaValidationPlugin, Validator
 from linkml.validator.plugins.shacl_validation_plugin import ShaclValidationPlugin
-from tests.output.types import Decimal
 
 THIS_DIR = Path(__file__).parent
 OUTPUT_DIR = THIS_DIR / "output"
@@ -62,6 +68,7 @@ JAVA = "java"
 SHACL = "shacl"
 SHEX = "shex"
 JSONLD_CONTEXT = "jsonld_context"
+JSONLD = "jsonld"
 SQL_ALCHEMY_IMPERATIVE = "sqlalchemy_imperative"
 SQL_ALCHEMY_DECLARATIVE = "sqlalchemy_declarative"
 SQL_DDL_SQLITE = "sql_ddl_sqlite"
@@ -74,6 +81,7 @@ GENERATORS: Dict[FRAMEWORK, Union[Type[Generator], Tuple[Type[Generator], Dict[s
     JSON_SCHEMA: generators.JsonSchemaGenerator,
     SHACL: generators.ShaclGenerator,
     SHEX: generators.ShExGenerator,
+    JSONLD: generators.JSONLDGenerator,
     JSONLD_CONTEXT: generators.ContextGenerator,
     SQL_ALCHEMY_IMPERATIVE: (
         generators.SQLAlchemyGenerator,
@@ -113,7 +121,7 @@ class DataCheck(BaseModel):
     data_name: str
     framework: str
     expected_behavior: ValidationBehavior
-    description: str = None
+    description: Optional[str] = None
     notes: Optional[str] = None
 
 
@@ -156,7 +164,7 @@ class FeatureSet(BaseModel):
     features: List[Feature]
 
 
-cached_generator_output: Dict[Tuple[SCHEMA_NAME, FRAMEWORK], Tuple[Generator, str]] = {}
+cached_generator_output: Dict[Tuple[SCHEMA_NAME, FRAMEWORK], Tuple[Generator, str, Optional[Path]]] = {}
 """Cache generators and their outputs to avoid repeated computation."""
 
 all_test_results: List[DataCheck] = []
@@ -252,7 +260,9 @@ def _get_metamodel_elements(obj: Any) -> Iterator[str]:
         pass
 
 
-def _generate_framework_output(schema: Dict, framework: str, mappings: List = None) -> Tuple[Generator, str, str]:
+def _generate_framework_output(
+    schema: Dict, framework: str, mappings: List = None
+) -> Tuple[Generator, str, Optional[Path]]:
     """
     Compile a schema using a framework (e.g. jsonschema generation).
 
@@ -277,6 +287,7 @@ def _generate_framework_output(schema: Dict, framework: str, mappings: List = No
         else:
             gen_args = {}
 
+        gen_args["base_dir"] = str(_schema_out_path(schema))
         gen = gen_class(schema=SchemaDefinition(**schema), **gen_args)
         if framework == JAVA:
             temp_dir = tempfile.TemporaryDirectory()
@@ -290,15 +301,22 @@ def _generate_framework_output(schema: Dict, framework: str, mappings: List = No
                         output += stream.read()
         else:
             output = gen.serialize()
-        out_dir = _schema_out_path(schema) / "generated"
-        out_dir.mkdir(parents=True, exist_ok=True)
-        out_path = out_dir / f"{framework}.{gen.file_extension}"
-        with open(out_path, "w", encoding="utf-8") as stream:
-            stream.write(output)
+
+        if tests.WITH_OUTPUT:
+            out_dir = _schema_out_path(schema) / "generated"
+            out_dir.mkdir(parents=True, exist_ok=True)
+            out_path = out_dir / f"{framework}.{gen.file_extension}"
+            with open(out_path, "w", encoding="utf-8") as stream:
+                stream.write(output)
+        else:
+            out_path = None
+
         cached_generator_output[pair] = (gen, output, out_path)
         for context, impdict in mappings:
             if framework in impdict:
                 expected = impdict[framework]
+                if expected is None:
+                    continue
                 if isinstance(expected, (list, str)) and framework in [SHACL, OWL]:
                     assert compare_rdf(expected, output, subsumes=framework in [OWL]) == set()
                 elif isinstance(expected, str):
@@ -412,6 +430,8 @@ def _make_schema(
     core_elements: List = None,
     post_process: Callable = None,
     merge_type_imports=True,
+    imported_schemas: List[Dict] = None,
+    mappings: Optional[Dict[str, Any]] = None,
     **kwargs,
 ) -> Tuple[Dict, List]:
     """
@@ -455,9 +475,12 @@ def _make_schema(
             if "imports" not in schema:
                 schema["imports"] = []
             schema["imports"].append("linkml:types")
+            if "linkml:types" not in schema["prefixes"]:
+                schema["prefixes"]["linkml"] = "https://w3id.org/linkml/"
     else:
         schema = deepcopy(schema)
-
+    if mappings is not None:
+        schema["_mappings"] = mappings
     if classes is not None:
         schema["classes"].update(classes)
     if slots is not None:
@@ -477,20 +500,22 @@ def _make_schema(
     mappings = list(_extract_mappings(schema))
     out_dir = _schema_out_path(schema)
     parent_out_dir = _schema_out_path(schema, parent=True)
-    # Write top-level README (TODO: avoid doing this for each combination)
-    with open(parent_out_dir / "README.md", "w", encoding="utf-8") as stream:
-        dlines = [x.strip() for x in schema["description"].split("\n")]
-        dlines = [x for x in dlines if not x.startswith(":")]
-        desc = "\n".join(dlines)
-        stream.write(f"# {test.__name__}\n\n")
-        stream.write(f"{desc}\n\n")
-        stream.write("## Elements Tested\n\n")
-        if not core_elements:
-            raise AssertionError(f"No core elements defined for for {schema_name}")
-        for el in core_elements:
-            stream.write(f"* [{el}](https://w3id.org/linkml/{el})\n")
+    schema["source_file"] = str(out_dir / "schema.yaml")
 
     if tests.WITH_OUTPUT:
+        # Write top-level README (TODO: avoid doing this for each combination)
+        with open(parent_out_dir / "README.md", "w", encoding="utf-8") as stream:
+            dlines = [x.strip() for x in schema["description"].split("\n")]
+            dlines = [x for x in dlines if not x.startswith(":")]
+            desc = "\n".join(dlines)
+            stream.write(f"# {test.__name__}\n\n")
+            stream.write(f"{desc}\n\n")
+            stream.write("## Elements Tested\n\n")
+            if not core_elements:
+                raise AssertionError(f"No core elements defined for for {schema_name}")
+            for el in core_elements:
+                stream.write(f"* [{el}](https://w3id.org/linkml/{el})\n")
+
         # Write README for this schema combo
         with open(out_dir / "README.md", "w", encoding="utf-8") as stream:
             dlines = [x.strip() for x in schema["description"].split("\n")]
@@ -513,10 +538,19 @@ def _make_schema(
             stream.write("```yaml\n")
             yaml.safe_dump(schema_minimal, stream, sort_keys=False)
             stream.write("```\n\n")
-        with open(out_dir / "schema.yaml", "w", encoding="utf-8") as stream:
-            yaml.safe_dump(schema, stream, sort_keys=False)
+
         with open(out_dir / "mappings.txt", "w", encoding="utf-8") as stream:
             stream.write(str(mappings))
+
+        with open(out_dir / "schema.yaml", "w", encoding="utf-8") as stream:
+            yaml.safe_dump(schema, stream, sort_keys=False)
+
+    if imported_schemas:
+        for imp in imported_schemas:
+            imp_path = f'{out_dir / imp["name"]}.yaml'
+            with open(imp_path, "w", encoding="utf-8") as imp_stream:
+                yaml.safe_dump(imp, imp_stream, sort_keys=False)
+
     if not schema["name"]:
         raise ValueError(f"Schema name not set: {schema}")
     return schema, mappings
@@ -587,7 +621,7 @@ def _extract_mappings(schema: Dict) -> Iterator[Tuple[Dict, List]]:
 
 def _as_compact_yaml(obj: Union[YAMLRoot, BaseModel, Dict]) -> str:
     if isinstance(obj, dict):
-        ys = yaml.dump(_clean_dict(obj), sort_keys=False)
+        ys = yaml.dump(_clean_dict(obj), sort_keys=False, Dumper=SafeDumper)
         ys = ys.replace("{}", "")
         return ys
     return yaml_dumper.dumps(obj)
@@ -743,7 +777,6 @@ def check_data(
                             py_inst = py_cls(**object_to_validate)
                             logging.info(f"Unexpectedly instantiated {py_inst}")
             if py_inst is not None:
-                yaml.safe_load(yaml_dumper.dumps(py_inst))
                 # assert roundtripped.items() == object_to_validate.items()
                 if valid and not exclude_rdf:
                     if isinstance(gen, PythonGenerator):
@@ -753,6 +786,21 @@ def check_data(
 
         elif isinstance(gen, JsonSchemaGenerator):
             plugins = [JsonschemaValidationPlugin(closed=True, include_range_class_descendants=False)]
+        elif isinstance(gen, ContextGenerator):
+            context_dir = _schema_out_path(schema) / "generated" / "jsonld_context.context.jsonld"
+            if not context_dir.exists() and tests.WITH_OUTPUT:
+                raise AssertionError(f"Could not find {context_dir}")
+            context = json.loads(cached_generator_output[(schema["name"], "jsonld_context")][1])["@context"]
+            json_object = copy(object_to_validate)
+            json_object["@context"] = context
+            jsonld_path = out_dir / f"{data_name}.jsonld"
+            if tests.WITH_OUTPUT:
+                with open(jsonld_path, "w", encoding="utf-8") as stream:
+                    json.dump(json_object, stream, indent=2, sort_keys=True, ensure_ascii=False)
+            g = rdflib.Graph()
+            g.parse(data=json.dumps(json_object, indent=2, sort_keys=True, ensure_ascii=False), format="json-ld")
+            if not valid and expected_behavior == ValidationBehavior.IMPLEMENTS:
+                logging.info(f"Skipping validation for {jsonld_path}")
         elif isinstance(gen, OwlSchemaGenerator):
             # TODO: make this a validator
             if not exclude_rdf:
@@ -847,7 +895,7 @@ def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_pa
     except Exception as e:
         logging.info(f"Could not instantiate {py_cls} from {instance}; exception: {e}")
         return None
-    schemaview = SchemaView(yaml.dump(schema))
+    schemaview = SchemaView(SchemaDefinition(**schema))
     g = rdflib_dumper.as_rdf_graph(
         py_inst,
         schemaview=schemaview,
@@ -857,11 +905,12 @@ def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_pa
             "P": "http://example.org/P/",
         },
     )
-    g.serialize(ttl_path, format="turtle")
+    ttl_output = g.serialize(format="turtle")
     g = rdflib.Graph()
-    g.parse(ttl_path, format="turtle")
-    roundtripped = rdflib_loader.load(ttl_path, target_class=py_cls, schemaview=schemaview)
-    yaml_dumper.dump(roundtripped, to_file=ttl_path + ".yaml")
+    g.parse(data=ttl_output, format="turtle")
+    roundtripped = rdflib_loader.load(ttl_output, target_class=py_cls, schemaview=schemaview)
+    if tests.WITH_OUTPUT:
+        yaml_dumper.dump(roundtripped, to_file=ttl_path + ".yaml")
     return g
 
 

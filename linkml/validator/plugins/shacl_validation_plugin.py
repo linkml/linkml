@@ -34,21 +34,27 @@ class ShaclValidationPlugin(ValidationPlugin):
         self.closed = closed
         self.shacl_path = shacl_path
         self.raise_on_conversion_error = raise_on_conversion_error
+        self._loaded_graphs = {}
 
     def _shacl_graph(self, context: ValidationContext) -> Optional[rdflib.Graph]:
         g = rdflib.Graph()
         if self.shacl_path:
             g.parse(str(self.shacl_path))
         else:
-            gen = ShaclGenerator(context._schema)
-            g = gen.as_graph()
+            schema_hash = hash(str(context._schema))
+            if schema_hash in self._loaded_graphs:
+                g = self._loaded_graphs[schema_hash]
+            else:
+                gen = ShaclGenerator(context._schema)
+                g = gen.as_graph()
+                self._loaded_graphs[schema_hash] = g
         return g
 
     def process(self, instance: Any, context: ValidationContext) -> Iterator[ValidationResult]:
-        """Perform JSON Schema validation on the provided instance
+        """Perform SHACL Schema validation on the provided instance
 
         :param instance: The instance to validate
-        :param context: The validation context which provides a JSON Schema artifact
+        :param context: The validation context which provides a SHACL artifact
         :return: Iterator over validation results
         :rtype: Iterator[ValidationResult]
         """

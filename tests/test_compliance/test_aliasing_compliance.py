@@ -13,6 +13,7 @@ from rdflib import URIRef
 
 from linkml.reporting.model import RDF, RDFS
 from tests.test_compliance.helper import (
+    JSONLD_CONTEXT,
     OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
@@ -55,28 +56,32 @@ OWLNS = rdflib.Namespace("http://www.w3.org/2002/07/owl#")
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_alias(framework, class_uri, slot_uri, slot_alias, type_uri, data_name, instance, is_valid):
     """
-    Tests ability to alias slots and classes.
+    Tests ability to alias slots
 
     The alias metaslot allows for a different name to be used for a slot than the name of the slot.
     It is not to be confused with `aliases`.
+
+    This test generates a class C, with a slot s1, aliased to `slot_alias`.
+    s1 is of type T, which is an integer.
 
     Known issues:
 
     - PydanticGenerator does not yet support aliasing
 
-    :param framework:
-    :param class_uri:
-    :param slot_uri:
-    :param slot_alias:
-    :param type_uri:
-    :param data_name:
-    :param instance:
-    :param is_valid:
+    :param framework: framework to test
+    :param class_uri: optional class URI for C
+    :param slot_uri: optional slot URI for s1
+    :param slot_alias: optional slot alias for s1
+    :param type_uri: optional type URI for type T
+    :param data_name: name of the test data
+    :param instance: instance data to test
+    :param is_valid: whether the instance is expected to validate
     :return:
     """
     prop_uriref = SCHEMA.s1 if slot_uri else EX.s1
     class_uriref = SCHEMA.C if class_uri else EX.C
     type_uriref = SCHEMA.T if type_uri else EX.T
+    expected_slot_name = slot_alias if slot_alias else SLOT_S1
     dc_type_expected = "class T(Integer):"
     if type_uri:
         dc_type_expected += "    type_class_uri = SCHEMA.T"
@@ -88,11 +93,20 @@ def test_alias(framework, class_uri, slot_uri, slot_alias, type_uri, data_name, 
             "slots": [SLOT_S1],
             "_mappings": {
                 OWL: [(class_uriref, RDF.type, OWLNS.Class)],
-                PYDANTIC: "s1: Optional[int]",  ## May change in future
-                PYTHON_DATACLASSES: f"{slot_alias if slot_alias else SLOT_S1}: Optional[Union[int, T]]",
+                PYDANTIC: "s1: Optional[int]",  ## May change in future, does not current support aliases
+                PYTHON_DATACLASSES: f"{expected_slot_name}: Optional[Union[int, T]]",
             },
         },
     }
+    # TODO: add typeof inference to ContextGenerator
+    expected_jsonld_context = {
+        expected_slot_name: {
+            "@id": expected_slot_name,
+            "@type": type_uri if type_uri else "xsd:integer",
+        },
+    }
+    if slot_uri:
+        expected_jsonld_context[expected_slot_name]["@id"] = slot_uri
     slots = {
         SLOT_S1: {
             "alias": slot_alias,
@@ -100,6 +114,7 @@ def test_alias(framework, class_uri, slot_uri, slot_alias, type_uri, data_name, 
             "range": TYPE_T,
             "_mappings": {
                 OWL: [(prop_uriref, RDF.type, OWLNS.DatatypeProperty)],
+                JSONLD_CONTEXT: expected_jsonld_context,
             },
         },
     }
