@@ -126,7 +126,7 @@ def test_basic_class_inheritance(framework, description, cls: str, object, is_va
             "attributes": {
                 SLOT_S1: {
                     "_mappings": {
-                        PYDANTIC: "s1: Optional[str] = Field(None)",
+                        PYDANTIC: "s1: Optional[str] = Field(None",
                         PYTHON_DATACLASSES: "s1: Optional[str] = None",
                     }
                 },
@@ -260,7 +260,7 @@ def test_mixins(framework, description, cls, object, is_valid):
             "attributes": {
                 SLOT_S1: {
                     "_mappings": {
-                        PYDANTIC: "s1: Optional[str] = Field(None)",
+                        PYDANTIC: "s1: Optional[str] = Field(None",
                         PYTHON_DATACLASSES: "s1: Optional[str] = None",
                     }
                 },

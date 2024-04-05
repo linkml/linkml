@@ -1,0 +1,8 @@
+    def __str__(self) -> str:
+        if self.linkml_meta is not None:
+            kwargs = self.linkml_meta
+        else:
+            kwargs = {}
+
+        kwargs.update(self.model_dump())
+        return '''{{ string_serialization | replace("'''", "") }}'''.format(**kwargs)
