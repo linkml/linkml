@@ -7,7 +7,7 @@ from importlib.metadata import version
 from importlib.util import find_spec
 from pathlib import Path
 from types import GeneratorType, ModuleType
-from typing import ClassVar, Dict, List, Literal, Optional, Union, get_args, get_origin
+from typing import Callable, ClassVar, Dict, List, Literal, Optional, ParamSpec, Union, get_args, get_origin
 
 import numpy as np
 import pytest
@@ -15,7 +15,7 @@ import yaml
 from jinja2 import DictLoader, Environment, Template
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import SchemaDefinition, SlotDefinition
+from linkml_runtime.linkml_model import Annotation, ClassDefinition, SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.schemaview import load_schema_wrap
 from pydantic import BaseModel, ValidationError
@@ -41,6 +41,25 @@ from .conftest import MyInjectedClass
 PYDANTIC_VERSION = int(PYDANTIC_VERSION[0])
 
 PACKAGE = "kitchen_sink"
+
+P = ParamSpec("P")
+
+
+@pytest.fixture(scope="function")
+def empty_schema() -> Callable[P, SchemaDefinition]:
+    def _schema(
+        classes: Optional[Union[Dict[str, ClassDefinition], ClassDefinition]] = None,
+        slots: Optional[Union[Dict[str, SlotDefinition], SlotDefinition]] = None,
+    ) -> SchemaDefinition:
+        if classes is not None and not isinstance(classes, dict):
+            classes = {classes.name: classes}
+        if slots is not None and not isinstance(slots, dict):
+            slots = {slots.name: slots}
+        return SchemaDefinition(
+            name="pydantic", id="pydantic", version="0.0.0", imports=["linkml:types"], classes=classes, slots=slots
+        )
+
+    return _schema
 
 
 def test_pydantic(kitchen_sink_path, tmp_path, input_path):
@@ -1722,3 +1741,31 @@ def test_template_noblack(array_complex, mock_black_import):
     # trying to render with black when we don't have it should raise a ValueError
     with pytest.raises(ValueError):
         _ = generated.classes["ComplexRangeShapeArray"].attributes["array"].render(black=True)
+
+
+def test_template_string_serialization(compliance, empty_schema):
+    attr_str_value = "a string value set as a class attribute"
+    meta_str_value = "a string value set as a linkml classdefinition metadata value"
+    alias_values = ["alias1", "alias2"]
+    string_serialization = """
+---
+annotations: {annotations[meta][value]}
+aliases: {aliases}
+attr: {attr}
+"""
+
+    cls = ClassDefinition(
+        name="StringSerialization",
+        attributes={"attr": SlotDefinition(name="attr", range="string")},
+        annotations={"meta": Annotation(tag="meta", value=meta_str_value)},
+        aliases=alias_values,
+        string_serialization=string_serialization,
+    )
+    schema = empty_schema(classes=cls)
+    generated = PydanticGenerator(schema).serialize()
+    mod = compile_python(generated)
+    instance = mod.StringSerialization(attr=attr_str_value)
+    assert str(instance) == string_serialization.format(
+        annotations={"meta": {"value": meta_str_value}}, aliases=alias_values, attr=attr_str_value
+    )
+    compliance.implements("string_serialization", PydanticGenerator)

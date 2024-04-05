@@ -1,9 +1,10 @@
 import shutil
 import sys
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from importlib.abc import MetaPathFinder
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Callable, ClassVar, Dict, Optional, Set
 
 import pytest
 import requests_cache
@@ -11,6 +12,7 @@ from _pytest.assertion.util import _diff_text
 from linkml_runtime.linkml_model.meta import SchemaDefinition
 
 import tests
+from linkml.utils.generator import Generator
 from tests.utils.compare_rdf import compare_rdf
 from tests.utils.dirutils import are_dir_trees_equal
 
@@ -250,3 +252,19 @@ def mock_black_import():
 
     sys.modules.update(removed)
     sys.meta_path.remove(meta_finder)
+
+
+@dataclass
+class Compliance:
+    _implements: ClassVar[Dict[str, Set[Generator]]] = {}
+
+    @classmethod
+    def implements(cls, term: str, generator: Generator):
+        if term not in cls._implements:
+            cls._implements[term] = set()
+        cls._implements[term].add(generator)
+
+
+@pytest.fixture(scope="function")
+def compliance():
+    return Compliance

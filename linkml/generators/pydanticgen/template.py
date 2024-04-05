@@ -303,6 +303,7 @@ class PydanticClass(TemplateModel):
     bases: Union[List[str], str] = PydanticBaseModel.default_name
     description: Optional[str] = None
     attributes: Optional[Dict[str, PydanticAttribute]] = None
+    string_serialization: Optional[str] = None
     meta: Optional[Dict[str, Any]] = None
     """
     Metadata for the class to be included in a linkml_meta class attribute

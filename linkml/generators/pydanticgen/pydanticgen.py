@@ -639,9 +639,7 @@ class PydanticGenerator(OOCodeGenerator):
             for attribute in list(class_def.attributes.keys()):
                 del class_def.attributes[attribute]
             for sn in sv.class_slots(class_name):
-                # TODO: fix runtime, copy should not be necessary
-                s = deepcopy(sv.induced_slot(sn, class_name))
-                # logging.error(f'Induced slot {class_name}.{sn} == {s.name} {s.range}')
+                s = sv.induced_slot(sn, class_name)
                 s.name = underscore(s.name)
                 if s.description:
                     s.description = s.description.replace('"', '\\"')
@@ -738,7 +736,11 @@ class PydanticGenerator(OOCodeGenerator):
                 attrs[attr_name] = self.include_metadata(attrs[attr_name], src_attr)
 
             new_class = PydanticClass(
-                name=k, attributes=attrs, description=c.description, pydantic_ver=self.pydantic_version
+                name=k,
+                attributes=attrs,
+                description=c.description,
+                pydantic_ver=self.pydantic_version,
+                string_serialization=c.string_serialization,
             )
             new_class = self.include_metadata(new_class, c)
             if k in bases:
