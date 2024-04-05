@@ -1,9 +1,9 @@
-# Auto generated from notebook_model_2.yaml by pythongen.py version: 0.0.1
-# Generation date: 2024-04-03T09:29:38
+# Auto generated from notebook_model_1.yaml by pythongen.py version: 0.0.1
+# Generation date: 2000-01-01T00:00:00
 # Schema: simple
 #
 # id: http://example.org/test/simple
-# description: Enumeration with some non-std values
+# description: Very simple enumeration
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
@@ -39,61 +39,48 @@ DEFAULT_ = PLAY
 # Types
 
 # Class references
-class SampleId(extended_str):
+class PositionalRecordId(extended_str):
     pass
 
 
 @dataclass
-class Sample(YAMLRoot):
-    id: Union[str, SampleId] = None
-    position: Union[Union[str, "UnusualEnumPatterns"], List[Union[str, "UnusualEnumPatterns"]]] = None
+class PositionalRecord(YAMLRoot):
+    id: Union[str, PositionalRecordId] = None
+    position: Union[str, "OpenEnum"] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
-        if not isinstance(self.id, SampleId):
-            self.id = SampleId(self.id)
+        if not isinstance(self.id, PositionalRecordId):
+            self.id = PositionalRecordId(self.id)
 
         if self._is_empty(self.position):
             self.MissingRequiredField("position")
-        if not isinstance(self.position, list):
-            self.position = [self.position] if self.position is not None else []
-        self.position = [v if isinstance(v, UnusualEnumPatterns) else UnusualEnumPatterns(v) for v in self.position]
+        if not isinstance(self.position, OpenEnum):
+            self.position = OpenEnum(self.position)
 
         super().__post_init__(**kwargs)
 
 
 # Enumerations
-class UnusualEnumPatterns(EnumDefinitionImpl):
+class OpenEnum(EnumDefinitionImpl):
     """
-    Very odd enumeration
+    Baseline enumeration -- simple code/value pairs, where the value (description) is optional
     """
-    M = PermissibleValue(
-        text="M",
-        description="Normal selection")
+    a = PermissibleValue(
+        text="a",
+        description="top")
+    b = PermissibleValue(
+        text="b",
+        description="middle")
+    c = PermissibleValue(
+        text="c",
+        description="bottom")
+    d = PermissibleValue(text="d")
 
     _defn = EnumDefinition(
-        name="UnusualEnumPatterns",
-        description="Very odd enumeration",
+        name="OpenEnum",
+        description="Baseline enumeration -- simple code/value pairs, where the value (description) is optional",
     )
-
-    @classmethod
-    def _addvals(cls):
-        setattr(cls, "1",
-            PermissibleValue(
-                text="1",
-                description="Numeric selection"))
-        setattr(cls, "def",
-            PermissibleValue(
-                text="def",
-                description="Python reserved word"))
-        setattr(cls, "embedded space",
-            PermissibleValue(
-                text="embedded space",
-                description="Embedded space"))
-        setattr(cls, "% ! -- whoo",
-            PermissibleValue(
-                text="% ! -- whoo",
-                description="Really weird stuff"))
 
 # Slots

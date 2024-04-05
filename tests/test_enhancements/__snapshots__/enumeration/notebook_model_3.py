@@ -1,5 +1,5 @@
-# Auto generated from notebook_model_1.yaml by pythongen.py version: 0.0.1
-# Generation date: 2024-04-03T09:29:38
+# Auto generated from notebook_model_3.yaml by pythongen.py version: 0.0.1
+# Generation date: 2000-01-01T00:00:00
 # Schema: simple
 #
 # id: http://example.org/test/simple
@@ -31,6 +31,7 @@ version = None
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
+SCT = CurieNamespace('SCT', 'http://snomed.info/id/')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 PLAY = CurieNamespace('play', 'http://example.org/test/play/')
 DEFAULT_ = PLAY
@@ -39,48 +40,63 @@ DEFAULT_ = PLAY
 # Types
 
 # Class references
-class PositionalRecordId(extended_str):
+class FavoriteColorId(extended_str):
     pass
 
 
 @dataclass
-class PositionalRecord(YAMLRoot):
-    id: Union[str, PositionalRecordId] = None
-    position: Union[str, "OpenEnum"] = None
+class FavoriteColor(YAMLRoot):
+    id: Union[str, FavoriteColorId] = None
+    position: Union[str, "Colors"] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
-        if not isinstance(self.id, PositionalRecordId):
-            self.id = PositionalRecordId(self.id)
+        if not isinstance(self.id, FavoriteColorId):
+            self.id = FavoriteColorId(self.id)
 
         if self._is_empty(self.position):
             self.MissingRequiredField("position")
-        if not isinstance(self.position, OpenEnum):
-            self.position = OpenEnum(self.position)
+        if not isinstance(self.position, Colors):
+            self.position = Colors(self.position)
 
         super().__post_init__(**kwargs)
 
 
 # Enumerations
-class OpenEnum(EnumDefinitionImpl):
+class Colors(EnumDefinitionImpl):
     """
-    Baseline enumeration -- simple code/value pairs, where the value (description) is optional
+    Color values, mapped to SNOMED CT
     """
-    a = PermissibleValue(
-        text="a",
-        description="top")
-    b = PermissibleValue(
-        text="b",
-        description="middle")
-    c = PermissibleValue(
-        text="c",
-        description="bottom")
-    d = PermissibleValue(text="d")
-
     _defn = EnumDefinition(
-        name="OpenEnum",
-        description="Baseline enumeration -- simple code/value pairs, where the value (description) is optional",
+        name="Colors",
+        description="Color values, mapped to SNOMED CT",
     )
+
+    @classmethod
+    def _addvals(cls):
+        setattr(cls, "1",
+            PermissibleValue(
+                text="1",
+                description="Red",
+                meaning=SCT["371240000"]))
+        setattr(cls, "2",
+            PermissibleValue(
+                text="2",
+                description="Yellow",
+                meaning=SCT["371244009"]))
+        setattr(cls, "3",
+            PermissibleValue(
+                text="3",
+                meaning=SCT["405738005"]))
+        setattr(cls, "4",
+            PermissibleValue(
+                text="4",
+                description="Muted",
+                meaning=SCT["abcde"]))
+        setattr(cls, "9",
+            PermissibleValue(
+                text="9",
+                description="Muddy"))
 
 # Slots
