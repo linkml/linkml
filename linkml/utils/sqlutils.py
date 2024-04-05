@@ -58,16 +58,22 @@ class SQLStore:
     - mapping your data/objects in any LinkML compliant data format (json. yaml, rdf) into ORM objects
     """
 
-    schema: Union[str, SchemaDefinition] = None
-    schemaview: SchemaView = None
-    engine: Engine = None
-    database_path: str = None
+    schema: Optional[Union[str, Path, SchemaDefinition]] = None
+    schemaview: Optional[SchemaView] = None
+    engine: Optional[Engine] = None
+    database_path: Union[str, Path] = None
     use_memory: bool = False
     """https://docs.sqlalchemy.org/en/20/dialects/sqlite.html#using-a-memory-database-in-multiple-threads"""
 
-    module: ModuleType = None
-    native_module: ModuleType = None
-    include_schema_in_database: bool = None
+    module: Optional[ModuleType] = None
+    native_module: Optional[ModuleType] = None
+    include_schema_in_database: bool = False
+
+    def __post_init__(self):
+        if self.database_path is None and not self.use_memory:
+            raise ValueError("Must have database path or use_memory must be True")
+        if self.schema is not None and self.schemaview is None:
+            self.schemaview = SchemaView(self.schema)
 
     def db_exists(self, create=True, force=False) -> Optional[str]:
         """
@@ -117,8 +123,6 @@ class SQLStore:
         """
         gen = SQLAlchemyGenerator(self.schema)
         self.module = gen.compile_sqla(template=TemplateEnum.DECLARATIVE)
-        if self.schemaview is None:
-            self.schemaview = SchemaView(self.schema)
         return self.module
 
     def compile_native(self) -> ModuleType:
@@ -236,8 +240,6 @@ class SQLStore:
         :param obj: sqla object
         :return: native dataclass object
         """
-        if self.schemaview is None:
-            self.schemaview = SchemaView(self.schema)
         typ = type(obj)
         nm = self.schemaview.class_name_mappings()
         if typ.__name__ in nm:
