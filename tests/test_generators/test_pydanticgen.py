@@ -1,6 +1,5 @@
 import importlib
 import inspect
-import pdb
 import sys
 import typing
 from contextlib import nullcontext as does_not_raise
@@ -1776,4 +1775,3 @@ attr: {attr}
         annotations={"meta": {"value": meta_str_value}}, aliases=alias_values, attr=attr_str_value
     )
     compliance.implements("string_serialization", PydanticGenerator)
-    pdb.set_trace()
