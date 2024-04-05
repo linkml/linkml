@@ -539,6 +539,6 @@ classes:
     class_uri: evidence:AllEnums
 metamodel_version: 1.7.0
 source_file: alternatives.yaml
-source_file_date: '2023-07-14T13:43:06'
-source_file_size: 2692
-generation_date: '2024-04-03T09:29:37'
+source_file_date: '2000-01-01T00:00:00'
+source_file_size: 1
+generation_date: '2000-01-01T00:00:00'

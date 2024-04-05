@@ -82,7 +82,7 @@ class Generator(metaclass=abc.ABCMeta):
     For usage `Generator Docs <https://linkml.io/linkml/generators/>`_
     """
 
-    schema: Union[str, TextIO, SchemaDefinition, "Generator"]
+    schema: Union[str, TextIO, SchemaDefinition, "Generator", Path]
     """metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an
         open file or a pre-parsed schema"""
 
@@ -129,7 +129,7 @@ class Generator(metaclass=abc.ABCMeta):
     useuris: Optional[bool] = None
     """True means declared class slot uri's are used.  False means use model uris"""
 
-    log_level: int = DEFAULT_LOG_LEVEL_INT
+    log_level: Optional[int] = DEFAULT_LOG_LEVEL_INT
     """Logging level, 0 is minimum"""
 
     mergeimports: Optional[bool] = True
@@ -179,6 +179,8 @@ class Generator(metaclass=abc.ABCMeta):
     def __post_init__(self) -> None:
         if not self.logger:
             self.logger = logging.getLogger()
+        if self.log_level is not None:
+            self.logger.setLevel(self.log_level)
         if self.format is None:
             self.format = self.valid_formats[0]
         if self.format not in self.valid_formats:
@@ -190,7 +192,11 @@ class Generator(metaclass=abc.ABCMeta):
             self.source_file_size = None
         if self.requires_metamodel:
             self.metamodel = _resolved_metamodel(self.mergeimports)
+
         schema = self.schema
+        if isinstance(schema, Path):
+            schema = str(schema)
+
         # TODO: remove aliasing
         self.emit_metadata = self.metadata
         if self.uses_schemaloader:

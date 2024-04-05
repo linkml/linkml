@@ -3,7 +3,7 @@ import sys
 from abc import ABC, abstractmethod
 from importlib.abc import MetaPathFinder
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 
 import pytest
 import requests_cache
@@ -116,15 +116,15 @@ class SnapshotDirectory(Snapshot):
 
 
 @pytest.fixture
-def snapshot_path(request) -> Callable[[str], Path]:
-    def get_path(relative_path):
+def snapshot_path(request) -> Callable[[Union[str, Path]], Path]:
+    def get_path(relative_path: Union[str, Path]):
         return request.path.parent / "__snapshots__" / relative_path
 
     return get_path
 
 
 @pytest.fixture
-def snapshot(snapshot_path, pytestconfig, monkeypatch) -> Callable[[str], Snapshot]:
+def snapshot(snapshot_path, pytestconfig, monkeypatch) -> Callable[[Union[str, Path]], Snapshot]:
     # Patching SchemaDefinition's setter here prevents metadata that can be variable
     # between systems from entering the snapshot files. This could be part of its own
     # fixture but it's not clear if it would be useful outside of tests that
@@ -142,7 +142,7 @@ def snapshot(snapshot_path, pytestconfig, monkeypatch) -> Callable[[str], Snapsh
 
     monkeypatch.setattr(SchemaDefinition, "__setattr__", patched)
 
-    def get_snapshot(relative_path, **kwargs):
+    def get_snapshot(relative_path: Union[str, Path], **kwargs):
         path = snapshot_path(relative_path)
         if not path.suffix:
             return SnapshotDirectory(path, pytestconfig)
