@@ -1,5 +1,7 @@
 import importlib
 import inspect
+import pdb
+import sys
 import typing
 from contextlib import nullcontext as does_not_raise
 from dataclasses import dataclass
@@ -7,7 +9,12 @@ from importlib.metadata import version
 from importlib.util import find_spec
 from pathlib import Path
 from types import GeneratorType, ModuleType
-from typing import Callable, ClassVar, Dict, List, Literal, Optional, ParamSpec, Union, get_args, get_origin
+from typing import Callable, ClassVar, Dict, List, Literal, Optional, Union, get_args, get_origin
+
+if sys.version_info.minor >= 10:
+    from typing import ParamSpec
+else:
+    from typing_extensions import ParamSpec
 
 import numpy as np
 import pytest
@@ -1769,3 +1776,4 @@ attr: {attr}
         annotations={"meta": {"value": meta_str_value}}, aliases=alias_values, attr=attr_str_value
     )
     compliance.implements("string_serialization", PydanticGenerator)
+    pdb.set_trace()

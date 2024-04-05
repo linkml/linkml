@@ -21,6 +21,7 @@ class {{ name }}({% if bases is string %}{{ bases }}{% else %}{{ bases | join(',
             {% endfor -%}
         {% endif %}
         {% if string_serialization %}
+
     {% include '__str__.py.jinja' %}
         {% endif %}
     {% else %}
