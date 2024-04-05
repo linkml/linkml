@@ -14,7 +14,27 @@ on:
   workflow_dispatch:
 
 jobs:
+  quality-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install poetry
+        run: pipx install poetry
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check pyproject.toml and poetry.lock
+        run: poetry check
+      - name: Install tox
+        run: python -m pip install tox
+      - name: Run codespell
+        run: tox -e codespell
+      - name: Run code quality checks
+        run: tox -e lint
+
   test:
+    needs:
+      - quality-checks
     strategy:
       fail-fast: false
       matrix:
@@ -41,39 +61,22 @@ jobs:
       #       check-out repo and set-up python
       #----------------------------------------------
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Install poetry
+        run: pipx install poetry
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
+          cache: 'poetry'
 
       #----------------------------------------------
-      #          install & configure poetry
-      #----------------------------------------------
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: 1.3.2
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-
-      #----------------------------------------------
-      #       load cached venv if cache exists
-      #----------------------------------------------
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: venv-${{ steps.setup-python.outputs.python-version }}-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-
-      #----------------------------------------------
-      # install dependencies if cache does not exist
+      # install dependencies
       #----------------------------------------------
       - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root --all-extras
 
       #----------------------------------------------
@@ -81,14 +84,6 @@ jobs:
       #----------------------------------------------
       - name: Setup Graphviz
         uses: ts-graphviz/setup-graphviz@v1
-
-      #----------------------------------------------
-      #    Linting & code quality
-      #----------------------------------------------
-      - name: Check common spelling errors
-        run: poetry run tox -e codespell
-      - name: Check with flake8
-        run: poetry run tox -e lint
 
       #----------------------------------------------
       #              coverage report
@@ -99,12 +94,13 @@ jobs:
           poetry run coverage xml
           poetry run coverage report -m
         shell: bash
+
       #----------------------------------------------
       #           upload coverage results
       #----------------------------------------------
       - name: Upload coverage report
         if: github.repository == 'linkml/linkml'
-        uses: codecov/codecov-action@v3.1.0
+        uses: codecov/codecov-action@v4
         with:
           name: codecov-results-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
