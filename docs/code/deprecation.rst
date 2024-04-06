@@ -1,5 +1,9 @@
+.. index:: Deprecation; Log
+
 Deprecation Log
 ---------------------
+
+See :ref:`deprecation-guide`
 
 .. plot:: plots/deprecation_plot.py
 

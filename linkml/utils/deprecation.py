@@ -60,7 +60,7 @@ PEP440 = re.compile(r"^\s*" + PEP440_PATTERN + r"\s*$", re.VERBOSE | re.IGNORECA
 @dataclass
 class SemVer:
     """
-    Representation of semantic version.
+    Representation of semantic version that supports inequality comparisons.
 
     .. note::
 
@@ -94,6 +94,19 @@ class SemVer:
 
     @classmethod
     def from_str(cls, v: str) -> Optional["SemVer"]:
+        """
+        Create a SemVer from a string using `PEP 440 <https://peps.python.org/pep-0440/>`_
+        syntax.
+
+        Examples:
+
+            .. code-block:: python
+
+                >>> version = SemVer.from_str("v0.1.0")
+                >>> print(version)
+                0.1.0
+
+        """
         match = PEP440.search(v)
         if match is None:
             return None
@@ -186,7 +199,7 @@ class Deprecation:
 
     def warn(self, **kwargs):
         if self.deprecated:
-            warnings.warn(message=str(self), category=DeprecationWarning, **kwargs)
+            warnings.warn(message=str(self), category=DeprecationWarning, stacklevel=3, **kwargs)
 
 
 DEPRECATIONS = (

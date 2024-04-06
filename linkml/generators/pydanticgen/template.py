@@ -1,6 +1,6 @@
 from copy import copy
 from importlib.util import find_spec
-from typing import TYPE_CHECKING, Any, ClassVar, Dict, Generator, List, Literal, Optional, Union, overload
+from typing import Any, ClassVar, Dict, Generator, List, Literal, Optional, Union, overload
 
 from jinja2 import Environment, PackageLoader
 from pydantic import BaseModel, Field
