@@ -66,7 +66,7 @@ jobs:
           fetch-depth: 0
 
       - name: Ensure tags if not run from main repo
-        if: GITHUB_REPOSITORY != 'linkml/linkml'
+        if: github.repository != 'linkml/linkml'
         run: |
           git remote add upstream https://github.com/linkml/linkml
           git fetch upstream --tags
