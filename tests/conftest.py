@@ -190,6 +190,12 @@ def pytest_collection_modifyitems(config, items):
             if item.get_closest_marker("slow"):
                 item.add_marker(skip_slow)
 
+    # make sure deprecation test happens at the end
+    test_deps = [i for i in items if i.name == "test_removed_are_removed"]
+    if len(test_deps) == 1:
+        items.remove(test_deps[0])
+        items.append(test_deps[0])
+
 
 def pytest_sessionstart(session: pytest.Session):
     tests.WITH_OUTPUT = session.config.getoption("--with-output")

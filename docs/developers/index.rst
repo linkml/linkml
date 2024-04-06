@@ -21,4 +21,5 @@ This section of the documentation is aimed primarily at Python developers who wa
    sqlstore
    tool-developer-guide
    contributing-code
+   deprecation
 

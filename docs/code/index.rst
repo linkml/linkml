@@ -6,3 +6,4 @@ Code
     metamodel
     utils
     validator
+    deprecation

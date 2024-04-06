@@ -62,9 +62,20 @@ jobs:
       #----------------------------------------------
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ensure tags if not run from main repo
+        if: github.repository != 'linkml/linkml'
+        run: |
+          git remote add upstream https://github.com/linkml/linkml
+          git fetch upstream --tags
 
       - name: Install poetry
         run: pipx install poetry
+
+      - name: Install dynamic versioning plugin
+        run: poetry self add "poetry-dynamic-versioning[plugin]"
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -77,7 +88,7 @@ jobs:
       # install dependencies
       #----------------------------------------------
       - name: Install dependencies
-        run: poetry install --no-interaction --no-root --all-extras
+        run: poetry install --no-interaction --all-extras
 
       #----------------------------------------------
       #         setup and install graphviz

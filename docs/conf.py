@@ -12,7 +12,12 @@
 #
 import os
 import sys
+from operator import attrgetter
+from copy import deepcopy
+
 sys.path.insert(0, os.path.abspath('..'))
+
+from linkml.utils.deprecation import DEPRECATIONS
 
 
 # -- Project information -----------------------------------------------------
@@ -40,7 +45,9 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
     'myst_nb',
-    'sphinx_design'
+    'sphinx_design',
+    'matplotlib.sphinxext.plot_directive',
+    'sphinx_jinja',
 ]
 
 # The suffix(es) of source filenames.
@@ -118,3 +125,8 @@ myst_heading_anchors = 3
 myst_enable_extensions = [
     "fieldlist"
 ]
+
+# Jinja
+jinja_contexts = {
+    'deprecations': {'deprecations': sorted(deepcopy(DEPRECATIONS), key=attrgetter('deprecated_in'))}
+}

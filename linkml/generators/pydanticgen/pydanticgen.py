@@ -50,8 +50,12 @@ from linkml.generators.pydanticgen.template import (
     PydanticModule,
     TemplateModel,
 )
+from linkml.utils import deprecation_warning
 from linkml.utils.generator import shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration
+
+if int(PYDANTIC_VERSION[0]) == 1:
+    deprecation_warning("pydantic-v1")
 
 
 def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
@@ -214,6 +218,11 @@ class PydanticGenerator(OOCodeGenerator):
     gen_slots: bool = True
     genmeta: bool = False
     emit_metadata: bool = True
+
+    def __post_init__(self):
+        super().__post_init__()
+        if int(self.pydantic_version) == 1:
+            deprecation_warning("pydanticgen-v1")
 
     def compile_module(self, **kwargs) -> ModuleType:
         """

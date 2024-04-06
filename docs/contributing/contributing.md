@@ -232,4 +232,8 @@ insight into your work and allows them to provide feedback early on.
 
 ![](a_bad_issue.png)
 
-### For general info about how to contribute to LinkML, please see [FAQ: Contributing](https://linkml.io/linkml/faq/contributing.html).
+## See Also
+
+- [FAQ: Contributing](../faq/contributing.md) - General info about how to contribute to LinkML.
+- [Deprecation](../developers/deprecation.md) - Handling deprecations
+

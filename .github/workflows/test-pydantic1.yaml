@@ -19,39 +19,33 @@ jobs:
       #----------------------------------------------
       - name: Check out repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Ensure tags if not run from main repo
+        if: github.repository != 'linkml/linkml'
+        run: |
+          git remote add upstream https://github.com/linkml/linkml
+          git fetch upstream --tags
+
+      - name: Install poetry
+        run: pipx install poetry
+
+      - name: Install dynamic versioning plugin
+        run: poetry self add "poetry-dynamic-versioning[plugin]"
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v3
         id: setup-python
         with:
           python-version: "3.12"
+          cache: 'poetry'
 
       #----------------------------------------------
-      #          install & configure poetry
-      #----------------------------------------------
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: 1.3.2
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-
-      #----------------------------------------------
-      #       load cached venv if cache exists
-      #----------------------------------------------
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: venv-${{ steps.setup-python.outputs.python-version }}-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-
-      #----------------------------------------------
-      # install dependencies if cache does not exist
+      # install dependencies
       #----------------------------------------------
       - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root --all-extras
+        run: poetry install --no-interaction --all-extras
 
       #----------------------------------------------
       # install pydantic
