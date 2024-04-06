@@ -88,7 +88,7 @@ jobs:
       # install dependencies
       #----------------------------------------------
       - name: Install dependencies
-        run: poetry install --no-interaction --no-root --all-extras
+        run: poetry install --no-interaction --all-extras
 
       #----------------------------------------------
       #         setup and install graphviz

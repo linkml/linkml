@@ -66,7 +66,7 @@ object contains
 - (Optional) an issue that contains further information.
 
 For example, if we are deprecating a feature for rendering a linkml schema to 
-[semaphore](https://en.wikipedia.org/wiki/Flag_semaphoree), we might create an object like this:
+[semaphore](https://en.wikipedia.org/wiki/Flag_semaphore), we might create an object like this:
 
 `deprecation.py`
 ```python
