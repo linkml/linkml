@@ -3,7 +3,7 @@
 Deprecation Log
 ---------------------
 
-See :ref:`deprecation-guide`
+See `Deprecation Guide <../developers/deprecation.md>`_
 
 .. plot:: plots/deprecation_plot.py
 
