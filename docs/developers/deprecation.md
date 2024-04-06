@@ -66,15 +66,15 @@ object contains
 - (Optional) an issue that contains further information.
 
 For example, if we are deprecating a feature for rendering a linkml schema to 
-[semaphor](https://en.wikipedia.org/wiki/Flag_semaphore), we might create an object like this:
+[semaphore](https://en.wikipedia.org/wiki/Flag_semaphoree), we might create an object like this:
 
 `deprecation.py`
 ```python
 DEPRECATIONS = (
   Deprecation(
-    name = "semaphor",
+    name = "semaphore",
     message = (
-      "Flag-based semaphor schemas were considered to not have a high "
+      "Flag-based semaphore schemas were considered to not have a high "
       "enough information capacity to usefully represent a linkml schema"),
     recommendation = "Update to a digital schema representation or morse code",
     deprecated_in = SemVer.from_str("1.7.5"),
@@ -94,9 +94,9 @@ that uses the `name` of the `Deprecation` object.
 This will emit a {class}`DeprecationWarning` that looks like this:
 
 ```python
->>> deprecation_warning('semaphor')
-[semaphor] DEPRECATED
-Flag-based semaphor schemas were considered to not have a high enough information capacity to usefully represent a linkml schema
+>>> deprecation_warning('semaphore')
+[semaphore] DEPRECATED
+Flag-based semaphore schemas were considered to not have a high enough information capacity to usefully represent a linkml schema
 Deprecated In: 1.7.0
 Removed In: 1.8.0
 Recommendation: Update to a digital schema representation or morse code
@@ -110,17 +110,17 @@ Some examples:
 
 #### Module
 
-`semaphor.py`
+`semaphore.py`
 ```python
 from linkml.utils import deprecation_warning
-deprecation_warning('semaphor')
+deprecation_warning('semaphore')
 ```
 
 #### Function
 
 ```python
-def render_semaphor(schema):
-    deprecation_warning('semaphor')
+def render_semaphore(schema):
+    deprecation_warning('semaphore')
 ```
 
 #### Class
@@ -128,19 +128,19 @@ def render_semaphor(schema):
 ```python
 class MyClass:
     def __init__(self):
-        deprecation_warning('semaphor')
+        deprecation_warning('semaphore')
 ```
 
 #### Dependency Version
 
-eg. if we were deprecating all versions of `pysemaphor<2.0.0`, in every place it is imported:
+eg. if we were deprecating all versions of `pysemaphore<2.0.0`, in every place it is imported:
 
 ```python
-import pysemaphor
+import pysemaphore
 from linkml.utils.deprecation import SemVer
 
-if SemVer.from_package('pysemaphor').major < 2:
-  deprecation_warning('semaphor')
+if SemVer.from_package('pysemaphore').major < 2:
+  deprecation_warning('semaphore')
 ```
 
 #### Python Version
@@ -150,7 +150,7 @@ In `linkml/__init__.py`
 import sys
 
 if sys.version_info.minor <= 8:
-  deprecation_warning('semaphor')
+  deprecation_warning('semaphore')
 ```
 
 #### Default Value
@@ -161,7 +161,7 @@ and filled in the function body:
 ```python
 def my_function(arg:Optional[str] = None):
     if arg is None:
-        deprecation_warning('semaphor')
+        deprecation_warning('semaphore')
         arg = 'old_default'
 ```
 
@@ -170,7 +170,7 @@ Or if we are dropping support for calling a function with a `str` in favor of a 
 ```python
 def my_function(arg: Union[Path, str]):
     if isinstance(arg, str):
-        deprecation_warning('semaphor')
+        deprecation_warning('semaphore')
         arg = Path(str)
 ```
 
@@ -183,7 +183,7 @@ def my_function(arg = 'default'):
     frame = inspect.currentframe()
     outer = inspect.getouterframes(frame, 1)[1]
     if arg not in outer.code_context[0]:
-        deprecation_warning('semaphor')
+        deprecation_warning('semaphore')
     
 ```
 
