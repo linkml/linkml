@@ -220,7 +220,7 @@ class PydanticGenerator(OOCodeGenerator):
     emit_metadata: bool = True
 
     def __post_init__(self):
-        super(PydanticGenerator, self).__post_init__()
+        super().__post_init__()
         if int(self.pydantic_version) == 1:
             deprecation_warning("pydanticgen-v1")
 
