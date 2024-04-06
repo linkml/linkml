@@ -3,13 +3,14 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="MetaModel" href="metamodel.html" /><link rel="prev" title="Contributing Code" href="../developers/contributing-code.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="MetaModel" href="metamodel.html" /><link rel="prev" title="Deprecations" href="../developers/deprecation.html" />
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
         <title>Code - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     <link rel="stylesheet" type="text/css" href="../_static/css/common.css?v=b029f2e4" />
@@ -284,12 +285,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../developers/sqlstore.html">SQLStore</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/tool-developer-guide.html">Tool Implementer Guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/contributing-code.html">Contributing Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/deprecation.html">Deprecations</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Code</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Code</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="metamodel.html">MetaModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html">Utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="validator.html">Validator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deprecation.html">Deprecation Log</a></li>
 </ul>
 </li>
 </ul>
@@ -575,7 +578,10 @@
 <li class="toctree-l3"><a class="reference internal" href="utils.html#linkml.utils.validation.validate_object"><code class="docutils literal notranslate"><span class="pre">validate_object()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="utils.html#module-linkml.utils">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#module-linkml.utils">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.html#linkml.utils.deprecation_warning"><code class="docutils literal notranslate"><span class="pre">deprecation_warning()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="validator.html">Validator</a><ul>
@@ -605,6 +611,11 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="deprecation.html">Deprecation Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deprecation.html#pydanticgen-v1">pydanticgen-v1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deprecation.html#pydantic-v1">pydantic-v1</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -623,14 +634,14 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../developers/contributing-code.html">
+          <a class="prev-page" href="../developers/deprecation.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Contributing Code</div>
+                <div class="title">Deprecations</div>
                 
               </div>
             </a>

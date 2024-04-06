@@ -8,6 +8,7 @@
 <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
     <link rel="stylesheet" type="text/css" href="_static/css/common.css?v=b029f2e4" />
@@ -282,12 +283,14 @@
 <li class="toctree-l2"><a class="reference internal" href="developers/sqlstore.html">SQLStore</a></li>
 <li class="toctree-l2"><a class="reference internal" href="developers/tool-developer-guide.html">Tool Implementer Guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="developers/contributing-code.html">Contributing Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developers/deprecation.html">Deprecations</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="code/index.html">Code</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Code</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="code/metamodel.html">MetaModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="code/utils.html">Utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="code/validator.html">Validator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code/deprecation.html">Deprecation Log</a></li>
 </ul>
 </li>
 </ul>
@@ -2731,9 +2734,11 @@
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.delete_type">delete_type() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
-        <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.deprecated">deprecated (linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.Deprecation.deprecated">deprecated (linkml.utils.deprecation.Deprecation property)</a>
 
         <ul>
+          <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.deprecated">(linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
+</li>
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.DimensionExpression.deprecated">(linkml_runtime.linkml_model.meta.DimensionExpression attribute)</a>
 </li>
         </ul></li>
@@ -2747,6 +2752,25 @@
 
         <ul>
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.DimensionExpression.deprecated_element_has_possible_replacement">(linkml_runtime.linkml_model.meta.DimensionExpression attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.Deprecation.deprecated_in">deprecated_in (linkml.utils.deprecation.Deprecation attribute)</a>
+</li>
+        <li>
+    Deprecation
+
+        <ul>
+          <li><a href="developers/deprecation.html#index-0">Guide</a>
+</li>
+          <li><a href="code/deprecation.html#index-0">Log</a>
+</li>
+        </ul></li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.Deprecation">Deprecation (class in linkml.utils.deprecation)</a>
+</li>
+        <li><a href="code/utils.html#linkml.utils.deprecation_warning">deprecation_warning() (in module linkml.utils)</a>
+
+        <ul>
+          <li><a href="developers/deprecation.html#linkml.utils.deprecation.deprecation_warning">(in module linkml.utils.deprecation)</a>
 </li>
         </ul></li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.EnumValue.description">description (linkml.generators.pydanticgen.template.EnumValue attribute)</a>
@@ -2766,6 +2790,12 @@
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.designates_type">designates_type (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
+</li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.SemVer.dev">dev (linkml.utils.deprecation.SemVer attribute)</a>
+</li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.SemVer.dev_l">dev_l (linkml.utils.deprecation.SemVer attribute)</a>
+</li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.SemVer.dev_n">dev_n (linkml.utils.deprecation.SemVer attribute)</a>
 </li>
         <li><a href="generators/yuml.html#linkml.generators.yumlgen.YumlGenerator.diagram_name">diagram_name (linkml.generators.yumlgen.YumlGenerator attribute)</a>
 </li>
@@ -2885,6 +2915,8 @@
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.TemplateModel.environment">environment() (linkml.generators.pydanticgen.template.TemplateModel class method)</a>
 </li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.SemVer.epoch">epoch (linkml.utils.deprecation.SemVer attribute)</a>
+</li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.equals_expression">equals_expression (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticAttribute.equals_number">equals_number (linkml.generators.pydanticgen.template.PydanticAttribute attribute)</a>
@@ -2991,13 +3023,15 @@
         </ul></li>
         <li><a href="generators/yuml.html#linkml.generators.yumlgen.YumlGenerator.filtered_cls_slots">filtered_cls_slots() (linkml.generators.yumlgen.YumlGenerator method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="generators/yuml.html#linkml.generators.yumlgen.YumlGenerator.focus_classes">focus_classes (linkml.generators.yumlgen.YumlGenerator attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.format">format (linkml.utils.generator.Generator attribute)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.formatted_element_name">formatted_element_name() (linkml.utils.generator.Generator method)</a>
+</li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.SemVer.from_package">from_package() (linkml.utils.deprecation.SemVer class method)</a>
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.from_schema">from_schema (linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
 
@@ -3006,6 +3040,8 @@
 </li>
         </ul></li>
         <li><a href="developers/sqlstore.html#linkml.utils.sqlutils.SQLStore.from_sqla">from_sqla() (linkml.utils.sqlutils.SQLStore method)</a>
+</li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.SemVer.from_str">from_str() (linkml.utils.deprecation.SemVer class method)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -4454,6 +4490,8 @@
 </li>
         <li><a href="code/utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.isarefs">isarefs (linkml.utils.schemasynopsis.SchemaSynopsis attribute)</a>
 </li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.Deprecation.issue">issue (linkml.utils.deprecation.Deprecation attribute)</a>
+</li>
         <li><a href="code/validator.html#linkml.validator.Validator.iter_results">iter_results() (linkml.validator.Validator method)</a>
 </li>
         <li><a href="code/validator.html#linkml.validator.Validator.iter_results_from_source">iter_results_from_source() (linkml.validator.Validator method)</a>
@@ -4766,6 +4804,13 @@
 </li>
         </ul></li>
         <li>
+    linkml.utils.deprecation
+
+        <ul>
+          <li><a href="developers/deprecation.html#module-linkml.utils.deprecation">module</a>
+</li>
+        </ul></li>
+        <li>
     linkml.utils.execute_tutorial
 
         <ul>
@@ -4916,6 +4961,8 @@
           <li><a href="developers/loaders-and-dumpers.html#linkml_runtime.loaders.YAMLLoader.loads_any">(linkml_runtime.loaders.YAMLLoader method)</a>
 </li>
         </ul></li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.SemVer.local">local (linkml.utils.deprecation.SemVer attribute)</a>
+</li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.locally_reflexive">locally_reflexive (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.log_level">log_level (linkml.utils.generator.Generator attribute)</a>
@@ -4932,6 +4979,8 @@
   <h2>M</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.SemVer.major">major (linkml.utils.deprecation.SemVer attribute)</a>
+</li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRangeGenerator.make">make() (linkml.generators.pydanticgen.array.ArrayRangeGenerator method)</a>
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.mappings">mappings (linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
@@ -5012,6 +5061,8 @@
 </li>
         <li><a href="generators/docgen.html#linkml.generators.docgen.DocGenerator.mermaid_directive">mermaid_directive() (linkml.generators.docgen.DocGenerator method)</a>
 </li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.Deprecation.message">message (linkml.utils.deprecation.Deprecation attribute)</a>
+</li>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.metadata">metadata (linkml.utils.generator.Generator attribute)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.metamodel">metamodel (linkml.utils.generator.Generator attribute)</a>
@@ -5046,6 +5097,8 @@
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.TypeDefinition.minimum_value">(linkml_runtime.linkml_model.meta.TypeDefinition attribute)</a>
 </li>
         </ul></li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.SemVer.minor">minor (linkml.utils.deprecation.SemVer attribute)</a>
+</li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.EnumDefinition.minus">minus (linkml_runtime.linkml_model.meta.EnumDefinition attribute)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.mixinrefs">mixinrefs (linkml.utils.schemasynopsis.SchemaSynopsis attribute)</a>
@@ -5170,6 +5223,8 @@
 </li>
           <li><a href="code/utils.html#module-linkml.utils.datavalidator">linkml.utils.datavalidator</a>
 </li>
+          <li><a href="developers/deprecation.html#module-linkml.utils.deprecation">linkml.utils.deprecation</a>
+</li>
           <li><a href="code/utils.html#module-linkml.utils.execute_tutorial">linkml.utils.execute_tutorial</a>
 </li>
           <li><a href="code/utils.html#module-linkml.utils.generator">linkml.utils.generator</a>
@@ -5223,6 +5278,8 @@
           <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticClass.name">(linkml.generators.pydanticgen.template.PydanticClass attribute)</a>
 </li>
           <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticEnum.name">(linkml.generators.pydanticgen.template.PydanticEnum attribute)</a>
+</li>
+          <li><a href="developers/deprecation.html#linkml.utils.deprecation.Deprecation.name">(linkml.utils.deprecation.Deprecation attribute)</a>
 </li>
           <li><a href="developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder.name">(linkml.utils.schema_builder.SchemaBuilder attribute)</a>
 </li>
@@ -5333,6 +5390,8 @@
 </li>
         <li><a href="code/utils.html#linkml.utils.execute_tutorial.parse_file_to_blocks">parse_file_to_blocks() (in module linkml.utils.execute_tutorial)</a>
 </li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.SemVer.patch">patch (linkml.utils.deprecation.SemVer attribute)</a>
+</li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.path_rule">path_rule (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticAttribute.pattern">pattern (linkml.generators.pydanticgen.template.PydanticAttribute attribute)</a>
@@ -5355,14 +5414,28 @@
 </li>
         <li><a href="developers/inference.html#linkml_runtime.utils.inference_utils.Policy">Policy (class in linkml_runtime.utils.inference_utils)</a>
 </li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.SemVer.post">post (linkml.utils.deprecation.SemVer attribute)</a>
+</li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.SemVer.post_l">post_l (linkml.utils.deprecation.SemVer attribute)</a>
+</li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.SemVer.post_n1">post_n1 (linkml.utils.deprecation.SemVer attribute)</a>
+</li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.SemVer.post_n2">post_n2 (linkml.utils.deprecation.SemVer attribute)</a>
+</li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.SemVer.pre">pre (linkml.utils.deprecation.SemVer attribute)</a>
+</li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.SemVer.pre_l">pre_l (linkml.utils.deprecation.SemVer attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.SemVer.pre_n">pre_n (linkml.utils.deprecation.SemVer attribute)</a>
+</li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticAttribute.predefined">predefined (linkml.generators.pydanticgen.template.PydanticAttribute attribute)</a>
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SchemaDefinition.prefixes">prefixes (linkml_runtime.linkml_model.meta.SchemaDefinition attribute)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.execute_tutorial.Block.prior_lines">prior_lines (linkml.utils.execute_tutorial.Block attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="code/utils.html#linkml.utils.schemaloader.SchemaLoader.process_slot_usage_definitions">process_slot_usage_definitions() (linkml.utils.schemaloader.SchemaLoader method)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.schemaloader.SchemaLoader.process_slot_usages">process_slot_usages() (linkml.utils.schemaloader.SchemaLoader method)</a>
@@ -5439,6 +5512,8 @@
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.readonly">readonly (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.Deprecation.recommendation">recommendation (linkml.utils.deprecation.Deprecation attribute)</a>
+</li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.recommended">recommended (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
         <li><a href="code/validator.html#linkml.validator.plugins.RecommendedSlotsPlugin">RecommendedSlotsPlugin (class in linkml.validator.plugins)</a>
@@ -5449,10 +5524,10 @@
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.reflexive">reflexive (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.reflexive_transitive_form_of">reflexive_transitive_form_of (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="code/utils.html#linkml.utils.typereferences.RefType">RefType (class in linkml.utils.typereferences)</a>
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.related_mappings">related_mappings (linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
@@ -5464,6 +5539,10 @@
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.relational_role">relational_role (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.helpers.remove_duplicates">remove_duplicates() (in module linkml.utils.helpers)</a>
+</li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.Deprecation.removed">removed (linkml.utils.deprecation.Deprecation property)</a>
+</li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.Deprecation.removed_in">removed_in (linkml.utils.deprecation.Deprecation attribute)</a>
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.TemplateModel.render">render() (linkml.generators.pydanticgen.template.TemplateModel method)</a>
 </li>
@@ -5537,6 +5616,8 @@
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.DimensionExpression.see_also">(linkml_runtime.linkml_model.meta.DimensionExpression attribute)</a>
 </li>
         </ul></li>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.SemVer">SemVer (class in linkml.utils.deprecation)</a>
+</li>
         <li><a href="generators/csv.html#linkml.generators.csvgen.CsvGenerator.sep">sep (linkml.generators.csvgen.CsvGenerator attribute)</a>
 </li>
         <li><a href="generators/docgen.html#linkml.generators.docgen.DocGenerator.serialize">serialize() (linkml.generators.docgen.DocGenerator method)</a>
@@ -5621,10 +5702,10 @@
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_leaves">slot_leaves() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
-        <li><a href="code/utils.html#linkml.utils.generator.Generator.slot_name">slot_name() (linkml.utils.generator.Generator method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="code/utils.html#linkml.utils.generator.Generator.slot_name">slot_name() (linkml.utils.generator.Generator method)</a>
+</li>
         <li><a href="code/utils.html#linkml.utils.schemaloader.SchemaLoader.slot_name_for">slot_name_for() (linkml.utils.schemaloader.SchemaLoader static method)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_name_mappings">slot_name_mappings() (linkml_runtime.utils.schemaview.SchemaView method)</a>
@@ -6031,6 +6112,8 @@
   <h2>W</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="developers/deprecation.html#linkml.utils.deprecation.Deprecation.warn">warn() (linkml.utils.deprecation.Deprecation method)</a>
+</li>
         <li><a href="code/utils.html#linkml.utils.execute_tutorial.write_lines">write_lines() (in module linkml.utils.execute_tutorial)</a>
 </li>
     </ul></td>

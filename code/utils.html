@@ -10,6 +10,7 @@
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     <link rel="stylesheet" type="text/css" href="../_static/css/common.css?v=b029f2e4" />
@@ -284,12 +285,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../developers/sqlstore.html">SQLStore</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/tool-developer-guide.html">Tool Implementer Guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/contributing-code.html">Contributing Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/deprecation.html">Deprecations</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Code</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Code</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="metamodel.html">MetaModel</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="validator.html">Validator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deprecation.html">Deprecation Log</a></li>
 </ul>
 </li>
 </ul>
@@ -1715,6 +1718,17 @@ content and load a SchemaSynopsis entry</p>
 </section>
 <section id="module-linkml.utils">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-linkml.utils" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="linkml.utils.deprecation_warning">
+<span class="sig-prename descclassname"><span class="pre">linkml.utils.</span></span><span class="sig-name descname"><span class="pre">deprecation_warning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/utils/deprecation.html#deprecation_warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.deprecation_warning" title="Permalink to this definition">#</a></dt>
+<dd><p>Call this with the name of the deprecation object wherever the deprecated functionality will be used</p>
+<p>This function will</p>
+<ul class="simple">
+<li><p>emit a warning if the current version is greater than <code class="docutils literal notranslate"><span class="pre">deprecated_in</span></code></p></li>
+<li><p>log that the deprecated feature was accessed in <code class="docutils literal notranslate"><span class="pre">EMITTED</span></code> for testing deprecations and muting warnings</p></li>
+</ul>
+</dd></dl>
+
 </section>
 </section>
 
@@ -2002,7 +2016,10 @@ content and load a SchemaSynopsis entry</p>
 <li><a class="reference internal" href="#linkml.utils.validation.validate_object"><code class="docutils literal notranslate"><span class="pre">validate_object()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-linkml.utils">Module contents</a></li>
+<li><a class="reference internal" href="#module-linkml.utils">Module contents</a><ul>
+<li><a class="reference internal" href="#linkml.utils.deprecation_warning"><code class="docutils literal notranslate"><span class="pre">deprecation_warning()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
