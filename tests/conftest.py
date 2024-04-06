@@ -180,6 +180,7 @@ def pytest_addoption(parser):
     parser.addoption(
         "--with-output", action="store_true", help="dump output in compliance test for richer debugging information"
     )
+    parser.addoption("--without-cache", action="store_true", help="Don't use a sqlite cache for network requests")
 
 
 def pytest_collection_modifyitems(config, items):
@@ -207,6 +208,9 @@ def patch_requests_cache(pytestconfig):
     Cache network requests - for each unique network request, store it in
     an sqlite cache. only do unique requests once per session.
     """
+    if pytestconfig.getoption("--without-cache"):
+        yield
+        return
     cache_file = Path(__file__).parent / "output" / "requests-cache.sqlite"
     requests_cache.install_cache(
         str(cache_file),
