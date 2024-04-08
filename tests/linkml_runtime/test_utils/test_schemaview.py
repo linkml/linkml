@@ -38,6 +38,10 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertEqual(children, ['Adult'])
 
     def test_all_aliases(self):
+        """
+        This tests the aliases slot (not: alias)
+        :return:
+        """
         view = SchemaView(SCHEMA_NO_IMPORTS)
         aliases = view.all_aliases()
         self.assertIn("identifier", aliases["id"])
@@ -45,6 +49,21 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertIn("B", aliases["subset B"])
         self.assertIn("dad", aliases["Adult"])
         self.assertNotIn("test", aliases["Adult"])
+
+    def test_alias_slot(self):
+        """
+        Tests the alias slot.
+
+        The induced slot alias should always be populated. For induced slots, it should default to the
+        name field if not present.
+        """
+        view = SchemaView(SCHEMA_NO_IMPORTS)
+        for c in view.all_classes().values():
+            for s in view.class_induced_slots(c.name):
+                self.assertIsNotNone(s.alias)
+        postal_code_slot = view.induced_slot('postal code', 'Address')
+        self.assertEqual(postal_code_slot.name, 'postal code')
+        self.assertEqual(postal_code_slot.alias, 'zip')
 
     def test_schemaview_enums(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)

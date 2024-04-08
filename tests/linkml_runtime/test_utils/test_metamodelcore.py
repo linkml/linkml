@@ -49,6 +49,7 @@ class MetamodelCoreTest(unittest.TestCase):
             URIorCURIE(" ")
         with self.assertRaises(ValueError):
             URIorCURIE("[")
+        assert URIorCURIE.is_valid("NCIT:C176962")
         lax()
         URIorCURIE("1abc:def")
         URIorCURIE("1:def")

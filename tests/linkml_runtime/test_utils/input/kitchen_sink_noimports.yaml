@@ -122,6 +122,7 @@ classes:
     slots:
       - street
       - city
+      - postal code
 
   Event:
     slots:
@@ -347,6 +348,10 @@ slots:
     range: agent
     multivalued: true
     inlined_as_list: true
+
+  postal code:
+    alias: zip
+    range: string
 
 
 enums:
