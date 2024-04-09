@@ -1,7 +1,6 @@
 
 # Class: permissible_value
 
-
 a permissible value, accompanied by intended text and an optional mapping to a concept URI
 
 URI: [linkml:PermissibleValue](https://w3id.org/linkml/PermissibleValue)
@@ -284,4 +283,3 @@ URI: [linkml:PermissibleValue](https://w3id.org/linkml/PermissibleValue)
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
 | **Close Mappings:** | | skos:Concept |
-

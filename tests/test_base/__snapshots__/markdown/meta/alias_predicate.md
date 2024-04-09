@@ -1,7 +1,6 @@
 
 # Slot: predicate
 
-
 The relationship between an element and its alias.
 
 URI: [linkml:alias_predicate](https://w3id.org/linkml/alias_predicate)
@@ -26,4 +25,3 @@ URI: [linkml:alias_predicate](https://w3id.org/linkml/alias_predicate)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | rdf:predicate |
-

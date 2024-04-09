@@ -1,7 +1,6 @@
 
 # Slot: unique_key_name
 
-
 name of the unique key
 
 URI: [linkml:unique_key_name](https://w3id.org/linkml/unique_key_name)
@@ -28,4 +27,3 @@ URI: [linkml:unique_key_name](https://w3id.org/linkml/unique_key_name)
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
 |  | | RelationalModelProfile |
-

@@ -1,7 +1,6 @@
 
 # Slot: license
 
-
 license for the schema
 
 URI: [linkml:license](https://w3id.org/linkml/license)
@@ -27,4 +26,3 @@ URI: [linkml:license](https://w3id.org/linkml/license)
 | --- | --- | --- |
 | **Mappings:** | | dcterms:license |
 | **In Subsets:** | | BasicSubset |
-

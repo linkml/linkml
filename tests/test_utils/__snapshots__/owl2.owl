@@ -40,22 +40,13 @@ linkml:topValue a owl:DatatypeProperty ;
     rdfs:label "c1" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:minCardinality 0 ;
-            owl:onProperty <http://example.org/owl2/:dataslot> ],
+            owl:onProperty <http://example.org/owl2/:annotslot2> ],
         [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty <http://example.org/owl2/:dataslot> ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom <http://example.org/owl2/:string> ;
+            owl:minCardinality 0 ;
             owl:onProperty <http://example.org/owl2/:dataslot> ],
         [ a owl:Restriction ;
             owl:maxCardinality 1 ;
             owl:onProperty <http://example.org/owl2/:objslot> ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty <http://example.org/owl2/:annotslot2> ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty <http://example.org/owl2/:annotslot> ],
         [ a owl:Restriction ;
             owl:allValuesFrom <http://example.org/owl2/:string> ;
             owl:onProperty <http://example.org/owl2/:annotslot2> ],
@@ -63,14 +54,23 @@ linkml:topValue a owl:DatatypeProperty ;
             owl:minCardinality 0 ;
             owl:onProperty <http://example.org/owl2/:objslot> ],
         [ a owl:Restriction ;
-            owl:allValuesFrom <http://example.org/owl2/:C2> ;
+            owl:maxCardinality 1 ;
+            owl:onProperty <http://example.org/owl2/:dataslot> ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
             owl:onProperty <http://example.org/owl2/:annotslot> ],
         [ a owl:Restriction ;
             owl:allValuesFrom <http://example.org/owl2/:C2> ;
             owl:onProperty <http://example.org/owl2/:objslot> ],
         [ a owl:Restriction ;
-            owl:minCardinality 0 ;
+            owl:allValuesFrom <http://example.org/owl2/:string> ;
+            owl:onProperty <http://example.org/owl2/:dataslot> ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
             owl:onProperty <http://example.org/owl2/:annotslot2> ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom <http://example.org/owl2/:C2> ;
+            owl:onProperty <http://example.org/owl2/:annotslot> ],
         [ a owl:Restriction ;
             owl:minCardinality 0 ;
             owl:onProperty <http://example.org/owl2/:annotslot> ] ;

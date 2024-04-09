@@ -1,7 +1,6 @@
 
 # Slot: modified_by
 
-
 agent that modified the element
 
 URI: [linkml:modified_by](https://w3id.org/linkml/modified_by)
@@ -47,4 +46,3 @@ URI: [linkml:modified_by](https://w3id.org/linkml/modified_by)
 | --- | --- | --- |
 | **Mappings:** | | oslc:modifiedBy |
 | **In Subsets:** | | BasicSubset |
-

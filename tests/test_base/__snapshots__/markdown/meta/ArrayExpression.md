@@ -1,7 +1,6 @@
 
 # Class: array_expression
 
-
 defines the dimensions of an array
 
 URI: [linkml:ArrayExpression](https://w3id.org/linkml/ArrayExpression)

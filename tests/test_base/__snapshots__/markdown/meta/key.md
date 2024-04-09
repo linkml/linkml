@@ -1,7 +1,6 @@
 
 # Slot: key
 
-
 True means that the key slot(s) uniquely identify the elements within a single container
 
 URI: [linkml:key](https://w3id.org/linkml/key)
@@ -33,4 +32,3 @@ URI: [linkml:key](https://w3id.org/linkml/key)
 |  | | BasicSubset |
 |  | | RelationalModelProfile |
 | **See also:** | | [linkml:unique_keys](linkml:unique_keys) |
-

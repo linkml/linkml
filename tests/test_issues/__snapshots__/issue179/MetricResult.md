@@ -1,7 +1,6 @@
 
 # Class: metric result
 
-
 Result of executing a metric on a KS
 
 URI: [http://example.org/sample/example1/MetricResult](http://example.org/sample/example1/MetricResult)

@@ -4,12 +4,12 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <https://example.org/this/personinfo> a linkml:SchemaDefinition ;
-    sh:declare [ sh:namespace <https://example.org/other/> ;
-            sh:prefix "other" ],
+    sh:declare [ sh:namespace linkml: ;
+            sh:prefix "linkml" ],
         [ sh:namespace xsd: ;
             sh:prefix "xsd" ],
-        [ sh:namespace linkml: ;
-            sh:prefix "linkml" ],
+        [ sh:namespace <https://example.org/other/> ;
+            sh:prefix "other" ],
         [ sh:namespace <https://example.org/this/> ;
             sh:prefix "this" ] ;
     linkml:classes <https://example.org/this/C1>,
@@ -102,5 +102,4 @@
     linkml:definition_uri <https://example.org/this/C1> ;
     linkml:slot_usage [ ] ;
     linkml:slots <https://example.org/this/c1__a> .
-
 

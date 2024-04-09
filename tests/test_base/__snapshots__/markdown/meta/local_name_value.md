@@ -1,7 +1,6 @@
 
 # Slot: local_name_value
 
-
 a name assigned to an element in a given ontology
 
 URI: [linkml:local_name_value](https://w3id.org/linkml/local_name_value)
@@ -26,4 +25,3 @@ URI: [linkml:local_name_value](https://w3id.org/linkml/local_name_value)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | skos:altLabel |
-

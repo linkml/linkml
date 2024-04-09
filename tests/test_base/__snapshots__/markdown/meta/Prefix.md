@@ -1,7 +1,6 @@
 
 # Class: prefix
 
-
 prefix URI tuple
 
 URI: [linkml:Prefix](https://w3id.org/linkml/Prefix)
@@ -33,4 +32,3 @@ URI: [linkml:Prefix](https://w3id.org/linkml/Prefix)
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
-

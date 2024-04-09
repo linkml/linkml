@@ -1,7 +1,6 @@
 
 # Slot: is_a
 
-
 A primary parent class from which inheritable metaslots are propagated
 
 URI: [linkml:class_definition_is_a](https://w3id.org/linkml/class_definition_is_a)
@@ -30,4 +29,3 @@ URI: [linkml:class_definition_is_a](https://w3id.org/linkml/class_definition_is_
 |  | | BasicSubset |
 |  | | ObjectOrientedProfile |
 |  | | OwlProfile |
-

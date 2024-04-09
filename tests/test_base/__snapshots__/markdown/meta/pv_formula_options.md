@@ -1,18 +1,10 @@
 
 # Enum: pv_formula_options
 
-
 The formula used to generate the set of permissible values from the code_set values
 
 URI: [linkml:pv_formula_options](https://w3id.org/linkml/pv_formula_options)
 
-
-## Other properties
-
-|  |  |  |
-| --- | --- | --- |
-| **In Subsets:** | | SpecificationSubset |
-|  | | BasicSubset |
 
 ## Permissible Values
 
@@ -24,3 +16,11 @@ URI: [linkml:pv_formula_options](https://w3id.org/linkml/pv_formula_options)
 | FHIR_CODING | The permissible values are the set of FHIR coding elements derived from the code set |  |  |
 | LABEL | The permissible values are the set of human readable labels in the code set |  |  |
 
+
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |

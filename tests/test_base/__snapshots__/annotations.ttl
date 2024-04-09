@@ -365,4 +365,3 @@ linkml:extensions a linkml:SlotDefinition ;
     linkml:range linkml:Extension ;
     linkml:slot_uri linkml:extensions .
 
-

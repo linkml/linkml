@@ -1,7 +1,6 @@
 
 # Slot: source_file_date
 
-
 modification date of the source of the schema
 
 URI: [linkml:source_file_date](https://w3id.org/linkml/source_file_date)
@@ -26,4 +25,3 @@ URI: [linkml:source_file_date](https://w3id.org/linkml/source_file_date)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | BasicSubset |
-

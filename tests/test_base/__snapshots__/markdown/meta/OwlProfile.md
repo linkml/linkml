@@ -1,7 +1,6 @@
 
 # Subset: OwlProfile
 
-
 A profile that includes all the metamodel elements whose semantics can be expressed in OWL
 
 URI: [linkml:OwlProfile](https://w3id.org/linkml/OwlProfile)

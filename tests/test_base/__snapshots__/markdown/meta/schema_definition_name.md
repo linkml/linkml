@@ -1,7 +1,6 @@
 
 # Slot: name
 
-
 a unique name for the schema that is both human-readable and consists of only characters from the NCName set
 
 URI: [linkml:schema_definition_name](https://w3id.org/linkml/schema_definition_name)
@@ -38,4 +37,3 @@ URI: [linkml:schema_definition_name](https://w3id.org/linkml/schema_definition_n
 | **See also:** | | [https://en.wikipedia.org/wiki/Data_element_name](https://en.wikipedia.org/wiki/Data_element_name) |
 |  | | [https://linkml.io/linkml/faq/modeling.html#why-are-my-class-names-translated-to-camelcase](https://linkml.io/linkml/faq/modeling.html#why-are-my-class-names-translated-to-camelcase) |
 | **Exact Mappings:** | | schema:name |
-

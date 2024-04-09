@@ -1,7 +1,6 @@
 
 # Slot: all_members
 
-
 the value of the slot is multivalued with all members satisfying the condition
 
 URI: [linkml:all_members](https://w3id.org/linkml/all_members)
@@ -29,4 +28,3 @@ None &#8594;  <sub>0..1</sub> [AnonymousSlotExpression](AnonymousSlotExpression.
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
-

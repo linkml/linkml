@@ -3,7 +3,6 @@
 
 
 
-
 URI: [linkml:iec61360code](https://w3id.org/linkml/iec61360code)
 
 
@@ -26,4 +25,3 @@ None &#8594;  <sub>0..1</sub> [String](types/String.md)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | qudt:iec61360Code |
-

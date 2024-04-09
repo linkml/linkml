@@ -1,3 +1,4 @@
+# metamodel_version: 1.7.0
 {
    "type": "Schema",
    "@context": [

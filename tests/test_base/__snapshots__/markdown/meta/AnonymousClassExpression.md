@@ -3,7 +3,6 @@
 
 
 
-
 URI: [linkml:AnonymousClassExpression](https://w3id.org/linkml/AnonymousClassExpression)
 
 

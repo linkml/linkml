@@ -1,7 +1,6 @@
 
 # Slot: syntax
 
-
 the string value of the slot must conform to this regular expression expressed in the string. May be interpolated.
 
 URI: [linkml:syntax](https://w3id.org/linkml/syntax)
@@ -26,4 +25,3 @@ URI: [linkml:syntax](https://w3id.org/linkml/syntax)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
-

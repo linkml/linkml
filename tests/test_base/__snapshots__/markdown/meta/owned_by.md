@@ -1,7 +1,6 @@
 
 # Slot: owned_by
 
-
 agent that owns or is the steward of the element
 
 URI: [linkml:owned_by](https://w3id.org/linkml/owned_by)
@@ -28,4 +27,3 @@ URI: [linkml:owned_by](https://w3id.org/linkml/owned_by)
 |  | | owner |
 | **In Subsets:** | | BasicSubset |
 | **Close Mappings:** | | rdfs:isDefinedBy |
-

@@ -1,7 +1,6 @@
 
 # Subset: ObjectOrientedProfile
 
-
 A profile that includes all the metamodel elements whose semantics can be expressed using a minimal
 implementation of the object oriented metamodel as employed by languages such as Java and Python, or
 in modeling frameworks like UML

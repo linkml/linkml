@@ -1,7 +1,6 @@
 
 # Subset: SpecificationSubset
 
-
 A subset that includes all the metamodel elements that form part of the normative LinkML specification.
 
 The complete LinkML specification can be found at [linkml:specification](https://w3id.org/linkml/specification)
@@ -182,4 +181,4 @@ URI: [linkml:SpecificationSubset](https://w3id.org/linkml/SpecificationSubset)
 
 ### Enums
 
- * [Uriorcurie](types/Uriorcurie.md) - a URI or a CURIE
+ * [pv_formula_options](pv_formula_options.md) - The formula used to generate the set of permissible values from the code_set values

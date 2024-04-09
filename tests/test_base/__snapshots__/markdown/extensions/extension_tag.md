@@ -1,7 +1,6 @@
 
 # Slot: tag
 
-
 a tag associated with an extension
 
 URI: [linkml:extension_tag](https://w3id.org/linkml/extension_tag)

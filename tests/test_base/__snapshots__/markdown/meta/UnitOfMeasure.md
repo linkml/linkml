@@ -1,7 +1,6 @@
 
 # Class: UnitOfMeasure
 
-
 A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for  measuring other quantities the same kind (more generally of equivalent dimension).
 
 URI: [linkml:UnitOfMeasure](https://w3id.org/linkml/UnitOfMeasure)
@@ -47,4 +46,3 @@ URI: [linkml:UnitOfMeasure](https://w3id.org/linkml/UnitOfMeasure)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | qudt:Unit |
-

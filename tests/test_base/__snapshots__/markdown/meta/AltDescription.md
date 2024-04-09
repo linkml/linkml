@@ -1,7 +1,6 @@
 
 # Class: alt_description
 
-
 an attributed description
 
 URI: [linkml:AltDescription](https://w3id.org/linkml/AltDescription)
@@ -33,4 +32,3 @@ URI: [linkml:AltDescription](https://w3id.org/linkml/AltDescription)
 | --- | --- | --- |
 | **Aliases:** | | structured description |
 | **In Subsets:** | | BasicSubset |
-

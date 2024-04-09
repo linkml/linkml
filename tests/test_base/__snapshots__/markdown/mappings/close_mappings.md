@@ -1,7 +1,6 @@
 
 # Slot: close mappings
 
-
 A list of terms from different schemas or terminology systems that have close meaning.
 
 URI: [linkml:close_mappings](https://w3id.org/linkml/close_mappings)
@@ -26,4 +25,3 @@ None &#8594;  <sub>0..\*</sub> [Uriorcurie](types/Uriorcurie.md)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | skos:closeMatch |
-

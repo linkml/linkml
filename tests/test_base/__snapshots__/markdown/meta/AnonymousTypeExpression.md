@@ -1,7 +1,6 @@
 
 # Class: anonymous_type_expression
 
-
 A type expression that is not a top-level named type definition. Used for nesting.
 
 URI: [linkml:AnonymousTypeExpression](https://w3id.org/linkml/AnonymousTypeExpression)

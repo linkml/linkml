@@ -1,7 +1,6 @@
 
 # Slot: implements
 
-
 An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.
 
 URI: [linkml:implements](https://w3id.org/linkml/implements)

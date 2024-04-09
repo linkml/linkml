@@ -1,7 +1,6 @@
 
 # Slot: enum_uri
 
-
 URI of the enum that provides a semantic interpretation of the element in a linked data context. The URI may come from any namespace and may be shared between schemas
 
 URI: [linkml:enum_uri](https://w3id.org/linkml/enum_uri)
@@ -28,4 +27,3 @@ URI: [linkml:enum_uri](https://w3id.org/linkml/enum_uri)
 | **Aliases:** | | public ID |
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
-

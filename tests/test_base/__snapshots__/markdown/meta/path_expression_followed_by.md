@@ -1,7 +1,6 @@
 
 # Slot: followed_by
 
-
 in a sequential list, this indicates the next member
 
 URI: [linkml:path_expression_followed_by](https://w3id.org/linkml/path_expression_followed_by)

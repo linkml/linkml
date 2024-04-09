@@ -1,7 +1,6 @@
 
 # Slot: ucum_code
 
-
 associates a QUDT unit with its UCUM code (case-sensitive).
 
 URI: [linkml:ucum_code](https://w3id.org/linkml/ucum_code)
@@ -26,4 +25,3 @@ URI: [linkml:ucum_code](https://w3id.org/linkml/ucum_code)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | qudt:ucumCode |
-

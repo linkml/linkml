@@ -1,7 +1,6 @@
 
 # Slot: traverse_up
 
-
 True if the direction of the reachability query is reversed and ancestors are retrieved
 
 URI: [linkml:traverse_up](https://w3id.org/linkml/traverse_up)
@@ -27,4 +26,3 @@ URI: [linkml:traverse_up](https://w3id.org/linkml/traverse_up)
 | --- | --- | --- |
 | **Aliases:** | | ancestors |
 | **In Subsets:** | | SpecificationSubset |
-

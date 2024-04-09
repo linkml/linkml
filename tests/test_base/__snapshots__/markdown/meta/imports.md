@@ -1,7 +1,6 @@
 
 # Slot: imports
 
-
 A list of schemas that are to be included in this schema
 
 URI: [linkml:imports](https://w3id.org/linkml/imports)
@@ -28,4 +27,3 @@ URI: [linkml:imports](https://w3id.org/linkml/imports)
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
 |  | | OwlProfile |
-

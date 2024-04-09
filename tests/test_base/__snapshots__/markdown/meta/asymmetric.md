@@ -1,7 +1,6 @@
 
 # Slot: asymmetric
 
-
 If s is antisymmetric, and i.s=v where i is different from v, v.s cannot have value i
 
 URI: [linkml:asymmetric](https://w3id.org/linkml/asymmetric)
@@ -29,4 +28,3 @@ URI: [linkml:asymmetric](https://w3id.org/linkml/asymmetric)
 | **Comments:** | | asymmetry is the combination of antisymmetry and irreflexivity |
 | **In Subsets:** | | SpecificationSubset |
 | **Close Mappings:** | | owl:AsymmetricProperty |
-

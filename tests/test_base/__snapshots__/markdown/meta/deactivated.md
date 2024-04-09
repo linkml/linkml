@@ -1,7 +1,6 @@
 
 # Slot: deactivated
 
-
 a deactivated rule is not executed by the rules engine
 
 URI: [linkml:deactivated](https://w3id.org/linkml/deactivated)
@@ -26,4 +25,3 @@ None &#8594;  <sub>0..1</sub> [Boolean](types/Boolean.md)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | sh:deactivated |
-

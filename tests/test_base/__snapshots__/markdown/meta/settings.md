@@ -1,7 +1,6 @@
 
 # Slot: settings
 
-
 A collection of global variable settings
 
 URI: [linkml:settings](https://w3id.org/linkml/settings)
@@ -28,4 +27,3 @@ URI: [linkml:settings](https://w3id.org/linkml/settings)
 | **Aliases:** | | constants |
 | **Comments:** | | global variables are used in string interpolation in structured patterns |
 | **In Subsets:** | | SpecificationSubset |
-

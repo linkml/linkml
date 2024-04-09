@@ -1,7 +1,6 @@
 
 # Slot: categories
 
-
 Controlled terms used to categorize an element.
 
 URI: [linkml:categories](https://w3id.org/linkml/categories)
@@ -48,4 +47,3 @@ None &#8594;  <sub>0..\*</sub> [Uriorcurie](types/Uriorcurie.md)
 | **Mappings:** | | dcterms:subject |
 | **Comments:** | | if you wish to use uncontrolled terms or terms that lack identifiers then use the keywords element |
 | **In Subsets:** | | BasicSubset |
-

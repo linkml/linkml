@@ -1,7 +1,6 @@
 
 # Subset: RelationalModelProfile
 
-
 A profile that includes all the metamodel elements whose semantics can be expressed using the classic Relational Model.
 The Relational Model excludes collections (multivalued slots) as first class entities. Instead, these must be
 mapped to backreferences

@@ -3,7 +3,6 @@
 
 
 
-
 URI: [http://example.org/sample/example1/has_messages](http://example.org/sample/example1/has_messages)
 
 

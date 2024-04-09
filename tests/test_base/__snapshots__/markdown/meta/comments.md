@@ -1,7 +1,6 @@
 
 # Slot: comments
 
-
 notes and comments about an element intended primarily for external consumption
 
 URI: [linkml:comments](https://w3id.org/linkml/comments)
@@ -48,4 +47,3 @@ URI: [linkml:comments](https://w3id.org/linkml/comments)
 | **Mappings:** | | skos:note |
 | **In Subsets:** | | BasicSubset |
 | **Exact Mappings:** | | rdfs:comment |
-

@@ -1,7 +1,6 @@
 
 # Slot: relational_logical_characteristic
 
-
 An abstract grouping for metaslots that describe logical properties of a slot
 
 URI: [linkml:relational_logical_characteristic](https://w3id.org/linkml/relational_logical_characteristic)

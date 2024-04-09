@@ -1,7 +1,6 @@
 
 # Slot: prefix_reference
 
-
 The namespace to which a prefix expands to.
 
 URI: [linkml:prefix_reference](https://w3id.org/linkml/prefix_reference)
@@ -28,4 +27,3 @@ URI: [linkml:prefix_reference](https://w3id.org/linkml/prefix_reference)
 | **Mappings:** | | sh:namespace |
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
-

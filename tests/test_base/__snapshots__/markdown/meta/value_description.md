@@ -1,7 +1,6 @@
 
 # Slot: description
 
-
 description of what the value is doing
 
 URI: [linkml:value_description](https://w3id.org/linkml/value_description)
@@ -26,4 +25,3 @@ URI: [linkml:value_description](https://w3id.org/linkml/value_description)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | BasicSubset |
-

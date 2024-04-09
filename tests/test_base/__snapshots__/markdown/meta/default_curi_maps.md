@@ -1,7 +1,6 @@
 
 # Slot: default_curi_maps
 
-
 ordered list of prefixcommon biocontexts to be fetched to resolve id prefixes and inline prefix variables
 
 URI: [linkml:default_curi_maps](https://w3id.org/linkml/default_curi_maps)
@@ -26,4 +25,3 @@ URI: [linkml:default_curi_maps](https://w3id.org/linkml/default_curi_maps)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | BasicSubset |
-

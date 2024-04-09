@@ -1,7 +1,6 @@
 
 # Slot: exactly_one_of
 
-
 holds if only one of the expressions hold
 
 URI: [linkml:path_expression_exactly_one_of](https://w3id.org/linkml/path_expression_exactly_one_of)
@@ -29,4 +28,3 @@ URI: [linkml:path_expression_exactly_one_of](https://w3id.org/linkml/path_expres
 | **In Subsets:** | | SpecificationSubset |
 | **See also:** | | [https://w3id.org/linkml/docs/specification/05validation/#rules](https://w3id.org/linkml/docs/specification/05validation/#rules) |
 | **Exact Mappings:** | | sh:xone |
-

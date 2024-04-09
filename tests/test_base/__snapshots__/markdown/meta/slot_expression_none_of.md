@@ -1,7 +1,6 @@
 
 # Slot: none_of
 
-
 holds if none of the expressions hold
 
 URI: [linkml:slot_expression_none_of](https://w3id.org/linkml/slot_expression_none_of)
@@ -31,4 +30,3 @@ URI: [linkml:slot_expression_none_of](https://w3id.org/linkml/slot_expression_no
 | **In Subsets:** | | SpecificationSubset |
 | **See also:** | | [https://w3id.org/linkml/docs/specification/05validation/#rules](https://w3id.org/linkml/docs/specification/05validation/#rules) |
 | **Exact Mappings:** | | sh:not |
-

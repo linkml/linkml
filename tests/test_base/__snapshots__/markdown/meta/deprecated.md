@@ -1,7 +1,6 @@
 
 # Slot: deprecated
 
-
 Description of why and when this element will no longer be used
 
 URI: [linkml:deprecated](https://w3id.org/linkml/deprecated)
@@ -48,4 +47,3 @@ URI: [linkml:deprecated](https://w3id.org/linkml/deprecated)
 | **Comments:** | | note that linkml does not use a boolean to indicate deprecation status - the presence of a string value in this field is sufficient to indicate deprecation. |
 | **In Subsets:** | | BasicSubset |
 | **Close Mappings:** | | owl:deprecated |
-

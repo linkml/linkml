@@ -1,7 +1,6 @@
 
 # Slot: interpolated
 
-
 if true then the pattern is first string interpolated
 
 URI: [linkml:interpolated](https://w3id.org/linkml/interpolated)
@@ -26,4 +25,3 @@ URI: [linkml:interpolated](https://w3id.org/linkml/interpolated)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
-

@@ -1,7 +1,6 @@
 
 # Slot: dimensions
 
-
 definitions of each axis in the array
 
 URI: [linkml:dimensions](https://w3id.org/linkml/dimensions)
@@ -26,4 +25,3 @@ URI: [linkml:dimensions](https://w3id.org/linkml/dimensions)
 |  |  |  |
 | --- | --- | --- |
 | **Aliases:** | | axes |
-

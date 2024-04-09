@@ -1,7 +1,6 @@
 
 # Class: unique_key
 
-
 a collection of slots whose values uniquely identify an instance of a class
 
 URI: [linkml:UniqueKey](https://w3id.org/linkml/UniqueKey)
@@ -276,4 +275,3 @@ URI: [linkml:UniqueKey](https://w3id.org/linkml/UniqueKey)
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
 |  | | RelationalModelProfile |
-

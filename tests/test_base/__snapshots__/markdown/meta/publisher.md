@@ -1,7 +1,6 @@
 
 # Slot: publisher
 
-
 An entity responsible for making the resource available
 
 URI: [linkml:publisher](https://w3id.org/linkml/publisher)
@@ -26,4 +25,3 @@ URI: [linkml:publisher](https://w3id.org/linkml/publisher)
 | --- | --- | --- |
 | **Mappings:** | | dcterms:publisher |
 | **In Subsets:** | | BasicSubset |
-

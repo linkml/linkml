@@ -1,7 +1,6 @@
 
 # Class: expression
 
-
 general mixin for any class that can represent some form of expression
 
 URI: [linkml:Expression](https://w3id.org/linkml/Expression)

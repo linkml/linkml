@@ -1,7 +1,6 @@
 
 # Class: import_expression
 
-
 an expression describing an import
 
 URI: [linkml:ImportExpression](https://w3id.org/linkml/ImportExpression)

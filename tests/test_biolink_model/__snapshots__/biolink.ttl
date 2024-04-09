@@ -87,252 +87,252 @@
 
 biolink:Biolink-Model a linkml:SchemaDefinition ;
     dcterms:description "Entity and association taxonomy and datamodel for life-sciences data" ;
-    sh:declare [ sh:namespace gff3: ;
-            sh:prefix "gff3" ],
-        [ sh:namespace qud: ;
-            sh:prefix "qud" ],
-        [ sh:namespace CTD: ;
-            sh:prefix "CTD" ],
-        [ sh:namespace UBERON_NONAMESPACE: ;
-            sh:prefix "UBERON_NONAMESPACE" ],
-        [ sh:namespace <http://bio2rdf.org/wormbase_vocabulary> ;
-            sh:prefix "WBVocab" ],
-        [ sh:namespace medgen: ;
-            sh:prefix "medgen" ],
-        [ sh:namespace mmmp.biomaps: ;
-            sh:prefix "mmmp.biomaps" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/FYPO_> ;
-            sh:prefix "FYPO" ],
-        [ sh:namespace <http://ctdbase.org/detail.go?type=gene&acc=> ;
-            sh:prefix "CTD.GENE" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/MAXO_> ;
-            sh:prefix "MAXO" ],
-        [ sh:namespace <https://lhncbc.nlm.nih.gov/semanticnetwork/download/sg_archive/SemGroups-v04.txt> ;
-            sh:prefix "UMLSSG" ],
-        [ sh:namespace DOID-PROPERTY: ;
-            sh:prefix "DOID-PROPERTY" ],
-        [ sh:namespace interpro: ;
-            sh:prefix "interpro" ],
-        [ sh:namespace KEGG.PATHWAY: ;
-            sh:prefix "KEGG.PATHWAY" ],
-        [ sh:namespace ORCID: ;
-            sh:prefix "ORCID" ],
-        [ sh:namespace <http://www.ebi.ac.uk/efo/EFO_> ;
-            sh:prefix "EFO" ],
-        [ sh:namespace KEGG.RCLASS: ;
-            sh:prefix "KEGG.GENE" ],
-        [ sh:namespace CID: ;
-            sh:prefix "CID" ],
-        [ sh:namespace <http://ctdbase.org/detail.go?type=disease&db=MESH&acc=> ;
-            sh:prefix "CTD.DISEASE" ],
-        [ sh:namespace <http://www.aspergillusgenome.org/cgi-bin/locus.pl?dbid=> ;
-            sh:prefix "AspGD" ],
-        [ sh:namespace <http://identifiers.org/clinvar> ;
-            sh:prefix "CLINVAR" ],
-        [ sh:namespace MESH: ;
-            sh:prefix "MESH" ],
-        [ sh:namespace linkml: ;
-            sh:prefix "linkml" ],
-        [ sh:namespace isni: ;
-            sh:prefix "isni" ],
-        [ sh:namespace KEGG.RCLASS: ;
-            sh:prefix "KEGG.BRITE" ],
-        [ sh:namespace CHEMBL.MECHANISM: ;
-            sh:prefix "CHEMBL.MECHANISM" ],
-        [ sh:namespace <https://github.com/cmungall/owlstar/blob/master/owlstar.ttl> ;
-            sh:prefix "os" ],
-        [ sh:namespace metacyc.reaction: ;
-            sh:prefix "metacyc.reaction" ],
-        [ sh:namespace <http://translator.ncats.nih.gov/ICD9_> ;
-            sh:prefix "ICD9" ],
-        [ sh:namespace <https://www.dgidb.org/interaction_types> ;
-            sh:prefix "DGIdb" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/INO_> ;
-            sh:prefix "INO" ],
-        [ sh:namespace <https://github.com/GMOD/Apollo> ;
-            sh:prefix "apollo" ],
-        [ sh:namespace <http://edamontology.org/data_> ;
-            sh:prefix "EDAM-DATA" ],
-        [ sh:namespace <http://edamontology.org/operation_> ;
-            sh:prefix "EDAM-OPERATION" ],
-        [ sh:namespace WIKIDATA: ;
-            sh:prefix "WIKIDATA" ],
-        [ sh:namespace gpi: ;
-            sh:prefix "gpi" ],
-        [ sh:namespace foodb.compound: ;
-            sh:prefix "foodb.compound" ],
-        [ sh:namespace KEGG.RCLASS: ;
-            sh:prefix "KEGG.DGROUP" ],
-        [ sh:namespace foodb.food: ;
-            sh:prefix "foodb.food" ],
-        [ sh:namespace MSigDB: ;
-            sh:prefix "MSigDB" ],
-        [ sh:namespace pav: ;
-            sh:prefix "pav" ],
-        [ sh:namespace biolink: ;
-            sh:prefix "biolink" ],
-        [ sh:namespace prov: ;
-            sh:prefix "prov" ],
-        [ sh:namespace issn: ;
-            sh:prefix "issn" ],
+    sh:declare [ sh:namespace NBO-PROPERTY: ;
+            sh:prefix "NBO-PROPERTY" ],
         [ sh:namespace STY: ;
             sh:prefix "STY" ],
-        [ sh:namespace fabio: ;
-            sh:prefix "fabio" ],
-        [ sh:namespace <http://www.orpha.net/ORDO/Orphanet_> ;
-            sh:prefix "orphanet" ],
-        [ sh:namespace RXNORM: ;
-            sh:prefix "RXNORM" ],
-        [ sh:namespace dcid: ;
-            sh:prefix "dcid" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/HsapDv_> ;
-            sh:prefix "HsapDv" ],
-        [ sh:namespace PathWhiz: ;
-            sh:prefix "PathWhiz" ],
-        [ sh:namespace PomBase: ;
-            sh:prefix "PomBase" ],
-        [ sh:namespace foaf: ;
-            sh:prefix "foaf" ],
-        [ sh:namespace dcterms: ;
-            sh:prefix "dct" ],
-        [ sh:namespace SNOMEDCT: ;
-            sh:prefix "SNOMEDCT" ],
-        [ sh:namespace OMIM.PS: ;
-            sh:prefix "OMIM.PS" ],
-        [ sh:namespace oboformat: ;
-            sh:prefix "oboformat" ],
-        [ sh:namespace <http://reg.clinicalgenome.org/redmine/projects/registry/genboree_registry/by_caid?caid=> ;
-            sh:prefix "CAID" ],
-        [ sh:namespace NBO-PROPERTY: ;
-            sh:prefix "NBO-PROPERTY" ],
-        [ sh:namespace <http://edamontology.org/topic_> ;
-            sh:prefix "EDAM-TOPIC" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/WBBL_> ;
-            sh:prefix "WBls" ],
-        [ sh:namespace DrugCentral: ;
-            sh:prefix "DrugCentral" ],
-        [ sh:namespace <http://ctdbase.org/detail.go?type=chem&acc=> ;
-            sh:prefix "CTD.CHEMICAL" ],
-        [ sh:namespace COAR_RESOURCE: ;
-            sh:prefix "COAR_RESOURCE" ],
-        [ sh:namespace <http://edamontology.org/format_> ;
-            sh:prefix "EDAM-FORMAT" ],
-        [ sh:namespace UO-PROPERTY: ;
-            sh:prefix "UO-PROPERTY" ],
-        [ sh:namespace <https://skr3.nlm.nih.gov/SemMedDB> ;
-            sh:prefix "SEMMEDDB" ],
-        [ sh:namespace <https://tripod.nih.gov/bioplanet/detail.jsp?pid=> ;
-            sh:prefix "ncats.bioplanet" ],
-        [ sh:namespace NCBIGene: ;
-            sh:prefix "NCBIGene" ],
-        [ sh:namespace bioschemas: ;
-            sh:prefix "bioschemas" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/ExO_> ;
-            sh:prefix "ExO" ],
-        [ sh:namespace GTEx: ;
-            sh:prefix "GTEx" ],
-        [ sh:namespace GOP: ;
-            sh:prefix "GOP" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/ECTO_> ;
-            sh:prefix "ECTO" ],
-        [ sh:namespace REPODB: ;
-            sh:prefix "REPODB" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/GOREL_> ;
-            sh:prefix "GOREL" ],
-        [ sh:namespace <https://www.scopus.com/authid/detail.uri?authorId=> ;
-            sh:prefix "ScopusID" ],
-        [ sh:namespace LOINC: ;
-            sh:prefix "LOINC" ],
-        [ sh:namespace <https://www.guidetopharmacology.org/GRAC/LigandDisplayForward?ligandId=> ;
-            sh:prefix "GTOPDB" ],
-        [ sh:namespace gtpo: ;
-            sh:prefix "gtpo" ],
-        [ sh:namespace AGRKB: ;
-            sh:prefix "AGRKB" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/MMUSDV_> ;
-            sh:prefix "MmusDv" ],
-        [ sh:namespace KEGG.RCLASS: ;
-            sh:prefix "KEGG.RCLASS" ],
         [ sh:namespace <https://mor.nlm.nih.gov/RxNav/search?searchBy=RXCUI&searchTerm=> ;
             sh:prefix "RXCUI" ],
-        [ sh:namespace <http://www.pantherdb.org/panther/family.do?clsAccession=> ;
-            sh:prefix "PANTHER.FAMILY" ],
-        [ sh:namespace isbn: ;
-            sh:prefix "isbn" ],
-        [ sh:namespace METANETX.REACTION: ;
-            sh:prefix "METANETX.REACTION" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/MI_> ;
-            sh:prefix "MI" ],
-        [ sh:namespace <https://scholar.google.com/citations?user=> ;
-            sh:prefix "GSID" ],
-        [ sh:namespace <http://semanticscience.org/resource/SIO_> ;
-            sh:prefix "SIO" ],
-        [ sh:namespace SPDI: ;
-            sh:prefix "SPDI" ],
-        [ sh:namespace UBERON_CORE: ;
-            sh:prefix "UBERON_CORE" ],
-        [ sh:namespace <http://www.w3.org/2003/01/geo/wgs84_pos> ;
-            sh:prefix "wgs" ],
-        [ sh:namespace KEGG.RCLASS: ;
-            sh:prefix "KEGG.ENZYME" ],
-        [ sh:namespace dcat: ;
-            sh:prefix "dcat" ],
-        [ sh:namespace FYECO: ;
-            sh:prefix "FYECO" ],
-        [ sh:namespace WIKIDATA_PROPERTY: ;
-            sh:prefix "WIKIDATA_PROPERTY" ],
+        [ sh:namespace <http://www.xenbase.org/gene/showgene.do?method=display&geneId=> ;
+            sh:prefix "Xenbase" ],
         [ sh:namespace <http://purl.obolibrary.org/obo/XPO_> ;
             sh:prefix "XPO" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/WBBT_> ;
-            sh:prefix "WBbt" ],
-        [ sh:namespace ComplexPortal: ;
-            sh:prefix "ComplexPortal" ],
         [ sh:namespace <http://chembank.broadinstitute.org/chemistry/viewMolecule.htm?cbid=> ;
             sh:prefix "ChemBank" ],
-        [ sh:namespace ncats.drug: ;
-            sh:prefix "ncats.drug" ],
+        [ sh:namespace interpro: ;
+            sh:prefix "interpro" ],
+        [ sh:namespace CID: ;
+            sh:prefix "CID" ],
+        [ sh:namespace <http://www.ebi.ac.uk/ancestro/ancestro_> ;
+            sh:prefix "HANCESTRO" ],
+        [ sh:namespace SPDI: ;
+            sh:prefix "SPDI" ],
+        [ sh:namespace metacyc.reaction: ;
+            sh:prefix "metacyc.reaction" ],
+        [ sh:namespace <http://ctdbase.org/detail.go?type=disease&db=MESH&acc=> ;
+            sh:prefix "CTD.DISEASE" ],
+        [ sh:namespace <http://www.pantherdb.org/panther/family.do?clsAccession=> ;
+            sh:prefix "PANTHER.FAMILY" ],
+        [ sh:namespace <https://www.guidetopharmacology.org/GRAC/LigandDisplayForward?ligandId=> ;
+            sh:prefix "GTOPDB" ],
+        [ sh:namespace gff3: ;
+            sh:prefix "gff3" ],
+        [ sh:namespace oboformat: ;
+            sh:prefix "oboformat" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/ExO_> ;
+            sh:prefix "ExO" ],
+        [ sh:namespace linkml: ;
+            sh:prefix "linkml" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/FYPO_> ;
+            sh:prefix "FYPO" ],
+        [ sh:namespace AGRKB: ;
+            sh:prefix "AGRKB" ],
+        [ sh:namespace RXNORM: ;
+            sh:prefix "RXNORM" ],
+        [ sh:namespace UBERON_NONAMESPACE: ;
+            sh:prefix "UBERON_NONAMESPACE" ],
+        [ sh:namespace <https://www.dgidb.org/interaction_types> ;
+            sh:prefix "DGIdb" ],
+        [ sh:namespace foodb.food: ;
+            sh:prefix "foodb.food" ],
+        [ sh:namespace VMC: ;
+            sh:prefix "VMC" ],
         [ sh:namespace HCPCS: ;
             sh:prefix "HCPCS" ],
+        [ sh:namespace isbn: ;
+            sh:prefix "isbn" ],
+        [ sh:namespace <http://pharos.nih.gov> ;
+            sh:prefix "PHAROS" ],
+        [ sh:namespace pav: ;
+            sh:prefix "pav" ],
+        [ sh:namespace <http://reg.clinicalgenome.org/redmine/projects/registry/genboree_registry/by_caid?caid=> ;
+            sh:prefix "CAID" ],
+        [ sh:namespace mmmp.biomaps: ;
+            sh:prefix "mmmp.biomaps" ],
+        [ sh:namespace ICD10: ;
+            sh:prefix "ICD10" ],
+        [ sh:namespace <http://edamontology.org/data_> ;
+            sh:prefix "EDAM-DATA" ],
+        [ sh:namespace <http://www.ebi.ac.uk/efo/EFO_> ;
+            sh:prefix "EFO" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/HsapDv_> ;
+            sh:prefix "HsapDv" ],
+        [ sh:namespace KEGG.PATHWAY: ;
+            sh:prefix "KEGG.PATHWAY" ],
+        [ sh:namespace KEGG.RCLASS: ;
+            sh:prefix "KEGG.ENZYME" ],
+        [ sh:namespace <http://www.orpha.net/ORDO/Orphanet_> ;
+            sh:prefix "orphanet" ],
+        [ sh:namespace isni: ;
+            sh:prefix "isni" ],
+        [ sh:namespace <http://translator.ncats.nih.gov/ICD9_> ;
+            sh:prefix "ICD9" ],
+        [ sh:namespace REPODB: ;
+            sh:prefix "REPODB" ],
+        [ sh:namespace NCBIGene: ;
+            sh:prefix "NCBIGene" ],
+        [ sh:namespace <https://skr3.nlm.nih.gov/SemMedDB> ;
+            sh:prefix "SEMMEDDB" ],
+        [ sh:namespace ncats.drug: ;
+            sh:prefix "ncats.drug" ],
+        [ sh:namespace <https://github.com/GMOD/Apollo> ;
+            sh:prefix "apollo" ],
+        [ sh:namespace <http://ctdbase.org/detail.go?type=chem&acc=> ;
+            sh:prefix "CTD.CHEMICAL" ],
+        [ sh:namespace KEGG.RCLASS: ;
+            sh:prefix "KEGG.GENE" ],
+        [ sh:namespace OBAN: ;
+            sh:prefix "OBAN" ],
+        [ sh:namespace dcat: ;
+            sh:prefix "dcat" ],
+        [ sh:namespace foodb.compound: ;
+            sh:prefix "foodb.compound" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/RO_> ;
+            sh:prefix "RO" ],
         [ sh:namespace COG: ;
             sh:prefix "COG" ],
+        [ sh:namespace <http://ctdbase.org/detail.go?type=gene&acc=> ;
+            sh:prefix "CTD.GENE" ],
+        [ sh:namespace bioschemas: ;
+            sh:prefix "bioschemas" ],
+        [ sh:namespace <http://edamontology.org/format_> ;
+            sh:prefix "EDAM-FORMAT" ],
+        [ sh:namespace ResearchID: ;
+            sh:prefix "ResearchID" ],
+        [ sh:namespace OMIM.PS: ;
+            sh:prefix "OMIM.PS" ],
+        [ sh:namespace WIKIDATA_PROPERTY: ;
+            sh:prefix "WIKIDATA_PROPERTY" ],
+        [ sh:namespace fabio: ;
+            sh:prefix "fabio" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/WBBT_> ;
+            sh:prefix "WBbt" ],
+        [ sh:namespace <https://www.scopus.com/authid/detail.uri?authorId=> ;
+            sh:prefix "ScopusID" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/GOREL_> ;
+            sh:prefix "GOREL" ],
+        [ sh:namespace GTEx: ;
+            sh:prefix "GTEx" ],
+        [ sh:namespace FYECO: ;
+            sh:prefix "FYECO" ],
+        [ sh:namespace COAR_RESOURCE: ;
+            sh:prefix "COAR_RESOURCE" ],
+        [ sh:namespace <https://github.com/cmungall/owlstar/blob/master/owlstar.ttl> ;
+            sh:prefix "os" ],
+        [ sh:namespace CHEMBL.MECHANISM: ;
+            sh:prefix "CHEMBL.MECHANISM" ],
+        [ sh:namespace CPT: ;
+            sh:prefix "CPT" ],
+        [ sh:namespace dcid: ;
+            sh:prefix "dcid" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/INO_> ;
+            sh:prefix "INO" ],
+        [ sh:namespace <https://scholar.google.com/citations?user=> ;
+            sh:prefix "GSID" ],
+        [ sh:namespace DrugCentral: ;
+            sh:prefix "DrugCentral" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/WBBL_> ;
+            sh:prefix "WBls" ],
+        [ sh:namespace WIKIDATA: ;
+            sh:prefix "WIKIDATA" ],
+        [ sh:namespace schema1: ;
+            sh:prefix "schema" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/MAXO_> ;
+            sh:prefix "MAXO" ],
+        [ sh:namespace GOP: ;
+            sh:prefix "GOP" ],
+        [ sh:namespace <http://www.w3.org/2003/01/geo/wgs84_pos> ;
+            sh:prefix "wgs" ],
         [ sh:namespace UBERGRAPH: ;
             sh:prefix "UBERGRAPH" ],
-        [ sh:namespace NCIT-OBO: ;
-            sh:prefix "NCIT-OBO" ],
+        [ sh:namespace SNOMEDCT: ;
+            sh:prefix "SNOMEDCT" ],
+        [ sh:namespace DOID-PROPERTY: ;
+            sh:prefix "DOID-PROPERTY" ],
+        [ sh:namespace gtpo: ;
+            sh:prefix "gtpo" ],
         [ sh:namespace VANDF: ;
             sh:prefix "VANDF" ],
         [ sh:namespace <http://identifiers.org/mirbase> ;
             sh:prefix "mirbase" ],
-        [ sh:namespace <https://www.ncbi.nlm.nih.gov/nlmcatalog/?term=> ;
-            sh:prefix "NLMID" ],
-        [ sh:namespace <http://pharos.nih.gov> ;
-            sh:prefix "PHAROS" ],
-        [ sh:namespace ICD10: ;
-            sh:prefix "ICD10" ],
-        [ sh:namespace CPT: ;
-            sh:prefix "CPT" ],
-        [ sh:namespace VMC: ;
-            sh:prefix "VMC" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/RO_> ;
-            sh:prefix "RO" ],
-        [ sh:namespace NDDF: ;
-            sh:prefix "NDDF" ],
-        [ sh:namespace <http://www.ebi.ac.uk/ancestro/ancestro_> ;
-            sh:prefix "HANCESTRO" ],
-        [ sh:namespace ResearchID: ;
-            sh:prefix "ResearchID" ],
-        [ sh:namespace schema1: ;
-            sh:prefix "schema" ],
-        [ sh:namespace CHADO: ;
-            sh:prefix "CHADO" ],
+        [ sh:namespace <https://lhncbc.nlm.nih.gov/semanticnetwork/download/sg_archive/SemGroups-v04.txt> ;
+            sh:prefix "UMLSSG" ],
         [ sh:namespace doi: ;
             sh:prefix "doi" ],
-        [ sh:namespace OBAN: ;
-            sh:prefix "OBAN" ],
-        [ sh:namespace <http://www.xenbase.org/gene/showgene.do?method=display&geneId=> ;
-            sh:prefix "Xenbase" ],
         [ sh:namespace SEED.REACTION: ;
-            sh:prefix "SEED.REACTION" ] ;
+            sh:prefix "SEED.REACTION" ],
+        [ sh:namespace <http://edamontology.org/operation_> ;
+            sh:prefix "EDAM-OPERATION" ],
+        [ sh:namespace foaf: ;
+            sh:prefix "foaf" ],
+        [ sh:namespace <http://bio2rdf.org/wormbase_vocabulary> ;
+            sh:prefix "WBVocab" ],
+        [ sh:namespace prov: ;
+            sh:prefix "prov" ],
+        [ sh:namespace MSigDB: ;
+            sh:prefix "MSigDB" ],
+        [ sh:namespace KEGG.RCLASS: ;
+            sh:prefix "KEGG.DGROUP" ],
+        [ sh:namespace <http://semanticscience.org/resource/SIO_> ;
+            sh:prefix "SIO" ],
+        [ sh:namespace KEGG.RCLASS: ;
+            sh:prefix "KEGG.BRITE" ],
+        [ sh:namespace <http://identifiers.org/clinvar> ;
+            sh:prefix "CLINVAR" ],
+        [ sh:namespace biolink: ;
+            sh:prefix "biolink" ],
+        [ sh:namespace dcterms: ;
+            sh:prefix "dct" ],
+        [ sh:namespace <https://www.ncbi.nlm.nih.gov/nlmcatalog/?term=> ;
+            sh:prefix "NLMID" ],
+        [ sh:namespace medgen: ;
+            sh:prefix "medgen" ],
+        [ sh:namespace PathWhiz: ;
+            sh:prefix "PathWhiz" ],
+        [ sh:namespace <http://edamontology.org/topic_> ;
+            sh:prefix "EDAM-TOPIC" ],
+        [ sh:namespace METANETX.REACTION: ;
+            sh:prefix "METANETX.REACTION" ],
+        [ sh:namespace KEGG.RCLASS: ;
+            sh:prefix "KEGG.RCLASS" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/MMUSDV_> ;
+            sh:prefix "MmusDv" ],
+        [ sh:namespace CTD: ;
+            sh:prefix "CTD" ],
+        [ sh:namespace UO-PROPERTY: ;
+            sh:prefix "UO-PROPERTY" ],
+        [ sh:namespace ComplexPortal: ;
+            sh:prefix "ComplexPortal" ],
+        [ sh:namespace <http://www.aspergillusgenome.org/cgi-bin/locus.pl?dbid=> ;
+            sh:prefix "AspGD" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/MI_> ;
+            sh:prefix "MI" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/ECTO_> ;
+            sh:prefix "ECTO" ],
+        [ sh:namespace qud: ;
+            sh:prefix "qud" ],
+        [ sh:namespace PomBase: ;
+            sh:prefix "PomBase" ],
+        [ sh:namespace gpi: ;
+            sh:prefix "gpi" ],
+        [ sh:namespace ORCID: ;
+            sh:prefix "ORCID" ],
+        [ sh:namespace LOINC: ;
+            sh:prefix "LOINC" ],
+        [ sh:namespace NDDF: ;
+            sh:prefix "NDDF" ],
+        [ sh:namespace CHADO: ;
+            sh:prefix "CHADO" ],
+        [ sh:namespace issn: ;
+            sh:prefix "issn" ],
+        [ sh:namespace MESH: ;
+            sh:prefix "MESH" ],
+        [ sh:namespace UBERON_CORE: ;
+            sh:prefix "UBERON_CORE" ],
+        [ sh:namespace NCIT-OBO: ;
+            sh:prefix "NCIT-OBO" ],
+        [ sh:namespace <https://tripod.nih.gov/bioplanet/detail.jsp?pid=> ;
+            sh:prefix "ncats.bioplanet" ] ;
     biolink:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
     biolink:version "3.1.2" ;
     linkml:classes biolink:Activity,
@@ -2336,9 +2336,9 @@ biolink:chemical_affects_gene_association_species_context_qualifier a linkml:Slo
     linkml:domain biolink:ChemicalAffectsGeneAssociation ;
     linkml:domain_of biolink:ChemicalAffectsGeneAssociation ;
     linkml:examples [ a linkml:Example ;
-            skos:example "human" ],
+            skos:example "zebrafish" ],
         [ a linkml:Example ;
-            skos:example "zebrafish" ] ;
+            skos:example "human" ] ;
     linkml:is_a biolink:species_context_qualifier ;
     linkml:is_usage_slot true ;
     linkml:owner biolink:ChemicalAffectsGeneAssociation ;
@@ -8232,11 +8232,11 @@ biolink:sequence_variant_id a linkml:SlotDefinition ;
     linkml:domain biolink:SequenceVariant ;
     linkml:domain_of biolink:SequenceVariant ;
     linkml:examples [ a linkml:Example ;
-            dcterms:description "ti282a allele from ZFIN" ;
-            skos:example "ZFIN:ZDB-ALT-980203-1091" ],
-        [ a linkml:Example ;
             dcterms:description "NM_007294.3(BRCA1):c.2521C>T (p.Arg841Trp)" ;
-            skos:example "CLINVAR:17681" ] ;
+            skos:example "CLINVAR:17681" ],
+        [ a linkml:Example ;
+            dcterms:description "ti282a allele from ZFIN" ;
+            skos:example "ZFIN:ZDB-ALT-980203-1091" ] ;
     linkml:identifier true ;
     linkml:is_a biolink:id ;
     linkml:is_usage_slot true ;
@@ -9864,11 +9864,11 @@ biolink:negatively_correlated_with a linkml:SlotDefinition ;
     skos:exactMatch CTD:negative_correlation ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     linkml:annotations [ a biolink:Annotation ;
-            skos:example true ;
-            linkml:tag biolink:canonical_predicate ],
-        [ a biolink:Annotation ;
             skos:example "positively correlated with" ;
-            linkml:tag biolink:opposite_of ] ;
+            linkml:tag biolink:opposite_of ],
+        [ a biolink:Annotation ;
+            skos:example true ;
+            linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:negatively_correlated_with ;
     linkml:domain biolink:NamedThing ;
     linkml:inherited true ;
@@ -10006,11 +10006,11 @@ biolink:positively_correlated_with a linkml:SlotDefinition ;
     skos:exactMatch CTD:positive_correlation ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     linkml:annotations [ a biolink:Annotation ;
-            skos:example true ;
-            linkml:tag biolink:canonical_predicate ],
-        [ a biolink:Annotation ;
             skos:example "negatively correlated with" ;
-            linkml:tag biolink:opposite_of ] ;
+            linkml:tag biolink:opposite_of ],
+        [ a biolink:Annotation ;
+            skos:example true ;
+            linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:positively_correlated_with ;
     linkml:domain biolink:NamedThing ;
     linkml:inherited true ;
@@ -10902,11 +10902,11 @@ biolink:broad_match a linkml:SlotDefinition ;
         WIKIDATA:Q39894595 ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     linkml:annotations [ a biolink:Annotation ;
-            skos:example "narrow match" ;
-            linkml:tag biolink:opposite_of ],
-        [ a biolink:Annotation ;
             skos:example true ;
-            linkml:tag biolink:canonical_predicate ] ;
+            linkml:tag biolink:canonical_predicate ],
+        [ a biolink:Annotation ;
+            skos:example "narrow match" ;
+            linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:broad_match ;
     linkml:domain biolink:NamedThing ;
     linkml:domain_of biolink:PredicateMapping ;
@@ -11149,11 +11149,11 @@ biolink:contraindicated_for a linkml:SlotDefinition ;
     skos:exactMatch <http://purl.obolibrary.org/obo/NCIT_C37933> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     linkml:annotations [ a biolink:Annotation ;
-            skos:example "treats" ;
-            linkml:tag biolink:opposite_of ],
-        [ a biolink:Annotation ;
             skos:example true ;
-            linkml:tag biolink:canonical_predicate ] ;
+            linkml:tag biolink:canonical_predicate ],
+        [ a biolink:Annotation ;
+            skos:example "treats" ;
+            linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:contraindicated_for ;
     linkml:domain biolink:Drug ;
     linkml:inherited true ;
@@ -11611,11 +11611,11 @@ biolink:has_completed a linkml:SlotDefinition ;
     skos:exactMatch <http://purl.obolibrary.org/obo/CL_has_completed> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     linkml:annotations [ a biolink:Annotation ;
-            skos:example "has not completed" ;
-            linkml:tag biolink:opposite_of ],
-        [ a biolink:Annotation ;
             skos:example true ;
-            linkml:tag biolink:canonical_predicate ] ;
+            linkml:tag biolink:canonical_predicate ],
+        [ a biolink:Annotation ;
+            skos:example "has not completed" ;
+            linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:has_completed ;
     linkml:domain biolink:NamedThing ;
     linkml:inherited true ;
@@ -11642,11 +11642,11 @@ biolink:has_decreased_amount a linkml:SlotDefinition ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/CL_has_low_plasma_membrane_amount> ;
     linkml:annotations [ a biolink:Annotation ;
-            skos:example "has increased amount" ;
-            linkml:tag biolink:opposite_of ],
-        [ a biolink:Annotation ;
             skos:example true ;
-            linkml:tag biolink:canonical_predicate ] ;
+            linkml:tag biolink:canonical_predicate ],
+        [ a biolink:Annotation ;
+            skos:example "has increased amount" ;
+            linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:has_decreased_amount ;
     linkml:domain biolink:NamedThing ;
     linkml:inherited true ;
@@ -11706,11 +11706,11 @@ biolink:has_increased_amount a linkml:SlotDefinition ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/CL_has_high_plasma_membrane_amount> ;
     linkml:annotations [ a biolink:Annotation ;
-            skos:example "has decreased amount" ;
-            linkml:tag biolink:opposite_of ],
-        [ a biolink:Annotation ;
             skos:example true ;
-            linkml:tag biolink:canonical_predicate ] ;
+            linkml:tag biolink:canonical_predicate ],
+        [ a biolink:Annotation ;
+            skos:example "has decreased amount" ;
+            linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:has_increased_amount ;
     linkml:domain biolink:NamedThing ;
     linkml:inherited true ;
@@ -11858,11 +11858,11 @@ biolink:has_not_completed a linkml:SlotDefinition ;
     skos:exactMatch <http://purl.obolibrary.org/obo/CL_has_not_completed> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     linkml:annotations [ a biolink:Annotation ;
-            skos:example true ;
-            linkml:tag biolink:canonical_predicate ],
-        [ a biolink:Annotation ;
             skos:example "has completed" ;
-            linkml:tag biolink:opposite_of ] ;
+            linkml:tag biolink:opposite_of ],
+        [ a biolink:Annotation ;
+            skos:example true ;
+            linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:has_not_completed ;
     linkml:domain biolink:NamedThing ;
     linkml:inherited true ;
@@ -12083,11 +12083,11 @@ biolink:increases_response_to a linkml:SlotDefinition ;
     skos:exactMatch CTD:increases_response_to ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     linkml:annotations [ a biolink:Annotation ;
-            skos:example true ;
-            linkml:tag biolink:canonical_predicate ],
-        [ a biolink:Annotation ;
             skos:example "decreases response to" ;
-            linkml:tag biolink:opposite_of ] ;
+            linkml:tag biolink:opposite_of ],
+        [ a biolink:Annotation ;
+            skos:example true ;
+            linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:increases_response_to ;
     linkml:domain biolink:ChemicalEntityOrGeneOrGeneProduct ;
     linkml:inherited true ;
@@ -12366,11 +12366,11 @@ biolink:lacks_part a linkml:SlotDefinition ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     skos:narrowMatch <http://purl.obolibrary.org/obo/CL_lacks_plasma_membrane_part> ;
     linkml:annotations [ a biolink:Annotation ;
-            skos:example true ;
-            linkml:tag biolink:canonical_predicate ],
-        [ a biolink:Annotation ;
             skos:example "has part" ;
-            linkml:tag biolink:opposite_of ] ;
+            linkml:tag biolink:opposite_of ],
+        [ a biolink:Annotation ;
+            skos:example true ;
+            linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:lacks_part ;
     linkml:domain biolink:NamedThing ;
     linkml:inherited true ;
@@ -12696,11 +12696,11 @@ biolink:predisposes a linkml:SlotDefinition ;
     skos:exactMatch <https://skr3.nlm.nih.gov/SemMedDBPREDISPOSES> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     linkml:annotations [ a biolink:Annotation ;
-            skos:example "prevents" ;
-            linkml:tag biolink:opposite_of ],
-        [ a biolink:Annotation ;
             skos:example true ;
-            linkml:tag biolink:canonical_predicate ] ;
+            linkml:tag biolink:canonical_predicate ],
+        [ a biolink:Annotation ;
+            skos:example "prevents" ;
+            linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:predisposes ;
     linkml:domain biolink:NamedThing ;
     linkml:inherited true ;
@@ -13191,11 +13191,11 @@ biolink:treats a linkml:SlotDefinition ;
         <http://purl.obolibrary.org/obo/SNOMED_plays_role> ;
     skos:relatedMatch <http://purl.obolibrary.org/obo/MONDO_disease_responds_to> ;
     linkml:annotations [ a biolink:Annotation ;
-            skos:example true ;
-            linkml:tag biolink:canonical_predicate ],
-        [ a biolink:Annotation ;
             skos:example "contraindicated for" ;
-            linkml:tag biolink:opposite_of ] ;
+            linkml:tag biolink:opposite_of ],
+        [ a biolink:Annotation ;
+            skos:example true ;
+            linkml:tag biolink:canonical_predicate ] ;
     linkml:definition_uri biolink:treats ;
     linkml:domain biolink:ChemicalOrDrugOrTreatment ;
     linkml:inherited true ;
@@ -14264,11 +14264,11 @@ biolink:ameliorates a linkml:SlotDefinition ;
     skos:exactMatch <http://purl.obolibrary.org/obo/RO_0003307> ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> ;
     linkml:annotations [ a biolink:Annotation ;
-            skos:example "exacerbates" ;
-            linkml:tag biolink:opposite_of ],
-        [ a biolink:Annotation ;
             skos:example true ;
-            linkml:tag biolink:canonical_predicate ] ;
+            linkml:tag biolink:canonical_predicate ],
+        [ a biolink:Annotation ;
+            skos:example "exacerbates" ;
+            linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:ameliorates ;
     linkml:domain biolink:NamedThing ;
     linkml:inherited true ;
@@ -14288,11 +14288,11 @@ biolink:aspect_qualifier a linkml:SlotDefinition ;
     linkml:examples [ a linkml:Example ;
             skos:example "expression" ],
         [ a linkml:Example ;
-            skos:example "stability" ],
+            skos:example "abundance" ],
         [ a linkml:Example ;
             skos:example "exposure" ],
         [ a linkml:Example ;
-            skos:example "abundance" ] ;
+            skos:example "stability" ] ;
     linkml:is_a biolink:association_slot ;
     linkml:owner biolink:aspect_qualifier ;
     linkml:range biolink:string ;
@@ -14545,13 +14545,13 @@ biolink:form_or_variant_qualifier a linkml:SlotDefinition ;
     linkml:definition_uri biolink:form_or_variant_qualifier ;
     linkml:domain biolink:Association ;
     linkml:examples [ a linkml:Example ;
-            skos:example "chemical analog" ],
+            skos:example "mutation" ],
         [ a linkml:Example ;
             skos:example "late stage" ],
         [ a linkml:Example ;
-            skos:example "transplant" ],
+            skos:example "chemical analog" ],
         [ a linkml:Example ;
-            skos:example "mutation" ],
+            skos:example "transplant" ],
         [ a linkml:Example ;
             skos:example "severe" ] ;
     linkml:is_a biolink:association_slot ;
@@ -15818,9 +15818,9 @@ biolink:species_context_qualifier a linkml:SlotDefinition ;
     linkml:domain biolink:Association ;
     linkml:domain_of biolink:PredicateMapping ;
     linkml:examples [ a linkml:Example ;
-            skos:example "human" ],
+            skos:example "zebrafish" ],
         [ a linkml:Example ;
-            skos:example "zebrafish" ] ;
+            skos:example "human" ] ;
     linkml:is_a biolink:statement_qualifier ;
     linkml:owner biolink:PredicateMapping ;
     linkml:range biolink:OrganismTaxon ;
@@ -19294,11 +19294,11 @@ biolink:has_input a linkml:SlotDefinition ;
         <http://purl.obolibrary.org/obo/SNOMED_uses_substance>,
         PathWhiz:has_left_element ;
     linkml:annotations [ a biolink:Annotation ;
-            skos:example "has output" ;
-            linkml:tag biolink:opposite_of ],
-        [ a biolink:Annotation ;
             skos:example true ;
-            linkml:tag biolink:canonical_predicate ] ;
+            linkml:tag biolink:canonical_predicate ],
+        [ a biolink:Annotation ;
+            skos:example "has output" ;
+            linkml:tag biolink:opposite_of ] ;
     linkml:definition_uri biolink:has_input ;
     linkml:domain biolink:BiologicalProcessOrActivity ;
     linkml:domain_of biolink:BiologicalProcessOrActivity ;
@@ -21526,11 +21526,11 @@ biolink:subject a linkml:SlotDefinition ;
     linkml:domain_of biolink:Association ;
     linkml:is_a biolink:association_slot ;
     linkml:local_names [ a linkml:LocalName ;
-            skos:altLabel "annotation subject" ;
-            linkml:local_name_source "ga4gh" ],
-        [ a linkml:LocalName ;
             skos:altLabel "node with outgoing relationship" ;
-            linkml:local_name_source "neo4j" ] ;
+            linkml:local_name_source "neo4j" ],
+        [ a linkml:LocalName ;
+            skos:altLabel "annotation subject" ;
+            linkml:local_name_source "ga4gh" ] ;
     linkml:owner biolink:Association ;
     linkml:range biolink:NamedThing ;
     linkml:required true ;
@@ -21601,5 +21601,4 @@ biolink:NamedThing a linkml:ClassDefinition ;
         biolink:provided_by,
         biolink:type,
         biolink:xref .
-
 

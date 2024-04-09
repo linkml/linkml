@@ -1,7 +1,6 @@
 
 # Type: boolean
 
-
 A binary (true or false) value
 
 URI: [linkml:Boolean](https://w3id.org/linkml/Boolean)
@@ -16,4 +15,3 @@ URI: [linkml:Boolean](https://w3id.org/linkml/Boolean)
 |  |  |  |
 | --- | --- | --- |
 | **Exact Mappings:** | | schema:Boolean |
-

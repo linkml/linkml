@@ -1,7 +1,6 @@
 
 # Slot: enums
 
-
 An index to the collection of all enum definitions in the schema
 
 URI: [linkml:enums](https://w3id.org/linkml/enums)
@@ -29,4 +28,3 @@ URI: [linkml:enums](https://w3id.org/linkml/enums)
 |  | | BasicSubset |
 |  | | ObjectOrientedProfile |
 |  | | OwlProfile |
-

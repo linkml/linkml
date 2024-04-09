@@ -1,7 +1,6 @@
 
 # Slot: irreflexive
 
-
 If s is irreflexive, then there exists no i such i.s=i
 
 URI: [linkml:irreflexive](https://w3id.org/linkml/irreflexive)
@@ -28,4 +27,3 @@ URI: [linkml:irreflexive](https://w3id.org/linkml/irreflexive)
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
 | **Close Mappings:** | | owl:IrreflexiveProperty |
-

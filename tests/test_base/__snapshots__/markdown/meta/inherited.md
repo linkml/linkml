@@ -1,7 +1,6 @@
 
 # Slot: inherited
 
-
 true means that the *value* of a slot is inherited by subclasses
 
 URI: [linkml:inherited](https://w3id.org/linkml/inherited)
@@ -28,4 +27,3 @@ URI: [linkml:inherited](https://w3id.org/linkml/inherited)
 | **Comments:** | | the slot is to be used for defining *metamodels* only |
 |  | | Inherited applies to slot values.  Parent *slots* are always inherited by subclasses |
 | **In Subsets:** | | SpecificationSubset |
-

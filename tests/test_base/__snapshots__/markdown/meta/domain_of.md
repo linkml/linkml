@@ -1,7 +1,6 @@
 
 # Slot: domain_of
 
-
 the class(es) that reference the slot in a "slots" or "slot_usage" context
 
 URI: [linkml:domain_of](https://w3id.org/linkml/domain_of)
@@ -27,4 +26,3 @@ URI: [linkml:domain_of](https://w3id.org/linkml/domain_of)
 | --- | --- | --- |
 | **Exact Mappings:** | | schema:domainIncludes |
 |  | | SIO:000011 |
-

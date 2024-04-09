@@ -1,7 +1,6 @@
 
 # Slot: text
 
-
 The actual permissible value itself
 
 URI: [linkml:text](https://w3id.org/linkml/text)
@@ -30,4 +29,3 @@ URI: [linkml:text](https://w3id.org/linkml/text)
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
 | **Close Mappings:** | | skos:notation |
-

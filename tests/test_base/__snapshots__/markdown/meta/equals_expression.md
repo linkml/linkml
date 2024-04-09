@@ -1,7 +1,6 @@
 
 # Slot: equals_expression
 
-
 the value of the slot must equal the value of the evaluated expression
 
 URI: [linkml:equals_expression](https://w3id.org/linkml/equals_expression)
@@ -32,4 +31,3 @@ None &#8594;  <sub>0..1</sub> [String](types/String.md)
 | **In Subsets:** | | SpecificationSubset |
 | **See also:** | | [https://linkml.io/linkml/developers/inference.html](https://linkml.io/linkml/developers/inference.html) |
 |  | | [https://linkml.io/linkml/schemas/advanced.html#equals-expression](https://linkml.io/linkml/schemas/advanced.html#equals-expression) |
-

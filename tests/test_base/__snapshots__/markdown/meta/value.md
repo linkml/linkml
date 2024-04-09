@@ -1,7 +1,6 @@
 
 # Slot: value
 
-
 example value
 
 URI: [linkml:value](https://w3id.org/linkml/value)
@@ -27,4 +26,3 @@ URI: [linkml:value](https://w3id.org/linkml/value)
 | --- | --- | --- |
 | **Mappings:** | | skos:example |
 | **In Subsets:** | | BasicSubset |
-

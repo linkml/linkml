@@ -1,7 +1,6 @@
 
 # Slot: is_direct
 
-
 True if the reachability query should only include directly related nodes, if False then include also transitively connected
 
 URI: [linkml:is_direct](https://w3id.org/linkml/is_direct)
@@ -27,4 +26,3 @@ URI: [linkml:is_direct](https://w3id.org/linkml/is_direct)
 | --- | --- | --- |
 | **Aliases:** | | non-transitive |
 | **In Subsets:** | | SpecificationSubset |
-

@@ -1,7 +1,6 @@
 
 # Class: schema_definition
 
-
 A collection of definitions that make up a schema or a data model.
 
 URI: [linkml:SchemaDefinition](https://w3id.org/linkml/SchemaDefinition)
@@ -152,4 +151,3 @@ URI: [linkml:SchemaDefinition](https://w3id.org/linkml/SchemaDefinition)
 | **See also:** | | [https://en.wikipedia.org/wiki/Data_dictionary](https://en.wikipedia.org/wiki/Data_dictionary) |
 | **Close Mappings:** | | qb:ComponentSet |
 |  | | owl:Ontology |
-

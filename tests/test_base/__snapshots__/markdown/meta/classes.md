@@ -1,7 +1,6 @@
 
 # Slot: classes
 
-
 An index to the collection of all class definitions in the schema
 
 URI: [linkml:classes](https://w3id.org/linkml/classes)
@@ -31,4 +30,3 @@ URI: [linkml:classes](https://w3id.org/linkml/classes)
 |  | | RelationalModelProfile |
 |  | | ObjectOrientedProfile |
 |  | | OwlProfile |
-

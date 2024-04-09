@@ -1,7 +1,6 @@
 
 # Slot: readonly
 
-
 If present, slot is read only.  Text explains why
 
 URI: [linkml:readonly](https://w3id.org/linkml/readonly)
@@ -26,4 +25,3 @@ URI: [linkml:readonly](https://w3id.org/linkml/readonly)
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | the slot is to be used for defining *metamodels* only |
-

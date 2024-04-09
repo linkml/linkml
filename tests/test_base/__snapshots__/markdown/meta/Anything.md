@@ -3,7 +3,6 @@
 
 
 
-
 URI: [linkml:Anything](https://w3id.org/linkml/Anything)
 
 
@@ -24,4 +23,3 @@ URI: [linkml:Anything](https://w3id.org/linkml/Anything)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | linkml:Any |
-

@@ -1,7 +1,6 @@
 
 # Type: datetime
 
-
 The combination of a date and time
 
 URI: [meta:Datetime](https://w3id.org/linkml/Datetime)
@@ -16,4 +15,3 @@ URI: [meta:Datetime](https://w3id.org/linkml/Datetime)
 |  |  |  |
 | --- | --- | --- |
 | **Exact Mappings:** | | schema:DateTime |
-

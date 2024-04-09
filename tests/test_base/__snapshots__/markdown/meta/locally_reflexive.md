@@ -1,7 +1,6 @@
 
 # Slot: locally_reflexive
 
-
 If s is locally_reflexive, then i.s=i for all instances i where s is a class slot for the type of i
 
 URI: [linkml:locally_reflexive](https://w3id.org/linkml/locally_reflexive)
@@ -27,4 +26,3 @@ URI: [linkml:locally_reflexive](https://w3id.org/linkml/locally_reflexive)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
-

@@ -1,7 +1,6 @@
 
 # Slot: derivation
 
-
 Expression for deriving this unit from other units
 
 URI: [linkml:derivation](https://w3id.org/linkml/derivation)

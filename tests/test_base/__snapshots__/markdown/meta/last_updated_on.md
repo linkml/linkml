@@ -1,7 +1,6 @@
 
 # Slot: last_updated_on
 
-
 time at which the element was last updated
 
 URI: [linkml:last_updated_on](https://w3id.org/linkml/last_updated_on)
@@ -47,4 +46,3 @@ URI: [linkml:last_updated_on](https://w3id.org/linkml/last_updated_on)
 | --- | --- | --- |
 | **Mappings:** | | pav:lastUpdatedOn |
 | **In Subsets:** | | BasicSubset |
-

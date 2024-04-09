@@ -1,7 +1,6 @@
 
 # Class: setting
 
-
 assignment of a key to a value
 
 URI: [linkml:Setting](https://w3id.org/linkml/Setting)
@@ -33,4 +32,3 @@ URI: [linkml:Setting](https://w3id.org/linkml/Setting)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
-
