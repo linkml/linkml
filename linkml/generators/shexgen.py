@@ -57,10 +57,11 @@ class ShExGenerator(Generator):
         self.base = Namespace(self.namespaces.join(self.namespaces._base, ""))  # Base URI for what is being modeled
         self.generate_header()
 
-    def generate_header(self):
-        print(f"# metamodel_version: {self.schema.metamodel_version}")
+    def generate_header(self) -> str:
+        out = f"\n# metamodel_version: {self.schema.metamodel_version}"
         if self.schema.version:
-            print(f"# version: {self.schema.version}")
+            out += f"\n# version: {self.schema.version}"
+        return out
 
     def visit_schema(self, **_):
         # Adjust the schema context to include the base model URI
@@ -160,7 +161,7 @@ class ShExGenerator(Generator):
             else:
                 constraint.valueExpr = self._class_or_type_uri(slot.range)
 
-    def end_schema(self, output: Optional[str] = None, **_) -> None:
+    def end_schema(self, output: Optional[str] = None, **_) -> str:
         self.shex.shapes = self.shapes if self.shapes else [Shape()]
         shex = as_json_1(self.shex)
         if self.format == "rdf":
@@ -172,11 +173,11 @@ class ShExGenerator(Generator):
             g = Graph()
             self.namespaces.load_graph(g)
             shex = str(ShExC(self.shex, base=sfx(self.namespaces._base), namespaces=g))
+
         if output:
             with open(output, "w", encoding="UTF-8") as outf:
                 outf.write(shex)
-        else:
-            print(shex)
+        return shex
 
     def _class_or_type_uri(
         self,

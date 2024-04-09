@@ -71,8 +71,8 @@ class TerminusdbGenerator(Generator):
         self.classes = []
         self.raw_additions = []
 
-    def end_schema(self, **_) -> None:
-        print(json.dumps(WQ().woql_and(*self.classes, *self.raw_additions).to_dict(), indent=2))
+    def end_schema(self, **_) -> str:
+        return json.dumps(WQ().woql_and(*self.classes, *self.raw_additions).to_dict(), indent=2)
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         self.clswq = WQ().add_class(camelcase(cls.name)).label(camelcase(cls.name)).description(be(cls.description))

@@ -89,7 +89,7 @@ class ContextGenerator(Generator):
         flatprefixes: Optional[bool] = False,
         model: Optional[bool] = True,
         **_,
-    ) -> None:
+    ) -> str:
         if model is None:
             model = self.model
         context = JsonObj()
@@ -126,8 +126,8 @@ class ContextGenerator(Generator):
         if output:
             with open(output, "w", encoding="UTF-8") as outf:
                 outf.write(as_json(context))
-        else:
-            print(as_json(context))
+
+        return str(as_json(context)) + "\n"
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         class_def = {}

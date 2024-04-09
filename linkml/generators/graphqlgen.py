@@ -24,23 +24,23 @@ class GraphqlGenerator(Generator):
         # TODO: move this
         self.generate_header()
 
-    def generate_header(self):
-        print(f"# metamodel_version: {self.schema.metamodel_version}")
+    def generate_header(self) -> str:
+        out = f"# metamodel_version: {self.schema.metamodel_version}"
         if self.schema.version:
-            print(f"# version: {self.schema.version}")
+            out = "\n".join([out, f"# version: {self.schema.version}"])
+        return out
 
-    def visit_class(self, cls: ClassDefinition) -> bool:
+    def visit_class(self, cls: ClassDefinition) -> str:
         etype = "interface" if (cls.abstract or cls.mixin) and not cls.mixins else "type"
         mixins = ", ".join([camelcase(mixin) for mixin in cls.mixins])
-        print(f"{etype} {camelcase(cls.name)}" + (f" implements {mixins}" if mixins else ""))
-        print("  {")
-        return True
+        out = f"{etype} {camelcase(cls.name)}" + (f" implements {mixins}" if mixins else "")
+        out = "\n".join([out, "  {"])
+        return out
 
-    def end_class(self, cls: ClassDefinition) -> None:
-        print("  }")
-        print()
+    def end_class(self, cls: ClassDefinition) -> str:
+        return "  }\n"
 
-    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
+    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> str:
         slotrange = (
             camelcase(slot.range)
             if slot.range in self.schema.classes or slot.range in self.schema.types or slot.range in self.schema.enums
@@ -50,7 +50,7 @@ class GraphqlGenerator(Generator):
             slotrange = f"[{slotrange}]"
         if slot.required:
             slotrange = slotrange + "!"
-        print(f"    {lcamelcase(aliased_slot_name)}: {slotrange}")
+        return f"    {lcamelcase(aliased_slot_name)}: {slotrange}"
 
 
 @shared_arguments(GraphqlGenerator)
