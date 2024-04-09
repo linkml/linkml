@@ -38,7 +38,7 @@ class GraphqlGenerator(Generator):
         return out
 
     def end_class(self, cls: ClassDefinition) -> str:
-        return "  }\n"
+        return "\n  }\n"
 
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> str:
         slotrange = (
@@ -50,7 +50,7 @@ class GraphqlGenerator(Generator):
             slotrange = f"[{slotrange}]"
         if slot.required:
             slotrange = slotrange + "!"
-        return f"    {lcamelcase(aliased_slot_name)}: {slotrange}"
+        return f"\n    {lcamelcase(aliased_slot_name)}: {slotrange}"
 
 
 @shared_arguments(GraphqlGenerator)

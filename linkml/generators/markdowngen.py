@@ -2,6 +2,7 @@ import os
 from dataclasses import dataclass
 from io import StringIO
 from typing import Any, Callable, Dict, List, Optional, Set, Union
+import re
 
 import click
 from jsonasobj2 import JsonObj, values
@@ -131,6 +132,7 @@ class MarkdownGenerator(Generator):
                     items.append(self.bullet(self.type_link(typ, after_link=f" ({typ_typ})", use_desc=True)))
             items = [i for i in items if i is not None]
             out = "\n".join(items) + "\n"
+            out = pad_heading(out)
             ixfile.write(out)
         return out
 
@@ -143,11 +145,11 @@ class MarkdownGenerator(Generator):
             return ""
 
         with open(self.exist_warning(self.dir_path(cls)), "w", encoding="UTF-8") as clsfile:
-            out = ""
+            items = []
             class_curi = self.namespaces.uri_or_curie_for(str(self.namespaces._base), camelcase(cls.name))
             class_uri = self.namespaces.uri_for(class_curi)
-            out += self.element_header(cls, cls.name, class_curi, class_uri)
-            out += "\n"
+            items.append(self.element_header(cls, cls.name, class_curi, class_uri))
+            items.append("")
             if not self.noyuml:
                 if self.image_directory:
                     yg = YumlGenerator(self)
@@ -163,60 +165,62 @@ class MarkdownGenerator(Generator):
                         yg.serialize(classes=[cls.name]).replace("?", "%3F").replace(" ", "%20").replace("|", "&#124;")
                     )
 
-                out += f"[![img]({img_url})]({img_url})"
+                items.append(f"[![img]({img_url})]({img_url})")
 
             if cls.id_prefixes:
-                out += self.header(2, "Identifier prefixes")
+                items.append(self.header(2, "Identifier prefixes"))
                 for p in cls.id_prefixes:
-                    out += self.bullet(f"{p}")
+                    items.append(self.bullet(f"{p}"))
 
             if cls.is_a is not None:
-                out += self.header(2, "Parents")
-                out += self.bullet(f" is_a: {self.class_link(cls.is_a, use_desc=True)}")
+                items.append(self.header(2, "Parents"))
+                items.append(self.bullet(f" is_a: {self.class_link(cls.is_a, use_desc=True)}"))
             if cls.mixins:
-                out += self.header(2, f"Uses {mixin_local_name}")
+                items.append(self.header(2, f"Uses {mixin_local_name}"))
                 for mixin in cls.mixins:
-                    out += self.bullet(f" mixin: {self.class_link(mixin, use_desc=True)}")
+                    items.append(self.bullet(f" mixin: {self.class_link(mixin, use_desc=True)}"))
 
             if cls.name in self.synopsis.isarefs:
-                out += self.header(2, "Children")
+                items.append(self.header(2, "Children"))
                 for child in sorted(self.synopsis.isarefs[cls.name].classrefs):
-                    out += self.bullet(f"{self.class_link(child, use_desc=True)}")
+                    items.append(self.bullet(f"{self.class_link(child, use_desc=True)}"))
 
             if cls.name in self.synopsis.mixinrefs:
-                out += self.header(2, f"{mixin_local_name} for")
+                items.append(self.header(2, f"{mixin_local_name} for"))
                 for mixin in sorted(self.synopsis.mixinrefs[cls.name].classrefs):
-                    out += self.bullet(f'{self.class_link(mixin, use_desc=True, after_link="(mixin)")}')
+                    items.append(self.bullet(f'{self.class_link(mixin, use_desc=True, after_link="(mixin)")}'))
 
             if cls.name in self.synopsis.classrefs:
-                out += self.header(2, f"Referenced by {class_local_name}")
+                items.append(self.header(2, f"Referenced by {class_local_name}"))
                 for sn in sorted(self.synopsis.classrefs[cls.name].slotrefs):
                     slot = self.schema.slots[sn]
                     if slot.range == cls.name:
-                        out += self.bullet(
-                            f" **{self.class_link(slot.domain)}** "
-                            f"*{self.slot_link(slot, add_subset=False)}*{self.predicate_cardinality(slot)}  "
-                            f"**{self.class_type_link(slot.range)}**"
+                        items.append(
+                            self.bullet(
+                                f" **{self.class_link(slot.domain)}** "
+                                f"*{self.slot_link(slot, add_subset=False)}*{self.predicate_cardinality(slot)}  "
+                                f"**{self.class_type_link(slot.range)}**"
+                            )
                         )
 
-            out += self.header(2, "Attributes")
+            items.append(self.header(2, "Attributes"))
 
             # List all of the slots that directly belong to the class
             slot_list = [slot for slot in [self.schema.slots[sn] for sn in cls.slots]]
             own_slots = [slot for slot in slot_list if cls.name in slot.domain_of]
             if own_slots:
-                out += self.header(3, "Own")
+                items.append(self.header(3, "Own"))
                 for slot in own_slots:
-                    out += self.slot_field(cls, slot)
+                    items.append(self.slot_field(cls, slot))
                     slot_list.remove(slot)
 
             # List all of the inherited slots
             ancestors = set(self.ancestors(cls))
             inherited_slots = [slot for slot in slot_list if set(slot.domain_of).intersection(ancestors)]
             if inherited_slots:
-                out += self.header(3, "Inherited from " + cls.is_a + ":")
+                items.append(self.header(3, "Inherited from " + cls.is_a + ":"))
                 for inherited_slot in inherited_slots:
-                    out += self.slot_field(cls, inherited_slot)
+                    items.append(self.slot_field(cls, inherited_slot))
                     slot_list.remove(inherited_slot)
 
             # List all of the slots acquired through mixing
@@ -227,10 +231,12 @@ class MarkdownGenerator(Generator):
             for slot in slot_list:
                 mixers = set(slot.domain_of).intersection(mixed_in_classes)
                 for mixer in mixers:
-                    out += self.header(3, "Mixed in from " + mixer + ":")
-                    out += self.slot_field(cls, slot)
+                    items.append(self.header(3, "Mixed in from " + mixer + ":"))
+                    items.append(self.slot_field(cls, slot))
 
-            out += self.element_properties(cls)
+            items.append(self.element_properties(cls))
+            out = "\n".join(items)
+            out = pad_heading(out)
             clsfile.write(out)
         return out
 
@@ -249,40 +255,38 @@ class MarkdownGenerator(Generator):
                 out = "\n".join([out, f"| Representation | | {typ.repr} |"])
             out += self.element_properties(typ)
             out += "\n"
+            out = pad_heading(out)
             typefile.write(out)
         return out
 
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> str:
         with open(self.exist_warning(self.dir_path(slot)), "w", encoding="UTF-8") as slotfile:
-            out = ""
+            items = []
             slot_curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(slot.name))
             slot_uri = self.namespaces.uri_for(slot_curie)
-            out += self.element_header(slot, aliased_slot_name, slot_curie, slot_uri)
+            items.append(self.element_header(slot, aliased_slot_name, slot_curie, slot_uri))
 
-            out += self.header(2, "Domain and Range")
-            out = "\n".join(
-                [
-                    out,
-                    (
-                        f"{self.class_link(slot.domain)} &#8594;{self.predicate_cardinality(slot)} "
-                        f"{self.class_type_link(slot.range)}"
-                    ),
-                ]
+            items.append(self.header(2, "Domain and Range"))
+            items.append(
+                (
+                    f"{self.class_link(slot.domain)} &#8594;{self.predicate_cardinality(slot)} "
+                    f"{self.class_type_link(slot.range)}"
+                )
             )
 
-            out += self.header(2, "Parents")
+            items.append(self.header(2, "Parents"))
             if slot.is_a:
-                out += self.bullet(f" is_a: {self.slot_link(slot.is_a)}")
+                items.append(self.bullet(f" is_a: {self.slot_link(slot.is_a)}"))
 
-            out += self.header(2, "Children")
+            items.append(self.header(2, "Children"))
             if slot.name in sorted(self.synopsis.isarefs):
                 for child in sorted(self.synopsis.isarefs[slot.name].slotrefs):
-                    out += self.bullet(f" {self.slot_link(child)}")
+                    items.append(self.bullet(f" {self.slot_link(child)}"))
 
-            out += self.header(2, "Used by")
+            items.append(self.header(2, "Used by"))
             if slot.name in sorted(self.synopsis.slotrefs):
                 for rc in sorted(self.synopsis.slotrefs[slot.name].classrefs):
-                    out += self.bullet(f"{self.class_link(rc)}")
+                    items.append(self.bullet(f"{self.class_link(rc)}"))
             if aliased_slot_name == "relation":
                 if slot.subproperty_of:
                     reifies = (
@@ -290,8 +294,10 @@ class MarkdownGenerator(Generator):
                         if slot.subproperty_of in self.schema.slots
                         else slot.subproperty_of
                     )
-                    out += self.bullet(f" reifies: {reifies}")
-            out += self.element_properties(slot)
+                    items.append(self.bullet(f" reifies: {reifies}"))
+            items.append(self.element_properties(slot))
+            out = "\n".join(items)
+            out = pad_heading(out)
             slotfile.write(out)
         return out
 
@@ -303,6 +309,7 @@ class MarkdownGenerator(Generator):
             items.append(self.element_header(obj=enum, name=enum.name, curie=enum_curie, uri=enum_uri))
             items.append(self.element_properties(enum))
             out = "\n".join(items)
+            out = pad_heading(out)
             enumfile.write(out)
         return out
 
@@ -337,6 +344,7 @@ class MarkdownGenerator(Generator):
                     items.append(self.bullet(self.enum_link(enum, use_desc=True), 0))
             items.append(self.element_properties(subset))
             out = "\n".join(items)
+            out = pad_heading(out)
             subsetfile.write(out)
         return out
 
@@ -457,23 +465,29 @@ class MarkdownGenerator(Generator):
         out = "\n".join(items)
         return out
 
-    def class_hier(self, cls: ClassDefinition, level=0) -> None:
-        self.bullet(self.class_link(cls, use_desc=True), level)
+    def class_hier(self, cls: ClassDefinition, level=0) -> str:
+        items = []
+        items.append(self.bullet(self.class_link(cls, use_desc=True), level))
         if cls.name in sorted(self.synopsis.isarefs):
             for child in sorted(self.synopsis.isarefs[cls.name].classrefs):
-                self.class_hier(self.schema.classes[child], level + 1)
+                items.append(self.class_hier(self.schema.classes[child], level + 1))
+        return "\n".join(items) if items else None
 
-    def pred_hier(self, slot: SlotDefinition, level=0) -> None:
-        self.bullet(self.slot_link(slot, use_desc=True), level)
+    def pred_hier(self, slot: SlotDefinition, level=0) -> str:
+        items = []
+        items.append(self.bullet(self.slot_link(slot, use_desc=True), level))
         if slot.name in sorted(self.synopsis.isarefs):
             for child in sorted(self.synopsis.isarefs[slot.name].slotrefs):
-                self.pred_hier(self.schema.slots[child], level + 1)
+                items.append(self.pred_hier(self.schema.slots[child], level + 1))
+        return "\n".join(items) if items else None
 
-    def enum_hier(self, enum: EnumDefinition, level=0) -> None:
-        self.bullet(self.enum_link(enum, use_desc=True), level)
+    def enum_hier(self, enum: EnumDefinition, level=0) -> str:
+        items = []
+        items.append(self.bullet(self.enum_link(enum, use_desc=True), level))
         if enum.name in sorted(self.synopsis.isarefs):
             for child in sorted(self.synopsis.isarefs[enum.name].classrefs):
-                self.enum_hier(self.schema.enums[child], level + 1)
+                items.append(self.enum_hier(self.schema.enums[child], level + 1))
+        return "\n".join(items) if items else None
 
     def dir_path(
         self,
@@ -768,6 +782,11 @@ class MarkdownGenerator(Generator):
                 base = "http://purl.obolibrary.org/obo/"
                 uri = base + frag
         return uri
+
+
+def pad_heading(text: str) -> str:
+    """Add an extra newline to a non-top-level header that doesn't have one preceding it"""
+    return re.sub(r"(?<!\n)\n##", "\n\n##", text)
 
 
 @shared_arguments(MarkdownGenerator)

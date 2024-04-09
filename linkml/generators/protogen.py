@@ -55,7 +55,7 @@ class ProtoGenerator(Generator):
         return out
 
     def end_class(self, cls: ClassDefinition) -> str:
-        return "\n }"
+        return "\n }\n"
 
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> str:
         qual = "repeated " if slot.multivalued else ""
