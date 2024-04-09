@@ -27,9 +27,8 @@ class ProtoGenerator(Generator):
     # ObjectVars
     relative_slot_num: int = 0
 
-    def __post_init__(self):
-        super().__post_init__()
-        self.generate_header()
+    def visit_schema(self, **kwargs) -> Optional[str]:
+        return self.generate_header()
 
     def generate_header(self) -> str:
         items = []
@@ -38,7 +37,7 @@ class ProtoGenerator(Generator):
         items.append(f"// metamodel_version: {self.schema.metamodel_version}")
         if self.schema.version:
             items.append(f"// version: {self.schema.version}")
-        out = "\n".join(items)
+        out = "\n".join(items) + "\n"
         return out
 
     def visit_class(self, cls: ClassDefinition) -> Optional[str]:

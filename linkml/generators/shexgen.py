@@ -55,12 +55,11 @@ class ShExGenerator(Generator):
             self.namespaces.join(self.namespaces[METAMODEL_NAMESPACE_NAME], "")
         )  # URI for the metamodel
         self.base = Namespace(self.namespaces.join(self.namespaces._base, ""))  # Base URI for what is being modeled
-        self.generate_header()
 
     def generate_header(self) -> str:
-        out = f"\n# metamodel_version: {self.schema.metamodel_version}"
+        out = f"# metamodel_version: {self.schema.metamodel_version}\n"
         if self.schema.version:
-            out += f"\n# version: {self.schema.version}"
+            out += f"# version: {self.schema.version}\n"
         return out
 
     def visit_schema(self, **_):
@@ -81,6 +80,7 @@ class ShExGenerator(Generator):
             else:
                 typeof_uri = self._class_or_type_uri(typ.typeof)
                 self.shapes.append(Shape(id=model_uri, expression=typeof_uri))
+        return self.generate_header()
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         self.shape = Shape()

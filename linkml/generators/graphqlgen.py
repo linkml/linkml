@@ -19,15 +19,13 @@ class GraphqlGenerator(Generator):
     uses_schemaloader = True
     requires_metamodel = False
 
-    def __post_init__(self):
-        super().__post_init__()
-        # TODO: move this
-        self.generate_header()
+    def visit_schema(self, **kwargs) -> str:
+        return self.generate_header()
 
     def generate_header(self) -> str:
-        out = f"# metamodel_version: {self.schema.metamodel_version}"
+        out = f"# metamodel_version: {self.schema.metamodel_version}\n"
         if self.schema.version:
-            out = "\n".join([out, f"# version: {self.schema.version}"])
+            out += f"# version: {self.schema.version}\n"
         return out
 
     def visit_class(self, cls: ClassDefinition) -> str:
@@ -38,7 +36,7 @@ class GraphqlGenerator(Generator):
         return out
 
     def end_class(self, cls: ClassDefinition) -> str:
-        return "\n  }\n"
+        return "\n  }\n\n"
 
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> str:
         slotrange = (
