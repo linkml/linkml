@@ -111,7 +111,7 @@ class PlantumlGenerator(Generator):
                     self.logger.error(f"{resp.reason} accessing {plantuml_url}")
         else:
             print(
-                "@startuml\nskinparam nodesep 10\n" + "\n".join(dedup_plantumlclassdef),
+                "@startuml\nskinparam nodesep 10\nhide circle\nhide empty members\n" + "\n".join(dedup_plantumlclassdef),
                 end="\n@enduml\n",
             )
 
@@ -130,13 +130,11 @@ class PlantumlGenerator(Generator):
                 if True or cn in slot.domain_of:
                     mod = self.prop_modifier(cls, slot)
                     slot_defs.append(
-                        '    {field} "'
+                        '    {field} '
                         + underscore(self.aliased_slot_name(slot))
-                        + '"'
                         + mod
-                        + ': "'
+                        + ': '
                         + underscore(slot.range)
-                        + '"'
                         + self.cardinality(slot)
                     )
             self.class_generated.add(cn)
