@@ -2,11 +2,10 @@
 
 """
 
-from io import StringIO
 import os
-import sys
 from csv import DictWriter
 from dataclasses import dataclass
+from io import StringIO
 from typing import Optional
 
 import click

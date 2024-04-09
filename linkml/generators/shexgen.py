@@ -80,7 +80,8 @@ class ShExGenerator(Generator):
             else:
                 typeof_uri = self._class_or_type_uri(typ.typeof)
                 self.shapes.append(Shape(id=model_uri, expression=typeof_uri))
-        return self.generate_header()
+        if self.format != "json":
+            return self.generate_header()
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         self.shape = Shape()

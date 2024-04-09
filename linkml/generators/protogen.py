@@ -1,6 +1,6 @@
 import os
-from typing import Optional
 from dataclasses import dataclass
+from typing import Optional
 
 import click
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition

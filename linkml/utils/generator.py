@@ -20,10 +20,8 @@ import logging
 import os
 import re
 import sys
-from contextlib import redirect_stdout
 from dataclasses import dataclass, field
 from functools import lru_cache
-from io import StringIO
 from pathlib import Path
 from typing import Callable, ClassVar, Dict, List, Mapping, Optional, Set, TextIO, Type, Union, cast
 

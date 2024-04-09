@@ -3,7 +3,6 @@ Generate JSON-LD contexts
 
 """
 
-import csv
 import os
 from dataclasses import dataclass, field
 from typing import Dict, Optional, Set, Union
@@ -88,8 +87,6 @@ class PrefixGenerator(Generator):
             out = str(as_json(context))
 
         if output:
-            output_ext = output.split(".")[-1]
-
             with open(output, "w", encoding="UTF-8") as outf:
                 outf.write(out)
 
