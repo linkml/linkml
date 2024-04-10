@@ -1,7 +1,6 @@
 
 # Slot: extensions
 
-
 a tag/text tuple attached to an arbitrary element
 
 URI: [linkml:extensions](https://w3id.org/linkml/extensions)

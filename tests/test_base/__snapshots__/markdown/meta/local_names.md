@@ -3,7 +3,6 @@
 
 
 
-
 URI: [linkml:local_names](https://w3id.org/linkml/local_names)
 
 

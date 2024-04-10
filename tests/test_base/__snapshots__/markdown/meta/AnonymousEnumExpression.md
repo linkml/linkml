@@ -1,7 +1,6 @@
 
 # Class: anonymous_enum_expression
 
-
 An enum_expression that is not named
 
 URI: [linkml:AnonymousEnumExpression](https://w3id.org/linkml/AnonymousEnumExpression)

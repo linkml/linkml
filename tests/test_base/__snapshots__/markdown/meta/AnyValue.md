@@ -3,7 +3,6 @@
 
 
 
-
 URI: [linkml:AnyValue](https://w3id.org/linkml/AnyValue)
 
 
@@ -21,4 +20,3 @@ URI: [linkml:AnyValue](https://w3id.org/linkml/AnyValue)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | linkml:Any |
-

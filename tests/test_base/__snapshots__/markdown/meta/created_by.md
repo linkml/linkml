@@ -1,7 +1,6 @@
 
 # Slot: created_by
 
-
 agent that created the element
 
 URI: [linkml:created_by](https://w3id.org/linkml/created_by)
@@ -47,4 +46,3 @@ URI: [linkml:created_by](https://w3id.org/linkml/created_by)
 | --- | --- | --- |
 | **Mappings:** | | pav:createdBy |
 | **In Subsets:** | | BasicSubset |
-

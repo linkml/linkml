@@ -1,7 +1,6 @@
 
 # Slot: slots
 
-
 An index to the collection of all slot definitions in the schema
 
 URI: [linkml:slot_definitions](https://w3id.org/linkml/slot_definitions)
@@ -29,4 +28,3 @@ URI: [linkml:slot_definitions](https://w3id.org/linkml/slot_definitions)
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
 |  | | OwlProfile |
-

@@ -1,7 +1,6 @@
 
 # Slot: created_on
 
-
 time at which the element was created
 
 URI: [linkml:created_on](https://w3id.org/linkml/created_on)
@@ -47,4 +46,3 @@ URI: [linkml:created_on](https://w3id.org/linkml/created_on)
 | --- | --- | --- |
 | **Mappings:** | | pav:createdOn |
 | **In Subsets:** | | BasicSubset |
-

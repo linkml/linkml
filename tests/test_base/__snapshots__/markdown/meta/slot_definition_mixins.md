@@ -1,7 +1,6 @@
 
 # Slot: mixins
 
-
 A collection of secondary parent mixin slots from which inheritable metaslots are propagated
 
 URI: [linkml:slot_definition_mixins](https://w3id.org/linkml/slot_definition_mixins)
@@ -33,4 +32,3 @@ URI: [linkml:slot_definition_mixins](https://w3id.org/linkml/slot_definition_mix
 |  | | ObjectOrientedProfile |
 |  | | OwlProfile |
 | **See also:** | | [https://en.wikipedia.org/wiki/Mixin](https://en.wikipedia.org/wiki/Mixin) |
-

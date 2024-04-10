@@ -1,7 +1,6 @@
 
 # Slot: list_elements_unique
 
-
 If True, then there must be no duplicates in the elements of a multivalued slot
 
 URI: [linkml:list_elements_unique](https://w3id.org/linkml/list_elements_unique)
@@ -27,4 +26,3 @@ URI: [linkml:list_elements_unique](https://w3id.org/linkml/list_elements_unique)
 | --- | --- | --- |
 | **Comments:** | | should only be used with multivalued slots |
 | **In Subsets:** | | SpecificationSubset |
-

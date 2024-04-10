@@ -1,7 +1,6 @@
 
 # Slot: typeof
 
-
 A parent type from which type properties are inherited
 
 URI: [linkml:typeof](https://w3id.org/linkml/typeof)
@@ -30,4 +29,3 @@ URI: [linkml:typeof](https://w3id.org/linkml/typeof)
 |  | | type definitions without a typeof slot are referred to as a "root type" |
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
-

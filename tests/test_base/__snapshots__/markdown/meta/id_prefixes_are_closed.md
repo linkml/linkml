@@ -1,7 +1,6 @@
 
 # Slot: id_prefixes_are_closed
 
-
 If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.
 
 URI: [linkml:id_prefixes_are_closed](https://w3id.org/linkml/id_prefixes_are_closed)
@@ -33,4 +32,3 @@ URI: [linkml:id_prefixes_are_closed](https://w3id.org/linkml/id_prefixes_are_clo
 |  |  |  |
 | --- | --- | --- |
 | **See also:** | | [https://github.com/linkml/linkml/issues/194](https://github.com/linkml/linkml/issues/194) |
-

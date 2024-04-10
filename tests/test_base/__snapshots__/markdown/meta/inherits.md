@@ -1,7 +1,6 @@
 
 # Slot: inherits
 
-
 An enum definition that is used as the basis to create a new enum
 
 URI: [linkml:inherits](https://w3id.org/linkml/inherits)
@@ -29,4 +28,3 @@ URI: [linkml:inherits](https://w3id.org/linkml/inherits)
 | --- | --- | --- |
 | **Comments:** | | All permissible values for all inherited enums are copied to form the initial seed set |
 | **In Subsets:** | | SpecificationSubset |
-

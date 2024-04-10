@@ -36,10 +36,11 @@ class ShaclGenerator(Generator):
         super().__post_init__()
         self.generate_header()
 
-    def generate_header(self):
-        print(f"# metamodel_version: {self.schema.metamodel_version}")
+    def generate_header(self) -> str:
+        out = f"\n# metamodel_version: {self.schema.metamodel_version}"
         if self.schema.version:
-            print(f"# version: {self.schema.version}")
+            out += f"\n# version: {self.schema.version}"
+        return out
 
     def serialize(self, **args) -> str:
         g = self.as_graph()

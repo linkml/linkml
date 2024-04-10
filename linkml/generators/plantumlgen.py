@@ -57,7 +57,7 @@ class PlantumlGenerator(Generator):
         directory: Optional[str] = None,
         load_image: bool = True,
         **_,
-    ) -> None:
+    ) -> Optional[str]:
         if directory:
             os.makedirs(directory, exist_ok=True)
         if classes is not None:
@@ -110,10 +110,9 @@ class PlantumlGenerator(Generator):
                 else:
                     self.logger.error(f"{resp.reason} accessing {plantuml_url}")
         else:
-            print(
-                "@startuml\nskinparam nodesep 10\n" + "\n".join(dedup_plantumlclassdef),
-                end="\n@enduml\n",
-            )
+            out = "@startuml\nskinparam nodesep 10\n" + "\n".join(dedup_plantumlclassdef)
+            out += "\n@enduml\n"
+            return out
 
     def add_class(self, cn: ClassDefinitionName) -> str:
         """Define the class only if

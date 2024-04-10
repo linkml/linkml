@@ -1,7 +1,6 @@
 
 # Slot: examples
 
-
 example usages of an element
 
 URI: [linkml:examples](https://w3id.org/linkml/examples)
@@ -47,4 +46,3 @@ URI: [linkml:examples](https://w3id.org/linkml/examples)
 | --- | --- | --- |
 | **In Subsets:** | | BasicSubset |
 | **Close Mappings:** | | vann:example |
-

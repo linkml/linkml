@@ -1,7 +1,6 @@
 
 # Type: objectidentifier
 
-
 A URI or CURIE that represents an object in the model.
 
 URI: [meta:Objectidentifier](https://w3id.org/linkml/Objectidentifier)
@@ -16,4 +15,3 @@ URI: [meta:Objectidentifier](https://w3id.org/linkml/Objectidentifier)
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | Used for inheritance and type checking |
-

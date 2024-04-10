@@ -1,7 +1,6 @@
 
 # Slot: rules
 
-
 the collection of rules that apply to all members of this class
 
 URI: [linkml:rules](https://w3id.org/linkml/rules)
@@ -27,4 +26,3 @@ URI: [linkml:rules](https://w3id.org/linkml/rules)
 | --- | --- | --- |
 | **Mappings:** | | sh:rule |
 | **In Subsets:** | | SpecificationSubset |
-

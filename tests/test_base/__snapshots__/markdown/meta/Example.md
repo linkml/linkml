@@ -1,7 +1,6 @@
 
 # Class: example
 
-
 usage example and description
 
 URI: [linkml:Example](https://w3id.org/linkml/Example)
@@ -36,4 +35,3 @@ URI: [linkml:Example](https://w3id.org/linkml/Example)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | BasicSubset |
-

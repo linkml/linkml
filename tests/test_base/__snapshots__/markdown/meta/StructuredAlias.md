@@ -1,7 +1,6 @@
 
 # Class: structured_alias
 
-
 object that contains meta data about a synonym or alias including where it came from (source) and its scope (narrow, broad, etc.)
 
 URI: [linkml:StructuredAlias](https://w3id.org/linkml/StructuredAlias)
@@ -268,4 +267,3 @@ URI: [linkml:StructuredAlias](https://w3id.org/linkml/StructuredAlias)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | skosxl:Label |
-

@@ -1,7 +1,6 @@
 
 # Slot: class_uri
 
-
 URI of the class that provides a semantic interpretation of the element in a linked data context. The URI may come from any namespace and may be shared between schemas
 
 URI: [linkml:class_uri](https://w3id.org/linkml/class_uri)
@@ -31,4 +30,3 @@ URI: [linkml:class_uri](https://w3id.org/linkml/class_uri)
 |  | | BasicSubset |
 | **See also:** | | [linkml:definition_uri](linkml:definition_uri) |
 |  | | [https://linkml.io/linkml/schemas/uris-and-mappings.html](https://linkml.io/linkml/schemas/uris-and-mappings.html) |
-

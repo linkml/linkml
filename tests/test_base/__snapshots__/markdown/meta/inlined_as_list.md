@@ -1,7 +1,6 @@
 
 # Slot: inlined_as_list
 
-
 True means that an inlined slot is represented as a list of range instances.  False means that an inlined slot is represented as a dictionary, whose key is the slot key or identifier and whose value is the range instance.
 
 URI: [linkml:inlined_as_list](https://w3id.org/linkml/inlined_as_list)
@@ -36,4 +35,3 @@ to the inlined_as_list setting. |
 |  | | BasicSubset |
 | **See also:** | | [https://w3id.org/linkml/docs/specification/06mapping/#collection-forms](https://w3id.org/linkml/docs/specification/06mapping/#collection-forms) |
 |  | | [https://linkml.io/linkml/schemas/inlining.html](https://linkml.io/linkml/schemas/inlining.html) |
-

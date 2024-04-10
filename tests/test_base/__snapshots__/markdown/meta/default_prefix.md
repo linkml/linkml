@@ -1,7 +1,6 @@
 
 # Slot: default_prefix
 
-
 The prefix that is used for all elements within a schema
 
 URI: [linkml:default_prefix](https://w3id.org/linkml/default_prefix)
@@ -28,4 +27,3 @@ URI: [linkml:default_prefix](https://w3id.org/linkml/default_prefix)
 | **In Subsets:** | | SpecificationSubset |
 |  | | MinimalSubset |
 |  | | BasicSubset |
-

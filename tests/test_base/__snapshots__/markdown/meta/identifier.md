@@ -1,7 +1,6 @@
 
 # Slot: identifier
 
-
 True means that the key slot(s) uniquely identifies the elements. There can be at most one identifier or key per container
 
 URI: [linkml:identifier](https://w3id.org/linkml/identifier)
@@ -39,4 +38,3 @@ URI: [linkml:identifier](https://w3id.org/linkml/identifier)
 |  | | RelationalModelProfile |
 | **See also:** | | [https://en.wikipedia.org/wiki/Identifier](https://en.wikipedia.org/wiki/Identifier) |
 |  | | [linkml:unique_keys](linkml:unique_keys) |
-

@@ -1,7 +1,6 @@
 
 # Slot: version
 
-
 particular version of schema
 
 URI: [linkml:version](https://w3id.org/linkml/version)
@@ -28,4 +27,3 @@ URI: [linkml:version](https://w3id.org/linkml/version)
 | **Mappings:** | | pav:version |
 | **In Subsets:** | | BasicSubset |
 | **Exact Mappings:** | | schema:schemaVersion |
-

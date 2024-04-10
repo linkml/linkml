@@ -3,9 +3,9 @@
 """
 
 import os
-import sys
 from csv import DictWriter
 from dataclasses import dataclass
+from io import StringIO
 from typing import Optional
 
 import click
@@ -28,9 +28,12 @@ class SummaryGenerator(Generator):
     slottab: Optional[DictWriter] = None
     dialect: str = "excel-tab"
 
+    _str_io: Optional[StringIO] = None
+
     def visit_schema(self, **_) -> None:
+        self._str_io = StringIO()
         self.classtab = DictWriter(
-            sys.stdout,
+            self._str_io,
             [
                 "Class Name",
                 "Parent Class",
@@ -78,6 +81,9 @@ class SummaryGenerator(Generator):
                 "URI": slot.slot_uri,
             }
         )
+
+    def end_schema(self, **kwargs) -> Optional[str]:
+        return self._str_io.getvalue()
 
 
 @shared_arguments(SummaryGenerator)

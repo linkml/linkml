@@ -1,7 +1,6 @@
 
 # Slot: name
 
-
 the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
 
 URI: [linkml:name](https://w3id.org/linkml/name)
@@ -44,4 +43,3 @@ URI: [linkml:name](https://w3id.org/linkml/name)
 | **See also:** | | [https://en.wikipedia.org/wiki/Data_element_name](https://en.wikipedia.org/wiki/Data_element_name) |
 |  | | [https://linkml.io/linkml/faq/modeling.html#why-are-my-class-names-translated-to-camelcase](https://linkml.io/linkml/faq/modeling.html#why-are-my-class-names-translated-to-camelcase) |
 | **Exact Mappings:** | | schema:name |
-

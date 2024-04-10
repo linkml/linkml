@@ -1,7 +1,6 @@
 
 # Slot: subsets
 
-
 An index to the collection of all subset definitions in the schema
 
 URI: [linkml:subsets](https://w3id.org/linkml/subsets)
@@ -28,4 +27,3 @@ URI: [linkml:subsets](https://w3id.org/linkml/subsets)
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
 | **Exact Mappings:** | | OIO:hasSubset |
-

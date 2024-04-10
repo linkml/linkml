@@ -1,7 +1,6 @@
 
 # Slot: narrow mappings
 
-
 A list of terms from different schemas or terminology systems that have narrower meaning.
 
 URI: [linkml:narrow_mappings](https://w3id.org/linkml/narrow_mappings)
@@ -26,4 +25,3 @@ None &#8594;  <sub>0..\*</sub> [Uriorcurie](types/Uriorcurie.md)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | skos:narrowMatch |
-

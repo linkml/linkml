@@ -1,7 +1,6 @@
 
 # Slot: metamodel_version
 
-
 Version of the metamodel used to load the schema
 
 URI: [linkml:metamodel_version](https://w3id.org/linkml/metamodel_version)
@@ -26,4 +25,3 @@ URI: [linkml:metamodel_version](https://w3id.org/linkml/metamodel_version)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | BasicSubset |
-

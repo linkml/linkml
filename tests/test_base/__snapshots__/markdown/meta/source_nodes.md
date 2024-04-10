@@ -1,7 +1,6 @@
 
 # Slot: source_nodes
 
-
 A list of nodes that are used in the reachability query
 
 URI: [linkml:source_nodes](https://w3id.org/linkml/source_nodes)
@@ -26,4 +25,3 @@ URI: [linkml:source_nodes](https://w3id.org/linkml/source_nodes)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
-

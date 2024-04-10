@@ -1,7 +1,6 @@
 
 # Subset: BasicSubset
 
-
 An extension of MinimalSubset that avoids advanced constructs and can be implemented by a broad variety of tools.
 
 This subset roughly corresponds to the union of most standard constructs used in relational datamodel modeling,
@@ -139,4 +138,4 @@ URI: [linkml:BasicSubset](https://w3id.org/linkml/BasicSubset)
 
 ### Enums
 
- * [Uriorcurie](types/Uriorcurie.md) - a URI or a CURIE
+ * [pv_formula_options](pv_formula_options.md) - The formula used to generate the set of permissible values from the code_set values

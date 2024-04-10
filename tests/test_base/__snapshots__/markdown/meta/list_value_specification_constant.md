@@ -1,7 +1,6 @@
 
 # Slot: list_value_specification_constant
 
-
 Grouping for metamodel slots that constrain members of a multivalued slot value to equal a specified constant
 
 URI: [linkml:list_value_specification_constant](https://w3id.org/linkml/list_value_specification_constant)

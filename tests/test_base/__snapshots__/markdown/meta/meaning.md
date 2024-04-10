@@ -1,7 +1,6 @@
 
 # Slot: meaning
 
-
 the value meaning of a permissible value
 
 URI: [linkml:meaning](https://w3id.org/linkml/meaning)
@@ -29,4 +28,3 @@ URI: [linkml:meaning](https://w3id.org/linkml/meaning)
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
 | **See also:** | | [https://en.wikipedia.org/wiki/ISO/IEC_11179](https://en.wikipedia.org/wiki/ISO/IEC_11179) |
-

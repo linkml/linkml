@@ -1,7 +1,6 @@
 
 # Slot: prefix_prefix
 
-
 The prefix components of a prefix expansions. This is the part that appears before the colon in a CURIE.
 
 URI: [linkml:prefix_prefix](https://w3id.org/linkml/prefix_prefix)
@@ -28,4 +27,3 @@ URI: [linkml:prefix_prefix](https://w3id.org/linkml/prefix_prefix)
 | **Mappings:** | | sh:prefix |
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
-

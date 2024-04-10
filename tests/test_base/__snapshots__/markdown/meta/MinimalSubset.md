@@ -1,7 +1,6 @@
 
 # Subset: MinimalSubset
 
-
 The absolute minimal set of elements necessary for defining any schema.
 
 schemas conforming to the minimal subset consist of classes, with all slots

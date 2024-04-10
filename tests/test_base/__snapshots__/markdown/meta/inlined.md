@@ -1,7 +1,6 @@
 
 # Slot: inlined
 
-
 True means that keyed or identified slot appears in an outer structure by value.  False means that only the key or identifier for the slot appears within the domain, referencing a structure that appears elsewhere.
 
 URI: [linkml:inlined](https://w3id.org/linkml/inlined)
@@ -33,4 +32,3 @@ URI: [linkml:inlined](https://w3id.org/linkml/inlined)
 |  | | BasicSubset |
 | **See also:** | | [https://w3id.org/linkml/docs/specification/06mapping/#collection-forms](https://w3id.org/linkml/docs/specification/06mapping/#collection-forms) |
 |  | | [https://linkml.io/linkml/schemas/inlining.html](https://linkml.io/linkml/schemas/inlining.html) |
-

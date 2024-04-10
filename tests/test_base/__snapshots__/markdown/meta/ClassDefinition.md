@@ -1,7 +1,6 @@
 
 # Class: class_definition
 
-
 an element whose instances are complex objects that may have slot-value assignments
 
 URI: [linkml:ClassDefinition](https://w3id.org/linkml/ClassDefinition)
@@ -198,4 +197,3 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
 |  | | ObjectOrientedProfile |
 |  | | OwlProfile |
 | **Close Mappings:** | | owl:Class |
-

@@ -1,7 +1,6 @@
 
 # Slot: exact mappings
 
-
 Used to link a unit to equivalent concepts in ontologies such as UO, SNOMED, OEM, OBOE, NCIT
 
 URI: [linkml:UnitOfMeasure_exact_mappings](https://w3id.org/linkml/UnitOfMeasure_exact_mappings)
@@ -28,4 +27,3 @@ URI: [linkml:UnitOfMeasure_exact_mappings](https://w3id.org/linkml/UnitOfMeasure
 | --- | --- | --- |
 | **Mappings:** | | skos:exactMatch |
 | **Comments:** | | Do not use this to encode mappings to systems for which a dedicated field exists |
-

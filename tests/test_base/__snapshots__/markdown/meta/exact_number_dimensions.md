@@ -1,7 +1,6 @@
 
 # Slot: exact_number_dimensions
 
-
 exact number of dimensions in the array
 
 URI: [linkml:exact_number_dimensions](https://w3id.org/linkml/exact_number_dimensions)
@@ -26,4 +25,3 @@ URI: [linkml:exact_number_dimensions](https://w3id.org/linkml/exact_number_dimen
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | if exact_number_dimensions is set, then minimum_number_dimensions and maximum_number_dimensions must be unset or have the same value |
-

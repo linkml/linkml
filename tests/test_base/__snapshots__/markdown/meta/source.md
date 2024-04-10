@@ -1,7 +1,6 @@
 
 # Slot: source
 
-
 A related resource from which the element is derived.
 
 URI: [linkml:source](https://w3id.org/linkml/source)
@@ -52,4 +51,3 @@ URI: [linkml:source](https://w3id.org/linkml/source)
 | **In Subsets:** | | BasicSubset |
 | **Close Mappings:** | | prov:wasDerivedFrom |
 |  | | schema:isBasedOn |
-

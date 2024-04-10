@@ -3,7 +3,6 @@
 
 
 
-
 URI: [linkml:AnonymousSlotExpression](https://w3id.org/linkml/AnonymousSlotExpression)
 
 

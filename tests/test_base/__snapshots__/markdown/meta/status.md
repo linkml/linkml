@@ -1,7 +1,6 @@
 
 # Slot: status
 
-
 status of the element
 
 URI: [linkml:status](https://w3id.org/linkml/status)
@@ -51,4 +50,3 @@ URI: [linkml:status](https://w3id.org/linkml/status)
 | **In Subsets:** | | BasicSubset |
 | **See also:** | | [https://www.hl7.org/fhir/valueset-publication-status.html](https://www.hl7.org/fhir/valueset-publication-status.html) |
 |  | | [https://www.hl7.org/fhir/versions.html#std-process](https://www.hl7.org/fhir/versions.html#std-process) |
-

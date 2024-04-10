@@ -1,7 +1,6 @@
 
 # Slot: keywords
 
-
 Keywords or tags used to describe the element
 
 URI: [linkml:keywords](https://w3id.org/linkml/keywords)
@@ -47,4 +46,3 @@ URI: [linkml:keywords](https://w3id.org/linkml/keywords)
 | --- | --- | --- |
 | **Mappings:** | | schema:keywords |
 | **In Subsets:** | | BasicSubset |
-

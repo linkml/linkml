@@ -1,7 +1,6 @@
 
 # Class: type_expression
 
-
 An abstract class grouping named types and anonymous type expressions
 
 URI: [linkml:TypeExpression](https://w3id.org/linkml/TypeExpression)

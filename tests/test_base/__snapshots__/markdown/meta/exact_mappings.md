@@ -1,7 +1,6 @@
 
 # Slot: exact mappings
 
-
 A list of terms from different schemas or terminology systems that have identical meaning.
 
 URI: [linkml:exact_mappings](https://w3id.org/linkml/exact_mappings)
@@ -48,4 +47,3 @@ None &#8594;  <sub>0..\*</sub> [Uriorcurie](types/Uriorcurie.md)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | skos:exactMatch |
-

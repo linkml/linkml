@@ -1,7 +1,6 @@
 
 # Slot: required
 
-
 true means that the slot must be present in instances of the class definition
 
 URI: [linkml:required](https://w3id.org/linkml/required)
@@ -32,4 +31,3 @@ URI: [linkml:required](https://w3id.org/linkml/required)
 |  | | BasicSubset |
 |  | | RelationalModelProfile |
 |  | | ObjectOrientedProfile |
-

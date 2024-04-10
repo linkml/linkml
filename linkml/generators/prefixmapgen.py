@@ -3,7 +3,6 @@ Generate JSON-LD contexts
 
 """
 
-import csv
 import os
 from dataclasses import dataclass, field
 from typing import Dict, Optional, Set, Union
@@ -59,7 +58,7 @@ class PrefixGenerator(Generator):
             if self.default_ns:
                 self.emit_prefixes.add(self.default_ns)
 
-    def end_schema(self, base: Optional[Union[str, Namespace]] = None, output: Optional[str] = None, **_) -> None:
+    def end_schema(self, base: Optional[Union[str, Namespace]] = None, output: Optional[str] = None, **_) -> str:
         context = JsonObj()
         if base:
             base = str(base)
@@ -74,31 +73,24 @@ class PrefixGenerator(Generator):
         for k, v in self.slot_class_maps.items():
             context[k] = v
 
-        if output:
-            output_ext = output.split(".")[-1]
+        if self.format == "tsv":
+            mapping: Dict = {}  # prefix to IRI mapping
+            for prefix in sorted(self.emit_prefixes):
+                mapping[prefix] = self.namespaces[prefix]
 
-            if output_ext == "tsv":
-                mapping: Dict = {}
-                for prefix in sorted(self.emit_prefixes):
-                    mapping[prefix] = self.namespaces[prefix]
+            items = []
+            for key, value in mapping.items():
+                items.append("\t".join([key, value]))
+            out = "\n".join(items)
 
-                with open(output, "w", encoding="UTF-8") as outf:
-                    writer = csv.writer(outf, delimiter="\t")
-                    for key, value in mapping.items():
-                        writer.writerow([key, value])
-            else:
-                with open(output, "w", encoding="UTF-8") as outf:
-                    outf.write(as_json(context))
         else:
-            if self.format == "tsv":
-                mapping: Dict = {}  # prefix to IRI mapping
-                for prefix in sorted(self.emit_prefixes):
-                    mapping[prefix] = self.namespaces[prefix]
+            out = str(as_json(context))
 
-                for key, value in mapping.items():
-                    print(key, value, sep="\t")
-            else:
-                print(as_json(context))
+        if output:
+            with open(output, "w", encoding="UTF-8") as outf:
+                outf.write(out)
+
+        return out
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         class_def = {}

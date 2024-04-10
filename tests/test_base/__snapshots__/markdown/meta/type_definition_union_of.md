@@ -1,7 +1,6 @@
 
 # Slot: union_of
 
-
 indicates that the domain element consists exactly of the members of the element in the range.
 
 URI: [linkml:type_definition_union_of](https://w3id.org/linkml/type_definition_union_of)
@@ -28,4 +27,3 @@ URI: [linkml:type_definition_union_of](https://w3id.org/linkml/type_definition_u
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
 |  | | OwlProfile |
-

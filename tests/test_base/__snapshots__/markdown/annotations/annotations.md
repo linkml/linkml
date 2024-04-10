@@ -1,7 +1,6 @@
 
 # Slot: annotations
 
-
 a collection of tag/text tuples with the semantics of OWL Annotation
 
 URI: [linkml:annotations](https://w3id.org/linkml/annotations)

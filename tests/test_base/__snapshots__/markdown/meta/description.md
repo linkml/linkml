@@ -1,7 +1,6 @@
 
 # Slot: description
 
-
 a textual description of the element's purpose and use
 
 URI: [linkml:description](https://w3id.org/linkml/description)
@@ -50,4 +49,3 @@ URI: [linkml:description](https://w3id.org/linkml/description)
 | **In Subsets:** | | BasicSubset |
 | **Exact Mappings:** | | dcterms:description |
 |  | | schema:description |
-

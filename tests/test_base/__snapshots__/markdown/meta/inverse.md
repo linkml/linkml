@@ -1,7 +1,6 @@
 
 # Slot: inverse
 
-
 indicates that any instance of d s r implies that there is also an instance of r s' d
 
 URI: [linkml:inverse](https://w3id.org/linkml/inverse)
@@ -27,4 +26,3 @@ URI: [linkml:inverse](https://w3id.org/linkml/inverse)
 | --- | --- | --- |
 | **Mappings:** | | owl:inverseOf |
 | **In Subsets:** | | SpecificationSubset |
-

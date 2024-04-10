@@ -1,7 +1,6 @@
 
 # Slot: symmetric
 
-
 If s is symmetric, and i.s=v, then v.s=i
 
 URI: [linkml:symmetric](https://w3id.org/linkml/symmetric)
@@ -28,4 +27,3 @@ URI: [linkml:symmetric](https://w3id.org/linkml/symmetric)
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
 | **Close Mappings:** | | owl:SymmetricProperty |
-

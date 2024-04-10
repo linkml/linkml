@@ -1,7 +1,6 @@
 
 # Class: enum_definition
 
-
 an element whose instances must be drawn from a specified set of permissible values
 
 URI: [linkml:EnumDefinition](https://w3id.org/linkml/EnumDefinition)
@@ -190,4 +189,3 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
 |  | | NCIT:C113497 |
 |  | | cdisc:ValueDomain |
 | **Close Mappings:** | | skos:ConceptScheme |
-

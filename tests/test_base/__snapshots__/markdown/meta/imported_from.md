@@ -1,7 +1,6 @@
 
 # Slot: imported_from
 
-
 the imports entry that this element was derived from.  Empty means primary source
 
 URI: [linkml:imported_from](https://w3id.org/linkml/imported_from)

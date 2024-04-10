@@ -1,7 +1,6 @@
 
 # Slot: domain
 
-
 defines the type of the subject of the slot.  Given the following slot definition
   S1:
     domain: C1
@@ -34,4 +33,3 @@ URI: [linkml:domain](https://w3id.org/linkml/domain)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
-

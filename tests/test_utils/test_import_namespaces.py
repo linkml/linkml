@@ -1,11 +1,17 @@
+import re
+
 from linkml.generators.shexgen import ShExGenerator
 
 
 def test_import_from_url(input_path):
     """Validate namespace bindings"""
     shex = ShExGenerator(input_path("import_test_l2.yaml")).serialize()
+    shex = shex.strip()
+    # replace metamodel version with 0.0.0
+    shex = re.sub(r"(?<=# metamodel_version: )\d\.\d\.\d", "0.0.0", shex)
     assert (
-        """BASE <http://example.org/l2/>
+        """# metamodel_version: 0.0.0
+BASE <http://example.org/l2/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX l1: <http://example.org/l1/>
@@ -41,5 +47,5 @@ l1:L1Class  (
        rdf:type [ <L2Class> ] ?
     )
 }"""
-        == shex.strip()
+        == shex
     )

@@ -1,7 +1,6 @@
 
 # Class: anonymous_expression
 
-
 An abstract parent class for any nested expression
 
 URI: [linkml:AnonymousExpression](https://w3id.org/linkml/AnonymousExpression)
@@ -265,4 +264,3 @@ URI: [linkml:AnonymousExpression](https://w3id.org/linkml/AnonymousExpression)
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | anonymous expressions are useful for when it is necessary to build a complex expression without introducing a named element for each sub-expression |
-

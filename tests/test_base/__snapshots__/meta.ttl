@@ -1777,9 +1777,9 @@ linkml:maximum_number_dimensions a linkml:SlotDefinition ;
     skos:inScheme linkml:meta ;
     skos:note "maximum_number_dimensions cannot be less than minimum_number_dimensions" ;
     linkml:any_of [ a linkml:AnonymousSlotExpression ;
-            linkml:range linkml:integer ],
+            linkml:range linkml:boolean ],
         [ a linkml:AnonymousSlotExpression ;
-            linkml:range linkml:boolean ] ;
+            linkml:range linkml:integer ] ;
     linkml:definition_uri linkml:maximum_number_dimensions ;
     linkml:domain linkml:ArrayExpression ;
     linkml:domain_of linkml:ArrayExpression ;
@@ -4546,9 +4546,9 @@ linkml:UnitOfMeasure a linkml:ClassDefinition ;
     linkml:any_of [ a linkml:AnonymousClassExpression ;
             linkml:slot_conditions linkml:ucum_code ],
         [ a linkml:AnonymousClassExpression ;
-            linkml:slot_conditions linkml:exact_mappings ],
-        [ a linkml:AnonymousClassExpression ;
             linkml:slot_conditions linkml:iec61360code ],
+        [ a linkml:AnonymousClassExpression ;
+            linkml:slot_conditions linkml:exact_mappings ],
         [ a linkml:AnonymousClassExpression ;
             linkml:slot_conditions linkml:symbol ] ;
     linkml:class_uri qudt:Unit ;
@@ -5723,40 +5723,40 @@ There are many subsets of *profiles* of the metamodel, for different purposes:
 For canonical reference documentation on any metamodel construct,
 refer to the official URI for each construct, e.g.
 [https://w3id.org/linkml/is_a](https://w3id.org/linkml/is_a)""" ;
-    sh:declare [ sh:namespace vann1: ;
-            sh:prefix "vann" ],
-        [ sh:namespace oslc: ;
+    sh:declare [ sh:namespace oslc: ;
             sh:prefix "oslc" ],
+        [ sh:namespace NCIT: ;
+            sh:prefix "NCIT" ],
+        [ sh:namespace bibo: ;
+            sh:prefix "bibo" ],
+        [ sh:namespace skosxl: ;
+            sh:prefix "skosxl" ],
+        [ sh:namespace schema1: ;
+            sh:prefix "schema" ],
+        [ sh:namespace OIO: ;
+            sh:prefix "OIO" ],
+        [ sh:namespace swrl: ;
+            sh:prefix "swrl" ],
+        [ sh:namespace sh: ;
+            sh:prefix "sh" ],
+        [ sh:namespace qb: ;
+            sh:prefix "qb" ],
+        [ sh:namespace linkml: ;
+            sh:prefix "linkml" ],
+        [ sh:namespace <http://semanticscience.org/resource/SIO_> ;
+            sh:prefix "SIO" ],
+        [ sh:namespace prov: ;
+            sh:prefix "prov" ],
+        [ sh:namespace pav: ;
+            sh:prefix "pav" ],
+        [ sh:namespace skos: ;
+            sh:prefix "skos" ],
+        [ sh:namespace vann1: ;
+            sh:prefix "vann" ],
         [ sh:namespace cdisc: ;
             sh:prefix "cdisc" ],
         [ sh:namespace owl: ;
             sh:prefix "owl" ],
-        [ sh:namespace bibo: ;
-            sh:prefix "bibo" ],
-        [ sh:namespace <http://semanticscience.org/resource/SIO_> ;
-            sh:prefix "SIO" ],
-        [ sh:namespace schema1: ;
-            sh:prefix "schema" ],
-        [ sh:namespace pav: ;
-            sh:prefix "pav" ],
-        [ sh:namespace skosxl: ;
-            sh:prefix "skosxl" ],
-        [ sh:namespace OIO: ;
-            sh:prefix "OIO" ],
-        [ sh:namespace linkml: ;
-            sh:prefix "linkml" ],
-        [ sh:namespace prov: ;
-            sh:prefix "prov" ],
-        [ sh:namespace swrl: ;
-            sh:prefix "swrl" ],
-        [ sh:namespace skos: ;
-            sh:prefix "skos" ],
-        [ sh:namespace qb: ;
-            sh:prefix "qb" ],
-        [ sh:namespace NCIT: ;
-            sh:prefix "NCIT" ],
-        [ sh:namespace sh: ;
-            sh:prefix "sh" ],
         [ sh:namespace qudt: ;
             sh:prefix "qudt" ] ;
     linkml:classes linkml:AltDescription,
@@ -6253,5 +6253,4 @@ linkml:SlotDefinition a linkml:ClassDefinition ;
         linkml:usage_slot_name,
         linkml:value_presence,
         linkml:values_from .
-
 

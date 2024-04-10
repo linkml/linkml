@@ -1,7 +1,6 @@
 
 # Slot: matches
 
-
 Specifies a match query that is used to calculate the list of permissible values
 
 URI: [linkml:matches](https://w3id.org/linkml/matches)
@@ -28,4 +27,3 @@ URI: [linkml:matches](https://w3id.org/linkml/matches)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
-

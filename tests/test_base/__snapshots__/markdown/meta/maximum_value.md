@@ -1,7 +1,6 @@
 
 # Slot: maximum_value
 
-
 For ordinal ranges, the value must be equal to or lower than this
 
 URI: [linkml:maximum_value](https://w3id.org/linkml/maximum_value)
@@ -33,4 +32,3 @@ URI: [linkml:maximum_value](https://w3id.org/linkml/maximum_value)
 | **Aliases:** | | high value |
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
-

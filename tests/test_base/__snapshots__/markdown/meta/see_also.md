@@ -1,7 +1,6 @@
 
 # Slot: see_also
 
-
 A list of related entities or URLs that may be of relevance
 
 URI: [linkml:see_also](https://w3id.org/linkml/see_also)
@@ -47,4 +46,3 @@ URI: [linkml:see_also](https://w3id.org/linkml/see_also)
 | --- | --- | --- |
 | **Mappings:** | | rdfs:seeAlso |
 | **In Subsets:** | | BasicSubset |
-

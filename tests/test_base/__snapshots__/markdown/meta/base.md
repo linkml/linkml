@@ -1,7 +1,6 @@
 
 # Slot: base
 
-
 python base type in the LinkML runtime that implements this type definition
 
 URI: [linkml:base](https://w3id.org/linkml/base)
@@ -29,4 +28,3 @@ URI: [linkml:base](https://w3id.org/linkml/base)
 |  | | the base is inherited by child types but may be overridden.  Base compatibility is not checked. |
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
-

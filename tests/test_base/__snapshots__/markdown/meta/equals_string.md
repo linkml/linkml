@@ -1,7 +1,6 @@
 
 # Slot: equals_string
 
-
 the slot must have range string and the value of the slot must equal the specified value
 
 URI: [linkml:equals_string](https://w3id.org/linkml/equals_string)
@@ -32,4 +31,3 @@ None &#8594;  <sub>0..1</sub> [String](types/String.md)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
-

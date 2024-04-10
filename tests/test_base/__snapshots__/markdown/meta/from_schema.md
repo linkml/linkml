@@ -1,7 +1,6 @@
 
 # Slot: from_schema
 
-
 id of the schema that defined the element
 
 URI: [linkml:from_schema](https://w3id.org/linkml/from_schema)
@@ -47,4 +46,3 @@ URI: [linkml:from_schema](https://w3id.org/linkml/from_schema)
 | --- | --- | --- |
 | **Mappings:** | | skos:inScheme |
 | **In Subsets:** | | SpecificationSubset |
-

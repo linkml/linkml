@@ -3,7 +3,6 @@
 
 
 
-
 URI: [linkml:import_map](https://w3id.org/linkml/import_map)
 
 

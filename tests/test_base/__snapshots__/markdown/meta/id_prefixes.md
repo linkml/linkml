@@ -1,7 +1,6 @@
 
 # Slot: id_prefixes
 
-
 An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix
 
 URI: [linkml:id_prefixes](https://w3id.org/linkml/id_prefixes)
@@ -38,4 +37,3 @@ URI: [linkml:id_prefixes](https://w3id.org/linkml/id_prefixes)
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
 | **See also:** | | [https://github.com/linkml/linkml-model/issues/28](https://github.com/linkml/linkml-model/issues/28) |
-

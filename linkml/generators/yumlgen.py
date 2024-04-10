@@ -59,7 +59,7 @@ class YumlGenerator(Generator):
         diagram_name: Optional[str] = None,
         load_image: bool = True,
         **_,
-    ) -> None:
+    ) -> Optional[str]:
         if directory:
             os.makedirs(directory, exist_ok=True)
         if classes is not None:
@@ -106,7 +106,7 @@ class YumlGenerator(Generator):
                 else:
                     self.logger.error(f"{resp.reason} accessing {url}: {resp!r}")
         else:
-            print(str(YUML) + ",".join(yumlclassdef), end="")
+            return str(YUML) + ",".join(yumlclassdef)
 
     def class_box(self, cn: ClassDefinitionName) -> str:
         """Generate a box for the class.  Populate its interior only if (a) it hasn't previously been generated and

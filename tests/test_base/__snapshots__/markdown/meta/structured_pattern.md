@@ -1,7 +1,6 @@
 
 # Slot: structured_pattern
 
-
 the string value of the slot must conform to the regular expression in the pattern expression
 
 URI: [linkml:structured_pattern](https://w3id.org/linkml/structured_pattern)
@@ -32,4 +31,3 @@ URI: [linkml:structured_pattern](https://w3id.org/linkml/structured_pattern)
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
 | **See also:** | | [https://linkml.io/linkml/schemas/constraints.html#structured-patterns](https://linkml.io/linkml/schemas/constraints.html#structured-patterns) |
-

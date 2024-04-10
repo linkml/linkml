@@ -1,7 +1,6 @@
 
 # Slot: instantiates
 
-
 An element in another schema which this element instantiates.
 
 URI: [linkml:instantiates](https://w3id.org/linkml/instantiates)

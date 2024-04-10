@@ -1,7 +1,6 @@
 
 # Slot: setting_value
 
-
 The value assigned for a setting
 
 URI: [linkml:setting_value](https://w3id.org/linkml/setting_value)
@@ -26,4 +25,3 @@ URI: [linkml:setting_value](https://w3id.org/linkml/setting_value)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
-

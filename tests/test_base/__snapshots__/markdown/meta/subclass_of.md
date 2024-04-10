@@ -1,7 +1,6 @@
 
 # Slot: ~~subclass_of~~ _(deprecated)_
 
-
 DEPRECATED -- rdfs:subClassOf to be emitted in OWL generation
 
 URI: [linkml:subclass_of](https://w3id.org/linkml/subclass_of)
@@ -26,4 +25,3 @@ URI: [linkml:subclass_of](https://w3id.org/linkml/subclass_of)
 |  |  |  |
 | --- | --- | --- |
 | **Close Mappings:** | | rdfs:subClassOf |
-

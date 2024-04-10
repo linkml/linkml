@@ -1,7 +1,6 @@
 
 # Slot: maximum_number_dimensions
 
-
 maximum number of dimensions in the array, or False if explicitly no maximum. If this is unset, and an explicit list of dimensions are passed using dimensions, then this is interpreted as a closed list and the maximum_number_dimensions is the length of the dimensions list, unless this value is set to False
 
 URI: [linkml:maximum_number_dimensions](https://w3id.org/linkml/maximum_number_dimensions)
@@ -26,4 +25,3 @@ URI: [linkml:maximum_number_dimensions](https://w3id.org/linkml/maximum_number_d
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | maximum_number_dimensions cannot be less than minimum_number_dimensions |
-

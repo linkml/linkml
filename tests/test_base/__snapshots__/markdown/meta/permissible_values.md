@@ -1,7 +1,6 @@
 
 # Slot: permissible_values
 
-
 A list of possible values for a slot range
 
 URI: [linkml:permissible_values](https://w3id.org/linkml/permissible_values)
@@ -31,4 +30,3 @@ URI: [linkml:permissible_values](https://w3id.org/linkml/permissible_values)
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
 | **Exact Mappings:** | | cdisc:PermissibleValue |
-

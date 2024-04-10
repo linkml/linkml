@@ -1,7 +1,6 @@
 
 # Class: definition
 
-
 abstract base class for core metaclasses
 
 URI: [linkml:Definition](https://w3id.org/linkml/Definition)
@@ -97,4 +96,3 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
 | --- | --- | --- |
 | **In Subsets:** | | BasicSubset |
 | **See also:** | | [https://en.wikipedia.org/wiki/Data_element_definition](https://en.wikipedia.org/wiki/Data_element_definition) |
-

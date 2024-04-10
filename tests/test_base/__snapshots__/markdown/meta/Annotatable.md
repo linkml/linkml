@@ -1,7 +1,6 @@
 
 # Class: annotatable
 
-
 mixin for classes that support annotations
 
 URI: [linkml:Annotatable](https://w3id.org/linkml/Annotatable)

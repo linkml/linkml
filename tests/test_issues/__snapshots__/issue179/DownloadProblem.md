@@ -1,7 +1,6 @@
 
 # Class: download problem
 
-
 A problem in downloading a knowledge source
 
 URI: [http://example.org/sample/example1/DownloadProblem](http://example.org/sample/example1/DownloadProblem)

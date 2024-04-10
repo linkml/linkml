@@ -1,7 +1,6 @@
 
 # Slot: aliases
 
-
 Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.
 
 URI: [linkml:aliases](https://w3id.org/linkml/aliases)
@@ -53,4 +52,3 @@ URI: [linkml:aliases](https://w3id.org/linkml/aliases)
 | **Comments:** | | not be confused with the metaslot alias. |
 | **In Subsets:** | | BasicSubset |
 | **Exact Mappings:** | | schema:alternateName |
-

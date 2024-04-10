@@ -1,7 +1,6 @@
 
 # Class: enum_expression
 
-
 An expression that constrains the range of a slot
 
 URI: [linkml:EnumExpression](https://w3id.org/linkml/EnumExpression)

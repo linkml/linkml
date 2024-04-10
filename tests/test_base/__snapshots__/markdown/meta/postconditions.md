@@ -1,7 +1,6 @@
 
 # Slot: postconditions
 
-
 an expression that must hold for an instance of the class, if the preconditions hold
 
 URI: [linkml:postconditions](https://w3id.org/linkml/postconditions)
@@ -31,4 +30,3 @@ None &#8594;  <sub>0..1</sub> [AnonymousClassExpression](AnonymousClassExpressio
 | **In Subsets:** | | SpecificationSubset |
 | **See also:** | | [https://w3id.org/linkml/docs/specification/05validation/#rules](https://w3id.org/linkml/docs/specification/05validation/#rules) |
 | **Close Mappings:** | | swrl:body |
-

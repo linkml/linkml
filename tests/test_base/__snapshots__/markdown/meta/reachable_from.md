@@ -1,7 +1,6 @@
 
 # Slot: reachable_from
 
-
 Specifies a query for obtaining a list of permissible values based on graph reachability
 
 URI: [linkml:reachable_from](https://w3id.org/linkml/reachable_from)
@@ -28,4 +27,3 @@ URI: [linkml:reachable_from](https://w3id.org/linkml/reachable_from)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
-

@@ -1,7 +1,6 @@
 
 # Slot: pv_formula
 
-
 Defines the specific formula to be used to generate the permissible values.
 
 URI: [linkml:pv_formula](https://w3id.org/linkml/pv_formula)
@@ -31,4 +30,3 @@ URI: [linkml:pv_formula](https://w3id.org/linkml/pv_formula)
 |  | | code_set must be supplied for this to be valid |
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
-

@@ -1,7 +1,6 @@
 
 # Class: local_name
 
-
 an attributed label
 
 URI: [linkml:LocalName](https://w3id.org/linkml/LocalName)

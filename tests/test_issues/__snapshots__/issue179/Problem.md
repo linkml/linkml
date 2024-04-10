@@ -1,7 +1,6 @@
 
 # Class: problem
 
-
 An object representing an error or problem encountered
 
 URI: [http://example.org/sample/example1/Problem](http://example.org/sample/example1/Problem)

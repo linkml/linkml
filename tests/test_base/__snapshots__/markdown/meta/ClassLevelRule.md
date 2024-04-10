@@ -1,7 +1,6 @@
 
 # Class: class_level_rule
 
-
 A rule that is applied to classes
 
 URI: [linkml:ClassLevelRule](https://w3id.org/linkml/ClassLevelRule)
