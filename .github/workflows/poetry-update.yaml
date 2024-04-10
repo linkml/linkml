@@ -47,22 +47,24 @@ jobs:
           echo "$UPDATE_MSG"
           echo EOF
         } >> "$GITHUB_ENV"
-
+    - uses: actions/create-github-app-token@v1
+      id: app-token
+      with:
+        app-id: ${{ vars.PR_BOT_APP_ID }}
+        private-key: ${{ secrets.PR_BOT_APP_PRIVATE_KEY }}
     - name: Create pull request
       uses: peter-evans/create-pull-request@v6
       with:
+        token: ${{ steps.app-token.outputs.token }}
         branch: update-lockfile
         title: "[poetry] Update Lockfile"
         commit-message: "Update poetry lockfile"
         labels: poetry
         add-paths: poetry.lock
+        reviewers: pkalita-lbl,cmungall,sierra-moxon
         body: |
-          Update poetry dependencies: 
-          
+          Update poetry dependencies:
+
           | Current | Updated |
           | ------- | ------- |
           ${{ env.UPDATE_MSG }}
-          
-        
-
-
