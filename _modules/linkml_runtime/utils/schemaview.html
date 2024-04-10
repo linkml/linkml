@@ -336,7 +336,7 @@
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span><span class="p">,</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">deque</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.namespaces</span> <span class="kn">import</span> <span class="n">Namespaces</span>
@@ -344,6 +344,7 @@
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.context_utils</span> <span class="kn">import</span> <span class="n">parse_import_map</span><span class="p">,</span> <span class="n">map_import</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.pattern</span> <span class="kn">import</span> <span class="n">PatternResolver</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.exceptions</span> <span class="kn">import</span> <span class="n">OrderingError</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -363,11 +364,23 @@
 <span class="n">TYPE_NAME</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">TypeDefinitionName</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
 <span class="n">ENUM_NAME</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">EnumDefinitionName</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
 
+<span class="n">ElementType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;ElementType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Element</span><span class="p">)</span>
+<span class="n">ElementNameType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;ElementNameType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Union</span><span class="p">[</span><span class="n">ElementName</span><span class="p">,</span><span class="nb">str</span><span class="p">])</span>
+<span class="n">DefinitionType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;DefinitionType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Definition</span><span class="p">)</span>
+<span class="n">DefinitionNameType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;DefinitionNameType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Union</span><span class="p">[</span><span class="n">DefinitionName</span><span class="p">,</span><span class="nb">str</span><span class="p">])</span>
+<span class="n">ElementDict</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ElementNameType</span><span class="p">,</span> <span class="n">ElementType</span><span class="p">]</span>
+<span class="n">DefDict</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="n">DefinitionNameType</span><span class="p">,</span> <span class="n">DefinitionType</span><span class="p">]</span>
+
 
 <span class="k">class</span> <span class="nc">OrderedBy</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">RANK</span> <span class="o">=</span> <span class="s2">&quot;rank&quot;</span>
     <span class="n">LEXICAL</span> <span class="o">=</span> <span class="s2">&quot;lexical&quot;</span>
     <span class="n">PRESERVE</span> <span class="o">=</span> <span class="s2">&quot;preserve&quot;</span>
+    <span class="n">INHERITANCE</span> <span class="o">=</span> <span class="s2">&quot;inheritance&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Order according to inheritance such that if C is a child of P then C appears after P</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
 
 
 <span class="k">def</span> <span class="nf">_closure</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">depth_first</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -635,7 +648,22 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dict</span><span class="p">(</span><span class="n">CLASSES</span><span class="p">,</span> <span class="n">imports</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_order_lexically</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elements</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="SchemaView.ordered"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.ordered">[docs]</a>    <span class="k">def</span> <span class="nf">ordered</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elements</span><span class="p">:</span> <span class="n">ElementDict</span><span class="p">,</span> <span class="n">ordered_by</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">OrderedBy</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElementDict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Order a dictionary of elements with some ordering method in :class:`.OrderedBy`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ordered_by</span> <span class="ow">in</span> <span class="p">(</span><span class="n">OrderedBy</span><span class="o">.</span><span class="n">LEXICAL</span><span class="p">,</span> <span class="n">OrderedBy</span><span class="o">.</span><span class="n">LEXICAL</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order_lexically</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">ordered_by</span> <span class="ow">in</span> <span class="p">(</span><span class="n">OrderedBy</span><span class="o">.</span><span class="n">RANK</span><span class="p">,</span> <span class="n">OrderedBy</span><span class="o">.</span><span class="n">RANK</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order_rank</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">ordered_by</span> <span class="ow">in</span> <span class="p">(</span><span class="n">OrderedBy</span><span class="o">.</span><span class="n">INHERITANCE</span><span class="p">,</span> <span class="n">OrderedBy</span><span class="o">.</span><span class="n">INHERITANCE</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order_inheritance</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">ordered_by</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">ordered_by</span> <span class="ow">in</span> <span class="p">(</span><span class="n">OrderedBy</span><span class="o">.</span><span class="n">PRESERVE</span><span class="p">,</span> <span class="n">OrderedBy</span><span class="o">.</span><span class="n">PRESERVE</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">elements</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ordered_by must be in OrderedBy or None, got </span><span class="si">{</span><span class="n">ordered_by</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_order_lexically</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elements</span><span class="p">:</span> <span class="n">ElementDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElementDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param element: slots or class type to order</span>
 <span class="sd">        :param imports</span>
@@ -650,7 +678,7 @@
             <span class="n">ordered_elements</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_element</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ordered_elements</span>
 
-    <span class="k">def</span> <span class="nf">_order_rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elements</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_order_rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elements</span><span class="p">:</span> <span class="n">ElementDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElementDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param elements: slots or classes to order</span>
 <span class="sd">        :return: all classes or slots sorted by their rank in schema view</span>
@@ -672,6 +700,32 @@
         <span class="n">rank_ordered_elements</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">unranked_map</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">rank_ordered_elements</span>
 
+    <span class="k">def</span> <span class="nf">_order_inheritance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elements</span><span class="p">:</span> <span class="n">DefDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DefDict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        sort classes such that if C is a child of P then C appears after P in the list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">clist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">elements</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">slist</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># sorted</span>
+        <span class="n">can_add</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">clist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">clist</span><span class="p">)):</span>
+                <span class="n">candidate</span> <span class="o">=</span> <span class="n">clist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">can_add</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">can_add</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">in</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">slist</span><span class="p">]:</span>
+                        <span class="n">can_add</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="n">can_add</span><span class="p">:</span>
+                    <span class="n">slist</span> <span class="o">=</span> <span class="n">slist</span> <span class="o">+</span> <span class="p">[</span><span class="n">candidate</span><span class="p">]</span>
+                    <span class="k">del</span> <span class="n">clist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">can_add</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">OrderingError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;could not find suitable element in </span><span class="si">{</span><span class="n">clist</span><span class="si">}</span><span class="s2"> that does not ref </span><span class="si">{</span><span class="n">slist</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">slist</span><span class="p">}</span>
+
+
 <div class="viewcode-block" id="SchemaView.all_classes"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_classes">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">all_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ordered_by</span><span class="o">=</span><span class="n">OrderedBy</span><span class="o">.</span><span class="n">PRESERVE</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -680,15 +734,8 @@
 <span class="sd">        :return: all classes in schema view</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">classes</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_dict</span><span class="p">(</span><span class="n">CLASSES</span><span class="p">,</span> <span class="n">imports</span><span class="p">))</span>
-
-        <span class="k">if</span> <span class="n">ordered_by</span> <span class="o">==</span> <span class="n">OrderedBy</span><span class="o">.</span><span class="n">LEXICAL</span><span class="p">:</span>
-            <span class="n">ordered_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order_lexically</span><span class="p">(</span><span class="n">elements</span><span class="o">=</span><span class="n">classes</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">ordered_by</span> <span class="o">==</span> <span class="n">OrderedBy</span><span class="o">.</span><span class="n">RANK</span><span class="p">:</span>
-            <span class="n">ordered_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order_rank</span><span class="p">(</span><span class="n">elements</span><span class="o">=</span><span class="n">classes</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>  <span class="c1"># else preserve the order in the yaml</span>
-            <span class="n">ordered_classes</span> <span class="o">=</span> <span class="n">classes</span>
-
-        <span class="k">return</span> <span class="n">ordered_classes</span></div>
+        <span class="n">classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ordered</span><span class="p">(</span><span class="n">classes</span><span class="p">,</span> <span class="n">ordered_by</span><span class="o">=</span><span class="n">ordered_by</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">classes</span></div>
 
 <div class="viewcode-block" id="SchemaView.all_slot"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_slot">[docs]</a>    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use `all_slots` instead&quot;</span><span class="p">)</span>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
@@ -716,14 +763,8 @@
                     <span class="k">if</span> <span class="n">aname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
                         <span class="n">slots</span><span class="p">[</span><span class="n">aname</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
 
-        <span class="k">if</span> <span class="n">ordered_by</span> <span class="o">==</span> <span class="n">OrderedBy</span><span class="o">.</span><span class="n">LEXICAL</span><span class="p">:</span>
-            <span class="n">ordered_slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order_lexically</span><span class="p">(</span><span class="n">elements</span><span class="o">=</span><span class="n">slots</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">ordered_by</span> <span class="o">==</span> <span class="n">OrderedBy</span><span class="o">.</span><span class="n">RANK</span><span class="p">:</span>
-            <span class="n">ordered_slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order_rank</span><span class="p">(</span><span class="n">elements</span><span class="o">=</span><span class="n">slots</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># preserve order in YAML</span>
-            <span class="n">ordered_slots</span> <span class="o">=</span> <span class="n">slots</span>
-        <span class="k">return</span> <span class="n">ordered_slots</span></div>
+        <span class="n">slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ordered</span><span class="p">(</span><span class="n">slots</span><span class="p">,</span> <span class="n">ordered_by</span><span class="o">=</span><span class="n">ordered_by</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">slots</span></div>
 
 <div class="viewcode-block" id="SchemaView.all_enum"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_enum">[docs]</a>    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use `all_enums` instead&quot;</span><span class="p">)</span>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
@@ -1091,7 +1132,7 @@
 <span class="sd">        :param is_a: include is_a parents (default is True)</span>
 <span class="sd">        :return: all direct child slot names (is_a and mixins)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">elts</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="n">imports</span><span class="p">)]</span>
+        <span class="n">elts</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)]</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">elts</span> <span class="k">if</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">is_a</span> <span class="o">==</span> <span class="n">slot_name</span> <span class="ow">and</span> <span class="n">is_a</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">mixins</span> <span class="ow">and</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">mixins</span><span class="p">)]</span></div>
 
 <div class="viewcode-block" id="SchemaView.class_ancestors"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_ancestors">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
