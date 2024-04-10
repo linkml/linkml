@@ -61,6 +61,7 @@ jobs:
         commit-message: "Update poetry lockfile"
         labels: poetry
         add-paths: poetry.lock
+        reviewers: pkalita-lbl,cmungall,sierra-moxon
         body: |
           Update poetry dependencies:
 
