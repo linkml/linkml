@@ -16,8 +16,8 @@
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
         {% if s.range not in gen.all_type_object_names() %}
-          {{ gen.name(element) }} --> {{ s.range }} : {{ gen.name(s) }}
-          click {{ s.range }} href "../{{s.range}}"
+          {{ gen.name(element) }} --> {{ gen.name(schemaview.get_element(s.range)) }} : {{ gen.name(s) }}
+          click {{ gen.name(schemaview.get_element(s.range)) }} href "../{{gen.name(schemaview.get_element(s.range))}}"
         {% endif %}
       {% endfor %}
 ```
@@ -33,8 +33,8 @@
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
         {% if s.range not in gen.all_type_object_names() %}
-          {{ gen.name(element) }} --> {{ s.range }} : {{ gen.name(s) }}
-          click {{ s.range }} href "../{{s.range}}"
+          {{ gen.name(element) }} --> {{ gen.name(schemaview.get_element(s.range)) }} : {{ gen.name(s) }}
+          click {{ gen.name(schemaview.get_element(s.range)) }} href "../{{gen.name(schemaview.get_element(s.range))}}"
         {% endif %}
       {% endfor %}
 ```
@@ -50,8 +50,8 @@
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
         {% if s.range not in gen.all_type_object_names() %}
-          {{ gen.name(element) }} --> {{ s.range }} : {{ gen.name(s) }}
-          click {{ s.range }} href "../{{s.range}}"
+          {{ gen.name(element) }} --> {{ gen.name(schemaview.get_element(s.range)) }} : {{ gen.name(s) }}
+          click {{ gen.name(schemaview.get_element(s.range)) }} href "../{{gen.name(schemaview.get_element(s.range))}}"
         {% endif %}
       {% endfor %}
 ```
@@ -63,8 +63,8 @@
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
         {% if s.range not in gen.all_type_object_names() %}
-          {{ gen.name(element) }} --> {{ s.range }} : {{ gen.name(s) }}
-          click {{ s.range }} href "../{{s.range}}"
+          {{ gen.name(element) }} --> {{ gen.name(schemaview.get_element(s.range)) }} : {{ gen.name(s) }}
+          click {{ gen.name(schemaview.get_element(s.range)) }} href "../{{gen.name(schemaview.get_element(s.range))}}"
         {% endif %}
       {% endfor %}
 ```
