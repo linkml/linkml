@@ -29,7 +29,7 @@ pip install linkml
 
 ## Alternative: Use the official Docker/OCI iamge
 
-You can also use the [official Docker/OCI image for LinkML](docker.io/linkml/linkml):
+You can also use the [official Docker/OCI image for LinkML](https://hub.docker.com/r/linkml/linkml):
 
 To start a shell from the image:
 ```bash
