@@ -24,13 +24,18 @@ pip install linkml
 
 ## Alternative protocol: Use Docker
 
-You can also use the Docker image, courtesy of the Monarch Initiative:
+You can also use the [official Docker/OCI image for LinkML](docker.io/linkml/linkml):
 
+To start a shell from the image:
 ```bash
-docker run -v $(PWD):/work -w /work/ --rm -ti monarchinitiative/linkml
+docker run -v ./:/work -w /work/ --rm -ti docker.io/linkml/linkml
 ```
 
-This comes with LinkML already installed
+Then try some commands:
+```bash
+linkml-ws --help
+gen-project --help
+```
 
 ## Installation for contributors
 
