@@ -27,7 +27,7 @@ The latest version can always be installed with:
 pip install linkml
 ```
 
-## Alternative: Use the official Docker/OCI iamge
+## Alternative: Use the official Docker/OCI image
 
 You can also use the [official Docker/OCI image for LinkML](https://hub.docker.com/r/linkml/linkml):
 
