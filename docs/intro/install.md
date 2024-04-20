@@ -1,6 +1,12 @@
 # Quick Install Guide
 
-## Install Python
+There are multiple ways to installing LinkML.
+
+## Local installation: Use the Python package
+
+If you are developing locally you can install LinkML as a python package in your local environment.
+
+### Install Python
 
 Get the latest version of Python at https://www.python.org/downloads/ or with your operating system’s package manager.
 
@@ -13,8 +19,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>>
 ```
 
-
-## Install LinkML
+### Install LinkML
 
 The latest version can always be installed with:
 
@@ -22,7 +27,7 @@ The latest version can always be installed with:
 pip install linkml
 ```
 
-## Alternative protocol: Use Docker
+## Alternative: Use the official Docker/OCI iamge
 
 You can also use the [official Docker/OCI image for LinkML](docker.io/linkml/linkml):
 
