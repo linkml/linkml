@@ -26,13 +26,12 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update
 RUN apt update && apt install -y gcc musl-dev python3-dev && rm -rf /var/lib/apt/lists/*
 
+COPY --from=builder /code/dist/*.whl /tmp/linkml-whl/
+RUN pip install /tmp/linkml-whl/*.whl
+
 RUN useradd --create-home linkmluser
 WORKDIR /home/linkmluser
 USER linkmluser
-ENV PATH="${PATH}:/home/linkmluser/.local/bin"
-
-COPY --from=builder /code/dist/*.whl /tmp
-RUN pip install --user /tmp/*.whl
 
 # command to run on container start
 CMD [ "bash" ]
