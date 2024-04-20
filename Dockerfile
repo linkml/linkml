@@ -1,4 +1,4 @@
-FROM python:3.9-bullseye as builder
+FROM python:3.12-bookworm as builder
 
 # https://stackoverflow.com/questions/53835198/integrating-python-poetry-with-docker
 ENV PYTHONFAULTHANDLER=1 \
@@ -20,7 +20,7 @@ ADD --keep-git-dir=true . .
 RUN poetry build
 
 #######################################
-FROM python:3.9-slim-bullseye as runner
+FROM python:3.12-slim-bookworm as runner
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update
