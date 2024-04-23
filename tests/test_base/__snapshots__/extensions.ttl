@@ -319,4 +319,3 @@ linkml:extensions a linkml:SchemaDefinition,
         linkml:uri,
         linkml:uriorcurie .
 
-

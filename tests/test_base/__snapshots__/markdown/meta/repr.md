@@ -1,7 +1,6 @@
 
 # Slot: repr
 
-
 the name of the python object that implements this type definition
 
 URI: [linkml:repr](https://w3id.org/linkml/repr)
@@ -27,4 +26,3 @@ URI: [linkml:repr](https://w3id.org/linkml/repr)
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
-

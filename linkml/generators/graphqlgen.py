@@ -19,28 +19,26 @@ class GraphqlGenerator(Generator):
     uses_schemaloader = True
     requires_metamodel = False
 
-    def __post_init__(self):
-        super().__post_init__()
-        # TODO: move this
-        self.generate_header()
+    def visit_schema(self, **kwargs) -> str:
+        return self.generate_header()
 
-    def generate_header(self):
-        print(f"# metamodel_version: {self.schema.metamodel_version}")
+    def generate_header(self) -> str:
+        out = f"# metamodel_version: {self.schema.metamodel_version}\n"
         if self.schema.version:
-            print(f"# version: {self.schema.version}")
+            out += f"# version: {self.schema.version}\n"
+        return out
 
-    def visit_class(self, cls: ClassDefinition) -> bool:
+    def visit_class(self, cls: ClassDefinition) -> str:
         etype = "interface" if (cls.abstract or cls.mixin) and not cls.mixins else "type"
         mixins = ", ".join([camelcase(mixin) for mixin in cls.mixins])
-        print(f"{etype} {camelcase(cls.name)}" + (f" implements {mixins}" if mixins else ""))
-        print("  {")
-        return True
+        out = f"{etype} {camelcase(cls.name)}" + (f" implements {mixins}" if mixins else "")
+        out = "\n".join([out, "  {"])
+        return out
 
-    def end_class(self, cls: ClassDefinition) -> None:
-        print("  }")
-        print()
+    def end_class(self, cls: ClassDefinition) -> str:
+        return "\n  }\n\n"
 
-    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
+    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> str:
         slotrange = (
             camelcase(slot.range)
             if slot.range in self.schema.classes or slot.range in self.schema.types or slot.range in self.schema.enums
@@ -50,7 +48,7 @@ class GraphqlGenerator(Generator):
             slotrange = f"[{slotrange}]"
         if slot.required:
             slotrange = slotrange + "!"
-        print(f"    {lcamelcase(aliased_slot_name)}: {slotrange}")
+        return f"\n    {lcamelcase(aliased_slot_name)}: {slotrange}"
 
 
 @shared_arguments(GraphqlGenerator)

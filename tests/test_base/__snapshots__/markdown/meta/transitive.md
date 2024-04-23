@@ -1,7 +1,6 @@
 
 # Slot: transitive
 
-
 If s is transitive, and i.s=z, and s.s=j, then i.s=j
 
 URI: [linkml:transitive](https://w3id.org/linkml/transitive)
@@ -28,4 +27,3 @@ URI: [linkml:transitive](https://w3id.org/linkml/transitive)
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
 | **Close Mappings:** | | owl:TransitiveProperty |
-

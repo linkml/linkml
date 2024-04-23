@@ -1,7 +1,6 @@
 
 # Slot: conforms_to
 
-
 An established standard to which the element conforms.
 
 URI: [linkml:conforms_to](https://w3id.org/linkml/conforms_to)
@@ -35,4 +34,3 @@ URI: [linkml:conforms_to](https://w3id.org/linkml/conforms_to)
 | **Mappings:** | | dcterms:conformsTo |
 | **In Subsets:** | | BasicSubset |
 | **See also:** | | [linkml:implements](linkml:implements) |
-

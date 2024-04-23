@@ -1,7 +1,6 @@
 
 # Class: path_expression
 
-
 An expression that describes an abstract path from an object to another through a sequence of slot lookups
 
 URI: [linkml:PathExpression](https://w3id.org/linkml/PathExpression)

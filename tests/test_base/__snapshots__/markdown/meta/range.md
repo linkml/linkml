@@ -1,7 +1,6 @@
 
 # Slot: range
 
-
 defines the type of the object of the slot.  Given the following slot definition
   S1:
     domain: C1
@@ -42,4 +41,3 @@ URI: [linkml:range](https://w3id.org/linkml/range)
 |  | | BasicSubset |
 |  | | RelationalModelProfile |
 |  | | ObjectOrientedProfile |
-

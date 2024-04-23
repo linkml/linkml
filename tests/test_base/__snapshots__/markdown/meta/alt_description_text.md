@@ -1,7 +1,6 @@
 
 # Slot: description
 
-
 text of an attributed description
 
 URI: [linkml:alt_description_text](https://w3id.org/linkml/alt_description_text)
@@ -26,4 +25,3 @@ URI: [linkml:alt_description_text](https://w3id.org/linkml/alt_description_text)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | BasicSubset |
-

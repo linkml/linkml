@@ -1,7 +1,6 @@
 
 # Class: subset_definition
 
-
 an element that can be used to group other metamodel elements
 
 URI: [linkml:SubsetDefinition](https://w3id.org/linkml/SubsetDefinition)
@@ -56,4 +55,3 @@ URI: [linkml:SubsetDefinition](https://w3id.org/linkml/SubsetDefinition)
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
-

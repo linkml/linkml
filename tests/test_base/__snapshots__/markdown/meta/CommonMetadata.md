@@ -1,7 +1,6 @@
 
 # Class: common_metadata
 
-
 Generic metadata shared across definitions
 
 URI: [linkml:CommonMetadata](https://w3id.org/linkml/CommonMetadata)
@@ -159,4 +158,3 @@ URI: [linkml:CommonMetadata](https://w3id.org/linkml/CommonMetadata)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | BasicSubset |
-

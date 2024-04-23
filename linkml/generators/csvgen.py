@@ -3,9 +3,9 @@ Generate CSVs
 """
 
 import os
-import sys
 from csv import DictWriter
 from dataclasses import dataclass
+from io import StringIO
 from typing import List, Optional, Set
 
 import click
@@ -42,14 +42,20 @@ class CsvGenerator(Generator):
     writer: Optional[DictWriter] = None
     """Python dictwriter"""
 
+    _str_io: Optional[StringIO] = None
+    """String that the writer outputs to"""
+
     def __post_init__(self):
         super().__post_init__()
+        self._str_io = None
+
         self.generate_header()  # TODO: don't do this in initialization
 
-    def generate_header(self):
-        print(f"# metamodel_version: {self.schema.metamodel_version}")
+    def generate_header(self) -> str:
+        out = f"# metamodel_version: {self.schema.metamodel_version}"
         if self.schema.version:
-            print(f"# version: {self.schema.version}")
+            out = "\n".join([out, f"# version: {self.schema.version}"])
+        return out
 
     def visit_schema(self, classes: List[ClassDefinitionName] = None, **_) -> None:
         # Note: classes comes from the "root" argument
@@ -65,8 +71,9 @@ class CsvGenerator(Generator):
             else:
                 self.closure.update(self.ancestors(self.schema.classes[clsname]))
 
+        self._str_io = StringIO()
         dialect: str = "excel" if self.format == "csv" else "excel-tab"
-        self.writer = DictWriter(sys.stdout, ["id", "mappings", "description"], dialect=dialect)
+        self.writer = DictWriter(self._str_io, ["id", "mappings", "description"], dialect=dialect)
         self.writer.writeheader()
 
     def visit_class(self, cls: ClassDefinition) -> bool:
@@ -82,6 +89,9 @@ class CsvGenerator(Generator):
             )
             return True
         return False
+
+    def end_schema(self, **kwargs) -> str:
+        return self._str_io.getvalue()
 
 
 @shared_arguments(CsvGenerator)

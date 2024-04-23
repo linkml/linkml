@@ -1,7 +1,6 @@
 
 # Slot: inapplicable
 
-
 true means that values for this slot must not be present
 
 URI: [linkml:inapplicable](https://w3id.org/linkml/inapplicable)
@@ -26,4 +25,3 @@ URI: [linkml:inapplicable](https://w3id.org/linkml/inapplicable)
 | --- | --- | --- |
 | **Comments:** | | By default all slots are applicable. The main use case for this slot is as an override in a subclass |
 | **In Subsets:** | | SpecificationSubset |
-

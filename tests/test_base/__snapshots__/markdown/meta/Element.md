@@ -1,7 +1,6 @@
 
 # Class: element
 
-
 A named element in the model
 
 URI: [linkml:Element](https://w3id.org/linkml/Element)
@@ -300,4 +299,3 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
 |  | | object |
 | **In Subsets:** | | BasicSubset |
 | **See also:** | | [https://en.wikipedia.org/wiki/Data_element](https://en.wikipedia.org/wiki/Data_element) |
-

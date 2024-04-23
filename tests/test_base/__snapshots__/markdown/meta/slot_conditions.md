@@ -1,7 +1,6 @@
 
 # Slot: slot_conditions
 
-
 expresses constraints on a group of slots for a class expression
 
 URI: [linkml:slot_conditions](https://w3id.org/linkml/slot_conditions)
@@ -28,4 +27,3 @@ URI: [linkml:slot_conditions](https://w3id.org/linkml/slot_conditions)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
-

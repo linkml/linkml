@@ -1,7 +1,6 @@
 
 # Slot: inlined_as_simple_dict
 
-
 True means that an inlined slot is represented as a simple dict whose values are all atoms
 
 URI: [linkml:inlined_as_simple_dict](https://w3id.org/linkml/inlined_as_simple_dict)
@@ -26,4 +25,3 @@ URI: [linkml:inlined_as_simple_dict](https://w3id.org/linkml/inlined_as_simple_d
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
 | **See also:** | | [https://w3id.org/linkml/docs/specification/06mapping/#collection-forms](https://w3id.org/linkml/docs/specification/06mapping/#collection-forms) |
-

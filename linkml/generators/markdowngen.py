@@ -1,7 +1,6 @@
 import os
-from contextlib import redirect_stdout
+import re
 from dataclasses import dataclass
-from io import StringIO
 from typing import Any, Callable, Dict, List, Optional, Set, Union
 
 import click
@@ -63,7 +62,7 @@ class MarkdownGenerator(Generator):
         index_file: str = "index.md",
         noimages: bool = False,
         **_,
-    ) -> None:
+    ) -> str:
         self.gen_classes = classes if classes else []
         for cls in self.gen_classes:
             if cls not in self.schema.classes:
@@ -85,248 +84,270 @@ class MarkdownGenerator(Generator):
             os.makedirs(os.path.join(directory, "types"), exist_ok=True)
 
         with open(self.exist_warning(directory, index_file), "w", encoding="UTF-8") as ixfile:
-            with redirect_stdout(ixfile):
-                self.frontmatter(f"{self.schema.name}")
+            items = []
+            items.append(self.frontmatter(f"{self.schema.name}"))
+            items.append(
                 self.para(
                     f"**metamodel version:** {self.schema.metamodel_version}\n\n**version:** {self.schema.version}"
                 )
-                self.para(be(self.schema.description))
+            )
+            items.append(self.para(be(self.schema.description)))
 
-                self.header(3, "Classes")
-                for cls in sorted(self.schema.classes.values(), key=lambda c: c.name):
-                    if not cls.is_a and not cls.mixin and self.is_secondary_ref(cls.name):
-                        self.class_hier(cls)
+            items.append(self.header(3, "Classes"))
+            for cls in sorted(self.schema.classes.values(), key=lambda c: c.name):
+                if not cls.is_a and not cls.mixin and self.is_secondary_ref(cls.name):
+                    items.append(self.class_hier(cls))
 
-                self.header(3, "Mixins")
-                for cls in sorted(self.schema.classes.values(), key=lambda c: c.name):
-                    if cls.mixin and self.is_secondary_ref(cls.name):
-                        self.class_hier(cls)
+            items.append(self.header(3, "Mixins"))
+            for cls in sorted(self.schema.classes.values(), key=lambda c: c.name):
+                if cls.mixin and self.is_secondary_ref(cls.name):
+                    items.append(self.class_hier(cls))
 
-                self.header(3, "Slots")
-                for slot in sorted(self.schema.slots.values(), key=lambda s: s.name):
-                    if not slot.is_a and self.is_secondary_ref(slot.name):
-                        self.pred_hier(slot)
+            items.append(self.header(3, "Slots"))
+            for slot in sorted(self.schema.slots.values(), key=lambda s: s.name):
+                if not slot.is_a and self.is_secondary_ref(slot.name):
+                    items.append(self.pred_hier(slot))
 
-                self.header(3, "Enums")
-                for enu in sorted(self.schema.enums.values(), key=lambda e: e.name):
-                    self.enum_hier(enu)
+            items.append(self.header(3, "Enums"))
+            for enu in sorted(self.schema.enums.values(), key=lambda e: e.name):
+                items.append(self.enum_hier(enu))
 
-                self.header(3, "Subsets")
-                for subset in sorted(self.schema.subsets.values(), key=lambda s: s.name):
-                    self.bullet(self.subset_link(subset, use_desc=True), 0)
+            items.append(self.header(3, "Subsets"))
+            for subset in sorted(self.schema.subsets.values(), key=lambda s: s.name):
+                items.append(self.bullet(self.subset_link(subset, use_desc=True), 0))
 
-                self.header(3, "Types")
-                self.header(4, "Built in")
-                for builtin_name in sorted(self.synopsis.typebases.keys()):
-                    self.bullet(f"**{builtin_name}**")
-                self.header(4, "Defined")
-                for typ in sorted(self.schema.types.values(), key=lambda t: t.name):
-                    if self.is_secondary_ref(typ.name):
-                        if typ.typeof:
-                            typ_typ = self.type_link(typ.typeof)
-                        else:
-                            typ_typ = f"**{typ.base}**"
+            items.append(self.header(3, "Types"))
+            items.append(self.header(4, "Built in"))
+            for builtin_name in sorted(self.synopsis.typebases.keys()):
+                items.append(self.bullet(f"**{builtin_name}**"))
+            items.append(self.header(4, "Defined"))
+            for typ in sorted(self.schema.types.values(), key=lambda t: t.name):
+                if self.is_secondary_ref(typ.name):
+                    if typ.typeof:
+                        typ_typ = self.type_link(typ.typeof)
+                    else:
+                        typ_typ = f"**{typ.base}**"
 
-                        self.bullet(self.type_link(typ, after_link=f" ({typ_typ})", use_desc=True))
+                    items.append(self.bullet(self.type_link(typ, after_link=f" ({typ_typ})", use_desc=True)))
+            items = [i for i in items if i is not None]
+            out = "\n".join(items) + "\n"
+            out = pad_heading(out)
+            ixfile.write(out)
+        return out
 
-    def visit_class(self, cls: ClassDefinition) -> bool:
+    def visit_class(self, cls: ClassDefinition) -> str:
         # allow client to relabel metamodel
         mixin_local_name = self.get_metamodel_slot_name("Mixin")
         class_local_name = self.get_metamodel_slot_name("Class")
 
         if self.gen_classes and cls.name not in self.gen_classes:
-            return False
+            return ""
 
         with open(self.exist_warning(self.dir_path(cls)), "w", encoding="UTF-8") as clsfile:
-            with redirect_stdout(clsfile):
-                class_curi = self.namespaces.uri_or_curie_for(str(self.namespaces._base), camelcase(cls.name))
-                class_uri = self.namespaces.uri_for(class_curi)
-                self.element_header(cls, cls.name, class_curi, class_uri)
-                print()
-                if not self.noyuml:
-                    if self.image_directory:
-                        yg = YumlGenerator(self)
-                        yg.serialize(
-                            classes=[cls.name],
-                            directory=self.image_directory,
-                            load_image=not self.noimages,
-                        )
-                        img_url = os.path.join("images", os.path.basename(yg.output_file_name))
-                    else:
-                        yg = YumlGenerator(self)
-                        img_url = (
-                            yg.serialize(classes=[cls.name])
-                            .replace("?", "%3F")
-                            .replace(" ", "%20")
-                            .replace("|", "&#124;")
-                        )
+            items = []
+            class_curi = self.namespaces.uri_or_curie_for(str(self.namespaces._base), camelcase(cls.name))
+            class_uri = self.namespaces.uri_for(class_curi)
+            items.append(self.element_header(cls, cls.name, class_curi, class_uri))
+            items.append("")
+            if not self.noyuml:
+                if self.image_directory:
+                    yg = YumlGenerator(self)
+                    yg.serialize(
+                        classes=[cls.name],
+                        directory=self.image_directory,
+                        load_image=not self.noimages,
+                    )
+                    img_url = os.path.join("images", os.path.basename(yg.output_file_name))
+                else:
+                    yg = YumlGenerator(self)
+                    img_url = (
+                        yg.serialize(classes=[cls.name]).replace("?", "%3F").replace(" ", "%20").replace("|", "&#124;")
+                    )
 
-                    print(f"[![img]({img_url})]({img_url})")
+                items.append(f"[![img]({img_url})]({img_url})")
 
-                self.mappings(cls)
+            if cls.id_prefixes:
+                items.append(self.header(2, "Identifier prefixes"))
+                for p in cls.id_prefixes:
+                    items.append(self.bullet(f"{p}"))
 
-                if cls.id_prefixes:
-                    self.header(2, "Identifier prefixes")
-                    for p in cls.id_prefixes:
-                        self.bullet(f"{p}")
+            if cls.is_a is not None:
+                items.append(self.header(2, "Parents"))
+                items.append(self.bullet(f" is_a: {self.class_link(cls.is_a, use_desc=True)}"))
+            if cls.mixins:
+                items.append(self.header(2, f"Uses {mixin_local_name}"))
+                for mixin in cls.mixins:
+                    items.append(self.bullet(f" mixin: {self.class_link(mixin, use_desc=True)}"))
 
-                if cls.is_a is not None:
-                    self.header(2, "Parents")
-                    self.bullet(f" is_a: {self.class_link(cls.is_a, use_desc=True)}")
-                if cls.mixins:
-                    self.header(2, f"Uses {mixin_local_name}")
-                    for mixin in cls.mixins:
-                        self.bullet(f" mixin: {self.class_link(mixin, use_desc=True)}")
+            if cls.name in self.synopsis.isarefs:
+                items.append(self.header(2, "Children"))
+                for child in sorted(self.synopsis.isarefs[cls.name].classrefs):
+                    items.append(self.bullet(f"{self.class_link(child, use_desc=True)}"))
 
-                if cls.name in self.synopsis.isarefs:
-                    self.header(2, "Children")
-                    for child in sorted(self.synopsis.isarefs[cls.name].classrefs):
-                        self.bullet(f"{self.class_link(child, use_desc=True)}")
+            if cls.name in self.synopsis.mixinrefs:
+                items.append(self.header(2, f"{mixin_local_name} for"))
+                for mixin in sorted(self.synopsis.mixinrefs[cls.name].classrefs):
+                    items.append(self.bullet(f'{self.class_link(mixin, use_desc=True, after_link="(mixin)")}'))
 
-                if cls.name in self.synopsis.mixinrefs:
-                    self.header(2, f"{mixin_local_name} for")
-                    for mixin in sorted(self.synopsis.mixinrefs[cls.name].classrefs):
-                        self.bullet(f'{self.class_link(mixin, use_desc=True, after_link="(mixin)")}')
-
-                if cls.name in self.synopsis.classrefs:
-                    self.header(2, f"Referenced by {class_local_name}")
-                    for sn in sorted(self.synopsis.classrefs[cls.name].slotrefs):
-                        slot = self.schema.slots[sn]
-                        if slot.range == cls.name:
+            if cls.name in self.synopsis.classrefs:
+                items.append(self.header(2, f"Referenced by {class_local_name}"))
+                for sn in sorted(self.synopsis.classrefs[cls.name].slotrefs):
+                    slot = self.schema.slots[sn]
+                    if slot.range == cls.name:
+                        items.append(
                             self.bullet(
                                 f" **{self.class_link(slot.domain)}** "
                                 f"*{self.slot_link(slot, add_subset=False)}*{self.predicate_cardinality(slot)}  "
                                 f"**{self.class_type_link(slot.range)}**"
                             )
+                        )
 
-                self.header(2, "Attributes")
+            items.append(self.header(2, "Attributes"))
 
-                # List all of the slots that directly belong to the class
-                slot_list = [slot for slot in [self.schema.slots[sn] for sn in cls.slots]]
-                own_slots = [slot for slot in slot_list if cls.name in slot.domain_of]
-                if own_slots:
-                    self.header(3, "Own")
-                    for slot in own_slots:
-                        self.slot_field(cls, slot)
-                        slot_list.remove(slot)
+            # List all of the slots that directly belong to the class
+            slot_list = [slot for slot in [self.schema.slots[sn] for sn in cls.slots]]
+            own_slots = [slot for slot in slot_list if cls.name in slot.domain_of]
+            if own_slots:
+                items.append(self.header(3, "Own"))
+                for slot in own_slots:
+                    items.append(self.slot_field(cls, slot))
+                    slot_list.remove(slot)
 
-                # List all of the inherited slots
-                ancestors = set(self.ancestors(cls))
-                inherited_slots = [slot for slot in slot_list if set(slot.domain_of).intersection(ancestors)]
-                if inherited_slots:
-                    self.header(3, "Inherited from " + cls.is_a + ":")
-                    for inherited_slot in inherited_slots:
-                        self.slot_field(cls, inherited_slot)
-                        slot_list.remove(inherited_slot)
+            # List all of the inherited slots
+            ancestors = set(self.ancestors(cls))
+            inherited_slots = [slot for slot in slot_list if set(slot.domain_of).intersection(ancestors)]
+            if inherited_slots:
+                items.append(self.header(3, "Inherited from " + cls.is_a + ":"))
+                for inherited_slot in inherited_slots:
+                    items.append(self.slot_field(cls, inherited_slot))
+                    slot_list.remove(inherited_slot)
 
-                # List all of the slots acquired through mixing
-                mixed_in_classes = set()
-                for mixin in cls.mixins:
-                    mixed_in_classes.add(mixin)
-                    mixed_in_classes.update(set(self.ancestors(self.schema.classes[mixin])))
-                for slot in slot_list:
-                    mixers = set(slot.domain_of).intersection(mixed_in_classes)
-                    for mixer in mixers:
-                        self.header(3, "Mixed in from " + mixer + ":")
-                        self.slot_field(cls, slot)
+            # List all of the slots acquired through mixing
+            mixed_in_classes = set()
+            for mixin in cls.mixins:
+                mixed_in_classes.add(mixin)
+                mixed_in_classes.update(set(self.ancestors(self.schema.classes[mixin])))
+            for slot in slot_list:
+                mixers = set(slot.domain_of).intersection(mixed_in_classes)
+                for mixer in mixers:
+                    items.append(self.header(3, "Mixed in from " + mixer + ":"))
+                    items.append(self.slot_field(cls, slot))
 
-                self.element_properties(cls)
+            items.append(self.element_properties(cls))
+            out = "\n".join(items)
+            out = pad_heading(out)
+            clsfile.write(out)
+        return out
 
-        return False
-
-    def visit_type(self, typ: TypeDefinition) -> None:
+    def visit_type(self, typ: TypeDefinition) -> str:
         with open(self.exist_warning(self.dir_path(typ)), "w", encoding="UTF-8") as typefile:
-            with redirect_stdout(typefile):
-                type_uri = typ.definition_uri
-                type_curie = self.namespaces.curie_for(type_uri)
-                self.element_header(typ, typ.name, type_curie, type_uri)
+            type_uri = typ.definition_uri
+            type_curie = self.namespaces.curie_for(type_uri)
+            out = self.element_header(typ, typ.name, type_curie, type_uri)
 
-                print("|  |  |  |")
-                print("| --- | --- | --- |")
-                if typ.typeof:
-                    print(f"| Parent type | | {self.class_type_link(typ.typeof)} |")
-                print(f"| Root (builtin) type | | **{typ.base}** |")
-                if typ.repr:
-                    print(f"| Representation | | {typ.repr} |")
-                self.element_properties(typ)
+            out = "\n".join([out, "|  |  |  |"])
+            out = "\n".join([out, "| --- | --- | --- |"])
+            if typ.typeof:
+                out = "\n".join([out, f"| Parent type | | {self.class_type_link(typ.typeof)} |"])
+            out = "\n".join([out, f"| Root (builtin) type | | **{typ.base}** |"])
+            if typ.repr:
+                out = "\n".join([out, f"| Representation | | {typ.repr} |"])
+            out += self.element_properties(typ)
+            out += "\n"
+            out = pad_heading(out)
+            typefile.write(out)
+        return out
 
-    def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
+    def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> str:
         with open(self.exist_warning(self.dir_path(slot)), "w", encoding="UTF-8") as slotfile:
-            with redirect_stdout(slotfile):
-                slot_curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(slot.name))
-                slot_uri = self.namespaces.uri_for(slot_curie)
-                self.element_header(slot, aliased_slot_name, slot_curie, slot_uri)
-                self.mappings(slot)
+            items = []
+            slot_curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(slot.name))
+            slot_uri = self.namespaces.uri_for(slot_curie)
+            items.append(self.element_header(slot, aliased_slot_name, slot_curie, slot_uri))
 
-                self.header(2, "Domain and Range")
-                print(
+            items.append(self.header(2, "Domain and Range"))
+            items.append(
+                (
                     f"{self.class_link(slot.domain)} &#8594;{self.predicate_cardinality(slot)} "
                     f"{self.class_type_link(slot.range)}"
                 )
+            )
 
-                self.header(2, "Parents")
-                if slot.is_a:
-                    self.bullet(f" is_a: {self.slot_link(slot.is_a)}")
+            items.append(self.header(2, "Parents"))
+            if slot.is_a:
+                items.append(self.bullet(f" is_a: {self.slot_link(slot.is_a)}"))
 
-                self.header(2, "Children")
-                if slot.name in sorted(self.synopsis.isarefs):
-                    for child in sorted(self.synopsis.isarefs[slot.name].slotrefs):
-                        self.bullet(f" {self.slot_link(child)}")
+            items.append(self.header(2, "Children"))
+            if slot.name in sorted(self.synopsis.isarefs):
+                for child in sorted(self.synopsis.isarefs[slot.name].slotrefs):
+                    items.append(self.bullet(f" {self.slot_link(child)}"))
 
-                self.header(2, "Used by")
-                if slot.name in sorted(self.synopsis.slotrefs):
-                    for rc in sorted(self.synopsis.slotrefs[slot.name].classrefs):
-                        self.bullet(f"{self.class_link(rc)}")
-                if aliased_slot_name == "relation":
-                    if slot.subproperty_of:
-                        reifies = (
-                            self.slot_link(slot.subproperty_of)
-                            if slot.subproperty_of in self.schema.slots
-                            else slot.subproperty_of
-                        )
-                        self.bullet(f" reifies: {reifies}")
-                self.element_properties(slot)
+            items.append(self.header(2, "Used by"))
+            if slot.name in sorted(self.synopsis.slotrefs):
+                for rc in sorted(self.synopsis.slotrefs[slot.name].classrefs):
+                    items.append(self.bullet(f"{self.class_link(rc)}"))
+            if aliased_slot_name == "relation":
+                if slot.subproperty_of:
+                    reifies = (
+                        self.slot_link(slot.subproperty_of)
+                        if slot.subproperty_of in self.schema.slots
+                        else slot.subproperty_of
+                    )
+                    items.append(self.bullet(f" reifies: {reifies}"))
+            items.append(self.element_properties(slot))
+            out = "\n".join(items)
+            out = pad_heading(out)
+            slotfile.write(out)
+        return out
 
-    def visit_enum(self, enum: EnumDefinition) -> None:
+    def visit_enum(self, enum: EnumDefinition) -> str:
         with open(self.exist_warning(self.dir_path(enum)), "w", encoding="UTF-8") as enumfile:
-            with redirect_stdout(enumfile):
-                enum_curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(enum.name))
-                enum_uri = self.namespaces.uri_for(enum_curie)
-                self.element_header(obj=enum, name=enum.name, curie=enum_curie, uri=enum_uri)
-                self.element_properties(enum)
+            items = []
+            enum_curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(enum.name))
+            enum_uri = self.namespaces.uri_for(enum_curie)
+            items.append(self.element_header(obj=enum, name=enum.name, curie=enum_curie, uri=enum_uri))
+            items.append(self.element_properties(enum))
+            out = "\n".join(items)
+            out = pad_heading(out)
+            enumfile.write(out)
+        return out
 
-    def visit_subset(self, subset: SubsetDefinition) -> None:
+    def visit_subset(self, subset: SubsetDefinition) -> str:
         with open(self.exist_warning(self.dir_path(subset)), "w", encoding="UTF-8") as subsetfile:
-            with redirect_stdout(subsetfile):
-                curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(subset.name))
-                uri = self.namespaces.uri_for(curie)
-                self.element_header(obj=subset, name=subset.name, curie=curie, uri=uri)
-                # TODO: consider showing hierarchy within a subset
-                self.header(3, "Classes")
-                for cls in sorted(self.schema.classes.values(), key=lambda c: c.name):
-                    if not cls.mixin:
-                        if cls.in_subset and subset.name in cls.in_subset:
-                            self.bullet(self.class_link(cls, use_desc=True), 0)
-                self.header(3, "Mixins")
-                for cls in sorted(self.schema.classes.values(), key=lambda c: c.name):
-                    if cls.mixin:
-                        if cls.in_subset and subset.name in cls.in_subset:
-                            self.bullet(self.class_link(cls, use_desc=True), 0)
-                self.header(3, "Slots")
-                for slot in sorted(self.schema.slots.values(), key=lambda s: s.name):
-                    if slot.in_subset and subset.name in slot.in_subset:
-                        self.bullet(self.slot_link(slot, use_desc=True), 0)
-                self.header(3, "Types")
-                for type in sorted(self.schema.types.values(), key=lambda s: s.name):
-                    if type.in_subset and subset.name in type.in_subset:
-                        self.bullet(self.type_link(type, use_desc=True), 0)
-                self.header(3, "Enums")
-                for enum in sorted(self.schema.enums.values(), key=lambda s: s.name):
-                    if enum.in_subset and subset.name in enum.in_subset:
-                        self.bullet(self.enum_link(type, use_desc=True), 0)
-                self.element_properties(subset)
+            items = []
+            curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(subset.name))
+            uri = self.namespaces.uri_for(curie)
+            items.append(self.element_header(obj=subset, name=subset.name, curie=curie, uri=uri))
+            # TODO: consider showing hierarchy within a subset
+            items.append(self.header(3, "Classes"))
+            for cls in sorted(self.schema.classes.values(), key=lambda c: c.name):
+                if not cls.mixin:
+                    if cls.in_subset and subset.name in cls.in_subset:
+                        items.append(self.bullet(self.class_link(cls, use_desc=True), 0))
+            items.append(self.header(3, "Mixins"))
+            for cls in sorted(self.schema.classes.values(), key=lambda c: c.name):
+                if cls.mixin:
+                    if cls.in_subset and subset.name in cls.in_subset:
+                        items.append(self.bullet(self.class_link(cls, use_desc=True), 0))
+            items.append(self.header(3, "Slots"))
+            for slot in sorted(self.schema.slots.values(), key=lambda s: s.name):
+                if slot.in_subset and subset.name in slot.in_subset:
+                    items.append(self.bullet(self.slot_link(slot, use_desc=True), 0))
+            items.append(self.header(3, "Types"))
+            for type in sorted(self.schema.types.values(), key=lambda s: s.name):
+                if type.in_subset and subset.name in type.in_subset:
+                    items.append(self.bullet(self.type_link(type, use_desc=True), 0))
+            items.append(self.header(3, "Enums"))
+            for enum in sorted(self.schema.enums.values(), key=lambda s: s.name):
+                if enum.in_subset and subset.name in enum.in_subset:
+                    items.append(self.bullet(self.enum_link(enum, use_desc=True), 0))
+            items.append(self.element_properties(subset))
+            out = "\n".join(items)
+            out = pad_heading(out)
+            subsetfile.write(out)
+        return out
 
-    def element_header(self, obj: Element, name: str, curie: str, uri: str) -> None:
+    def element_header(self, obj: Element, name: str, curie: str, uri: str) -> str:
         if isinstance(obj, TypeDefinition):
             obj_type = "Type"
         elif isinstance(obj, ClassDefinition):
@@ -341,13 +362,13 @@ class MarkdownGenerator(Generator):
             obj_type = "Class"
 
         header_label = f"{obj_type}: ~~{name}~~ _(deprecated)_" if obj.deprecated else f"{obj_type}: {name}"
-        self.header(1, header_label)
+        out = self.header(1, header_label)
 
-        self.para(be(obj.description))
-        print(f"URI: [{curie}]({uri})")
-        print()
+        out += self.para(be(obj.description))
+        out = "\n".join([out, f"URI: [{curie}]({uri})", ""])
+        return out
 
-    def element_properties(self, obj: Element) -> None:
+    def element_properties(self, obj: Element) -> str:
         def identity(e: Any) -> Any:
             return e
 
@@ -355,21 +376,24 @@ class MarkdownGenerator(Generator):
             title: str,
             entries: Union[List, Dict],
             formatter: Optional[Callable[[Element], str]] = None,
-        ) -> None:
+        ) -> Optional[str]:
             if formatter is None:
                 formatter = identity
             if isinstance(entries, (dict, JsonObj)):
                 entries = list(values(entries))
             if entries:
-                print(f"| **{title}:** | | {formatter(entries[0])} |")
+                items = []
+                items.append(f"| **{title}:** | | {formatter(entries[0])} |")
                 for entry in entries[1:]:
-                    print(f"|  | | {formatter(entry)} |")
+                    items.append(f"|  | | {formatter(entry)} |")
+                return "\n".join(items)
 
-        def enum_list(title: str, obj: EnumDefinition) -> None:
+        def enum_list(title: str, obj: EnumDefinition) -> str:
             # This data is from the enum provided in the YAML
-            self.header(2, title)
-            print("| Text | Description | Meaning | Other Information |")
-            print("| :--- | :---: | :---: | ---: |")
+            items = []
+            items.append(self.header(2, title))
+            items.append("| Text | Description | Meaning | Other Information |")
+            items.append("| :--- | :---: | :---: | ---: |")
 
             for item, item_info in obj.permissible_values.items():
                 text = ""
@@ -388,66 +412,81 @@ class MarkdownGenerator(Generator):
                             other[k] = item_info[k]
                 if not other:
                     other = ""
-                print(f"| {text} | {desc} | {meaning} | {other} |")
+                items.append(f"| {text} | {desc} | {meaning} | {other} |")
+            return "\n".join(items)
 
-        attributes = StringIO()
-        with redirect_stdout(attributes):
-            prop_list("Aliases", obj.aliases)
+        items = []
+
+        items.append(prop_list("Aliases", obj.aliases))
+        items.append(
             prop_list(
                 "Local names",
                 obj.local_names,
                 lambda e: f"{e.local_name_value} ({e.local_name_source})",
             )
-            prop_list("Mappings", obj.mappings)
+        )
+        items.append(prop_list("Mappings", obj.mappings))
+        items.append(
             prop_list(
                 "Alt Descriptions",
                 obj.alt_descriptions,
                 lambda e: f"{e.description} ({e.source})",
             )
-            # todos
-            # notes
-            prop_list("Comments", obj.comments)
-            prop_list("Examples", obj.examples)
-            prop_list("In Subsets", obj.in_subset)
-            # from_schema
-            # imported_from
-            prop_list("See also", [f"[{v}]({v})" for v in obj.see_also])
-            prop_list("Exact Mappings", obj.exact_mappings)
-            prop_list("Close Mappings", obj.close_mappings)
-            prop_list("Narrow Mappings", obj.narrow_mappings)
-            prop_list("Broad Mappings", obj.broad_mappings)
-            prop_list("Related Mappings", obj.related_mappings)
-            #       - exact mappings
-            #       - close mappings
-            #       - related mappings
-            #       - deprecated element has exact replacement
-            #       - deprecated element has possible replacement
-            if type(obj) == EnumDefinition:
-                enum_list("Permissible Values", obj)
+        )
+        # todos
+        # notes
+        items.append(prop_list("Comments", obj.comments))
+        items.append(prop_list("Examples", obj.examples))
+        items.append(prop_list("In Subsets", obj.in_subset))
+        # from_schema
+        # imported_from
+        items.append(prop_list("See also", [f"[{v}]({v})" for v in obj.see_also]))
+        items.append(prop_list("Exact Mappings", obj.exact_mappings))
+        items.append(prop_list("Close Mappings", obj.close_mappings))
+        items.append(prop_list("Narrow Mappings", obj.narrow_mappings))
+        items.append(prop_list("Broad Mappings", obj.broad_mappings))
+        items.append(prop_list("Related Mappings", obj.related_mappings))
 
-        if attributes.getvalue():
-            self.header(2, "Other properties")
-            print("|  |  |  |")
-            print("| --- | --- | --- |")
-            print(attributes.getvalue())
+        items = [i for i in items if i is not None]
+        if len(items) > 0:
+            header = "\n".join([self.header(2, "Other properties"), "|  |  |  |", "| --- | --- | --- |"])
+            items.insert(0, header)
 
-    def class_hier(self, cls: ClassDefinition, level=0) -> None:
-        self.bullet(self.class_link(cls, use_desc=True), level)
+        #       - exact mappings
+        #       - close mappings
+        #       - related mappings
+        #       - deprecated element has exact replacement
+        #       - deprecated element has possible replacement
+        if type(obj) == EnumDefinition:
+            items.insert(0, enum_list("Permissible Values", obj))
+            items.insert(1, "\n")
+
+        out = "\n".join(items)
+        return out
+
+    def class_hier(self, cls: ClassDefinition, level=0) -> str:
+        items = []
+        items.append(self.bullet(self.class_link(cls, use_desc=True), level))
         if cls.name in sorted(self.synopsis.isarefs):
             for child in sorted(self.synopsis.isarefs[cls.name].classrefs):
-                self.class_hier(self.schema.classes[child], level + 1)
+                items.append(self.class_hier(self.schema.classes[child], level + 1))
+        return "\n".join(items) if items else None
 
-    def pred_hier(self, slot: SlotDefinition, level=0) -> None:
-        self.bullet(self.slot_link(slot, use_desc=True), level)
+    def pred_hier(self, slot: SlotDefinition, level=0) -> str:
+        items = []
+        items.append(self.bullet(self.slot_link(slot, use_desc=True), level))
         if slot.name in sorted(self.synopsis.isarefs):
             for child in sorted(self.synopsis.isarefs[slot.name].slotrefs):
-                self.pred_hier(self.schema.slots[child], level + 1)
+                items.append(self.pred_hier(self.schema.slots[child], level + 1))
+        return "\n".join(items) if items else None
 
-    def enum_hier(self, enum: EnumDefinition, level=0) -> None:
-        self.bullet(self.enum_link(enum, use_desc=True), level)
+    def enum_hier(self, enum: EnumDefinition, level=0) -> str:
+        items = []
+        items.append(self.bullet(self.enum_link(enum, use_desc=True), level))
         if enum.name in sorted(self.synopsis.isarefs):
             for child in sorted(self.synopsis.isarefs[enum.name].classrefs):
-                self.enum_hier(self.schema.enums[child], level + 1)
+                items.append(self.enum_hier(self.schema.enums[child], level + 1))
+        return "\n".join(items) if items else None
 
     def dir_path(
         self,
@@ -464,15 +503,6 @@ class MarkdownGenerator(Generator):
         )
         subdir = "/types" if isinstance(obj, TypeDefinition) and not self.no_types_dir else ""
         return f"{self.directory}{subdir}/{filename}.md"
-
-    def mappings(self, obj: Union[SlotDefinition, ClassDefinition]) -> None:
-        # TODO: get rid of this?
-        # self.header(2, 'Mappings')
-        # for mapping in obj.mappings:
-        #     self.bullet(f"{self.xlink(mapping)} {self.to_uri(mapping)}")
-        # if obj.subclass_of:
-        #     self.bullet(self.xlink(obj.subclass_of))
-        pass
 
     def is_secondary_ref(self, en: str) -> bool:
         """Determine whether 'en' is the name of something in the neighborhood of the requested classes
@@ -492,23 +522,27 @@ class MarkdownGenerator(Generator):
         else:
             return True
 
-    def slot_field(self, cls: ClassDefinition, slot: SlotDefinition) -> None:
-        self.bullet(f"{self.slot_link(slot)}{self.predicate_cardinality(slot)}")
+    def slot_field(self, cls: ClassDefinition, slot: SlotDefinition) -> str:
+        items = []
+        items.append(self.bullet(f"{self.slot_link(slot)}{self.predicate_cardinality(slot)}"))
         if slot.description:
-            self.bullet(f"Description: {slot.description}", level=1)
-        self.bullet(f"Range: {self.class_type_link(slot.range)}", level=1)
+            items.append(self.bullet(f"Description: {slot.description}", level=1))
+        items.append(self.bullet(f"Range: {self.class_type_link(slot.range)}", level=1))
         # if slot.subproperty_of:
         #     self.bullet(f'edge label: {self.slot_link(slot.subproperty_of)}', level=1)
         for example in slot.examples:
-            self.bullet(
-                f'Example: {getattr(example, "value", " ")} {getattr(example, "description", " ")}',
-                level=1,
+            items.append(
+                self.bullet(
+                    f'Example: {getattr(example, "value", " ")} {getattr(example, "description", " ")}',
+                    level=1,
+                )
             )
         # if slot.name not in self.own_slot_names(cls):
         #     self.bullet(f'inherited from: {self.class_link(slot.domain)}', level=1)
         if slot.in_subset:
             ssl = ",".join(slot.in_subset)
-            self.bullet(f"in subsets: ({ssl})", level=1)
+            items.append(self.bullet(f"in subsets: ({ssl})", level=1))
+        return "\n".join(items)
 
     def to_uri(self, uri_or_curie: str) -> str:
         """Return the URI for the slot if known"""
@@ -541,27 +575,28 @@ class MarkdownGenerator(Generator):
         return f"  <sub><b>{card_str}</b></sub>"
 
     @staticmethod
-    def anchor(id_: str) -> None:
-        print(f'<a name="{id_}">', end="")
+    def anchor(id_: str) -> str:
+        return f'<a name="{id_}">'
 
     @staticmethod
-    def anchorend() -> None:
-        print("</a>")
+    def anchorend() -> str:
+        return "</a>"
 
-    def header(self, level: int, txt: str) -> None:
+    def header(self, level: int, txt: str) -> str:
         txt = self.get_metamodel_slot_name(txt)
-        print(f'\n{"#" * level} {txt}\n')
+        out = f'\n{"#" * level} {txt}\n'
+        return out
 
     @staticmethod
-    def para(txt: str) -> None:
-        print(f"\n{txt}\n")
+    def para(txt: str) -> str:
+        return f"\n{txt}\n"
 
     @staticmethod
-    def bullet(txt: str, level=0) -> None:
-        print(f'{"    " * level} * {txt}')
+    def bullet(txt: str, level=0) -> str:
+        return f'{"    " * level} * {txt}'
 
-    def frontmatter(self, thingtype: str, layout="default") -> None:
-        self.header(1, thingtype)
+    def frontmatter(self, thingtype: str, layout="default") -> str:
+        return self.header(1, thingtype)
         # print(f'---\nlayout: {layout}\n---\n')
 
     def bbin(self, obj: Element) -> str:
@@ -746,6 +781,11 @@ class MarkdownGenerator(Generator):
                 base = "http://purl.obolibrary.org/obo/"
                 uri = base + frag
         return uri
+
+
+def pad_heading(text: str) -> str:
+    """Add an extra newline to a non-top-level header that doesn't have one preceding it"""
+    return re.sub(r"(?<!\n)\n##", "\n\n##", text)
 
 
 @shared_arguments(MarkdownGenerator)

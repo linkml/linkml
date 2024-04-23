@@ -1,7 +1,6 @@
 
 # Class: slot_expression
 
-
 an expression that constrains the range of values a slot can take
 
 URI: [linkml:SlotExpression](https://w3id.org/linkml/SlotExpression)

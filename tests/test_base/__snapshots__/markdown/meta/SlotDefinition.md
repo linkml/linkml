@@ -1,7 +1,6 @@
 
 # Class: slot_definition
 
-
 an element that describes how instances are related to other instances
 
 URI: [linkml:SlotDefinition](https://w3id.org/linkml/SlotDefinition)
@@ -474,4 +473,3 @@ implicitly asserts Y is an instance of C2
 |  | | OwlProfile |
 | **Close Mappings:** | | rdf:Property |
 |  | | qb:ComponentProperty |
-

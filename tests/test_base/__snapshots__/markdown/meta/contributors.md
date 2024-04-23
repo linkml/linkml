@@ -1,7 +1,6 @@
 
 # Slot: contributors
 
-
 agent that contributed to the element
 
 URI: [linkml:contributors](https://w3id.org/linkml/contributors)
@@ -47,4 +46,3 @@ URI: [linkml:contributors](https://w3id.org/linkml/contributors)
 | --- | --- | --- |
 | **Mappings:** | | dcterms:contributor |
 | **In Subsets:** | | BasicSubset |
-

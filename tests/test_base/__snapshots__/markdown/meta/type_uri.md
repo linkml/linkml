@@ -1,7 +1,6 @@
 
 # Slot: uri
 
-
 The uri that defines the possible values for the type definition
 
 URI: [linkml:type_uri](https://w3id.org/linkml/type_uri)
@@ -29,4 +28,3 @@ URI: [linkml:type_uri](https://w3id.org/linkml/type_uri)
 |  | | every root type must have a type uri |
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
-

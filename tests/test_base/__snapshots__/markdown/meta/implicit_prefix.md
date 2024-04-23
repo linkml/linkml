@@ -1,7 +1,6 @@
 
 # Slot: implicit_prefix
 
-
 Causes the slot value to be interpreted as a uriorcurie after prefixing with this string
 
 URI: [linkml:implicit_prefix](https://w3id.org/linkml/implicit_prefix)
@@ -31,4 +30,3 @@ URI: [linkml:implicit_prefix](https://w3id.org/linkml/implicit_prefix)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
-

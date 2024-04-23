@@ -1,7 +1,6 @@
 
 # Slot: enum_range
 
-
 An inlined enumeration
 
 URI: [linkml:enum_range](https://w3id.org/linkml/enum_range)
@@ -28,4 +27,3 @@ None &#8594;  <sub>0..1</sub> [EnumExpression](EnumExpression.md)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
-

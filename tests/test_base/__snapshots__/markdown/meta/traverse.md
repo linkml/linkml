@@ -1,7 +1,6 @@
 
 # Slot: traverse
 
-
 the slot to traverse
 
 URI: [linkml:traverse](https://w3id.org/linkml/traverse)

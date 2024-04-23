@@ -57,7 +57,7 @@ class PlantumlGenerator(Generator):
         directory: Optional[str] = None,
         load_image: bool = True,
         **_,
-    ) -> None:
+    ) -> Optional[str]:
         if directory:
             os.makedirs(directory, exist_ok=True)
         if classes is not None:

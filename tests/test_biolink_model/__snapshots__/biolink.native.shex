@@ -1,3 +1,5 @@
+# metamodel_version: 1.7.0
+# version: 3.1.2
 BASE <https://w3id.org/biolink/vocab/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -3352,5 +3354,4 @@ linkml:Sparqlpath xsd:string
        rdf:type [ <Zygosity> ]
     )
 }
-
 

@@ -185,11 +185,8 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 # Slots
 {self.gen_slotdefs()}"""
 
-    def end_schema(self, **_):
-        print(
-            re.sub(r" +\n", "\n", self.gen_schema().replace("\t", "    ")).strip(" "),
-            end="",
-        )
+    def end_schema(self, **_) -> str:
+        return re.sub(r" +\n", "\n", self.gen_schema().replace("\t", "    ")).strip(" ")
 
     def gen_imports(self) -> str:
         list_ents = [f"from {k} import {', '.join(v)}" for k, v in self.gen_import_list().items()]

@@ -1,7 +1,6 @@
 
 # Class: pattern_expression
 
-
 a regular expression pattern used to evaluate conformance of a string
 
 URI: [linkml:PatternExpression](https://w3id.org/linkml/PatternExpression)

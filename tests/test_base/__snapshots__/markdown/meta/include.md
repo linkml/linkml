@@ -1,7 +1,6 @@
 
 # Slot: include
 
-
 An enum expression that yields a list of permissible values that are to be included, after subtracting the minus set
 
 URI: [linkml:include](https://w3id.org/linkml/include)
@@ -28,4 +27,3 @@ URI: [linkml:include](https://w3id.org/linkml/include)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
-

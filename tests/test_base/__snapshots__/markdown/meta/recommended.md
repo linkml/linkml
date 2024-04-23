@@ -1,7 +1,6 @@
 
 # Slot: recommended
 
-
 true means that the slot should be present in instances of the class definition, but this is not required
 
 URI: [linkml:recommended](https://w3id.org/linkml/recommended)
@@ -32,4 +31,3 @@ URI: [linkml:recommended](https://w3id.org/linkml/recommended)
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
 | **See also:** | | [https://github.com/linkml/linkml/issues/177](https://github.com/linkml/linkml/issues/177) |
-

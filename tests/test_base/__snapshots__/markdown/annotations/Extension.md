@@ -1,7 +1,6 @@
 
 # Class: extension
 
-
 a tag/value pair used to add non-model information to an entry
 
 URI: [linkml:Extension](https://w3id.org/linkml/Extension)

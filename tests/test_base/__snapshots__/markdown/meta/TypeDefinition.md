@@ -1,7 +1,6 @@
 
 # Class: type_definition
 
-
 an element that whose instances are atomic scalar values that can be mapped to primitive types
 
 URI: [linkml:TypeDefinition](https://w3id.org/linkml/TypeDefinition)
@@ -175,4 +174,3 @@ URI: [linkml:TypeDefinition](https://w3id.org/linkml/TypeDefinition)
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
 |  | | OwlProfile |
-

@@ -1,7 +1,6 @@
 
 # Slot: id
 
-
 The official schema URI
 
 URI: [linkml:id](https://w3id.org/linkml/id)
@@ -29,4 +28,3 @@ URI: [linkml:id](https://w3id.org/linkml/id)
 |  | | MinimalSubset |
 |  | | BasicSubset |
 |  | | OwlProfile |
-

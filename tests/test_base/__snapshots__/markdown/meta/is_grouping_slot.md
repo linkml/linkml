@@ -1,7 +1,6 @@
 
 # Slot: is_grouping_slot
 
-
 true if this slot is a grouping slot
 
 URI: [linkml:is_grouping_slot](https://w3id.org/linkml/is_grouping_slot)
@@ -28,4 +27,3 @@ URI: [linkml:is_grouping_slot](https://w3id.org/linkml/is_grouping_slot)
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
 | **Close Mappings:** | | sh:PropertyGroup |
-

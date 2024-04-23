@@ -1,7 +1,6 @@
 
 # Slot: shared
 
-
 If True, then the relationship between the slot domain and range is many to one or many to many
 
 URI: [linkml:shared](https://w3id.org/linkml/shared)
@@ -28,4 +27,3 @@ URI: [linkml:shared](https://w3id.org/linkml/shared)
 | **Aliases:** | | inverse functional |
 |  | | many to one or many |
 | **In Subsets:** | | SpecificationSubset |
-

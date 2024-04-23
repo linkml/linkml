@@ -1,7 +1,6 @@
 
 # Class: class_expression
 
-
 A boolean expression that can be used to dynamically determine membership of a class
 
 URI: [linkml:ClassExpression](https://w3id.org/linkml/ClassExpression)

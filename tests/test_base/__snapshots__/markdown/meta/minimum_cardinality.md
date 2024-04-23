@@ -1,7 +1,6 @@
 
 # Slot: minimum_cardinality
 
-
 the minimum number of entries for a multivalued slot
 
 URI: [linkml:minimum_cardinality](https://w3id.org/linkml/minimum_cardinality)
@@ -31,4 +30,3 @@ None &#8594;  <sub>0..1</sub> [Integer](types/Integer.md)
 | --- | --- | --- |
 | **Comments:** | | minimum_cardinality cannot be greater than maximum_cardinality |
 | **In Subsets:** | | SpecificationSubset |
-

@@ -1,7 +1,6 @@
 
 # Slot: minus
 
-
 An enum expression that yields a list of permissible values that are to be subtracted from the enum
 
 URI: [linkml:minus](https://w3id.org/linkml/minus)
@@ -28,4 +27,3 @@ URI: [linkml:minus](https://w3id.org/linkml/minus)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
-

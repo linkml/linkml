@@ -12,10 +12,10 @@ ex:C1 a owl:Class,
             owl:minCardinality 0 ;
             owl:onProperty ex:s1 ],
         [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
+            owl:maxCardinality 1 ;
             owl:onProperty ex:s1 ],
         [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
+            owl:allValuesFrom linkml:String ;
             owl:onProperty ex:s1 ] ;
     skos:inScheme <http://example.org/sample/example163c> .
 
@@ -23,13 +23,13 @@ ex:C2 a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "c2" ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty ex:s2 ],
+        [ a owl:Restriction ;
             owl:minCardinality 0 ;
             owl:onProperty ex:s2 ],
         [ a owl:Restriction ;
             owl:allValuesFrom linkml:Uriorcurie ;
-            owl:onProperty ex:s2 ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
             owl:onProperty ex:s2 ] ;
     skos:inScheme <http://example.org/sample/example163c> .
 

@@ -1,7 +1,6 @@
 
 # Slot: source_file
 
-
 name, uri or description of the source of the schema
 
 URI: [linkml:source_file](https://w3id.org/linkml/source_file)
@@ -26,4 +25,3 @@ URI: [linkml:source_file](https://w3id.org/linkml/source_file)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | BasicSubset |
-

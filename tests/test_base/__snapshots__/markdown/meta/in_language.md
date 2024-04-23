@@ -1,7 +1,6 @@
 
 # Slot: in_language
 
-
 the primary language used in the sources
 
 URI: [linkml:in_language](https://w3id.org/linkml/in_language)
@@ -47,4 +46,3 @@ None &#8594;  <sub>0..1</sub> [String](types/String.md)
 | --- | --- | --- |
 | **Mappings:** | | schema:inLanguage |
 | **Comments:** | | Recommended to use a string from IETF BCP 47 |
-

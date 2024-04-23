@@ -1,7 +1,6 @@
 
 # Slot: source
 
-
 the source of an attributed description
 
 URI: [linkml:alt_description_source](https://w3id.org/linkml/alt_description_source)
@@ -26,4 +25,3 @@ URI: [linkml:alt_description_source](https://w3id.org/linkml/alt_description_sou
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | BasicSubset |
-

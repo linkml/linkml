@@ -1,7 +1,6 @@
 
 # Slot: minimum_value
 
-
 For ordinal ranges, the value must be equal to or higher than this
 
 URI: [linkml:minimum_value](https://w3id.org/linkml/minimum_value)
@@ -33,4 +32,3 @@ URI: [linkml:minimum_value](https://w3id.org/linkml/minimum_value)
 | **Aliases:** | | low value |
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
-

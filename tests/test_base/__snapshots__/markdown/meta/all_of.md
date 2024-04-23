@@ -1,7 +1,6 @@
 
 # Slot: all_of
 
-
 holds if all of the expressions hold
 
 URI: [linkml:all_of](https://w3id.org/linkml/all_of)
@@ -32,4 +31,3 @@ None &#8594;  <sub>0..\*</sub> [Expression](Expression.md)
 | **In Subsets:** | | SpecificationSubset |
 | **See also:** | | [https://w3id.org/linkml/docs/specification/05validation/#rules](https://w3id.org/linkml/docs/specification/05validation/#rules) |
 | **Exact Mappings:** | | sh:and |
-

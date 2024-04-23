@@ -1,7 +1,6 @@
 
 # Slot: role
 
-
 a textual descriptor that indicates the role played by the slot range
 
 URI: [linkml:role](https://w3id.org/linkml/role)
@@ -26,4 +25,3 @@ URI: [linkml:role](https://w3id.org/linkml/role)
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | the primary use case for this slot is to provide a textual descriptor of a generic slot name when used in the context of a more specific class |
-

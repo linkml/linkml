@@ -1,7 +1,6 @@
 
 # Slot: rank
 
-
 the relative order in which the element occurs, lower values are given precedence
 
 URI: [linkml:rank](https://w3id.org/linkml/rank)
@@ -54,4 +53,3 @@ None &#8594;  <sub>0..1</sub> [Integer](types/Integer.md)
 |  | | BasicSubset |
 | **Exact Mappings:** | | qudt:order |
 |  | | qb:order |
-

@@ -1,7 +1,6 @@
 
 # Slot: ifabsent
 
-
 function that provides a default value for the slot.  Possible values for this slot are defined in linkml.utils.ifabsent_functions.default_library:
   * [Tt]rue -- boolean True
   * [Ff]alse -- boolean False
@@ -39,4 +38,3 @@ URI: [linkml:ifabsent](https://w3id.org/linkml/ifabsent)
 | **In Subsets:** | | SpecificationSubset |
 | **See also:** | | [linkml:equals_expression](linkml:equals_expression) |
 | **Close Mappings:** | | sh:defaultValue |
-

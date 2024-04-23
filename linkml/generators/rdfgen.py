@@ -47,7 +47,7 @@ class RDFGenerator(Generator):
     def _data(self, g: Graph) -> str:
         return g.serialize(format="turtle" if self.format == "ttl" else self.format)
 
-    def end_schema(self, output: Optional[str] = None, context: str = None, **_) -> None:
+    def end_schema(self, output: Optional[str] = None, context: str = None, **_) -> str:
         gen = JSONLDGenerator(
             self.original_schema,
             format=JSONLDGenerator.valid_formats[0],
@@ -67,11 +67,12 @@ class RDFGenerator(Generator):
             base=str(self.namespaces._base),
             prefix=True,
         )
+        out = self._data(graph)
         if output:
             with open(output, "w", encoding="UTF-8") as outf:
-                outf.write(self._data(graph))
-        else:
-            print(self._data(graph))
+                outf.write(out)
+
+        return out
 
 
 @shared_arguments(RDFGenerator)

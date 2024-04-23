@@ -1,7 +1,6 @@
 
 # Slot: setting_key
 
-
 the variable name for a setting
 
 URI: [linkml:setting_key](https://w3id.org/linkml/setting_key)
@@ -26,4 +25,3 @@ URI: [linkml:setting_key](https://w3id.org/linkml/setting_key)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
-

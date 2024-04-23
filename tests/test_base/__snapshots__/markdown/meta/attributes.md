@@ -1,7 +1,6 @@
 
 # Slot: attributes
 
-
 Inline definition of slots
 
 URI: [linkml:attributes](https://w3id.org/linkml/attributes)
@@ -32,4 +31,3 @@ URI: [linkml:attributes](https://w3id.org/linkml/attributes)
 |  | | RelationalModelProfile |
 |  | | ObjectOrientedProfile |
 |  | | OwlProfile |
-

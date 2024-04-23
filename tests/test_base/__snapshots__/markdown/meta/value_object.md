@@ -1,7 +1,6 @@
 
 # Slot: object
 
-
 direct object representation of the example
 
 URI: [linkml:value_object](https://w3id.org/linkml/value_object)
@@ -26,4 +25,3 @@ URI: [linkml:value_object](https://w3id.org/linkml/value_object)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | BasicSubset |
-

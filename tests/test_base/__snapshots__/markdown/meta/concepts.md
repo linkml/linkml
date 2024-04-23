@@ -1,7 +1,6 @@
 
 # Slot: concepts
 
-
 A list of identifiers that are used to construct a set of permissible values
 
 URI: [linkml:concepts](https://w3id.org/linkml/concepts)
@@ -28,4 +27,3 @@ URI: [linkml:concepts](https://w3id.org/linkml/concepts)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
-

@@ -1,7 +1,6 @@
 
 # Slot: include_self
 
-
 True if the query is reflexive
 
 URI: [linkml:include_self](https://w3id.org/linkml/include_self)
@@ -27,4 +26,3 @@ URI: [linkml:include_self](https://w3id.org/linkml/include_self)
 | --- | --- | --- |
 | **Aliases:** | | reflexive |
 | **In Subsets:** | | SpecificationSubset |
-

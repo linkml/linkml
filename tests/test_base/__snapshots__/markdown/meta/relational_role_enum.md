@@ -1,16 +1,10 @@
 
 # Enum: relational_role_enum
 
-
 enumeration of roles a slot on a relationship class can play
 
 URI: [linkml:relational_role_enum](https://w3id.org/linkml/relational_role_enum)
 
-
-## Other properties
-
-|  |  |  |
-| --- | --- | --- |
 
 ## Permissible Values
 

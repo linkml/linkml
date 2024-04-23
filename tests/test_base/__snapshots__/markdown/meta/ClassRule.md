@@ -1,7 +1,6 @@
 
 # Class: class_rule
 
-
 A rule that applies to instances of a class
 
 URI: [linkml:ClassRule](https://w3id.org/linkml/ClassRule)
@@ -291,4 +290,3 @@ URI: [linkml:ClassRule](https://w3id.org/linkml/ClassRule)
 | **In Subsets:** | | SpecificationSubset |
 | **Close Mappings:** | | sh:TripleRule |
 |  | | swrl:Imp |
-

@@ -1,7 +1,6 @@
 
 # Slot: reversed
 
-
 true if the slot is to be inversed
 
 URI: [linkml:reversed](https://w3id.org/linkml/reversed)

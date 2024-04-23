@@ -1,7 +1,6 @@
 
 # Slot: symbol
 
-
 name of the unit encoded as a symbol
 
 URI: [linkml:symbol](https://w3id.org/linkml/symbol)
@@ -26,4 +25,3 @@ None &#8594;  <sub>0..1</sub> [String](types/String.md)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | qudt:symbol |
-

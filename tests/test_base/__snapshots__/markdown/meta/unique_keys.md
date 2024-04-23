@@ -1,7 +1,6 @@
 
 # Slot: unique_keys
 
-
 A collection of named unique keys for this class. Unique keys may be singular or compound.
 
 URI: [linkml:unique_keys](https://w3id.org/linkml/unique_keys)
@@ -30,4 +29,3 @@ URI: [linkml:unique_keys](https://w3id.org/linkml/unique_keys)
 |  | | RelationalModelProfile |
 | **See also:** | | [https://linkml.io/linkml/schemas/constraints.html#unique-key](https://linkml.io/linkml/schemas/constraints.html#unique-key) |
 | **Exact Mappings:** | | owl:hasKey |
-

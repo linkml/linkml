@@ -1,7 +1,6 @@
 
 # Slot: relationship_types
 
-
 A list of relationship types (properties) that are used in a reachability query
 
 URI: [linkml:relationship_types](https://w3id.org/linkml/relationship_types)
@@ -28,4 +27,3 @@ URI: [linkml:relationship_types](https://w3id.org/linkml/relationship_types)
 | **Aliases:** | | predicates |
 |  | | properties |
 | **In Subsets:** | | SpecificationSubset |
-

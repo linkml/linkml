@@ -1,7 +1,6 @@
 
 # Slot: partial_match
 
-
 if not true then the pattern must match the whole string, as if enclosed in ^...$
 
 URI: [linkml:partial_match](https://w3id.org/linkml/partial_match)
@@ -26,4 +25,3 @@ URI: [linkml:partial_match](https://w3id.org/linkml/partial_match)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
-

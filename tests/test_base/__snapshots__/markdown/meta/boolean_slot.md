@@ -1,7 +1,6 @@
 
 # Slot: boolean_slot
 
-
 A grouping of slots that expression a boolean operator over a list of operands
 
 URI: [linkml:boolean_slot](https://w3id.org/linkml/boolean_slot)

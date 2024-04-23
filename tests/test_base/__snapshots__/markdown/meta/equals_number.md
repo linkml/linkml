@@ -1,7 +1,6 @@
 
 # Slot: equals_number
 
-
 the slot must have range of a number and the value of the slot must equal the specified value
 
 URI: [linkml:equals_number](https://w3id.org/linkml/equals_number)

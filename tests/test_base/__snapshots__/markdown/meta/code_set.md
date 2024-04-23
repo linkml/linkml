@@ -1,7 +1,6 @@
 
 # Slot: code_set
 
-
 the identifier of an enumeration code set.
 
 URI: [linkml:code_set](https://w3id.org/linkml/code_set)
@@ -29,4 +28,3 @@ URI: [linkml:code_set](https://w3id.org/linkml/code_set)
 | --- | --- | --- |
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
-

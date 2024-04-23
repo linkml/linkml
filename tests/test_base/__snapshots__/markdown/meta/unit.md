@@ -1,7 +1,6 @@
 
 # Slot: unit
 
-
 an encoding of a unit
 
 URI: [linkml:unit](https://w3id.org/linkml/unit)
@@ -32,4 +31,3 @@ None &#8594;  <sub>0..1</sub> [UnitOfMeasure](UnitOfMeasure.md)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | qudt:unit |
-

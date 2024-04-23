@@ -1,7 +1,6 @@
 
 # Slot: exact_cardinality
 
-
 the exact number of entries for a multivalued slot
 
 URI: [linkml:exact_cardinality](https://w3id.org/linkml/exact_cardinality)
@@ -31,4 +30,3 @@ None &#8594;  <sub>0..1</sub> [Integer](types/Integer.md)
 | --- | --- | --- |
 | **Comments:** | | if exact_cardinality is set, then minimum_cardinalty and maximum_cardinality must be unset or have the same value |
 | **In Subsets:** | | SpecificationSubset |
-
