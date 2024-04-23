@@ -174,6 +174,9 @@ class Generator(metaclass=abc.ABCMeta):
     stacktrace: bool = False
     """True means print stack trace, false just error message"""
 
+    include: Optional[Union[str, Path, SchemaDefinition]] = None
+    """If set, include extra schema outside of the imports mechanism"""
+
     def __post_init__(self) -> None:
         if not self.logger:
             self.logger = logging.getLogger()
@@ -202,7 +205,12 @@ class Generator(metaclass=abc.ABCMeta):
         else:
             logging.info(f"Using SchemaView with im={self.importmap} // base_dir={self.base_dir}")
             self.schemaview = SchemaView(schema, importmap=self.importmap, base_dir=self.base_dir)
+            if self.include:
+                if isinstance(self.include, (str, Path)):
+                    self.include = SchemaView(self.include, importmap=self.importmap, base_dir=self.base_dir).schema
+                self.schemaview.merge_schema(self.include)
             self.schema = self.schemaview.schema
+
         self._init_namespaces()
 
     def _initialize_using_schemaloader(self, schema: Union[str, TextIO, SchemaDefinition, "Generator"]):

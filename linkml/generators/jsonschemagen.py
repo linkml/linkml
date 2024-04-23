@@ -3,6 +3,7 @@ import logging
 import os
 from copy import deepcopy
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import click
@@ -16,7 +17,7 @@ from linkml_runtime.linkml_model.meta import (
     PermissibleValueText,
     PresenceEnum,
     SlotDefinition,
-    metamodel_version,
+    metamodel_version, SchemaDefinition,
 )
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
 
@@ -185,6 +186,7 @@ class JsonSchemaGenerator(Generator):
     indent: int = 4
 
     inline: bool = False
+
     top_class: Optional[Union[ClassDefinitionName, str]] = None  # JSON object is one instance of this
     """Class instantiated by the root node of the document tree"""
 
@@ -209,7 +211,7 @@ class JsonSchemaGenerator(Generator):
             if self.schemaview.get_class(self.top_class) is None:
                 logging.warning(f"No class in schema named {self.top_class}")
 
-    def start_schema(self, inline: bool = False) -> JsonSchema:
+    def start_schema(self, inline: bool = False, include_deprecated: bool = False) -> JsonSchema:
         self.inline = inline
 
         self.top_level_schema = JsonSchema(
@@ -660,6 +662,14 @@ disable pretty-printing and return the most compact JSON representation
     default="name",
     help="""
 Specify from which slot are JSON Schema 'title' annotations generated.
+""",
+)
+@click.option(
+    "-d",
+    "--include",
+    help="""
+Include LinkML Schema outside of imports mechanism.  Helpful in including deprecated classes and slots in a separate
+YAML, and including it when necessary but not by default (e.g. in documentation or for backwards compatibility)
 """,
 )
 @click.version_option(__version__, "-V", "--version")
