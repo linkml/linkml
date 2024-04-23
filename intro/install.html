@@ -331,8 +331,12 @@
         <article role="main">
           <section id="quick-install-guide">
 <h1>Quick Install Guide<a class="headerlink" href="#quick-install-guide" title="Permalink to this heading">#</a></h1>
+<p>There are multiple ways to installing LinkML.</p>
+<section id="local-installation-use-the-python-package">
+<h2>Local installation: Use the Python package<a class="headerlink" href="#local-installation-use-the-python-package" title="Permalink to this heading">#</a></h2>
+<p>If you are developing locally you can install LinkML as a python package in your local environment.</p>
 <section id="install-python">
-<h2>Install Python<a class="headerlink" href="#install-python" title="Permalink to this heading">#</a></h2>
+<h3>Install Python<a class="headerlink" href="#install-python" title="Permalink to this heading">#</a></h3>
 <p>Get the latest version of Python at https://www.python.org/downloads/ or with your operating system’s package manager.</p>
 <p>You can verify that Python is installed by typing <code class="docutils literal notranslate"><span class="pre">python</span></code> from your shell; you should see something like:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Python<span class="w"> </span><span class="m">3</span>.9.5<span class="w"> </span><span class="o">(</span>v3.9.5:0a7dcbdb13,<span class="w"> </span>May<span class="w">  </span><span class="m">3</span><span class="w"> </span><span class="m">2021</span>,<span class="w"> </span><span class="m">13</span>:17:02<span class="o">)</span><span class="w"> </span>
@@ -343,19 +347,25 @@ Type<span class="w"> </span><span class="s2">&quot;help&quot;</span>,<span class
 </div>
 </section>
 <section id="install-linkml">
-<h2>Install LinkML<a class="headerlink" href="#install-linkml" title="Permalink to this heading">#</a></h2>
+<h3>Install LinkML<a class="headerlink" href="#install-linkml" title="Permalink to this heading">#</a></h3>
 <p>The latest version can always be installed with:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>linkml
 </pre></div>
 </div>
 </section>
-<section id="alternative-protocol-use-docker">
-<h2>Alternative protocol: Use Docker<a class="headerlink" href="#alternative-protocol-use-docker" title="Permalink to this heading">#</a></h2>
-<p>You can also use the Docker image, courtesy of the Monarch Initiative:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span><span class="k">$(</span>PWD<span class="k">)</span>:/work<span class="w"> </span>-w<span class="w"> </span>/work/<span class="w"> </span>--rm<span class="w"> </span>-ti<span class="w"> </span>monarchinitiative/linkml
+</section>
+<section id="alternative-use-the-official-docker-oci-image">
+<h2>Alternative: Use the official Docker/OCI image<a class="headerlink" href="#alternative-use-the-official-docker-oci-image" title="Permalink to this heading">#</a></h2>
+<p>You can also use the <a class="reference external" href="https://hub.docker.com/r/linkml/linkml">official Docker/OCI image for LinkML</a>:</p>
+<p>To start a shell from the image:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span>./:/work<span class="w"> </span>-w<span class="w"> </span>/work/<span class="w"> </span>--rm<span class="w"> </span>-ti<span class="w"> </span>docker.io/linkml/linkml
 </pre></div>
 </div>
-<p>This comes with LinkML already installed</p>
+<p>Then try some commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-ws<span class="w"> </span>--help
+gen-project<span class="w"> </span>--help
+</pre></div>
+</div>
 </section>
 <section id="installation-for-contributors">
 <h2>Installation for contributors<a class="headerlink" href="#installation-for-contributors" title="Permalink to this heading">#</a></h2>
@@ -419,9 +429,12 @@ Type<span class="w"> </span><span class="s2">&quot;help&quot;</span>,<span class
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Quick Install Guide</a><ul>
+<li><a class="reference internal" href="#local-installation-use-the-python-package">Local installation: Use the Python package</a><ul>
 <li><a class="reference internal" href="#install-python">Install Python</a></li>
 <li><a class="reference internal" href="#install-linkml">Install LinkML</a></li>
-<li><a class="reference internal" href="#alternative-protocol-use-docker">Alternative protocol: Use Docker</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#alternative-use-the-official-docker-oci-image">Alternative: Use the official Docker/OCI image</a></li>
 <li><a class="reference internal" href="#installation-for-contributors">Installation for contributors</a></li>
 </ul>
 </li>
