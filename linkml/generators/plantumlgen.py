@@ -110,10 +110,15 @@ class PlantumlGenerator(Generator):
                 else:
                     self.logger.error(f"{resp.reason} accessing {plantuml_url}")
         else:
-            print(
-                "@startuml\nskinparam nodesep 10\nhide circle\nhide empty members\n" + "\n".join(dedup_plantumlclassdef),
-                end="\n@enduml\n",
+            out = (
+                "@startuml\n"
+                "skinparam nodesep 10\n"
+                "hide circle\n"
+                "hide empty members\n"
+                + "\n".join(dedup_plantumlclassdef)
+                + "\n@enduml\n"
             )
+            return out
 
     def add_class(self, cn: ClassDefinitionName) -> str:
         """Define the class only if
