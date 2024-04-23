@@ -723,7 +723,7 @@ Available templates to override:
 @click.option(
     "--pydantic-version",
     type=click.IntRange(1, 2),
-    default=1,
+    default=int(PYDANTIC_VERSION[0]),
     help="Pydantic version to use (1 or 2)",
 )
 @click.option(
@@ -750,7 +750,7 @@ def cli(
     classvars=True,
     slots=True,
     array_representations=list("list"),
-    pydantic_version=1,
+    pydantic_version=int(PYDANTIC_VERSION[0]),
     extra_fields: Literal["allow", "forbid", "ignore"] = "forbid",
     **args,
 ):
