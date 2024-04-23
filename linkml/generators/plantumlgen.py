@@ -114,9 +114,7 @@ class PlantumlGenerator(Generator):
                 "@startuml\n"
                 "skinparam nodesep 10\n"
                 "hide circle\n"
-                "hide empty members\n"
-                + "\n".join(dedup_plantumlclassdef)
-                + "\n@enduml\n"
+                "hide empty members\n" + "\n".join(dedup_plantumlclassdef) + "\n@enduml\n"
             )
             return out
 
@@ -135,10 +133,10 @@ class PlantumlGenerator(Generator):
                 if True or cn in slot.domain_of:
                     mod = self.prop_modifier(cls, slot)
                     slot_defs.append(
-                        '    {field} '
+                        "    {field} "
                         + underscore(self.aliased_slot_name(slot))
                         + mod
-                        + ': '
+                        + ": "
                         + underscore(slot.range)
                         + self.cardinality(slot)
                     )
