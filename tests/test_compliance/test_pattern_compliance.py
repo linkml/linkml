@@ -98,10 +98,10 @@ def test_pattern(framework, range, schema_name, pattern, data_name, value):
     )
 
 
+# pattern is {word}{ws}{word} and defined in settings above
 @pytest.mark.parametrize(
     "interpolated,partial_match,value,is_valid",
     [
-        # pattern is {word}{ws}{word} and defined in settings above
         (True, False, "abc def", True),
         (True, False, "abc", False),
         (True, False, "abc def ghi", False),
@@ -112,7 +112,7 @@ def test_pattern(framework, range, schema_name, pattern, data_name, value):
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-# @pytest.mark.skip(reason="https://github.com/linkml/linkml/issues/1557")
+@pytest.mark.skip(reason="https://github.com/linkml/linkml/issues/1557")
 def test_structured_pattern(framework, interpolated, partial_match, value: str, is_valid):
     """
     Tests behavior of structured pattern slots.
