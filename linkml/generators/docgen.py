@@ -932,6 +932,14 @@ class DocGenerator(Generator):
     "--example-directory",
     help="Folder in which example files are found. These are used to make inline examples",
 )
+@click.option(
+    "-d",
+    "--include",
+    help="""
+Include LinkML Schema outside of imports mechanism.  Helpful in including deprecated classes and slots in a separate
+YAML, and including it when necessary but not by default (e.g. in documentation or for backwards compatibility)
+""",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(
