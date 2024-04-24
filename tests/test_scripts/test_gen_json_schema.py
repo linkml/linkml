@@ -69,5 +69,5 @@ def test_include_option(input_path):
     extra_import_path = str(input_path("deprecation.yaml"))
     result = runner.invoke(cli, ["--include", extra_import_path, schema])
     assert "C4" in result.output
-    
+
 

@@ -68,6 +68,14 @@ def test_latex_generation(kitchen_sink_path, tmp_path):
     gen.serialize(directory=str(tmp_path))
 
 
+def test_docgen_includes(kitchen_sink_path, input_path, tmp_path):
+    """Tests basic document generator functionality"""
+    deprecated_specification = str(input_path("deprecation.yaml"))
+    gen = DocGenerator(kitchen_sink_path, mergeimports=True, no_types_dir=True, include=deprecated_specification)
+    gen.serialize(directory=str(tmp_path))
+    assert_mdfile_contains(tmp_path / "index.md", "C1", after="## Classes")
+
+
 def test_docgen(kitchen_sink_path, input_path, tmp_path):
     """Tests basic document generator functionality"""
     example_dir = str(input_path("examples"))
