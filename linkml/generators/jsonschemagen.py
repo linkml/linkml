@@ -3,7 +3,6 @@ import logging
 import os
 from copy import deepcopy
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import click
@@ -17,7 +16,7 @@ from linkml_runtime.linkml_model.meta import (
     PermissibleValueText,
     PresenceEnum,
     SlotDefinition,
-    metamodel_version, SchemaDefinition,
+    metamodel_version,
 )
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
 
