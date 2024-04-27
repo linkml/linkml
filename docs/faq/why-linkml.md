@@ -283,7 +283,7 @@ similarities to LinkML.
 There are a number of reasons to use LinkML over UML:
 
 * The UML standard is large and complex
-* UML serialization in XML is hard to work with
+* UML serialization in [XMI (XML Medata Interchange)](https://en.wikipedia.org/wiki/XML_Metadata_Interchange) is hard to work with
 * UML is more geared towards software engineering and includes features not needed for data modeling, such as operations
 * UML tools are complex and expensive (both financially and in terms of learning curves)
 * In contrast, LinkML makes it easy to author schemas using nothing more than a text editor
