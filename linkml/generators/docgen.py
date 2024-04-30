@@ -567,23 +567,60 @@ class DocGenerator(Generator):
     @staticmethod
     def cardinality(slot: SlotDefinition) -> str:
         """
-        Render combination of required, multivalued, and recommended as a range, e.g. 0..*
-        :param slot:
-        :return:
+        Render combination of required, multivalued, recommended, and exact_cardinality as a range,
+        according to Mermaid conventions. Considers 'required' and 'multivalued' to set defaults
+        for 'minimum_cardinality' and 'maximum_cardinality'.
+
+        Reference: https://mermaid.js.org/syntax/classDiagram.html#cardinality-multiplicity-on-relations
+
+        The different cardinality options are:
+        - 1 Only 1
+        - 0..1 Zero or One
+        - 1..* One or more
+        - * Many
+        - n n (where n>1)
+        - 0..n zero to n (where n>1)
+        - 1..n one to n (where n>1)
+        :param slot: SlotDefinition
+        :return: cardinality string as used in Mermaid diagrams
         """
-        if slot.required or slot.identifier:
-            min = "1"
+        if slot.exact_cardinality is not None:
+            cardinality = str(slot.exact_cardinality)  # handles 'n' case
         else:
-            min = "0"
-        if slot.multivalued:
-            max = "*"
-        else:
-            max = "1"
+            if slot.required or slot.identifier:
+                min_card = "1"
+            else:
+                min_card = str(slot.minimum_cardinality) if slot.minimum_cardinality is not None else "0"
+
+            if slot.multivalued:
+                max_card = "*"
+            else:
+                max_card = str(slot.maximum_cardinality) if slot.maximum_cardinality is not None else "1"
+
+            if min_card == "0":
+                if max_card == "1":
+                    cardinality = "0..1"  # handles '0..1' case
+                elif max_card == "*":
+                    cardinality = "*"  # handles '*' case
+                else:
+                    cardinality = f"0..{max_card}"  # handles '0..n' case
+            elif min_card == "1":
+                if max_card == "1":
+                    cardinality = "1"  # handles '1' case
+                elif max_card == "*":
+                    cardinality = "1..*"  # handles '1..*' case
+                else:
+                    cardinality = f"1..{max_card}"  # handles '1..n' case
+            else:
+                if max_card == "*":
+                    cardinality = f"{min_card}..*"  # handles 'n..*' case
+                else:
+                    cardinality = f"{min_card}..{max_card}"  # handles 'n..m' case
+
         if slot.recommended:
-            info = " _recommended_"
-        else:
-            info = ""
-        return f"{min}..{max}{info}"
+            cardinality += " _recommended_"
+
+        return cardinality
 
     def mermaid_directive(self) -> str:
         """
