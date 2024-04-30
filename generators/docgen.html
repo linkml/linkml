@@ -450,9 +450,20 @@ document for every</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.cardinality">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cardinality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.cardinality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.cardinality" title="Permalink to this definition">#</a></dt>
-<dd><p>Render combination of required, multivalued, and recommended as a range, e.g. 0..*
-:param slot:
-:return:</p>
+<dd><p>Render combination of required, multivalued, recommended, and exact_cardinality as a range,
+according to Mermaid conventions. Considers ‘required’ and ‘multivalued’ to set defaults
+for ‘minimum_cardinality’ and ‘maximum_cardinality’.</p>
+<p>Reference: <a class="reference external" href="https://mermaid.js.org/syntax/classDiagram.html#cardinality-multiplicity-on-relations">https://mermaid.js.org/syntax/classDiagram.html#cardinality-multiplicity-on-relations</a></p>
+<p>The different cardinality options are:
+- 1 Only 1
+- 0..1 Zero or One
+- 1..* One or more
+- * Many
+- n n (where n&gt;1)
+- 0..n zero to n (where n&gt;1)
+- 1..n one to n (where n&gt;1)
+:param slot: SlotDefinition
+:return: cardinality string as used in Mermaid diagrams</p>
 </dd></dl>
 
 <dl class="py method">
