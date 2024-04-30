@@ -1,3 +1,10 @@
+{% macro slot_relationship(element, slot) %}
+    {% set range_element = gen.name(schemaview.get_element(slot.range)) %}
+    {% set relation_label = gen.name(slot) %}
+    {{ gen.name(element) }} --> "{{ gen.cardinality(slot) }}" {{ range_element }} : {{ relation_label }}
+    click {{ range_element }} href "../{{ range_element }}"
+{% endmacro %}
+
 {% if schemaview.class_parents(element.name) and schemaview.class_children(element.name) %}
 ```{{ gen.mermaid_directive() }}
  classDiagram
@@ -16,12 +23,7 @@
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
         {% if s.range not in gen.all_type_object_names() %}
-        {% if s.multivalued -%}
-          {{ gen.name(element) }} --> "*" {{ gen.name(schemaview.get_element(s.range)) }} : {{ gen.name(s) }}
-        {% else -%}
-          {{ gen.name(element) }} --> "1" {{ gen.name(schemaview.get_element(s.range)) }} : {{ gen.name(s) }}
-        {% endif %}
-          click {{ gen.name(schemaview.get_element(s.range)) }} href "../{{gen.name(schemaview.get_element(s.range))}}"
+          {{ slot_relationship(element, s) }}
         {% endif %}
       {% endfor %}
 ```
@@ -37,12 +39,7 @@
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
         {% if s.range not in gen.all_type_object_names() %}
-        {% if s.multivalued -%}
-          {{ gen.name(element) }} --> "*" {{ gen.name(schemaview.get_element(s.range)) }} : {{ gen.name(s) }}
-        {% else -%}
-          {{ gen.name(element) }} --> "1" {{ gen.name(schemaview.get_element(s.range)) }} : {{ gen.name(s) }}
-        {% endif %}
-          click {{ gen.name(schemaview.get_element(s.range)) }} href "../{{gen.name(schemaview.get_element(s.range))}}"
+          {{ slot_relationship(element, s) }}
         {% endif %}
       {% endfor %}
 ```
@@ -58,12 +55,7 @@
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
         {% if s.range not in gen.all_type_object_names() %}
-        {% if s.multivalued -%}
-          {{ gen.name(element) }} --> "*" {{ gen.name(schemaview.get_element(s.range)) }} : {{ gen.name(s) }}
-        {% else -%}
-          {{ gen.name(element) }} --> "1" {{ gen.name(schemaview.get_element(s.range)) }} : {{ gen.name(s) }}
-        {% endif %}
-          click {{ gen.name(schemaview.get_element(s.range)) }} href "../{{gen.name(schemaview.get_element(s.range))}}"
+          {{ slot_relationship(element, s) }}
         {% endif %}
       {% endfor %}
 ```
@@ -75,12 +67,7 @@
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
         {% if s.range not in gen.all_type_object_names() %}
-        {% if s.multivalued -%}
-          {{ gen.name(element) }} --> "*" {{ gen.name(schemaview.get_element(s.range)) }} : {{ gen.name(s) }}
-        {% else -%}
-          {{ gen.name(element) }} --> "1" {{ gen.name(schemaview.get_element(s.range)) }} : {{ gen.name(s) }}
-        {% endif %}
-          click {{ gen.name(schemaview.get_element(s.range)) }} href "../{{gen.name(schemaview.get_element(s.range))}}"
+          {{ slot_relationship(element, s) }}
         {% endif %}
       {% endfor %}
 ```

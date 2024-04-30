@@ -265,18 +265,18 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
     )
     assert_mdfile_contains(
         tmp_path / "FamilialRelationship.md",
-        ("| [related_to](related_to.md) | 1..1 <br/> [Person](Person.md) |  | " "[Relationship](Relationship.md) |"),
+        ("| [related_to](related_to.md) | 1 <br/> [Person](Person.md) |  | [Relationship](Relationship.md) |"),
         after="## Slots",
     )
     # test inheritance column
     assert_mdfile_contains(
         tmp_path / "Person.md",
-        "| [id](id.md) | 1..1 <br/> [String](String.md) |  | direct |",
+        "| [id](id.md) | 1 <br/> [String](String.md) |  | direct |",
         after="## Slots",
     )
     assert_mdfile_contains(
         tmp_path / "Person.md",
-        ("| [aliases](aliases.md) | 0..* <br/> [String](String.md) |  | [HasAliases](HasAliases.md) |"),
+        ("| [aliases](aliases.md) | * <br/> [String](String.md) |  | [HasAliases](HasAliases.md) |"),
         after="## Slots",
     )
     # Examples
