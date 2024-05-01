@@ -754,7 +754,8 @@ class DocGenerator(Generator):
         :return: tuples (depth: int, cls: ClassDefinitionName)
         """
         sv = self.schemaview
-        roots = sv.class_roots(mixins=False, imports=self.mergeimports)
+        # note that root classes include imported classes
+        roots = sv.class_roots(mixins=False, imports=True)
 
         # by default the classes are sorted alphabetically
         roots = sorted(roots, key=str.casefold, reverse=True)
