@@ -345,11 +345,11 @@
 </section>
 <section id="my-data-is-a-simple-spreadsheet-tsv-why-should-i-use-linkml">
 <h2>My data is a simple spreadsheet/TSV, why should I use LinkML?<a class="headerlink" href="#my-data-is-a-simple-spreadsheet-tsv-why-should-i-use-linkml" title="Permalink to this heading">#</a></h2>
-<p>If your data is a simple CSV then using a framework like LinkML may seem daunting. It may be tempting to include a simple README alongside your TSV describing the column headers. While this is certainly better than not having any data description at all, consider some of the drawbacks:</p>
+<p>If your data is a simple spreadsheet, then using a framework like LinkML may seem daunting. It may be tempting to include a simple README alongside your TSV describing the column headers. While this is certainly better than not having any data description at all, consider some of the drawbacks:</p>
 <ul class="simple">
 <li><p>the README isn’t a computer-digestible representation of your data</p></li>
 <li><p>you do not have a mechanism for validating the TSV</p></li>
-<li><p>you lack a computable way of mapping your column headers to a standard data dictionary, vocabulary</p></li>
+<li><p>you lack a computable way of mapping your column headers to a standard data dictionary or vocabulary</p></li>
 </ul>
 <p>LinkML provides an easy way of making your data computable. You can start with a very simple schema, with a single class, and one slot per column in your TSV; for example, for a dataset where the rows represent people:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
@@ -391,7 +391,7 @@
 <span class="w">    </span><span class="nt">service</span><span class="p">:</span>
 </pre></div>
 </div>
-<p>You can also provide textual descriptions and additional metadata on the columns that may be useful for human users</p>
+<p>You can also provide textual descriptions and additional metadata on the columns that may be useful for human users:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
@@ -408,7 +408,7 @@
 <span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">...</span>
 </pre></div>
 </div>
-<p>If you like, you can provide both linked data IRIs to your schema elements, or mappings to existing systems, for example:</p>
+<p>If you like, you can provide linked data IRIs to your schema elements or mappings to existing systems, for example:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://schema.org/</span>
 <span class="w">  </span><span class="nt">foaf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://xmlns.com/foaf/0.1/</span>
@@ -437,7 +437,7 @@
 <li><p>csvy</p></li>
 <li><p>csv on the web</p></li>
 </ul>
-<p>One advantage of LinkML is that it is not <em>only</em> for TSVs</p>
+<p>One advantage of LinkML is that it is not <em>only</em> for TSVs. It can read and write many popular data formats.</p>
 </section>
 <section id="why-should-i-use-linkml-over-json-schema">
 <h2>Why should I use LinkML over JSON-Schema?<a class="headerlink" href="#why-should-i-use-linkml-over-json-schema" title="Permalink to this heading">#</a></h2>
@@ -485,7 +485,7 @@ schema to ShEx, with a prototype SHACL generator now available.</p>
 <li><p>your user based and developer base is not entirely semantic web / linked data enthusiasts</p></li>
 <li><p>your emphasis is more on data modeling rather than validation</p></li>
 </ul>
-<p>Note: LinkML lead developer Harold Solbrig is also one of the authors of the ShEx specification.</p>
+<p>Note: former LinkML lead developer Harold Solbrig is also one of the authors of the ShEx specification.</p>
 <p>See also:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://linkml.io/linkml/generators/shex.html">ShEx generator</a></p></li>
@@ -504,7 +504,7 @@ be no compelling use case for LinkML.</p>
 involve some alternative representation of the data - for example, a
 JSON representation in an API, or an object representation – or even
 an RDF representation. It can be challenging to keep these different
-representations in sync. There are frequently excellent products that
+representations in sync. There are some excellent products that
 solve “one part” of this mapping problem – e.g. an ORM (Object
 Relational Mapping) tool. LinkML is intended to allow you to give a
 “bigger picture” view of your model that is as independent as possible
@@ -582,15 +582,15 @@ drive dynamic tooltips in an application that collects or displays data.</p>
 <h2>Why should I use LinkML over UML?<a class="headerlink" href="#why-should-i-use-linkml-over-uml" title="Permalink to this heading">#</a></h2>
 <p>UML is a powerful language for software engineer diagramming. <a class="reference external" href="https://en.wikipedia.org/wiki/Class_diagram">UML
 Class Diagrams</a> provide a
-standard way to draw a class hierarchy for a program, that has some
+standard way to draw a class hierarchy for a program that has some
 similarities to LinkML.</p>
-<p>There are a number of reasons to use LinkML over UML</p>
+<p>There are a number of reasons to use LinkML over UML:</p>
 <ul class="simple">
 <li><p>The UML standard is large and complex</p></li>
-<li><p>UML serialization in XMI is hard to work with</p></li>
+<li><p>UML serialization in <a class="reference external" href="https://en.wikipedia.org/wiki/XML_Metadata_Interchange">XMI (XML Medata Interchange)</a> is hard to work with</p></li>
 <li><p>UML is more geared towards software engineering and includes features not needed for data modeling, such as operations</p></li>
 <li><p>UML tools are complex and expensive (both financially and in terms of learning curves)</p></li>
-<li><p>In contrast LinkML makes it easy to author schemas using nothing more than a text editor</p></li>
+<li><p>In contrast, LinkML makes it easy to author schemas using nothing more than a text editor</p></li>
 <li><p>All the tooling for LinkML is free and open</p></li>
 <li><p>LinkML has the ability to compile to other frameworks</p></li>
 <li><p>LinkML has facilities for <em>semantic modeling</em>, not anticipated in UML</p></li>
@@ -604,25 +604,25 @@ similarities to LinkML.</p>
 ontological knowledge.</p>
 <p>LinkML is in a very different class of languages from OWL. LinkML is a
 <em>schema language</em>, with features in common with JSON-Schema, XML Schema,
-UML, SQL DDL, shape languages such as ShEx/SHACL. OWL is a subset of first-order logic,
+UML, SQL DDL, shape languages such as ShEx/SHACL. OWL is a subset of first-order logic
 based in set theory that is intended for open-world reasoning.</p>
 <p>In our experience OWL is best for open world direct representations
 of domain knowledge, and should not be used as a schema
 language. Many LinkML contributors and users also work with large biomedical
-terminological-style ontologies in OWL, these are essentially large structured
+terminological-style ontologies in OWL; these are essentially large structured
 vocabularies, and are not intended for representing <em>data</em>. In the wider
 semantic web world, people have historically sought to use OWL as a schema language,
 with mixed results.</p>
 <p>However, we appreciate this is nuanced, and we welcome any
-questions or discussions via our GitHub issue tracker.</p>
+questions or discussions via our <a class="reference external" href="https://github.com/linkml/linkml/issues">GitHub issue tracker</a>.</p>
 <p>If you do have a schema expressed in OWL, you can use <a class="reference external" href="https://github.com/linkml/schema-automator">schema-automator</a>
-to infer/bootstrap a LinkML schema from it. But note this is a
+to infer/bootstrap a LinkML schema from it. But note that this is a
 heuristic procedure, and will not give you sensible results from a
 large “terminological” ontology (such as an OBO ontology); it is best used with schema-style “ontologies”,
 such as common semantic web vocabularies.</p>
 <p>It <em>is</em> possible to use LinkML to help you structure an OWL ontology
 by using LinkML as a metaclass authoring system. See
-<a class="reference external" href="https://chemkg.github.io/chemrof/ontology">ChemSchema</a> for
+<a class="reference external" href="https://chemkg.github.io/chemrof/ontology">CHEMROF</a> for
 an example, and see also the
 <a class="reference external" href="https://github.com/linkml/linkml-owl">linkml-owl</a> framework.</p>
 <p>See also:</p>
@@ -631,12 +631,12 @@ an example, and see also the
 </ul>
 </section>
 <section id="why-should-i-use-linkml-over-custom-spreadsheets">
-<h2>Why should I use LinkML over Custom spreadsheets?<a class="headerlink" href="#why-should-i-use-linkml-over-custom-spreadsheets" title="Permalink to this heading">#</a></h2>
+<h2>Why should I use LinkML over custom spreadsheets?<a class="headerlink" href="#why-should-i-use-linkml-over-custom-spreadsheets" title="Permalink to this heading">#</a></h2>
 <p>It is common in many projects for metadata elements and data dictionaries to be maintained as ad-hoc spreadsheets.</p>
-<p>Doing this in the absence of any over-arching framework can be
+<p>Doing this in the absence of any overarching framework can be
 problematic. It is easy for mistakes to creep into these spreadsheets
-unnoticed, often the semantics are unclear, and when developers are
-asked to write validators or UIs driven by these spreadsheets the lack
+unnoticed. Often the semantics are unclear, and when developers are
+asked to write validators or UIs driven by these spreadsheets, the lack
 of clear semantics can lead to repetitive error-prone code that is
 costly to maintain.</p>
 <p>LinkML provides a <strong>systematic way to manage data dictionaries and metadata elements</strong>.</p>
@@ -645,7 +645,7 @@ which can be off-putting to non-technical metadata curators. SchemaSheets allows
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/linkml/schemasheets">SchemaSheets</a> – author schemas as spreadsheets</p></li>
 </ul>
-<p>This framework allows schemas to be maintained using Excel, google sheets, or TSVs, providing flexibility to non-technical modelers, with all the benefits of linkml.</p>
+<p>This framework allows schemas to be maintained using Excel, google sheets, or TSVs, providing flexibility to non-technical modelers, with all the benefits of LinkML.</p>
 </section>
 <section id="why-should-i-use-linkml-over-csv-on-the-web">
 <h2>Why should I use LinkML over CSV-on-the-web?<a class="headerlink" href="#why-should-i-use-linkml-over-csv-on-the-web" title="Permalink to this heading">#</a></h2>
@@ -653,7 +653,7 @@ which can be off-putting to non-technical metadata curators. SchemaSheets allows
 (CSVW) Working Group have developed standard ways to express metadata about
 CSVs and other kinds of tabular data.</p>
 <p>An example use of CSVW is to semantically describe the columns in a
-CSV/TSV, for example a CSV about country locations and nomenclature. The following in Example 10 from the CSVW primer:</p>
+CSV/TSV, for example a CSV about country locations and nomenclature. The following is Example 10 from the CSVW primer:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;@context&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://www.w3.org/ns/csvw&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;countries.csv&quot;</span>
@@ -685,15 +685,15 @@ CSV/TSV, for example a CSV about country locations and nomenclature. The followi
 </pre></div>
 </div>
 <p>CSVW provides a number of advantages for making data FAIR over the use
-of CSVs alone, or CSVs in combination with non-machine readable documentation files.</p>
-<p>Most of the things that can be said using CSVW can also be said with
+of CSVs alone, or CSVs in combination with non-machine-readable documentation files.</p>
+<p>Most of the things that can be expressed using CSVW can also be expressed with
 LinkML, and LinkML is not restricted solely to CSVs - e.g. you can
 semantically describe JSON files with LinkML too.</p>
 <p>We are currently planning on writing a generator for CSVW JSON-LD.</p>
 </section>
 <section id="why-should-i-use-linkml-over-iso-11179">
 <h2>Why should I use LinkML over ISO-11179?<a class="headerlink" href="#why-should-i-use-linkml-over-iso-11179" title="Permalink to this heading">#</a></h2>
-<p><a class="reference external" href="https://en.wikipedia.org/wiki/ISO/IEC_11179">ISO-11179</a> is an ISO standard for Metadata and Metadata Registries. It
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/ISO/IEC_11179">ISO-11179</a> is an ISO standard for metadata and metadata registries. It
 provides a rich standardized way of exchanging data dictionaries. For
 example, an ISO-11179 registry can be used to register all of the
 columns in a data file or tags in an XML file, and to map semantics
@@ -768,7 +768,7 @@ clarifying the connection.</p>
 <li><a class="reference internal" href="#why-should-i-use-linkml-over-sql-ddl">Why should I use LinkML over SQL DDL?</a></li>
 <li><a class="reference internal" href="#why-should-i-use-linkml-over-uml">Why should I use LinkML over UML?</a></li>
 <li><a class="reference internal" href="#why-should-i-use-linkml-over-owl">Why should I use LinkML over OWL?</a></li>
-<li><a class="reference internal" href="#why-should-i-use-linkml-over-custom-spreadsheets">Why should I use LinkML over Custom spreadsheets?</a></li>
+<li><a class="reference internal" href="#why-should-i-use-linkml-over-custom-spreadsheets">Why should I use LinkML over custom spreadsheets?</a></li>
 <li><a class="reference internal" href="#why-should-i-use-linkml-over-csv-on-the-web">Why should I use LinkML over CSV-on-the-web?</a></li>
 <li><a class="reference internal" href="#why-should-i-use-linkml-over-iso-11179">Why should I use LinkML over ISO-11179?</a></li>
 </ul>

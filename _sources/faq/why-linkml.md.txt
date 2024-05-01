@@ -14,11 +14,11 @@ LinkML is designed to be flexible enough to cover all these use cases, allowing 
 
 ## My data is a simple spreadsheet/TSV, why should I use LinkML?
 
-If your data is a simple CSV then using a framework like LinkML may seem daunting. It may be tempting to include a simple README alongside your TSV describing the column headers. While this is certainly better than not having any data description at all, consider some of the drawbacks:
+If your data is a simple spreadsheet, then using a framework like LinkML may seem daunting. It may be tempting to include a simple README alongside your TSV describing the column headers. While this is certainly better than not having any data description at all, consider some of the drawbacks:
 
  * the README isn't a computer-digestible representation of your data
  * you do not have a mechanism for validating the TSV
- * you lack a computable way of mapping your column headers to a standard data dictionary, vocabulary
+ * you lack a computable way of mapping your column headers to a standard data dictionary or vocabulary
 
 LinkML provides an easy way of making your data computable. You can start with a very simple schema, with a single class, and one slot per column in your TSV; for example, for a dataset where the rows represent people:
 
@@ -65,7 +65,7 @@ enums:
     service:
 ```
 
-You can also provide textual descriptions and additional metadata on the columns that may be useful for human users
+You can also provide textual descriptions and additional metadata on the columns that may be useful for human users:
 
 ```yaml
 classes:
@@ -84,7 +84,7 @@ classes:
       ...
 ```
 
-If you like, you can provide both linked data IRIs to your schema elements, or mappings to existing systems, for example:
+If you like, you can provide linked data IRIs to your schema elements or mappings to existing systems, for example:
 
 ```yaml
 prefixes:
@@ -115,7 +115,7 @@ There are a number of proposed frameworks for providing lightweight data diction
  - csvy
  - csv on the web
 
-One advantage of LinkML is that it is not *only* for TSVs
+One advantage of LinkML is that it is not *only* for TSVs. It can read and write many popular data formats.
 
 
 ## Why should I use LinkML over JSON-Schema?
@@ -170,7 +170,7 @@ schema to ShEx, with a prototype SHACL generator now available.
  * your user based and developer base is not entirely semantic web / linked data enthusiasts
  * your emphasis is more on data modeling rather than validation
 
-Note: LinkML lead developer Harold Solbrig is also one of the authors of the ShEx specification.
+Note: former LinkML lead developer Harold Solbrig is also one of the authors of the ShEx specification.
 
 See also:
 
@@ -191,7 +191,7 @@ However, most information architectures that use a SQL database also
 involve some alternative representation of the data - for example, a
 JSON representation in an API, or an object representation -- or even
 an RDF representation. It can be challenging to keep these different
-representations in sync. There are frequently excellent products that
+representations in sync. There are some excellent products that
 solve "one part" of this mapping problem -- e.g. an ORM (Object
 Relational Mapping) tool. LinkML is intended to allow you to give a
 "bigger picture" view of your model that is as independent as possible
@@ -277,16 +277,16 @@ See also:
 
 UML is a powerful language for software engineer diagramming. [UML
 Class Diagrams](https://en.wikipedia.org/wiki/Class_diagram) provide a
-standard way to draw a class hierarchy for a program, that has some
+standard way to draw a class hierarchy for a program that has some
 similarities to LinkML.
 
-There are a number of reasons to use LinkML over UML
+There are a number of reasons to use LinkML over UML:
 
 * The UML standard is large and complex
-* UML serialization in XMI is hard to work with
+* UML serialization in [XMI (XML Medata Interchange)](https://en.wikipedia.org/wiki/XML_Metadata_Interchange) is hard to work with
 * UML is more geared towards software engineering and includes features not needed for data modeling, such as operations
 * UML tools are complex and expensive (both financially and in terms of learning curves)
-* In contrast LinkML makes it easy to author schemas using nothing more than a text editor
+* In contrast, LinkML makes it easy to author schemas using nothing more than a text editor
 * All the tooling for LinkML is free and open
 * LinkML has the ability to compile to other frameworks
 * LinkML has facilities for *semantic modeling*, not anticipated in UML
@@ -302,29 +302,29 @@ ontological knowledge.
 
 LinkML is in a very different class of languages from OWL. LinkML is a
 *schema language*, with features in common with JSON-Schema, XML Schema,
-UML, SQL DDL, shape languages such as ShEx/SHACL. OWL is a subset of first-order logic,
+UML, SQL DDL, shape languages such as ShEx/SHACL. OWL is a subset of first-order logic
 based in set theory that is intended for open-world reasoning.
 
 In our experience OWL is best for open world direct representations
 of domain knowledge, and should not be used as a schema
 language. Many LinkML contributors and users also work with large biomedical
-terminological-style ontologies in OWL, these are essentially large structured
+terminological-style ontologies in OWL; these are essentially large structured
 vocabularies, and are not intended for representing *data*. In the wider
 semantic web world, people have historically sought to use OWL as a schema language,
 with mixed results.
 
 However, we appreciate this is nuanced, and we welcome any
-questions or discussions via our GitHub issue tracker.
+questions or discussions via our [GitHub issue tracker](https://github.com/linkml/linkml/issues).
 
 If you do have a schema expressed in OWL, you can use [schema-automator](https://github.com/linkml/schema-automator)
-to infer/bootstrap a LinkML schema from it. But note this is a
+to infer/bootstrap a LinkML schema from it. But note that this is a
 heuristic procedure, and will not give you sensible results from a
 large "terminological" ontology (such as an OBO ontology); it is best used with schema-style "ontologies",
 such as common semantic web vocabularies.
 
 It *is* possible to use LinkML to help you structure an OWL ontology
 by using LinkML as a metaclass authoring system. See
-[ChemSchema](https://chemkg.github.io/chemrof/ontology) for
+[CHEMROF](https://chemkg.github.io/chemrof/ontology) for
 an example, and see also the
 [linkml-owl](https://github.com/linkml/linkml-owl) framework.
 
@@ -332,14 +332,14 @@ See also:
 
  * [OWL generator](https://linkml.io/linkml/generators/owl.html)
 
-## Why should I use LinkML over Custom spreadsheets?
+## Why should I use LinkML over custom spreadsheets?
 
 It is common in many projects for metadata elements and data dictionaries to be maintained as ad-hoc spreadsheets.
 
-Doing this in the absence of any over-arching framework can be
+Doing this in the absence of any overarching framework can be
 problematic. It is easy for mistakes to creep into these spreadsheets
-unnoticed, often the semantics are unclear, and when developers are
-asked to write validators or UIs driven by these spreadsheets the lack
+unnoticed. Often the semantics are unclear, and when developers are
+asked to write validators or UIs driven by these spreadsheets, the lack
 of clear semantics can lead to repetitive error-prone code that is
 costly to maintain.
 
@@ -350,7 +350,7 @@ which can be off-putting to non-technical metadata curators. SchemaSheets allows
 
  * [SchemaSheets](https://github.com/linkml/schemasheets) -- author schemas as spreadsheets
 
-This framework allows schemas to be maintained using Excel, google sheets, or TSVs, providing flexibility to non-technical modelers, with all the benefits of linkml.
+This framework allows schemas to be maintained using Excel, google sheets, or TSVs, providing flexibility to non-technical modelers, with all the benefits of LinkML.
 
 ## Why should I use LinkML over CSV-on-the-web?
 
@@ -359,7 +359,7 @@ The W3C [CSV on the Web](https://www.w3.org/TR/tabular-data-primer/)
 CSVs and other kinds of tabular data.
 
 An example use of CSVW is to semantically describe the columns in a
-CSV/TSV, for example a CSV about country locations and nomenclature. The following in Example 10 from the CSVW primer:
+CSV/TSV, for example a CSV about country locations and nomenclature. The following is Example 10 from the CSVW primer:
 
 ```json
 {
@@ -393,9 +393,9 @@ CSV/TSV, for example a CSV about country locations and nomenclature. The followi
 ```
 
 CSVW provides a number of advantages for making data FAIR over the use
-of CSVs alone, or CSVs in combination with non-machine readable documentation files.
+of CSVs alone, or CSVs in combination with non-machine-readable documentation files.
 
-Most of the things that can be said using CSVW can also be said with
+Most of the things that can be expressed using CSVW can also be expressed with
 LinkML, and LinkML is not restricted solely to CSVs - e.g. you can
 semantically describe JSON files with LinkML too.
 
@@ -403,7 +403,7 @@ We are currently planning on writing a generator for CSVW JSON-LD.
 
 ## Why should I use LinkML over ISO-11179?
 
-[ISO-11179](https://en.wikipedia.org/wiki/ISO/IEC_11179) is an ISO standard for Metadata and Metadata Registries. It
+[ISO-11179](https://en.wikipedia.org/wiki/ISO/IEC_11179) is an ISO standard for metadata and metadata registries. It
 provides a rich standardized way of exchanging data dictionaries. For
 example, an ISO-11179 registry can be used to register all of the
 columns in a data file or tags in an XML file, and to map semantics
