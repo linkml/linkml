@@ -28,6 +28,7 @@ class ValidationResult(BaseModel):
     instance: Optional[Any] = None
     instance_index: Optional[int] = None
     instantiates: Optional[str] = None
+    context: List[str] = []
 
 
 class ValidationReport(BaseModel):
