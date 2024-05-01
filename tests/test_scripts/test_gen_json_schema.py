@@ -61,3 +61,11 @@ def test_indent_option(input_path):
     # test no newlines or spaces when indent = 0
     result = runner.invoke(cli, ["--indent", 0, schema])
     assert re.search(r'^{"\$defs"', result.output)
+
+
+def test_include_option(input_path):
+    schema = str(input_path("roottest.yaml"))
+    runner = CliRunner()
+    extra_import_path = str(input_path("deprecation.yaml"))
+    result = runner.invoke(cli, ["--include", extra_import_path, schema])
+    assert "C4" in result.output
