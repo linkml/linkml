@@ -27,7 +27,7 @@ and you can [vote for your favorite issue here](https://github.com/linkml/linkml
 ## How do I stay involved?
 
 - Mailing list (low traffic; mostly announcements about upcoming LinkML Community Meetings): [sign up](https://groups.google.com/g/linkml-community)
-- Slack channel for the core team and adopters of bleeding edge new features: [join here](https://join.slack.com/t/obo-communitygroup/shared_invite/zt-1oq48ttk7-kKo0i6TwntYtAq~Jcjjg4g)
+- Separate Slack channels for the core development team and the LinkML community: [join here](https://join.slack.com/t/obo-communitygroup/shared_invite/zt-1oq48ttk7-kKo0i6TwntYtAq~Jcjjg4g)
 - LinkedIn group: [join](https://www.linkedin.com/groups/14303246/)
 - Mastodon: [follow us](https://qoto.org/@linkml)
 - Community meetings: we hold an open meeting once a month (usually the third Thursday of the month at 11am ET). Please join the mailing list or Slack channel (see above) for info on how to participate.
