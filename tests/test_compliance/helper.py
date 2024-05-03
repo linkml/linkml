@@ -961,7 +961,7 @@ def robot_check_coherency(
         return None
     if not ontology_path:
         return None
-        #raise ValueError(f"Ontology path must be provided for data_path={data_path}")
+        # raise ValueError(f"Ontology path must be provided for data_path={data_path}")
     merged = str(data_path) + ".merged.owl"
     cmd = [
         "robot",

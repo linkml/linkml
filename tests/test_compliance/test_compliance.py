@@ -1,4 +1,5 @@
 """Constants for compliance tests. See README.md for more information."""
+
 import rdflib
 
 from tests.test_compliance.helper import (

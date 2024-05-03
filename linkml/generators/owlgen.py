@@ -30,7 +30,7 @@ from linkml_runtime.linkml_model.meta import (
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.introspection import package_schemaview
-from rdflib import OWL, RDF, XSD, BNode, Graph, Literal, URIRef, DCTERMS
+from rdflib import DCTERMS, OWL, RDF, XSD, BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import RDFS, SKOS
 from rdflib.plugin import Parser as rdflib_Parser
@@ -832,7 +832,9 @@ class OwlSchemaGenerator(Generator):
             if ixn:
                 self.graph.add((type_uri, OWL.equivalentClass, ixn))
 
-    def _get_metatype(self, element: Union[Definition, PermissibleValue], default_value: Optional[Union[str, URIRef]]=None) -> Optional[URIRef]:
+    def _get_metatype(
+        self, element: Union[Definition, PermissibleValue], default_value: Optional[Union[str, URIRef]] = None
+    ) -> Optional[URIRef]:
         impls = []
         if isinstance(element, Definition):
             impls.extend(element.implements)
@@ -927,15 +929,15 @@ class OwlSchemaGenerator(Generator):
             if all_is_class or all_is_individual or all_is_literal:
                 if all_is_class:
                     combo_pred = OWL.unionOf
-                    #self._union_of(pv_uris, node=enum_uri)
+                    # self._union_of(pv_uris, node=enum_uri)
                     sub_pred = RDFS.subClassOf
                 elif all_is_individual:
                     combo_pred = OWL.oneOf
-                    #self._object_one_of(pv_uris, node=enum_uri)
+                    # self._object_one_of(pv_uris, node=enum_uri)
                     sub_pred = RDF.type
                 elif all_is_literal:
                     combo_pred = OWL.oneOf
-                    #self._object_one_of(pv_uris, node=enum_uri)
+                    # self._object_one_of(pv_uris, node=enum_uri)
                     sub_pred = RDF.type
                 if combo_pred:
                     self._boolean_expression(pv_uris, combo_pred, enum_uri, owl_types=set(owl_types))

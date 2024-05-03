@@ -8,8 +8,9 @@ import re
 from copy import deepcopy
 
 import pytest
-from rdflib import RDF, OWL
+from rdflib import OWL, RDF
 
+import tests.test_compliance.helper as helper
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
     PYDANTIC,
@@ -21,8 +22,7 @@ from tests.test_compliance.helper import (
     generate_tree,
     validated_schema,
 )
-import tests.test_compliance.helper as helper
-from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1, ENUM_E, EXAMPLE_NS
+from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, ENUM_E, EXAMPLE_NS, SLOT_S1
 
 
 @pytest.mark.parametrize("include_meaning", [True, False])
@@ -125,6 +125,7 @@ def test_enum(framework, enum_name, enum_desc, pvs, value, include_meaning):
         description="enum",
     )
 
+
 ANN_NAMED_INDIVIDUAL = {
     "annotations": {
         "tag": "implements",
@@ -149,127 +150,169 @@ ANN_LITERAL = {
         "value": ["rdfs:Literal"],
     }
 }
-@pytest.mark.parametrize("enum_name,enums,data_name,data,is_valid", [
-    ("defaults_to_class",
-     {
-         ENUM_E: {
-                "permissible_values": {
-                    "X": {},
-                    "Y": {},
-                },
-                 "_mappings": {
-                     helper.OWL: [
-                         (EXAMPLE_NS[ENUM_E], RDF.type, OWL.Class),
-                         (EXAMPLE_NS[ENUM_E], OWL.unionOf, None),
-                         (EXAMPLE_NS[ENUM_E + "#X"], RDF.type, OWL.Class),
-                     ],
-                },
-        },
-    }, "X", "X", True),
-    ("defaults_to_class",
-     {
-         ENUM_E: {
-                "permissible_values": {
-                    "X": {},
-                    "Y": {},
-                },
-        },
-    }, "Z", "Z", False),
-    ("defaults_to_class_with_meaning",
-     {
-         ENUM_E: {
-                "permissible_values": {
-                    "X": {
-                        "meaning": "ex:X",
-                    },
-                    "Y": {
-                        "meaning": "ex:Y",
-                    },
-                },
-                 "_mappings": {
-                     helper.OWL: [
-                         (EXAMPLE_NS[ENUM_E], RDF.type, OWL.Class),
-                         (EXAMPLE_NS[ENUM_E], OWL.unionOf, None),
-                         (EXAMPLE_NS["X"], RDF.type, OWL.Class),
-                         (EXAMPLE_NS["Y"], RDF.type, OWL.Class),
-                     ],
-                },
-        },
-    }, "X", "X", True),
-    ("individuals",
-     {
-         ENUM_E: {
-                "permissible_values": {
-                    "X": ANN_NAMED_INDIVIDUAL,
-                    "Y": ANN_NAMED_INDIVIDUAL,
-                },
-                   "_mappings": {
-                         helper.OWL: [
-                             (EXAMPLE_NS[ENUM_E], RDF.type, OWL.Class),
-                             (EXAMPLE_NS[ENUM_E], OWL.oneOf, None),
-                             (EXAMPLE_NS[ENUM_E + "#X"], RDF.type, OWL.NamedIndividual),
-                             (EXAMPLE_NS[ENUM_E + "#Y"], RDF.type, OWL.NamedIndividual),
-                         ],
-                    },
 
-        },
-    }, "X", "X", True),
-    ("individuals_enum_level",
-     {
-         ENUM_E: {
-                "implements": ["owl:NamedIndividual"],
-                "permissible_values": {
-                    "X": {},
-                    "Y": {},
-                },
-                   "_mappings": {
-                         helper.OWL: [
-                             (EXAMPLE_NS[ENUM_E], RDF.type, OWL.Class),
-                             (EXAMPLE_NS[ENUM_E], OWL.oneOf, None),
-                             (EXAMPLE_NS[ENUM_E + "#X"], RDF.type, OWL.NamedIndividual),
-                             (EXAMPLE_NS[ENUM_E + "#Y"], RDF.type, OWL.NamedIndividual),
-                         ],
-                    },
 
-        },
-    }, "X", "X", True),
-    ("mixed",
-     {
-         ENUM_E: {
-                "implements": ["owl:NamedIndividual"],
-                "permissible_values": {
-                    "X": {},
-                    "Y": ANN_CLASS,
-                },
-                   "_mappings": {
-                         helper.OWL: [
-                             (EXAMPLE_NS[ENUM_E], RDF.type, OWL.Class),
-                             (EXAMPLE_NS[ENUM_E + "#X"], RDF.type, OWL.NamedIndividual),
-                             (EXAMPLE_NS[ENUM_E + "#Y"], RDF.type, OWL.Class),
-                         ],
+@pytest.mark.parametrize(
+    "enum_name,enums,data_name,data,is_valid",
+    [
+        (
+            "defaults_to_class",
+            {
+                ENUM_E: {
+                    "permissible_values": {
+                        "X": {},
+                        "Y": {},
                     },
-
-        },
-    }, "X", "X", True),
-    ("ints",
-     {
-         ENUM_E: {
-                "permissible_values": {
-                    1: {},
-                    2: {},
+                    "_mappings": {
+                        helper.OWL: [
+                            (EXAMPLE_NS[ENUM_E], RDF.type, OWL.Class),
+                            (EXAMPLE_NS[ENUM_E], OWL.unionOf, None),
+                            (EXAMPLE_NS[ENUM_E + "#X"], RDF.type, OWL.Class),
+                        ],
+                    },
                 },
-        },
-    }, "1", 1, True),
-    ("literals",
-     {
-         ENUM_E: {
-                "permissible_values": {
-                    "X": ANN_LITERAL,
-                    "Y": ANN_LITERAL,
+            },
+            "X",
+            "X",
+            True,
+        ),
+        (
+            "defaults_to_class",
+            {
+                ENUM_E: {
+                    "permissible_values": {
+                        "X": {},
+                        "Y": {},
+                    },
                 },
-        },
-    }, "X", "X", True),
-    ])
+            },
+            "Z",
+            "Z",
+            False,
+        ),
+        (
+            "defaults_to_class_with_meaning",
+            {
+                ENUM_E: {
+                    "permissible_values": {
+                        "X": {
+                            "meaning": "ex:X",
+                        },
+                        "Y": {
+                            "meaning": "ex:Y",
+                        },
+                    },
+                    "_mappings": {
+                        helper.OWL: [
+                            (EXAMPLE_NS[ENUM_E], RDF.type, OWL.Class),
+                            (EXAMPLE_NS[ENUM_E], OWL.unionOf, None),
+                            (EXAMPLE_NS["X"], RDF.type, OWL.Class),
+                            (EXAMPLE_NS["Y"], RDF.type, OWL.Class),
+                        ],
+                    },
+                },
+            },
+            "X",
+            "X",
+            True,
+        ),
+        (
+            "individuals",
+            {
+                ENUM_E: {
+                    "permissible_values": {
+                        "X": ANN_NAMED_INDIVIDUAL,
+                        "Y": ANN_NAMED_INDIVIDUAL,
+                    },
+                    "_mappings": {
+                        helper.OWL: [
+                            (EXAMPLE_NS[ENUM_E], RDF.type, OWL.Class),
+                            (EXAMPLE_NS[ENUM_E], OWL.oneOf, None),
+                            (EXAMPLE_NS[ENUM_E + "#X"], RDF.type, OWL.NamedIndividual),
+                            (EXAMPLE_NS[ENUM_E + "#Y"], RDF.type, OWL.NamedIndividual),
+                        ],
+                    },
+                },
+            },
+            "X",
+            "X",
+            True,
+        ),
+        (
+            "individuals_enum_level",
+            {
+                ENUM_E: {
+                    "implements": ["owl:NamedIndividual"],
+                    "permissible_values": {
+                        "X": {},
+                        "Y": {},
+                    },
+                    "_mappings": {
+                        helper.OWL: [
+                            (EXAMPLE_NS[ENUM_E], RDF.type, OWL.Class),
+                            (EXAMPLE_NS[ENUM_E], OWL.oneOf, None),
+                            (EXAMPLE_NS[ENUM_E + "#X"], RDF.type, OWL.NamedIndividual),
+                            (EXAMPLE_NS[ENUM_E + "#Y"], RDF.type, OWL.NamedIndividual),
+                        ],
+                    },
+                },
+            },
+            "X",
+            "X",
+            True,
+        ),
+        (
+            "mixed",
+            {
+                ENUM_E: {
+                    "implements": ["owl:NamedIndividual"],
+                    "permissible_values": {
+                        "X": {},
+                        "Y": ANN_CLASS,
+                    },
+                    "_mappings": {
+                        helper.OWL: [
+                            (EXAMPLE_NS[ENUM_E], RDF.type, OWL.Class),
+                            (EXAMPLE_NS[ENUM_E + "#X"], RDF.type, OWL.NamedIndividual),
+                            (EXAMPLE_NS[ENUM_E + "#Y"], RDF.type, OWL.Class),
+                        ],
+                    },
+                },
+            },
+            "X",
+            "X",
+            True,
+        ),
+        (
+            "ints",
+            {
+                ENUM_E: {
+                    "permissible_values": {
+                        1: {},
+                        2: {},
+                    },
+                },
+            },
+            "1",
+            1,
+            True,
+        ),
+        (
+            "literals",
+            {
+                ENUM_E: {
+                    "permissible_values": {
+                        "X": ANN_LITERAL,
+                        "Y": ANN_LITERAL,
+                    },
+                },
+            },
+            "X",
+            "X",
+            True,
+        ),
+    ],
+)
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_permissible_value_typing(framework, enum_name, enums, data_name, data, is_valid):
     """
