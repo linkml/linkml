@@ -1,4 +1,5 @@
 """Constants for compliance tests. See README.md for more information."""
+import rdflib
 
 from tests.test_compliance.helper import (
     JAVA,
@@ -12,6 +13,8 @@ from tests.test_compliance.helper import (
     SQL_DDL_POSTGRES,
     SQL_DDL_SQLITE,
 )
+
+EXAMPLE_NS = rdflib.Namespace("http://example.org/")
 
 SCHEMA_M1 = "M1"
 CLASS_CONTAINER = "Container"
