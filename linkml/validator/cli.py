@@ -109,7 +109,11 @@ DEPRECATED = "[DEPRECATED: only used in legacy mode]"
     "class instead of just the range class",
 )
 @click.option(
-    "--include-context/--no-include-context", "-D", default=False, help="Include additional context when reporting of validation errors."
+    "--include-context/--no-include-context",
+    "-D",
+    default=False,
+    show_default=True,
+    help="Include additional context when reporting of validation errors.",
 )
 @click.argument("data_sources", nargs=-1, type=click.Path(exists=True))
 @click.version_option(__version__, "-V", "--version")
