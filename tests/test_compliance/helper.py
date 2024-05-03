@@ -271,7 +271,7 @@ def _generate_framework_output(
     :param schema:
     :param framework:
     :param mappings: maps between framework and expected results.
-    :return:
+    :return: tuple of Generator, generator output, optional path to generated file
     """
     pair = (schema["name"], framework)
     if schema["name"] not in schema_name_to_metamodel_elements:
@@ -313,6 +313,7 @@ def _generate_framework_output(
 
         cached_generator_output[pair] = (gen, output, out_path)
         for context, impdict in mappings:
+
             if framework in impdict:
                 expected = impdict[framework]
                 if expected is None:
@@ -354,6 +355,8 @@ def compare_rdf(expected: Union[str, List[TRIPLE]], actual: str, subsumes: bool 
     else:
         g_expected = rdflib.Graph()
         for t in expected:
+            if t[2] is None:
+                t = (t[0], t[1], rdflib.BNode())
             g_expected.add(t)
     g_actual = rdflib.Graph()
     g_actual.parse(data=actual, format="turtle")
@@ -910,7 +913,7 @@ def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_pa
     g.parse(data=ttl_output, format="turtle")
     roundtripped = rdflib_loader.load(ttl_output, target_class=py_cls, schemaview=schemaview)
     if tests.WITH_OUTPUT:
-        yaml_dumper.dump(roundtripped, to_file=ttl_path + ".yaml")
+        yaml_dumper.dump(roundtripped, to_file=ttl_path)
     return g
 
 
@@ -939,7 +942,9 @@ def robot_is_on_path():
     return shutil.which("robot") is not None
 
 
-def robot_check_coherency(data_path: str, ontology_path: str, output_path: str = None) -> Optional[bool]:
+def robot_check_coherency(
+    data_path: Union[str, Path], ontology_path: Union[str, Path], output_path: Union[str, Path] = None
+) -> Optional[bool]:
     """
     Check the data validates using an OWL reasoner, executed by robot.
 
@@ -953,14 +958,17 @@ def robot_check_coherency(data_path: str, ontology_path: str, output_path: str =
     """
     if not robot_is_on_path():
         return None
+    if not ontology_path:
+        return None
+        # raise ValueError(f"Ontology path must be provided for data_path={data_path}")
     merged = str(data_path) + ".merged.owl"
     cmd = [
         "robot",
         "merge",
         "-i",
-        data_path,
+        str(data_path),
         "-i",
-        ontology_path,
+        str(ontology_path),
         "-o",
         merged,
         "merge",
@@ -971,13 +979,12 @@ def robot_check_coherency(data_path: str, ontology_path: str, output_path: str =
         "hermit",
     ]
     if output_path:
-        cmd.extend(["-o", output_path])
+        cmd.extend(["-o", str(output_path)])
     try:
         # print(f"Running robot: {' '.join(cmd)}")
         result = subprocess.run(cmd, check=True, capture_output=True, text=True)
         if result.stderr:
             logging.warning(result.stderr)
-        logging.info(result.stdout)
         return True
     except subprocess.CalledProcessError as e:
         logging.info(f"Robot call failed, likely unsatisfiable: {e}")

@@ -30,7 +30,7 @@ from linkml_runtime.linkml_model.meta import (
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.introspection import package_schemaview
-from rdflib import OWL, RDF, XSD, BNode, Graph, Literal, URIRef
+from rdflib import DCTERMS, OWL, RDF, XSD, BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import RDFS, SKOS
 from rdflib.plugin import Parser as rdflib_Parser
@@ -146,6 +146,8 @@ class OwlSchemaGenerator(Generator):
 
     mixins_as_expressions: bool = None
     """EXPERIMENTAL: If True, use OWL existential restrictions to represent mixins"""
+
+    default_permissible_value_type: Union[str, URIRef] = field(default_factory=lambda: OWL.Class)
 
     slot_is_literal_map: Mapping[str, Set[bool]] = field(default_factory=lambda: defaultdict(set))
     """DEPRECATED: use node_owltypes"""
@@ -830,6 +832,28 @@ class OwlSchemaGenerator(Generator):
             if ixn:
                 self.graph.add((type_uri, OWL.equivalentClass, ixn))
 
+    def _get_metatype(
+        self, element: Union[Definition, PermissibleValue], default_value: Optional[Union[str, URIRef]] = None
+    ) -> Optional[URIRef]:
+        impls = []
+        if isinstance(element, Definition):
+            impls.extend(element.implements)
+        if isinstance(element, PermissibleValue):
+            if "implements" in element.annotations:
+                ann = element.annotations["implements"]
+                v = ann.value
+                if not isinstance(v, list):
+                    v = [v]
+                impls.extend(v)
+        for impl in impls:
+            if impl.startswith("owl:"):
+                return OWL[impl.split(":")[1]]
+            if impl.startswith("rdfs:"):
+                return RDFS[impl.split(":")[1]]
+        if isinstance(default_value, str):
+            return URIRef(default_value)
+        return default_value
+
     def add_enum(self, e: EnumDefinition) -> None:
         g = self.graph
         enum_uri = self._enum_uri(e.name)
@@ -856,26 +880,36 @@ class OwlSchemaGenerator(Generator):
                 )
             )
         pv_uris = []
+        owl_types = []
+        enum_owl_type = self._get_metatype(e, self.default_permissible_value_type)
+
         for pv in e.permissible_values.values():
-            pv_uri = self._permissible_value_uri(pv, enum_uri, e)
-            pv_uris.append(pv_uri)
-            if pv_uri:
-                g.add((pv_uri, RDF.type, OWL.Class))
-                g.add((pv_uri, RDFS.label, Literal(pv.text)))
-                # TODO: make this configurable
-                g.add(
-                    (
-                        enum_uri,
-                        self.metamodel.namespaces[METAMODEL_NAMESPACE_NAME]["permissible_values"],
-                        pv_uri,
-                    )
+            pv_owl_type = self._get_metatype(pv, enum_owl_type)
+            owl_types.append(pv_owl_type)
+            if pv_owl_type == RDFS.Literal:
+                pv_node = Literal(pv.text)
+                if pv.meaning:
+                    logging.warning(f"Meaning on literal {pv.text} in {e.name} is ignored")
+            else:
+                pv_node = self._permissible_value_uri(pv, enum_uri, e)
+            pv_uris.append(pv_node)
+            g.add(
+                (
+                    enum_uri,
+                    self.metamodel.namespaces[METAMODEL_NAMESPACE_NAME]["permissible_values"],
+                    pv_node,
                 )
+            )
+            if not isinstance(pv_node, Literal):
+                g.add((pv_node, RDF.type, pv_owl_type))
+                g.add((pv_node, RDFS.label, Literal(pv.text)))
+                # TODO: make this configurable
                 # self._add_element_properties(pv_uri, pv)
                 if self.metaclasses:
-                    g.add((pv_uri, RDF.type, enum_uri))
+                    g.add((pv_node, RDF.type, enum_uri))
                 has_parent = False
                 if pv.is_a:
-                    self.graph.add((pv_uri, RDFS.subClassOf, self._permissible_value_uri(pv.is_a, enum_uri, e)))
+                    self.graph.add((pv_node, RDFS.subClassOf, self._permissible_value_uri(pv.is_a, enum_uri, e)))
                     has_parent = True
                 for mixin in sorted(pv.mixins):
                     parent = self._permissible_value_uri(mixin, enum_uri, e)
@@ -885,13 +919,33 @@ class OwlSchemaGenerator(Generator):
                         has_parent = True
                     self.graph.add((enum_uri, RDFS.subClassOf, parent))
                 if not has_parent and self.add_root_classes:
-                    self.graph.add((pv_uri, RDFS.subClassOf, URIRef(PermissibleValue.class_class_uri)))
+                    self.graph.add((pv_node, RDFS.subClassOf, URIRef(PermissibleValue.class_class_uri)))
         if all([pv is not None for pv in pv_uris]):
-            self._union_of(pv_uris, node=enum_uri)
-            for pv_uri in pv_uris:
+            all_is_class = all([owl_type == OWL.Class for owl_type in owl_types])
+            all_is_individual = all([owl_type == OWL.NamedIndividual for owl_type in owl_types])
+            all_is_literal = all([owl_type == RDFS.Literal for owl_type in owl_types])
+            sub_pred = DCTERMS.isPartOf
+            combo_pred = None
+            if all_is_class or all_is_individual or all_is_literal:
+                if all_is_class:
+                    combo_pred = OWL.unionOf
+                    # self._union_of(pv_uris, node=enum_uri)
+                    sub_pred = RDFS.subClassOf
+                elif all_is_individual:
+                    combo_pred = OWL.oneOf
+                    # self._object_one_of(pv_uris, node=enum_uri)
+                    sub_pred = RDF.type
+                elif all_is_literal:
+                    combo_pred = OWL.oneOf
+                    # self._object_one_of(pv_uris, node=enum_uri)
+                    sub_pred = RDF.type
+                if combo_pred:
+                    self._boolean_expression(pv_uris, combo_pred, enum_uri, owl_types=set(owl_types))
+            for pv_node in pv_uris:
                 # this would normally be entailed, but we assert here so it is visible
                 # without reasoning
-                g.add((pv_uri, RDFS.subClassOf, enum_uri))
+                if not isinstance(pv_node, Literal):
+                    g.add((pv_node, sub_pred, enum_uri))
 
     def _add_rule(self, subject: Union[URIRef, BNode], rule: ClassRule, cls: ClassDefinition):
         if not self.use_swrl:
@@ -1030,6 +1084,9 @@ class OwlSchemaGenerator(Generator):
     def _union_of(self, exprs: List[Union[BNode, URIRef]], **kwargs) -> Optional[Union[BNode, URIRef]]:
         return self._boolean_expression(exprs, OWL.unionOf, **kwargs)
 
+    def _object_one_of(self, exprs: List[Union[BNode, URIRef]], **kwargs) -> Optional[Union[BNode, URIRef]]:
+        return self._boolean_expression(exprs, OWL.oneOf, **kwargs)
+
     def _exactly_one_of(self, exprs: List[Union[BNode, URIRef]]) -> Optional[Union[BNode, URIRef]]:
         if not exprs:
             raise ValueError("Must pass at least one")
@@ -1165,7 +1222,7 @@ class OwlSchemaGenerator(Generator):
         return URIRef(expanded)
 
     def _permissible_value_uri(
-        self, pv: Union[str, EnumDefinition], enum_uri: str, enum_def: EnumDefinition = None
+        self, pv: Union[str, PermissibleValue], enum_uri: str, enum_def: EnumDefinition = None
     ) -> URIRef:
         if isinstance(pv, str):
             pv_name = pv
@@ -1182,6 +1239,10 @@ class OwlSchemaGenerator(Generator):
 
     def slot_owl_type(self, slot: SlotDefinition) -> URIRef:
         sv = self.schemaview
+        if slot.implements:
+            for t in ["owl:AnnotationProperty", "owl:ObjectProperty", "owl:DatatypeProperty"]:
+                if t in slot.implements:
+                    return OWL[t.replace("owl:", "")]
         if slot.range is None:
             range = self.schemaview.schema.default_range
         else:
@@ -1266,6 +1327,12 @@ class OwlSchemaGenerator(Generator):
     default=True,
     show_default=True,
     help="Use model URIs rather than class/slot URIs",
+)
+@click.option(
+    "--default-permissible-value-type",
+    default=str(OWL.Class),
+    show_default=True,
+    help="Default OWL type for permissible values",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, metadata_profile: str, **kwargs):
