@@ -141,7 +141,7 @@ def test_alias(framework, class_uri, slot_uri, slot_alias, type_uri, data_name, 
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if slot_alias:
-        if framework == PYDANTIC and False:
+        if framework == PYDANTIC:
             expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
