@@ -921,9 +921,9 @@ class OwlSchemaGenerator(Generator):
                 if not has_parent and self.add_root_classes:
                     self.graph.add((pv_node, RDFS.subClassOf, URIRef(PermissibleValue.class_class_uri)))
         if all([pv is not None for pv in pv_uris]):
-            all_is_class = all([ot == OWL.Class for ot in owl_types])
-            all_is_individual = all([ot == OWL.NamedIndividual for ot in owl_types])
-            all_is_literal = all([ot == RDFS.Literal for ot in owl_types])
+            all_is_class = all([owl_type == OWL.Class for owl_type in owl_types])
+            all_is_individual = all([owl_type == OWL.NamedIndividual for owl_type in owl_types])
+            all_is_literal = all([owl_type == RDFS.Literal for owl_type in owl_types])
             sub_pred = DCTERMS.isPartOf
             combo_pred = None
             if all_is_class or all_is_individual or all_is_literal:
