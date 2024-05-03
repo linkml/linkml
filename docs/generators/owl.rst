@@ -68,7 +68,7 @@ Mapping
 .. note:: The current default settings for ``metaclasses`` and ``type-objects`` may change in the future
 
 Enums and PermissibleValues
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Enums and PermissibleValues are treated as *classes* by default. An enum has a *definition* added using
 an OWL ``UnionOf`` construct.
