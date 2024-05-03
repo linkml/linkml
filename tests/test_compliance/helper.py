@@ -319,7 +319,6 @@ def _generate_framework_output(
                 if expected is None:
                     continue
                 if isinstance(expected, (list, str)) and framework in [SHACL, OWL]:
-                    # raise ValueError(f"{output} // {type(expected)} :: {framework == OWL} :: {framework} => {impdict}")
                     assert compare_rdf(expected, output, subsumes=framework in [OWL]) == set()
                 elif isinstance(expected, str):
                     if "".join(expected.split()) not in "".join(output.split()):
