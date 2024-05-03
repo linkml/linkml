@@ -1,8 +1,7 @@
 {% macro slot_relationship(element, slot) %}
     {% set range_element = gen.name(schemaview.get_element(slot.range)) %}
     {% set relation_label = gen.name(slot) %}
-    {{ gen.name(element) }} --> "{{ gen.cardinality(slot) }}" {{ range_element }} : {{ relation_label }}
-    {{ gen.name(element) }} o-- {{ range_element }}
+    {{ gen.name(element) }} o--> "{{ gen.cardinality(slot) }}" {{ range_element }} : {{ relation_label }}
     click {{ range_element }} href "../{{ range_element }}"
 {% endmacro %}
 
