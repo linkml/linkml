@@ -46,6 +46,7 @@ class JsonschemaValidationPlugin(ValidationPlugin):
             path_override=self.json_schema_path,
         )
         for error in validator.iter_errors(instance):
+            error_context = [ctx.message for ctx in error.context]
             best_error = best_match([error])
             yield ValidationResult(
                 type="jsonschema validation",
@@ -53,4 +54,5 @@ class JsonschemaValidationPlugin(ValidationPlugin):
                 instance=instance,
                 instantiates=context.target_class,
                 message=f"{best_error.message} in /{'/'.join(str(p) for p in best_error.absolute_path)}",
+                context=error_context,
             )
