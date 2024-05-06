@@ -80,9 +80,6 @@ class SlotResult(BuildResult):
 
 
 class ClassResult(BuildResult):
-    """
-    TODO: Merge with BuildResult when array implementations is merged
-    """
 
     cls: PydanticClass
     """Constructed Template Model for class, including attributes/slots"""
