@@ -2,7 +2,7 @@ from typing import List, Optional, Type, TypeVar, Union
 
 from pydantic import BaseModel
 
-from linkml.generators.pydanticgen.template import Import, Imports
+from linkml.generators.pydanticgen.template import Import, Imports, PydanticClass
 
 T = TypeVar("T", bound="BuildResult", covariant=True)
 
@@ -77,3 +77,12 @@ class SlotResult(BuildResult):
                 res.field_extras = {}
             res.field_extras.update(other.field_extras)
         return res
+
+
+class ClassResult(BuildResult):
+    """
+    TODO: Merge with BuildResult when array implementations is merged
+    """
+
+    cls: PydanticClass
+    """Constructed Template Model for class, including attributes/slots"""

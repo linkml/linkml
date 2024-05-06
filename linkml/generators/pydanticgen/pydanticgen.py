@@ -1,9 +1,7 @@
 import inspect
 import logging
 import os
-import textwrap
 from collections import defaultdict
-from copy import deepcopy
 from dataclasses import dataclass, field
 from pathlib import Path
 from types import ModuleType
@@ -22,14 +20,12 @@ from jinja2 import ChoiceLoader, Environment, FileSystemLoader
 from linkml_runtime.linkml_model.meta import (
     Annotation,
     ClassDefinition,
-    SchemaDefinition,
     SlotDefinition,
     TypeDefinition,
 )
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
-from pydantic import BaseModel
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml._version import __version__
@@ -39,7 +35,7 @@ from linkml.generators.common.type_designators import (
 )
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.generators.pydanticgen.array import ArrayRangeGenerator, ArrayRepresentation
-from linkml.generators.pydanticgen.build import SlotResult
+from linkml.generators.pydanticgen.build import ClassResult, SlotResult
 from linkml.generators.pydanticgen.template import (
     ConditionalImport,
     Import,
@@ -109,15 +105,6 @@ DEFAULT_IMPORTS = (
         ),
     )
 )
-
-
-class ClassResult(BaseModel):
-    """
-    TODO: Merge with BuildResult when array implementations is merged
-    """
-
-    cls: PydanticClass
-    imports: Optional[List[Import]] = None
 
 
 @dataclass
