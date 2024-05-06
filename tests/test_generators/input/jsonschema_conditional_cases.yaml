@@ -3,8 +3,8 @@
 # - linkml_rules: will be injected into the `rules` slot of a test class in a LinkML schema
 # - json_schema: a YAML representation of an expected subset of the generated JSON Schema
 # - data_cases: data instance validation tests. Must have a `data` field which will be validated
-#               against the JSON schema. By default it is expected to be valid. If the case is 
-#               expected to be invalid, provide an `error_message` field which will be matched 
+#               against the JSON schema. By default it is expected to be valid. If the case is
+#               expected to be invalid, provide an `error_message` field which will be matched
 #               against the validation error message.
 
 - name: basic precondition and postcondition
@@ -20,8 +20,8 @@
             minimum_value: 1
   json_schema:
     if:
-      properties: 
-        s1: 
+      properties:
+        s1:
           const: 0
       required:
         - s1
@@ -62,7 +62,7 @@
             minimum_value: 10
             maximum_value: 20
   json_schema:
-    if: 
+    if:
       properties:
         s1:
           minimum: 0
@@ -112,7 +112,7 @@
     if:
       properties:
         s1:
-          anyOf: 
+          anyOf:
             - const: 0
             - const: 10
       required:
@@ -121,19 +121,19 @@
       properties:
         s2:
           not:
-            anyOf: 
+            anyOf:
               - const: 0
               - const: 10
       required:
         - s2
   data_cases:
-    - data: 
+    - data:
         s1: 0
       error_message: "'s2' is a required property"
-    - data: 
+    - data:
         s1: 5
         s2: 0
-    - data: 
+    - data:
         s1: 0
         s2: 5
     - data:
@@ -173,9 +173,9 @@
   json_schema:
     if:
       properties:
-        s1: 
+        s1:
           const: 0
-      required: 
+      required:
         - s1
     then:
       properties:
@@ -205,7 +205,7 @@
     - data:
         s1: 1
         s2: 101
-    - data: 
+    - data:
         s1: 0
         s2: 11
       error_message: 11 is greater than the maximum of 10
@@ -213,7 +213,7 @@
         s1: 1
         s2: 99
       error_message: 99 is less than the minimum of 100
-    
+
 - name: conditions on multiple slots
   linkml_rules:
     - description: if s1 is 0 and s2 is 1 then s3 must be 2 or greater and s4 must be 3 or greater
@@ -230,9 +230,9 @@
           s4:
             minimum_value: 3
   json_schema:
-    if: 
+    if:
       properties:
-        s1: 
+        s1:
           const: 0
         s2:
           const: 1
@@ -306,7 +306,7 @@
     if:
       anyOf:
         - properties:
-            s1: 
+            s1:
               const: 1
           required:
             - s1
@@ -318,14 +318,14 @@
     then:
       anyOf:
         - properties:
-            s3: 
+            s3:
               minimum: 3
           required:
             - s3
         - properties:
             s4:
               minimum: 4
-          required: 
+          required:
             - s4
   data_cases:
     - data:
@@ -356,7 +356,7 @@
         s2: 2
         s3: 0
         s4: 0
-      error_message: "Failed validating 'anyOf' in schema\\['then'\\]"
+      error_message: 0 is less than the minimum of 3
 
 - name: multiple rules
   linkml_rules:
@@ -380,13 +380,13 @@
             minimum_value: 4
   json_schema:
     allOf:
-      - if: 
+      - if:
           properties:
-            s1: 
+            s1:
               const: 1
           required:
             - s1
-        then: 
+        then:
           properties:
             s2:
               minimum: 2
@@ -459,8 +459,8 @@
       open_world: true
   json_schema:
     if:
-      properties: 
-        s1: 
+      properties:
+        s1:
           const: 0
       required:
         - s1
@@ -503,9 +503,9 @@
   json_schema:
     if:
       properties:
-        s1: 
+        s1:
           const: 0
-      required: 
+      required:
         - s1
     then:
       properties:
@@ -529,7 +529,7 @@
     - data:
         s1: 1
         s2: 101
-    - data: 
+    - data:
         s1: 0
         s2: 11
       error_message: 11 is greater than the maximum of 10
@@ -537,4 +537,3 @@
         s1: 1
         s2: 99
       error_message: 99 is less than the minimum of 100
-    
