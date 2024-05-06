@@ -332,6 +332,7 @@
           <section id="expression-language">
 <h1>Expression Language<a class="headerlink" href="#expression-language" title="Permalink to this heading">#</a></h1>
 <p>The Expression Language is a domain-specific language (DSL) that allows for the evaluation of expressions with a syntax similar to Python. It provides a restricted subset of Python’s features to ensure safe and controlled execution.</p>
+<p>See the <a class="reference internal" href="../developers/inference.html"><span class="doc std std-doc">inference documentation</span></a> for details on how to use these at run time.</p>
 <section id="syntax">
 <h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this heading">#</a></h2>
 <p>The Expression Language supports the following syntax elements:</p>
@@ -453,7 +454,6 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">min(arg1,</span> <span class="pre">arg2,</span> <span class="pre">...)</span></code>: Returns the minimum value among the arguments.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">len(arg)</span></code>: Returns the length of a string or a list.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">str(arg)</span></code>: Converts the argument to a string.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">strlen(arg)</span></code>: Returns the length of a string.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">case(cond1,</span> <span class="pre">val1,</span> <span class="pre">cond2,</span> <span class="pre">val2,</span> <span class="pre">...,</span> <span class="pre">default)</span></code>: Evaluates the conditions in order and returns the value associated with the first true condition. If no condition is true, the default value is returned.</p></li>
 </ul>
 </section>

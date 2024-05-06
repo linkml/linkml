@@ -2,6 +2,8 @@
 
 The Expression Language is a domain-specific language (DSL) that allows for the evaluation of expressions with a syntax similar to Python. It provides a restricted subset of Python's features to ensure safe and controlled execution.
 
+See the [inference documentation](../developers/inference) for details on how to use these at run time. 
+
 ## Syntax
 
 The Expression Language supports the following syntax elements:
@@ -68,7 +70,6 @@ The Expression Language provides a set of built-in functions:
 - `min(arg1, arg2, ...)`: Returns the minimum value among the arguments.
 - `len(arg)`: Returns the length of a string or a list.
 - `str(arg)`: Converts the argument to a string.
-- `strlen(arg)`: Returns the length of a string.
 - `case(cond1, val1, cond2, val2, ..., default)`: Evaluates the conditions in order and returns the value associated with the first true condition. If no condition is true, the default value is returned.
 
 ### Attribute Access
