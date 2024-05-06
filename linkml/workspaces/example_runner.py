@@ -20,6 +20,7 @@ from linkml_runtime.dumpers import json_dumper, rdflib_dumper, yaml_dumper
 from linkml_runtime.linkml_model import ElementName
 from linkml_runtime.utils.formatutils import camelcase
 
+from linkml._version import __version__
 from linkml.generators.pythongen import PythonGenerator
 from linkml.validator import Validator, _get_default_validator
 
@@ -298,6 +299,7 @@ class ExampleRunner:
     show_default=True,
     help="If true use type_designators to deepen ranges",
 )
+@click.version_option(__version__, "-V", "--version")
 def cli(schema, prefixes, output: TextIO, **kwargs):
     """Process a folder of examples and a folder of counter examples.
 

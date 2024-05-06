@@ -2,6 +2,7 @@ import logging
 import os
 from collections import OrderedDict
 from copy import deepcopy
+from pathlib import Path
 from typing import Dict, Iterator, List, Mapping, Optional, Set, TextIO, Tuple, Union, cast
 from urllib.parse import urlparse
 
@@ -32,7 +33,7 @@ from linkml.utils.schemasynopsis import SchemaSynopsis
 class SchemaLoader:
     def __init__(
         self,
-        data: Union[str, TextIO, SchemaDefinition, dict],
+        data: Union[str, TextIO, SchemaDefinition, dict, Path],
         base_dir: Optional[str] = None,
         namespaces: Optional[Namespaces] = None,
         useuris: Optional[bool] = None,

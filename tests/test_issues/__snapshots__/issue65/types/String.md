@@ -1,7 +1,6 @@
 
 # Type: string
 
-
 A character string
 
 URI: [meta:String](https://w3id.org/linkml/String)
@@ -15,4 +14,3 @@ URI: [meta:String](https://w3id.org/linkml/String)
 |  |  |  |
 | --- | --- | --- |
 | **Exact Mappings:** | | schema:Text |
-

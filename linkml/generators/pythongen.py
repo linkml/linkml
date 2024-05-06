@@ -4,6 +4,7 @@ import os
 import re
 from copy import copy
 from dataclasses import dataclass
+from pathlib import Path
 from types import ModuleType
 from typing import Callable, Dict, Iterator, List, Optional, Set, Tuple, Union
 
@@ -62,6 +63,8 @@ class PythonGenerator(Generator):
     emit_metadata: bool = True
 
     def __post_init__(self) -> None:
+        if isinstance(self.schema, Path):
+            self.schema = str(self.schema)
         self.sourcefile = self.schema
         self.schemaview = SchemaView(self.schema, base_dir=self.base_dir)
         super().__post_init__()
@@ -182,11 +185,8 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 # Slots
 {self.gen_slotdefs()}"""
 
-    def end_schema(self, **_):
-        print(
-            re.sub(r" +\n", "\n", self.gen_schema().replace("\t", "    ")).strip(" "),
-            end="",
-        )
+    def end_schema(self, **_) -> str:
+        return re.sub(r" +\n", "\n", self.gen_schema().replace("\t", "    ")).strip(" ")
 
     def gen_imports(self) -> str:
         list_ents = [f"from {k} import {', '.join(v)}" for k, v in self.gen_import_list().items()]

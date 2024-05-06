@@ -1,8 +1,10 @@
+from pathlib import Path
 from typing import Any, Dict, Optional, Union
 
 import jsonpatch
 import yaml
 from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.utils.formatutils import remove_empty_items
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 
@@ -17,17 +19,24 @@ def compare_dicts(expected: Dict[str, Any], actual: Dict[str, Any]) -> Optional[
     return " ".join([str(p) for p in patches])
 
 
-def compare_yaml(expected: Union[str, Dict], actual: Union[str, Dict]) -> Optional[str]:
-    if isinstance(expected, str):
+def compare_yaml(
+    expected: Union[str, Dict, Path], actual: Union[str, Dict, Path], remove_empty: bool = False
+) -> Optional[str]:
+    if isinstance(expected, (str, Path)):
         with open(expected) as expected_stream:
             expected_obj = yaml.safe_load(expected_stream)
     else:
         expected_obj = expected
-    if isinstance(actual, str):
+    if isinstance(actual, (str, Path)):
         with open(actual) as actual_stream:
             actual_obj = yaml.safe_load(actual_stream)
     else:
         actual_obj = actual
+
+    if remove_empty:
+        expected_obj = remove_empty_items(expected_obj)
+        actual_obj = remove_empty_items(actual_obj)
+
     return compare_dicts(expected_obj, actual_obj)
 
 

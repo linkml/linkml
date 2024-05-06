@@ -6,7 +6,7 @@ Generate JSON-LD contexts
 import os
 import re
 from dataclasses import dataclass, field
-from typing import Dict, Optional, Set, Union
+from typing import Any, Dict, Optional, Set, Union
 
 import click
 from jsonasobj2 import JsonObj, as_json
@@ -89,7 +89,7 @@ class ContextGenerator(Generator):
         flatprefixes: Optional[bool] = False,
         model: Optional[bool] = True,
         **_,
-    ) -> None:
+    ) -> str:
         if model is None:
             model = self.model
         context = JsonObj()
@@ -126,23 +126,20 @@ class ContextGenerator(Generator):
         if output:
             with open(output, "w", encoding="UTF-8") as outf:
                 outf.write(as_json(context))
-        else:
-            print(as_json(context))
+
+        return str(as_json(context)) + "\n"
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         class_def = {}
         cn = camelcase(cls.name)
         self.add_mappings(cls)
-        cls_uri_prefix, cls_uri_suffix = self.namespaces.prefix_suffix(cls.class_uri)
-        if not self.default_ns or not cls_uri_prefix or cls_uri_prefix != self.default_ns:
-            class_def["@id"] = (cls_uri_prefix + ":" + cls_uri_suffix) if cls_uri_prefix else cls.class_uri
-            if cls_uri_prefix:
-                self.add_prefix(cls_uri_prefix)
+
+        self._build_element_id(class_def, cls.class_uri)
         if class_def:
             self.slot_class_maps[cn] = class_def
 
         # We don't bother to visit class slots - just all slots
-        return False
+        return True
 
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
         if slot.identifier:
@@ -169,14 +166,37 @@ class ContextGenerator(Generator):
                         slot_def["@type"] = "@id"
                     else:
                         slot_def["@type"] = range_type.uri
-                slot_prefix = self.namespaces.prefix_for(slot.slot_uri)
-                if not self.default_ns or not slot_prefix or slot_prefix != self.default_ns:
-                    slot_def["@id"] = slot.slot_uri
-                    if slot_prefix:
-                        self.add_prefix(slot_prefix)
+
+                self._build_element_id(slot_def, slot.slot_uri)
                 self.add_mappings(slot)
         if slot_def:
             self.context_body[underscore(aliased_slot_name)] = slot_def
+
+    def _build_element_id(self, definition: Any, uri: str) -> None:
+        """
+        Defines the elements @id attribute according to the default namespace prefix of the schema.
+
+        The @id namespace prefix is added only if it doesn't correspond to the default schema namespace prefix
+        whether it is in URI format or as an alias.
+
+        @param definition: the element (class or slot) definition
+        @param uri: the uri of the element (class or slot)
+        @return: None
+        """
+        uri_prefix, uri_suffix = self.namespaces.prefix_suffix(uri)
+        is_default_namespace = uri_prefix == self.context_body["@vocab"] or uri_prefix == self.namespaces.prefix_for(
+            self.context_body["@vocab"]
+        )
+
+        if not uri_prefix and not uri_suffix:
+            definition["@id"] = uri
+        elif not uri_prefix or is_default_namespace:
+            definition["@id"] = uri_suffix
+        else:
+            definition["@id"] = (uri_prefix + ":" + uri_suffix) if uri_prefix else uri
+
+        if uri_prefix and not is_default_namespace:
+            self.add_prefix(uri_prefix)
 
     def serialize(self, base: Optional[Union[str, Namespace]] = None, **kwargs) -> str:
         return super().serialize(base=base, **kwargs)

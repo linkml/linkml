@@ -185,6 +185,7 @@ class JsonSchemaGenerator(Generator):
     indent: int = 4
 
     inline: bool = False
+
     top_class: Optional[Union[ClassDefinitionName, str]] = None  # JSON object is one instance of this
     """Class instantiated by the root node of the document tree"""
 
@@ -660,6 +661,14 @@ disable pretty-printing and return the most compact JSON representation
     default="name",
     help="""
 Specify from which slot are JSON Schema 'title' annotations generated.
+""",
+)
+@click.option(
+    "-d",
+    "--include",
+    help="""
+Include LinkML Schema outside of imports mechanism.  Helpful in including deprecated classes and slots in a separate
+YAML, and including it when necessary but not by default (e.g. in documentation or for backwards compatibility)
 """,
 )
 @click.version_option(__version__, "-V", "--version")

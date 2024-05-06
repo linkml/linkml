@@ -256,4 +256,3 @@ ex:C1 a linkml:ClassDefinition ;
     linkml:definition_uri ex:C1 ;
     linkml:slot_usage [ ] .
 
-

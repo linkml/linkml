@@ -1,4 +1,3 @@
-# metamodel_version: 1.7.0
 id,mappings,description
 Event,,
 Person,,"A person, living or dead"

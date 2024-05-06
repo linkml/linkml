@@ -1,3 +1,4 @@
+(structural-forms)=
 # How to recognize and work with different structural forms
 
 ## Introduction

@@ -11,7 +11,7 @@ Then clone the repository and install the development dependencies:
 ```shell
 git clone https://github.com/linkml/linkml
 cd linkml
-poetry install
+poetry install --all-extras
 ```
 
 ## LinkML Testing Framework
@@ -63,8 +63,8 @@ issues are with reference to the old [biolinkml](https://github.com/biolink/biol
 
 Use marks to run or exclude groups of tests:
 
-- `network` - (currently unused in CI) - tests marked as requiring network access/making network requests in order to succeed. 
-- `slow` - tests that are necessary to test technical correctness but are sufficiently long that it's worth excluding them during routine development/when running tests locally. 
+- `network` - (currently unused in CI) - tests marked as requiring network access/making network requests in order to succeed.
+- `slow` - tests that are necessary to test technical correctness but are sufficiently long that it's worth excluding them during routine development/when running tests locally.
   By default, tests marked `slow` are not run, and require the `--with-slow` flag to run. Slow tests are included in the CI testing action. Typical use is to do most development
   work without running `slow` tests, and then running the full test suite `--with-slow` before submitting or merging a pull request.
 - `skip`, `xfail` - see [skip and xfail docs](https://docs.pytest.org/en/latest/how-to/skipping.html)
@@ -146,19 +146,19 @@ New tests in any directory should be written using pytest.
 
 LinkML both generates and depends on Pydantic. [Pydantic V2](https://docs.pydantic.dev/2.4/migration/) brought a number of breaking changes, but we intend to support both V1 and V2. By default, the `PydanticGenerator` class will generate code compatible with the version of Pydantic that is installed in your environment. This can be overridden by explicitly setting the `pydantic_version` field.
 
-As of October 2023, our default development environment still specifies Pydantic 1 (as determined by the `poetry.lock` file). But since we also support Pydantic 2 (as specified in `pyproject.toml`), it is important to test with Pydantic 2 in your environment. To facilitate that there is a `tox` environment called `pydantic2`. To run all tests with Pydantic 2 installed:
+As of March 2024, our default development environment specifies Pydantic 2 (as determined by the `poetry.lock` file). But since we also support Pydantic 1 (as specified in `pyproject.toml`), it is important to test with Pydantic 1 in your environment. To facilitate that there is a `tox` environment called `pydantic1`. To run all tests with Pydantic 1 installed:
 
 ```shell
-poetry run tox -e pydantic2
+poetry run tox -e pydantic1
 ```
 
 Additional arguments will be passed to `pytest`. For example, to run a specific test:
 
 ```shell
-poetry run tox -e pydantic2 -- tests/test_compliance/test_core_compliance.py
+poetry run tox -e pydantic1 -- -- tests/test_compliance/test_core_compliance.py
 ```
 
-Our main GitHub Actions testing workflow will also automatically perform one test run with Pydantic 2 in the environment.
+Our main GitHub Actions testing workflow will also automatically perform at least one test run with Pydantic 1 in the environment.
 
 ## Code formatting and linting
 
@@ -232,4 +232,8 @@ insight into your work and allows them to provide feedback early on.
 
 ![](a_bad_issue.png)
 
-### For general info about how to contribute to LinkML, please see [FAQ: Contributing](https://linkml.io/linkml/faq/contributing.html).
+## See Also
+
+- [FAQ: Contributing](../faq/contributing.md) - General info about how to contribute to LinkML.
+- [Deprecation](../developers/deprecation.md) - Handling deprecations
+

@@ -1,0 +1,530 @@
+{
+  "name": "annotations",
+  "description": "Annotations mixin",
+  "id": "https://w3id.org/linkml/annotations",
+  "version": "2.0.0",
+  "imports": [
+    "linkml:types",
+    "linkml:extensions"
+  ],
+  "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "prefixes": [
+    {
+      "prefix_prefix": "linkml",
+      "prefix_reference": "https://w3id.org/linkml/"
+    }
+  ],
+  "emit_prefixes": [
+    "linkml"
+  ],
+  "default_prefix": "linkml",
+  "default_range": "string",
+  "types": [
+    {
+      "name": "string",
+      "definition_uri": "https://w3id.org/linkml/String",
+      "description": "A character string",
+      "notes": [
+        "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:Text"
+      ],
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "integer",
+      "definition_uri": "https://w3id.org/linkml/Integer",
+      "description": "An integer",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"integer\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:Integer"
+      ],
+      "base": "int",
+      "uri": "http://www.w3.org/2001/XMLSchema#integer",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "boolean",
+      "definition_uri": "https://w3id.org/linkml/Boolean",
+      "description": "A binary (true or false) value",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"boolean\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:Boolean"
+      ],
+      "base": "Bool",
+      "uri": "http://www.w3.org/2001/XMLSchema#boolean",
+      "repr": "bool",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "float",
+      "definition_uri": "https://w3id.org/linkml/Float",
+      "description": "A real number that conforms to the xsd:float specification",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"float\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:Float"
+      ],
+      "base": "float",
+      "uri": "http://www.w3.org/2001/XMLSchema#float",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "double",
+      "definition_uri": "https://w3id.org/linkml/Double",
+      "description": "A real number that conforms to the xsd:double specification",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"double\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "close_mappings": [
+        "schema:Float"
+      ],
+      "base": "float",
+      "uri": "http://www.w3.org/2001/XMLSchema#double",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "decimal",
+      "definition_uri": "https://w3id.org/linkml/Decimal",
+      "description": "A real number with arbitrary precision that conforms to the xsd:decimal specification",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"decimal\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "broad_mappings": [
+        "schema:Number"
+      ],
+      "base": "Decimal",
+      "uri": "http://www.w3.org/2001/XMLSchema#decimal",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "time",
+      "definition_uri": "https://w3id.org/linkml/Time",
+      "description": "A time object represents a (local) time of day, independent of any particular day",
+      "notes": [
+        "URI is dateTime because OWL reasoners do not work with straight date or time",
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"time\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:Time"
+      ],
+      "base": "XSDTime",
+      "uri": "http://www.w3.org/2001/XMLSchema#time",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "date",
+      "definition_uri": "https://w3id.org/linkml/Date",
+      "description": "a date (year, month and day) in an idealized calendar",
+      "notes": [
+        "URI is dateTime because OWL reasoners don't work with straight date or time",
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:Date"
+      ],
+      "base": "XSDDate",
+      "uri": "http://www.w3.org/2001/XMLSchema#date",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "datetime",
+      "definition_uri": "https://w3id.org/linkml/Datetime",
+      "description": "The combination of a date and time",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"datetime\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:DateTime"
+      ],
+      "base": "XSDDateTime",
+      "uri": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "date_or_datetime",
+      "definition_uri": "https://w3id.org/linkml/DateOrDatetime",
+      "description": "Either a date or a datetime",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date_or_datetime\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "https://w3id.org/linkml/DateOrDatetime",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "uriorcurie",
+      "definition_uri": "https://w3id.org/linkml/Uriorcurie",
+      "description": "a URI or a CURIE",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uriorcurie\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "URIorCURIE",
+      "uri": "http://www.w3.org/2001/XMLSchema#anyURI",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "curie",
+      "definition_uri": "https://w3id.org/linkml/Curie",
+      "conforms_to": "https://www.w3.org/TR/curie/",
+      "description": "a compact URI",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"curie\"."
+      ],
+      "comments": [
+        "in RDF serializations this MUST be expanded to a URI",
+        "in non-RDF serializations MAY be serialized as the compact representation"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "Curie",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "uri",
+      "definition_uri": "https://w3id.org/linkml/Uri",
+      "conforms_to": "https://www.ietf.org/rfc/rfc3987.txt",
+      "description": "a complete URI",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uri\"."
+      ],
+      "comments": [
+        "in RDF serializations a slot with range of uri is treated as a literal or type xsd:anyURI unless it is an identifier or a reference to an identifier, in which case it is translated directly to a node"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "close_mappings": [
+        "schema:URL"
+      ],
+      "base": "URI",
+      "uri": "http://www.w3.org/2001/XMLSchema#anyURI",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "ncname",
+      "definition_uri": "https://w3id.org/linkml/Ncname",
+      "description": "Prefix part of CURIE",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"ncname\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "NCName",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "objectidentifier",
+      "definition_uri": "https://w3id.org/linkml/Objectidentifier",
+      "description": "A URI or CURIE that represents an object in the model.",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"objectidentifier\"."
+      ],
+      "comments": [
+        "Used for inheritance and type checking"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "ElementIdentifier",
+      "uri": "http://www.w3.org/ns/shex#iri",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "nodeidentifier",
+      "definition_uri": "https://w3id.org/linkml/Nodeidentifier",
+      "description": "A URI, CURIE or BNODE that represents a node in a model.",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"nodeidentifier\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "NodeIdentifier",
+      "uri": "http://www.w3.org/ns/shex#nonLiteral",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "jsonpointer",
+      "definition_uri": "https://w3id.org/linkml/Jsonpointer",
+      "conforms_to": "https://datatracker.ietf.org/doc/html/rfc6901",
+      "description": "A string encoding a JSON Pointer. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to a valid object within the current instance document when encoded in tree form.",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpointer\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "jsonpath",
+      "definition_uri": "https://w3id.org/linkml/Jsonpath",
+      "conforms_to": "https://www.ietf.org/archive/id/draft-goessner-dispatch-jsonpath-00.html",
+      "description": "A string encoding a JSON Path. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded in tree form.",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpath\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "sparqlpath",
+      "definition_uri": "https://w3id.org/linkml/Sparqlpath",
+      "conforms_to": "https://www.w3.org/TR/sparql11-query/#propertypaths",
+      "description": "A string encoding a SPARQL Property Path. The value of the string MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded as RDF.",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"sparqlpath\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    }
+  ],
+  "slots": [
+    {
+      "name": "annotations",
+      "definition_uri": "https://w3id.org/linkml/annotations",
+      "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
+      "from_schema": "https://w3id.org/linkml/annotations",
+      "is_a": "extensions",
+      "domain": "Annotatable",
+      "slot_uri": "https://w3id.org/linkml/annotations",
+      "multivalued": true,
+      "owner": "Annotation",
+      "domain_of": [
+        "Annotatable",
+        "Annotation"
+      ],
+      "range": "Annotation",
+      "inlined": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "extensions",
+      "definition_uri": "https://w3id.org/linkml/extensions",
+      "description": "a tag/text tuple attached to an arbitrary element",
+      "from_schema": "https://w3id.org/linkml/extensions",
+      "imported_from": "linkml:extensions",
+      "domain": "Extensible",
+      "slot_uri": "https://w3id.org/linkml/extensions",
+      "multivalued": true,
+      "owner": "Extensible",
+      "domain_of": [
+        "Extension",
+        "Extensible"
+      ],
+      "range": "Extension",
+      "inlined": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "extension_tag",
+      "definition_uri": "https://w3id.org/linkml/extension_tag",
+      "description": "a tag associated with an extension",
+      "from_schema": "https://w3id.org/linkml/extensions",
+      "imported_from": "linkml:extensions",
+      "domain": "Extension",
+      "slot_uri": "https://w3id.org/linkml/tag",
+      "key": true,
+      "alias": "tag",
+      "owner": "Extension",
+      "domain_of": [
+        "Extension"
+      ],
+      "range": "uriorcurie",
+      "required": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "extension_value",
+      "definition_uri": "https://w3id.org/linkml/extension_value",
+      "description": "the actual annotation",
+      "from_schema": "https://w3id.org/linkml/extensions",
+      "imported_from": "linkml:extensions",
+      "domain": "Extension",
+      "slot_uri": "https://w3id.org/linkml/value",
+      "alias": "value",
+      "owner": "Extension",
+      "domain_of": [
+        "Extension"
+      ],
+      "range": "AnyValue",
+      "required": true,
+      "inlined": true,
+      "@type": "SlotDefinition"
+    }
+  ],
+  "classes": [
+    {
+      "name": "Annotatable",
+      "definition_uri": "https://w3id.org/linkml/Annotatable",
+      "description": "mixin for classes that support annotations",
+      "from_schema": "https://w3id.org/linkml/annotations",
+      "mixin": true,
+      "slots": [
+        "annotations"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/Annotatable",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "Annotation",
+      "definition_uri": "https://w3id.org/linkml/Annotation",
+      "description": "a tag/value pair with the semantics of OWL Annotation",
+      "from_schema": "https://w3id.org/linkml/annotations",
+      "is_a": "Extension",
+      "mixins": [
+        "Annotatable"
+      ],
+      "slots": [
+        "extension_tag",
+        "extension_value",
+        "extensions",
+        "annotations"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/Annotation",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "AnyValue",
+      "definition_uri": "https://w3id.org/linkml/AnyValue",
+      "from_schema": "https://w3id.org/linkml/extensions",
+      "imported_from": "linkml:extensions",
+      "mappings": [
+        "linkml:Any"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/Any",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "Extension",
+      "definition_uri": "https://w3id.org/linkml/Extension",
+      "description": "a tag/value pair used to add non-model information to an entry",
+      "from_schema": "https://w3id.org/linkml/extensions",
+      "imported_from": "linkml:extensions",
+      "slots": [
+        "extension_tag",
+        "extension_value",
+        "extensions"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/Extension",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "Extensible",
+      "definition_uri": "https://w3id.org/linkml/Extensible",
+      "description": "mixin for classes that support extension",
+      "from_schema": "https://w3id.org/linkml/extensions",
+      "imported_from": "linkml:extensions",
+      "mixin": true,
+      "slots": [
+        "extensions"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/Extensible",
+      "@type": "ClassDefinition"
+    }
+  ],
+  "metamodel_version": "1.7.0",
+  "source_file": "annotations.yaml",
+  "source_file_date": "2000-01-01T00:00:00",
+  "source_file_size": 1,
+  "generation_date": "2000-01-01T00:00:00",
+  "@type": "SchemaDefinition",
+  "@context": [
+    "https://w3id.org/linkml/meta.context.jsonld",
+    {
+      "linkml": "https://w3id.org/linkml/",
+      "@vocab": "https://w3id.org/linkml/",
+      "annotations": {
+        "@type": "@id",
+        "@id": "annotations"
+      },
+      "tag": {
+        "@type": "@id",
+        "@id": "tag"
+      },
+      "value": {
+        "@type": "@id",
+        "@id": "value"
+      },
+      "extensions": {
+        "@type": "@id",
+        "@id": "extensions"
+      },
+      "Annotatable": {
+        "@id": "Annotatable"
+      },
+      "Annotation": {
+        "@id": "Annotation"
+      },
+      "AnyValue": {
+        "@id": "Any"
+      },
+      "Extensible": {
+        "@id": "Extensible"
+      },
+      "Extension": {
+        "@id": "Extension"
+      }
+    },
+    "https://w3id.org/linkml/types.context.jsonld",
+    "https://w3id.org/linkml/extensions.context.jsonld",
+    {
+      "@base": "https://w3id.org/linkml/"
+    }
+  ]
+}

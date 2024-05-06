@@ -108,6 +108,13 @@ DEPRECATED = "[DEPRECATED: only used in legacy mode]"
     help=f"{DEPRECATED} When handling range constraints, include all descendants of the range "
     "class instead of just the range class",
 )
+@click.option(
+    "--include-context/--no-include-context",
+    "-D",
+    default=False,
+    show_default=True,
+    help="Include additional context when reporting of validation errors.",
+)
 @click.argument("data_sources", nargs=-1, type=click.Path(exists=True))
 @click.version_option(__version__, "-V", "--version")
 @click.pass_context
@@ -123,6 +130,7 @@ def cli(
     input_format: Optional[str],
     index_slot: Optional[str],
     include_range_class_descendants: bool,
+    include_context: bool,
 ):
     if legacy_mode:
         from linkml.validators import jsonschemavalidator
@@ -183,6 +191,9 @@ def cli(
         for result in validator.iter_results_from_source(loader, config.target_class):
             severity_counter[result.severity] += 1
             click.echo(f"[{result.severity.value}] [{loader.source}/{result.instance_index}] {result.message}")
+            if include_context:
+                for ctx in result.context:
+                    click.echo(f"[CONTEXT] {ctx}")
 
     if sum(severity_counter.values()) == 0:
         click.echo("No issues found")

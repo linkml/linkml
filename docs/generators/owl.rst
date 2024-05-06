@@ -63,7 +63,31 @@ Mapping
     - Set ``--no-metaclasses`` if you do not want this behavior
     - Set ``--add-root-classes`` to add a root class for each metamodel class
 
+
+
 .. note:: The current default settings for ``metaclasses`` and ``type-objects`` may change in the future
+
+Enums and PermissibleValues
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Enums and PermissibleValues are treated as *classes* by default. An enum has a *definition* added using
+an OWL ``UnionOf`` construct.
+
+* Use ``--default-permissible-value-type`` to change the default type
+
+You can make an enum represent individuals by adding an ``implements`` slot assignment:
+
+.. code-block:: yaml
+
+    enums:
+      HomePlanetType:
+        implements:
+         - owl:NamedIndividual
+        description: The type of home planet
+        permissible_values:
+          Earth:
+          Venus:
+
 
 Tips
 ^^^^

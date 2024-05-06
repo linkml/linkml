@@ -12,7 +12,12 @@
 #
 import os
 import sys
+from operator import attrgetter
+from copy import deepcopy
+
 sys.path.insert(0, os.path.abspath('..'))
+
+from linkml.utils.deprecation import DEPRECATIONS
 
 
 # -- Project information -----------------------------------------------------
@@ -36,14 +41,14 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
-    'myst_parser',
     'sphinxcontrib.mermaid',
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
-    'myst_parser'
+    'myst_nb',
+    'sphinx_design',
+    'matplotlib.sphinxext.plot_directive',
+    'sphinx_jinja',
 ]
-
-myst_heading_anchors = 3
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -73,7 +78,12 @@ html_favicon = 'https://linkml.io/uploads/linkml-logo_color-no-words.png'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
+html_static_path = ['_static']
+
+html_css_files = [
+    'css/common.css', # used everywhere!
+    'css/notebooks.css', # when using myst_nb
+]
 
 
 # Options for the linkcheck builder
@@ -102,5 +112,21 @@ napoleon_use_admonition_for_examples = True
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
     'pydantic': ('https://docs.pydantic.dev/latest', None),
-    'jinja2': ('https://jinja.palletsprojects.com/en/latest/', None)
+    'jinja2': ('https://jinja.palletsprojects.com/en/latest/', None),
+    'numpydantic': ('https://numpydantic.readthedocs.io/en/latest/', None)
+}
+
+# myst-nb
+nb_render_markdown_format = 'myst'
+nb_execution_show_tb = True
+
+# myst
+myst_heading_anchors = 3
+myst_enable_extensions = [
+    "fieldlist"
+]
+
+# Jinja
+jinja_contexts = {
+    'deprecations': {'deprecations': sorted(deepcopy(DEPRECATIONS), key=attrgetter('deprecated_in'))}
 }

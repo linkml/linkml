@@ -1,0 +1,66 @@
+name: Build and test with Pydantic 1
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      #----------------------------------------------
+      #       check-out repo and set-up python
+      #----------------------------------------------
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Ensure tags if not run from main repo
+        if: github.repository != 'linkml/linkml'
+        run: |
+          git remote add upstream https://github.com/linkml/linkml
+          git fetch upstream --tags
+
+      - name: Install poetry
+        run: pipx install poetry
+
+      - name: Install dynamic versioning plugin
+        run: poetry self add "poetry-dynamic-versioning[plugin]"
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v3
+        id: setup-python
+        with:
+          python-version: "3.12"
+          cache: 'poetry'
+
+      #----------------------------------------------
+      # install dependencies
+      #----------------------------------------------
+      - name: Install dependencies
+        run: poetry install --no-interaction --all-extras
+
+      #----------------------------------------------
+      # install pydantic
+      #----------------------------------------------
+      - name: Install Pydantic
+        run: poetry add pydantic@^1
+
+      #----------------------------------------------
+      #         setup and install graphviz
+      #----------------------------------------------
+      - name: Setup Graphviz
+        uses: ts-graphviz/setup-graphviz@v1
+
+      #----------------------------------------------
+      #              run tests
+      #----------------------------------------------
+      - name: Run tests
+        run: poetry run pytest --with-slow

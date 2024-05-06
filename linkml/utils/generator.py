@@ -20,17 +20,14 @@ import logging
 import os
 import re
 import sys
-from contextlib import redirect_stdout
 from dataclasses import dataclass, field
 from functools import lru_cache
-from io import StringIO
 from pathlib import Path
 from typing import Callable, ClassVar, Dict, List, Mapping, Optional, Set, TextIO, Type, Union, cast
 
 import click
 from click import Argument, Command, Option
 from linkml_runtime import SchemaView
-from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
@@ -83,7 +80,7 @@ class Generator(metaclass=abc.ABCMeta):
     For usage `Generator Docs <https://linkml.io/linkml/generators/>`_
     """
 
-    schema: Union[str, TextIO, SchemaDefinition, "Generator"]
+    schema: Union[str, TextIO, SchemaDefinition, "Generator", Path]
     """metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an
         open file or a pre-parsed schema"""
 
@@ -130,7 +127,7 @@ class Generator(metaclass=abc.ABCMeta):
     useuris: Optional[bool] = None
     """True means declared class slot uri's are used.  False means use model uris"""
 
-    log_level: int = DEFAULT_LOG_LEVEL_INT
+    log_level: Optional[int] = DEFAULT_LOG_LEVEL_INT
     """Logging level, 0 is minimum"""
 
     mergeimports: Optional[bool] = True
@@ -177,9 +174,14 @@ class Generator(metaclass=abc.ABCMeta):
     stacktrace: bool = False
     """True means print stack trace, false just error message"""
 
+    include: Optional[Union[str, Path, SchemaDefinition]] = None
+    """If set, include extra schema outside of the imports mechanism"""
+
     def __post_init__(self) -> None:
         if not self.logger:
             self.logger = logging.getLogger()
+        if self.log_level is not None:
+            self.logger.setLevel(self.log_level)
         if self.format is None:
             self.format = self.valid_formats[0]
         if self.format not in self.valid_formats:
@@ -191,7 +193,11 @@ class Generator(metaclass=abc.ABCMeta):
             self.source_file_size = None
         if self.requires_metamodel:
             self.metamodel = _resolved_metamodel(self.mergeimports)
+
         schema = self.schema
+        if isinstance(schema, Path):
+            schema = str(schema)
+
         # TODO: remove aliasing
         self.emit_metadata = self.metadata
         if self.uses_schemaloader:
@@ -199,7 +205,12 @@ class Generator(metaclass=abc.ABCMeta):
         else:
             logging.info(f"Using SchemaView with im={self.importmap} // base_dir={self.base_dir}")
             self.schemaview = SchemaView(schema, importmap=self.importmap, base_dir=self.base_dir)
+            if self.include:
+                if isinstance(self.include, (str, Path)):
+                    self.include = SchemaView(self.include, importmap=self.importmap, base_dir=self.base_dir).schema
+                self.schemaview.merge_schema(self.include)
             self.schema = self.schemaview.schema
+
         self._init_namespaces()
 
     def _initialize_using_schemaloader(self, schema: Union[str, TextIO, SchemaDefinition, "Generator"]):
@@ -225,8 +236,7 @@ class Generator(metaclass=abc.ABCMeta):
                 # schemaloader based methods require schemas to have been created via SchemaLoader,
                 # which prepopulates some fields (e.g. definition_url). If the schema has not been processed through the
                 # loader, then roundtrip
-                if any(c for c in schema.classes.values() if not c.definition_uri):
-                    schema = yaml_dumper.dumps(schema)
+                schema = schema._as_dict
             loader = SchemaLoader(
                 schema,
                 self.base_dir,
@@ -263,66 +273,82 @@ class Generator(metaclass=abc.ABCMeta):
         :param kwargs: Generator specific parameters
         :return: Generated output
         """
-        output = StringIO()
-        # Note: we currently redirect stdout, this means that print statements within
-        # each generator will be redirected to the StringIO object.
-        # See https://github.com/linkml/linkml/issues/923 for discussion on simplifying this
-        with redirect_stdout(output):
-            # the default is to use the Visitor Pattern; each individual generator may
-            # choose to override methods {visit,end}_{element}.
-            # See https://github.com/linkml/linkml/issues/923
-            self.visit_schema(**kwargs)
-            for sn, ss in (
-                sorted(self.schema.subsets.items(), key=lambda s: s[0].lower())
-                if self.visits_are_sorted
-                else self.schema.subsets.items()
-            ):
-                self.visit_subset(ss)
-            for tn, typ in (
-                sorted(self.schema.types.items(), key=lambda s: s[0].lower())
-                if self.visits_are_sorted
-                else self.schema.types.items()
-            ):
-                self.visit_type(typ)
-            for enum in (
-                sorted(self.schema.enums.values(), key=lambda e: e.name.lower())
-                if self.visits_are_sorted
-                else self.schema.enums.values()
-            ):
-                self.visit_enum(enum)
-            for sn, slot in (
-                sorted(self.schema.slots.items(), key=lambda c: c[0].lower())
-                if self.visits_are_sorted
-                else self.schema.slots.items()
-            ):
-                self.visit_slot(self.aliased_slot_name(slot), slot)
-            for cls in (
-                sorted(self.schema.classes.values(), key=lambda c: c.name.lower())
-                if self.visits_are_sorted
-                else self.schema.classes.values()
-            ):
-                if self.visit_class(cls):
-                    for slot in self.all_slots(cls) if self.visit_all_class_slots else self.own_slots(cls):
-                        self.visit_class_slot(cls, self.aliased_slot_name(slot), slot)
-                    self.end_class(cls)
-            self.end_schema(**kwargs)
-        return output.getvalue()
+        out = ""
 
-    def visit_schema(self, **kwargs) -> None:
+        # the default is to use the Visitor Pattern; each individual generator may
+        # choose to override methods {visit,end}_{element}.
+        # See https://github.com/linkml/linkml/issues/923
+        sub_out = self.visit_schema(**kwargs)
+        if sub_out is not None:
+            out += sub_out
+        for sn, ss in (
+            sorted(self.schema.subsets.items(), key=lambda s: s[0].lower())
+            if self.visits_are_sorted
+            else self.schema.subsets.items()
+        ):
+            sub_out = self.visit_subset(ss)
+            if sub_out is not None:
+                out += sub_out
+        for tn, typ in (
+            sorted(self.schema.types.items(), key=lambda s: s[0].lower())
+            if self.visits_are_sorted
+            else self.schema.types.items()
+        ):
+            sub_out = self.visit_type(typ)
+            if sub_out is not None:
+                out += sub_out
+        for enum in (
+            sorted(self.schema.enums.values(), key=lambda e: e.name.lower())
+            if self.visits_are_sorted
+            else self.schema.enums.values()
+        ):
+            sub_out = self.visit_enum(enum)
+            if sub_out is not None:
+                out += sub_out
+        for sn, slot in (
+            sorted(self.schema.slots.items(), key=lambda c: c[0].lower())
+            if self.visits_are_sorted
+            else self.schema.slots.items()
+        ):
+            sub_out = self.visit_slot(self.aliased_slot_name(slot), slot)
+            if sub_out is not None:
+                out += sub_out
+        for cls in (
+            sorted(self.schema.classes.values(), key=lambda c: c.name.lower())
+            if self.visits_are_sorted
+            else self.schema.classes.values()
+        ):
+            cls_out = self.visit_class(cls)
+            if cls_out:
+                if isinstance(cls_out, str):
+                    out += cls_out
+                for slot in self.all_slots(cls) if self.visit_all_class_slots else self.own_slots(cls):
+                    sub_out = self.visit_class_slot(cls, self.aliased_slot_name(slot), slot)
+                    if sub_out is not None:
+                        out += sub_out
+                sub_out = self.end_class(cls)
+                if sub_out is not None:
+                    out += sub_out
+        sub_out = self.end_schema(**kwargs)
+        if sub_out is not None:
+            out += sub_out
+        return out
+
+    def visit_schema(self, **kwargs) -> Optional[str]:
         """Visited once at the beginning of generation
 
         @param kwargs: Arguments passed through from CLI -- implementation dependent
         """
         ...
 
-    def end_schema(self, **kwargs) -> None:
+    def end_schema(self, **kwargs) -> Optional[str]:
         """Visited once at the end of generation
 
         @param kwargs: Arguments passed through from CLI -- implementation dependent
         """
         ...
 
-    def visit_class(self, cls: ClassDefinition) -> bool:
+    def visit_class(self, cls: ClassDefinition) -> Optional[Union[str, bool]]:
         """Visited once per schema class
 
         @param cls: class being visited
@@ -330,14 +356,14 @@ class Generator(metaclass=abc.ABCMeta):
         """
         return True
 
-    def end_class(self, cls: ClassDefinition) -> None:
+    def end_class(self, cls: ClassDefinition) -> Optional[str]:
         """Visited after visit_class_slots (if visit_class returned true)
 
         @param cls: class being visited
         """
         ...
 
-    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
+    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> Optional[str]:
         """Visited for each slot in a class.  If class level visit_all_slots is true, this is visited once
         for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise, just the own slots.
 
@@ -347,7 +373,7 @@ class Generator(metaclass=abc.ABCMeta):
         """
         ...
 
-    def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
+    def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> Optional[str]:
         """Visited once for every slot definition in the schema.
 
         @param aliased_slot_name: Aliased name of the slot.  May not be unique
@@ -355,21 +381,21 @@ class Generator(metaclass=abc.ABCMeta):
         """
         ...
 
-    def visit_type(self, typ: TypeDefinition) -> None:
+    def visit_type(self, typ: TypeDefinition) -> Optional[str]:
         """Visited once for every type definition in the schema
 
         @param typ: Type definition
         """
         ...
 
-    def visit_subset(self, subset: SubsetDefinition) -> None:
+    def visit_subset(self, subset: SubsetDefinition) -> Optional[str]:
         """Visited once for every subset definition in the schema
 
         #param subset: Subset definition
         """
         ...
 
-    def visit_enum(self, enum: EnumDefinition) -> None:
+    def visit_enum(self, enum: EnumDefinition) -> Optional[str]:
         """Visited once for every enum definition in the schema
 
         @param enum: Enum definition
@@ -684,7 +710,7 @@ class Generator(metaclass=abc.ABCMeta):
 
     def slot_name(self, name: str) -> str:
         """
-        Return the underscored version of the aliased slot name if name is a slot. Prepend "unknown\_" if the name
+        Return the underscored version of the aliased slot name if name is a slot. Prepend ``unknown_`` if the name
         isn't valid.
         """
         slot = self.slot_for(name)

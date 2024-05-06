@@ -60,8 +60,8 @@ class JSONLDGenerator(Generator):
     """Path to a JSONLD context file"""
 
     def __post_init__(self) -> None:
-        super().__post_init__()
         self.original_schema = deepcopy(self.schema)
+        super().__post_init__()
 
     def _add_type(self, node: YAMLRoot) -> dict:
         if self.format == "jsonld":
@@ -151,7 +151,7 @@ class JSONLDGenerator(Generator):
     def visit_subset(self, ss: SubsetDefinition) -> None:
         self._visit(ss)
 
-    def end_schema(self, context: str = None, **_) -> None:
+    def end_schema(self, context: str = None, **_) -> str:
         self._add_type(self.schema)
         base_prefix = self.default_prefix()
 
@@ -186,8 +186,9 @@ class JSONLDGenerator(Generator):
             if base_prefix:
                 self.schema["@context"].append({"@base": base_prefix})
         # json_obj["@id"] = self.schema.id
-        print(as_json(self.schema, indent="  "))
+        out = str(as_json(self.schema, indent="  ")) + "\n"
         self.schema = self.original_schema
+        return out
 
 
 @shared_arguments(JSONLDGenerator)

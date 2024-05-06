@@ -16,7 +16,9 @@ class {{ name }}(BaseModel):
         validate_default = True,
         extra = "{{ extra_fields }}",
         arbitrary_types_allowed = True,
-        use_enum_values = True)
+        use_enum_values = True,
+        strict = {{ strict }},
+    )
 {% endif %}
 {% if fields is not none %}
     {% for field in fields %}

@@ -1,7 +1,6 @@
 
 # Type: float
 
-
 A real number that conforms to the xsd:float specification
 
 URI: [meta:Float](https://w3id.org/linkml/Float)
@@ -15,4 +14,3 @@ URI: [meta:Float](https://w3id.org/linkml/Float)
 |  |  |  |
 | --- | --- | --- |
 | **Exact Mappings:** | | schema:Float |
-

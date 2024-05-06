@@ -6,6 +6,9 @@ import pytest
 from linkml.generators.plantumlgen import PlantumlGenerator
 
 MARKDOWN_HEADER = """@startuml
+skinparam nodesep 10
+hide circle
+hide empty members
 """
 
 MARKDOWN_FOOTER = """
@@ -14,13 +17,13 @@ MARKDOWN_FOOTER = """
 
 PERSON = """
 class "Person" {
-    {field} "id": "string" [req]
-    {field} "name": "string" [opt]
-    {field} "age_in_years": "integer" [opt]
-    {field} "species_name": "string" [opt]
-    {field} "stomach_count": "integer" [opt]
-    {field} "is_living": "LifeStatusEnum" [opt]
-    {field} "aliases": "string" [0..*]
+    {field} id: string [req]
+    {field} name: string [opt]
+    {field} age_in_years: integer [opt]
+    {field} species_name: string [opt]
+    {field} stomach_count: integer [opt]
+    {field} is_living: LifeStatusEnum [opt]
+    {field} aliases: string [0..*]
 }
 """
 

@@ -1,19 +1,28 @@
 import inspect
 import logging
 import os
+import textwrap
 from collections import defaultdict
-from dataclasses import dataclass
+from copy import deepcopy
+from dataclasses import dataclass, field
 from pathlib import Path
 from types import ModuleType
-from typing import Dict, List, Literal, Optional, Set, Type, Union
+from typing import (
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Set,
+    Type,
+    Union,
+)
 
 import click
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader
-
-# from linkml.generators import pydantic_GEN_VERSION
 from linkml_runtime.linkml_model.meta import (
     Annotation,
     ClassDefinition,
+    SchemaDefinition,
     SlotDefinition,
     TypeDefinition,
 )
@@ -29,6 +38,8 @@ from linkml.generators.common.type_designators import (
     get_type_designator_value,
 )
 from linkml.generators.oocodegen import OOCodeGenerator
+from linkml.generators.pydanticgen.array import ArrayRangeGenerator, ArrayRepresentation
+from linkml.generators.pydanticgen.build import SlotResult
 from linkml.generators.pydanticgen.template import (
     ConditionalImport,
     Import,
@@ -40,8 +51,12 @@ from linkml.generators.pydanticgen.template import (
     PydanticModule,
     TemplateModel,
 )
+from linkml.utils import deprecation_warning
 from linkml.utils.generator import shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration
+
+if int(PYDANTIC_VERSION[0]) == 1:
+    deprecation_warning("pydantic-v1")
 
 
 def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
@@ -66,6 +81,7 @@ DEFAULT_IMPORTS = (
     + Import(module="decimal", objects=[ObjectImport(name="Decimal")])
     + Import(module="enum", objects=[ObjectImport(name="Enum")])
     + Import(module="re")
+    + Import(module="sys")
     + Import(
         module="typing",
         objects=[
@@ -119,6 +135,11 @@ class PydanticGenerator(OOCodeGenerator):
     file_extension = "py"
 
     # ObjectVars
+    array_representations: List[ArrayRepresentation] = field(default_factory=lambda: [ArrayRepresentation.LIST])
+    black: bool = False
+    """
+    If black is present in the environment, format the serialized code with it
+    """
     pydantic_version: int = int(PYDANTIC_VERSION[0])
     template_dir: Optional[Union[str, Path]] = None
     """
@@ -211,6 +232,11 @@ class PydanticGenerator(OOCodeGenerator):
     # Private attributes
     _predefined_slot_values: Optional[Dict[str, Dict[str, str]]] = None
     _class_bases: Optional[Dict[str, List[str]]] = None
+
+    def __post_init__(self):
+        super().__post_init__()
+        if int(self.pydantic_version) == 1:
+            deprecation_warning("pydanticgen-v1")
 
     def compile_module(self, **kwargs) -> ModuleType:
         """
@@ -584,7 +610,22 @@ class PydanticGenerator(OOCodeGenerator):
             env.loader = loader
         return env
 
-    def serialize(self) -> str:
+    def get_array_representations_range(self, slot: SlotDefinition, range: str) -> List[SlotResult]:
+        """
+        Generate the python range for array representations
+        """
+        array_reps = []
+        for repr in self.array_representations:
+            generator = ArrayRangeGenerator.get_generator(repr)
+            result = generator(slot.array, range, self.pydantic_version).make()
+            array_reps.append(result)
+
+        if len(array_reps) == 0:
+            raise ValueError("No array representation generated, but one was requested!")
+
+        return array_reps
+
+    def render(self) -> PydanticModule:
         sv: SchemaView
         sv = self.schemaview
 
@@ -631,8 +672,11 @@ class PydanticGenerator(OOCodeGenerator):
             enums=enums,
             classes=classes,
         )
-        code = module.render(self._template_environment())
-        return code
+        return module
+
+    def serialize(self) -> str:
+        module = self.render()
+        return module.render(self._template_environment(), self.black)
 
     def default_value_for_type(self, typ: str) -> str:
         return "None"
@@ -671,6 +715,13 @@ Available templates to override:
     help="Pydantic version to use (1 or 2)",
 )
 @click.option(
+    "--array-representations",
+    type=click.Choice([k.value for k in ArrayRepresentation]),
+    multiple=True,
+    default=["list"],
+    help="List of array representations to accept for array slots. Default is list of lists.",
+)
+@click.option(
     "--extra-fields",
     type=click.Choice(["allow", "ignore", "forbid"], case_sensitive=False),
     default="forbid",
@@ -686,8 +737,9 @@ def cli(
     genmeta=False,
     classvars=True,
     slots=True,
+    array_representations=list("list"),
     pydantic_version=1,
-    extra_fields="forbid",
+    extra_fields: Literal["allow", "forbid", "ignore"] = "forbid",
     **args,
 ):
     """Generate pydantic classes to represent a LinkML model"""
@@ -706,6 +758,7 @@ def cli(
     gen = PydanticGenerator(
         yamlfile,
         pydantic_version=pydantic_version,
+        array_representations=[ArrayRepresentation(x) for x in array_representations],
         extra_fields=extra_fields,
         emit_metadata=head,
         genmeta=genmeta,

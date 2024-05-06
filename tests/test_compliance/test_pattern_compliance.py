@@ -98,6 +98,7 @@ def test_pattern(framework, range, schema_name, pattern, data_name, value):
     )
 
 
+# pattern is {word}{ws}{word} and defined in settings above
 @pytest.mark.parametrize(
     "interpolated,partial_match,value,is_valid",
     [
@@ -119,11 +120,27 @@ def test_structured_pattern(framework, interpolated, partial_match, value: str, 
     Pattern slots allow for regular expression constraints.
     Currently not supported for validation by python frameworks.
 
-    :param framework: not supported by python frameworks
-    :param schema_name: the name reflects which constraints are implementd
-    :param pattern: regular expression
+    :param framework: one of CORE_FRAMEWORKS collection above, not supported by python dataclasses
+    :param interpolated: whether the pattern is interpolated
+    :param partial_match: whether the pattern is a partial match
     :param value: value to check
+    :param is_valid: whether the value is valid
     :return:
+
+    Examples:
+    (True, False, "abc def", True)
+    Interpolation is enabled, and partial matching is disabled.
+    The string "abc def" should exactly match the interpolated pattern {word}{ws}{word} - 'word' and 'ws' defined below
+    (which translates to something like [a-zA-Z]+\s+[a-zA-Z]+), and this is expected to be valid.
+
+    (True, False, "abc", False)
+    Similar settings as the first, but "abc" does not meet the {word}{ws}{word} pattern since
+    there's no whitespace or second word. Expected to be invalid.
+
+    (True, False, "abc def ghi", False)
+    Again, partial matching is not allowed, and "abc def ghi" exceeds the {word}{ws}{word} pattern
+    because it has an extra word. Expected to be invalid.
+
     """
     settings = {
         "word": r"[a-zA-Z]+",

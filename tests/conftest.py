@@ -1,7 +1,9 @@
 import shutil
+import sys
 from abc import ABC, abstractmethod
+from importlib.abc import MetaPathFinder
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 
 import pytest
 import requests_cache
@@ -21,7 +23,7 @@ def normalize_line_endings(string: str):
 
 class Snapshot(ABC):
     def __init__(self, path: Path, config: pytest.Config) -> None:
-        self.path = path
+        self.path = Path(path)
         self.config = config
         self.eq_state = ""
 
@@ -114,15 +116,15 @@ class SnapshotDirectory(Snapshot):
 
 
 @pytest.fixture
-def snapshot_path(request) -> Callable[[str], Path]:
-    def get_path(relative_path):
+def snapshot_path(request) -> Callable[[Union[str, Path]], Path]:
+    def get_path(relative_path: Union[str, Path]):
         return request.path.parent / "__snapshots__" / relative_path
 
     return get_path
 
 
 @pytest.fixture
-def snapshot(snapshot_path, pytestconfig, monkeypatch) -> Callable[[str], Snapshot]:
+def snapshot(snapshot_path, pytestconfig, monkeypatch) -> Callable[[Union[str, Path]], Snapshot]:
     # Patching SchemaDefinition's setter here prevents metadata that can be variable
     # between systems from entering the snapshot files. This could be part of its own
     # fixture but it's not clear if it would be useful outside of tests that
@@ -140,7 +142,7 @@ def snapshot(snapshot_path, pytestconfig, monkeypatch) -> Callable[[str], Snapsh
 
     monkeypatch.setattr(SchemaDefinition, "__setattr__", patched)
 
-    def get_snapshot(relative_path, **kwargs):
+    def get_snapshot(relative_path: Union[str, Path], **kwargs):
         path = snapshot_path(relative_path)
         if not path.suffix:
             return SnapshotDirectory(path, pytestconfig)
@@ -150,12 +152,22 @@ def snapshot(snapshot_path, pytestconfig, monkeypatch) -> Callable[[str], Snapsh
     return get_snapshot
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def input_path(request) -> Callable[[str], Path]:
     def get_path(filename):
         return str(request.path.parent / "input" / filename)
 
     return get_path
+
+
+@pytest.fixture(scope="function")
+def temp_dir(request) -> Path:
+    base = Path(request.path.parent) / "temp"
+    test_dir = base / request.function.__name__
+    test_dir.mkdir(exist_ok=True, parents=True)
+    yield test_dir
+    if not request.config.getoption("with_output"):
+        shutil.rmtree(test_dir)
 
 
 def pytest_addoption(parser):
@@ -168,6 +180,7 @@ def pytest_addoption(parser):
     parser.addoption(
         "--with-output", action="store_true", help="dump output in compliance test for richer debugging information"
     )
+    parser.addoption("--without-cache", action="store_true", help="Don't use a sqlite cache for network requests")
 
 
 def pytest_collection_modifyitems(config, items):
@@ -177,9 +190,17 @@ def pytest_collection_modifyitems(config, items):
             if item.get_closest_marker("slow"):
                 item.add_marker(skip_slow)
 
+    # make sure deprecation test happens at the end
+    test_deps = [i for i in items if i.name == "test_removed_are_removed"]
+    if len(test_deps) == 1:
+        items.remove(test_deps[0])
+        items.append(test_deps[0])
+
 
 def pytest_sessionstart(session: pytest.Session):
     tests.WITH_OUTPUT = session.config.getoption("--with-output")
+    if session.config.getoption("--generate-snapshots"):
+        tests.DEFAULT_MISMATCH_ACTION = "MismatchAction.Ignore"
 
 
 def pytest_assertrepr_compare(config, op, left, right):
@@ -193,6 +214,9 @@ def patch_requests_cache(pytestconfig):
     Cache network requests - for each unique network request, store it in
     an sqlite cache. only do unique requests once per session.
     """
+    if pytestconfig.getoption("--without-cache"):
+        yield
+        return
     cache_file = Path(__file__).parent / "output" / "requests-cache.sqlite"
     requests_cache.install_cache(
         str(cache_file),
@@ -204,3 +228,47 @@ def patch_requests_cache(pytestconfig):
     # delete cache file unless we have requested it to persist for inspection
     if not pytestconfig.getoption("--with-output"):
         cache_file.unlink(missing_ok=True)
+
+
+class MockImportErrorFinder(MetaPathFinder):
+    """
+    Fake like we don't have a module when we really do.
+
+    see the ``mock_black_import`` fixture for example usage.
+
+    .. note::
+
+        you will also have to reimport any modules that potentially import the module you are removing -
+        see tests/test_generators/test_pydanticgen.py:test_template_noblack for an example
+
+    """
+
+    def __init__(self, module: str, *args, **kwargs):
+        super(MockImportErrorFinder, self).__init__(*args, **kwargs)
+        self.module = module
+
+    def find_spec(self, fullname, path, target):
+        if fullname.startswith(self.module):
+            raise ImportError(f"module with name {fullname} could not be found")
+        else:
+            return None
+
+
+@pytest.fixture(scope="function")
+def mock_black_import():
+    """
+    Pretend like we don't have black even if we do
+    """
+    removed = {}
+    for k, v in sys.modules.items():
+        if k.startswith("black"):
+            removed[k] = v
+    for k in removed.keys():
+        del sys.modules[k]
+    meta_finder = MockImportErrorFinder("black")
+    sys.meta_path.insert(0, meta_finder)
+
+    yield removed
+
+    sys.modules.update(removed)
+    sys.meta_path.remove(meta_finder)

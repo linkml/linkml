@@ -22,7 +22,8 @@ class ShaclGenerator(Generator):
     # ClassVars
     closed: bool = True
     """True means add 'sh:closed=true' to all shapes, except of mixin shapes and shapes, that have parents"""
-
+    suffix: str = None
+    """parameterized suffix to be appended. No suffix per default."""
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
@@ -35,10 +36,11 @@ class ShaclGenerator(Generator):
         super().__post_init__()
         self.generate_header()
 
-    def generate_header(self):
-        print(f"# metamodel_version: {self.schema.metamodel_version}")
+    def generate_header(self) -> str:
+        out = f"\n# metamodel_version: {self.schema.metamodel_version}"
         if self.schema.version:
-            print(f"# version: {self.schema.version}")
+            out += f"\n# version: {self.schema.version}"
+        return out
 
     def serialize(self, **args) -> str:
         g = self.as_graph()
@@ -59,9 +61,12 @@ class ShaclGenerator(Generator):
 
             def shape_pv(p, v):
                 if v is not None:
-                    g.add((class_uri, p, v))
+                    g.add((class_uri_with_suffix, p, v))
 
             class_uri = URIRef(sv.get_uri(c, expand=True))
+            class_uri_with_suffix = class_uri
+            if self.suffix is not None:
+                class_uri_with_suffix += self.suffix
             shape_pv(RDF.type, SH.NodeShape)
             shape_pv(SH.targetClass, class_uri)  # TODO
             if self.closed:
@@ -172,7 +177,7 @@ class ShaclGenerator(Generator):
                     if s.pattern:
                         prop_pv(SH.pattern, Literal(s.pattern))
 
-                ifabsent_processor.process_slot(prop_pv, s)
+                ifabsent_processor.process_slot(prop_pv, s, class_uri)
 
         return g
 
@@ -211,14 +216,21 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
 
 
 @shared_arguments(ShaclGenerator)
+@click.command()
 @click.option(
     "--closed/--non-closed",
     default=True,
     show_default=True,
     help="Use '--closed' to generate closed SHACL shapes. Use '--non-closed' to generate open SHACL shapes.",
 )
+@click.option(
+    "-s",
+    "--suffix",
+    default=None,
+    show_default=True,
+    help="Use --suffix to append given string to SHACL class name (e. g. --suffix Shape: Person becomes PersonShape).",
+)
 @click.version_option(__version__, "-V", "--version")
-@click.command()
 def cli(yamlfile, **args):
     """Generate SHACL turtle from a LinkML model"""
     gen = ShaclGenerator(yamlfile, **args)
