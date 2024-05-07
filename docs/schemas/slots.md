@@ -128,15 +128,20 @@ slots:
 
 See the [type-designators](type-designators.md) section of the docs for more details.
 
-## Slot cardinality
+## Cardinality
 
-The cardinality of a slot is indicative of two properties on a slot. It tells us about whether a slot is *required* or not, and also about how many values it is allowed to have, i.e., whether it is *single-valued* or *multi-valued*.
+The cardinality of a slot in UML class diagrams indicates the number of instances of one class 
+that can be linked to an instance of another class. Cardinality (sometimes also referred to as 
+*multiplicity*) notations are placed near the end of an association.
 
-The following list summarizes the expansions of the various possible combinations of cardinalities that can be asserted on a slot:
-* `1..*` - slot is *required* and *multivalued*
-* `1..1` - slot is *required* but *not multivalued*
-* `0..*` - slot is *not required* but if provided it must be *mulitvalued*
-* `0..1` - slot is *not required* and *not multivalued*
+The different cardinality options are as follows:
+* `1` - Only 1
+* `0..1` - Zero or one
+* `1..*` - One or more
+* `*` - Many
+* `n` - n (where n>1)
+* `0..n` - Zero to n (where n>1)
+* `1..n` - One to n (where n>1)
 
 ### multivalued
 
