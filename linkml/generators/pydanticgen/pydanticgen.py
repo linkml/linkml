@@ -1,6 +1,7 @@
 import inspect
 import logging
 import os
+import textwrap
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -18,7 +19,6 @@ from typing import (
 import click
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader
 from linkml_runtime.linkml_model.meta import (
-    Annotation,
     ClassDefinition,
     SlotDefinition,
     TypeDefinition,
@@ -279,16 +279,19 @@ class PydanticGenerator(OOCodeGenerator):
             pydantic_ver=self.pydantic_version,
         )
 
+        result = ClassResult(cls=pyclass)
+
         attributes = {}
         for sn in self.schemaview.class_slots(cls.name):
             slot = self.generate_slot(self.schemaview.induced_slot(sn, cls.name), cls)
             # TODO: handle imports and a proper slot result
-            attributes[slot.name] = slot
+            attributes[slot.attribute.name] = slot.attribute
+            result = result.merge(slot)
 
-        pyclass.attributes = attributes
-        return ClassResult(cls=pyclass)
+        result.cls.attributes = attributes
+        return result
 
-    def generate_slot(self, slot: SlotDefinition, cls: ClassDefinition) -> PydanticAttribute:
+    def generate_slot(self, slot: SlotDefinition, cls: ClassDefinition) -> SlotResult:
         slot_args = {
             k: slot._as_dict.get(k, None)
             for k in PydanticAttribute.model_fields.keys()
@@ -324,13 +327,25 @@ class PydanticGenerator(OOCodeGenerator):
         else:
             raise Exception(f"Could not generate python range for {cls.name}.{slot.name}")
 
-        if slot.multivalued:
+        pyslot.range = pyrange
+        result = SlotResult(attribute=pyslot)
+
+        if slot.array is not None:
+            results = self.get_array_representations_range(slot, result.attribute.range)
+            if len(results) == 1:
+                result.attribute.range = results[0].range
+            else:
+                result.attribute.range = f"Union[{', '.join([res.range for res in results])}]"
+            for res in results:
+                result = result.merge(res)
+
+        elif slot.multivalued:
             if slot.inlined or slot.inlined_as_list:
                 collection_key = self.generate_collection_key(slot_ranges, slot, cls)
             else:
                 collection_key = None
             if slot.inlined is False or collection_key is None or slot.inlined_as_list is True:
-                pyrange = f"List[{pyrange}]"
+                result.attribute.range = f"List[{result.attribute.range}]"
             else:
                 simple_dict_value = None
                 if len(slot_ranges) == 1:
@@ -338,16 +353,14 @@ class PydanticGenerator(OOCodeGenerator):
                 if simple_dict_value:
                     # simple_dict_value might be the range of the identifier of a class when range is a class,
                     # so we specify either that identifier or the range itself
-                    if simple_dict_value != pyrange:
-                        simple_dict_value = f"Union[{simple_dict_value}, {pyrange}]"
-                    pyrange = f"Dict[str, {simple_dict_value}]"
+                    if simple_dict_value != result.attribute.range:
+                        simple_dict_value = f"Union[{simple_dict_value}, {result.attribute.range}]"
+                    result.attribute.range = f"Dict[str, {simple_dict_value}]"
                 else:
-                    pyrange = f"Dict[{collection_key}, {pyrange}]"
+                    result.attribute.range = f"Dict[{collection_key}, {result.attribute.range}]"
         if not (slot.required or slot.identifier or slot.key) and not slot.designates_type:
-            pyrange = f"Optional[{pyrange}]"
-        ann = Annotation("python_range", pyrange)
-        pyslot.annotations = {ann.tag: ann}
-        return pyslot
+            result.attribute.range = f"Optional[{result.attribute.range}]"
+        return result
 
     @property
     def predefined_slot_values(self) -> Dict[str, Dict[str, str]]:
@@ -554,6 +567,17 @@ class PydanticGenerator(OOCodeGenerator):
             return list(collection_keys)[0]
         return None
 
+    def _clean_injected_classes(self, injected_classes: List[Union[str, Type]]) -> Optional[List[str]]:
+        """Get source, deduplicate, and dedent injected classes"""
+        if len(injected_classes) == 0:
+            return None
+
+        injected_classes = list(
+            dict.fromkeys([c if isinstance(c, str) else inspect.getsource(c) for c in injected_classes])
+        )
+        injected_classes = [textwrap.dedent(c) for c in injected_classes]
+        return injected_classes
+
     def _inline_as_simple_dict_with_value(self, slot_def: SlotDefinition) -> Optional[str]:
         """
         Determine if a slot should be inlined as a simple dict with a value.
@@ -622,6 +646,12 @@ class PydanticGenerator(OOCodeGenerator):
             for i in self.imports:
                 imports += i
 
+        # injected classes
+        if self.injected_classes is not None:
+            injected_classes = self.injected_classes.copy()
+        else:
+            injected_classes = []
+
         # enums
         enums = self.generate_enums(sv.all_enums())
 
@@ -629,12 +659,6 @@ class PydanticGenerator(OOCodeGenerator):
         base_model = PydanticBaseModel(
             pydantic_ver=self.pydantic_version, extra_fields=self.extra_fields, fields=self.injected_fields
         )
-
-        # injected classes
-        if self.injected_classes is not None:
-            injected_classes = [c if isinstance(c, str) else inspect.getsource(c) for c in self.injected_classes]
-        else:
-            injected_classes = None
 
         # schema classes
         classes = {}
@@ -648,6 +672,10 @@ class PydanticGenerator(OOCodeGenerator):
             classes[result.cls.name] = result.cls
             if result.imports is not None:
                 imports += result.imports
+            if result.injected_classes is not None:
+                injected_classes.extend(result.injected_classes)
+
+        injected_classes = self._clean_injected_classes(injected_classes)
 
         module = PydanticModule(
             pydantic_ver=self.pydantic_version,
