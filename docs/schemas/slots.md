@@ -132,7 +132,9 @@ See the [type-designators](type-designators.md) section of the docs for more det
 
 The cardinality of a slot in UML class diagrams indicates the number of instances of one class 
 that can be linked to an instance of another class. Cardinality (sometimes also referred to as 
-*multiplicity*) notations are placed near the end of an association.
+*multiplicity*) notations in mermaid class diagrams are placed near the end of *association* 
+relationship arrows, i.e., arrows that relate one class to another by way of a slot assertion.
+
 
 The different cardinality options are as follows:
 * `1` - Only 1
