@@ -130,7 +130,7 @@ class ShaclGenerator(Generator):
 
                             self._add_class(cl_node_pv, r)
                             range_list.append(class_node)
-                        elif r in sv.all_types().values():
+                        elif r in sv.all_types():
                             t_node = BNode()
 
                             def t_node_pv(p, v):
@@ -168,7 +168,7 @@ class ShaclGenerator(Generator):
                             prop_pv(SH.nodeKind, SH.IRI)
                         else:
                             prop_pv(SH.nodeKind, SH.BlankNodeOrIRI)
-                    elif r in sv.all_types().values():
+                    elif r in sv.all_types():
                         self._add_type(prop_pv, r)
                     elif r in sv.all_enums():
                         self._add_enum(g, prop_pv, r)
@@ -201,10 +201,11 @@ class ShaclGenerator(Generator):
         func(SH["in"], pv_node)
 
     def _add_type(self, func: Callable, r: ElementName) -> None:
+        func(SH.nodeKind, SH.Literal)
         sv = self.schemaview
         rt = sv.get_type(r)
         if rt.uri:
-            func(SH.datatype, rt.uri)
+            func(SH.datatype, URIRef(sv.get_uri(rt, expand=True)))
         else:
             logging.error(f"No URI for type {rt.name}")
 
