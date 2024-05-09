@@ -9,7 +9,7 @@ over the linkml metamodel, for example:
 - Tools that analyze schemas or align schemas or schema elements
 - Tools that auto-genete APIs from schemas
 - Generic faceted data browsers that flexibly operate over multiple
-  schemas (see   `this draft <https://docs.google.com/document/d/1jOLRF_doeSomVxZD5H8Ig_WujQ-2sNxhvWBmojZos3o/edit>`_
+  schemas (see `this draft <https://docs.google.com/document/d/1jOLRF_doeSomVxZD5H8Ig_WujQ-2sNxhvWBmojZos3o/edit>`_)
 - Schema editors for LinkML itself
 
 
