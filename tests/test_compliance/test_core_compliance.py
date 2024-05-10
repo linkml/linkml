@@ -486,6 +486,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         "sh:property [ sh:datatype xsd:string ;"
         f"    {'sh:maxCount 1 ;' if not multivalued else ''}"
         f"    {'sh:minCount 1 ;' if required else ''}"
+        "    sh:nodeKind sh:Literal ;"
         "    sh:order 0 ;"
         "    sh:path ex:s1 ] ;"
         "sh:targetClass ex:C ."
