@@ -220,17 +220,8 @@ class PydanticAttribute(TemplateModel):
     key: bool = False
     predefined: Optional[str] = None
     """Fixed string to use in body of field"""
-    annotations: Optional[dict] = None
-    """
-    Of the form::
-
-        annotations = {'python_range': {'value': 'int'}}
-
-    .. todo::
-
-        simplify when refactoring pydanticgen, should just be a string or a model
-
-    """
+    range: Optional[str] = None
+    """Type annotation used for model field"""
     title: Optional[str] = None
     description: Optional[str] = None
     equals_number: Optional[Union[int, float]] = None

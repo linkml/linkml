@@ -29,7 +29,7 @@ if sys.version_info.minor <= 8:
 else:
     from typing import Annotated
 
-from linkml.generators.pydanticgen.build import SlotResult
+from linkml.generators.pydanticgen.build import RangeResult
 from linkml.generators.pydanticgen.template import ConditionalImport, Import, Imports, ObjectImport
 
 
@@ -188,7 +188,7 @@ _ConListImports = Imports() + Import(module="pydantic", objects=[ObjectImport(na
 
 class ArrayRangeGenerator(ABC):
     """
-    Metaclass for generating a given format of array annotation.
+    Metaclass for generating a given format of array range.
 
     See :ref:`array-forms` for more details on array range forms.
 
@@ -207,7 +207,7 @@ class ArrayRangeGenerator(ABC):
         (unless that's what you intend to do ofc ;)
 
     Attributes:
-        array (:class:`.ArrayExpression` ): Array to create an annotation for
+        array (:class:`.ArrayExpression` ): Array to create a range for
         dtype (Union[str, :class:`.Element` ): dtype of the entire array as a string
         pydantic_ver (str): Pydantic version to generate array form for -
             currently only pydantic 1 and 2 are differentiated, and pydantic 1 will be deprecated soon.
@@ -223,7 +223,7 @@ class ArrayRangeGenerator(ABC):
         self.dtype = dtype
         self.pydantic_ver = pydantic_ver
 
-    def make(self) -> SlotResult:
+    def make(self) -> RangeResult:
         """Create the string form of the array representation"""
         if not self.array.dimensions and not self.has_bounded_dimensions:
             # any-shaped array
@@ -249,22 +249,22 @@ class ArrayRangeGenerator(ABC):
         raise ValueError(f"Generator for array representation {repr} not found!")
 
     @abstractmethod
-    def any_shape(self, array: Optional[ArrayRepresentation] = None) -> SlotResult:
+    def any_shape(self, array: Optional[ArrayRepresentation] = None) -> RangeResult:
         """Any shaped array!"""
         pass
 
     @abstractmethod
-    def bounded_dimensions(self, array: ArrayExpression) -> SlotResult:
+    def bounded_dimensions(self, array: ArrayExpression) -> RangeResult:
         """Array shape specified numerically, without axis parameterization"""
         pass
 
     @abstractmethod
-    def parameterized_dimensions(self, array: ArrayExpression) -> SlotResult:
+    def parameterized_dimensions(self, array: ArrayExpression) -> RangeResult:
         """Array shape specified with ``dimensions`` without additional parameterized dimensions"""
         pass
 
     @abstractmethod
-    def complex_dimensions(self, array: ArrayExpression) -> SlotResult:
+    def complex_dimensions(self, array: ArrayExpression) -> RangeResult:
         """Array shape with both ``parameterized`` and ``bounded`` dimensions"""
         pass
 
@@ -284,7 +284,7 @@ class ListOfListsArray(ArrayRangeGenerator):
         return ("List[" * dimensions) + dtype + ("]" * dimensions)
 
     @staticmethod
-    def _parameterized_dimension(dimension: DimensionExpression, dtype: str) -> SlotResult:
+    def _parameterized_dimension(dimension: DimensionExpression, dtype: str) -> RangeResult:
         # TODO: Preserve label representation in some readable way! doing the MVP now of using conlist
         if dimension.exact_cardinality and (dimension.minimum_cardinality or dimension.maximum_cardinality):
             raise ValueError("Can only specify EITHER exact_cardinality OR minimum/maximum cardinality")
@@ -296,7 +296,7 @@ class ListOfListsArray(ArrayRangeGenerator):
             dmax = dimension.maximum_cardinality
         else:
             # TODO: handle labels for labeled but unshaped arrays
-            return SlotResult(annotation="List[" + dtype + "]")
+            return RangeResult(range="List[" + dtype + "]")
 
         items = []
         if int(PYDANTIC_VERSION[0]) >= 2:
@@ -311,11 +311,11 @@ class ListOfListsArray(ArrayRangeGenerator):
                 items.append(f"max_items={dmax}")
         items.append(f"item_type={dtype}")
         items = ", ".join(items)
-        annotation = f"conlist({items})"
+        range = f"conlist({items})"
 
-        return SlotResult(annotation=annotation, imports=_ConListImports)
+        return RangeResult(range=range, imports=_ConListImports)
 
-    def any_shape(self, array: Optional[ArrayExpression] = None, with_inner_union: bool = False) -> SlotResult:
+    def any_shape(self, array: Optional[ArrayExpression] = None, with_inner_union: bool = False) -> RangeResult:
         """
         An AnyShaped array (using :class:`.AnyShapeArray` )
 
@@ -326,17 +326,17 @@ class ListOfListsArray(ArrayRangeGenerator):
 
         """
         if self.dtype in ("Any", "AnyType"):
-            annotation = "AnyShapeArray"
+            range = "AnyShapeArray"
         else:
-            annotation = f"AnyShapeArray[{self.dtype}]"
+            range = f"AnyShapeArray[{self.dtype}]"
 
         if with_inner_union:
-            annotation = f"Union[{annotation}, {self.dtype}]"
-        return SlotResult(annotation=annotation, injected_classes=_AnyShapeArrayInjects, imports=_AnyShapeArrayImports)
+            range = f"Union[{range}, {self.dtype}]"
+        return RangeResult(range=range, injected_classes=_AnyShapeArrayInjects, imports=_AnyShapeArrayImports)
 
-    def bounded_dimensions(self, array: ArrayExpression) -> SlotResult:
+    def bounded_dimensions(self, array: ArrayExpression) -> RangeResult:
         """
-        A nested series of ``List[]`` annotations with :attr:`.dtype` at the center.
+        A nested series of ``List[]`` ranges with :attr:`.dtype` at the center.
 
         When an array expression allows for a range of dimensions, each set of ``List`` s is joined by a ``Union`` .
         """
@@ -346,29 +346,27 @@ class ListOfListsArray(ArrayRangeGenerator):
             and array.minimum_number_dimensions == array.maximum_number_dimensions
         ):
             exact_dims = array.exact_number_dimensions or array.minimum_number_dimensions
-            return SlotResult(annotation=self._list_of_lists(exact_dims, self.dtype))
+            return RangeResult(range=self._list_of_lists(exact_dims, self.dtype))
         elif not array.maximum_number_dimensions and (
             array.minimum_number_dimensions is None or array.minimum_number_dimensions == 1
         ):
             return self.any_shape()
         elif array.maximum_number_dimensions:
-            # e.g., if min = 2, max = 3, annotation = Union[List[List[dtype]], List[List[List[dtype]]]]
+            # e.g., if min = 2, max = 3, range = Union[List[List[dtype]], List[List[List[dtype]]]]
             min_dims = array.minimum_number_dimensions if array.minimum_number_dimensions is not None else 1
-            annotations = [
-                self._list_of_lists(i, self.dtype) for i in range(min_dims, array.maximum_number_dimensions + 1)
-            ]
+            ranges = [self._list_of_lists(i, self.dtype) for i in range(min_dims, array.maximum_number_dimensions + 1)]
             # TODO: Format this nicely!
-            return SlotResult(annotation="Union[" + ", ".join(annotations) + "]")
+            return RangeResult(range="Union[" + ", ".join(ranges) + "]")
         else:
             # min specified with no max
-            # e.g., if min = 3, annotation = List[List[AnyShapeArray[dtype]]]
-            return SlotResult(
-                annotation=self._list_of_lists(array.minimum_number_dimensions - 1, self.any_shape().annotation),
+            # e.g., if min = 3, range = List[List[AnyShapeArray[dtype]]]
+            return RangeResult(
+                range=self._list_of_lists(array.minimum_number_dimensions - 1, self.any_shape().range),
                 injected_classes=_AnyShapeArrayInjects,
                 imports=_AnyShapeArrayImports,
             )
 
-    def parameterized_dimensions(self, array: ArrayExpression) -> SlotResult:
+    def parameterized_dimensions(self, array: ArrayExpression) -> RangeResult:
         """
         Constrained shapes using :func:`pydantic.conlist`
 
@@ -378,20 +376,20 @@ class ListOfListsArray(ArrayRangeGenerator):
         """
         # generate dimensions from inside out and then format
         # e.g., if dimensions = [{min_card: 3}, {min_card: 2}],
-        # annotation = conlist(min_length=3, item_type=conlist(min_length=2, item_type=dtype))
+        # range = conlist(min_length=3, item_type=conlist(min_length=2, item_type=dtype))
         range = self.dtype
         for dimension in reversed(array.dimensions):
-            range = self._parameterized_dimension(dimension, range).annotation
+            range = self._parameterized_dimension(dimension, range).range
 
-        return SlotResult(annotation=range, imports=_ConListImports)
+        return RangeResult(range=range, imports=_ConListImports)
 
-    def complex_dimensions(self, array: ArrayExpression) -> SlotResult:
+    def complex_dimensions(self, array: ArrayExpression) -> RangeResult:
         """
         Mixture of parameterized dimensions with a max or min (or both) shape for anonymous dimensions.
 
         A mixture of ``List`` , :class:`.conlist` , and :class:`.AnyShapeArray` .
         """
-        # first process any unlabeled dimensions which must be the innermost level of the annotation,
+        # first process any unlabeled dimensions which must be the innermost level of the range,
         # then wrap that with labeled dimensions
         if array.exact_number_dimensions or (
             array.minimum_number_dimensions
@@ -400,7 +398,7 @@ class ListOfListsArray(ArrayRangeGenerator):
         ):
             exact_dims = array.exact_number_dimensions or array.minimum_number_dimensions
             if exact_dims > len(array.dimensions):
-                res = SlotResult(annotation=self._list_of_lists(exact_dims - len(array.dimensions), self.dtype))
+                res = RangeResult(range=self._list_of_lists(exact_dims - len(array.dimensions), self.dtype))
             elif exact_dims == len(array.dimensions):
                 # equivalent to labeled shape
                 return self.parameterized_dimensions(array)
@@ -415,11 +413,9 @@ class ListOfListsArray(ArrayRangeGenerator):
 
             if array.minimum_number_dimensions and array.minimum_number_dimensions > len(array.dimensions):
                 # some minimum anonymous dimensions but unlimited max dimensions
-                # e.g., if min = 3, len(dim) = 2, then res.annotation = List[Union[AnyShapeArray[dtype], dtype]]
-                # res.annotation will be wrapped with the 2 labeled dimensions later
-                res.annotation = self._list_of_lists(
-                    array.minimum_number_dimensions - len(array.dimensions), res.annotation
-                )
+                # e.g., if min = 3, len(dim) = 2, then res.range = List[Union[AnyShapeArray[dtype], dtype]]
+                # res.range will be wrapped with the 2 labeled dimensions later
+                res.range = self._list_of_lists(array.minimum_number_dimensions - len(array.dimensions), res.range)
 
         elif array.minimum_number_dimensions and array.maximum_number_dimensions is None:
             raise ValueError(
@@ -442,9 +438,9 @@ class ListOfListsArray(ArrayRangeGenerator):
 
         # Wrap inner dimension with labeled dimension
         # e.g., if dimensions = [{min_card: 3}, {min_card: 2}]
-        # and res.annotation = List[Union[AnyShapeArray[dtype], dtype]]
+        # and res.range = List[Union[AnyShapeArray[dtype], dtype]]
         # (min 3 dims, no max dims)
-        # then the final annotation = conlist(
+        # then the final range = conlist(
         #     min_length=3,
         #     item_type=conlist(
         #         min_length=2,
@@ -452,7 +448,7 @@ class ListOfListsArray(ArrayRangeGenerator):
         #     )
         # )
         for dim in reversed(array.dimensions):
-            res = res.merge(self._parameterized_dimension(dim, dtype=res.annotation))
+            res = res.merge(self._parameterized_dimension(dim, dtype=res.range))
 
         return res
 
