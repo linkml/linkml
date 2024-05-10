@@ -128,15 +128,13 @@ slots:
 
 See the [type-designators](type-designators.md) section of the docs for more details.
 
-## Slot cardinality
+## Cardinality
 
-The cardinality of a slot is indicative of two properties on a slot. It tells us about whether a slot is *required* or not, and also about how many values it is allowed to have, i.e., whether it is *single-valued* or *multi-valued*.
+In LinkML, slots can be required (mandatory), and they can be singlevalued or multivalued. These are controlled
+via `required` and `multivalued` boolean slots. Additionally, when a slot is multivalued, specific cardinality ranges can be supplied
+using `maximum_cardinality` and `minimum_cardinality`.
 
-The following list summarizes the expansions of the various possible combinations of cardinalities that can be asserted on a slot:
-* `1..*` - slot is *required* and *multivalued*
-* `1..1` - slot is *required* but *not multivalued*
-* `0..*` - slot is *not required* but if provided it must be *mulitvalued*
-* `0..1` - slot is *not required* and *not multivalued*
+Collectively, these metamodel slots define the *cardinality* of a slot in a data model.
 
 ### multivalued
 
@@ -151,6 +149,57 @@ slots:
     multivalued: true
     inlined_as_list: true
 ```
+
+
+### required
+
+The [required](https://w3id.org/linkml/required) slot can be used to define whether a slot is required.
+
+When a slot is declared as required, any class that uses that slot must have a value for that slot.
+
+### recommended
+
+The [recommended](https://w3id.org/linkml/recommended) slot can be used to define whether a slot is recommended.
+
+If data is missing a recommended slot, it is still considered valid. However, validators may choose to issue warnings.
+
+### explicit cardinality ranges
+
+When a field is multivalued, cardinality can be explicit specified using the following metamodel slots:
+
+- [minimum_cardinality](https://w3id.org/linkml/minimum_cardinality) minimum (inclusive) length of the list of elements
+- [maximum_cardinality](https://w3id.org/linkml/maximum_cardinality) maximum (inclusive) length of the list of elements
+- [exact_cardinality](https://w3id.org/linkml/exact_cardinality) exact length of the list of elements
+
+Note that specifying `exact` entails both `maximum` and `minimum`, and setting `maximum` and `minimum` to be equal entails `exact`.
+
+### Writing cardinality using UML notation
+
+Cardinality can also be written in UML notation. The following gives an explanation of UML notation and how this maps to LinkML.
+
+* `1` - Only 1 (`required` and not `multivalued`)
+* `0..1` - Zero or one (not `required` and not `multivalued`)
+* `1..*` - One or more (`required` and `multivalued`, with no minimum and maximum cardinality specified)
+* `*` - Many (not `required` and `multivalued`, with no minimum and maximum cardinality specified)
+* `n` - n (where n>1) (`multivalued`, with `exact_cardinality=n`)
+* `0..n` - Zero to n (where n>1) (not `required` and `multivalued`, with `maximum_cardinality=n`)
+* `1..n` - One to n (where n>1) (`required` and `multivalued`, with `maximum_cardinality=n`)
+* `m..n` - m to n (where m,n>1) (`required` and `multivalued`, with `minimum_cardnality=m` and `maximum_cardinality=n`)
+
+
+## inverse
+
+The `inverse` slot can be used to specify the inverse predicate of a given predicate slot relationship.
+
+```yaml
+  parent_of:
+    is_a: famlially_related_to
+    inverse: child_of
+```
+
+For most purposes, the specification of an inverse acts as additional documentation and doesn't
+affect programming semantics. However, some frameworks like RDF/OWL allow for the inference of
+inverses.
 
 ## default values
 
@@ -180,31 +229,6 @@ slots:
     ifabsent: datetime("2020-01-31T12:00:00Z")
 ```
 
-### required
-
-The [required](https://w3id.org/linkml/required) slot can be used to define whether a slot is required.
-
-When a slot is declared as required, any class that uses that slot must have a value for that slot.
-
-### recommended
-
-The [recommended](https://w3id.org/linkml/recommended) slot can be used to define whether a slot is recommended.
-
-If data is missing a recommended slot, it is still considered valid. However, validators may choose to issue warnings.
-
-## inverse
-
-The `inverse` slot can be used to specify the inverse predicate of a given predicate slot relationship.
-
-```yaml
-  parent_of:
-    is_a: famlially_related_to
-    inverse: child_of
-```
-
-For most purposes, the specification of an inverse acts as additional documentation and doesn't
-affect programming semantics. However, some frameworks like RDF/OWL allow for the inference of
-inverses.
 
 ## logical characteristics
 
