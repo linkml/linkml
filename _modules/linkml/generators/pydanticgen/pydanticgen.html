@@ -1053,7 +1053,7 @@
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--pydantic-version&quot;</span><span class="p">,</span>
     <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">IntRange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-    <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">PYDANTIC_VERSION</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Pydantic version to use (1 or 2)&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
@@ -1080,7 +1080,7 @@
     <span class="n">classvars</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">array_representations</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="s2">&quot;list&quot;</span><span class="p">),</span>
-    <span class="n">pydantic_version</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">pydantic_version</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">PYDANTIC_VERSION</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
     <span class="n">extra_fields</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;allow&quot;</span><span class="p">,</span> <span class="s2">&quot;forbid&quot;</span><span class="p">,</span> <span class="s2">&quot;ignore&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;forbid&quot;</span><span class="p">,</span>
     <span class="o">**</span><span class="n">args</span><span class="p">,</span>
 <span class="p">):</span>
