@@ -187,11 +187,9 @@ slots:
         """
     gen = PydanticGenerator(schema_str, package=PACKAGE)
     code = gen.serialize()
-    lines = code.splitlines()
-    ix = lines.index("class C(ConfiguredBaseModel):")
-    assert lines[ix + 2] == "    inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default_factory=dict)"
-    assert lines[ix + 3] == "    inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default_factory=list)"
-    assert lines[ix + 4] == "    not_inlined_things: Optional[List[str]] = Field(default_factory=list)"
+    assert "inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default_factory=dict" in code
+    assert "inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default_factory=list" in code
+    assert "not_inlined_things: Optional[List[str]] = Field(default_factory=list" in code
 
 
 @pytest.mark.parametrize(
@@ -271,10 +269,10 @@ slots:
 def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_identifier, expected, notes):
     # Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
     expected_default_factories = {
-        "Optional[List[str]]": "Field(default_factory=list)",
-        "Optional[List[B]]": "Field(default_factory=list)",
-        "Optional[Dict[str, B]]": "Field(default_factory=dict)",
-        "Optional[Dict[str, str]]": "Field(default_factory=dict)",
+        "Optional[List[str]]": "Field(default_factory=list",
+        "Optional[List[B]]": "Field(default_factory=list",
+        "Optional[Dict[str, B]]": "Field(default_factory=dict",
+        "Optional[Dict[str, str]]": "Field(default_factory=dict",
     }
 
     sb = SchemaBuilder("test")
@@ -294,16 +292,12 @@ def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_i
     schema_str = yaml_dumper.dumps(schema)
     gen = PydanticGenerator(schema_str, package=PACKAGE)
     code = gen.serialize()
-    lines = code.splitlines()
-    ix = lines.index("class A(ConfiguredBaseModel):")
-    assert ix > 0
-    # assume a single blank line separating
-    slot_line = lines[ix + 1]
-    assert f"a2b: {expected}" in slot_line, f"did not find expected {expected} in {slot_line}"
+
+    assert f"a2b: {expected}" in code, f"did not find expected {expected} in {code}"
     if expected not in expected_default_factories:
         raise ValueError(f"unexpected default factory for {expected}")
     assert (
-        expected_default_factories[expected] in slot_line
+        expected_default_factories[expected] in code
     ), f"did not find expected default factory {expected_default_factories[expected]}"
 
 
@@ -346,20 +340,12 @@ classes:
 
     gen = PydanticGenerator(schema_str)
     code = gen.serialize()
-    lines = code.splitlines()
-    ix = lines.index("class Test(ConfiguredBaseModel):")
-    integer_slot_line = lines[ix + 4].strip()
-    assert integer_slot_line == "attr1: Optional[int] = Field(10)"
-    string_slot_line = lines[ix + 5].strip()
-    assert string_slot_line == 'attr2: Optional[str] = Field("hello world")'
-    boolean_slot_line = lines[ix + 6].strip()
-    assert boolean_slot_line == "attr3: Optional[bool] = Field(True)"
-    float_slot_line = lines[ix + 7].strip()
-    assert float_slot_line == "attr4: Optional[float] = Field(1.0)"
-    date_slot_line = lines[ix + 8].strip()
-    assert date_slot_line == "attr5: Optional[date] = Field(date(2020, 1, 1))"
-    datetime_slot_line = lines[ix + 9].strip()
-    assert datetime_slot_line == "attr6: Optional[datetime ] = Field(datetime(2020, 1, 1, 0, 0, 0))"
+    assert "attr1: Optional[int] = Field(10" in code
+    assert 'attr2: Optional[str] = Field("hello world"' in code
+    assert "attr3: Optional[bool] = Field(True" in code
+    assert "attr4: Optional[float] = Field(1.0" in code
+    assert "attr5: Optional[date] = Field(date(2020, 1, 1)" in code
+    assert "attr6: Optional[datetime ] = Field(datetime(2020, 1, 1, 0, 0, 0)" in code
 
 
 def test_multiline_module(input_path):
@@ -1568,7 +1554,7 @@ def test_generate_array_bounded_implicit_exact(representation, array_bounded):
     if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
         return
 
-    generated = PydanticGenerator(array_bounded, array_representations=representation).render()
+    generated = PydanticGenerator(array_bounded, array_representations=representation, metadata_mode=None).render()
     explicit = generated.classes["ExactDimensions"].attributes["array"]
     implicit = generated.classes["ImplicitExact"].attributes["array"]
     assert explicit.render() == implicit.render()
@@ -1583,7 +1569,7 @@ def test_generate_array_complex_implicit_exact(representation, array_complex):
     if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
         return
 
-    generated = PydanticGenerator(array_complex, array_representations=representation).render()
+    generated = PydanticGenerator(array_complex, array_representations=representation, metadata_mode=None).render()
     explicit = generated.classes["ComplexExactShapeArray"].attributes["array"]
     implicit = generated.classes["ComplexImplicitExactShapeArray"].attributes["array"]
     assert explicit.render() == implicit.render()
@@ -1598,8 +1584,12 @@ def test_generate_array_complex_noop_exact(representation, array_complex, array_
     if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
         return
 
-    generated_complex = PydanticGenerator(array_complex, array_representations=representation).render()
-    generated_parameterized = PydanticGenerator(array_parameterized, array_representations=representation).render()
+    generated_complex = PydanticGenerator(
+        array_complex, array_representations=representation, metadata_mode=None
+    ).render()
+    generated_parameterized = PydanticGenerator(
+        array_parameterized, array_representations=representation, metadata_mode=None
+    ).render()
     complex = generated_complex.classes["ComplexNoOpExactShapeArray"].attributes["array"]
     parameterized = generated_parameterized.classes["ParameterizedArray"].attributes["array"]
     assert complex.render() == parameterized.render()
@@ -1646,7 +1636,9 @@ def test_template_black(array_complex):
     """
     When black is installed, we should format template models with black :)
     """
-    generated = PydanticGenerator(array_complex, array_representations=[ArrayRepresentation.LIST]).render()
+    generated = PydanticGenerator(
+        array_complex, array_representations=[ArrayRepresentation.LIST], metadata_mode=None
+    ).render()
     array_repr = generated.classes["ComplexRangeShapeArray"].attributes["array"].render(black=True)
     if PYDANTIC_VERSION >= 2:
         assert (
@@ -1660,9 +1652,7 @@ def test_template_black(array_complex):
                 min_length=2,
                 max_length=5,
                 item_type=conlist(
-                    min_length=6,
-                    max_length=6,
-                    item_type=Union[List[int], List[List[int]], List[List[List[int]]]],
+                    min_length=6, max_length=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]]
                 ),
             ),
         ),
@@ -1682,9 +1672,7 @@ def test_template_black(array_complex):
                 min_items=2,
                 max_items=5,
                 item_type=conlist(
-                    min_items=6,
-                    max_items=6,
-                    item_type=Union[List[int], List[List[int]], List[List[List[int]]]],
+                    min_items=6, max_items=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]]
                 ),
             ),
         ),
@@ -1716,7 +1704,9 @@ def test_template_noblack(array_complex, mock_black_import):
     from linkml.generators.pydanticgen import PydanticGenerator
     from linkml.generators.pydanticgen.array import ArrayRepresentation
 
-    generated = PydanticGenerator(array_complex, array_representations=[ArrayRepresentation.LIST]).render()
+    generated = PydanticGenerator(
+        array_complex, array_representations=[ArrayRepresentation.LIST], metadata_mode=None
+    ).render()
     array_repr = generated.classes["ComplexRangeShapeArray"].attributes["array"].render(black=False)
     if PYDANTIC_VERSION >= 2:
         assert (

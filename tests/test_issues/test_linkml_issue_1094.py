@@ -45,4 +45,4 @@ def test_pydanticgen_inline_dict():
 
     output_subset = [line for line in output.splitlines() if "has_bikes: " in line]
     assert len(output_subset) == 1
-    assert "has_bikes: Dict[str, str] = Field(default_factory=dict)" in output_subset[0]
+    assert "has_bikes: Dict[str, str] = Field(default_factory=dict" in output_subset[0]

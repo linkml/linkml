@@ -60,6 +60,7 @@ class TemplateModel(BaseModel):
     )
 
     pydantic_ver: int = int(PYDANTIC_VERSION[0])
+    meta_exclude: ClassVar[List[str]] = None
 
     def render(self, environment: Optional[Environment] = None, black: bool = False) -> str:
         """
@@ -131,6 +132,16 @@ class TemplateModel(BaseModel):
             if mode == "json":
                 return self.json(**kwargs)
             return self.dict(**kwargs)
+
+    @classmethod
+    def exclude_from_meta(cls: "TemplateModel") -> List[str]:
+        """
+        Attributes in the source definition to exclude from linkml_meta
+        """
+        ret = [*cls.model_fields.keys()]
+        if cls.meta_exclude is not None:
+            ret = ret + cls.meta_exclude
+        return ret
 
 
 def _render(
@@ -213,6 +224,7 @@ class PydanticAttribute(TemplateModel):
     """
 
     template: ClassVar[str] = "attribute.py.jinja"
+    meta_exclude: ClassVar[List[str]] = ["from_schema", "owner", "range", "multivalued", "inlined", "inlined_as_list"]
 
     name: str
     required: bool = False
@@ -237,6 +249,10 @@ class PydanticAttribute(TemplateModel):
     minimum_value: Optional[Union[int, float]] = None
     maximum_value: Optional[Union[int, float]] = None
     pattern: Optional[str] = None
+    meta: Optional[Dict[str, Any]] = None
+    """
+    Metadata for the slot to be included in a Field annotation
+    """
 
     if int(PYDANTIC_VERSION[0]) >= 2:
 
@@ -283,11 +299,16 @@ class PydanticClass(TemplateModel):
     """
 
     template: ClassVar[str] = "class.py.jinja"
+    meta_exclude: ClassVar[List[str]] = ["slots", "is_a"]
 
     name: str
     bases: Union[List[str], str] = PydanticBaseModel.default_name
     description: Optional[str] = None
     attributes: Optional[Dict[str, PydanticAttribute]] = None
+    meta: Optional[Dict[str, Any]] = None
+    """
+    Metadata for the class to be included in a linkml_meta class attribute
+    """
 
     def _validators(self) -> Optional[Dict[str, PydanticValidator]]:
         if self.attributes is None:
@@ -548,6 +569,7 @@ class PydanticModule(TemplateModel):
     """
 
     template: ClassVar[str] = "module.py.jinja"
+    meta_exclude: ClassVar[str] = ["slots"]
 
     metamodel_version: Optional[str] = None
     version: Optional[str] = None
@@ -556,6 +578,10 @@ class PydanticModule(TemplateModel):
     imports: List[Union[Import, ConditionalImport]] = Field(default_factory=list)
     enums: Dict[str, PydanticEnum] = Field(default_factory=dict)
     classes: Dict[str, PydanticClass] = Field(default_factory=dict)
+    meta: Optional[Dict[str, Any]] = None
+    """
+    Metadata for the schema to be included in a linkml_meta module-level instance of LinkMLMeta
+    """
 
     if int(PYDANTIC_VERSION[0]) >= 2:
 

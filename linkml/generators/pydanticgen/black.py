@@ -16,9 +16,7 @@ except ImportError:
 
 
 def _default_mode() -> "Mode":
-    return Mode(
-        target_versions={TargetVersion.PY311},
-    )
+    return Mode(target_versions={TargetVersion.PY311}, line_length=120)
 
 
 def format_black(code: str, mode: Optional["Mode"] = None) -> str:
