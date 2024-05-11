@@ -333,19 +333,12 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">textwrap</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span><span class="p">,</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ModuleType</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Dict</span><span class="p">,</span>
-    <span class="n">List</span><span class="p">,</span>
-    <span class="n">Literal</span><span class="p">,</span>
-    <span class="n">Optional</span><span class="p">,</span>
-    <span class="n">Set</span><span class="p">,</span>
-    <span class="n">Type</span><span class="p">,</span>
-    <span class="n">Union</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
 <span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">ChoiceLoader</span><span class="p">,</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">FileSystemLoader</span>
@@ -357,7 +350,7 @@
     <span class="n">TypeDefinition</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.compile_python</span> <span class="kn">import</span> <span class="n">compile_python</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">remove_empty_items</span><span class="p">,</span> <span class="n">underscore</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.schemaview</span> <span class="kn">import</span> <span class="n">SchemaView</span>
 <span class="kn">from</span> <span class="nn">pydantic.version</span> <span class="kn">import</span> <span class="n">VERSION</span> <span class="k">as</span> <span class="n">PYDANTIC_VERSION</span>
 
@@ -367,6 +360,7 @@
     <span class="n">get_type_designator_value</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.oocodegen</span> <span class="kn">import</span> <span class="n">OOCodeGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen</span> <span class="kn">import</span> <span class="n">includes</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen.array</span> <span class="kn">import</span> <span class="n">ArrayRangeGenerator</span><span class="p">,</span> <span class="n">ArrayRepresentation</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen.build</span> <span class="kn">import</span> <span class="n">SlotResult</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen.template</span> <span class="kn">import</span> <span class="p">(</span>
@@ -415,6 +409,7 @@
         <span class="n">module</span><span class="o">=</span><span class="s2">&quot;typing&quot;</span><span class="p">,</span>
         <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
             <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Any&quot;</span><span class="p">),</span>
+            <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ClassVar&quot;</span><span class="p">),</span>
             <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;List&quot;</span><span class="p">),</span>
             <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Literal&quot;</span><span class="p">),</span>
             <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Dict&quot;</span><span class="p">),</span>
@@ -430,6 +425,7 @@
             <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;BaseModel&quot;</span><span class="p">),</span>
             <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ConfigDict&quot;</span><span class="p">),</span>
             <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Field&quot;</span><span class="p">),</span>
+            <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;RootModel&quot;</span><span class="p">),</span>
             <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;field_validator&quot;</span><span class="p">),</span>
         <span class="p">],</span>
         <span class="n">alternative</span><span class="o">=</span><span class="n">Import</span><span class="p">(</span>
@@ -438,6 +434,33 @@
         <span class="p">),</span>
     <span class="p">)</span>
 <span class="p">)</span>
+
+<span class="n">DEFAULT_INJECTS</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="n">includes</span><span class="o">.</span><span class="n">LinkMLMeta_v1</span><span class="p">],</span> <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="n">includes</span><span class="o">.</span><span class="n">LinkMLMeta_v2</span><span class="p">]}</span>
+
+
+<span class="k">class</span> <span class="nc">MetadataMode</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+    <span class="n">FULL</span> <span class="o">=</span> <span class="s2">&quot;full&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    all metadata from the source schema will be included, even if it is represented by the template classes, </span>
+<span class="sd">    and even if it is represented by some child class (eg. &quot;classes&quot; will be included with schema metadata</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">EXCEPT_CHILDREN</span> <span class="o">=</span> <span class="s2">&quot;except_children&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    all metadata from the source schema will be included, even if it is represented by the template classes,</span>
+<span class="sd">    except if it is represented by some child template class (eg. &quot;classes&quot; will be excluded from schema metadata)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">AUTO</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Only the metadata that isn&#39;t represented by the template classes or excluded with ``meta_exclude`` will be included </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">NONE</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    No metadata will be included.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="n">DefinitionType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;DefinitionType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Union</span><span class="p">[</span><span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">])</span>
+<span class="n">TemplateType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;TemplateType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Union</span><span class="p">[</span><span class="n">PydanticModule</span><span class="p">,</span> <span class="n">PydanticClass</span><span class="p">,</span> <span class="n">PydanticAttribute</span><span class="p">])</span>
 
 
 <div class="viewcode-block" id="PydanticGenerator"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator">[docs]</a><span class="nd">@dataclass</span>
@@ -541,6 +564,12 @@
 <span class="sd">        else:</span>
 <span class="sd">            from typing_extensions import Literal</span>
 <span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">metadata_mode</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">MetadataMode</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">MetadataMode</span><span class="o">.</span><span class="n">AUTO</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    How to include schema metadata in generated pydantic models.</span>
+<span class="sd">    </span>
+<span class="sd">    See :class:`.MetadataMode` for mode documentation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># ObjectVars (identical to pythongen)</span>
@@ -860,6 +889,56 @@
 
         <span class="k">return</span> <span class="n">array_reps</span></div>
 
+    <span class="nd">@overload</span>
+    <span class="k">def</span> <span class="nf">include_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">PydanticModule</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PydanticModule</span><span class="p">:</span> <span class="o">...</span>
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span> <span class="nf">include_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">PydanticClass</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PydanticClass</span><span class="p">:</span> <span class="o">...</span>
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span> <span class="nf">include_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">PydanticAttribute</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PydanticAttribute</span><span class="p">:</span> <span class="o">...</span>
+
+<div class="viewcode-block" id="PydanticGenerator.include_metadata"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.include_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">include_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">TemplateType</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">DefinitionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TemplateType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Include metadata from the source schema that is otherwise not represented in the pydantic template models.</span>
+
+<span class="sd">        Metadata inclusion mode is dependent on :attr:`.metadata_mode` - see:</span>
+
+<span class="sd">        - :class:`.MetadataMode`</span>
+<span class="sd">        - :meth:`.TemplateModel.exclude_from_meta`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata_mode</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata_mode</span> <span class="o">==</span> <span class="n">MetadataMode</span><span class="o">.</span><span class="n">NONE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">model</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata_mode</span> <span class="ow">in</span> <span class="p">(</span><span class="n">MetadataMode</span><span class="o">.</span><span class="n">AUTO</span><span class="p">,</span> <span class="n">MetadataMode</span><span class="o">.</span><span class="n">AUTO</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+            <span class="n">meta</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">remove_empty_items</span><span class="p">(</span><span class="n">source</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">exclude_from_meta</span><span class="p">()}</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata_mode</span> <span class="ow">in</span> <span class="p">(</span><span class="n">MetadataMode</span><span class="o">.</span><span class="n">EXCEPT_CHILDREN</span><span class="p">,</span> <span class="n">MetadataMode</span><span class="o">.</span><span class="n">EXCEPT_CHILDREN</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+            <span class="n">meta</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">remove_empty_items</span><span class="p">(</span><span class="n">source</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+                    <span class="n">meta</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
+                    <span class="p">[</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">TemplateModel</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">k</span><span class="p">)]</span>
+                <span class="p">):</span>
+                    <span class="n">meta</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
+                    <span class="p">[</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">TemplateModel</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+                <span class="p">):</span>
+                    <span class="n">meta</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="n">TemplateModel</span><span class="p">):</span>
+                    <span class="n">meta</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata_mode</span> <span class="ow">in</span> <span class="p">(</span><span class="n">MetadataMode</span><span class="o">.</span><span class="n">FULL</span><span class="p">,</span> <span class="n">MetadataMode</span><span class="o">.</span><span class="n">FULL</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+            <span class="n">meta</span> <span class="o">=</span> <span class="n">remove_empty_items</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Unknown metadata mode &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata_mode</span><span class="si">}</span><span class="s2">&#39;, needs to be one of &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="p">[</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">mode</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">MetadataMode</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">model</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="n">meta</span>
+        <span class="k">return</span> <span class="n">model</span></div>
+
     <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PydanticModule</span><span class="p">:</span>
         <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
@@ -870,7 +949,7 @@
             <span class="n">description</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&quot;&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">schema</span><span class="o">.</span><span class="n">description</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">enums</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_enums</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">all_enums</span><span class="p">())</span>
-        <span class="n">injected_classes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">injected_classes</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">DEFAULT_INJECTS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pydantic_version</span><span class="p">])</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">injected_classes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">injected_classes</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">injected_classes</span>
 
@@ -995,14 +1074,21 @@
                     <span class="n">predef_slot</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">predef_slot</span><span class="p">)</span>
                 <span class="n">new_fields</span><span class="p">[</span><span class="s2">&quot;predefined&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">predef_slot</span>
                 <span class="n">new_fields</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr_name</span>
+
                 <span class="n">attrs</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">PydanticAttribute</span><span class="p">(</span><span class="o">**</span><span class="n">new_fields</span><span class="p">,</span> <span class="n">pydantic_ver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pydantic_version</span><span class="p">)</span>
+                <span class="n">attrs</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_metadata</span><span class="p">(</span><span class="n">attrs</span><span class="p">[</span><span class="n">attr_name</span><span class="p">],</span> <span class="n">src_attr</span><span class="p">)</span>
 
             <span class="n">new_class</span> <span class="o">=</span> <span class="n">PydanticClass</span><span class="p">(</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attrs</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">pydantic_ver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pydantic_version</span>
             <span class="p">)</span>
+            <span class="n">new_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_metadata</span><span class="p">(</span><span class="n">new_class</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">bases</span><span class="p">:</span>
                 <span class="n">new_class</span><span class="o">.</span><span class="n">bases</span> <span class="o">=</span> <span class="n">bases</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
             <span class="n">classes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_class</span>
+
+        <span class="n">schema_meta</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">remove_empty_items</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">PydanticModule</span><span class="o">.</span><span class="n">exclude_from_meta</span><span class="p">()</span>
+        <span class="p">}</span>
 
         <span class="n">module</span> <span class="o">=</span> <span class="n">PydanticModule</span><span class="p">(</span>
             <span class="n">pydantic_ver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pydantic_version</span><span class="p">,</span>
@@ -1013,7 +1099,9 @@
             <span class="n">injected_classes</span><span class="o">=</span><span class="n">injected_classes</span><span class="p">,</span>
             <span class="n">enums</span><span class="o">=</span><span class="n">enums</span><span class="p">,</span>
             <span class="n">classes</span><span class="o">=</span><span class="n">classes</span><span class="p">,</span>
+            <span class="n">meta</span><span class="o">=</span><span class="n">schema_meta</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_metadata</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">pyschema</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">module</span>
 
 <div class="viewcode-block" id="PydanticGenerator.serialize"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -1069,6 +1157,12 @@
     <span class="n">default</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;How to handle extra fields in BaseModel.&quot;</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--black&quot;</span><span class="p">,</span>
+    <span class="n">is_flag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Format generated models with black (must be present in the environment)&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">cli</span><span class="p">(</span>
@@ -1082,6 +1176,7 @@
     <span class="n">array_representations</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="s2">&quot;list&quot;</span><span class="p">),</span>
     <span class="n">pydantic_version</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">PYDANTIC_VERSION</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
     <span class="n">extra_fields</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;allow&quot;</span><span class="p">,</span> <span class="s2">&quot;forbid&quot;</span><span class="p">,</span> <span class="s2">&quot;ignore&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;forbid&quot;</span><span class="p">,</span>
+    <span class="n">black</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">args</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate pydantic classes to represent a LinkML model&quot;&quot;&quot;</span>
@@ -1107,6 +1202,7 @@
         <span class="n">gen_classvars</span><span class="o">=</span><span class="n">classvars</span><span class="p">,</span>
         <span class="n">gen_slots</span><span class="o">=</span><span class="n">slots</span><span class="p">,</span>
         <span class="n">template_dir</span><span class="o">=</span><span class="n">template_dir</span><span class="p">,</span>
+        <span class="n">black</span><span class="o">=</span><span class="n">black</span><span class="p">,</span>
         <span class="o">**</span><span class="n">args</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">gen</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
