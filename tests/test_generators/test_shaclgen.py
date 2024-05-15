@@ -145,6 +145,29 @@ EXPECTED_any_of_with_suffix = [
     ),
 ]
 
+EXPECTED_with_annotations = [
+    (
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Person"),
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/viewer"),
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/PersonViewer"),
+    ),
+    (
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Person"),
+        rdflib.term.Literal("resting", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#string")),
+        rdflib.term.Literal("supine", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#string")),
+    ),
+    (
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Person"),
+        rdflib.term.Literal("opinions", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#string")),
+        rdflib.term.Literal("1000", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer")),
+    ),
+    (
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Person"),
+        rdflib.term.Literal("fallible", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#string")),
+        rdflib.term.Literal("true", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#boolean")),
+    ),
+]
+
 
 def test_shacl(kitchen_sink_path):
     """tests shacl generation"""
@@ -162,6 +185,12 @@ def test_shacl_suffix(kitchen_sink_path):
     """tests shacl generation with suffix option"""
     shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True, closed=True, suffix="Shape").serialize()
     do_test(shaclstr, EXPECTED_suffix, EXPECTED_any_of_with_suffix)
+
+
+def test_shacl_annotations(kitchen_sink_path):
+    """tests shacl generation with annotation option"""
+    shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True, include_annotations=True).serialize()
+    do_test(shaclstr, EXPECTED_with_annotations, EXPECTED_any_of)
 
 
 def do_test(shaclstr, expected, expected_any_of):
