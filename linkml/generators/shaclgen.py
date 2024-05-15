@@ -4,15 +4,11 @@ from dataclasses import dataclass
 from typing import Callable
 
 import click
-from jsonasobj2 import as_dict, JsonObj
+from jsonasobj2 import JsonObj, as_dict
 from linkml_runtime.linkml_model.meta import ElementName
 from linkml_runtime.utils.formatutils import underscore
-from linkml_runtime.utils.yamlutils import (   
-    extended_float,
-    extended_int,
-    extended_str,
-)
 from linkml_runtime.utils.schemaview import SchemaView
+from linkml_runtime.utils.yamlutils import extended_float, extended_int, extended_str
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import RDF, SH, XSD
@@ -224,7 +220,7 @@ class ShaclGenerator(Generator):
                 self._add_annotations(func, rt)
         else:
             logging.error(f"No URI for type {rt.name}")
-    
+
     def _add_annotations(self, func: Callable, item) -> None:
         sv = self.schemaview
         annotations = item.annotations
@@ -234,17 +230,17 @@ class ShaclGenerator(Generator):
             annotations = as_dict(annotations)
         for a in annotations.values():
             # If ':' is in the tag, treat it as a CURIE, otherwise string Literal
-            if ":" in a['tag']:
-                N_predicate = URIRef(sv.expand_curie(a['tag']))
+            if ":" in a["tag"]:
+                N_predicate = URIRef(sv.expand_curie(a["tag"]))
             else:
-                N_predicate = Literal(a['tag'], datatype=XSD.string)
+                N_predicate = Literal(a["tag"], datatype=XSD.string)
             # If the value is a string and ':' is in the value, treat it as a CURIE,
             # otherwise treat as Literal with derived XSD datatype
-            if type(a['value']) == extended_str and ":" in a['value']:
-                N_object = URIRef(sv.expand_curie(a['value']))
+            if type(a["value"]) == extended_str and ":" in a["value"]:
+                N_object = URIRef(sv.expand_curie(a["value"]))
             else:
-                N_object = Literal(a['value'], datatype=self._getXSDtype(a['value']))
-            
+                N_object = Literal(a["value"], datatype=self._getXSDtype(a["value"]))
+
             func(N_predicate, N_object)
 
     def _getXSDtype(self, value):
