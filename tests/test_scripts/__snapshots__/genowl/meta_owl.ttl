@@ -1120,7 +1120,11 @@ ks:Person a owl:Class ;
     skos:definition "A person, living or dead" ;
     skos:exactMatch schema1:Person ;
     skos:inScheme <https://w3id.org/linkml/tests/kitchen_sink> ;
-    sh:order 2 .
+    sh:order 2 ;
+    ks:fallible true ;
+    ks:opinions 1000 ;
+    ks:resting "supine" ;
+    ks:viewer "ks:PersonViewer" .
 
 <https://w3id.org/linkml/tests/core/ended_at_time> a owl:DatatypeProperty ;
     rdfs:label "ended at time" ;
