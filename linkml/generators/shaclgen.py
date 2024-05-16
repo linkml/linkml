@@ -222,6 +222,7 @@ class ShaclGenerator(Generator):
             logging.error(f"No URI for type {rt.name}")
 
     def _add_annotations(self, func: Callable, item) -> None:
+        # TODO: migrate some of this logic to SchemaView
         sv = self.schemaview
         annotations = item.annotations
         # item could be a class, slot or type
