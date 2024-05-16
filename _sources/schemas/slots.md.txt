@@ -66,34 +66,65 @@ slots:
 
 ## slot_usage
 
-The [slot_usage](https://w3id.org/linkml/slot_usage) slot can be used to refine the meaning of a slot in the context of a particular class.
+The [slot_usage](https://w3id.org/linkml/slot_usage) slot can be used to *refine* the meaning of a slot in the context of a particular class.
 
-For example, imagine a schema with a generic "Relationship" class:
+For example, imagine a schema with classes `Vehicle` and `VehiclePart`, which vehicles can be disassembled into parts:
+
 
 ```yaml
-  Relationship:
+classes:
+  Vehicle:
     slots:
-      - started_at_time
-      - ended_at_time
-      - related_to
-      - type
+      - make
+      - parts
+  VehiclePart:
+    slots:
+      - part_number
+  
+slots:
+  make:
+    range: string
+  part_number:
+    range: string
+  parts:
+    range: VehiclePart
+    multivalued: true
 ```
 
-with subtypes such as `FamilialRelationship`, `BusinessRelationship`, etc
-
-we can use `slot_usage` to constrain the meaning of more generic slots such as `type` and `related to`:
+We can refine the hierarchy:
 
 ```yaml
-  FamilialRelationship:
-    is_a: Relationship
+classes:
+  ...
+  Car:
+    is_a: Vehicle
     slot_usage:
-      type:
-        range: FamilialRelationshipType
-        required: true
-      related to:
-        range: Person
-        required: true
-```        
+      parts:
+        range: CarPart
+  Bicycle:
+    is_a: Vehicle
+    slot_usage:
+      parts:
+        range: BicyclePart
+  CarPart:
+    is_a: VehiclePart
+  BicyclePart:
+    is_a: VehiclePart
+```
+
+In this example, `Car` and `Bicycle` are subclasses of `Vehicle`, and `CarPart` and `BicyclePart` are subclasses of `VehiclePart`.
+The `parts` slot is refined to have a range of `CarPart` for `Car` and `BicyclePart` for `Bicycle`.
+
+Note that LinkML schemas are [monotonic](https://en.wikipedia.org/wiki/Monotonicity_of_entailment). This means
+it's not possible to *override* existing constraints, new constraints are always additive and "layered on".
+
+In the above example, you can think of a `Car` having *two* constraints on the `parts` slot: 
+
+- one from the `Vehicle` class, stating that the range is `VehiclePart`
+- and one from the `Car` class, stating that the range is `CarPart`
+
+Rather than the first overriding the second, the two constraints are combined, and the first becomes redundant
+(because `CarPart` is a subclass of `VehiclePart`)
 
 ## Identifiers
 

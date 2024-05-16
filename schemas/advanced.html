@@ -334,11 +334,20 @@
 <p>The following language features are experimental, behavior is not guaranteed to stay consistent</p>
 <section id="linkml-any-type">
 <h2>LinkML Any type<a class="headerlink" href="#linkml-any-type" title="Permalink to this heading">#</a></h2>
-<p>LinkML is currently best suited to ‘strict’ schemas, and doesn’t have full support for being able to model arbitrary dictionaries/objects. Each slot must have a defined range, the range must be exactly one of a Class, Type, or Enum. It is currently impossible to define unions of these core ranges.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">linkml:Any</span></code> type is an experimental feature for allowing arbitrary objects</p>
+<p>Most of the time in LinkML, the ranges of slots are “committed” to being one of the following:</p>
+<ul class="simple">
+<li><p>a class</p></li>
+<li><p>a type</p></li>
+<li><p>an enum</p></li>
+</ul>
+<p>Note that even if you don’t explicitly declare a range, the <a class="reference external" href="https://w3id.org/linkml/default_range">default_range</a> is used,
+(and the default value of default_range is <code class="docutils literal notranslate"><span class="pre">string</span></code>, reflecting the most common use case).</p>
+<p>In some cases you want to make slots more flexible, for example to allow for arbitrary objects.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">linkml:Any</span></code> states that the range of a slot can be any object. This isn’t a builtin type,
+but any class in the schema can take on this roll be being declared as <code class="docutils literal notranslate"><span class="pre">linkml:Any</span></code> using <code class="docutils literal notranslate"><span class="pre">class_uri</span></code>:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
 
-<span class="w">  </span><span class="nt">MetaObject</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Any</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:Any</span>
 
 <span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span>
@@ -346,19 +355,45 @@
 <span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
 <span class="w">   </span><span class="nt">attributes</span><span class="p">:</span>
 <span class="w">     </span><span class="nt">id</span><span class="p">:</span>
-<span class="w">     </span><span class="nt">name</span><span class="p">:</span>
 <span class="w">     </span><span class="nt">metadata</span><span class="p">:</span>
-<span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MetaObject</span>
+<span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Any</span>
+</pre></div>
+</div>
+<p>This means all the following are valid:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">person with string metadata</span><span class="w"> </span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">a string</span>
+</pre></div>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">person with an object as metadata</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">a string</span>
+<span class="w">  </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">an integer</span>
+</pre></div>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">person with an integer</span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">42</span>
 </pre></div>
 </div>
 </section>
+<section id="boolean-constraints">
+<h2>Boolean constraints<a class="headerlink" href="#boolean-constraints" title="Permalink to this heading">#</a></h2>
+<p>The following LinkML constructs can be used to express boolean constraints:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://w3id.org/linkml/any_of">any_of</a></p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/all_of">all_of</a></p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/none_of">none_of</a></p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/exactly_one_of">exactly_one_of</a></p></li>
+</ul>
+<p>These can be applied at the class or slot level. The range of each of these is an array of <em>expressions</em>.</p>
 <section id="unions-as-ranges">
-<h2>Unions as ranges<a class="headerlink" href="#unions-as-ranges" title="Permalink to this heading">#</a></h2>
+<h3>Unions as ranges<a class="headerlink" href="#unions-as-ranges" title="Permalink to this heading">#</a></h3>
 <p><a class="reference external" href="https://w3id.org/linkml/any_of">any_of</a> can be used to express that a range must satisfy any of a set of ranges.</p>
-<p>One way this can be used is to compose enums together, for example if we have a <code class="docutils literal notranslate"><span class="pre">vital_status</span></code> enum that can take on any a set of enums from VitalStatus OR a missing value with the type of missing value defined by an enum:</p>
+<p>One way this can be used is to compose enums together, for example if we have a <code class="docutils literal notranslate"><span class="pre">vital_status</span></code> enum<br />
+that can take on any a set of enums from VitalStatus OR a missing value with the type of missing value defined by an enum:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">vital_status</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Any</span>
 <span class="w">    </span><span class="nt">any_of</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MissingValueEnum</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VitalStatusEnum</span>
@@ -376,13 +411,13 @@
 <span class="w">      </span><span class="nt">UNDEAD</span><span class="p">:</span>
 </pre></div>
 </div>
-<p>Note that these constructs may ignored by some generators in the linkml 1.1 series.</p>
-<p>In the 1.2 series:</p>
-<ul class="simple">
-<li><p>generated python should use a Union</p></li>
-<li><p>jsonschema should use <a class="reference external" href="https://json-schema.org/understanding-json-schema/reference/conditionals.html">conditionals</a></p></li>
-<li><p>OWL should use UnionOf</p></li>
-</ul>
+<p>Note that the range of <code class="docutils literal notranslate"><span class="pre">vital_status</span></code> is declared as <code class="docutils literal notranslate"><span class="pre">Any</span></code>, which is further constrained by the <code class="docutils literal notranslate"><span class="pre">any_of</span></code> expression.</p>
+<p>Currently, it is important to always have a range declaration (even if it is <code class="docutils literal notranslate"><span class="pre">Any</span></code>), because LinkML constraint semantics are
+monotonic (i.e. new constraints can be specified but additional ones cannot be overridden - see <a class="reference internal" href="slots.html"><span class="std std-doc">slots</span></a> for more on this).
+If this range declaration were not explicitly stated, then the <code class="docutils literal notranslate"><span class="pre">default_range</span></code> of string would be applied.</p>
+<p>In future, LinkML may allow limited forms of non-monotonicity around default ranges, see:</p>
+<p>https://github.com/linkml/linkml/issues/1483</p>
+</section>
 </section>
 <section id="rules">
 <h2>Rules<a class="headerlink" href="#rules" title="Permalink to this heading">#</a></h2>
@@ -533,7 +568,10 @@ details of how to use this in code.</p>
             <ul>
 <li><a class="reference internal" href="#">Advanced features</a><ul>
 <li><a class="reference internal" href="#linkml-any-type">LinkML Any type</a></li>
+<li><a class="reference internal" href="#boolean-constraints">Boolean constraints</a><ul>
 <li><a class="reference internal" href="#unions-as-ranges">Unions as ranges</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#rules">Rules</a></li>
 <li><a class="reference internal" href="#defining-slots">Defining slots</a></li>
 <li><a class="reference internal" href="#equals-expression">equals_expression</a></li>

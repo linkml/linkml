@@ -398,29 +398,57 @@ are applicable to that class.</p>
 </section>
 <section id="slot-usage">
 <h2>slot_usage<a class="headerlink" href="#slot-usage" title="Permalink to this heading">#</a></h2>
-<p>The <a class="reference external" href="https://w3id.org/linkml/slot_usage">slot_usage</a> slot can be used to refine the meaning of a slot in the context of a particular class.</p>
-<p>For example, imagine a schema with a generic “Relationship” class:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">Relationship</span><span class="p">:</span>
+<p>The <a class="reference external" href="https://w3id.org/linkml/slot_usage">slot_usage</a> slot can be used to <em>refine</em> the meaning of a slot in the context of a particular class.</p>
+<p>For example, imagine a schema with classes <code class="docutils literal notranslate"><span class="pre">Vehicle</span></code> and <code class="docutils literal notranslate"><span class="pre">VehiclePart</span></code>, which vehicles can be disassembled into parts:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Vehicle</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">started_at_time</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ended_at_time</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">related_to</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">type</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">parts</span>
+<span class="w">  </span><span class="nt">VehiclePart</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">part_number</span>
+<span class="w">  </span>
+<span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">make</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">  </span><span class="nt">part_number</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">  </span><span class="nt">parts</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VehiclePart</span>
+<span class="w">    </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
-<p>with subtypes such as <code class="docutils literal notranslate"><span class="pre">FamilialRelationship</span></code>, <code class="docutils literal notranslate"><span class="pre">BusinessRelationship</span></code>, etc</p>
-<p>we can use <code class="docutils literal notranslate"><span class="pre">slot_usage</span></code> to constrain the meaning of more generic slots such as <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">related</span> <span class="pre">to</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">FamilialRelationship</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Relationship</span>
+<p>We can refine the hierarchy:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">Car</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Vehicle</span>
 <span class="w">    </span><span class="nt">slot_usage</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">type</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FamilialRelationshipType</span>
-<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">      </span><span class="nt">related to</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Person</span>
-<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">parts</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CarPart</span>
+<span class="w">  </span><span class="nt">Bicycle</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Vehicle</span>
+<span class="w">    </span><span class="nt">slot_usage</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">parts</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BicyclePart</span>
+<span class="w">  </span><span class="nt">CarPart</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VehiclePart</span>
+<span class="w">  </span><span class="nt">BicyclePart</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VehiclePart</span>
 </pre></div>
 </div>
+<p>In this example, <code class="docutils literal notranslate"><span class="pre">Car</span></code> and <code class="docutils literal notranslate"><span class="pre">Bicycle</span></code> are subclasses of <code class="docutils literal notranslate"><span class="pre">Vehicle</span></code>, and <code class="docutils literal notranslate"><span class="pre">CarPart</span></code> and <code class="docutils literal notranslate"><span class="pre">BicyclePart</span></code> are subclasses of <code class="docutils literal notranslate"><span class="pre">VehiclePart</span></code>.
+The <code class="docutils literal notranslate"><span class="pre">parts</span></code> slot is refined to have a range of <code class="docutils literal notranslate"><span class="pre">CarPart</span></code> for <code class="docutils literal notranslate"><span class="pre">Car</span></code> and <code class="docutils literal notranslate"><span class="pre">BicyclePart</span></code> for <code class="docutils literal notranslate"><span class="pre">Bicycle</span></code>.</p>
+<p>Note that LinkML schemas are <a class="reference external" href="https://en.wikipedia.org/wiki/Monotonicity_of_entailment">monotonic</a>. This means
+it’s not possible to <em>override</em> existing constraints, new constraints are always additive and “layered on”.</p>
+<p>In the above example, you can think of a <code class="docutils literal notranslate"><span class="pre">Car</span></code> having <em>two</em> constraints on the <code class="docutils literal notranslate"><span class="pre">parts</span></code> slot:</p>
+<ul class="simple">
+<li><p>one from the <code class="docutils literal notranslate"><span class="pre">Vehicle</span></code> class, stating that the range is <code class="docutils literal notranslate"><span class="pre">VehiclePart</span></code></p></li>
+<li><p>and one from the <code class="docutils literal notranslate"><span class="pre">Car</span></code> class, stating that the range is <code class="docutils literal notranslate"><span class="pre">CarPart</span></code></p></li>
+</ul>
+<p>Rather than the first overriding the second, the two constraints are combined, and the first becomes redundant
+(because <code class="docutils literal notranslate"><span class="pre">CarPart</span></code> is a subclass of <code class="docutils literal notranslate"><span class="pre">VehiclePart</span></code>)</p>
 </section>
 <section id="identifiers">
 <h2>Identifiers<a class="headerlink" href="#identifiers" title="Permalink to this heading">#</a></h2>
