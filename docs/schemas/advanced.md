@@ -95,8 +95,8 @@ enums:
 
 Note that the range of `vital_status` is declared as `Any`, which is further constrained by the `any_of` expression.
 
-Currently, it is important to have this base range declaration, because LinkML constraint semantics are
-monotonic. If this were not stated, then the `default_range` of string would be applied.
+Currently, it is important to always have a range declaration (even if it is `Any`), because LinkML constraint semantics are
+monotonic. If this were not stated, then the `default_range` of string would be applied. 
 
 In future, LinkML may allow limited forms of non-monotonicity around default ranges, see:
 
