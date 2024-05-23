@@ -1657,7 +1657,7 @@ class SchemaView(object):
 
         :return: dictionary of SchemaUsages keyed by used elements
         """
-        ROLES = ['domain', 'range']
+        ROLES = ['domain', 'range', 'any_of', 'exactly_one_of', 'none_of', 'all_of']
         ix = defaultdict(list)
         for cn, c in self.all_classes().items():
             direct_slots = c.slots
@@ -1671,6 +1671,9 @@ class SchemaView(object):
                         vl = [v]
                     for x in vl:
                         if x is not None:
+                            if isinstance(x, AnonymousSlotExpression):
+                                x = x.range
+                                k = f"{k}[range]"
                             u = SchemaUsage(used_by=cn, slot=sn, metaslot=k, used=x)
                             u.inferred = sn in direct_slots
                             ix[x].append(u)
