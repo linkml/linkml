@@ -1674,6 +1674,7 @@ class SchemaView(object):
                             if isinstance(x, AnonymousSlotExpression):
                                 x = x.range
                                 k = f"{k}[range]"
+                            k = k.split("[")[0] + "[range]" if "[range]" in k else k
                             u = SchemaUsage(used_by=cn, slot=sn, metaslot=k, used=x)
                             u.inferred = sn in direct_slots
                             ix[x].append(u)

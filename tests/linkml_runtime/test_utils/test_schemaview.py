@@ -186,7 +186,7 @@ class SchemaViewTestCase(unittest.TestCase):
 
         self.assertCountEqual(['id', 'name',  ## From Thing
                                'has employment history', 'has familial relationships', 'has medical history',
-                               AGE_IN_YEARS, 'addresses', 'has birth event', ## From Person
+                               AGE_IN_YEARS, 'addresses', 'has birth event', 'reason_for_happiness', ## From Person
                                'aliases'  ## From HasAliases
                                 ],
                               view.class_slots('Person'))
@@ -256,6 +256,42 @@ class SchemaViewTestCase(unittest.TestCase):
             logging.debug(f' {k} = {v}')
         self.assertIn(SchemaUsage(used_by='FamilialRelationship', slot=RELATED_TO,
                            metaslot='range', used='Person', inferred=False), u['Person'])
+        self.assertListEqual(
+            [SchemaUsage(used_by='Person', 
+                        slot='reason_for_happiness', 
+                        metaslot='any_of[range]', 
+                        used='MarriageEvent', 
+                        inferred=True
+                        ), 
+            SchemaUsage(used_by='Adult',
+                        slot='reason_for_happiness', 
+                        metaslot='any_of[range]', 
+                        used='MarriageEvent', 
+                        inferred=False
+                        )], 
+            u['MarriageEvent'])
+        self.assertListEqual(
+            [SchemaUsage(used_by='Person', 
+                        slot='has employment history', 
+                        metaslot='range', 
+                        used='EmploymentEvent', 
+                        inferred=True), 
+            SchemaUsage(used_by='Person', 
+                        slot='reason_for_happiness', 
+                        metaslot='any_of[range]', 
+                        used='EmploymentEvent', 
+                        inferred=True), 
+            SchemaUsage(used_by='Adult', 
+                        slot='has employment history', 
+                        metaslot='range', 
+                        used='EmploymentEvent', 
+                        inferred=False), 
+            SchemaUsage(used_by='Adult', 
+                        slot='reason_for_happiness', 
+                        metaslot='any_of[range]', 
+                        used='EmploymentEvent', 
+                        inferred=False)],
+            u['EmploymentEvent'])
 
         # test methods also work for attributes
         leaves = view.class_leaves()
