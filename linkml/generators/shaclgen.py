@@ -1,10 +1,11 @@
 import logging
 import os
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, List
 
 import click
 from linkml_runtime.linkml_model.meta import ElementName
+from linkml_runtime.utils.yamlutils import TypedNode
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from rdflib import BNode, Graph, Literal, URIRef
@@ -116,6 +117,11 @@ class ShaclGenerator(Generator):
 
                 all_classes = sv.all_classes()
                 if s.any_of:
+                    # It is not allowed to use any of and equals_string or equals_string_in in one slot definition, as both are mapped to sh:in in SHACL
+                    if s.equals_string or s.equals_string_in:
+                        error = "'equals_string'/'equals_string_in' and 'any_of' are mutually exclusive"
+                        raise ValueError(f'{TypedNode.yaml_loc(s, suffix="")} {error}')
+
                     or_node = BNode()
                     prop_pv(SH["or"], or_node)
                     range_list = []
@@ -158,10 +164,16 @@ class ShaclGenerator(Generator):
                             add_simple_data_type(st_node_pv, r)
                             range_list.append(st_node)
                     Collection(g, or_node, range_list)
-
                 else:
                     prop_pv_literal(SH.hasValue, s.equals_number)
                     r = s.range
+                    if s.equals_string or s.equals_string_in:
+                        # Check if range is "string" as this is mandatory for "equals_string" and "equals_string_in"
+                        if r != "string":
+                            raise ValueError(
+                                f'slot: "{slot_uri}" - \'equals_string\' and \'equals_string_in\' require range \'string\' and not \'{r}\''
+                            )
+
                     if r in all_classes:
                         self._add_class(prop_pv, r)
                         if sv.get_identifier_slot(r) is not None:
@@ -176,6 +188,12 @@ class ShaclGenerator(Generator):
                         add_simple_data_type(prop_pv, r)
                     if s.pattern:
                         prop_pv(SH.pattern, Literal(s.pattern))
+                    if s.equals_string:
+                        # Map equal_string and equal_string_in to sh:in
+                        self._and_equals_string(g, prop_pv, [s.equals_string])
+                    if s.equals_string_in:
+                        # Map equal_string and equal_string_in to sh:in
+                        self._and_equals_string(g, prop_pv, s.equals_string_in)
 
                 ifabsent_processor.process_slot(prop_pv, s, class_uri)
 
@@ -208,6 +226,18 @@ class ShaclGenerator(Generator):
             func(SH.datatype, URIRef(sv.get_uri(rt, expand=True)))
         else:
             logging.error(f"No URI for type {rt.name}")
+
+    def _and_equals_string(self, g: Graph, func: Callable, values: List) -> None:
+        pv_node = BNode()
+        Collection(
+            g,
+            pv_node,
+            [
+                Literal(v) for v in values
+            ],
+        )
+        func(SH["in"], pv_node)
+
 
 
 def add_simple_data_type(func: Callable, r: ElementName) -> None:
