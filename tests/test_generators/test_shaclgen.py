@@ -2,10 +2,9 @@ from collections import Counter
 from typing import Any, List, Tuple
 
 import rdflib
-from rdflib import SH, Literal, URIRef
-
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shaclgen import ShaclGenerator
+from rdflib import SH, Literal, URIRef
 
 EXPECTED = [
     (
@@ -145,26 +144,51 @@ EXPECTED_any_of_with_suffix = [
     ),
 ]
 
+EXPECTED_equals_string = [
+    (
+        rdflib.term.URIRef('https://w3id.org/linkml/tests/kitchen_sink/EqualsString'),
+        [
+            (
+                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
+                rdflib.term.Literal('foo'),
+            ),
+        ],
+    ),
+    (
+        rdflib.term.URIRef('https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn'),
+        [
+            (
+                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
+                rdflib.term.Literal('bar'),
+            ),
+            (
+                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
+                rdflib.term.Literal('foo'),
+            ),
+        ],
+    )
+]
+
 
 def test_shacl(kitchen_sink_path):
     """tests shacl generation"""
     shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True).serialize()
-    do_test(shaclstr, EXPECTED, EXPECTED_any_of)
+    do_test(shaclstr, EXPECTED, EXPECTED_any_of, EXPECTED_equals_string)
 
 
 def test_shacl_closed(kitchen_sink_path):
     """tests shacl generation"""
     shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True, closed=False).serialize()
-    do_test(shaclstr, EXPECTED_closed, EXPECTED_any_of)
+    do_test(shaclstr, EXPECTED, EXPECTED_any_of, EXPECTED_equals_string)
 
 
 def test_shacl_suffix(kitchen_sink_path):
     """tests shacl generation with suffix option"""
     shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True, closed=True, suffix="Shape").serialize()
-    do_test(shaclstr, EXPECTED_suffix, EXPECTED_any_of_with_suffix)
+    do_test(shaclstr, EXPECTED, EXPECTED_any_of, EXPECTED_equals_string)
 
 
-def do_test(shaclstr, expected, expected_any_of):
+def do_test(shaclstr, expected, expected_any_of, expected_equals_string):
     g = rdflib.Graph()
     g.parse(data=shaclstr)
     triples = list(g.triples((None, None, None)))
@@ -173,22 +197,68 @@ def do_test(shaclstr, expected, expected_any_of):
     # TODO: test shacl validation; pyshacl requires rdflib6
 
     assert_any_of(expected_any_of, triples)
+    assert_equals_string(expected_equals_string, triples)
+
+
+def assert_equals_string(
+        expected: List[Tuple[rdflib.term.URIRef, List[Tuple[rdflib.term.URIRef, rdflib.term.URIRef]]]], triples: List
+) -> None:
+    for ex in expected:
+        found = False
+        # look for "property" triplet
+        for property_triple in triples:
+            if property_triple[0] == ex[0] and property_triple[1] == rdflib.term.URIRef(
+                    "http://www.w3.org/ns/shacl#property"
+            ):
+                # look for "or" triplet
+                for path_triplet in triples:
+                    if path_triplet[0] == property_triple[2] and path_triplet[1] == rdflib.term.URIRef(
+                            "http://www.w3.org/ns/shacl#in"
+                    ):
+                        found = True
+                        for tuple in ex[1]:
+                            assert tuple in _get_data_type(path_triplet[2], triples)
+        if not found:
+            print(str(ex) + "not found")
+            assert False
 
 
 def assert_any_of(
-    expected: List[Tuple[rdflib.term.URIRef, List[Tuple[rdflib.term.URIRef, rdflib.term.URIRef]]]], triples: List
+        expected: List[Tuple[rdflib.term.URIRef, List[Tuple[rdflib.term.URIRef, rdflib.term.URIRef]]]], triples: List
 ) -> None:
     for ex in expected:
         found = False
         for property_triple in triples:
             # look for "property" triplet
             if property_triple[0] == ex[0] and property_triple[1] == rdflib.term.URIRef(
-                "http://www.w3.org/ns/shacl#property"
+                    "http://www.w3.org/ns/shacl#property"
             ):
                 # look for "or" triplet
                 for or_triplet in triples:
                     if or_triplet[0] == property_triple[2] and or_triplet[1] == rdflib.term.URIRef(
-                        "http://www.w3.org/ns/shacl#or"
+                            "http://www.w3.org/ns/shacl#or"
+                    ):
+                        found = True
+                        assert Counter(_get_data_type(or_triplet[2], triples)) == Counter(ex[1])
+        if not found:
+            print(str(ex) + "not found")
+            assert False
+
+
+def assert_equals(
+        expected: List[Tuple[rdflib.term.URIRef, List[Tuple[rdflib.term.URIRef, rdflib.term.URIRef]]]], triples: List
+) -> None:
+    for ex in expected:
+        found = False
+        for property_triple in triples:
+            # look for "property" triplet
+            if property_triple[0] == ex[0] and property_triple[1] == rdflib.term.URIRef(
+                    "http://www.w3.org/ns/shacl#property"
+            ):
+                # look for "or" triplet
+                for or_triplet in triples:
+                    if or_triplet[0] == property_triple[2] and or_triplet[1] == rdflib.term.URIRef(
+                            "http://www.w3.org/ns/shacl#or"
                     ):
                         found = True
                         assert Counter(_get_data_type(or_triplet[2], triples)) == Counter(ex[1])
