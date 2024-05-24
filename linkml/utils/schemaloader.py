@@ -235,21 +235,8 @@ class SchemaLoader:
             ):
                 self.raise_value_error(f"slot: {slot.name} - unrecognized range ({slot.range})", slot.range)
 
-            # check constraints for usage of equals_string and and equals_string_in
-            if slot.equals_string or slot.equals_string_in:
-                # Range "string" mandatory for "equals_string" and "equals_string_in"
-                range = slot.range
-                if not range:
-                    # range is not defined --> check default range
-                    range = self.schema.default_range
-                if range != "string":
-                    self.raise_value_error(f"slot: {slot.name} - 'equals_string' and 'equals_string_in' requires range 'string' and not range {range}", {slot.name})
-                if slot.any_of:
-                    # It is not allowed to use any of and equals_string or equals_string_in in one slot definition, as both are mapped to sh:in in SHACL
-                    self.raise_value_error(f"slot: {slot.name} - 'equals_string'/'equals_string_in' are mutually exclusive", "equals_string")
-
-
-            return self.schema
+            # check constraints for usage of equals_string and equals_string_in
+            self._check_equals_string(slot)
 
         # apply to --> mixins
         for cls in self.schema.classes.values():
@@ -388,7 +375,8 @@ class SchemaLoader:
             ):
                 self.raise_value_error(f"slot: {slot.name} - unrecognized range ({slot.range})", slot.range)
 
-
+            # check constraints for usage of equals_string and equals_string_in
+            self._check_equals_string(slot)
 
         # Massage classes, propagating class slots entries domain back to the target slots
         for cls in self.schema.classes.values():
@@ -625,7 +613,13 @@ class SchemaLoader:
             if subset not in self.schema.subsets:
                 self.raise_value_error(f"Subset: {subset} is not defined", subset)
 
+        # check constraints for usage of equals_string and equals_string_in
+        for cls in self.schema.classes.values():
+            if cls.name.startswith("Example"):
+            #for slot in self.schema.class_induced_slots(cls.name):
+                pass
 
+        return self.schema
 
     def validate_item_names(self, typ: str, names: List[str]) -> None:
         # TODO: add a more rigorous syntax check for item names
@@ -983,3 +977,21 @@ class SchemaLoader:
                 return rval
         else:
             return None
+
+    def _check_equals_string(self, slot: SlotDefinition):
+        if slot.equals_string or slot.equals_string_in:
+            # Range "string" mandatory for "equals_string" and "equals_string_in"
+            range = slot.range
+            if not range:
+                # range is not defined --> check default range
+                range = self.schema.default_range
+            if range != "string":
+                self.raise_value_error(
+                    f"slot: {slot.name} - 'equals_string' and 'equals_string_in' requires range 'string' and not range '{range}'",
+                    slot.range)
+            if slot.any_of:
+                # It is not allowed to use any of and equals_string or equals_string_in in one slot definition, as both are mapped to sh:in in SHACL
+                self.raise_value_error(
+                    f"slot: {slot.name} - 'equals_string'/'equals_string_in' and 'any_of' are mutually exclusive",
+                    slot.name)
+
