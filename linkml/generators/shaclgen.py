@@ -6,7 +6,6 @@ from typing import Callable, List
 import click
 from jsonasobj2 import JsonObj, as_dict
 from linkml_runtime.linkml_model.meta import ElementName
-from linkml_runtime.utils.yamlutils import TypedNode
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import extended_float, extended_int, extended_str
@@ -290,12 +289,9 @@ class ShaclGenerator(Generator):
         Collection(
             g,
             pv_node,
-            [
-                Literal(v) for v in values
-            ],
+            [Literal(v) for v in values],
         )
         func(SH["in"], pv_node)
-
 
 
 def add_simple_data_type(func: Callable, r: ElementName) -> None:
