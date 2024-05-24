@@ -980,11 +980,13 @@ class SchemaLoader:
                 range = self.schema.default_range
             if range != "string":
                 self.raise_value_error(
-                    f"slot: {slot.name} - 'equals_string' and 'equals_string_in' requires range 'string' and not range '{range}'",
+                    f"slot: {slot.name} - 'equals_string' and 'equals_string_in' requires range "
+                    f"'string' and not range '{range}'",
                     slot.range,
                 )
             if slot.any_of:
-                # It is not allowed to use any of and equals_string or equals_string_in in one slot definition, as both are mapped to sh:in in SHACL
+                # It is not allowed to use any of and equals_string or equals_string_in in one slot definition,
+                # as both are mapped to sh:in in SHACL
                 self.raise_value_error(
                     f"slot: {slot.name} - 'equals_string'/'equals_string_in' and 'any_of' are mutually exclusive",
                     slot.name,
