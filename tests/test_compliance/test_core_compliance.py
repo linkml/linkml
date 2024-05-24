@@ -1,7 +1,9 @@
 """Compliance tests for core constructs."""
 
 import pytest
+import pytest
 import unicodedata
+
 from _decimal import Decimal
 
 import pytest
