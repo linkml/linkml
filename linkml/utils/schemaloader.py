@@ -613,12 +613,6 @@ class SchemaLoader:
             if subset not in self.schema.subsets:
                 self.raise_value_error(f"Subset: {subset} is not defined", subset)
 
-        # check constraints for usage of equals_string and equals_string_in
-        for cls in self.schema.classes.values():
-            if cls.name.startswith("Example"):
-            #for slot in self.schema.class_induced_slots(cls.name):
-                pass
-
         return self.schema
 
     def validate_item_names(self, typ: str, names: List[str]) -> None:
