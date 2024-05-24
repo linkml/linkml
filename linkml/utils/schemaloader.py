@@ -612,7 +612,6 @@ class SchemaLoader:
         for subset, referees in self.synopsis.subsetrefs.items():
             if subset not in self.schema.subsets:
                 self.raise_value_error(f"Subset: {subset} is not defined", subset)
-
         return self.schema
 
     def validate_item_names(self, typ: str, names: List[str]) -> None:
