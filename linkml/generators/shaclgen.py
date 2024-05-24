@@ -6,6 +6,7 @@ from typing import Callable, List
 import click
 from jsonasobj2 import JsonObj, as_dict
 from linkml_runtime.linkml_model.meta import ElementName
+from linkml_runtime.utils.yamlutils import TypedNode
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import extended_float, extended_int, extended_str
@@ -122,6 +123,11 @@ class ShaclGenerator(Generator):
 
                 all_classes = sv.all_classes()
                 if s.any_of:
+                    # It is not allowed to use any of and equals_string or equals_string_in in one slot definition, as both are mapped to sh:in in SHACL
+                    if s.equals_string or s.equals_string_in:
+                        error = "'equals_string'/'equals_string_in' and 'any_of' are mutually exclusive"
+                        raise ValueError(f'{TypedNode.yaml_loc(s, suffix="")} {error}')
+
                     or_node = BNode()
                     prop_pv(SH["or"], or_node)
                     range_list = []
@@ -167,6 +173,13 @@ class ShaclGenerator(Generator):
                 else:
                     prop_pv_literal(SH.hasValue, s.equals_number)
                     r = s.range
+                    if s.equals_string or s.equals_string_in:
+                        # Check if range is "string" as this is mandatory for "equals_string" and "equals_string_in"
+                        if r != "string":
+                            raise ValueError(
+                                f'slot: "{slot_uri}" - \'equals_string\' and \'equals_string_in\' require range \'string\' and not \'{r}\''
+                            )
+
                     if r in all_classes:
                         self._add_class(prop_pv, r)
                         if sv.get_identifier_slot(r) is not None:
@@ -271,6 +284,18 @@ class ShaclGenerator(Generator):
             return XSD.decimal
         else:
             return None
+
+    def _and_equals_string(self, g: Graph, func: Callable, values: List) -> None:
+        pv_node = BNode()
+        Collection(
+            g,
+            pv_node,
+            [
+                Literal(v) for v in values
+            ],
+        )
+        func(SH["in"], pv_node)
+
 
 
 def add_simple_data_type(func: Callable, r: ElementName) -> None:
