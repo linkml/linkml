@@ -97,4 +97,3 @@ def test_output_option(kitchen_sink_path, tmp_path):
 
     tss.serialize(output=tmp_path / "kitchen_sink.ts")
     assert (tmp_path / "kitchen_sink.ts").exists()
-
