@@ -120,7 +120,7 @@ class TypescriptGenerator(OOCodeGenerator):
     gen_type_utils: bool = False
     include_induced_slots: bool = False
 
-    def serialize(self, output) -> str:
+    def serialize(self, output=None) -> str:
         """Serialize a schema to typescript string"""
 
         sv: SchemaView = self.schemaview
