@@ -217,7 +217,7 @@ class MedicalEvent(Event):
 ```
 
 
-rdflib.URIRef is used to allow for introspection to retrieve the URI of any LinkML class at rumtime:
+rdflib.URIRef is used to allow for introspection to retrieve the URI of any LinkML class at runtime:
 
 ```python
 from rdflib import Namespace, URIRef

@@ -188,7 +188,7 @@ Note that LinkML models are "closed" by default. If a slot is not listed for a c
 Slots are [inherited](inheritance), so for example if `name` is listed
 as an allowed slot for `NamedThing`, and `Person` inherits from
 NamedThing, then `name` will be valid for Person. There is no need to
-re-declare
+redeclare
 
 See [SlotDefinition](https://w3id.org/linkml/SlotDefinition) for a full list of which metamodel slots can be applied to slots.
 
