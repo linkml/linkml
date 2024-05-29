@@ -1240,6 +1240,19 @@ classes:
     id_prefixes:
     - P
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Person
+    annotations:
+      ks:viewer:
+        tag: ks:viewer
+        value: ks:PersonViewer
+      resting:
+        tag: resting
+        value: supine
+      opinions:
+        tag: opinions
+        value: 1000
+      fallible:
+        tag: fallible
+        value: true
     description: A person, living or dead
     in_subset:
     - subset A

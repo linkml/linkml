@@ -1643,6 +1643,28 @@
         "P"
       ],
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Person",
+      "annotations": [
+        {
+          "tag": "ks:viewer",
+          "value": "ks:PersonViewer",
+          "@type": "Annotation"
+        },
+        {
+          "tag": "resting",
+          "value": "supine",
+          "@type": "Annotation"
+        },
+        {
+          "tag": "opinions",
+          "value": 1000,
+          "@type": "Annotation"
+        },
+        {
+          "tag": "fallible",
+          "value": true,
+          "@type": "Annotation"
+        }
+      ],
       "description": "A person, living or dead",
       "in_subset": [
         "subset_A"

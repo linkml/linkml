@@ -150,6 +150,11 @@ classes:
     see_also:
       - https://en.wikipedia.org/wiki/Person
       - schema:Person
+    annotations:
+      ks:viewer: ks:PersonViewer
+      resting: supine
+      opinions: 1000
+      fallible: true
 
   Organization:
     rank: 3

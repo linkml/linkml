@@ -4,12 +4,14 @@ from dataclasses import dataclass
 from typing import Callable, List
 
 import click
+from jsonasobj2 import JsonObj, as_dict
 from linkml_runtime.linkml_model.meta import ElementName
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
+from linkml_runtime.utils.yamlutils import extended_float, extended_int, extended_str
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
-from rdflib.namespace import RDF, SH
+from rdflib.namespace import RDF, SH, XSD
 
 from linkml._version import __version__
 from linkml.generators.shacl.ifabsent_processor import IfAbsentProcessor
@@ -24,6 +26,8 @@ class ShaclGenerator(Generator):
     """True means add 'sh:closed=true' to all shapes, except of mixin shapes and shapes, that have parents"""
     suffix: str = None
     """parameterized suffix to be appended. No suffix per default."""
+    include_annotations: bool = False
+    """True means include all class / slot / type annotations in generated Node or Property shapes"""
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
@@ -83,6 +87,8 @@ class ShaclGenerator(Generator):
             list_node = BNode()
             Collection(g, list_node, [RDF.type])
             shape_pv(SH.ignoredProperties, list_node)
+            if c.annotations and self.include_annotations:
+                self._add_annotations(shape_pv, c)
             order = 0
             for s in sv.class_induced_slots(c.name):
                 # fixed in linkml-runtime 1.1.3
@@ -175,6 +181,8 @@ class ShaclGenerator(Generator):
                         add_simple_data_type(prop_pv, r)
                     if s.pattern:
                         prop_pv(SH.pattern, Literal(s.pattern))
+                    if s.annotations and self.include_annotations:
+                        self._add_annotations(prop_pv, s)
                     if s.equals_string:
                         # Map equal_string and equal_string_in to sh:in
                         self._and_equals_string(g, prop_pv, [s.equals_string])
@@ -211,6 +219,10 @@ class ShaclGenerator(Generator):
         rt = sv.get_type(r)
         if rt.uri:
             func(SH.datatype, URIRef(sv.get_uri(rt, expand=True)))
+            if rt.pattern:
+                func(SH.pattern, Literal(rt.pattern))
+            if rt.annotations and self.include_annotations:
+                self._add_annotations(func, rt)
         else:
             logging.error(f"No URI for type {rt.name}")
 
@@ -222,6 +234,43 @@ class ShaclGenerator(Generator):
             [Literal(v) for v in values],
         )
         func(SH["in"], pv_node)
+
+    def _add_annotations(self, func: Callable, item) -> None:
+        # TODO: migrate some of this logic to SchemaView
+        sv = self.schemaview
+        annotations = item.annotations
+        # item could be a class, slot or type
+        # annotation type could be dict (on types) or JsonObj (on slots)
+        if type(annotations) == JsonObj:
+            annotations = as_dict(annotations)
+        for a in annotations.values():
+            # If ':' is in the tag, treat it as a CURIE, otherwise string Literal
+            if ":" in a["tag"]:
+                N_predicate = URIRef(sv.expand_curie(a["tag"]))
+            else:
+                N_predicate = Literal(a["tag"], datatype=XSD.string)
+            # If the value is a string and ':' is in the value, treat it as a CURIE,
+            # otherwise treat as Literal with derived XSD datatype
+            if type(a["value"]) == extended_str and ":" in a["value"]:
+                N_object = URIRef(sv.expand_curie(a["value"]))
+            else:
+                N_object = Literal(a["value"], datatype=self._getXSDtype(a["value"]))
+
+            func(N_predicate, N_object)
+
+    def _getXSDtype(self, value):
+        value_type = type(value)
+        if value_type == bool:
+            return XSD.boolean
+        elif value_type == extended_str:
+            return XSD.string
+        elif value_type == extended_int:
+            return XSD.integer
+        elif value_type == extended_float:
+            # TODO: distinguish between xsd:decimal and xsd:double?
+            return XSD.decimal
+        else:
+            return None
 
 
 def add_simple_data_type(func: Callable, r: ElementName) -> None:
@@ -244,6 +293,12 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     default=None,
     show_default=True,
     help="Use --suffix to append given string to SHACL class name (e. g. --suffix Shape: Person becomes PersonShape).",
+)
+@click.option(
+    "--include-annotations/--exclude-annotations",
+    default=False,
+    show_default=True,
+    help="Use --include-annotations to include annotations of slots, types, and classes in the generated SHACL shapes.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
