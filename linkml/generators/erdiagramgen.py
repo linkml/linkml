@@ -1,7 +1,7 @@
 import os
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Optional, Union
+from typing import List, Optional, Set, Union
 
 import click
 import pydantic
@@ -163,6 +163,7 @@ class ERDiagramGenerator(Generator):
         class_names: List[Union[str, ClassDefinitionName]],
         follow_references=False,
         max_hops: int = None,
+        include_upstream: bool = False,
     ) -> MERMAID_SERIALIZATION:
         """
         Serialize a list of classes as an ER Diagram.
@@ -195,6 +196,15 @@ class ERDiagramGenerator(Generator):
                     if follow_references or sv.is_inlined(slot):
                         if rng not in visited:
                             stack.append((rng, depth + 1))
+
+        # Now Add upstream classes if needed
+        if include_upstream:
+            for sn in sv.all_slots():
+                slot = sv.schema.slots.get(sn)
+                if slot and slot.range in set(class_names):
+                    for cl in sv.all_classes():
+                        if slot.name in sv.get_class(cl).slots and cl not in visited:
+                            self.add_upstream_class(cl, set(class_names), diagram)
         return self.serialize_diagram(diagram)
 
     def serialize_diagram(self, diagram: ERDiagram) -> str:
@@ -209,6 +219,15 @@ class ERDiagramGenerator(Generator):
             return f"```mermaid\n{er}\n```\n"
         else:
             return er
+
+    def add_upstream_class(self, class_name: ClassDefinitionName, targets: Set[str], diagram: ERDiagram) -> None:
+        sv = self.schemaview
+        cls = sv.get_class(class_name)
+        entity = Entity(name=camelcase(cls.name))
+        diagram.entities.append(entity)
+        for slot in sv.class_induced_slots(class_name):
+            if slot.range in targets:
+                self.add_relationship(entity, slot, diagram)
 
     def add_class(self, class_name: ClassDefinitionName, diagram: ERDiagram) -> None:
         """
@@ -291,9 +310,17 @@ class ERDiagramGenerator(Generator):
 )
 @click.option("--max-hops", default=None, type=click.INT, help="Maximum number of hops")
 @click.option("--classes", "-c", multiple=True, help="List of classes to serialize")
+@click.option("--include-upstream", is_flag=True, help="Include upstream classes")
 @click.version_option(__version__, "-V", "--version")
 @click.command()
-def cli(yamlfile, classes: List[str], max_hops: Optional[int], follow_references: bool, **args):
+def cli(
+    yamlfile,
+    classes: List[str],
+    max_hops: Optional[int],
+    follow_references: bool,
+    include_upstream: bool = False,
+    **args,
+):
     """Generate a mermaid ER diagram from a schema.
 
     By default, all entities traversable from the tree_root are included. If no tree_root is
@@ -306,7 +333,14 @@ def cli(yamlfile, classes: List[str], max_hops: Optional[int], follow_references
         **args,
     )
     if classes:
-        print(gen.serialize_classes(classes, follow_references=follow_references, max_hops=max_hops))
+        print(
+            gen.serialize_classes(
+                classes,
+                follow_references=follow_references,
+                max_hops=max_hops,
+                include_upstream=include_upstream,
+            )
+        )
     else:
         print(gen.serialize())
 
