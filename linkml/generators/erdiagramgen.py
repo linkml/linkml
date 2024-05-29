@@ -1,7 +1,7 @@
 import os
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Optional, Union
+from typing import List, Optional, Set, Union
 
 import click
 import pydantic
@@ -220,7 +220,7 @@ class ERDiagramGenerator(Generator):
         else:
             return er
 
-    def add_upstream_class(self, class_name: ClassDefinitionName, targets: set[str], diagram: ERDiagram) -> None:
+    def add_upstream_class(self, class_name: ClassDefinitionName, targets: Set[str], diagram: ERDiagram) -> None:
         sv = self.schemaview
         cls = sv.get_class(class_name)
         entity = Entity(name=camelcase(cls.name))
