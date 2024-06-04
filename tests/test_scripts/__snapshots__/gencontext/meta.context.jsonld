@@ -111,6 +111,12 @@
          "@type": "xsd:date",
          "@id": "prov:endedAtTime"
       },
+      "attribute5": {
+         "@id": "attribute5"
+      },
+      "attribute6": {
+         "@id": "attribute6"
+      },
       "test_attribute": {
          "@id": "test_attribute"
       },
@@ -281,6 +287,12 @@
       },
       "EmploymentEvent": {
          "@id": "EmploymentEvent"
+      },
+      "EqualsString": {
+         "@id": "EqualsString"
+      },
+      "EqualsStringIn": {
+         "@id": "EqualsStringIn"
       },
       "Event": {
          "@id": "Event"

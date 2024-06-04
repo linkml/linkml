@@ -132,7 +132,7 @@ def test_file_generation_for_mixins(input_path, tmp_path):
     file_count = len(files)
 
     # Check that HasAliases.xlsx and WithLocation.xlsx have not been generated
-    assert file_count == 29
+    assert file_count == 31
 
     assert "HasAliases.xlsx" not in files
     assert "WithLocation.xlsx" not in files
@@ -146,7 +146,7 @@ def test_file_generation_for_mixins(input_path, tmp_path):
     file_count = len(files)
 
     # Check if HasAliases.xlsx and WithLocation.xlsx have been generated
-    assert file_count == 31
+    assert file_count == 33
 
     assert "HasAliases.xlsx" in files
     assert "WithLocation.xlsx" in files

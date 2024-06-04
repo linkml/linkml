@@ -94,6 +94,14 @@ message EmploymentEvent
   company employedAt = 0
   string type = 0
  }
+message EqualsString
+ {
+  string attribute5 = 0
+ }
+message EqualsStringIn
+ {
+  string attribute6 = 0
+ }
 message Event
  {
   date startedAtTime = 0
