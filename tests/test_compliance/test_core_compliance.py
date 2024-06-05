@@ -2,9 +2,9 @@
 
 import sys
 import unicodedata
-from _decimal import Decimal
 
 import pytest
+from _decimal import Decimal
 from linkml_runtime.utils.formatutils import underscore
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
@@ -224,12 +224,15 @@ def test_type_range(framework, linkml_type, example_value):
     )
 
 
-@pytest.mark.parametrize("name,range,minimum,maximum,value,valid", [
-    ("integer", "integer", 1, 10, 5, True),
-    ("integer", "integer", 1, 10, 15, False),
-    ("float", "float", 1.5, 10.5, 1.6, True),
-    ("float", "float", 1.5, 10.5, 1.4, False),
-    ])
+@pytest.mark.parametrize(
+    "name,range,minimum,maximum,value,valid",
+    [
+        ("integer", "integer", 1, 10, 5, True),
+        ("integer", "integer", 1, 10, 15, False),
+        ("float", "float", 1.5, 10.5, 1.6, True),
+        ("float", "float", 1.5, 10.5, 1.4, False),
+    ],
+)
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_min_max_values(framework, name, range, minimum, maximum, value, valid):
     """
@@ -257,7 +260,9 @@ def test_min_max_values(framework, name, range, minimum, maximum, value, valid):
             }
         },
     }
-    schema = validated_schema(test_min_max_values, name, framework, classes=classes, core_elements=["minimum_value", "maximum_value"])
+    schema = validated_schema(
+        test_min_max_values, name, framework, classes=classes, core_elements=["minimum_value", "maximum_value"]
+    )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if framework in [SQL_DDL_SQLITE, PYTHON_DATACLASSES]:
         if not valid:
@@ -273,6 +278,7 @@ def test_min_max_values(framework, name, range, minimum, maximum, value, valid):
         coerced=False,
         description="min-max values",
     )
+
 
 @pytest.mark.parametrize("example_value", ["", None, 1, 1.1, "1", True, False, Decimal("5.4"), {}, {"foo": 1}])
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
