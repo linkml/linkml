@@ -243,12 +243,6 @@ def test_shacl_annotations(kitchen_sink_path):
     do_test(shaclstr, EXPECTED_with_annotations, EXPECTED_any_of, EXPECTED_equals_string)
 
 
-def test_shacl_annotations(kitchen_sink_path):
-    """tests shacl generation with annotation option"""
-    shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True, include_annotations=True).serialize()
-    do_test(shaclstr, EXPECTED_with_annotations, EXPECTED_any_of, EXPECTED_equals_string)
-
-
 def do_test(shaclstr, expected, expected_any_of, expected_equals_string):
     g = rdflib.Graph()
     g.parse(data=shaclstr)
