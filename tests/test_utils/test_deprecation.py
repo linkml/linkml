@@ -156,7 +156,7 @@ def test_deprecation_str():
     dep_str = str(dep)
     assert (
         dep_str
-        == """[test-dep] 
+        == """[test-dep] REMOVED
 testing strings
 Deprecated In: 1.0.1
 Removed In: 1.2.1
