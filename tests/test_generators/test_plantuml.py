@@ -1,3 +1,4 @@
+import logging
 import os
 from xml.dom import minidom
 
@@ -16,14 +17,14 @@ MARKDOWN_FOOTER = """
 """
 
 PERSON = """
-class "Person" {
-    {field} id: string [req]
-    {field} name: string [opt]
-    {field} age_in_years: integer [opt]
-    {field} species_name: string [opt]
-    {field} stomach_count: integer [opt]
-    {field} is_living: LifeStatusEnum [opt]
-    {field} aliases: string [0..*]
+class "Person" [[{A person, living or dead}]]{
+    {field} "id" : "string" [req]
+    {field} "name" : "string" [opt]
+    {field} "age_in_years" : "integer" [opt]
+    {field} "species_name" : "string" [opt]
+    {field} "stomach_count" : "integer" [opt]
+    {field} "is_living" : "LifeStatusEnum" [opt]
+    {field} "aliases" : "string" [0..*]
 }
 """
 
@@ -56,7 +57,7 @@ def test_serialize_selected(input_class, expected, kitchen_sink_path):
     generator = PlantumlGenerator(kitchen_sink_path)
     plantuml = generator.serialize(classes=[input_class])
 
-    # check that the expected block/relationships are present
+# check that the expected block/relationships are present
     # in class-selected diagrams
     assert expected in plantuml
 
@@ -87,6 +88,9 @@ def test_serialize(kitchen_sink_path):
 def test_generate_svg(tmp_path, kitchen_sink_path):
     """Test the correctness of SVG rendering of plantUML diagram."""
     generator = PlantumlGenerator(kitchen_sink_path)
+    plantuml = generator.serialize()
+    logging.log(logging.WARN, "uml is %s", plantuml)
+
     generator.serialize(directory=tmp_path)
 
     # name of SVG file will be inferred from schema name because
