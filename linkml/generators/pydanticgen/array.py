@@ -1,12 +1,10 @@
 import sys
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import (Any, ClassVar, Generic, Iterable, List, Optional, Type,
-                    TypeVar, Union, get_args)
+from typing import Any, ClassVar, Generic, Iterable, List, Optional, Type, TypeVar, Union, get_args
 
 from linkml_runtime.linkml_model import Element
-from linkml_runtime.linkml_model.meta import (ArrayExpression,
-                                              DimensionExpression)
+from linkml_runtime.linkml_model.meta import ArrayExpression, DimensionExpression
 from pydantic import VERSION as PYDANTIC_VERSION
 
 if int(PYDANTIC_VERSION[0]) < 2:
@@ -21,8 +19,7 @@ else:
     from typing import Annotated
 
 from linkml.generators.pydanticgen.build import SlotResult
-from linkml.generators.pydanticgen.template import (ConditionalImport, Import,
-                                                    Imports, ObjectImport)
+from linkml.generators.pydanticgen.template import ConditionalImport, Import, Imports, ObjectImport
 
 
 class ArrayRepresentation(Enum):

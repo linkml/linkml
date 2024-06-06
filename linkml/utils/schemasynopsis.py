@@ -1,23 +1,27 @@
 from dataclasses import dataclass, field
 from typing import Dict, List, Set, Union
 
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              ClassDefinitionName, Definition,
-                                              DefinitionName, Element,
-                                              ElementName, EnumDefinition,
-                                              EnumDefinitionName,
-                                              SchemaDefinition, SlotDefinition,
-                                              SlotDefinitionName,
-                                              SubsetDefinitionName,
-                                              TypeDefinition,
-                                              TypeDefinitionName)
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ClassDefinitionName,
+    Definition,
+    DefinitionName,
+    Element,
+    ElementName,
+    EnumDefinition,
+    EnumDefinitionName,
+    SchemaDefinition,
+    SlotDefinition,
+    SlotDefinitionName,
+    SubsetDefinitionName,
+    TypeDefinition,
+    TypeDefinitionName,
+)
 from linkml_runtime.utils.metamodelcore import empty_dict
 from linkml_runtime.utils.yamlutils import TypedNode
 from rdflib import URIRef
 
-from linkml.utils.typereferences import (ClassType, EnumType, References,
-                                         RefType, SlotType, SubsetType,
-                                         TypeType)
+from linkml.utils.typereferences import ClassType, EnumType, References, RefType, SlotType, SubsetType, TypeType
 
 
 def empty_references() -> field:

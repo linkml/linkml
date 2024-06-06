@@ -5,8 +5,7 @@ from typing import List, Optional, Set, Union
 
 import click
 import pydantic
-from linkml_runtime.linkml_model.meta import (ClassDefinitionName,
-                                              SlotDefinition)
+from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 

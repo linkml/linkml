@@ -5,11 +5,18 @@ from typing import Any, Callable, Dict, Type
 import click
 from jsonasobj2 import as_dict
 from linkml_runtime import SchemaView
-from linkml_runtime.linkml_model import (ClassDefinition, ClassDefinitionName,
-                                         ElementName, EnumDefinition,
-                                         EnumDefinitionName, SchemaDefinition,
-                                         SlotDefinition, SlotDefinitionName,
-                                         TypeDefinition, TypeDefinitionName)
+from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    ClassDefinitionName,
+    ElementName,
+    EnumDefinition,
+    EnumDefinitionName,
+    SchemaDefinition,
+    SlotDefinition,
+    SlotDefinitionName,
+    TypeDefinition,
+    TypeDefinitionName,
+)
 from linkml_runtime.utils.formatutils import camelcase, lcamelcase, underscore
 from linkml_runtime.utils.schema_as_dict import schema_as_yaml_dump
 from linkml_runtime.utils.yamlutils import YAMLRoot

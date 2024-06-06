@@ -3,12 +3,16 @@ import logging
 from copy import deepcopy
 from typing import Dict, List, Optional, Union, cast
 
-from linkml_runtime.linkml_model.meta import (ClassDefinition, Element,
-                                              EnumDefinition, SchemaDefinition,
-                                              SlotDefinition,
-                                              SlotDefinitionName,
-                                              TypeDefinition,
-                                              TypeDefinitionName)
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    Element,
+    EnumDefinition,
+    SchemaDefinition,
+    SlotDefinition,
+    SlotDefinitionName,
+    TypeDefinition,
+    TypeDefinitionName,
+)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.yamlutils import extended_str

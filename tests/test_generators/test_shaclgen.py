@@ -170,53 +170,54 @@ EXPECTED_with_annotations = [
 
 EXPECTED_equals_string = [
     (
-        rdflib.term.URIRef('https://w3id.org/linkml/tests/kitchen_sink/EqualsString'),
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/EqualsString"),
         [
             (
                 rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
-                rdflib.term.Literal('foo'),
+                rdflib.term.Literal("foo"),
             ),
         ],
     ),
     (
-        rdflib.term.URIRef('https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn'),
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn"),
         [
             (
                 rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
-                rdflib.term.Literal('bar'),
+                rdflib.term.Literal("bar"),
             ),
             (
                 rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
-                rdflib.term.Literal('foo'),
+                rdflib.term.Literal("foo"),
             ),
         ],
-    )
+    ),
 ]
 
 EXPECTED_equals_string_with_suffix = [
     (
-        rdflib.term.URIRef('https://w3id.org/linkml/tests/kitchen_sink/EqualsStringShape'),
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/EqualsStringShape"),
         [
             (
                 rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
-                rdflib.term.Literal('foo'),
+                rdflib.term.Literal("foo"),
             ),
         ],
     ),
     (
-        rdflib.term.URIRef('https://w3id.org/linkml/tests/kitchen_sink/EqualsStringInShape'),
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/EqualsStringInShape"),
         [
             (
                 rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
-                rdflib.term.Literal('bar'),
+                rdflib.term.Literal("bar"),
             ),
             (
                 rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
-                rdflib.term.Literal('foo'),
+                rdflib.term.Literal("foo"),
             ),
         ],
-    )
+    ),
 ]
+
 
 def test_shacl(kitchen_sink_path):
     """tests shacl generation"""
@@ -261,19 +262,19 @@ def do_test(shaclstr, expected, expected_any_of, expected_equals_string):
 
 
 def assert_equals_string(
-        expected: List[Tuple[rdflib.term.URIRef, List[Tuple[rdflib.term.URIRef, rdflib.term.URIRef]]]], triples: List
+    expected: List[Tuple[rdflib.term.URIRef, List[Tuple[rdflib.term.URIRef, rdflib.term.URIRef]]]], triples: List
 ) -> None:
     for ex in expected:
         found = False
         # look for "property" triplet
         for property_triple in triples:
             if property_triple[0] == ex[0] and property_triple[1] == rdflib.term.URIRef(
-                    "http://www.w3.org/ns/shacl#property"
+                "http://www.w3.org/ns/shacl#property"
             ):
                 # look for "or" triplet
                 for path_triplet in triples:
                     if path_triplet[0] == property_triple[2] and path_triplet[1] == rdflib.term.URIRef(
-                            "http://www.w3.org/ns/shacl#in"
+                        "http://www.w3.org/ns/shacl#in"
                     ):
                         found = True
                         for tuple in ex[1]:
@@ -284,19 +285,19 @@ def assert_equals_string(
 
 
 def assert_any_of(
-        expected: List[Tuple[rdflib.term.URIRef, List[Tuple[rdflib.term.URIRef, rdflib.term.URIRef]]]], triples: List
+    expected: List[Tuple[rdflib.term.URIRef, List[Tuple[rdflib.term.URIRef, rdflib.term.URIRef]]]], triples: List
 ) -> None:
     for ex in expected:
         found = False
         for property_triple in triples:
             # look for "property" triplet
             if property_triple[0] == ex[0] and property_triple[1] == rdflib.term.URIRef(
-                    "http://www.w3.org/ns/shacl#property"
+                "http://www.w3.org/ns/shacl#property"
             ):
                 # look for "or" triplet
                 for or_triplet in triples:
                     if or_triplet[0] == property_triple[2] and or_triplet[1] == rdflib.term.URIRef(
-                            "http://www.w3.org/ns/shacl#or"
+                        "http://www.w3.org/ns/shacl#or"
                     ):
                         found = True
                         assert Counter(_get_data_type(or_triplet[2], triples)) == Counter(ex[1])
@@ -306,19 +307,19 @@ def assert_any_of(
 
 
 def assert_equals(
-        expected: List[Tuple[rdflib.term.URIRef, List[Tuple[rdflib.term.URIRef, rdflib.term.URIRef]]]], triples: List
+    expected: List[Tuple[rdflib.term.URIRef, List[Tuple[rdflib.term.URIRef, rdflib.term.URIRef]]]], triples: List
 ) -> None:
     for ex in expected:
         found = False
         for property_triple in triples:
             # look for "property" triplet
             if property_triple[0] == ex[0] and property_triple[1] == rdflib.term.URIRef(
-                    "http://www.w3.org/ns/shacl#property"
+                "http://www.w3.org/ns/shacl#property"
             ):
                 # look for "or" triplet
                 for or_triplet in triples:
                     if or_triplet[0] == property_triple[2] and or_triplet[1] == rdflib.term.URIRef(
-                            "http://www.w3.org/ns/shacl#or"
+                        "http://www.w3.org/ns/shacl#or"
                     ):
                         found = True
                         assert Counter(_get_data_type(or_triplet[2], triples)) == Counter(ex[1])

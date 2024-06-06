@@ -29,9 +29,16 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.utils import datautils, validation
-from linkml.utils.datautils import (_get_context, _get_format, _is_xsv,
-                                    dumpers_loaders, get_dumper, get_loader,
-                                    infer_index_slot, infer_root_class)
+from linkml.utils.datautils import (
+    _get_context,
+    _get_format,
+    _is_xsv,
+    dumpers_loaders,
+    get_dumper,
+    get_loader,
+    infer_index_slot,
+    infer_root_class,
+)
 
 
 @dataclass

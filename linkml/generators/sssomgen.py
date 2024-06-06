@@ -3,9 +3,14 @@ from dataclasses import dataclass
 from datetime import date
 
 import click
-from linkml_runtime.linkml_model.meta import (LINKML, ClassDefinition,
-                                              Definition, EnumDefinition,
-                                              SchemaDefinition, SlotDefinition)
+from linkml_runtime.linkml_model.meta import (
+    LINKML,
+    ClassDefinition,
+    Definition,
+    EnumDefinition,
+    SchemaDefinition,
+    SlotDefinition,
+)
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments

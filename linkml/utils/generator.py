@@ -23,24 +23,28 @@ import sys
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import (Callable, ClassVar, Dict, List, Mapping, Optional, Set,
-                    TextIO, Type, Union, cast)
+from typing import Callable, ClassVar, Dict, List, Mapping, Optional, Set, TextIO, Type, Union, cast
 
 import click
 from click import Argument, Command, Option
 from linkml_runtime import SchemaView
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              ClassDefinitionName, Definition,
-                                              Element, ElementName,
-                                              EnumDefinition,
-                                              EnumDefinitionName,
-                                              PrefixPrefixPrefix,
-                                              SchemaDefinition, SlotDefinition,
-                                              SlotDefinitionName,
-                                              SubsetDefinition,
-                                              SubsetDefinitionName,
-                                              TypeDefinition,
-                                              TypeDefinitionName)
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ClassDefinitionName,
+    Definition,
+    Element,
+    ElementName,
+    EnumDefinition,
+    EnumDefinitionName,
+    PrefixPrefixPrefix,
+    SchemaDefinition,
+    SlotDefinition,
+    SlotDefinitionName,
+    SubsetDefinition,
+    SubsetDefinitionName,
+    TypeDefinition,
+    TypeDefinitionName,
+)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.namespaces import Namespaces
 

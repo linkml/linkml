@@ -5,10 +5,13 @@ from typing import List, Optional
 
 import click
 from jinja2 import Template
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              ClassDefinitionName, Element,
-                                              SlotDefinition,
-                                              SlotDefinitionName)
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ClassDefinitionName,
+    Element,
+    SlotDefinition,
+    SlotDefinitionName,
+)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 

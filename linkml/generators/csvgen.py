@@ -9,8 +9,7 @@ from io import StringIO
 from typing import List, Optional, Set
 
 import click
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              ClassDefinitionName)
+from linkml_runtime.linkml_model.meta import ClassDefinition, ClassDefinitionName
 from linkml_runtime.utils.formatutils import be, underscore
 
 from linkml._version import __version__

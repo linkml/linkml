@@ -8,8 +8,7 @@ from jsonasobj2 import JsonObj, as_dict
 from linkml_runtime.linkml_model.meta import ElementName
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
-from linkml_runtime.utils.yamlutils import (extended_float, extended_int,
-                                            extended_str, TypedNode)
+from linkml_runtime.utils.yamlutils import extended_float, extended_int, extended_str, TypedNode
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import RDF, SH, XSD
@@ -178,7 +177,7 @@ class ShaclGenerator(Generator):
                         # Check if range is "string" as this is mandatory for "equals_string" and "equals_string_in"
                         if r != "string":
                             raise ValueError(
-                                f'slot: "{slot_uri}" - \'equals_string\' and \'equals_string_in\' require range \'string\' and not \'{r}\''
+                                f"slot: \"{slot_uri}\" - 'equals_string' and 'equals_string_in' require range 'string' and not '{r}'"
                             )
 
                     if r in all_classes:

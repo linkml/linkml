@@ -3,17 +3,19 @@ from abc import ABC, abstractmethod
 from functools import lru_cache
 from typing import Callable, Iterable, List
 
-from linkml_runtime.linkml_model import (ClassDefinition, ClassDefinitionName,
-                                         Element, SlotDefinition)
+from linkml_runtime.linkml_model import ClassDefinition, ClassDefinitionName, Element, SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView
 from prefixmaps.io.parser import load_multi_context
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
 
-from .config.datamodel.config import (CanonicalPrefixesConfig,
-                                      RecommendedRuleConfig, RuleConfig,
-                                      StandardNamingConfig,
-                                      TreeRootClassRuleConfig)
+from .config.datamodel.config import (
+    CanonicalPrefixesConfig,
+    RecommendedRuleConfig,
+    RuleConfig,
+    StandardNamingConfig,
+    TreeRootClassRuleConfig,
+)
 from .linter import LinterProblem
 
 

@@ -12,9 +12,16 @@ from linkml_runtime.utils.schemaview import SchemaView
 from linkml._version import __version__
 from linkml.generators.pythongen import PythonGenerator
 from linkml.utils import datautils, validation
-from linkml.utils.datautils import (_get_context, _get_format, _is_xsv,
-                                    dumpers_loaders, get_dumper, get_loader,
-                                    infer_index_slot, infer_root_class)
+from linkml.utils.datautils import (
+    _get_context,
+    _get_format,
+    _is_xsv,
+    dumpers_loaders,
+    get_dumper,
+    get_loader,
+    infer_index_slot,
+    infer_root_class,
+)
 
 
 @click.command()

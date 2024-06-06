@@ -9,9 +9,14 @@ import click
 import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper
-from linkml_runtime.linkml_model import (ClassDefinition, ClassDefinitionName,
-                                         EnumDefinition, SchemaDefinition,
-                                         SlotDefinition, TypeDefinition)
+from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    ClassDefinitionName,
+    EnumDefinition,
+    SchemaDefinition,
+    SlotDefinition,
+    TypeDefinition,
+)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
