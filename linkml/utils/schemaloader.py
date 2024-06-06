@@ -3,29 +3,29 @@ import os
 from collections import OrderedDict
 from copy import deepcopy
 from pathlib import Path
-from typing import Dict, Iterator, List, Mapping, Optional, Set, TextIO, Tuple, Union, cast
+from typing import (Dict, Iterator, List, Mapping, Optional, Set, TextIO,
+                    Tuple, Union, cast)
 from urllib.parse import urlparse
 
 from jsonasobj2 import values
-from linkml_runtime.linkml_model.meta import (
-    ClassDefinition,
-    ClassDefinitionName,
-    ElementName,
-    EnumDefinition,
-    EnumDefinitionName,
-    SchemaDefinition,
-    SlotDefinition,
-    SlotDefinitionName,
-    TypeDefinition,
-    TypeDefinitionName,
-)
+from linkml_runtime.linkml_model.meta import (ClassDefinition,
+                                              ClassDefinitionName, ElementName,
+                                              EnumDefinition,
+                                              EnumDefinitionName,
+                                              SchemaDefinition, SlotDefinition,
+                                              SlotDefinitionName,
+                                              TypeDefinition,
+                                              TypeDefinitionName)
 from linkml_runtime.utils.context_utils import parse_import_map
-from linkml_runtime.utils.formatutils import camelcase, mangled_attribute_name, sfx, underscore
+from linkml_runtime.utils.formatutils import (camelcase,
+                                              mangled_attribute_name, sfx,
+                                              underscore)
 from linkml_runtime.utils.metamodelcore import Bool
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.yamlutils import TypedNode
 
-from linkml.utils.mergeutils import merge_classes, merge_schemas, merge_slots, slot_usage_name
+from linkml.utils.mergeutils import (merge_classes, merge_schemas, merge_slots,
+                                     slot_usage_name)
 from linkml.utils.rawloader import load_raw_schema
 from linkml.utils.schemasynopsis import SchemaSynopsis
 

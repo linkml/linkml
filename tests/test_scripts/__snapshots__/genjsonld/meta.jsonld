@@ -1199,6 +1199,35 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "equalsString__attribute5",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/attribute5",
+      "alias": "attribute5",
+      "owner": "EqualsString",
+      "domain_of": [
+        "EqualsString"
+      ],
+      "range": "string",
+      "equals_string": "foo",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "equalsStringIn__attribute6",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/attribute6",
+      "alias": "attribute6",
+      "owner": "EqualsStringIn",
+      "domain_of": [
+        "EqualsStringIn"
+      ],
+      "range": "string",
+      "equals_string_in": [
+        "foo",
+        "bar"
+      ],
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "hasAliases__aliases",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "mappings": [
@@ -1606,6 +1635,45 @@
       "@type": "ClassDefinition"
     },
     {
+      "name": "EqualsString",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/EqualsString",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "slots": [
+        "equalsString__attribute5"
+      ],
+      "slot_usage": {},
+      "attributes": [
+        {
+          "name": "attribute5",
+          "equals_string": "foo",
+          "@type": "SlotDefinition"
+        }
+      ],
+      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/EqualsString",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "EqualsStringIn",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "slots": [
+        "equalsStringIn__attribute6"
+      ],
+      "slot_usage": {},
+      "attributes": [
+        {
+          "name": "attribute6",
+          "equals_string_in": [
+            "foo",
+            "bar"
+          ],
+          "@type": "SlotDefinition"
+        }
+      ],
+      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn",
+      "@type": "ClassDefinition"
+    },
+    {
       "name": "HasAliases",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/HasAliases",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
@@ -1643,6 +1711,28 @@
         "P"
       ],
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Person",
+      "annotations": [
+        {
+          "tag": "ks:viewer",
+          "value": "ks:PersonViewer",
+          "@type": "Annotation"
+        },
+        {
+          "tag": "resting",
+          "value": "supine",
+          "@type": "Annotation"
+        },
+        {
+          "tag": "opinions",
+          "value": 1000,
+          "@type": "Annotation"
+        },
+        {
+          "tag": "fallible",
+          "value": true,
+          "@type": "Annotation"
+        }
+      ],
       "description": "A person, living or dead",
       "in_subset": [
         "subset_A"

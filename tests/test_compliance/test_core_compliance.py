@@ -1,10 +1,10 @@
 """Compliance tests for core constructs."""
-
-import pytest
 import sys
 import unicodedata
 
 from _decimal import Decimal
+
+import pytest
 from linkml_runtime.utils.formatutils import underscore
 from pydantic.version import VERSION as PYDANTIC_VERSION
 

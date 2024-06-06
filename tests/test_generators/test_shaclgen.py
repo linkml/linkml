@@ -144,6 +144,29 @@ EXPECTED_any_of_with_suffix = [
     ),
 ]
 
+EXPECTED_with_annotations = [
+    (
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Person"),
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/viewer"),
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/PersonViewer"),
+    ),
+    (
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Person"),
+        rdflib.term.Literal("resting", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#string")),
+        rdflib.term.Literal("supine", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#string")),
+    ),
+    (
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Person"),
+        rdflib.term.Literal("opinions", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#string")),
+        rdflib.term.Literal("1000", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer")),
+    ),
+    (
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Person"),
+        rdflib.term.Literal("fallible", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#string")),
+        rdflib.term.Literal("true", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#boolean")),
+    ),
+]
+
 EXPECTED_equals_string = [
     (
         rdflib.term.URIRef('https://w3id.org/linkml/tests/kitchen_sink/EqualsString'),
@@ -169,6 +192,31 @@ EXPECTED_equals_string = [
     )
 ]
 
+EXPECTED_equals_string_with_suffix = [
+    (
+        rdflib.term.URIRef('https://w3id.org/linkml/tests/kitchen_sink/EqualsStringShape'),
+        [
+            (
+                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
+                rdflib.term.Literal('foo'),
+            ),
+        ],
+    ),
+    (
+        rdflib.term.URIRef('https://w3id.org/linkml/tests/kitchen_sink/EqualsStringInShape'),
+        [
+            (
+                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
+                rdflib.term.Literal('bar'),
+            ),
+            (
+                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
+                rdflib.term.Literal('foo'),
+            ),
+        ],
+    )
+]
+
 
 def test_shacl(kitchen_sink_path):
     """tests shacl generation"""
@@ -179,13 +227,19 @@ def test_shacl(kitchen_sink_path):
 def test_shacl_closed(kitchen_sink_path):
     """tests shacl generation"""
     shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True, closed=False).serialize()
-    do_test(shaclstr, EXPECTED, EXPECTED_any_of, EXPECTED_equals_string)
+    do_test(shaclstr, EXPECTED_closed, EXPECTED_any_of, EXPECTED_equals_string)
 
 
 def test_shacl_suffix(kitchen_sink_path):
     """tests shacl generation with suffix option"""
     shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True, closed=True, suffix="Shape").serialize()
-    do_test(shaclstr, EXPECTED, EXPECTED_any_of, EXPECTED_equals_string)
+    do_test(shaclstr, EXPECTED_suffix, EXPECTED_any_of_with_suffix, EXPECTED_equals_string_with_suffix)
+
+
+def test_shacl_annotations(kitchen_sink_path):
+    """tests shacl generation with annotation option"""
+    shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True, include_annotations=True).serialize()
+    do_test(shaclstr, EXPECTED_with_annotations, EXPECTED_any_of, EXPECTED_equals_string)
 
 
 def do_test(shaclstr, expected, expected_any_of, expected_equals_string):
