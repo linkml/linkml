@@ -9,7 +9,7 @@ from linkml_runtime.linkml_model.meta import ElementName
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import TypedNode
-from linkml_runtime.utils.yamlutils import extended_float, extended_int
+from linkml_runtime.utils.yamlutils import extended_float, extended_int, extended_str
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import RDF, SH, XSD
