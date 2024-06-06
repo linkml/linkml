@@ -9,7 +9,7 @@ from linkml_runtime.linkml_model.meta import ElementName
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import (extended_float, extended_int,
-                                            extended_str)
+                                            extended_str, TypedNode)
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import RDF, SH, XSD
@@ -123,7 +123,8 @@ class ShaclGenerator(Generator):
 
                 all_classes = sv.all_classes()
                 if s.any_of:
-                    # It is not allowed to use any of and equals_string or equals_string_in in one slot definition, as both are mapped to sh:in in SHACL
+                    # It is not allowed to use any of and equals_string or equals_string_in in one
+                    # slot definition, as both are mapped to sh:in in SHACL
                     if s.equals_string or s.equals_string_in:
                         error = "'equals_string'/'equals_string_in' and 'any_of' are mutually exclusive"
                         raise ValueError(f'{TypedNode.yaml_loc(s, suffix="")} {error}')
