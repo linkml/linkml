@@ -1,5 +1,3 @@
-"""Compliance tests for core constructs."""
-
 import sys
 import unicodedata
 
@@ -264,7 +262,7 @@ def test_min_max_values(framework, name, range, minimum, maximum, value, valid):
         test_min_max_values, name, framework, classes=classes, core_elements=["minimum_value", "maximum_value"]
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework in [SQL_DDL_SQLITE, PYTHON_DATACLASSES]:
+    if framework in [SQL_DDL_SQLITE, PYTHON_DATACLASSES] or (framework == PYDANTIC and IS_PYDANTIC_V1):
         if not valid:
             expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
