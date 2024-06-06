@@ -167,6 +167,7 @@ EXPECTED_with_annotations = [
     ),
 ]
 
+
 EXPECTED_equals_string = [
     (
         rdflib.term.URIRef('https://w3id.org/linkml/tests/kitchen_sink/EqualsString'),
@@ -217,7 +218,6 @@ EXPECTED_equals_string_with_suffix = [
     )
 ]
 
-
 def test_shacl(kitchen_sink_path):
     """tests shacl generation"""
     shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True).serialize()
@@ -240,6 +240,13 @@ def test_shacl_annotations(kitchen_sink_path):
     """tests shacl generation with annotation option"""
     shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True, include_annotations=True).serialize()
     do_test(shaclstr, EXPECTED_with_annotations, EXPECTED_any_of, EXPECTED_equals_string)
+
+
+def test_shacl_annotations(kitchen_sink_path):
+    """tests shacl generation with annotation option"""
+    shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True, include_annotations=True).serialize()
+    do_test(shaclstr, EXPECTED_with_annotations, EXPECTED_any_of)
+
 
 
 def do_test(shaclstr, expected, expected_any_of, expected_equals_string):
