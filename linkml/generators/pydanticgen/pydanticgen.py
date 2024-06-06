@@ -8,42 +8,35 @@ from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from types import ModuleType
-from typing import Dict, List, Literal, Optional, Set, Type, TypeVar, Union, overload
+from typing import (Dict, List, Literal, Optional, Set, Type, TypeVar, Union,
+                    overload)
 
 import click
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader
-from linkml_runtime.linkml_model.meta import (
-    Annotation,
-    ClassDefinition,
-    SchemaDefinition,
-    SlotDefinition,
-    TypeDefinition,
-)
+from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
+                                              SchemaDefinition, SlotDefinition,
+                                              TypeDefinition)
 from linkml_runtime.utils.compile_python import compile_python
-from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
+from linkml_runtime.utils.formatutils import (camelcase, remove_empty_items,
+                                              underscore)
 from linkml_runtime.utils.schemaview import SchemaView
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml._version import __version__
 from linkml.generators.common.type_designators import (
-    get_accepted_type_designator_values,
-    get_type_designator_value,
-)
+    get_accepted_type_designator_values, get_type_designator_value)
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.generators.pydanticgen import includes
-from linkml.generators.pydanticgen.array import ArrayRangeGenerator, ArrayRepresentation
+from linkml.generators.pydanticgen.array import (ArrayRangeGenerator,
+                                                 ArrayRepresentation)
 from linkml.generators.pydanticgen.build import SlotResult
-from linkml.generators.pydanticgen.template import (
-    ConditionalImport,
-    Import,
-    Imports,
-    ObjectImport,
-    PydanticAttribute,
-    PydanticBaseModel,
-    PydanticClass,
-    PydanticModule,
-    TemplateModel,
-)
+from linkml.generators.pydanticgen.template import (ConditionalImport, Import,
+                                                    Imports, ObjectImport,
+                                                    PydanticAttribute,
+                                                    PydanticBaseModel,
+                                                    PydanticClass,
+                                                    PydanticModule,
+                                                    TemplateModel)
 from linkml.utils import deprecation_warning
 from linkml.utils.generator import shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration

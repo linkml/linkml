@@ -11,9 +11,7 @@ from typing import Any, Optional, Union
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.loaders import yaml_loader
 
-from linkml.validator.loaders import (
-    default_loader_for_file,
-)
+from linkml.validator.loaders import default_loader_for_file
 from linkml.validator.plugins import JsonschemaValidationPlugin
 from linkml.validator.report import ValidationReport
 from linkml.validator.validator import Validator

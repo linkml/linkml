@@ -6,18 +6,14 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import click
-from linkml_runtime.linkml_model.meta import (
-    AnonymousClassExpression,
-    AnonymousSlotExpression,
-    ClassDefinition,
-    ClassDefinitionName,
-    EnumDefinition,
-    PermissibleValue,
-    PermissibleValueText,
-    PresenceEnum,
-    SlotDefinition,
-    metamodel_version,
-)
+from linkml_runtime.linkml_model.meta import (AnonymousClassExpression,
+                                              AnonymousSlotExpression,
+                                              ClassDefinition,
+                                              ClassDefinitionName,
+                                              EnumDefinition, PermissibleValue,
+                                              PermissibleValueText,
+                                              PresenceEnum, SlotDefinition,
+                                              metamodel_version)
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
 
 from linkml._version import __version__

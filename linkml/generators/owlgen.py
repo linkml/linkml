@@ -11,23 +11,19 @@ from typing import Any, List, Mapping, Optional, Set, Tuple, Union
 import click
 import rdflib
 from linkml_runtime import SchemaView
-from linkml_runtime.linkml_model.meta import (
-    AnonymousClassExpression,
-    AnonymousSlotExpression,
-    AnonymousTypeExpression,
-    ClassDefinition,
-    ClassDefinitionName,
-    ClassRule,
-    Definition,
-    EnumDefinition,
-    EnumDefinitionName,
-    PermissibleValue,
-    SchemaDefinitionName,
-    SlotDefinition,
-    SlotDefinitionName,
-    TypeDefinition,
-    TypeDefinitionName,
-)
+from linkml_runtime.linkml_model.meta import (AnonymousClassExpression,
+                                              AnonymousSlotExpression,
+                                              AnonymousTypeExpression,
+                                              ClassDefinition,
+                                              ClassDefinitionName, ClassRule,
+                                              Definition, EnumDefinition,
+                                              EnumDefinitionName,
+                                              PermissibleValue,
+                                              SchemaDefinitionName,
+                                              SlotDefinition,
+                                              SlotDefinitionName,
+                                              TypeDefinition,
+                                              TypeDefinitionName)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.introspection import package_schemaview
 from rdflib import DCTERMS, OWL, RDF, XSD, BNode, Graph, Literal, URIRef

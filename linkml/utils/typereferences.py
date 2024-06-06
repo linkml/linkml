@@ -1,14 +1,11 @@
 from dataclasses import dataclass
 from typing import Set
 
-from linkml_runtime.linkml_model.meta import (
-    ClassDefinitionName,
-    ElementName,
-    EnumDefinitionName,
-    SlotDefinitionName,
-    SubsetDefinitionName,
-    TypeDefinitionName,
-)
+from linkml_runtime.linkml_model.meta import (ClassDefinitionName, ElementName,
+                                              EnumDefinitionName,
+                                              SlotDefinitionName,
+                                              SubsetDefinitionName,
+                                              TypeDefinitionName)
 from linkml_runtime.utils.metamodelcore import empty_set
 
 

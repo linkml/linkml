@@ -13,7 +13,8 @@ from typing import Any, ClassVar, Dict, List, Optional, Union
 from jsonasobj2 import as_dict
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.dataclass_extensions_376 import \
+    dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.metamodelcore import Bool, empty_list
 from linkml_runtime.utils.slot import Slot

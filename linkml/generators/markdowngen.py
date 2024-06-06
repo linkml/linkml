@@ -5,15 +5,10 @@ from typing import Any, Callable, Dict, List, Optional, Set, Union
 
 import click
 from jsonasobj2 import JsonObj, values
-from linkml_runtime.linkml_model.meta import (
-    ClassDefinition,
-    ClassDefinitionName,
-    Element,
-    EnumDefinition,
-    SlotDefinition,
-    SubsetDefinition,
-    TypeDefinition,
-)
+from linkml_runtime.linkml_model.meta import (ClassDefinition,
+                                              ClassDefinitionName, Element,
+                                              EnumDefinition, SlotDefinition,
+                                              SubsetDefinition, TypeDefinition)
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
 
 from linkml._version import __version__

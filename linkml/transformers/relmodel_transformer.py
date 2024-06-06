@@ -3,15 +3,10 @@ from copy import copy
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
-from linkml_runtime.linkml_model import (
-    Annotation,
-    ClassDefinition,
-    ClassDefinitionName,
-    Definition,
-    Prefix,
-    SchemaDefinition,
-    SlotDefinition,
-)
+from linkml_runtime.linkml_model import (Annotation, ClassDefinition,
+                                         ClassDefinitionName, Definition,
+                                         Prefix, SchemaDefinition,
+                                         SlotDefinition)
 from linkml_runtime.utils.schemaview import SchemaView, SlotDefinitionName
 from sqlalchemy import Enum
 

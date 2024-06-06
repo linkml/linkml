@@ -9,7 +9,8 @@ import yaml
 from linkml._version import __version__
 
 from .config.datamodel.config import RuleLevel
-from .formatters import JsonFormatter, MarkdownFormatter, TerminalFormatter, TsvFormatter
+from .formatters import (JsonFormatter, MarkdownFormatter, TerminalFormatter,
+                         TsvFormatter)
 from .linter import Linter
 
 YAML_SUFFIXES = [".yml", ".yaml"]

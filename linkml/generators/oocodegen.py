@@ -4,14 +4,10 @@ import unicodedata
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
-from linkml_runtime.linkml_model.meta import (
-    ClassDefinition,
-    EnumDefinition,
-    EnumDefinitionName,
-    SchemaDefinition,
-    SlotDefinition,
-    TypeDefinition,
-)
+from linkml_runtime.linkml_model.meta import (ClassDefinition, EnumDefinition,
+                                              EnumDefinitionName,
+                                              SchemaDefinition, SlotDefinition,
+                                              TypeDefinition)
 from linkml_runtime.utils.formatutils import camelcase, lcamelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 

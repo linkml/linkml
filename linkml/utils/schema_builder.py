@@ -1,15 +1,10 @@
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Union
 
-from linkml_runtime.linkml_model import (
-    ClassDefinition,
-    EnumDefinition,
-    PermissibleValue,
-    Prefix,
-    SchemaDefinition,
-    SlotDefinition,
-    TypeDefinition,
-)
+from linkml_runtime.linkml_model import (ClassDefinition, EnumDefinition,
+                                         PermissibleValue, Prefix,
+                                         SchemaDefinition, SlotDefinition,
+                                         TypeDefinition)
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schema_as_dict import schema_as_dict
 

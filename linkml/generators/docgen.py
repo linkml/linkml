@@ -10,19 +10,13 @@ from typing import Dict, Iterable, Iterator, List, Optional, Tuple, Union
 import click
 from jinja2 import Environment, FileSystemLoader, Template
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model.meta import (
-    ClassDefinition,
-    ClassDefinitionName,
-    Definition,
-    DefinitionName,
-    Element,
-    EnumDefinition,
-    SlotDefinition,
-    SlotDefinitionName,
-    SubsetDefinition,
-    TypeDefinition,
-    TypeDefinitionName,
-)
+from linkml_runtime.linkml_model.meta import (ClassDefinition,
+                                              ClassDefinitionName, Definition,
+                                              DefinitionName, Element,
+                                              EnumDefinition, SlotDefinition,
+                                              SlotDefinitionName,
+                                              SubsetDefinition, TypeDefinition,
+                                              TypeDefinitionName)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 

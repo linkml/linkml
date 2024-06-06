@@ -1,16 +1,13 @@
-from linkml.generators.pydanticgen.pydanticgen import DEFAULT_IMPORTS, PydanticGenerator, cli
-from linkml.generators.pydanticgen.template import (
-    ConditionalImport,
-    Import,
-    Imports,
-    PydanticAttribute,
-    PydanticBaseModel,
-    PydanticClass,
-    PydanticEnum,
-    PydanticModule,
-    PydanticValidator,
-    TemplateModel,
-)
+from linkml.generators.pydanticgen.pydanticgen import (DEFAULT_IMPORTS,
+                                                       PydanticGenerator, cli)
+from linkml.generators.pydanticgen.template import (ConditionalImport, Import,
+                                                    Imports, PydanticAttribute,
+                                                    PydanticBaseModel,
+                                                    PydanticClass,
+                                                    PydanticEnum,
+                                                    PydanticModule,
+                                                    PydanticValidator,
+                                                    TemplateModel)
 
 __all__ = [
     "cli",

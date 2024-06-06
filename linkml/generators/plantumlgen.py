@@ -12,11 +12,9 @@ from typing import Callable, List, Optional, Set, cast
 
 import click
 import requests
-from linkml_runtime.linkml_model.meta import (
-    ClassDefinition,
-    ClassDefinitionName,
-    SlotDefinition,
-)
+from linkml_runtime.linkml_model.meta import (ClassDefinition,
+                                              ClassDefinitionName,
+                                              SlotDefinition)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 
 from linkml import REQUESTS_TIMEOUT
