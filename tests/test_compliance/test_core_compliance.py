@@ -1,5 +1,3 @@
-"""Compliance tests for core constructs."""
-
 import sys
 import unicodedata
 from _decimal import Decimal
@@ -221,6 +219,62 @@ def test_type_range(framework, linkml_type, example_value):
         target_class=CLASS_C,
         coerced=coerced,
         description="pattern",
+    )
+
+
+@pytest.mark.parametrize(
+    "name,range,minimum,maximum,value,valid",
+    [
+        ("integer", "integer", 1, 10, 5, True),
+        ("integer", "integer", 1, 10, 15, False),
+        ("float", "float", 1.5, 10.5, 1.6, True),
+        ("float", "float", 1.5, 10.5, 1.4, False),
+    ],
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_min_max_values(framework, name, range, minimum, maximum, value, valid):
+    """
+    Tests behavior of min/max values.
+
+    :param framework:
+    :param name:
+    :param range:
+    :param minimum:
+    :param maximum:
+    :param value:
+    :param valid:
+    :return:
+    """
+    if isinstance(value, Decimal):
+        pytest.skip("Decimal not supported by YAML - https://github.com/yaml/pyyaml/issues/255")
+    classes = {
+        CLASS_C: {
+            "attributes": {
+                SLOT_S1: {
+                    "range": range,
+                    "minimum_value": minimum,
+                    "maximum_value": maximum,
+                },
+            }
+        },
+    }
+    schema = validated_schema(
+        test_min_max_values, name, framework, classes=classes, core_elements=["minimum_value", "maximum_value"]
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework in [SQL_DDL_SQLITE, PYTHON_DATACLASSES] or (framework == PYDANTIC and IS_PYDANTIC_V1):
+        if not valid:
+            expected_behavior = ValidationBehavior.INCOMPLETE
+    check_data(
+        schema,
+        f"{type(value).__name__}-{value}",
+        framework,
+        {SLOT_S1: value},
+        valid,
+        expected_behavior=expected_behavior,
+        target_class=CLASS_C,
+        coerced=False,
+        description="min-max values",
     )
 
 
