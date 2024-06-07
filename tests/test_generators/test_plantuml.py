@@ -57,7 +57,7 @@ def test_serialize_selected(input_class, expected, kitchen_sink_path):
     generator = PlantumlGenerator(kitchen_sink_path)
     plantuml = generator.serialize(classes=[input_class])
 
-# check that the expected block/relationships are present
+    # check that the expected block/relationships are present
     # in class-selected diagrams
     assert expected in plantuml
 

@@ -5,23 +5,20 @@ https://plantuml.com/
 """
 
 import base64
-import logging
 import os
 import zlib
-import re
 from dataclasses import dataclass
 from typing import Callable, List, Optional, Set, cast
 
 import click
 import requests
-from linkml_runtime.utils.schemaview import SchemaView
-
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
     SlotDefinition,
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml import REQUESTS_TIMEOUT
 from linkml._version import __version__
@@ -157,18 +154,18 @@ class PlantumlGenerator(Generator):
         cls = self.schema.classes[cn]
 
         tooltip_contents = str(self.schemaview.get_class(cls.name).description)
-        first_newline_index = tooltip_contents.find('\n')
+        first_newline_index = tooltip_contents.find("\n")
         tooltip_contents = tooltip_contents if first_newline_index < 0 else tooltip_contents[0:first_newline_index]
 
-        if self.format == 'svg' and len(tooltip_contents) > 200:
-            tooltip_contents = tooltip_contents[0:197] + ' ... '
+        if self.format == "svg" and len(tooltip_contents) > 200:
+            tooltip_contents = tooltip_contents[0:197] + " ... "
 
-        tooltip = '" [[{' + tooltip_contents + '}]]'
+        tooltip = '" [[{' + tooltip_contents + "}]]"
         if cls.abstract:
             class_type = "abstract"
         else:
             class_type = "class"
-        return class_type + ' "' + cn + tooltip + ('{\n' + "\n".join(slot_defs) + "\n}")
+        return class_type + ' "' + cn + tooltip + ("{\n" + "\n".join(slot_defs) + "\n}")
 
     def class_associations(self, cn: ClassDefinitionName, must_render: bool = False) -> str:
         """Emit all associations for a focus class.  If none are specified, all classes are generated
@@ -251,8 +248,9 @@ class PlantumlGenerator(Generator):
                         classes.append(self.add_class(ClassDefinitionName(mixin)))
                     if cn not in self.class_generated:
                         classes.append(self.add_class(cn))
-                    assocs.append('"' + ClassDefinitionName(mixin) + '" ' + plantuml_uses[0] + ' "' + cn
-                                  + '" ' + plantuml_uses[1])
+                    assocs.append(
+                        '"' + ClassDefinitionName(mixin) + '" ' + plantuml_uses[0] + ' "' + cn + '" ' + plantuml_uses[1]
+                    )
 
             # Classes that inject information
             if cn in self.synopsis.applytos.classrefs:
