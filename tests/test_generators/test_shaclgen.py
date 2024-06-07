@@ -2,9 +2,10 @@ from collections import Counter
 from typing import Any, List, Tuple
 
 import rdflib
+from rdflib import SH, Literal, URIRef
+
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shaclgen import ShaclGenerator
-from rdflib import SH, Literal, URIRef
 
 EXPECTED = [
     (
