@@ -332,14 +332,14 @@
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
 <span class="kn">from</span> <span class="nn">jsonasobj2</span> <span class="kn">import</span> <span class="n">JsonObj</span><span class="p">,</span> <span class="n">as_dict</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">ElementName</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">underscore</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.schemaview</span> <span class="kn">import</span> <span class="n">SchemaView</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">extended_float</span><span class="p">,</span> <span class="n">extended_int</span><span class="p">,</span> <span class="n">extended_str</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">TypedNode</span><span class="p">,</span> <span class="n">extended_float</span><span class="p">,</span> <span class="n">extended_int</span><span class="p">,</span> <span class="n">extended_str</span>
 <span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">BNode</span><span class="p">,</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">URIRef</span>
 <span class="kn">from</span> <span class="nn">rdflib.collection</span> <span class="kn">import</span> <span class="n">Collection</span>
 <span class="kn">from</span> <span class="nn">rdflib.namespace</span> <span class="kn">import</span> <span class="n">RDF</span><span class="p">,</span> <span class="n">SH</span><span class="p">,</span> <span class="n">XSD</span>
@@ -453,6 +453,12 @@
 
                 <span class="n">all_classes</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">any_of</span><span class="p">:</span>
+                    <span class="c1"># It is not allowed to use any of and equals_string or equals_string_in in one</span>
+                    <span class="c1"># slot definition, as both are mapped to sh:in in SHACL</span>
+                    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">equals_string</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">equals_string_in</span><span class="p">:</span>
+                        <span class="n">error</span> <span class="o">=</span> <span class="s2">&quot;&#39;equals_string&#39;/&#39;equals_string_in&#39; and &#39;any_of&#39; are mutually exclusive&quot;</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">TypedNode</span><span class="o">.</span><span class="n">yaml_loc</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
                     <span class="n">or_node</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
                     <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="p">[</span><span class="s2">&quot;or&quot;</span><span class="p">],</span> <span class="n">or_node</span><span class="p">)</span>
                     <span class="n">range_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -495,10 +501,17 @@
                             <span class="n">add_simple_data_type</span><span class="p">(</span><span class="n">st_node_pv</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
                             <span class="n">range_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">st_node</span><span class="p">)</span>
                     <span class="n">Collection</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">or_node</span><span class="p">,</span> <span class="n">range_list</span><span class="p">)</span>
-
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">hasValue</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">equals_number</span><span class="p">)</span>
                     <span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">range</span>
+                    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">equals_string</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">equals_string_in</span><span class="p">:</span>
+                        <span class="c1"># Check if range is &quot;string&quot; as this is mandatory for &quot;equals_string&quot; and &quot;equals_string_in&quot;</span>
+                        <span class="k">if</span> <span class="n">r</span> <span class="o">!=</span> <span class="s2">&quot;string&quot;</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;slot: </span><span class="se">\&quot;</span><span class="si">{</span><span class="n">slot_uri</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2"> - &#39;equals_string&#39; and &#39;equals_string_in&#39;&quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot; require range &#39;string&#39; and not &#39;</span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                            <span class="p">)</span>
+
                     <span class="k">if</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">all_classes</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_add_class</span><span class="p">(</span><span class="n">prop_pv</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -515,6 +528,12 @@
                         <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">pattern</span><span class="p">))</span>
                     <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">annotations</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_annotations</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_add_annotations</span><span class="p">(</span><span class="n">prop_pv</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">equals_string</span><span class="p">:</span>
+                        <span class="c1"># Map equal_string and equal_string_in to sh:in</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_and_equals_string</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">prop_pv</span><span class="p">,</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">equals_string</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">equals_string_in</span><span class="p">:</span>
+                        <span class="c1"># Map equal_string and equal_string_in to sh:in</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_and_equals_string</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">prop_pv</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">equals_string_in</span><span class="p">)</span>
 
                 <span class="n">ifabsent_processor</span><span class="o">.</span><span class="n">process_slot</span><span class="p">(</span><span class="n">prop_pv</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">class_uri</span><span class="p">)</span>
 
@@ -552,6 +571,15 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No URI for type </span><span class="si">{</span><span class="n">rt</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">_and_equals_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pv_node</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
+        <span class="n">Collection</span><span class="p">(</span>
+            <span class="n">g</span><span class="p">,</span>
+            <span class="n">pv_node</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">Literal</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">func</span><span class="p">(</span><span class="n">SH</span><span class="p">[</span><span class="s2">&quot;in&quot;</span><span class="p">],</span> <span class="n">pv_node</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_add_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># TODO: migrate some of this logic to SchemaView</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
@@ -587,7 +615,16 @@
             <span class="c1"># TODO: distinguish between xsd:decimal and xsd:double?</span>
             <span class="k">return</span> <span class="n">XSD</span><span class="o">.</span><span class="n">decimal</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span></div>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_and_equals_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pv_node</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
+        <span class="n">Collection</span><span class="p">(</span>
+            <span class="n">g</span><span class="p">,</span>
+            <span class="n">pv_node</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">Literal</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">func</span><span class="p">(</span><span class="n">SH</span><span class="p">[</span><span class="s2">&quot;in&quot;</span><span class="p">],</span> <span class="n">pv_node</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">add_simple_data_type</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">ElementName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

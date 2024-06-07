@@ -566,6 +566,9 @@
             <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">raise_value_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;slot: </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> - unrecognized range (</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
 
+            <span class="c1"># check constraints for usage of equals_string and equals_string_in</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_equals_string</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+
         <span class="c1"># apply to --&gt; mixins</span>
         <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">apply_to_cls</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">apply_to</span><span class="p">:</span>
@@ -702,6 +705,9 @@
                 <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span>
             <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">raise_value_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;slot: </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> - unrecognized range (</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+
+            <span class="c1"># check constraints for usage of equals_string and equals_string_in</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_equals_string</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
 
         <span class="c1"># Massage classes, propagating class slots entries domain back to the target slots</span>
         <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -1294,7 +1300,28 @@
                 <span class="n">rval</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">source_file</span><span class="p">))</span>
                 <span class="k">return</span> <span class="n">rval</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span></div>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_check_equals_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_string</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_string_in</span><span class="p">:</span>
+            <span class="c1"># Range &quot;string&quot; mandatory for &quot;equals_string&quot; and &quot;equals_string_in&quot;</span>
+            <span class="nb">range</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">range</span><span class="p">:</span>
+                <span class="c1"># range is not defined --&gt; check default range</span>
+                <span class="nb">range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_range</span>
+            <span class="k">if</span> <span class="nb">range</span> <span class="o">!=</span> <span class="s2">&quot;string&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">raise_value_error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;slot: </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> - &#39;equals_string&#39; and &#39;equals_string_in&#39; requires range &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;&#39;string&#39; and not range &#39;</span><span class="si">{</span><span class="nb">range</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
+                    <span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">any_of</span><span class="p">:</span>
+                <span class="c1"># It is not allowed to use any of and equals_string or equals_string_in in one slot definition,</span>
+                <span class="c1"># as both are mapped to sh:in in SHACL</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">raise_value_error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;slot: </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> - &#39;equals_string&#39;/&#39;equals_string_in&#39; and &#39;any_of&#39; are mutually exclusive&quot;</span><span class="p">,</span>
+                    <span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="p">)</span></div>
 </pre></div>
         </article>
       </div>
