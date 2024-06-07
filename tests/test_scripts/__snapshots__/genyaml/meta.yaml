@@ -928,6 +928,28 @@ slots:
     - range: integer
     - range: Person
     - range: EmploymentEventType
+  equalsString__attribute5:
+    name: equalsString__attribute5
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:attribute5
+    alias: attribute5
+    owner: EqualsString
+    domain_of:
+    - EqualsString
+    range: string
+    equals_string: foo
+  equalsStringIn__attribute6:
+    name: equalsStringIn__attribute6
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:attribute6
+    alias: attribute6
+    owner: EqualsStringIn
+    domain_of:
+    - EqualsStringIn
+    range: string
+    equals_string_in:
+    - foo
+    - bar
   hasAliases__aliases:
     name: hasAliases__aliases
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -1214,6 +1236,30 @@ classes:
         - range: Person
         - range: EmploymentEventType
     class_uri: ks:AnyOfMix
+  EqualsString:
+    name: EqualsString
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/EqualsString
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slots:
+    - equalsString__attribute5
+    attributes:
+      attribute5:
+        name: attribute5
+        equals_string: foo
+    class_uri: ks:EqualsString
+  EqualsStringIn:
+    name: EqualsStringIn
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slots:
+    - equalsStringIn__attribute6
+    attributes:
+      attribute6:
+        name: attribute6
+        equals_string_in:
+        - foo
+        - bar
+    class_uri: ks:EqualsStringIn
   HasAliases:
     name: HasAliases
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/HasAliases

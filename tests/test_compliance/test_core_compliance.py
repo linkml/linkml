@@ -1,3 +1,5 @@
+"""Compliance tests for core constructs."""
+
 import sys
 import unicodedata
 from _decimal import Decimal

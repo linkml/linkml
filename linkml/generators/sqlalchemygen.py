@@ -7,12 +7,7 @@ from typing import List, Optional, Union
 
 import click
 from jinja2 import Template
-from linkml_runtime.linkml_model import (
-    Annotation,
-    ClassDefinition,
-    ClassDefinitionName,
-    SchemaDefinition,
-)
+from linkml_runtime.linkml_model import Annotation, ClassDefinition, ClassDefinitionName, SchemaDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
@@ -21,10 +16,7 @@ from sqlalchemy import Enum
 from linkml._version import __version__
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
-from linkml.generators.sqlalchemy import (
-    sqlalchemy_declarative_template_str,
-    sqlalchemy_imperative_template_str,
-)
+from linkml.generators.sqlalchemy import sqlalchemy_declarative_template_str, sqlalchemy_imperative_template_str
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.transformers.relmodel_transformer import ForeignKeyPolicy, RelationalModelTransformer
 from linkml.utils.generator import Generator, shared_arguments

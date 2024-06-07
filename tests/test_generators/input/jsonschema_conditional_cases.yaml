@@ -356,7 +356,7 @@
         s2: 2
         s3: 0
         s4: 0
-      error_message: 0 is less than the minimum of 3
+      error_message: "0 is less than the minimum of 3"
 
 - name: multiple rules
   linkml_rules:

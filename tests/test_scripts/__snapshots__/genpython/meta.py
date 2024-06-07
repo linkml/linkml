@@ -194,6 +194,42 @@ class AnyOfMix(YAMLRoot):
 
 
 @dataclass
+class EqualsString(YAMLRoot):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = KS["EqualsString"]
+    class_class_curie: ClassVar[str] = "ks:EqualsString"
+    class_name: ClassVar[str] = "EqualsString"
+    class_model_uri: ClassVar[URIRef] = KS.EqualsString
+
+    attribute5: Optional[str] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.attribute5 is not None and not isinstance(self.attribute5, str):
+            self.attribute5 = str(self.attribute5)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class EqualsStringIn(YAMLRoot):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = KS["EqualsStringIn"]
+    class_class_curie: ClassVar[str] = "ks:EqualsStringIn"
+    class_name: ClassVar[str] = "EqualsStringIn"
+    class_model_uri: ClassVar[URIRef] = KS.EqualsStringIn
+
+    attribute6: Optional[str] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.attribute6 is not None and not isinstance(self.attribute6, str):
+            self.attribute6 = str(self.attribute6)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
 class HasAliases(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -1113,6 +1149,12 @@ slots.anyOfEnums__attribute3 = Slot(uri=KS.attribute3, name="anyOfEnums__attribu
 
 slots.anyOfMix__attribute4 = Slot(uri=KS.attribute4, name="anyOfMix__attribute4", curie=KS.curie('attribute4'),
                    model_uri=KS.anyOfMix__attribute4, domain=None, range=Optional[str])
+
+slots.equalsString__attribute5 = Slot(uri=KS.attribute5, name="equalsString__attribute5", curie=KS.curie('attribute5'),
+                   model_uri=KS.equalsString__attribute5, domain=None, range=Optional[str])
+
+slots.equalsStringIn__attribute6 = Slot(uri=KS.attribute6, name="equalsStringIn__attribute6", curie=KS.curie('attribute6'),
+                   model_uri=KS.equalsStringIn__attribute6, domain=None, range=Optional[str])
 
 slots.hasAliases__aliases = Slot(uri=SKOS.altLabel, name="hasAliases__aliases", curie=SKOS.curie('altLabel'),
                    model_uri=KS.hasAliases__aliases, domain=None, range=Optional[Union[str, List[str]]])

@@ -235,6 +235,9 @@ class SchemaLoader:
             ):
                 self.raise_value_error(f"slot: {slot.name} - unrecognized range ({slot.range})", slot.range)
 
+            # check constraints for usage of equals_string and equals_string_in
+            self._check_equals_string(slot)
+
         # apply to --> mixins
         for cls in self.schema.classes.values():
             for apply_to_cls in cls.apply_to:
@@ -371,6 +374,9 @@ class SchemaLoader:
                 and slot.range not in self.schema.enums
             ):
                 self.raise_value_error(f"slot: {slot.name} - unrecognized range ({slot.range})", slot.range)
+
+            # check constraints for usage of equals_string and equals_string_in
+            self._check_equals_string(slot)
 
         # Massage classes, propagating class slots entries domain back to the target slots
         for cls in self.schema.classes.values():
@@ -964,3 +970,24 @@ class SchemaLoader:
                 return rval
         else:
             return None
+
+    def _check_equals_string(self, slot: SlotDefinition):
+        if slot.equals_string or slot.equals_string_in:
+            # Range "string" mandatory for "equals_string" and "equals_string_in"
+            range = slot.range
+            if not range:
+                # range is not defined --> check default range
+                range = self.schema.default_range
+            if range != "string":
+                self.raise_value_error(
+                    f"slot: {slot.name} - 'equals_string' and 'equals_string_in' requires range "
+                    f"'string' and not range '{range}'",
+                    slot.range,
+                )
+            if slot.any_of:
+                # It is not allowed to use any of and equals_string or equals_string_in in one slot definition,
+                # as both are mapped to sh:in in SHACL
+                self.raise_value_error(
+                    f"slot: {slot.name} - 'equals_string'/'equals_string_in' and 'any_of' are mutually exclusive",
+                    slot.name,
+                )

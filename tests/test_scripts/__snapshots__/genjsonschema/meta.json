@@ -384,6 +384,29 @@
             "title": "EmploymentEventType",
             "type": "string"
         },
+        "EqualsString": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "attribute5": {
+                    "const": "foo",
+                    "type": "string"
+                }
+            },
+            "title": "EqualsString",
+            "type": "object"
+        },
+        "EqualsStringIn": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "attribute6": {
+                    "type": "string"
+                }
+            },
+            "title": "EqualsStringIn",
+            "type": "object"
+        },
         "Event": {
             "additionalProperties": false,
             "description": "",

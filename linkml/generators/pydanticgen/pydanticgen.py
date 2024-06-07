@@ -25,10 +25,7 @@ from linkml_runtime.utils.schemaview import SchemaView
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml._version import __version__
-from linkml.generators.common.type_designators import (
-    get_accepted_type_designator_values,
-    get_type_designator_value,
-)
+from linkml.generators.common.type_designators import get_accepted_type_designator_values, get_type_designator_value
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.generators.pydanticgen import includes
 from linkml.generators.pydanticgen.array import ArrayRangeGenerator, ArrayRepresentation

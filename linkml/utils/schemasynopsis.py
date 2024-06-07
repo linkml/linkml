@@ -21,15 +21,7 @@ from linkml_runtime.utils.metamodelcore import empty_dict
 from linkml_runtime.utils.yamlutils import TypedNode
 from rdflib import URIRef
 
-from linkml.utils.typereferences import (
-    ClassType,
-    EnumType,
-    References,
-    RefType,
-    SlotType,
-    SubsetType,
-    TypeType,
-)
+from linkml.utils.typereferences import ClassType, EnumType, References, RefType, SlotType, SubsetType, TypeType
 
 
 def empty_references() -> field:

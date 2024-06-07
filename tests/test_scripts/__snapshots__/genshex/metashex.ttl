@@ -205,6 +205,18 @@
                 shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/type> ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] ) .
 
+<https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn_tes> a shex:TripleConstraint ;
+    shex:max 1 ;
+    shex:min 0 ;
+    shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/attribute6> ;
+    shex:valueExpr <https://w3id.org/linkml/String> .
+
+<https://w3id.org/linkml/tests/kitchen_sink/EqualsString_tes> a shex:TripleConstraint ;
+    shex:max 1 ;
+    shex:min 0 ;
+    shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/attribute5> ;
+    shex:valueExpr <https://w3id.org/linkml/String> .
+
 <https://w3id.org/linkml/tests/kitchen_sink/FakeClass_tes> a shex:TripleConstraint ;
     shex:max 1 ;
     shex:min 0 ;
@@ -422,6 +434,24 @@
                         shex:predicate rdf:type ;
                         shex:valueExpr [ a shex:NodeConstraint ;
                                 shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/Dataset> ) ] ] ) ] .
+
+<https://w3id.org/linkml/tests/kitchen_sink/EqualsString> a shex:Shape ;
+    shex:closed true ;
+    shex:expression [ a shex:EachOf ;
+            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/EqualsString_tes> [ a shex:TripleConstraint ;
+                        shex:min 0 ;
+                        shex:predicate rdf:type ;
+                        shex:valueExpr [ a shex:NodeConstraint ;
+                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/EqualsString> ) ] ] ) ] .
+
+<https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn> a shex:Shape ;
+    shex:closed true ;
+    shex:expression [ a shex:EachOf ;
+            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn_tes> [ a shex:TripleConstraint ;
+                        shex:min 0 ;
+                        shex:predicate rdf:type ;
+                        shex:valueExpr [ a shex:NodeConstraint ;
+                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn> ) ] ] ) ] .
 
 <https://w3id.org/linkml/tests/kitchen_sink/FakeClass> a shex:Shape ;
     shex:closed true ;
@@ -774,6 +804,6 @@
     shex:datatype xsd:string .
 
 [] a shex:Schema ;
-    shex:shapes ( <https://w3id.org/linkml/String> <https://w3id.org/linkml/Integer> <https://w3id.org/linkml/Boolean> <https://w3id.org/linkml/Float> <https://w3id.org/linkml/Double> <https://w3id.org/linkml/Decimal> <https://w3id.org/linkml/Time> <https://w3id.org/linkml/Date> <https://w3id.org/linkml/Datetime> <https://w3id.org/linkml/DateOrDatetime> <https://w3id.org/linkml/Uriorcurie> <https://w3id.org/linkml/Curie> <https://w3id.org/linkml/Uri> <https://w3id.org/linkml/Ncname> <https://w3id.org/linkml/Objectidentifier> <https://w3id.org/linkml/Nodeidentifier> <https://w3id.org/linkml/Jsonpointer> <https://w3id.org/linkml/Jsonpath> <https://w3id.org/linkml/Sparqlpath> <https://w3id.org/linkml/tests/core/PhoneNumberType> <https://w3id.org/linkml/tests/core/AgeInYearsType> <https://w3id.org/linkml/tests/core/Activity> <https://w3id.org/linkml/tests/kitchen_sink/Address> <https://w3id.org/linkml/tests/core/Agent> <https://w3id.org/linkml/tests/kitchen_sink/AnyObject> <https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses> <https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums> <https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix> <https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType> <https://w3id.org/linkml/tests/kitchen_sink/BirthEvent> <https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces> <https://w3id.org/linkml/tests/kitchen_sink/CodeSystem> <https://w3id.org/linkml/tests/kitchen_sink/Company> <https://w3id.org/linkml/tests/kitchen_sink/Concept> <https://w3id.org/linkml/tests/kitchen_sink/Dataset> <https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept> <https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent> <https://w3id.org/linkml/tests/kitchen_sink/Event> <https://w3id.org/linkml/tests/kitchen_sink/FakeClass> <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship> <https://w3id.org/linkml/tests/kitchen_sink/Friend> <https://w3id.org/linkml/tests/kitchen_sink/HasAliases> <https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent> <https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent> <https://w3id.org/linkml/tests/kitchen_sink/Organization> <https://w3id.org/linkml/tests/kitchen_sink/Person> <https://w3id.org/linkml/tests/kitchen_sink/Place> <https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept> <https://w3id.org/linkml/tests/kitchen_sink/Relationship> <https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2> <https://w3id.org/linkml/tests/kitchen_sink/SubclassTest> <https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1> <https://w3id.org/linkml/tests/kitchen_sink/WithLocation> ) .
+    shex:shapes ( <https://w3id.org/linkml/String> <https://w3id.org/linkml/Integer> <https://w3id.org/linkml/Boolean> <https://w3id.org/linkml/Float> <https://w3id.org/linkml/Double> <https://w3id.org/linkml/Decimal> <https://w3id.org/linkml/Time> <https://w3id.org/linkml/Date> <https://w3id.org/linkml/Datetime> <https://w3id.org/linkml/DateOrDatetime> <https://w3id.org/linkml/Uriorcurie> <https://w3id.org/linkml/Curie> <https://w3id.org/linkml/Uri> <https://w3id.org/linkml/Ncname> <https://w3id.org/linkml/Objectidentifier> <https://w3id.org/linkml/Nodeidentifier> <https://w3id.org/linkml/Jsonpointer> <https://w3id.org/linkml/Jsonpath> <https://w3id.org/linkml/Sparqlpath> <https://w3id.org/linkml/tests/core/PhoneNumberType> <https://w3id.org/linkml/tests/core/AgeInYearsType> <https://w3id.org/linkml/tests/core/Activity> <https://w3id.org/linkml/tests/kitchen_sink/Address> <https://w3id.org/linkml/tests/core/Agent> <https://w3id.org/linkml/tests/kitchen_sink/AnyObject> <https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses> <https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums> <https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix> <https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType> <https://w3id.org/linkml/tests/kitchen_sink/BirthEvent> <https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces> <https://w3id.org/linkml/tests/kitchen_sink/CodeSystem> <https://w3id.org/linkml/tests/kitchen_sink/Company> <https://w3id.org/linkml/tests/kitchen_sink/Concept> <https://w3id.org/linkml/tests/kitchen_sink/Dataset> <https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept> <https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent> <https://w3id.org/linkml/tests/kitchen_sink/EqualsString> <https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn> <https://w3id.org/linkml/tests/kitchen_sink/Event> <https://w3id.org/linkml/tests/kitchen_sink/FakeClass> <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship> <https://w3id.org/linkml/tests/kitchen_sink/Friend> <https://w3id.org/linkml/tests/kitchen_sink/HasAliases> <https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent> <https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent> <https://w3id.org/linkml/tests/kitchen_sink/Organization> <https://w3id.org/linkml/tests/kitchen_sink/Person> <https://w3id.org/linkml/tests/kitchen_sink/Place> <https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept> <https://w3id.org/linkml/tests/kitchen_sink/Relationship> <https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2> <https://w3id.org/linkml/tests/kitchen_sink/SubclassTest> <https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1> <https://w3id.org/linkml/tests/kitchen_sink/WithLocation> ) .
 
 

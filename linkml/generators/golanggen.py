@@ -5,12 +5,7 @@ from typing import List, Optional
 
 import click
 from jinja2 import Template
-from linkml_runtime.linkml_model.meta import (
-    ClassDefinition,
-    ClassDefinitionName,
-    Element,
-    SlotDefinition,
-)
+from linkml_runtime.linkml_model.meta import ClassDefinition, ClassDefinitionName, Element, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 
 from linkml._version import __version__

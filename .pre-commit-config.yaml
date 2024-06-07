@@ -16,7 +16,8 @@ repos:
   hooks:
   - id: black
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.0.278
+  # Ensure this version stays in sync with tox.ini
+  rev: v0.4.8
   hooks:
   - id: ruff
     args: [--fix, --exit-non-zero-on-fix]
