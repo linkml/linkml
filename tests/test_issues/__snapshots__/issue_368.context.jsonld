@@ -12,7 +12,6 @@
       "@vocab": "https://microbiomedata/schema/",
       "slot_1": {
          "@context": {
-            "@vocab": "@null",
             "text": "skos:notation",
             "description": "skos:prefLabel",
             "meaning": "@id"
