@@ -1,6 +1,8 @@
+import importlib.metadata
 import warnings
 from copy import deepcopy
 from operator import eq, ge, gt, le, lt
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -141,14 +143,41 @@ def test_deprecation_postinit():
     assert dep.removed_in == SemVer(major=1, minor=2, patch=0)
 
 
-def test_deprecation_str():
+@patch('linkml.utils.deprecation.version')
+def test_deprecation_str(version_mock):
     """
     Deprecation should render a pretty string
     """
+    version_mock.return_value = "2.0.0"
+
     dep = Deprecation(
         name="test-dep",
         message="testing strings",
-        deprecated_in=SemVer.from_str("1.0.1"),
+        deprecated_in=SemVer.from_str("1.0.0"),
+        recommendation="See if this test passes",
+        issue=1,
+    )
+    dep_str = str(dep)
+    assert (
+        dep_str
+        == """[test-dep] DEPRECATED
+testing strings
+Deprecated In: 1.0.0
+Recommendation: See if this test passes
+See: https://github.com/linkml/linkml/issues/1"""
+    )
+
+@patch('linkml.utils.deprecation.version')
+def test_deprecation_removed_in_str(version_mock):
+    """
+    Deprecation with removed_in should render a pretty string
+    """
+    version_mock.return_value = "2.0.0"
+
+    dep = Deprecation(
+        name="test-dep",
+        message="testing strings",
+        deprecated_in=SemVer.from_str("1.0.0"),
         removed_in=SemVer.from_str("1.2.1"),
         recommendation="See if this test passes",
         issue=1,
@@ -158,7 +187,7 @@ def test_deprecation_str():
         dep_str
         == """[test-dep] REMOVED
 testing strings
-Deprecated In: 1.0.1
+Deprecated In: 1.0.0
 Removed In: 1.2.1
 Recommendation: See if this test passes
 See: https://github.com/linkml/linkml/issues/1"""
