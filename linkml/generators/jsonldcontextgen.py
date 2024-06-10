@@ -21,7 +21,6 @@ from linkml.utils.generator import Generator, shared_arguments
 URI_RANGES = (SHEX.nonliteral, SHEX.bnode, SHEX.iri)
 
 ENUM_CONTEXT = {
-    "@vocab": "@null",
     "text": "skos:notation",
     "description": "skos:prefLabel",
     "meaning": "@id",

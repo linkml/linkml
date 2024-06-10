@@ -29765,7 +29765,6 @@
       },
       "anatomical_context_qualifier": {
         "@context": {
-          "@vocab": "@null",
           "text": "skos:notation",
           "description": "skos:prefLabel",
           "meaning": "@id"
@@ -29822,7 +29821,6 @@
       },
       "available_from": {
         "@context": {
-          "@vocab": "@null",
           "text": "skos:notation",
           "description": "skos:prefLabel",
           "meaning": "@id"
@@ -30125,7 +30123,6 @@
       },
       "FDA_adverse_event_level": {
         "@context": {
-          "@vocab": "@null",
           "text": "skos:notation",
           "description": "skos:prefLabel",
           "meaning": "@id"
@@ -30134,7 +30131,6 @@
       },
       "FDA_approval_status": {
         "@context": {
-          "@vocab": "@null",
           "text": "skos:notation",
           "description": "skos:prefLabel",
           "meaning": "@id"
@@ -30176,7 +30172,6 @@
       },
       "genome_build": {
         "@context": {
-          "@vocab": "@null",
           "text": "skos:notation",
           "description": "skos:prefLabel",
           "meaning": "@id"
@@ -30706,7 +30701,6 @@
       },
       "logical_interpretation": {
         "@context": {
-          "@vocab": "@null",
           "text": "skos:notation",
           "description": "skos:prefLabel",
           "meaning": "@id"
@@ -30810,7 +30804,6 @@
       },
       "object_direction_qualifier": {
         "@context": {
-          "@vocab": "@null",
           "text": "skos:notation",
           "description": "skos:prefLabel",
           "meaning": "@id"
@@ -30889,7 +30882,6 @@
       },
       "phase": {
         "@context": {
-          "@vocab": "@null",
           "text": "skos:notation",
           "description": "skos:prefLabel",
           "meaning": "@id"
@@ -31000,7 +30992,6 @@
       },
       "reaction_direction": {
         "@context": {
-          "@vocab": "@null",
           "text": "skos:notation",
           "description": "skos:prefLabel",
           "meaning": "@id"
@@ -31009,7 +31000,6 @@
       },
       "reaction_side": {
         "@context": {
-          "@vocab": "@null",
           "text": "skos:notation",
           "description": "skos:prefLabel",
           "meaning": "@id"
@@ -31088,7 +31078,6 @@
       },
       "routes_of_delivery": {
         "@context": {
-          "@vocab": "@null",
           "text": "skos:notation",
           "description": "skos:prefLabel",
           "meaning": "@id"
@@ -31157,7 +31146,6 @@
       },
       "strand": {
         "@context": {
-          "@vocab": "@null",
           "text": "skos:notation",
           "description": "skos:prefLabel",
           "meaning": "@id"
