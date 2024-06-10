@@ -22,7 +22,6 @@ URI_RANGES = (XSD.anyURI, SHEX.nonliteral, SHEX.bnode, SHEX.iri)
 
 
 ENUM_CONTEXT = {
-    "@vocab": "@null",
     "text": "skos:notation",
     "description": "skos:prefLabel",
     "meaning": "@id",
