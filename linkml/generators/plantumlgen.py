@@ -52,9 +52,6 @@ class PlantumlGenerator(Generator):
     load_image: bool = True
     tooltips_flag: bool = False
 
-    def __post_init__(self):
-        super().__post_init__()
-
     def visit_schema(
         self,
         classes: Set[ClassDefinitionName] = None,
