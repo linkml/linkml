@@ -18,7 +18,6 @@ from linkml_runtime.linkml_model.meta import (
     SlotDefinition,
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
-from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml import REQUESTS_TIMEOUT
 from linkml._version import __version__
@@ -54,7 +53,6 @@ class PlantumlGenerator(Generator):
     tooltips_flag: bool = False
 
     def __post_init__(self):
-        self.schemaview = SchemaView(self.schema)
         super().__post_init__()
 
     def visit_schema(
