@@ -153,7 +153,7 @@ class PlantumlGenerator(Generator):
         self.referenced.add(cn)
         cls = self.schema.classes[cn]
 
-        tooltip_contents = str(self.schemaview.get_class(cls.name).description)
+        tooltip_contents = str(cls.description)
         first_newline_index = tooltip_contents.find("\n")
         tooltip_contents = tooltip_contents if first_newline_index < 0 else tooltip_contents[0:first_newline_index]
 
