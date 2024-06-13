@@ -16,14 +16,14 @@ MARKDOWN_FOOTER = """
 """
 
 PERSON = """
-class "Person" {
-    {field} id: string [req]
-    {field} name: string [opt]
-    {field} age_in_years: integer [opt]
-    {field} species_name: string [opt]
-    {field} stomach_count: integer [opt]
-    {field} is_living: LifeStatusEnum [opt]
-    {field} aliases: string [0..*]
+class "Person" [[{A person, living or dead}]]{
+    {field} "id" : "string" [req]
+    {field} "name" : "string" [opt]
+    {field} "age_in_years" : "integer" [opt]
+    {field} "species_name" : "string" [opt]
+    {field} "stomach_count" : "integer" [opt]
+    {field} "is_living" : "LifeStatusEnum" [opt]
+    {field} "aliases" : "string" [0..*]
 }
 """
 
