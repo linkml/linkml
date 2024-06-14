@@ -154,7 +154,7 @@ class PlantumlGenerator(Generator):
         if self.format == "svg" and len(tooltip_contents) > 200:
             tooltip_contents = tooltip_contents[0:197] + " ... "
 
-        tooltip = ' [[{' + tooltip_contents + '}]] '
+        tooltip = " [[{" + tooltip_contents + "}]] "
         if cls.abstract:
             class_type = "abstract"
         else:
