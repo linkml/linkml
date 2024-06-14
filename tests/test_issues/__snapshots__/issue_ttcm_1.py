@@ -575,6 +575,16 @@ class AbstractResourceDescription(ResourceDescription):
     releaseFormat: Optional[Union[Union[dict, SourceAndNotation], List[Union[dict, SourceAndNotation]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.about):
+            self.MissingRequiredField("about")
+        if not isinstance(self.about, ExternalURI):
+            self.about = ExternalURI(self.about)
+
+        if self._is_empty(self.resourceID):
+            self.MissingRequiredField("resourceID")
+        if not isinstance(self.resourceID, LocalIdentifier):
+            self.resourceID = LocalIdentifier(self.resourceID)
+
         if self.releaseDocumentation is not None and not isinstance(self.releaseDocumentation, str):
             self.releaseDocumentation = str(self.releaseDocumentation)
 
@@ -608,6 +618,16 @@ class ResourceVersionDescription(ResourceDescription):
     officialActivationDate: Optional[Union[str, XSDDateTime]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.about):
+            self.MissingRequiredField("about")
+        if not isinstance(self.about, ExternalURI):
+            self.about = ExternalURI(self.about)
+
+        if self._is_empty(self.resourceID):
+            self.MissingRequiredField("resourceID")
+        if not isinstance(self.resourceID, LocalIdentifier):
+            self.resourceID = LocalIdentifier(self.resourceID)
+
         if self.documentURI is not None and not isinstance(self.documentURI, DocumentURI):
             self.documentURI = DocumentURI(self.documentURI)
 
@@ -676,6 +696,15 @@ class AssociationReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
+
 @dataclass
 class BindingQualifierReference(NameAndMeaningReference):
     """
@@ -692,6 +721,15 @@ class BindingQualifierReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
+
 @dataclass
 class CaseSignificanceReference(NameAndMeaningReference):
     """
@@ -705,6 +743,15 @@ class CaseSignificanceReference(NameAndMeaningReference):
     class_model_uri: ClassVar[URIRef] = TCCM.CaseSignificanceReference
 
     name: Union[str, LocalIdentifier] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
 
 @dataclass
 class CodeSystemCategoryReference(NameAndMeaningReference):
@@ -721,6 +768,15 @@ class CodeSystemCategoryReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
+
 @dataclass
 class CodeSystemReference(NameAndMeaningReference):
     """
@@ -734,6 +790,15 @@ class CodeSystemReference(NameAndMeaningReference):
     class_model_uri: ClassVar[URIRef] = TCCM.CodeSystemReference
 
     name: Union[str, LocalIdentifier] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
 
 @dataclass
 class CodeSystemVersionReference(NameAndMeaningReference):
@@ -751,6 +816,11 @@ class CodeSystemVersionReference(NameAndMeaningReference):
     codeSystem: Optional[Union[dict, CodeSystemReference]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
         if self.codeSystem is not None and not isinstance(self.codeSystem, CodeSystemReference):
             self.codeSystem = CodeSystemReference(**as_dict(self.codeSystem))
 
@@ -771,6 +841,15 @@ class ConceptDomainReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
+
 @dataclass
 class ContextReference(NameAndMeaningReference):
     """
@@ -784,6 +863,15 @@ class ContextReference(NameAndMeaningReference):
     class_model_uri: ClassVar[URIRef] = TCCM.ContextReference
 
     name: Union[str, LocalIdentifier] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
 
 @dataclass
 class DesignationFidelityReference(NameAndMeaningReference):
@@ -799,6 +887,15 @@ class DesignationFidelityReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
+
 @dataclass
 class DesignationTypeReference(NameAndMeaningReference):
     """
@@ -812,6 +909,15 @@ class DesignationTypeReference(NameAndMeaningReference):
     class_model_uri: ClassVar[URIRef] = TCCM.DesignationTypeReference
 
     name: Union[str, LocalIdentifier] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
 
 @dataclass
 class FormalityLevelReference(NameAndMeaningReference):
@@ -827,6 +933,15 @@ class FormalityLevelReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
+
 @dataclass
 class FormatReference(NameAndMeaningReference):
     """
@@ -840,6 +955,15 @@ class FormatReference(NameAndMeaningReference):
     class_model_uri: ClassVar[URIRef] = TCCM.FormatReference
 
     name: Union[str, LocalIdentifier] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
 
 @dataclass
 class LanguageReference(NameAndMeaningReference):
@@ -855,6 +979,15 @@ class LanguageReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
+
 @dataclass
 class MapCorrelationReference(NameAndMeaningReference):
     """
@@ -869,6 +1002,15 @@ class MapCorrelationReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
+
 @dataclass
 class MapReference(NameAndMeaningReference):
     """
@@ -882,6 +1024,15 @@ class MapReference(NameAndMeaningReference):
     class_model_uri: ClassVar[URIRef] = TCCM.MapReference
 
     name: Union[str, LocalIdentifier] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
 
 @dataclass
 class MapVersionReference(NameAndMeaningReference):
@@ -899,6 +1050,11 @@ class MapVersionReference(NameAndMeaningReference):
     map: Optional[Union[dict, MapReference]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
         if self.map is not None and not isinstance(self.map, MapReference):
             self.map = MapReference(**as_dict(self.map))
 
@@ -919,6 +1075,15 @@ class MatchAlgorithmReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
+
 @dataclass
 class ModelAttributeReference(NameAndMeaningReference):
     """
@@ -932,6 +1097,15 @@ class ModelAttributeReference(NameAndMeaningReference):
     class_model_uri: ClassVar[URIRef] = TCCM.ModelAttributeReference
 
     name: Union[str, LocalIdentifier] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
 
 @dataclass
 class NamespaceReference(NameAndMeaningReference):
@@ -948,6 +1122,15 @@ class NamespaceReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
+
 @dataclass
 class OntologyDomainReference(NameAndMeaningReference):
     """
@@ -961,6 +1144,15 @@ class OntologyDomainReference(NameAndMeaningReference):
     class_model_uri: ClassVar[URIRef] = TCCM.OntologyDomainReference
 
     name: Union[str, LocalIdentifier] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
 
 @dataclass
 class OntologyEngineeringMethodologyReference(NameAndMeaningReference):
@@ -976,6 +1168,15 @@ class OntologyEngineeringMethodologyReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
+
 @dataclass
 class OntologyEngineeringToolReference(NameAndMeaningReference):
     """
@@ -989,6 +1190,15 @@ class OntologyEngineeringToolReference(NameAndMeaningReference):
     class_model_uri: ClassVar[URIRef] = TCCM.OntologyEngineeringToolReference
 
     name: Union[str, LocalIdentifier] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
 
 @dataclass
 class OntologyLanguageReference(NameAndMeaningReference):
@@ -1004,6 +1214,15 @@ class OntologyLanguageReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
+
 @dataclass
 class OntologySyntaxReference(NameAndMeaningReference):
     """
@@ -1017,6 +1236,15 @@ class OntologySyntaxReference(NameAndMeaningReference):
     class_model_uri: ClassVar[URIRef] = TCCM.OntologySyntaxReference
 
     name: Union[str, LocalIdentifier] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
 
 @dataclass
 class OntologyTaskReference(NameAndMeaningReference):
@@ -1032,6 +1260,15 @@ class OntologyTaskReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
+
 @dataclass
 class OntologyTypeReference(NameAndMeaningReference):
     """
@@ -1045,6 +1282,15 @@ class OntologyTypeReference(NameAndMeaningReference):
     class_model_uri: ClassVar[URIRef] = TCCM.OntologyTypeReference
 
     name: Union[str, LocalIdentifier] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
 
 @dataclass
 class PredicateReference(YAMLRoot):
@@ -1099,6 +1345,15 @@ class ReasoningAlgorithmReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
+
 @dataclass
 class RoleReference(NameAndMeaningReference):
     """
@@ -1113,6 +1368,15 @@ class RoleReference(NameAndMeaningReference):
     class_model_uri: ClassVar[URIRef] = TCCM.RoleReference
 
     name: Union[str, LocalIdentifier] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
 
 @dataclass
 class SourceAndRoleReference(NameAndMeaningReference):
@@ -1131,6 +1395,11 @@ class SourceAndRoleReference(NameAndMeaningReference):
     role: Optional[Union[dict, RoleReference]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
         if self.role is not None and not isinstance(self.role, RoleReference):
             self.role = RoleReference(**as_dict(self.role))
 
@@ -1151,6 +1420,15 @@ class SourceReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
+
 @dataclass
 class StatusReference(NameAndMeaningReference):
     """
@@ -1164,6 +1442,15 @@ class StatusReference(NameAndMeaningReference):
     class_model_uri: ClassVar[URIRef] = TCCM.StatusReference
 
     name: Union[str, LocalIdentifier] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
 
 @dataclass
 class ValueSetDefinitionReference(NameAndMeaningReference):
@@ -1179,6 +1466,15 @@ class ValueSetDefinitionReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
+
 @dataclass
 class ValueSetReference(NameAndMeaningReference):
     """
@@ -1193,6 +1489,15 @@ class ValueSetReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
+
 @dataclass
 class VersionTagReference(NameAndMeaningReference):
     """
@@ -1206,6 +1511,15 @@ class VersionTagReference(NameAndMeaningReference):
     class_model_uri: ClassVar[URIRef] = TCCM.VersionTagReference
 
     name: Union[str, LocalIdentifier] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, LocalIdentifier):
+            self.name = LocalIdentifier(self.name)
+
+        super().__post_init__(**kwargs)
+
 
 # Enumerations
 

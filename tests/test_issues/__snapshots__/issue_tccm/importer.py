@@ -60,6 +60,11 @@ class Child(Base):
         if not isinstance(self.id, ChildId):
             self.id = ChildId(self.id)
 
+        if self._is_empty(self.value):
+            self.MissingRequiredField("value")
+        if not isinstance(self.value, str):
+            self.value = str(self.value)
+
         super().__post_init__(**kwargs)
 
 

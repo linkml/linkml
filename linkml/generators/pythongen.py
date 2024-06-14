@@ -6,7 +6,7 @@ from copy import copy
 from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType
-from typing import Callable, Dict, Iterator, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Set, Tuple, Union
 
 import click
 from linkml_runtime import SchemaView
@@ -30,7 +30,7 @@ from rdflib import URIRef
 import linkml
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
-from linkml.utils.ifabsent_functions import ifabsent_postinit_declaration, ifabsent_value_declaration
+from linkml.utils.ifabsent_functions import ifabsent_value_declaration
 
 
 @dataclass
@@ -473,37 +473,30 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         :param cls: class containing variables to be rendered in inheritance hierarchy
         :return: variable declarations for target class and its ancestors
         """
-        initializers = []
-
-        is_root = not cls.is_a
-        domain_slots = self.domain_slots(cls)
-
-        # Root keys and identifiers go first.  Note that even if a key or identifier is overridden it still
-        # appears at the top of the list, as we need to keep the position
-        slot_variables = self._slot_iter(
-            cls,
-            lambda slot: (slot.identifier or slot.key) and not slot.ifabsent,
-            first_hit_only=True,
-        )
-        initializers += [self.gen_class_variable(cls, slot, not is_root) for slot in slot_variables]
-
-        # Required slots
-        slot_variables = self._slot_iter(
-            cls,
-            lambda slot: slot.required and not slot.identifier and not slot.key and not slot.ifabsent,
-        )
-        initializers += [self.gen_class_variable(cls, slot, not is_root) for slot in slot_variables]
-
-        # Required or key slots with default values
-        slot_variables = self._slot_iter(cls, lambda slot: slot.ifabsent and slot.required)
-        initializers += [self.gen_class_variable(cls, slot, False) for slot in slot_variables]
-
-        # Followed by everything else
-
-        slot_variables = self._slot_iter(cls, lambda slot: not slot.required and slot in domain_slots)
-        initializers += [self.gen_class_variable(cls, slot, False) for slot in slot_variables]
-
+        domain_slots = self.sort_slots(self.class_slots(cls))
+        initializers = [self.gen_class_variable(cls, slot, False) for slot in domain_slots]
         return "\n\t".join(initializers)
+
+    @staticmethod
+    def sort_slots(slots: List[SlotDefinition]) -> List[SlotDefinition]:
+        """
+        - Root keys and identifiers
+        - Required without defaults
+        - Required with default
+        - Everything else
+
+        Sort with a series of python `sorted` calls in reverse order
+
+        References:
+            - https://docs.python.org/3/howto/sorting.html#sort-stability-and-complex-sorts
+        """
+        # required with default
+        slots = sorted(slots, key=lambda s: (bool(s.required) and bool(s.ifabsent)), reverse=True)
+        # required without default
+        slots = sorted(slots, key=lambda s: (bool(s.required) and not bool(s.ifabsent)), reverse=True)
+        # root keys and identifiers
+        slots = sorted(slots, key=lambda s: (bool(s.identifier) or bool(s.key)) and not bool(s.ifabsent), reverse=True)
+        return slots
 
     def gen_class_variable(self, cls: ClassDefinition, slot: SlotDefinition, can_be_positional: bool) -> str:
         """
@@ -627,61 +620,35 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
     def gen_postinits(self, cls: ClassDefinition) -> str:
         """Generate all the typing and existence checks post initialize"""
-        post_inits_pre_super = []
-        for slot in self.domain_slots(cls):
-            if slot.ifabsent:
-                dflt = ifabsent_postinit_declaration(slot.ifabsent, self, cls, slot)
-
-                if dflt and dflt != "None":
-                    post_inits_pre_super.append(f"if self.{self.slot_name(slot.name)} is None:")
-                    post_inits_pre_super.append(f"\tself.{self.slot_name(slot.name)} = {dflt}")
-
         post_inits = []
-        if not (cls.mixin or cls.abstract):
-            pkeys = self.primary_keys_for(cls)
-            for pkey in pkeys:
-                slot = self.schema.slots[pkey]
-                # TODO: Remove the bypass whenever we get default_range fixed
-                if not slot.ifabsent or True:
-                    post_inits.append(self.gen_postinit(cls, slot))
-        else:
-            pkeys = []
-        for slot in self.domain_slots(cls):
-            if slot.required:
-                # TODO: Remove the bypass whenever we get default_range fixed
-                if slot.name not in pkeys and (not slot.ifabsent or True):
-                    post_inits.append(self.gen_postinit(cls, slot))
-        for slot in self.domain_slots(cls):
-            if not slot.required:
-                # TODO: Remove the bypass whenever we get default_range fixed
-                if slot.name not in pkeys and (not slot.ifabsent or True):
-                    post_inits.append(self.gen_postinit(cls, slot))
         post_inits_designators = []
 
-        domain_slot_names = [s.name for s in self.domain_slots(cls)]
-        for slot in self.schemaview.class_induced_slots(cls.name):
-            # This is for all type designators that were defined at a parent class
-            # We need to treat them specially: the initialisation should come
-            # AFTER the call to super() because we want to override the super behaviour
-            if slot.name not in domain_slot_names and slot.designates_type:
-                post_inits_designators.append(self.gen_postinit(cls, slot))
+        # separate induced/inherited type designator slots from owned domain slots,
+        # these have to be executed after the super() call
+        domain_slots = self.domain_slots(cls)
+        induced_slots = [s for s in self.schemaview.class_induced_slots(cls.name) if s.designates_type]
+        induced_names = set([s.name for s in induced_slots]) - set([s.name for s in domain_slots])
 
-        post_inits_pre_super_line = "\n\t\t".join([p for p in post_inits_pre_super if p]) + (
-            "\n\t\t" if post_inits_pre_super else ""
-        )
+        all_slots = self.sort_slots(self.class_slots(cls))
+
+        for slot in all_slots:
+            generated = self.gen_postinit(cls, slot)
+            if slot.name not in induced_names:
+                post_inits.append(generated)
+            else:
+                post_inits_designators.append(generated)
+
         post_inits_post_super_line = "\n\t\t".join(post_inits_designators)
         post_inits_line = "\n\t\t".join([p for p in post_inits if p])
-        return (
-            (
-                f"""
+
+        if not post_inits and not post_inits_designators:
+            return ""
+        else:
+            return f"""
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        {post_inits_pre_super_line}{post_inits_line}
+        {post_inits_line}
         super().__post_init__(**kwargs)
         {post_inits_post_super_line}"""
-            )
-            if post_inits_line or post_inits_pre_super_line or post_inits_post_super_line
-            else ""
-        )
 
     # sort classes such that if C is a child of P then C appears after P in the list
     @staticmethod
@@ -899,39 +866,37 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         rlines.append("")
         return "\n\t\t".join(rlines)
 
-    def _slot_iter(
-        self,
-        cls: ClassDefinition,
-        test: Callable[[SlotDefinition], bool],
-        first_hit_only: bool = False,
-    ) -> Iterator[SlotDefinition]:
-        """Return the representation for the set of own slots in cls that pass test
-
-        :param cls: Class containing a set of slots
-        :param test: Slot test function
-        :param first_hit_only: True means stop on first match.  False means generate all
-        :return: Set of slots that match
-        """
-        for slot in self.all_slots(cls):
-            if test(slot):
-                yield slot
-                if first_hit_only:
-                    break
-
     def primary_keys_for(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
-        """Return the primary key for cls.
-
-        Note: At the moment we return at most one entry.  At some point, keys will be expanded to support
-              composite keys.
+        """
+        Return the primary keys for cls.
 
         @param cls: class to get keys for
         @return: List of primary keys or identifiers
         """
-        return [
-            slot_name
-            for slot_name in cls.slots
-            if self.schema.slots[slot_name].key or self.schema.slots[slot_name].identifier
+        return [slot.name for slot in self.all_slots(cls) if slot.key or slot.identifier]
+
+    def class_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
+        """
+        All the slots that need to be defined on this class specifically -
+        domain slots, identifiers, and primary keys.
+        The rest are defined in the parent classes.
+
+        literally :meth:`.domain_slots` + :meth:`primary_keys_for`
+
+        Args:
+            cls ( :class:`.ClassDefinition` ):
+
+        Returns:
+            list[SlotDefinition]
+        """
+        domain_slots = self.domain_slots(cls)
+        domain_slot_names = [d.name for d in domain_slots]
+        class_slots = [
+            slot
+            for slot in self.all_slots(cls)
+            if slot.name in domain_slot_names or slot.required or slot.identifier or slot.key or slot.designates_type
         ]
+        return class_slots
 
     def key_name_for(self, class_name: ClassDefinitionName) -> Optional[str]:
         for slot_name in self.primary_keys_for(self.schema.classes[class_name]):
