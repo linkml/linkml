@@ -28,6 +28,26 @@ EXPECTED_FORMATS = [
     if (fmt not in META_ONLY or source == Source.META)
 ]
 
+W3ID_EXTENSIONS = (
+    'html',
+    'yaml',
+    'graphql',
+    'context.json',
+    'context.jsonld',
+    'schema.json',
+    'json',
+    'ttl',
+    'owl',
+    'shex',
+    'shexc',
+    'shexj'
+)
+W3ID_FORMATS = [
+    (source, fmt) for source, fmt in EXPECTED_FORMATS
+    if _Path.get(fmt.name).extension in W3ID_EXTENSIONS
+]
+"""The formats that have rewrite rules at https://github.com/perma-id/w3id.org/blob/master/linkml/.htaccess"""
+
 @pytest.mark.parametrize(
     'source,fmt',
     EXPECTED_FORMATS
@@ -66,7 +86,7 @@ def test_no_unmapped_dirs():
 # URLs
 # --------------------------------------------------
 
-@pytest.mark.skipif(not HAVE_REQUESTS_CACHE, reason='We need to cache this...')
+@pytest.mark.skip("github paths largely unused and expensive to test due to ratelimiting")
 @pytest.mark.parametrize(
     'release_type',
     ReleaseTag.__iter__()
@@ -78,7 +98,7 @@ def test_no_unmapped_dirs():
 def test_github_path_exists(source,fmt, release_type):
     url = GITHUB_PATH_FOR(source, fmt, release_type)
     res = requests.get(url)
-    assert res.status_code != 404
+    assert res.status_code != 404, url
 
 
 @pytest.mark.parametrize(
@@ -99,8 +119,7 @@ def test_github_path_format(source,fmt, release_type):
     # for windows...
     assert '\\' not in url
 
-
-@pytest.mark.skipif(not HAVE_REQUESTS_CACHE,reason= "Need to cache this")
+@pytest.mark.skip("github paths largely unused")
 @pytest.mark.parametrize(
     'source,fmt',
     EXPECTED_FORMATS
@@ -108,18 +127,25 @@ def test_github_path_format(source,fmt, release_type):
 def test_github_io_path(source,fmt):
     url = GITHUB_IO_PATH_FOR(source, fmt)
     res = requests.get(url)
-    assert res.status_code != 404
+    assert res.status_code != 404, url
 
 
 @pytest.mark.skipif(not HAVE_REQUESTS_CACHE,reason= 'Need to cache this')
 @pytest.mark.parametrize(
     'source,fmt',
-    EXPECTED_FORMATS
+    W3ID_FORMATS
 )
 def test_url_for_format(source,fmt):
     url = URL_FOR(source, fmt)
     res = requests.get(url)
-    assert res.status_code != 404
+    assert res.status_code != 404, url
+
+def test_fixed_meta_url():
+    """
+    One fixed canary value - the METAMODEL_URI as used in linkml main shouldn't change
+    """
+    assert URL_FOR(Source.META, Format.YAML) == 'https://w3id.org/linkml/meta.yaml'
+    assert URL_FOR(Source.META, Format.JSONLD) == 'https://w3id.org/linkml/meta.context.jsonld'
 
 
 

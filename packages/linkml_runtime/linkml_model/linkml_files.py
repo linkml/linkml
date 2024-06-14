@@ -143,7 +143,8 @@ def _build_loc(base: str, source: Source, fmt: Format) -> str:
 
 def URL_FOR(source: Source, fmt: Format) -> str:
     """ Return the URL to retrieve source in format """
-    return f"{LINKML_URL_BASE}{source.value}.{fmt.value}"
+    fmt_path: FormatPath = _Path.get(fmt.name)
+    return f"{LINKML_URL_BASE}{source.value}.{fmt_path.extension}"
 
 
 def LOCAL_PATH_FOR(source: Source, fmt: Format) -> str:

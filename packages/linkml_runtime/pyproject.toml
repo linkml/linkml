@@ -64,6 +64,7 @@ pydantic = ">=1.10.2, <3.0.0"
 
 [tool.poetry.dev-dependencies]
 coverage = "^6.2"
+requests-cache = "^1.2.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
