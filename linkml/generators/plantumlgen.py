@@ -154,12 +154,12 @@ class PlantumlGenerator(Generator):
         if self.format == "svg" and len(tooltip_contents) > 200:
             tooltip_contents = tooltip_contents[0:197] + " ... "
 
-        tooltip = '" [[{' + tooltip_contents + "}]]"
+        tooltip = ' [[{' + tooltip_contents + '}]] '
         if cls.abstract:
             class_type = "abstract"
         else:
             class_type = "class"
-        return class_type + ' "' + cn + tooltip + ("{\n" + "\n".join(slot_defs) + "\n}")
+        return class_type + ' "' + cn + '"' + tooltip + ("{\n" + "\n".join(slot_defs) + "\n}")
 
     def class_associations(self, cn: ClassDefinitionName, must_render: bool = False) -> str:
         """Emit all associations for a focus class.  If none are specified, all classes are generated

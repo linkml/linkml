@@ -16,7 +16,7 @@ MARKDOWN_FOOTER = """
 """
 
 PERSON = """
-class "Person" [[{A person, living or dead}]]{
+class "Person" [[{A person, living or dead}]] {
     {field} "id" : "string" [req]
     {field} "name" : "string" [opt]
     {field} "age_in_years" : "integer" [opt]
