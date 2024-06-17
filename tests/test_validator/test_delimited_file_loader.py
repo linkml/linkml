@@ -1,9 +1,9 @@
 import pytest
 
-from linkml.validator.loaders import CsvLoader, TsvLoader
+from linkml.validator.loaders import CSVLoader, TSVLoader
 
 
-@pytest.mark.parametrize("delimiter,loader_cls", [(",", CsvLoader), ("\t", TsvLoader)])
+@pytest.mark.parametrize("delimiter,loader_cls", [(",", CSVLoader), ("\t", TSVLoader)])
 def test_load(delimiter, loader_cls, tmp_file_factory):
     data = "\n".join(
         (
@@ -26,7 +26,7 @@ a, b, c
 d, e, f
 """
     csv_file = tmp_file_factory("data", data)
-    loader = CsvLoader(csv_file)
+    loader = CSVLoader(csv_file)
     instances = loader.iter_instances()
     assert next(instances) == {"one": "a", "two": "b", "three": "c"}
     assert next(instances) == {}
@@ -34,7 +34,7 @@ d, e, f
     with pytest.raises(StopIteration):
         next(instances)
 
-    loader = CsvLoader(csv_file, skip_empty_rows=True)
+    loader = CSVLoader(csv_file, skip_empty_rows=True)
     instances = loader.iter_instances()
     assert next(instances) == {"one": "a", "two": "b", "three": "c"}
     assert next(instances) == {"one": "d", "two": "e", "three": "f"}
@@ -48,7 +48,7 @@ a, b, c
 d, e, f
 """
     csv_file = tmp_file_factory("data", data)
-    loader = CsvLoader(csv_file, index_slot_name="some_things")
+    loader = CSVLoader(csv_file, index_slot_name="some_things")
     instances = loader.iter_instances()
     assert next(instances) == {
         "some_things": [
@@ -66,7 +66,7 @@ a, , c
 d, e, f
 """
     csv_file = tmp_file_factory("data", data)
-    loader = CsvLoader(csv_file)
+    loader = CSVLoader(csv_file)
     instances = loader.iter_instances()
     assert next(instances) == {"one": "a", "three": "c"}
     assert next(instances) == {"one": "d", "two": "e", "three": "f"}
