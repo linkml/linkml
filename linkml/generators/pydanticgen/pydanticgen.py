@@ -71,6 +71,7 @@ DEFAULT_IMPORTS = (
     + Import(module="decimal", objects=[ObjectImport(name="Decimal")])
     + Import(module="enum", objects=[ObjectImport(name="Enum")])
     + Import(module="re")
+    + Import(module="uuid")
     + Import(module="sys")
     + Import(
         module="typing",
@@ -316,7 +317,10 @@ class PydanticGenerator(OOCodeGenerator):
                         slot.name
                     ]
                 elif slot.ifabsent is not None:
-                    value = ifabsent_value_declaration(slot.ifabsent, sv, class_def, slot)
+                    if slot.ifabsent == "bnode":
+                        value = 'default_factory=lambda: "_:" + uuid.uuid4().hex'
+                    else:
+                        value = ifabsent_value_declaration(slot.ifabsent, sv, class_def, slot)
                     slot_values[camelcase(class_def.name)][slot.name] = value
                 # Multivalued slots that are either not inlined (just an identifier) or are
                 # inlined as lists should get default_factory list, if they're inlined but
