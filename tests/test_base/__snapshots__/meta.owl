@@ -1422,6 +1422,14 @@ linkml:ifabsent a owl:ObjectProperty,
   * EnumName(PermissibleValue) -- enum value""" ;
     skos:inScheme linkml:meta .
 
+linkml:implements a owl:ObjectProperty,
+        linkml:SlotDefinition ;
+    rdfs:label "implements" ;
+    rdfs:domain linkml:Element ;
+    rdfs:range linkml:Uriorcurie ;
+    skos:definition "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element." ;
+    skos:inScheme linkml:meta .
+
 linkml:import_as a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "import_as" ;

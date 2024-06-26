@@ -258,6 +258,9 @@ slots:
   my_datetime_slot:
     range: datetime
     ifabsent: datetime("2020-01-31T12:00:00Z")
+  my_enum_slot:
+    range: FamilialRelationshipType
+    ifabsent: FamilialRelationshipType(PARENT_OF)
 ```
 
 

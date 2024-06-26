@@ -29,8 +29,8 @@ from rdflib import URIRef
 
 import linkml
 from linkml._version import __version__
+from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
-from linkml.utils.ifabsent_functions import ifabsent_postinit_declaration, ifabsent_value_declaration
 
 
 @dataclass
@@ -70,6 +70,7 @@ class PythonGenerator(Generator):
             self.schema = str(self.schema)
         self.sourcefile = self.schema
         self.schemaview = SchemaView(self.schema, base_dir=self.base_dir)
+        self.ifabsent_processor = PythonIfAbsentProcessor(self.schemaview)
         super().__post_init__()
         if self.format is None:
             self.format = self.valid_formats[0]
@@ -153,7 +154,7 @@ import re
 from jsonasobj2 import JsonObj, as_dict
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, time
 {enumimports}
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
@@ -515,7 +516,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
         return "\n\t".join(initializers)
 
-    def gen_class_variable(self, cls: ClassDefinition, slot: SlotDefinition, can_be_positional: bool) -> str:
+    def gen_class_variable(self, cls: ClassDefinition, slot: SlotDefinition, can_be_positional: bool = False) -> str:
         """
         Generate a class variable declaration for the supplied slot.  Note: the can_be_positional attribute works,
         but it makes tag/value lists unduly complex, as you can't load them with tag=..., value=... -- you HAVE
@@ -527,12 +528,9 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         :param can_be_positional: True means that positional parameters are allowed.
         :return: Initializer string
         """
-        can_be_positional = False  # Force everything to be tag values
         slotname = self.slot_name(slot.name)
         slot_range, default_val = self.range_cardinality(slot, cls, can_be_positional)
-        ifabsent_text = (
-            ifabsent_value_declaration(slot.ifabsent, self, cls, slot) if slot.ifabsent is not None else None
-        )
+        ifabsent_text = self.ifabsent_processor.process_slot(slot, cls) if slot.ifabsent is not None else None
         if ifabsent_text is not None:
             default = f"= {ifabsent_text}"
         else:
@@ -637,15 +635,6 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
     def gen_postinits(self, cls: ClassDefinition) -> str:
         """Generate all the typing and existence checks post initialize"""
-        post_inits_pre_super = []
-        for slot in self.domain_slots(cls):
-            if slot.ifabsent:
-                dflt = ifabsent_postinit_declaration(slot.ifabsent, self, cls, slot)
-
-                if dflt and dflt != "None":
-                    post_inits_pre_super.append(f"if self.{self.slot_name(slot.name)} is None:")
-                    post_inits_pre_super.append(f"\tself.{self.slot_name(slot.name)} = {dflt}")
-
         post_inits = []
         if not (cls.mixin or cls.abstract):
             pkeys = self.primary_keys_for(cls)
@@ -676,20 +665,17 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             if slot.name not in domain_slot_names and slot.designates_type:
                 post_inits_designators.append(self.gen_postinit(cls, slot))
 
-        post_inits_pre_super_line = "\n\t\t".join([p for p in post_inits_pre_super if p]) + (
-            "\n\t\t" if post_inits_pre_super else ""
-        )
         post_inits_post_super_line = "\n\t\t".join(post_inits_designators)
         post_inits_line = "\n\t\t".join([p for p in post_inits if p])
         return (
             (
                 f"""
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        {post_inits_pre_super_line}{post_inits_line}
+        {post_inits_line}
         super().__post_init__(**kwargs)
         {post_inits_post_super_line}"""
             )
-            if post_inits_line or post_inits_pre_super_line or post_inits_post_super_line
+            if post_inits_line or post_inits_post_super_line
             else ""
         )
 
