@@ -1320,7 +1320,7 @@ linkml:ifabsent a owl:ObjectProperty,
     rdfs:range linkml:String ;
     rdfs:seeAlso linkml:equals_expression ;
     skos:closeMatch sh:defaultValue ;
-    skos:definition """function that provides a default value for the slot.  Possible values for this slot are defined in linkml.utils.ifabsent_functions.default_library:
+    skos:definition """function that provides a default value for the slot.
   * [Tt]rue -- boolean True
   * [Ff]alse -- boolean False
   * bnode -- blank node identifier
@@ -1331,7 +1331,8 @@ linkml:ifabsent a owl:ObjectProperty,
   * int(value) -- integer value
   * slot_uri -- URI for the slot
   * slot_curie -- CURIE for the slot
-  * string(value) -- string value""" ;
+  * string(value) -- string value
+  * EnumName(PermissibleValue) -- enum value""" ;
     skos:inScheme linkml:meta .
 
 linkml:implements a owl:ObjectProperty,

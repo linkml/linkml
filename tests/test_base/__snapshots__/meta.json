@@ -3224,7 +3224,7 @@
     {
       "name": "ifabsent",
       "definition_uri": "https://w3id.org/linkml/ifabsent",
-      "description": "function that provides a default value for the slot.  Possible values for this slot are defined in linkml.utils.ifabsent_functions.default_library:\n  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * bnode -- blank node identifier\n  * class_curie -- CURIE for the containing class\n  * class_uri -- URI for the containing class\n  * default_ns -- schema default namespace\n  * default_range -- schema default range\n  * int(value) -- integer value\n  * slot_uri -- URI for the slot\n  * slot_curie -- CURIE for the slot\n  * string(value) -- string value",
+      "description": "function that provides a default value for the slot.\n  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * bnode -- blank node identifier\n  * class_curie -- CURIE for the containing class\n  * class_uri -- URI for the containing class\n  * default_ns -- schema default namespace\n  * default_range -- schema default range\n  * int(value) -- integer value\n  * slot_uri -- URI for the slot\n  * slot_curie -- CURIE for the slot\n  * string(value) -- string value\n  * EnumName(PermissibleValue) -- enum value",
       "in_subset": [
         "SpecificationSubset"
       ],

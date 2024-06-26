@@ -73,7 +73,7 @@ URI: [linkml:SpecificationSubset](https://w3id.org/linkml/SpecificationSubset)
  * [id_prefixes](id_prefixes.md) - An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix
  * [identifier](identifier.md) - True means that the key slot(s) uniquely identifies the elements. There can be at most one identifier or key per container
  * [identifier_pattern](identifier_pattern.md) - A regular expression that is used to obtain a set of identifiers from a source_ontology to construct a set of permissible values
- * [ifabsent](ifabsent.md) - function that provides a default value for the slot.  Possible values for this slot are defined in linkml.utils.ifabsent_functions.default_library:
+ * [ifabsent](ifabsent.md) - function that provides a default value for the slot.
  * [implicit_prefix](implicit_prefix.md) - Causes the slot value to be interpreted as a uriorcurie after prefixing with this string
  * [imports](imports.md) - A list of schemas that are to be included in this schema
  * [inapplicable](inapplicable.md) - true means that values for this slot must not be present

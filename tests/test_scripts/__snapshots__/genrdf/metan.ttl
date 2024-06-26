@@ -1327,7 +1327,7 @@ linkml:ifabsent a linkml:SlotDefinition ;
     skos:closeMatch sh:defaultValue ;
     skos:inScheme linkml:meta ;
     linkml:definition_uri linkml:ifabsent ;
-    linkml:description """function that provides a default value for the slot.  Possible values for this slot are defined in linkml.utils.ifabsent_functions.default_library:
+    linkml:description """function that provides a default value for the slot.
   * [Tt]rue -- boolean True
   * [Ff]alse -- boolean False
   * bnode -- blank node identifier
@@ -1338,7 +1338,8 @@ linkml:ifabsent a linkml:SlotDefinition ;
   * int(value) -- integer value
   * slot_uri -- URI for the slot
   * slot_curie -- CURIE for the slot
-  * string(value) -- string value""" ;
+  * string(value) -- string value
+  * EnumName(PermissibleValue) -- enum value""" ;
     linkml:domain linkml:SlotDefinition ;
     linkml:domain_of linkml:SlotDefinition ;
     linkml:inherited true ;
