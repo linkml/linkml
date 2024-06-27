@@ -313,7 +313,7 @@
 --     * Slot: multivalued Description: true means that slot can have more than one value
 --     * Slot: inherited Description: true means that the *value* of a slot is inherited by subclasses
 --     * Slot: readonly Description: If present, slot is read only.  Text explains why
---     * Slot: ifabsent Description: function that provides a default value for the slot.  Possible values for this slot are defined inlinkml_runtime.utils.ifabsent_functions.default_library:  * [Tt]rue -- boolean True  * [Ff]alse -- boolean False  * int(value) -- integer value  * str(value) -- string value  * default_range -- schema default range  * bnode -- blank node identifier  * slot_uri -- URI for the slot  * class_curie -- CURIE for the containing class  * class_uri -- URI for the containing class
+--     * Slot: ifabsent Description: function that provides a default value for the slot. * [Tt]rue -- boolean True  * [Ff]alse -- boolean False  * int(value) -- integer value  * str(value) -- string value  * default_range -- schema default range  * bnode -- blank node identifier  * slot_uri -- URI for the slot  * class_curie -- CURIE for the containing class  * class_uri -- URI for the containing class
 --     * Slot: list_elements_unique Description: If True, then there must be no duplicates in the elements of a multivalued slot
 --     * Slot: list_elements_ordered Description: If True, then the order of elements of a multivalued slot is guaranteed to be preserved. If False, the order may still be preserved but this is not guaranteed
 --     * Slot: shared Description: If True, then the relationship between the slot domain and range is many to one or many to many
