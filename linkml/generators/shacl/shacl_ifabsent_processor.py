@@ -1,6 +1,6 @@
 from typing import Any, Optional
 
-from linkml_runtime.linkml_model import ClassDefinition, SlotDefinition
+from linkml_runtime.linkml_model import ClassDefinition, SlotDefinition, EnumDefinitionName
 from rdflib import Literal, URIRef
 
 from linkml.generators.common.ifabsent_processor import IfAbsentProcessor
@@ -9,26 +9,76 @@ from linkml.generators.shacl.shacl_data_type import ShaclDataType
 
 class ShaclIfAbsentProcessor(IfAbsentProcessor):
 
-    def _map_to_default_value(
-        self,
-        slot: SlotDefinition,
-        ifabsent_default_value: Any,
-        cls: ClassDefinition,
-    ) -> Optional[str]:
-        for datatype in list(ShaclDataType):
-            if datatype.linkml_type == slot.range:
-                return Literal(ifabsent_default_value, datatype=datatype.uri_ref)
-
-        for enum_name, enum in self.schema_view.all_enums().items():
-            if enum_name == slot.range:
-                for permissible_value_name, permissible_value in enum.permissible_values.items():
-                    if permissible_value_name == ifabsent_default_value:
-                        return Literal(ifabsent_default_value)
-
-        if ifabsent_default_value == "class_curie":
+    def map_custom_default_values(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition) -> (bool, str):
+        if default_value == "class_curie":
             class_uri = self.schema_view.get_uri(cls, expand=True)
             if class_uri:
-                return URIRef(class_uri)
-            return None
+                return True, URIRef(class_uri)
+            return True, ""
 
-        raise ValueError(f"The ifabsent value `{slot.ifabsent}` of the `{slot.name}` slot could not be processed")
+        return False, None
+
+    def map_enum_default_value(self, enum_name: EnumDefinitionName, permissible_value_name: str, slot: SlotDefinition,
+                               cls: ClassDefinition):
+        return Literal(permissible_value_name)
+
+    def map_string_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        return Literal(default_value, datatype=ShaclDataType.STRING.uri_ref)
+
+    def map_integer_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        return Literal(default_value, datatype=ShaclDataType.INTEGER.uri_ref)
+
+    def map_boolean_true_default_value(self, slot: SlotDefinition, cls: ClassDefinition):
+        return Literal(True, datatype=ShaclDataType.BOOLEAN.uri_ref)
+
+    def map_boolean_false_default_value(self, slot: SlotDefinition, cls: ClassDefinition):
+        return Literal(False, datatype=ShaclDataType.BOOLEAN.uri_ref)
+
+    def map_float_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        return Literal(default_value, datatype=ShaclDataType.FLOAT.uri_ref)
+
+    def map_double_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        return Literal(default_value, datatype=ShaclDataType.DOUBLE.uri_ref)
+
+    def map_decimal_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        return Literal(default_value, datatype=ShaclDataType.DECIMAL.uri_ref)
+
+    def map_time_default_value(self, hour: str, minutes: str, seconds: str, slot: SlotDefinition, cls: ClassDefinition):
+        # TODO manage timezones and offsets
+        return Literal(f"{hour}:{minutes}:{seconds}", datatype=ShaclDataType.TIME.uri_ref)
+
+    def map_date_default_value(self, year: str, month: str, day: str, slot: SlotDefinition, cls: ClassDefinition):
+        # TODO manage timezones and offsets
+        return Literal(f"{year}-{month}-{day}", datatype=ShaclDataType.DATE.uri_ref)
+
+    def map_datetime_default_value(self, year: str, month: str, day: str, hour: str, minutes: str, seconds: str,
+                                   slot: SlotDefinition, cls: ClassDefinition):
+        # TODO manage timezones and offsets
+        return Literal(f"{year}-{month}-{day}T{hour}:{minutes}:{seconds}Z", datatype=ShaclDataType.DATETIME.uri_ref)
+
+    def map_uri_or_curie_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        raise NotImplementedError()
+
+    def map_curie_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        return Literal(default_value, datatype=ShaclDataType.CURIE.uri_ref)
+
+    def map_uri_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        return Literal(default_value, datatype=ShaclDataType.URI.uri_ref)
+
+    def map_nc_name_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        raise NotImplementedError()
+
+    def map_object_identifier_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        raise NotImplementedError()
+
+    def map_node_identifier_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        raise NotImplementedError()
+
+    def map_json_pointer_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        raise NotImplementedError()
+
+    def map_json_path_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        raise NotImplementedError()
+
+    def map_sparql_path_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        raise NotImplementedError()
