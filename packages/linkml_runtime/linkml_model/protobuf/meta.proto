@@ -111,8 +111,10 @@ message AnonymousSlotExpression
   element range = 0
   anonymousClassExpression rangeExpression = 0
   enumExpression enumRange = 0
+ repeated  enumBinding bindings = 0
   boolean required = 8
   boolean recommended = 9
+  boolean multivalued = 7
   boolean inlined = 25
   boolean inlinedAsList = 27
   anything minimumValue = 0
@@ -159,7 +161,6 @@ message ArrayExpression
   integer exactNumberDimensions = 0
   integer minimumNumberDimensions = 0
   anything maximumNumberDimensions = 0
-  boolean hasExtraDimensions = 0
  repeated  dimensionExpression dimensions = 0
  repeated  extension extensions = 0
  repeated  annotation annotations = 0
@@ -323,6 +324,49 @@ message DimensionExpression
   integer maximumCardinality = 0
   integer minimumCardinality = 0
   integer exactCardinality = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+ }
+// A binding of a slot or a class to a permissible value from an enumeration.
+message EnumBinding
+ {
+  enumDefinition range = 0
+  obligationLevelEnum obligationLevel = 0
+  string bindsValueOf = 0
+  pvFormulaOptions pvFormula = 0
  repeated  extension extensions = 0
  repeated  annotation annotations = 0
   string description = 5
@@ -604,6 +648,8 @@ message PermissibleValue
   string description = 5
   uriorcurie meaning = 23
   unitOfMeasure unit = 0
+ repeated  uriorcurie instantiates = 0
+ repeated  uriorcurie implements = 0
   permissibleValue isA = 11
  repeated  permissibleValue mixins = 13
  repeated  extension extensions = 0
@@ -723,6 +769,7 @@ message SchemaDefinition
   datetime generationDate = 0
   boolean slotNamesUnique = 0
  repeated  setting settings = 20
+ repeated  enumBinding bindings = 0
   ncname name = 1
  }
 // assignment of a key to a value
@@ -784,7 +831,6 @@ message SlotDefinition
   string singularName = 0
   classDefinition domain = 0
   uriorcurie slotUri = 2
-  boolean multivalued = 7
   arrayExpression array = 0
   boolean inherited = 0
   string readonly = 0
@@ -819,14 +865,17 @@ message SlotDefinition
  repeated  slotDefinition disjointWith = 0
   boolean childrenAreMutuallyDisjoint = 0
  repeated  slotDefinition unionOf = 0
+ repeated  typeMapping typeMappings = 0
   slotDefinition isA = 11
  repeated  slotDefinition mixins = 13
  repeated  slotDefinition applyTo = 0
   element range = 0
   anonymousClassExpression rangeExpression = 0
   enumExpression enumRange = 0
+ repeated  enumBinding bindings = 0
   boolean required = 8
   boolean recommended = 9
+  boolean multivalued = 7
   boolean inlined = 25
   boolean inlinedAsList = 27
   anything minimumValue = 0
@@ -856,6 +905,7 @@ message StructuredAlias
   string literalForm = 0
   aliasPredicateEnum predicate = 0
  repeated  uriorcurie categories = 0
+ repeated  uri contexts = 0
  repeated  extension extensions = 0
  repeated  annotation annotations = 0
   string description = 5
@@ -1002,6 +1052,48 @@ message TypeDefinition
  repeated  anonymousTypeExpression exactlyOneOf = 103
  repeated  anonymousTypeExpression anyOf = 101
  repeated  anonymousTypeExpression allOf = 107
+ }
+// Represents how a slot or type can be serialized to a format.
+message TypeMapping
+ {
+  string framework = 0
+  typeDefinition type = 0
+  string stringSerialization = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
  }
 // a collection of slots whose values uniquely identify an instance of a class
 message UniqueKey

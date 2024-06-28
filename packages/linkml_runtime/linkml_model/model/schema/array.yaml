@@ -11,14 +11,15 @@ description: >-
   use `implements` to denote conformance.
 
 status: testing
-# contributors:
-#  - github:rly
-#  - github:oruebel
-#  - github:jmchandonia
-#  - github:realmarcin
-#  - github:mavaylon1
-#  - github:ialarmedalien
-#  - github:cmungall
+ contributors:
+  - github:rly
+  - github:oruebel
+  - github:sneakers-the-rat
+  - github:jmchandonia
+  - github:realmarcin
+  - github:mavaylon1
+  - github:ialarmedalien
+  - github:cmungall
 
 prefixes:
   linkml: https://w3id.org/linkml/
@@ -39,7 +40,7 @@ classes:
   DataStructure:
     abstract: true
 
-  NDArray:
+  Array:
     description: >-
       a data structure consisting of a collection of *elements*, each identified by at least one array index tuple.
     abstract: true

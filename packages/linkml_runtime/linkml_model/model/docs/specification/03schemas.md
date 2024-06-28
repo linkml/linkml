@@ -255,15 +255,15 @@ A collection of ClassDefinition instances might look
     name=String^"NamedThing",
     abstract=True,
     slots=[
-        SlotDefinitionReference&"id",
-        SlotDefinitionReference&"name",
+        SlotDefinition&"id",
+        SlotDefinition&"name",
         ...
       ]
     ),
    ClassDefinition(
     name=String^"Person",
     description=String^"A person, living or dead",
-    is_a=ClassDefinitionReference&"NamedThing",
+    is_a=ClassDefinition&"NamedThing",
     attributes=[
         SlotDefinition(
             name=String^"height",
@@ -424,7 +424,7 @@ SchemaDefinition(
     name=String^"id",
     identifier=Boolean^True,
     description=String^"A unique identifier for an object",
-    range=TypeDefinitionReference&"String",
+    range=TypeDefinition&"String",
     ...
     ),
    SlotDefinition(
@@ -741,14 +741,14 @@ SchemaDefinition(
   ],
   slots=[
     SlotDefinition(
-      name=SlotDefinition&"id",
+      name=String^"id",
       identifier=Boolean^True,
       description=String^"...",
       range=TypeDefinition&"String",
       ...
     ),
     SlotDefinition(
-      name=SlotDefinition&"name",
+      name=String^"name",
       description=SlotDefinition&"...",
       ...
     ),
