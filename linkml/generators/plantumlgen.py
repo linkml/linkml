@@ -134,13 +134,12 @@ class PlantumlGenerator(Generator):
                 if True or cn in slot.domain_of:
                     mod = self.prop_modifier(cls, slot)
                     slot_defs.append(
-                        '    {field} "'
+                        '    {field} '
                         + underscore(self.aliased_slot_name(slot))
-                        + '"'
                         + mod
-                        + ' : "'
+                        + ' : '
                         + underscore(slot.range)
-                        + '"'
+                        + ' '
                         + self.cardinality(slot)
                     )
             self.class_generated.add(cn)
@@ -283,7 +282,7 @@ class PlantumlGenerator(Generator):
             if slot.multivalued:
                 return " [1..*]" if slot.required else " [0..*]"
             else:
-                return " [req]" if slot.required else " [opt]"
+                return " "
         else:
             if slot.multivalued:
                 return '"1..*" ' if slot.required else '"0..*" '
