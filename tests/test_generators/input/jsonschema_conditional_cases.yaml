@@ -1,4 +1,5 @@
 ### Schema
+#
 # - name: brief description of the test case
 # - linkml_rules: will be injected into the `rules` slot of a test class in a LinkML schema
 # - json_schema: a YAML representation of an expected subset of the generated JSON Schema
