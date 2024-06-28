@@ -76,3 +76,16 @@ Instances of this class *should* have identifiers with one of the following pref
 * imported from: {{ element.imported_from }}
 {% endif %}
 {% endif %}
+
+{% if schemaview.get_mappings(element.name).items() -%}
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+{% for m, mt in schemaview.get_mappings(element.name).items() -%}
+{% if mt|length > 0 -%}
+| {{ m }} | {{ mt|join(', ') }} |
+{% endif -%}
+{% endfor %}
+
+{% endif -%}
