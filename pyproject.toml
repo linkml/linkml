@@ -208,6 +208,7 @@ markers = [
   "no_asserts: tests that don't have meaningful asserts, but are only snapshot comparisons, or historically had print statements, or other non-erroring behavior",
   "strcmp: tests that compare stringified values rather than the values themselves",
   "pydanticgen_split: Split module generation in pydanticgen",
+  "pydanticgen_npd: tests for the numpydantic array generator",
   "pythongen: Tests for python generator",
   "pydanticgen: Tests for pydantic generator",
   "javagen: Tests for java generator",

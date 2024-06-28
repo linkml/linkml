@@ -26,11 +26,12 @@ else:
 
 from linkml.generators.pydanticgen.build import RangeResult
 from linkml.generators.pydanticgen.template import ConditionalImport, Import, Imports, ObjectImport
+from linkml.utils.exceptions import ValidationError
 
 
 class ArrayRepresentation(Enum):
     LIST = "list"
-    NPARRAY = "nparray"  # numpy and nptyping must be installed to use this
+    NUMPYDANTIC = "numpydantic"  # numpy and nptyping must be installed to use this
 
 
 _BOUNDED_ARRAY_FIELDS = ("exact_number_dimensions", "minimum_number_dimensions", "maximum_number_dimensions")
@@ -109,6 +110,128 @@ _AnyShapeArrayInjects = [
 _ConListImports = Imports() + Import(module="pydantic", objects=[ObjectImport(name="conlist")])
 
 
+class ArrayValidator:
+    """
+    Validate the specification of a LinkML Array
+
+    .. todo::
+
+        It looks like :mod:`linkml.validator` is for validating instances against schema, rather
+        than validating the schema itself, so am not subclassing/writing as a plugin.
+        Unsure if there is a more general means of validating schema, but for now this is
+        an independent class
+    """
+
+    @classmethod
+    def validate(cls, array: ArrayExpression):
+        """
+        Validate an array expression.
+
+        Raises:
+            :class:`.ValidationError` if invalid
+        """
+        cls.array_exact_dimensions(array)
+        cls.array_consistent_n_dimensions(array)
+        cls.array_explicitly_unbounded(array)
+        cls.array_dimensions_ordinal(array)
+
+        if array.dimensions is not None:
+            for dimension in array.dimensions:
+                cls.validate_dimension(dimension)
+
+    @classmethod
+    def validate_dimension(cls, dimension: DimensionExpression):
+        """
+        Validate a single array dimension
+
+        Raises:
+            :class:`.ValidationError` if invalid
+        """
+        cls.dimension_exact_cardinality(dimension)
+        cls.dimension_ordinal(dimension)
+
+    @staticmethod
+    def array_exact_dimensions(array: ArrayExpression):
+        """Arrays can have exact_number_dimensions OR min/max_number_dimensions, but not both"""
+        if array.exact_number_dimensions is not None and (
+            array.minimum_number_dimensions is not None or array.maximum_number_dimensions is not None
+        ):
+            raise ValidationError(
+                "Can only specify EITHER exact_number_dimensions OR minimum/maximum dimensions, " f"got: {array}"
+            )
+
+    @staticmethod
+    def array_consistent_n_dimensions(array: ArrayExpression):
+        """
+        Complex arrays with both exact/min/max_number_dimensions and parameterized dimensions
+        need to have the exact/min/max_number_dimensions greater than the number of parameterized dimensions!
+        """
+        if array.dimensions is None:
+            return
+
+        for field_name in _BOUNDED_ARRAY_FIELDS:
+            field = getattr(array, field_name, None)
+            if field is not None and field < len(array.dimensions):
+                raise ValidationError(
+                    "if exact/minimum/maximum_number_dimensions is provided, "
+                    "it must be greater than the parameterized dimensions. "
+                    f"got\n- {field_name}: {field}\n- dimensions: {array.dimensions}"
+                )
+
+    @staticmethod
+    def array_dimensions_ordinal(array: ArrayExpression):
+        """
+        minimum_number_dimensions needs to be less than maximum_number_dimensions when both are set
+        """
+        if array.minimum_number_dimensions is not None and array.maximum_number_dimensions is not None:
+            if array.minimum_number_dimensions > array.maximum_number_dimensions:
+                raise ValidationError(
+                    "minimum_number_dimensions must be lesser than maximum_number_dimensions when both are set. "
+                    f"got minimum: {array.minimum_number_dimensions}, maximum: {array.maximum_number_dimensions}"
+                )
+
+    @staticmethod
+    def array_explicitly_unbounded(array: ArrayExpression):
+        """
+        Complex arrays with a minimum_number_dimensions and parameterized dimensions
+        need to either use exact_number_dimensions to specify extra anonymous dimensions
+        or set maximum_number_dimensions to ``False`` to specify unbounded extra anonymous
+        dimensions to avoid ambiguity.
+        """
+        if (
+            array.minimum_number_dimensions is not None
+            and array.maximum_number_dimensions is None
+            and array.dimensions is not None
+        ):
+            raise ValidationError(
+                (
+                    "Cannot specify a minimum_number_dimensions while maximum is None while using labeled dimensions - "
+                    "either use exact_number_dimensions > len(dimensions) for extra parameterized dimensions or set "
+                    "maximum_number_dimensions explicitly to False for unbounded dimensions"
+                )
+            )
+
+    @staticmethod
+    def dimension_exact_cardinality(dimension: DimensionExpression):
+        """Dimensions can only have exact_cardinality OR min/max_cardinality, but not both"""
+        if dimension.exact_cardinality is not None and (
+            dimension.minimum_cardinality is not None or dimension.maximum_cardinality is not None
+        ):
+            raise ValidationError(
+                "Can only specify EITHER exact_cardinality OR minimum/maximum cardinality, " f"got: {dimension}"
+            )
+
+    @staticmethod
+    def dimension_ordinal(dimension: DimensionExpression):
+        """minimum_cardinality must be less than maximum_cardinality when both are set"""
+        if dimension.minimum_cardinality is not None and dimension.maximum_cardinality is not None:
+            if dimension.minimum_cardinality > dimension.maximum_cardinality:
+                raise ValidationError(
+                    "minimum_cardinality must be lesser than maximum_cardinality when both are set. "
+                    f"got minimum: {dimension.minimum_cardinality}, maximum: {dimension.maximum_cardinality}"
+                )
+
+
 class ArrayRangeGenerator(ABC):
     """
     Metaclass for generating a given format of array range.
@@ -142,9 +265,12 @@ class ArrayRangeGenerator(ABC):
         self.dtype = dtype
 
     def make(self) -> RangeResult:
-        """Create the string form of the array representation"""
+        """
+        Create the string form of the array representation, validating first
+        """
+        self.validate()
+
         if not self.array.dimensions and not self.has_bounded_dimensions:
-            # any-shaped array
             return self.any_shape(self.array)
         elif not self.array.dimensions and self.has_bounded_dimensions:
             return self.bounded_dimensions(self.array)
@@ -152,6 +278,20 @@ class ArrayRangeGenerator(ABC):
             return self.parameterized_dimensions(self.array)
         else:
             return self.complex_dimensions(self.array)
+
+    def validate(self):
+        """
+        Ensure that the given ArrayExpression is valid using :class:`.ArrayValidator`
+
+        .. todo::
+
+            Integrate with more general schema validation that happens when a schema is loaded,
+            rather than when an array is generated
+
+        Raises:
+            :class:`.ValidationError` if the schema is invalid
+        """
+        ArrayValidator.validate(self.array)
 
     @property
     def has_bounded_dimensions(self) -> bool:
@@ -190,9 +330,6 @@ class ArrayRangeGenerator(ABC):
 class ListOfListsArray(ArrayRangeGenerator):
     """
     Represent arrays as lists of lists!
-
-    TODO: Move all validation of values (eg. anywhere we raise a ValueError) to the ArrayExpression
-    dataclass and out of the generator class
     """
 
     REPR = ArrayRepresentation.LIST
@@ -204,9 +341,7 @@ class ListOfListsArray(ArrayRangeGenerator):
     @staticmethod
     def _parameterized_dimension(dimension: DimensionExpression, dtype: str) -> RangeResult:
         # TODO: Preserve label representation in some readable way! doing the MVP now of using conlist
-        if dimension.exact_cardinality and (dimension.minimum_cardinality or dimension.maximum_cardinality):
-            raise ValueError("Can only specify EITHER exact_cardinality OR minimum/maximum cardinality")
-        elif dimension.exact_cardinality:
+        if dimension.exact_cardinality:
             dmin = dimension.exact_cardinality
             dmax = dimension.exact_cardinality
         elif dimension.minimum_cardinality or dimension.maximum_cardinality:
@@ -268,7 +403,6 @@ class ListOfListsArray(ArrayRangeGenerator):
             # e.g., if min = 2, max = 3, range = Union[List[List[dtype]], List[List[List[dtype]]]]
             min_dims = array.minimum_number_dimensions if array.minimum_number_dimensions is not None else 1
             ranges = [self._list_of_lists(i, self.dtype) for i in range(min_dims, array.maximum_number_dimensions + 1)]
-            # TODO: Format this nicely!
             return RangeResult(range="Union[" + ", ".join(ranges) + "]")
         else:
             # min specified with no max
@@ -302,6 +436,7 @@ class ListOfListsArray(ArrayRangeGenerator):
 
         A mixture of ``List`` , :class:`.conlist` , and :class:`.AnyShapeArray` .
         """
+        res = None
         # first process any unlabeled dimensions which must be the innermost level of the range,
         # then wrap that with labeled dimensions
         if array.exact_number_dimensions or (
@@ -316,9 +451,8 @@ class ListOfListsArray(ArrayRangeGenerator):
                 # equivalent to labeled shape
                 return self.parameterized_dimensions(array)
             else:
-                raise ValueError(
-                    "if exact_number_dimensions is provided, it must be greater than the parameterized dimensions"
-                )
+                # invalid - raise exception
+                ArrayValidator.array_consistent_n_dimensions(array)
 
         elif array.maximum_number_dimensions is not None and not array.maximum_number_dimensions:
             # unlimited n dimensions, so innermost is AnyShape with dtype
@@ -330,14 +464,6 @@ class ListOfListsArray(ArrayRangeGenerator):
                 # res.range will be wrapped with the 2 labeled dimensions later
                 res.range = self._list_of_lists(array.minimum_number_dimensions - len(array.dimensions), res.range)
 
-        elif array.minimum_number_dimensions and array.maximum_number_dimensions is None:
-            raise ValueError(
-                (
-                    "Cannot specify a minimum_number_dimensions while maximum is None while using labeled dimensions - "
-                    "either use exact_number_dimensions > len(dimensions) for extra parameterized dimensions or set "
-                    "maximum_number_dimensions explicitly to False for unbounded dimensions"
-                )
-            )
         elif array.maximum_number_dimensions:
             initial_min = array.minimum_number_dimensions if array.minimum_number_dimensions is not None else 0
             dmin = max(len(array.dimensions), initial_min) - len(array.dimensions)
@@ -346,7 +472,8 @@ class ListOfListsArray(ArrayRangeGenerator):
             res = self.bounded_dimensions(
                 ArrayExpression(minimum_number_dimensions=dmin, maximum_number_dimensions=dmax)
             )
-        else:
+
+        if res is None:
             raise ValueError("Unsupported array specification! this is almost certainly a bug!")  # pragma: no cover
 
         # Wrap inner dimension with labeled dimension
@@ -366,13 +493,98 @@ class ListOfListsArray(ArrayRangeGenerator):
         return res
 
 
-class NPTypingArray(ArrayRangeGenerator):
+class NumpydanticArray(ArrayRangeGenerator):
     """
-    Represent array range with nptyping, and serialization/loading with an ArrayProxy
+    Represent array range with :class:`numpydantic.NDArray` annotations,
+    allowing an abstract array specification to be used with many different array
+    libraries.
     """
 
-    REPR = ArrayRepresentation.NPARRAY
+    REPR = ArrayRepresentation.NUMPYDANTIC
+    NUMPYDANTIC_VERSION = "1.2.0"
+    """
+    Minimum numpydantic version needed to be installed in the environment using
+    the generated models
+    """
+    IMPORTS = Imports() + Import(
+        module="numpydantic", objects=[ObjectImport(name="NDArray"), ObjectImport(name="Shape")]
+    )
 
-    def __init__(self, **kwargs):
-        super(self).__init__(**kwargs)
-        raise NotImplementedError("NPTyping array ranges are not implemented yet :(")
+    @staticmethod
+    def ndarray_annotation(shape: Optional[List[Union[int, str]]] = None, dtype: Optional[str] = None) -> str:
+        """
+        Make a stringified :class:`numpydantic.NDArray` annotation for a given shape
+        and dtype.
+
+        If either ``shape`` or ``dtype`` is ``None`` , use ``Any``
+        """
+        if shape is None:
+            shape = "Any"
+        else:
+            shape_expression = ", ".join([str(i) for i in shape])
+            shape = f"Shape[{shape_expression}]"
+
+        if dtype is None or dtype in ("Any", "AnyType"):
+            dtype = "Any"
+
+        if shape == "Any" and dtype == "Any":
+            return "NDArray"
+        else:
+            return f"NDArray[{shape}, {dtype}]"
+
+    def any_shape(self, array: Optional[ArrayRepresentation] = None) -> SlotResult:
+        """
+        Any shaped array, either an unparameterized :class:`numpydantic.NDArray`
+        if dtype is :class:`typing.Any` , or like ``NDArray[Any, {self.dtype}]``
+        otherwise.
+        """
+        if self.dtype in ("Any", "AnyType"):
+            annotation = "NDArray"
+        else:
+            annotation = f"NDArray[Any, {self.dtype}]"
+
+        return SlotResult(annotation=annotation, imports=self.IMPORTS)
+
+    def bounded_dimensions(self, array: ArrayExpression) -> SlotResult:
+        """
+        Number of dimensions specified without shape
+        """
+        if array.exact_number_dimensions or (
+            array.minimum_number_dimensions
+            and array.maximum_number_dimensions
+            and array.minimum_number_dimensions == array.maximum_number_dimensions
+        ):
+            exact_dims = array.exact_number_dimensions or array.minimum_number_dimensions
+
+            return SlotResult(annotation=self.ndarray_annotation(["*"] * exact_dims, self.dtype), imports=self.IMPORTS)
+        elif not array.maximum_number_dimensions and (
+            array.minimum_number_dimensions is None or array.minimum_number_dimensions == 1
+        ):
+            return self.any_shape()
+        elif array.maximum_number_dimensions:
+            # e.g., if min = 2, max = 3, annotation = Union[List[List[dtype]], List[List[List[dtype]]]]
+            min_dims = array.minimum_number_dimensions if array.minimum_number_dimensions is not None else 1
+            annotations = [
+                self.ndarray_annotation(["*"] * i, self.dtype)
+                for i in range(min_dims, array.maximum_number_dimensions + 1)
+            ]
+            return SlotResult(annotation="Union[" + ", ".join(annotations) + "]", imports=self.IMPORTS)
+        else:
+            # min specified with no max
+            # e.g., if min = 3, annotation = List[List[AnyShapeArray[dtype]]]
+            shape_inner = ["*"] * array.minimum_number_dimensions
+            shape_inner.append("...")
+            return SlotResult(
+                annotation=self.ndarray_annotation(shape_inner, self.dtype),
+                imports=self.IMPORTS,
+            )
+
+    def parameterized_dimensions(self, array: ArrayExpression) -> SlotResult:
+        """
+        Arrays with constrained shapes or labels
+        """
+
+        pass
+
+    def complex_dimensions(self, array: ArrayExpression) -> SlotResult:
+        pass
