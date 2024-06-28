@@ -684,6 +684,7 @@ def check_data(
     description: str = None,
     coerced: Dict = None,
     exclude_rdf=False,
+    instance_check_call: Callable = None,
 ):
     """
     Validate the given object against the given schema using the given framework.
@@ -703,6 +704,8 @@ def check_data(
     :param target_class: the type of the object
     :param description: description of this particular test combination
     :param coerced: Dict representation of repaired/coerced form of object
+    :param exclude_rdf: exclude RDF conversion
+    :param instance_check_call: function to call to check the instance
     :return:
     """
     out_dir = _schema_out_path(schema)
@@ -785,6 +788,8 @@ def check_data(
                     if isinstance(gen, PythonGenerator):
                         ttl_path = out_dir / f"{data_name}.ttl"
                         _convert_data_to_rdf(schema, object_to_validate, target_class, ttl_path)
+                if valid and instance_check_call:
+                    assert instance_check_call(py_inst)
             logging.info(f"fwk: {framework}, cls: {target_class}, inst: {object_to_validate}, valid: {valid}")
 
         elif isinstance(gen, JsonSchemaGenerator):

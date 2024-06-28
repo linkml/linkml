@@ -93,7 +93,7 @@ def test_annotation(
         class_annotations["class_metaslot"] = "..."
     if not is_valid:
         pytest.skip("TODO: test invalid annotations")
-    print(triples if "nested" not in name else None)
+    # print(triples if "nested" not in name else None)
     classes = {
         "MetaclassM": {
             "attributes": {
