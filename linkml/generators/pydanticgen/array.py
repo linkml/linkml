@@ -198,11 +198,7 @@ class ArrayValidator:
         or set maximum_number_dimensions to ``False`` to specify unbounded extra anonymous
         dimensions to avoid ambiguity.
         """
-        if (
-            array.minimum_number_dimensions is not None
-            and array.maximum_number_dimensions is None
-            and array.dimensions
-        ):
+        if array.minimum_number_dimensions is not None and array.maximum_number_dimensions is None and array.dimensions:
             raise ValidationError(
                 (
                     "Cannot specify a minimum_number_dimensions while maximum is None while using labeled dimensions - "
@@ -509,7 +505,7 @@ class NumpydanticArray(ArrayRangeGenerator):
     IMPORTS = Imports() + Import(
         module="numpydantic", objects=[ObjectImport(name="NDArray"), ObjectImport(name="Shape")]
     )
-    INJECTS = [f"NUMPYDANTIC_VERSION = \"{NUMPYDANTIC_VERSION}\""]
+    INJECTS = [f'NUMPYDANTIC_VERSION = "{NUMPYDANTIC_VERSION}"']
 
     def make(self) -> SlotResult:
         result = super().make()
@@ -529,7 +525,7 @@ class NumpydanticArray(ArrayRangeGenerator):
             shape = "Any"
         else:
             shape_expression = ", ".join([str(i) for i in shape])
-            shape = f"Shape[\"{shape_expression}\"]"
+            shape = f'Shape["{shape_expression}"]'
 
         if dtype is None or dtype in ("Any", "AnyType"):
             dtype = "Any"
@@ -604,9 +600,7 @@ class NumpydanticArray(ArrayRangeGenerator):
             # e.g., if min = 3, annotation = List[List[AnyShapeArray[dtype]]]
             shape_inner = ["*"] * array.minimum_number_dimensions
             shape_inner.append("...")
-            return SlotResult(
-                annotation=self.ndarray_annotation(shape_inner, self.dtype)
-            )
+            return SlotResult(annotation=self.ndarray_annotation(shape_inner, self.dtype))
 
     def parameterized_dimensions(self, array: ArrayExpression) -> SlotResult:
         """
@@ -662,10 +656,10 @@ class NumpydanticArray(ArrayRangeGenerator):
                 this_dims = dims.copy()
                 this_dims.extend(["*"] * (i - len(dims)))
                 dim_union.append(self.ndarray_annotation(this_dims, self.dtype))
-            dim_union = ', '.join(dim_union)
+            dim_union = ", ".join(dim_union)
             annotation = f"Union[{dim_union}]"
 
         if annotation is None:
-            raise RuntimeError(f'Unhandled annotation case! {array}')
+            raise RuntimeError(f"Unhandled annotation case! {array}")
 
         return SlotResult(annotation=annotation)

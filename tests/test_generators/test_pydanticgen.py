@@ -1505,8 +1505,8 @@ def test_generate_array_anyshape(case, representation, array_anyshape):
     """
     if ArrayRepresentation.LIST in representation and isinstance(case.array, np.ndarray):
         case.array = case.array.tolist()
-    if ArrayRepresentation.NUMPYDANTIC in representation and case.type == 'fail':
-        pytest.skip('numpydantic coerces scalars rather than failing validation')
+    if ArrayRepresentation.NUMPYDANTIC in representation and case.type == "fail":
+        pytest.skip("numpydantic coerces scalars rather than failing validation")
 
     generated = PydanticGenerator(array_anyshape, array_representations=representation).serialize()
     mod = compile_python(generated)
