@@ -113,12 +113,12 @@ def render_comparison(path, cls, string=False) -> str:
         class_def = {a_cls: class_def}
         class_strs.append(YAMLDumper().dumps(class_def))
         pydantic_strs.append(render_class(path, a_cls))
-        npd_strs.append(render_class(path, a_cls, representation='numpdantic'))
+        npd_strs.append(render_class(path, a_cls, representation='numpydantic'))
         
     class_str = "\n".join(class_strs)
     pydantic_str = "\n".join(pydantic_strs)
     npd_str = "\n".join(npd_strs)
-    md = COMPARISON.format(linkml=class_str, pydantic_lol=pydantic_str)
+    md = COMPARISON.format(linkml=class_str, pydantic_lol=pydantic_str, pydantic_npd=npd_str)
     if string:
         return md
     else:
@@ -173,6 +173,65 @@ try:
 except Exception as e:
     console.print(e)
 ```
+
+### Array Library Integration
+
+The most basic kind of array annotations that the pydantic generator can produce are "list of list" style arrays,
+but most practical uses of arrays require specialized array libraries. 
+
+The {class}`.PydanticGenerator` also supports generating array annotations with {mod}`numpydantic`, which allows
+you to use a single model with an extensible set of array libraries.
+
+To generate numpydantic-style array annotations:
+
+```python
+PydanticGenerator('my_schema.yaml', array_representations=['numpydantic'])
+```
+
+Which yields a model like this (and see the examples throughout the rest of this page)
+
+```python
+from pydantic import BaseModel
+from numpydantic import NDArray, Shape
+
+class MyModel(BaseModel):
+    array: NDArray[Shape["3 x, 4 y, * z"], int]
+```
+
+Then use it as you please:
+
+```python
+import numpy as np
+import dask.array as da
+import zarr
+
+# numpy
+model = MyModel(array=np.zeros((3, 4, 5), dtype=int))
+# dask
+model = MyModel(array=da.zeros((3, 4, 5), dtype=int))
+# hdf5 datasets
+model = MyModel(array=('data.h5', '/nested/dataset'))
+# zarr arrays
+model = MyModel(array=zarr.zeros((3,4,5), dtype=int))
+model = MyModel(array='data.zarr')
+model = MyModel(array=('data.zarr', '/nested/dataset'))
+# video files
+model = MyModel(array="data.mp4")
+```
+
+This makes it possible for your schema to be extremely *implementation general* - data formats and standards
+can support many array backends out of the box, reducing coupling between the abstract standard and its concrete implementation.
+More humble array users get powerful array modeling tools right from a yaml schema.
+
+```{tip}
+To use numpydantic arrays, you'll need to add it as a dependency in your project.
+
+Schema rendered with numpydantic arrays will include a module-level constant `NUMPYDANTIC_VERSION` which specifies the
+minimum version that it was designed for, but if you already depend on `linkml` in your project you can add the
+`numpydantic` extra (eg. `pip install linkml[numpydantic]`) which will give you a `numpydantic` dependency that matches
+the version supported by `linkml`.
+```
+
 
 ### Specification
 
