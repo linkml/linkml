@@ -146,6 +146,7 @@ numpy = [
   { "version" = ">=1.24.3", "python" = "<3.12" },
   { "version" = ">=1.25.2", "python" = ">=3.12" }
 ]
+numpydantic = { version=">=1.2.1", "python" = ">=3.9" }
 requests-cache = "^1.2.0"
 mock = "^5.1.0"
 

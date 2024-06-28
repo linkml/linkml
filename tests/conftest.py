@@ -204,6 +204,14 @@ def pytest_collection_modifyitems(config, items: List[pytest.Item]):
         items.remove(test_deps[0])
         items.append(test_deps[0])
 
+    # numpydantic only supported python>=3.9
+    if sys.version_info.minor < 9:
+        skip_npd = pytest.mark.skip(reason="Numpydantic is only supported in python>=3.9")
+        for item in items:
+            if item.get_closest_marker("pydantic_npd"):
+                item.add_marker(skip_npd)
+
+
     # the fixture that mocks black import failures should always come all the way last
     # see: https://github.com/linkml/linkml/pull/2209#issuecomment-2231548078
     # this causes really hard to diagnose errors, but we can't fail a test run if
