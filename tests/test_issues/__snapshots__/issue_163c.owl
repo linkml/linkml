@@ -23,10 +23,10 @@ ex:C2 a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "c2" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:minCardinality 0 ;
+            owl:allValuesFrom linkml:Uriorcurie ;
             owl:onProperty ex:s2 ],
         [ a owl:Restriction ;
-            owl:allValuesFrom linkml:Uriorcurie ;
+            owl:minCardinality 0 ;
             owl:onProperty ex:s2 ],
         [ a owl:Restriction ;
             owl:maxCardinality 1 ;
