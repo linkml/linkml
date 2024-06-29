@@ -385,7 +385,7 @@ def test_deep_schema(specify_redundant, preserve_class_is_a):
         sb.add_class(cn, is_a=p, slot_usage=[slot_usage], mixins=mixins, slots=slots, **extra)
     sb.add_defaults()
     schema = sb.schema
-    local_id = f"SR{specify_redundant}-PCI{preserve_class_is_a}"
+    # local_id = f"SR{specify_redundant}-PCI{preserve_class_is_a}"
     # print(yaml_dumper.dump(schema, f"/tmp/asserted-schema-{local_id}.yaml"))
     sv = SchemaView(schema)
     flattener = LogicalModelTransformer(sv, preserve_class_is_a=preserve_class_is_a)
