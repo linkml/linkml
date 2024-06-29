@@ -366,8 +366,8 @@
         "http://www.w3.org/2004/02/skos/core#mappingRelation"
       ],
       "slot_uri": "http://www.w3.org/2004/02/skos/core#mappingRelation",
-      "multivalued": true,
       "range": "uriorcurie",
+      "multivalued": true,
       "@type": "SlotDefinition"
     },
     {
@@ -380,8 +380,8 @@
       ],
       "is_a": "mappings",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#exactMatch",
-      "multivalued": true,
       "range": "uriorcurie",
+      "multivalued": true,
       "@type": "SlotDefinition"
     },
     {
@@ -394,8 +394,8 @@
       ],
       "is_a": "mappings",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#closeMatch",
-      "multivalued": true,
       "range": "uriorcurie",
+      "multivalued": true,
       "@type": "SlotDefinition"
     },
     {
@@ -408,8 +408,8 @@
       ],
       "is_a": "mappings",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#relatedMatch",
-      "multivalued": true,
       "range": "uriorcurie",
+      "multivalued": true,
       "@type": "SlotDefinition"
     },
     {
@@ -422,8 +422,8 @@
       ],
       "is_a": "mappings",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#narrowMatch",
-      "multivalued": true,
       "range": "uriorcurie",
+      "multivalued": true,
       "@type": "SlotDefinition"
     },
     {
@@ -436,8 +436,8 @@
       ],
       "is_a": "mappings",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#broadMatch",
-      "multivalued": true,
       "range": "uriorcurie",
+      "multivalued": true,
       "@type": "SlotDefinition"
     },
     {

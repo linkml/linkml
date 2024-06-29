@@ -338,13 +338,13 @@
       "is_a": "extensions",
       "domain": "Annotatable",
       "slot_uri": "https://w3id.org/linkml/annotations",
-      "multivalued": true,
       "owner": "Annotation",
       "domain_of": [
         "Annotatable",
         "Annotation"
       ],
       "range": "Annotation",
+      "multivalued": true,
       "inlined": true,
       "@type": "SlotDefinition"
     },
@@ -356,13 +356,13 @@
       "imported_from": "linkml:extensions",
       "domain": "Extensible",
       "slot_uri": "https://w3id.org/linkml/extensions",
-      "multivalued": true,
       "owner": "Extensible",
       "domain_of": [
         "Extension",
         "Extensible"
       ],
       "range": "Extension",
+      "multivalued": true,
       "inlined": true,
       "@type": "SlotDefinition"
     },
@@ -387,6 +387,13 @@
     {
       "name": "extension_value",
       "definition_uri": "https://w3id.org/linkml/extension_value",
+      "annotations": [
+        {
+          "tag": "simple_dict_value",
+          "value": true,
+          "@type": "Annotation"
+        }
+      ],
       "description": "the actual annotation",
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",

@@ -45,6 +45,10 @@
       "alias": {
          "@id": "skos:prefLabel"
       },
+      "contexts": {
+         "@type": "@id",
+         "@id": "contexts"
+      },
       "predicate": {
          "@context": {
             "@vocab": "@null",
@@ -106,6 +110,13 @@
       "bidirectional": {
          "@type": "xsd:boolean",
          "@id": "bidirectional"
+      },
+      "bindings": {
+         "@type": "@id",
+         "@id": "bindings"
+      },
+      "binds_value_of": {
+         "@id": "binds_value_of"
       },
       "boolean_slot": {
          "@type": "@id",
@@ -305,6 +316,9 @@
          "@type": "@id",
          "@id": "followed_by"
       },
+      "framework": {
+         "@id": "framework"
+      },
       "from_schema": {
          "@type": "@id",
          "@id": "skos:inScheme"
@@ -487,6 +501,10 @@
          "@type": "xsd:boolean",
          "@id": "locally_reflexive"
       },
+      "type": {
+         "@type": "@id",
+         "@id": "type"
+      },
       "mappings": {
          "@type": "@id",
          "@id": "skos:mappingRelation"
@@ -557,6 +575,15 @@
       },
       "notes": {
          "@id": "skos:editorialNote"
+      },
+      "obligation_level": {
+         "@context": {
+            "@vocab": "@null",
+            "text": "skos:notation",
+            "description": "skos:prefLabel",
+            "meaning": "@id"
+         },
+         "@id": "obligation_level"
       },
       "open_world": {
          "@type": "xsd:boolean",
@@ -823,6 +850,10 @@
          "@type": "xsd:boolean",
          "@id": "tree_root"
       },
+      "type_mappings": {
+         "@type": "@id",
+         "@id": "type_mappings"
+      },
       "uri": {
          "@type": "@id",
          "@id": "uri"
@@ -941,6 +972,9 @@
       "Element": {
          "@id": "Element"
       },
+      "EnumBinding": {
+         "@id": "EnumBinding"
+      },
       "EnumDefinition": {
          "@id": "EnumDefinition"
       },
@@ -1006,6 +1040,9 @@
       },
       "TypeExpression": {
          "@id": "TypeExpression"
+      },
+      "TypeMapping": {
+         "@id": "TypeMapping"
       },
       "UniqueKey": {
          "@id": "UniqueKey"

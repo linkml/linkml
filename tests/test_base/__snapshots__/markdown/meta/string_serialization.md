@@ -25,6 +25,7 @@ URI: [linkml:string_serialization](https://w3id.org/linkml/string_serialization)
  * [Definition](Definition.md)
  * [EnumDefinition](EnumDefinition.md)
  * [SlotDefinition](SlotDefinition.md)
+ * [TypeMapping](TypeMapping.md)
 
 ## Other properties
 

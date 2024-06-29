@@ -59,6 +59,7 @@ URI: [linkml:BasicSubset](https://w3id.org/linkml/BasicSubset)
  * [default_range](default_range.md) - default slot range to be used if range element is omitted from a slot definition
  * [deprecated](deprecated.md) - Description of why and when this element will no longer be used
  * [description](description.md) - a textual description of the element's purpose and use
+ * [enum_binding➞range](enum_binding_range.md)
  * [enum_uri](enum_uri.md) - URI of the enum that provides a semantic interpretation of the element in a linked data context. The URI may come from any namespace and may be shared between schemas
  * [enums](enums.md) - An index to the collection of all enum definitions in the schema
  * [examples](examples.md) - example usages of an element

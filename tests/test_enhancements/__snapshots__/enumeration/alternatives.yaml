@@ -419,13 +419,13 @@ slots:
     name: allEnums__code_1
     from_schema: http://example.org/test/alternatives
     slot_uri: evidence:code_1
-    multivalued: true
     alias: code_1
     owner: all_enums
     domain_of:
     - all_enums
     range: open_enum
     required: true
+    multivalued: true
   allEnums__code_2:
     name: allEnums__code_2
     from_schema: http://example.org/test/alternatives
@@ -512,9 +512,9 @@ classes:
         identifier: true
       code_1:
         name: code_1
-        multivalued: true
         range: open_enum
         required: true
+        multivalued: true
       code_2:
         name: code_2
         range: constrained_enum_2

@@ -57,6 +57,7 @@ refer to the official URI for each construct, e.g.
      * [SchemaDefinition](SchemaDefinition.md) - A collection of definitions that make up a schema or a data model.
      * [SubsetDefinition](SubsetDefinition.md) - an element that can be used to group other metamodel elements
      * [TypeDefinition](TypeDefinition.md) - an element that whose instances are atomic scalar values that can be mapped to primitive types
+ * [EnumBinding](EnumBinding.md) - A binding of a slot or a class to a permissible value from an enumeration.
  * [Example](Example.md) - usage example and description
  * [Extension](Extension.md) - a tag/value pair used to add non-model information to an entry
      * [Annotation](Annotation.md) - a tag/value pair with the semantics of OWL Annotation
@@ -70,6 +71,7 @@ refer to the official URI for each construct, e.g.
  * [ReachabilityQuery](ReachabilityQuery.md) - A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a  set of source nodes to a set of descendants or ancestors over a set of relationship types.
  * [Setting](Setting.md) - assignment of a key to a value
  * [StructuredAlias](StructuredAlias.md) - object that contains meta data about a synonym or alias including where it came from (source) and its scope (narrow, broad, etc.)
+ * [TypeMapping](TypeMapping.md) - Represents how a slot or type can be serialized to a format.
  * [UniqueKey](UniqueKey.md) - a collection of slots whose values uniquely identify an instance of a class
 
 ### Mixins
@@ -90,6 +92,7 @@ refer to the official URI for each construct, e.g.
  * [abbreviation](abbreviation.md) - An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in  contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance  readability. When a power of a base unit needs to be expressed, such as squares this can be done using  abbreviations rather than symbols (source: qudt)
  * [abstract](abstract.md) - Indicates the class or slot cannot be directly instantiated and is intended for grouping purposes.
  * [alias](alias.md) - the name used for a slot in the context of its owning class.  If present, this is used instead of the actual slot name.
+ * [structured_alias➞contexts](alias_contexts.md) - The context in which an alias should be applied
  * [structured_alias➞predicate](alias_predicate.md) - The relationship between an element and its alias.
  * [aliases](aliases.md) - Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.
  * [alt_description➞source](alt_description_source.md) - the source of an attributed description
@@ -102,6 +105,8 @@ refer to the official URI for each construct, e.g.
  * [attributes](attributes.md) - Inline definition of slots
  * [base](base.md) - python base type in the LinkML runtime that implements this type definition
  * [bidirectional](bidirectional.md) - in addition to preconditions entailing postconditions, the postconditions entail the preconditions
+ * [bindings](bindings.md) - A collection of enum bindings that specify how a slot can be bound to a permissible value from an enumeration.
+ * [binds_value_of](binds_value_of.md) - A path to a slot that is being bound to a permissible value from an enumeration.
  * [boolean_slot](boolean_slot.md) - A grouping of slots that expression a boolean operator over a list of operands
      * [all_of](all_of.md) - holds if all of the expressions hold
          * [class_expression➞all_of](class_expression_all_of.md)
@@ -171,6 +176,7 @@ refer to the official URI for each construct, e.g.
      * [annotations](annotations.md) - a collection of tag/text tuples with the semantics of OWL Annotation
  * [followed_by](followed_by.md) - in a sequential list, this indicates the next member
      * [path_expression➞followed_by](path_expression_followed_by.md)
+ * [➞framework](framework_key.md) - The name of a format that can be used to serialize LinkML data. The string value should be a code from the LinkML frameworks vocabulary, but this is not strictly enforced
  * [from_schema](from_schema.md) - id of the schema that defined the element
  * [generation_date](generation_date.md) - date and time that the schema was loaded/generated
  * [has_quantity_kind](has_quantity_kind.md) - Concept in a vocabulary or ontology that denotes the kind of quantity being measured, e.g. length
@@ -180,7 +186,7 @@ refer to the official URI for each construct, e.g.
  * [identifier](identifier.md) - True means that the key slot(s) uniquely identifies the elements. There can be at most one identifier or key per container
  * [identifier_pattern](identifier_pattern.md) - A regular expression that is used to obtain a set of identifiers from a source_ontology to construct a set of permissible values
  * [iec61360code](iec61360code.md)
- * [ifabsent](ifabsent.md) - function that provides a default value for the slot.  Possible values for this slot are defined in linkml.utils.ifabsent_functions.default_library:
+ * [ifabsent](ifabsent.md) - function that provides a default value for the slot.
  * [implements](implements.md) - An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.
  * [implicit_prefix](implicit_prefix.md) - Causes the slot value to be interpreted as a uriorcurie after prefixing with this string
  * [import_as](import_as.md)
@@ -226,11 +232,12 @@ refer to the official URI for each construct, e.g.
      * [has_member](has_member.md) - the value of the slot is multivalued with at least one member satisfying the condition
      * [maximum_cardinality](maximum_cardinality.md) - the maximum number of entries for a multivalued slot
      * [minimum_cardinality](minimum_cardinality.md) - the minimum number of entries for a multivalued slot
-     * [value_presence](value_presence.md) - if true then a value must be present (for lists there must be at least one value). If false then a value must be absent (for lists, must be empty)
+     * [value_presence](value_presence.md) - if PRESENT then a value must be present (for lists there must be at least one value). If ABSENT then a value must be absent (for lists, must be empty)
  * [literal_form](literal_form.md) - The literal lexical form of a structured alias; i.e the actual alias value.
  * [local_name_source](local_name_source.md) - the ncname of the source of the name
  * [local_name_value](local_name_value.md) - a name assigned to an element in a given ontology
  * [local_names](local_names.md)
+ * [➞type](mapped_type.md) - type to coerce to
  * [mappings](mappings.md) - A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
      * [broad mappings](broad_mappings.md) - A list of terms from different schemas or terminology systems that have broader meaning.
      * [close mappings](close_mappings.md) - A list of terms from different schemas or terminology systems that have close meaning.
@@ -256,6 +263,7 @@ refer to the official URI for each construct, e.g.
  * [name](name.md) - the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
      * [schema_definition➞name](schema_definition_name.md) - a unique name for the schema that is both human-readable and consists of only characters from the NCName set
  * [notes](notes.md) - editorial notes about an element intended primarily for internal consumption
+ * [obligation_level](obligation_level.md) - The level of obligation or recommendation strength for a metadata element
  * [open_world](open_world.md) - if true, the the postconditions may be omitted in instance data, but it is valid for an inference engine to add these
  * [owned_by](owned_by.md) - agent that owns or is the steward of the element
  * [owner](owner.md) - the "owner" of the slot. It is the class if it appears in the slots list, otherwise the declaring slot
@@ -271,6 +279,7 @@ refer to the official URI for each construct, e.g.
  * [publisher](publisher.md) - An entity responsible for making the resource available
  * [pv_formula](pv_formula.md) - Defines the specific formula to be used to generate the permissible values.
  * [range](range.md) - defines the type of the object of the slot.  Given the following slot definition
+     * [enum_binding➞range](enum_binding_range.md)
  * [range_expression](range_expression.md) - A range that is described as a boolean expression combining existing ranges
  * [rank](rank.md) - the relative order in which the element occurs, lower values are given precedence
  * [reachable_from](reachable_from.md) - Specifies a query for obtaining a list of permissible values based on graph reachability
@@ -329,6 +338,7 @@ refer to the official URI for each construct, e.g.
  * [traverse](traverse.md) - the slot to traverse
  * [traverse_up](traverse_up.md) - True if the direction of the reachability query is reversed and ancestors are retrieved
  * [tree_root](tree_root.md) - Indicates that this is the Container class which forms the root of the serialized document structure in tree serializations
+ * [type_mappings](type_mappings.md) - A collection of type mappings that specify how a slot's range should be mapped or serialized in different frameworks
  * [type_definition➞uri](type_uri.md) - The uri that defines the possible values for the type definition
  * [typeof](typeof.md) - A parent type from which type properties are inherited
  * [types](types.md) - An index to the collection of all type definitions in the schema
@@ -352,6 +362,7 @@ refer to the official URI for each construct, e.g.
 ### Enums
 
  * [alias_predicate_enum](alias_predicate_enum.md) - permissible values for the relationship between an element and an alias
+ * [obligation_level_enum](obligation_level_enum.md) - The level of obligation or recommendation strength for a metadata element
  * [presence_enum](presence_enum.md) - enumeration of conditions by which a slot value should be set
  * [pv_formula_options](pv_formula_options.md) - The formula used to generate the set of permissible values from the code_set values
  * [relational_role_enum](relational_role_enum.md) - enumeration of roles a slot on a relationship class can play

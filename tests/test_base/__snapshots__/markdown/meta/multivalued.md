@@ -18,7 +18,9 @@ URI: [linkml:multivalued](https://w3id.org/linkml/multivalued)
 
 ## Used by
 
+ * [AnonymousSlotExpression](AnonymousSlotExpression.md)
  * [SlotDefinition](SlotDefinition.md)
+ * [SlotExpression](SlotExpression.md)
 
 ## Other properties
 

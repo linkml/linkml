@@ -39,17 +39,23 @@ ex:A a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "a" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
+            owl:allValuesFrom linkml:Integer ;
+            owl:onProperty ex:len ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
             owl:onProperty ex:unit ],
         [ a owl:Restriction ;
             owl:maxCardinality 1 ;
+            owl:onProperty ex:len ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom linkml:String ;
             owl:onProperty ex:id ],
         [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty ex:len ],
+            owl:allValuesFrom linkml:String ;
+            owl:onProperty ex:name ],
         [ a owl:Restriction ;
-            owl:allValuesFrom linkml:Integer ;
-            owl:onProperty ex:len ],
+            owl:minCardinality 0 ;
+            owl:onProperty ex:name ],
         [ a owl:Restriction ;
             owl:maxCardinality 1 ;
             owl:onProperty ex:name ],
@@ -60,33 +66,27 @@ ex:A a owl:Class,
             owl:allValuesFrom ex:unitcode ;
             owl:onProperty ex:unit ],
         [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty ex:unit ],
-        [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty ex:name ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
+            owl:maxCardinality 1 ;
             owl:onProperty ex:id ],
         [ a owl:Restriction ;
             owl:minCardinality 0 ;
             owl:onProperty ex:len ],
         [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
-            owl:onProperty ex:name ] ;
+            owl:maxCardinality 1 ;
+            owl:onProperty ex:unit ] ;
     skos:inScheme <http://example.org/sample/example1> .
 
 ex:B a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "b" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
+            owl:allValuesFrom ex:A ;
             owl:onProperty ex:has_a ],
         [ a owl:Restriction ;
             owl:minCardinality 0 ;
             owl:onProperty ex:has_a ],
         [ a owl:Restriction ;
-            owl:allValuesFrom ex:A ;
+            owl:maxCardinality 1 ;
             owl:onProperty ex:has_a ],
         ex:A ;
     skos:inScheme <http://example.org/sample/example1> .
@@ -146,10 +146,10 @@ ex:C a owl:Class,
             owl:minCardinality 0 ;
             owl:onProperty ex:has_b ],
         [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
+            owl:allValuesFrom ex:B ;
             owl:onProperty ex:has_b ],
         [ a owl:Restriction ;
-            owl:allValuesFrom ex:B ;
+            owl:maxCardinality 1 ;
             owl:onProperty ex:has_b ],
         ex:B ;
     skos:inScheme <http://example.org/sample/example1> .
