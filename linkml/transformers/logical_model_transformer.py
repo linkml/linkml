@@ -444,7 +444,7 @@ class LogicalModelTransformer(ModelTransformer):
                 logger.debug(f"Simplified member of: {x}")
                 simplified_att = self._from_logical_expression(x)
                 for k, v in simplified_att.__dict__.items():
-                    if v is  None or v is False:
+                    if v is None or v is False:
                         if k in ["multivalued"]:
                             continue
                     setattr(att, k, v)
