@@ -41,9 +41,9 @@ from linkml.generators.pydanticgen.template import (
     PydanticModule,
     TemplateModel,
 )
+from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
 from linkml.utils import deprecation_warning
 from linkml.utils.generator import shared_arguments
-from linkml.utils.ifabsent_functions import ifabsent_value_declaration
 
 if int(PYDANTIC_VERSION[0]) == 1:
     deprecation_warning("pydantic-v1")
@@ -67,7 +67,9 @@ def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
 DEFAULT_IMPORTS = (
     Imports()
     + Import(module="__future__", objects=[ObjectImport(name="annotations")])
-    + Import(module="datetime", objects=[ObjectImport(name="datetime"), ObjectImport(name="date")])
+    + Import(
+        module="datetime", objects=[ObjectImport(name="datetime"), ObjectImport(name="date"), ObjectImport(name="time")]
+    )
     + Import(module="decimal", objects=[ObjectImport(name="Decimal")])
     + Import(module="enum", objects=[ObjectImport(name="Enum")])
     + Import(module="re")
@@ -301,6 +303,7 @@ class PydanticGenerator(OOCodeGenerator):
         :return: Dictionary of dictionaries with predefined slot values for each class
         """
         sv = self.schemaview
+        ifabsent_processor = PythonIfAbsentProcessor(sv)
         slot_values = defaultdict(dict)
         for class_def in sv.all_classes().values():
             for slot_name in sv.class_slots(class_def.name):
@@ -316,7 +319,7 @@ class PydanticGenerator(OOCodeGenerator):
                         slot.name
                     ]
                 elif slot.ifabsent is not None:
-                    value = ifabsent_value_declaration(slot.ifabsent, sv, class_def, slot)
+                    value = ifabsent_processor.process_slot(slot, class_def)
                     slot_values[camelcase(class_def.name)][slot.name] = value
                 # Multivalued slots that are either not inlined (just an identifier) or are
                 # inlined as lists should get default_factory list, if they're inlined but

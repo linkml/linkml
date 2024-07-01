@@ -78,7 +78,7 @@ implicitly asserts that X is an instance of C1
      * Description: If present, slot is read only.  Text explains why
      * Range: [String](types/String.md)
  * [ifabsent](ifabsent.md)  <sub>0..1</sub>
-     * Description: function that provides a default value for the slot.  Possible values for this slot are defined in linkml.utils.ifabsent_functions.default_library:
+     * Description: function that provides a default value for the slot.
   * [Tt]rue -- boolean True
   * [Ff]alse -- boolean False
   * bnode -- blank node identifier
@@ -90,6 +90,7 @@ implicitly asserts that X is an instance of C1
   * slot_uri -- URI for the slot
   * slot_curie -- CURIE for the slot
   * string(value) -- string value
+  * EnumName(PermissibleValue) -- enum value
      * Range: [String](types/String.md)
      * in subsets: (SpecificationSubset)
  * [list_elements_unique](list_elements_unique.md)  <sub>0..1</sub>

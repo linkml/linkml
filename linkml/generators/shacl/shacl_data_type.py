@@ -20,7 +20,7 @@ class ShaclDataType(DataType, Enum):
     FLOAT = ("float", URIRef("http://www.w3.org/2001/XMLSchema#float"))
     DOUBLE = ("double", URIRef("http://www.w3.org/2001/XMLSchema#double"))
     URI = ("uri", URIRef("http://www.w3.org/2001/XMLSchema#anyURI"))
-    CURI = ("curi", URIRef("http://www.w3.org/2001/XMLSchema#string"))
+    CURIE = ("curi", URIRef("http://www.w3.org/2001/XMLSchema#string"))
     NCNAME = ("ncname", URIRef("http://www.w3.org/2001/XMLSchema#string"))
     OBJECT_IDENTIFIER = ("objectidentifier", URIRef("http://www.w3.org/ns/shex#iri"))
     NODE_IDENTIFIER = ("nodeidentifier", URIRef("http://www.w3.org/ns/shex#nonLiteral"))
