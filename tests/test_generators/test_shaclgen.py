@@ -412,7 +412,7 @@ def test_ifabsent(input_path):
     )
     check_slot_default_value(
         URIRef("https://w3id.org/linkml/tests/kitchen_sink/ifabsent_datetime"),
-        "2024-02-08T09:39:25Z",
+        "2024-02-08T09:39:25",
         datatype=ShaclDataType.DATETIME.uri_ref,
     )
     check_slot_default_value(

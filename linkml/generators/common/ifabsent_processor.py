@@ -4,10 +4,32 @@ from abc import ABC
 from typing import Any, Optional
 
 from linkml_runtime import SchemaView
-from linkml_runtime.linkml_model import ClassDefinition, SlotDefinition, String, Boolean, Integer, Float, Double, \
-    Decimal, Time, Date, Datetime, Uri, EnumDefinitionName
-from linkml_runtime.linkml_model.types import Curie, Uriorcurie, DateOrDatetime, Ncname, Objectidentifier, \
-    Nodeidentifier, Jsonpointer, Jsonpath, Sparqlpath
+from linkml_runtime.linkml_model import (
+    Boolean,
+    ClassDefinition,
+    Date,
+    Datetime,
+    Decimal,
+    Double,
+    EnumDefinitionName,
+    Float,
+    Integer,
+    SlotDefinition,
+    String,
+    Time,
+    Uri,
+)
+from linkml_runtime.linkml_model.types import (
+    Curie,
+    DateOrDatetime,
+    Jsonpath,
+    Jsonpointer,
+    Ncname,
+    Nodeidentifier,
+    Objectidentifier,
+    Sparqlpath,
+    Uriorcurie,
+)
 
 
 class IfAbsentProcessor(ABC):
@@ -32,7 +54,7 @@ class IfAbsentProcessor(ABC):
         return None
 
     def _map_to_default_value(
-            self, slot: SlotDefinition, ifabsent_default_value: Any, cls: ClassDefinition
+        self, slot: SlotDefinition, ifabsent_default_value: Any, cls: ClassDefinition
     ) -> Optional[str]:
         # Used to manage specific cases that aren't generic
         mapped, custom_default_value = self.map_custom_default_values(ifabsent_default_value, slot, cls)
@@ -74,6 +96,7 @@ class IfAbsentProcessor(ABC):
                     f"The ifabsent value `{slot.ifabsent}` of the `{slot.name}` slot does not match a valid time value"
                 )
 
+        # TODO manage timezones and offsets
         if slot.range == Date.type_name:
             match = re.match(r"^(\d{4})-(\d{2})-(\d{2})$", ifabsent_default_value)
             if match:
@@ -83,29 +106,32 @@ class IfAbsentProcessor(ABC):
                     f"The ifabsent value `{slot.ifabsent}` of the `{slot.name}` slot does not match a valid date value"
                 )
 
+        # TODO manage timezones and offsets
         if slot.range == Datetime.type_name:
             match = re.match(r"^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}).*$", ifabsent_default_value)
             if match:
-                return self.map_datetime_default_value(match[1], match[2], match[3], match[4], match[5], match[6],
-                                                       slot, cls)
+                return self.map_datetime_default_value(
+                    match[1], match[2], match[3], match[4], match[5], match[6], slot, cls
+                )
             else:
                 raise ValueError(
                     f"The ifabsent value `{slot.ifabsent}` of the `{slot.name}` slot does not match a valid datetime "
                     f"value"
                 )
 
-        # TODO test this
+        # TODO manage timezones and offsets
         if slot.range == DateOrDatetime.type_name:
             match = re.match(r"^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}):(\d{2}))?.*$", ifabsent_default_value)
-            if len(match.groups()) == 3:
+            if match and (match[4] is None or match[5] is None or match[6] is None):
                 return self.map_date_default_value(match[1], match[2], match[3], slot, cls)
-            elif len(match.groups()) == 6:
-                return self.map_datetime_default_value(match[1], match[2], match[3], match[4], match[5], match[6],
-                                                       slot, cls)
+            elif match:
+                return self.map_datetime_default_value(
+                    match[1], match[2], match[3], match[4], match[5], match[6], slot, cls
+                )
             else:
                 raise ValueError(
-                    f"The ifabsent value `{slot.ifabsent}` of the `{slot.name}` slot does not match a valid datetime "
-                    f"value"
+                    f"The ifabsent value `{slot.ifabsent}` of the `{slot.name}` slot does not match a valid date or "
+                    f"datetime value"
                 )
 
         if slot.range == Uri.type_name:
@@ -196,8 +222,17 @@ class IfAbsentProcessor(ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def map_datetime_default_value(self, year: str, month: str, day: str, hour: str, minutes: str, seconds: str,
-                                   slot: SlotDefinition, cls: ClassDefinition):
+    def map_datetime_default_value(
+        self,
+        year: str,
+        month: str,
+        day: str,
+        hour: str,
+        minutes: str,
+        seconds: str,
+        slot: SlotDefinition,
+        cls: ClassDefinition,
+    ):
         raise NotImplementedError()
 
     @abc.abstractmethod
@@ -237,8 +272,9 @@ class IfAbsentProcessor(ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def map_enum_default_value(self, enum_name: EnumDefinitionName, permissible_value_name: str, slot: SlotDefinition,
-                               cls: ClassDefinition):
+    def map_enum_default_value(
+        self, enum_name: EnumDefinitionName, permissible_value_name: str, slot: SlotDefinition, cls: ClassDefinition
+    ):
         raise NotImplementedError()
 
     def _uri_for(self, s: str) -> str:

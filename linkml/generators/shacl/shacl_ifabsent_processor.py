@@ -1,6 +1,4 @@
-from typing import Any, Optional
-
-from linkml_runtime.linkml_model import ClassDefinition, SlotDefinition, EnumDefinitionName
+from linkml_runtime.linkml_model import ClassDefinition, EnumDefinitionName, SlotDefinition
 from rdflib import Literal, URIRef
 
 from linkml.generators.common.ifabsent_processor import IfAbsentProcessor
@@ -18,8 +16,9 @@ class ShaclIfAbsentProcessor(IfAbsentProcessor):
 
         return False, None
 
-    def map_enum_default_value(self, enum_name: EnumDefinitionName, permissible_value_name: str, slot: SlotDefinition,
-                               cls: ClassDefinition):
+    def map_enum_default_value(
+        self, enum_name: EnumDefinitionName, permissible_value_name: str, slot: SlotDefinition, cls: ClassDefinition
+    ):
         return Literal(permissible_value_name)
 
     def map_string_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
@@ -44,17 +43,23 @@ class ShaclIfAbsentProcessor(IfAbsentProcessor):
         return Literal(default_value, datatype=ShaclDataType.DECIMAL.uri_ref)
 
     def map_time_default_value(self, hour: str, minutes: str, seconds: str, slot: SlotDefinition, cls: ClassDefinition):
-        # TODO manage timezones and offsets
         return Literal(f"{hour}:{minutes}:{seconds}", datatype=ShaclDataType.TIME.uri_ref)
 
     def map_date_default_value(self, year: str, month: str, day: str, slot: SlotDefinition, cls: ClassDefinition):
-        # TODO manage timezones and offsets
         return Literal(f"{year}-{month}-{day}", datatype=ShaclDataType.DATE.uri_ref)
 
-    def map_datetime_default_value(self, year: str, month: str, day: str, hour: str, minutes: str, seconds: str,
-                                   slot: SlotDefinition, cls: ClassDefinition):
-        # TODO manage timezones and offsets
-        return Literal(f"{year}-{month}-{day}T{hour}:{minutes}:{seconds}Z", datatype=ShaclDataType.DATETIME.uri_ref)
+    def map_datetime_default_value(
+        self,
+        year: str,
+        month: str,
+        day: str,
+        hour: str,
+        minutes: str,
+        seconds: str,
+        slot: SlotDefinition,
+        cls: ClassDefinition,
+    ):
+        return Literal(f"{year}-{month}-{day}T{hour}:{minutes}:{seconds}", datatype=ShaclDataType.DATETIME.uri_ref)
 
     def map_uri_or_curie_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
         raise NotImplementedError()

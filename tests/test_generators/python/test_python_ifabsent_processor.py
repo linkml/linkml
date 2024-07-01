@@ -211,8 +211,14 @@ def test_date_default_value():
       - name: lastSickLeave
         range: date
         ifabsent: date(2024-06-26)
+      - name: graduationDate
+        range: date_or_datetime
+        ifabsent: date(2026-06-18)
       - name: invalidDate
         range: date
+        ifabsent: date(invalid)
+      - name: invalidDateOrDatetime
+        range: date_or_datetime
         ifabsent: date(invalid)
     """
     )
@@ -227,6 +233,13 @@ def test_date_default_value():
         )
         == "date(2024, 6, 26)"
     )
+    assert (
+        processor.process_slot(
+            schema_view.all_slots()[SlotDefinitionName("graduationDate")],
+            schema_view.all_classes()[ClassDefinitionName("Student")],
+        )
+        == "date(2026, 6, 18)"
+    )
 
     with pytest.raises(ValueError) as e:
         processor.process_slot(
@@ -236,6 +249,17 @@ def test_date_default_value():
 
     assert str(e.value) == (
         "The ifabsent value `date(invalid)` of the `invalidDate` slot does not match a valid date value"
+    )
+
+    with pytest.raises(ValueError) as e:
+        processor.process_slot(
+            schema_view.all_slots()[SlotDefinitionName("invalidDateOrDatetime")],
+            schema_view.all_classes()[ClassDefinitionName("Student")],
+        )
+
+    assert str(e.value) == (
+        "The ifabsent value `date(invalid)` of the `invalidDateOrDatetime` slot does not match a valid date or "
+        "datetime value"
     )
 
 
@@ -249,8 +273,14 @@ def test_datetime_default_value():
       - name: modificationTimestamp
         range: datetime
         ifabsent: datetime(2024-04-18T09:10:11Z)
+      - name: lastMeetingWithParents
+        range: date_or_datetime
+        ifabsent: datetime(2024-02-09T18:25:44Z)
       - name: invalidDatetime
         range: datetime
+        ifabsent: datetime(invalid)
+      - name: invalidDateOrDatetime
+        range: date_or_datetime
         ifabsent: datetime(invalid)
     """
     )
@@ -272,6 +302,13 @@ def test_datetime_default_value():
         )
         == "datetime(2024, 4, 18, 9, 10, 11)"
     )
+    assert (
+        processor.process_slot(
+            schema_view.all_slots()[SlotDefinitionName("lastMeetingWithParents")],
+            schema_view.all_classes()[ClassDefinitionName("Student")],
+        )
+        == "datetime(2024, 2, 9, 18, 25, 44)"
+    )
 
     with pytest.raises(ValueError) as e:
         processor.process_slot(
@@ -281,6 +318,17 @@ def test_datetime_default_value():
 
     assert str(e.value) == (
         "The ifabsent value `datetime(invalid)` of the `invalidDatetime` slot does not match a valid datetime value"
+    )
+
+    with pytest.raises(ValueError) as e:
+        processor.process_slot(
+            schema_view.all_slots()[SlotDefinitionName("invalidDateOrDatetime")],
+            schema_view.all_classes()[ClassDefinitionName("Student")],
+        )
+
+    assert str(e.value) == (
+        "The ifabsent value `datetime(invalid)` of the `invalidDateOrDatetime` slot does not match a valid date or "
+        "datetime value"
     )
 
 

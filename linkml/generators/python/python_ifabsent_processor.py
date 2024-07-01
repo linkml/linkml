@@ -1,6 +1,7 @@
 from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    EnumDefinitionName,
     SlotDefinition,
-    ClassDefinition, EnumDefinitionName,
 )
 
 from linkml.generators.common.ifabsent_processor import IfAbsentProcessor
@@ -45,12 +46,18 @@ class PythonIfAbsentProcessor(IfAbsentProcessor):
     def map_date_default_value(self, year: str, month: str, day: str, slot: SlotDefinition, cls: ClassDefinition):
         return f"date({int(year)}, {int(month)}, {int(day)})"
 
-    def map_datetime_default_value(self, year: str, month: str, day: str, hour: str, minutes: str, seconds: str,
-                                   slot: SlotDefinition, cls: ClassDefinition):
-        return (
-            f"datetime({int(year)}, {int(month)}, {int(day)}, "
-            f"{int(hour)}, {int(minutes)}, {int(seconds)})"
-        )
+    def map_datetime_default_value(
+        self,
+        year: str,
+        month: str,
+        day: str,
+        hour: str,
+        minutes: str,
+        seconds: str,
+        slot: SlotDefinition,
+        cls: ClassDefinition,
+    ):
+        return f"datetime({int(year)}, {int(month)}, {int(day)}, " f"{int(hour)}, {int(minutes)}, {int(seconds)})"
 
     def map_uri_or_curie_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
         return self._uri_for(default_value)
@@ -61,8 +68,9 @@ class PythonIfAbsentProcessor(IfAbsentProcessor):
     def map_uri_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
         return self._uri_for(default_value)
 
-    def map_enum_default_value(self, enum_name: EnumDefinitionName, permissible_value_name: str, slot: SlotDefinition,
-                               cls: ClassDefinition):
+    def map_enum_default_value(
+        self, enum_name: EnumDefinitionName, permissible_value_name: str, slot: SlotDefinition, cls: ClassDefinition
+    ):
         return f"{enum_name}.{permissible_value_name}"
 
     def map_nc_name_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
@@ -82,7 +90,3 @@ class PythonIfAbsentProcessor(IfAbsentProcessor):
 
     def map_sparql_path_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
         raise NotImplementedError()
-
-
-
-
