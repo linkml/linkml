@@ -51,7 +51,7 @@ jobs:
       # install pydantic
       #----------------------------------------------
       - name: Install Pydantic
-        run: poetry add pydantic@^1
+        run: poetry run pip install 'pydantic<2'
 
       #----------------------------------------------
       #         setup and install graphviz

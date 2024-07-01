@@ -2,6 +2,7 @@ import shutil
 import sys
 from abc import ABC, abstractmethod
 from importlib.abc import MetaPathFinder
+from importlib.metadata import version
 from pathlib import Path
 from typing import Callable, Optional, Union
 
@@ -199,6 +200,13 @@ def pytest_collection_modifyitems(config, items):
     if len(test_deps) == 1:
         items.remove(test_deps[0])
         items.append(test_deps[0])
+
+    # numpydantic only supported python>=3.9
+    if sys.version_info.minor < 9 or version("pydantic").startswith("1"):
+        skip_npd = pytest.mark.skip(reason="Numpydantic is only supported in python>=3.9 and with pydantic>=2")
+        for item in items:
+            if item.get_closest_marker("pydantic_npd"):
+                item.add_marker(skip_npd)
 
 
 def pytest_sessionstart(session: pytest.Session):
