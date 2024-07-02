@@ -1776,8 +1776,6 @@ def test_linkml_meta(kitchen_sink_path, tmp_path, input_path, mode):
         else:
             _test_meta(cls.linkml_meta, cls_def, PydanticClass, mode)
 
-        # pydantic
-
         for slot_def in schema.class_induced_slots(cls_name):
             extra = cls.model_fields[underscore(slot_def.name)].json_schema_extra
             if mode == MetadataMode.NONE:
