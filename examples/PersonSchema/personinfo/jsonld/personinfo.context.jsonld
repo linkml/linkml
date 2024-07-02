@@ -49,7 +49,6 @@
       },
       "gender": {
          "@context": {
-            "@vocab": "@null",
             "text": "skos:notation",
             "description": "skos:prefLabel",
             "meaning": "@id"
