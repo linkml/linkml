@@ -758,10 +758,6 @@ class PydanticGenerator(OOCodeGenerator):
                 new_class.bases = bases[k]
             classes[k] = new_class
 
-        # schema_meta = {
-        #     k: v for k, v in remove_empty_items(schema).items() if k not in PydanticModule.exclude_from_meta()
-        # }
-
         module = PydanticModule(
             pydantic_ver=self.pydantic_version,
             metamodel_version=self.schema.metamodel_version,
