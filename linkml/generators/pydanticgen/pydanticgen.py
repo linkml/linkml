@@ -600,7 +600,7 @@ class PydanticGenerator(OOCodeGenerator):
         else:
             raise ValueError(
                 f"Unknown metadata mode '{self.metadata_mode}', needs to be one of "
-                f"{[mode.value for mode in MetadataMode]}"
+                f"{[mode for mode in MetadataMode]}"
             )
 
         model.meta = meta
@@ -753,9 +753,9 @@ class PydanticGenerator(OOCodeGenerator):
                 new_class.bases = bases[k]
             classes[k] = new_class
 
-        schema_meta = {
-            k: v for k, v in remove_empty_items(schema).items() if k not in PydanticModule.exclude_from_meta()
-        }
+        # schema_meta = {
+        #     k: v for k, v in remove_empty_items(schema).items() if k not in PydanticModule.exclude_from_meta()
+        # }
 
         module = PydanticModule(
             pydantic_ver=self.pydantic_version,
@@ -766,7 +766,6 @@ class PydanticGenerator(OOCodeGenerator):
             injected_classes=injected_classes,
             enums=enums,
             classes=classes,
-            meta=schema_meta,
         )
         module = self.include_metadata(module, pyschema)
         return module
@@ -830,6 +829,14 @@ Available templates to override:
     default=False,
     help="Format generated models with black (must be present in the environment)",
 )
+@click.option(
+    "--meta",
+    type=click.Choice([k for k in MetadataMode]),
+    default="auto",
+    help="How to include linkml schema metadata in generated pydantic classes. "
+         "See docs for MetadataMode for full description of choices. "
+         "Default (auto) is to include all metadata that can't be otherwise represented"
+)
 @click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(
@@ -844,6 +851,7 @@ def cli(
     pydantic_version=int(PYDANTIC_VERSION[0]),
     extra_fields: Literal["allow", "forbid", "ignore"] = "forbid",
     black: bool = False,
+    meta: MetadataMode = "auto",
     **args,
 ):
     """Generate pydantic classes to represent a LinkML model"""
@@ -870,6 +878,7 @@ def cli(
         gen_slots=slots,
         template_dir=template_dir,
         black=black,
+        metadata_mode=meta,
         **args,
     )
     print(gen.serialize())
