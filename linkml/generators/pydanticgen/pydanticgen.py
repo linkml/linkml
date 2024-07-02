@@ -582,17 +582,22 @@ class PydanticGenerator(OOCodeGenerator):
         elif self.metadata_mode in (MetadataMode.EXCEPT_CHILDREN, MetadataMode.EXCEPT_CHILDREN.value):
             meta = {}
             for k, v in remove_empty_items(source).items():
+                if k in ("slots", "classes") and isinstance(model, PydanticModule):
+                    # FIXME: Special-case removal of slots until we generate class-level slots
+                    continue
+
                 if not hasattr(model, k):
                     meta[k] = v
-                elif isinstance(getattr(model, k), list) and not any(
-                    [isinstance(item, TemplateModel) for item in getattr(model, k)]
+                    continue
+
+                model_attr = getattr(model, k)
+                if isinstance(model_attr, list) and not any([isinstance(item, TemplateModel) for item in model_attr]):
+                    meta[k] = v
+                elif isinstance(model_attr, dict) and not any(
+                    [isinstance(item, TemplateModel) for item in model_attr.values()]
                 ):
                     meta[k] = v
-                elif isinstance(getattr(model, k), dict) and not any(
-                    [isinstance(item, TemplateModel) for item in getattr(model, k).values()]
-                ):
-                    meta[k] = v
-                elif not isinstance(getattr(model, k), TemplateModel):
+                elif not isinstance(model_attr, (list, dict, TemplateModel)):
                     meta[k] = v
 
         elif self.metadata_mode in (MetadataMode.FULL, MetadataMode.FULL.value):
@@ -761,13 +766,13 @@ class PydanticGenerator(OOCodeGenerator):
             pydantic_ver=self.pydantic_version,
             metamodel_version=self.schema.metamodel_version,
             version=self.schema.version,
-            imports=imports.imports,
+            python_imports=imports.imports,
             base_model=base_model,
             injected_classes=injected_classes,
             enums=enums,
             classes=classes,
         )
-        module = self.include_metadata(module, pyschema)
+        module = self.include_metadata(module, schema)
         return module
 
     def serialize(self) -> str:
@@ -834,8 +839,8 @@ Available templates to override:
     type=click.Choice([k for k in MetadataMode]),
     default="auto",
     help="How to include linkml schema metadata in generated pydantic classes. "
-         "See docs for MetadataMode for full description of choices. "
-         "Default (auto) is to include all metadata that can't be otherwise represented"
+    "See docs for MetadataMode for full description of choices. "
+    "Default (auto) is to include all metadata that can't be otherwise represented",
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command()
