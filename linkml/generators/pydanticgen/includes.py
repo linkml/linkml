@@ -19,6 +19,9 @@ class LinkMLMeta(BaseModel):
     
     def __setitem__(self, key:str, value):
         self.__root__[key] = value
+        
+    def __contains__(self, key:str) -> bool:
+        return key in self.__root__
    
     class Config:
         allow_mutation = False
@@ -37,6 +40,9 @@ class LinkMLMeta(RootModel):
     
     def __setitem__(self, key:str, value):
         self.root[key] = value
+        
+    def __contains__(self, key:str) -> bool:
+        return key in self.root
     
 """
 
