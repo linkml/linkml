@@ -437,7 +437,7 @@ class JsonSchemaGenerator(Generator):
 
     def get_subschema_for_slot(self, slot: SlotDefinition, omit_type: bool = False) -> JsonSchema:
         prop = JsonSchema()
-        if slot.array:
+        if isinstance(slot, SlotDefinition) and slot.array:
             # TODO: this is currently too lax, in that it will validate ANY array.
             # see https://github.com/linkml/linkml/issues/2188
             prop = JsonSchema(
