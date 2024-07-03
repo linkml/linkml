@@ -435,7 +435,7 @@ class JsonSchemaGenerator(Generator):
         constraints.add_keyword("const", slot.equals_number)
         return constraints
 
-    def get_subschema_for_slot(self, slot: SlotDefinition, omit_type: bool = False) -> JsonSchema:
+    def get_subschema_for_slot(self, slot: Union[SlotDefinition, AnonymousSlotExpression], omit_type: bool = False) -> JsonSchema:
         prop = JsonSchema()
         if isinstance(slot, SlotDefinition) and slot.array:
             # TODO: this is currently too lax, in that it will validate ANY array.
