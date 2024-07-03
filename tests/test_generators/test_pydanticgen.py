@@ -7,7 +7,7 @@ from importlib.metadata import version
 from importlib.util import find_spec
 from pathlib import Path
 from types import GeneratorType, ModuleType
-from typing import ClassVar, Dict, List, Literal, Optional, Union, get_args, get_origin
+from typing import ClassVar, Dict, List, Literal, Optional, Type, Union, get_args, get_origin
 
 import numpy as np
 import pytest
@@ -15,14 +15,15 @@ import yaml
 from jinja2 import DictLoader, Environment, Template
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import SchemaDefinition, SlotDefinition
+from linkml_runtime.linkml_model import Definition, SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
 from linkml_runtime.utils.schemaview import load_schema_wrap
 from pydantic import BaseModel, ValidationError
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml.generators import pydanticgen as pydanticgen_root
-from linkml.generators.pydanticgen import PydanticGenerator, array, build, pydanticgen, template
+from linkml.generators.pydanticgen import MetadataMode, PydanticGenerator, array, build, pydanticgen, template
 from linkml.generators.pydanticgen.array import AnyShapeArray, ArrayRepresentation
 from linkml.generators.pydanticgen.template import (
     ConditionalImport,
@@ -31,6 +32,7 @@ from linkml.generators.pydanticgen.template import (
     ObjectImport,
     PydanticAttribute,
     PydanticClass,
+    PydanticModule,
     PydanticValidator,
     TemplateModel,
 )
@@ -1722,3 +1724,61 @@ def test_template_noblack(array_complex, mock_black_import):
     # trying to render with black when we don't have it should raise a ValueError
     with pytest.raises(ValueError):
         _ = generated.classes["ComplexRangeShapeArray"].attributes["array"].render(black=True)
+
+
+# --------------------------------------------------
+# Metadata inclusion
+# --------------------------------------------------
+
+
+def _test_meta(linkml_meta, definition: Definition, model: Type[TemplateModel], mode: str):
+    def_clean = remove_empty_items(definition)
+    for k, v in def_clean.items():
+        if mode == "auto":
+            if k in model.exclude_from_meta():
+                assert k not in linkml_meta
+            else:
+                assert k in linkml_meta
+        elif mode == "full":
+            assert k in linkml_meta
+        elif mode == "except_children":
+            # basically nothing that has a template model
+            if k in ("slots", "classes", "enums", "attributes"):
+                assert k not in linkml_meta
+            else:
+                assert k in linkml_meta
+        elif mode == "None":
+            assert linkml_meta is None or k not in linkml_meta
+        else:
+            raise ValueError(f"Don't know how to test this metadata mode: {mode}")
+
+
+@pytest.mark.skipif(PYDANTIC_VERSION < 2, reason="Pydantic v1 is deprecated")
+@pytest.mark.parametrize("mode", MetadataMode)
+def test_linkml_meta(kitchen_sink_path, tmp_path, input_path, mode):
+    """
+    Pydanticgen can inject missing linkml metadata from schema definitions
+    with several different modes :)
+    """
+    schema = SchemaView(kitchen_sink_path)
+
+    gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE, metadata_mode=mode)
+    code = gen.serialize()
+    module = compile_python(code, PACKAGE)
+    _test_meta(module.linkml_meta, schema.schema, PydanticModule, mode)
+
+    for cls_name, cls_def in schema.all_classes().items():
+        if cls_def["class_uri"] == "linkml:Any":
+            continue
+        cls = getattr(module, camelcase(cls_name))  # type: Type[BaseModel]
+        if mode == MetadataMode.NONE:
+            assert not hasattr(cls, "linkml_meta")
+        else:
+            _test_meta(cls.linkml_meta, cls_def, PydanticClass, mode)
+
+        for slot_def in schema.class_induced_slots(cls_name):
+            extra = cls.model_fields[underscore(slot_def.name)].json_schema_extra
+            if mode == MetadataMode.NONE:
+                assert extra is None or "linkml_meta" not in extra
+            else:
+                _test_meta(extra["linkml_meta"], slot_def, PydanticAttribute, mode)

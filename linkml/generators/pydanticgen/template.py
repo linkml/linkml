@@ -322,6 +322,11 @@ class PydanticClass(TemplateModel):
         def validators(self) -> Optional[Dict[str, PydanticValidator]]:
             return self._validators()
 
+        @computed_field
+        def slots(self) -> Optional[Dict[str, PydanticAttribute]]:
+            """alias of attributes"""
+            return self.attributes
+
     else:
         validators: Optional[Dict[str, PydanticValidator]]
 
@@ -575,7 +580,7 @@ class PydanticModule(TemplateModel):
     version: Optional[str] = None
     base_model: PydanticBaseModel = PydanticBaseModel()
     injected_classes: Optional[List[str]] = None
-    imports: List[Union[Import, ConditionalImport]] = Field(default_factory=list)
+    python_imports: List[Union[Import, ConditionalImport]] = Field(default_factory=list)
     enums: Dict[str, PydanticEnum] = Field(default_factory=dict)
     classes: Dict[str, PydanticClass] = Field(default_factory=dict)
     meta: Optional[Dict[str, Any]] = None
