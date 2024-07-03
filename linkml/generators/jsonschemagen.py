@@ -435,8 +435,20 @@ class JsonSchemaGenerator(Generator):
         constraints.add_keyword("const", slot.equals_number)
         return constraints
 
-    def get_subschema_for_slot(self, slot: SlotDefinition, omit_type: bool = False) -> JsonSchema:
+    def get_subschema_for_slot(
+        self, slot: Union[SlotDefinition, AnonymousSlotExpression], omit_type: bool = False
+    ) -> JsonSchema:
         prop = JsonSchema()
+        if isinstance(slot, SlotDefinition) and slot.array:
+            # TODO: this is currently too lax, in that it will validate ANY array.
+            # see https://github.com/linkml/linkml/issues/2188
+            prop = JsonSchema(
+                {
+                    "type": ["null", "boolean", "object", "number", "string", "array"],
+                    "additionalProperties": True,
+                }
+            )
+            return JsonSchema.array_of(prop)
         slot_is_multivalued = "multivalued" in slot and slot.multivalued
         slot_is_inlined = self.schemaview.is_inlined(slot)
         if not omit_type:
