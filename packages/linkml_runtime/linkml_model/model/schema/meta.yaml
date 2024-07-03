@@ -464,6 +464,14 @@ slots:
     description: >-
       The relationship between an element and its alias.
 
+  alias_contexts:
+    alias: contexts
+    domain: structured_alias
+    range: uri
+    multivalued: true
+    description: >-
+      The context in which an alias should be applied
+
   in_language:
     slot_uri: schema:inLanguage
     range: string
@@ -502,7 +510,6 @@ slots:
   # --------------------------------------------------------------
   is_a:
     rank: 11
-    domain: definition
     range: definition
     abstract: true
     description: >-
@@ -546,7 +553,6 @@ slots:
     rank: 13
     aliases:
       - traits
-    domain: definition
     multivalued: true
     range: definition
     description: >-
@@ -618,7 +624,6 @@ slots:
       - BasicSubset
 
   pv_formula:
-    domain: enum_expression
     range: pv_formula_options
     description: >-
       Defines the specific formula to be used to generate the permissible values.
@@ -1499,8 +1504,7 @@ slots:
     range: string
     inherited: true
     description: >-
-      function that provides a default value for the slot.  Possible values for this slot are defined in
-      linkml.utils.ifabsent_functions.default_library:
+      function that provides a default value for the slot.
         * [Tt]rue -- boolean True
         * [Ff]alse -- boolean False
         * bnode -- blank node identifier
@@ -1512,6 +1516,7 @@ slots:
         * slot_uri -- URI for the slot
         * slot_curie -- CURIE for the slot
         * string(value) -- string value
+        * EnumName(PermissibleValue) -- enum value
     close_mappings:
       - sh:defaultValue
     in_subset:
@@ -1543,7 +1548,7 @@ slots:
     domain: slot_definition
     range: presence_enum
     inherited: true
-    description: if true then a value must be present (for lists there must be at least one value). If false then a value must be absent (for lists, must be empty)
+    description: if PRESENT then a value must be present (for lists there must be at least one value). If ABSENT then a value must be absent (for lists, must be empty)
     comments:
       - if set to true this has the same effect as required=true. In contrast, required=false allows a value to be present
     status: unstable
@@ -2098,6 +2103,63 @@ slots:
     in_subset:
       - SpecificationSubset
 
+  bindings:
+    domain: element
+    range: enum_binding
+    multivalued: true
+    inlined: true
+    status: testing
+    description: >-
+      A collection of enum bindings that specify how a slot can be bound to a permissible value
+      from an enumeration.
+
+      LinkML provides enums to allow string values to be restricted to one of a set of permissible
+      values (specified statically or dynamically).
+
+      Enum bindings allow enums to be bound to any object, including complex nested objects. For
+      example, given a (generic) class Concept with slots id and label, it may be desirable to restrict the
+      values the id takes on in a given context. For example, a HumanSample class may have a slot for
+      representing sample site, with a range of concept, but the values of that slot may be restricted to
+      concepts from a particular branch of an anatomy ontology.
+    in_subset:
+      - SpecificationSubset
+
+  binds_value_of:
+    domain: enum_binding
+    range: string
+    description: >-
+      A path to a slot that is being bound to a permissible value from an enumeration.
+    in_subset:
+      - SpecificationSubset
+
+  obligation_level:
+    range: obligation_level_enum
+    description: >-
+      The level of obligation or recommendation strength for a metadata element
+    in_subset:
+      - SpecificationSubset
+
+  type_mappings:
+    range: type_mapping
+    description: >-
+      A collection of type mappings that specify how a slot's range should be mapped or
+      serialized in different frameworks
+    multivalued: true
+      
+  framework_key:
+    range: string
+    alias: framework
+    key: true
+    description: >-
+      The name of a format that can be used to serialize LinkML data.
+      The string value should be a code from the LinkML frameworks vocabulary,
+      but this is not strictly enforced
+    
+  mapped_type:
+    range: type_definition
+    alias: type
+    description: >-
+      type to coerce to
 
   # -----------------------------------
   # Slots for type definition
@@ -2520,6 +2582,7 @@ classes:
       - generation_date
       - slot_names_unique
       - settings
+      - bindings
     see_also:
       - https://en.wikipedia.org/wiki/Data_dictionary
     close_mappings:
@@ -2673,6 +2736,24 @@ classes:
     slots:
       - enum_uri
 
+  enum_binding:
+    description: >-
+      A binding of a slot or a class to a permissible value from an enumeration.
+    slots:
+      - range
+      - obligation_level
+      - binds_value_of
+      - pv_formula
+    slot_usage:
+      range:
+        range: enum_definition
+    in_subset:
+      - SpecificationSubset
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+
   match_query:
     description: >-
       A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that 
@@ -2711,6 +2792,7 @@ classes:
       - literal_form
       - alias_predicate
       - categories
+      - alias_contexts
     slot_usage:
       categories:
         description: >-
@@ -2772,8 +2854,10 @@ classes:
       - range
       - range_expression
       - enum_range
+      - bindings
       - required
       - recommended
+      - multivalued
       - inlined
       - inlined_as_list
       - minimum_value
@@ -2831,7 +2915,6 @@ classes:
       - singular_name
       - domain
       - slot_uri
-      - multivalued
       - array
       - inherited
       - readonly
@@ -2866,6 +2949,7 @@ classes:
       - disjoint_with
       - children_are_mutually_disjoint
       - union_of
+      - type_mappings
     slot_usage:
       is_a:
         range: slot_definition
@@ -3104,6 +3188,10 @@ classes:
       - description
       - meaning
       - unit
+      - instantiates
+      - implements
+      - is_a
+      - mixins
     in_subset:
       - SpecificationSubset
       - BasicSubset
@@ -3123,6 +3211,20 @@ classes:
       - SpecificationSubset
       - BasicSubset
       - RelationalModelProfile
+
+  type_mapping:
+    rank: 21
+    description: Represents how a slot or type can be serialized to a format.
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+    slots:
+      - framework_key
+      - mapped_type
+      - string_serialization
+    in_subset:
+      - SpecificationSubset
 
 # ==================================
 # Enumerations                     #
@@ -3192,3 +3294,28 @@ enums:
         meaning: skos:broaderMatch
       NARROW_SYNONYM:
         meaning: skos:narrowerMatch
+
+  obligation_level_enum:
+    rank: 10
+    description: >-
+      The level of obligation or recommendation strength for a metadata element
+    permissible_values:
+      REQUIRED:
+        description: >-
+          The metadata element is required to be present in the model
+      RECOMMENDED:
+        aliases:
+          - ENCOURAGED
+        description: >-
+          The metadata element is recommended to be present in the model
+      OPTIONAL:
+        description: >-
+          The metadata element is optional to be present in the model
+      EXAMPLE:
+        description: >-
+          The metadata element is an example of how to use the model
+      DISCOURAGED:
+        description: >-
+          The metadata element is allowed but discouraged to be present in the model
+    in_subset:
+      - SpecificationSubset
