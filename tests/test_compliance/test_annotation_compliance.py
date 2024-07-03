@@ -5,7 +5,7 @@ there is no instance data to test.
 """
 
 from copy import copy
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 import pytest
 import rdflib
@@ -24,7 +24,7 @@ EX = rdflib.Namespace("http://example.org/")
 
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 @pytest.mark.parametrize(
-    "name,class_annotations,slot_annotations",
+    "name,slot_annotations,class_annotations",
     [
         ("empty", {}, {}),
         ("slot_num", {"foo": 1}, {}),
@@ -33,16 +33,19 @@ EX = rdflib.Namespace("http://example.org/")
         ("class_num", {}, {"foo": 1}),
         ("class_str", {}, {"foo": "v1"}),
         ("class_nested_obj", {}, {"foo": {"bar": "v1"}}),
+        ("class_list_nested_obj", {}, {"foo": [1, {"bar": "v1"}]}),
         ("slot_incomplete", {"foo": None}, None),
         ("class_incomplete", None, {"foo": None}),
     ],
 )
 @pytest.mark.parametrize("is_valid", [True, False])
+@pytest.mark.parametrize("expand", [True, False])
 def test_annotation(
     framework: str,
     name: str,
     slot_annotations: Optional[Dict[str, Any]],
     class_annotations: Optional[Dict[str, Any]],
+    expand: Optional[Union[bool, str]],
     is_valid: bool,
 ):
     """
@@ -68,7 +71,15 @@ def test_annotation(
     def anns(tvs: Optional[dict]) -> Optional[dict]:
         if tvs is None:
             return None
-        return {k: {"tag": k, **{"value": v if v else {}}} for k, v in tvs.items()}
+        if expand:
+            if expand == "partial":
+                return {k: {"value": v if v else {}} for k, v in tvs.items()}
+            else:
+                return {k: {"tag": k, **{"value": v if v else {}}} for k, v in tvs.items()}
+        else:
+            return tvs
+
+    is_nested = "nested" in name
 
     # expected triples in OWL serialization
     triples = []
@@ -115,6 +126,9 @@ def test_annotation(
             },
         },
     }
+
+    if is_nested and not expand:
+        pytest.skip("TODO: https://github.com/linkml/linkml/issues/2191")
 
     schema = validated_schema(
         test_annotation,
