@@ -39,7 +39,6 @@ def test_simple(default_range, preserve_class_is_a, abstract):
     sb.schema.default_range = default_range
     tr.set_schema(sb.schema)
     flat_schema = tr.transform()
-    # print(yaml_dumper.dumps(flat_schema))
     thing = flat_schema.classes["Thing"]
     actual_default_range = default_range if default_range != "Any" else None
     assert thing.attributes["name"].range == actual_default_range
@@ -55,7 +54,6 @@ def test_simple(default_range, preserve_class_is_a, abstract):
     sb.add_class("Container", slots=[SlotDefinition("entities", range="Thing", multivalued=True)])
     tr.set_schema(sb.schema)
     flat_schema = tr.transform()
-    # print(yaml_dumper.dumps(flat_schema))
     container = flat_schema.classes["Container"]
     entities_att = container.attributes["entities"]
     if preserve_class_is_a:
@@ -94,7 +92,6 @@ def test_unrestricted_range(default_range, preserve_class_is_a):
     sb.schema.default_range = default_range
     tr.set_schema(sb.schema)
     flat_schema = tr.transform(simplify=True)
-    print(yaml_dumper.dumps(flat_schema))
     thing = flat_schema.classes["Thing"]
     person = flat_schema.classes["Person"]
     assert person.attributes["age"].range == "integer", "direct assertion"
@@ -188,14 +185,12 @@ def test_type_inheritance():
         is_a="Thing",
         slot_usage={"id": {"range": "PersonCodeType"}, "age": {"maximum_value": 200}},
     )
-    # print(yaml_dumper.dumps(sb.schema))
     sb.add_defaults()
     tr = LogicalModelTransformer()
     tr.set_schema(sb.schema)
     # flat_schema = tr.transform(simplify=False)
     # print(yaml_dumper.dumps(flat_schema))
     flat_schema = tr.transform(simplify=True)
-    # print(yaml_dumper.dumps(flat_schema))
     p = flat_schema.classes["Person"]
     id_slot = p.attributes["id"]
     assert id_slot.range == "PersonCodeType"
@@ -217,6 +212,8 @@ def test_type_inheritance():
 def test_any_of_with_required(preserve_class_is_a, pattern, multivalued, inlined, inlined_as_list):
     """
     Test a schema that uses any_of.
+
+    The schema includes a slot manufactured_by that is a list of either Organization or Person.
 
     :param preserve_class_is_a:
     :param pattern:
@@ -264,8 +261,8 @@ def test_any_of_with_required(preserve_class_is_a, pattern, multivalued, inlined
     sb.add_defaults()
     tr.set_schema(sb.schema)
     flat_schema = tr.transform()
-    # print(yaml_dumper.dumps(flat_schema))
     device = flat_schema.classes["Device"]
+
     manufactured_by = device.attributes["manufactured_by"]
     py_field = tr.attribute_as_python_field(manufactured_by)
     any_of = manufactured_by.any_of
@@ -283,10 +280,10 @@ def test_any_of_with_required(preserve_class_is_a, pattern, multivalued, inlined
             assert py_field in [
                 "manufactured_by: Union[Organization, Optional[Person]]",
                 "manufactured_by: Union[Optional[Person], Organization]",
-            ]
+            ], "unexpected for multivalued=False"
         else:
             # assert py_field == "xx"
-            assert "Collection" in py_field
+            assert "Collection" in py_field, f"expected Collection for multivalued; attr={manufactured_by.multivalued}"
     else:
         assert {"Organization", "Company"} == {c.range for c in required_expr.any_of}
         assert {"Person", "Employee"} == {c.range for c in non_required_expr.any_of}
@@ -388,7 +385,7 @@ def test_deep_schema(specify_redundant, preserve_class_is_a):
         sb.add_class(cn, is_a=p, slot_usage=[slot_usage], mixins=mixins, slots=slots, **extra)
     sb.add_defaults()
     schema = sb.schema
-    local_id = f"SR{specify_redundant}-PCI{preserve_class_is_a}"
+    # local_id = f"SR{specify_redundant}-PCI{preserve_class_is_a}"
     # print(yaml_dumper.dump(schema, f"/tmp/asserted-schema-{local_id}.yaml"))
     sv = SchemaView(schema)
     flattener = LogicalModelTransformer(sv, preserve_class_is_a=preserve_class_is_a)
@@ -397,7 +394,7 @@ def test_deep_schema(specify_redundant, preserve_class_is_a):
     # print(yaml_dumper.dumps(new_schema))
     # print(yaml_dumper.dump(new_schema, f"/tmp/trSCHEMA-{local_id}.yaml"))
     flattener.simplify(new_schema)
-    _dump_schema(new_schema, local_id)
+    # _dump_schema(new_schema, local_id)
     # print(yaml_dumper.dump(new_schema, f"/tmp/trSIMPLIFIED-{local_id}.yaml"))
     class_C = new_schema.classes["C"]
     class_C1 = new_schema.classes["C1"]

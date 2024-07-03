@@ -32,6 +32,7 @@ from linkml.transformers.model_transformer import ModelTransformer
 from linkml.utils import logictools
 
 HERITABLE_METASLOT = [
+    # "multivalued",
     "range",
     "range_expression",
     "minimum_value",
@@ -102,7 +103,7 @@ class LogicalModelTransformer(ModelTransformer):
     >>> _ = sb.add_class("Person", slots={"age": {"range": "integer"}}, is_a="Thing")
     >>> _ = sb.add_class("Organization", slots={"category": {"range": "OrganizationType"}}, is_a="Thing")
     >>> _ = sb.add_enum("OrganizationType", ["commercial", "non-profit"])
-    >>> from linkml.transformers import LogicalModelTransformer
+    >>> from linkml.transformers.logical_model_transformer import LogicalModelTransformer
     >>> tr = LogicalModelTransformer()
     >>> tr.set_schema(sb.schema)
     >>> flat_schema = tr.transform()
@@ -153,8 +154,8 @@ class LogicalModelTransformer(ModelTransformer):
     attributes:
       entities:
         name: entities
-        multivalued: true
         range: Thing
+        multivalued: true
 
     ...
 
@@ -443,6 +444,9 @@ class LogicalModelTransformer(ModelTransformer):
                 logger.debug(f"Simplified member of: {x}")
                 simplified_att = self._from_logical_expression(x)
                 for k, v in simplified_att.__dict__.items():
+                    if v is None or v is False:
+                        if k in ["multivalued"]:
+                            continue
                     setattr(att, k, v)
 
     def _simplify_member_ofs(self, expr: logictools.Expression):

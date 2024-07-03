@@ -46,35 +46,35 @@ linkml:topValue a owl:DatatypeProperty ;
         linkml:ClassDefinition ;
     rdfs:label "c1" ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:minCardinality 1 ;
+            owl:onProperty <http://example.org/owl1/:slotonemany> ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty <http://example.org/owl1/:slotopt> ],
+        [ a owl:Restriction ;
             owl:allValuesFrom <http://example.org/owl1/:C2> ;
-            owl:onProperty <http://example.org/owl1/:slotzeromany> ],
+            owl:onProperty <http://example.org/owl1/:slotopt> ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty <http://example.org/owl1/:slotopt> ],
         [ a owl:Restriction ;
             owl:minCardinality 1 ;
             owl:onProperty <http://example.org/owl1/:slotreq> ],
         [ a owl:Restriction ;
             owl:minCardinality 0 ;
-            owl:onProperty <http://example.org/owl1/:slotopt> ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty <http://example.org/owl1/:slotreq> ],
-        [ a owl:Restriction ;
-            owl:minCardinality 0 ;
             owl:onProperty <http://example.org/owl1/:slotzeromany> ],
         [ a owl:Restriction ;
-            owl:minCardinality 1 ;
-            owl:onProperty <http://example.org/owl1/:slotonemany> ],
+            owl:allValuesFrom <http://example.org/owl1/:C2> ;
+            owl:onProperty <http://example.org/owl1/:slotzeromany> ],
         [ a owl:Restriction ;
             owl:allValuesFrom <http://example.org/owl1/:C2> ;
             owl:onProperty <http://example.org/owl1/:slotreq> ],
         [ a owl:Restriction ;
             owl:maxCardinality 1 ;
-            owl:onProperty <http://example.org/owl1/:slotopt> ],
+            owl:onProperty <http://example.org/owl1/:slotreq> ],
         [ a owl:Restriction ;
             owl:allValuesFrom <http://example.org/owl1/:C2> ;
-            owl:onProperty <http://example.org/owl1/:slotonemany> ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom <http://example.org/owl1/:C2> ;
-            owl:onProperty <http://example.org/owl1/:slotopt> ] ;
+            owl:onProperty <http://example.org/owl1/:slotonemany> ] ;
     skos:inScheme <http://example.org/owl1> .
 
 <http://example.org/owl1> a owl:Ontology ;

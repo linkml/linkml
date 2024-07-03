@@ -1,7 +1,7 @@
 
 # Slot: value_presence
 
-if true then a value must be present (for lists there must be at least one value). If false then a value must be absent (for lists, must be empty)
+if PRESENT then a value must be present (for lists there must be at least one value). If ABSENT then a value must be absent (for lists, must be empty)
 
 URI: [linkml:value_presence](https://w3id.org/linkml/value_presence)
 
