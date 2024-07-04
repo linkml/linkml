@@ -91,7 +91,7 @@ DEFAULT_IMPORTS = (
             ObjectImport(name="Field"),
             ObjectImport(name="RootModel"),
             ObjectImport(name="field_validator"),
-        ]
+        ],
     )
 )
 
@@ -716,9 +716,7 @@ class PydanticGenerator(OOCodeGenerator):
         )
         injected_classes = [textwrap.dedent(c) for c in injected_classes]
 
-        base_model = PydanticBaseModel(
-            extra_fields=self.extra_fields, fields=self.injected_fields
-        )
+        base_model = PydanticBaseModel(extra_fields=self.extra_fields, fields=self.injected_fields)
 
         classes = {}
         predefined = self.get_predefined_slot_values()
@@ -741,9 +739,7 @@ class PydanticGenerator(OOCodeGenerator):
                 attrs[attr_name] = PydanticAttribute(**new_fields)
                 attrs[attr_name] = self.include_metadata(attrs[attr_name], src_attr)
 
-            new_class = PydanticClass(
-                name=k, attributes=attrs, description=c.description
-            )
+            new_class = PydanticClass(name=k, attributes=attrs, description=c.description)
             new_class = self.include_metadata(new_class, c)
             if k in bases:
                 new_class.bases = bases[k]

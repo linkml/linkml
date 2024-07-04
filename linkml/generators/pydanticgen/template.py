@@ -1,10 +1,11 @@
 from copy import copy
 from importlib.util import find_spec
-from typing import Any, ClassVar, Dict, Generator, List, Literal, Optional, Union, overload
+from typing import Any, ClassVar, Dict, Generator, List, Literal, Optional, Union
 
 from jinja2 import Environment, PackageLoader
 from pydantic import BaseModel, Field
 from pydantic.version import VERSION as PYDANTIC_VERSION
+
 from linkml.utils.deprecation import deprecation_warning
 
 try:
@@ -20,7 +21,8 @@ except ImportError:
 if int(PYDANTIC_VERSION[0]) >= 2:
     from pydantic import computed_field
 else:
-    deprecation_warning('pydantic-v1')
+    deprecation_warning("pydantic-v1")
+
     def computed_field(f):
         """No-op decorator to allow this module to not break imports until 1.9.0"""
         return f
@@ -281,7 +283,6 @@ class PydanticClass(TemplateModel):
     def slots(self) -> Optional[Dict[str, PydanticAttribute]]:
         """alias of attributes"""
         return self.attributes
-
 
 
 class ObjectImport(BaseModel):

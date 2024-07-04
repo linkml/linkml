@@ -7,7 +7,7 @@ from importlib.metadata import version
 from importlib.util import find_spec
 from pathlib import Path
 from types import GeneratorType, ModuleType
-from typing import ClassVar, Dict, List, Literal, Optional, Type, Union, get_args, get_origin
+from typing import ClassVar, Dict, List, Literal, Optional, Type, Union
 
 import numpy as np
 import pytest
@@ -695,7 +695,6 @@ def test_inject_field(kitchen_sink_path, tmp_path, input_path, inject, name, typ
     assert field.annotation == type
     assert field.default == default
     assert field.description == description
-
 
 
 # --------------------------------------------------
@@ -1624,7 +1623,8 @@ def test_template_black(array_complex):
         ),
     )
 ] = Field(None)
-""")
+"""
+    )
 
 
 def test_template_noblack(array_complex, mock_black_import):

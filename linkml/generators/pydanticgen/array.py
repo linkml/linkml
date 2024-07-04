@@ -1,18 +1,19 @@
 import sys
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterable, List, Optional, Type, TypeVar, Union, get_args
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterable, Optional, Type, TypeVar, Union, get_args
 
 from linkml_runtime.linkml_model import Element
 from linkml_runtime.linkml_model.meta import ArrayExpression, DimensionExpression
-from linkml.utils.deprecation import deprecation_warning
 from pydantic import VERSION as PYDANTIC_VERSION
+
+from linkml.utils.deprecation import deprecation_warning
 
 if int(PYDANTIC_VERSION[0]) >= 2:
     from pydantic_core import core_schema
 else:
     # Support for having pydantic 1 installed in the same environment will be dropped in 1.9.0
-    deprecation_warning('pydantic-v1')
+    deprecation_warning("pydantic-v1")
 
 if TYPE_CHECKING:
     from pydantic import GetCoreSchemaHandler
@@ -37,9 +38,10 @@ _BOUNDED_ARRAY_FIELDS = ("exact_number_dimensions", "minimum_number_dimensions",
 _T = TypeVar("_T")
 _RecursiveListType = Iterable[Union[_T, Iterable["_RecursiveListType"]]]
 
+
 class AnyShapeArrayType(Generic[_T]):
     @classmethod
-    def __get_pydantic_core_schema__(cls, source_type: Any, handler: 'GetCoreSchemaHandler') -> 'CoreSchema':
+    def __get_pydantic_core_schema__(cls, source_type: Any, handler: "GetCoreSchemaHandler") -> "CoreSchema":
         # double-nested parameterized types here
         # source_type: List[Union[T,List[...]]]
         item_type = Any if get_args(get_args(source_type)[0])[0] is _T else get_args(get_args(source_type)[0])[0]
@@ -70,6 +72,7 @@ class AnyShapeArrayType(Generic[_T]):
         )
 
         return schema
+
 
 AnyShapeArray = Annotated[_RecursiveListType, AnyShapeArrayType]
 
@@ -134,9 +137,7 @@ class ArrayRangeGenerator(ABC):
 
     REPR: ClassVar[ArrayRepresentation]
 
-    def __init__(
-        self, array: Optional[ArrayExpression], dtype: Union[str, Element]
-    ):
+    def __init__(self, array: Optional[ArrayExpression], dtype: Union[str, Element]):
         self.array = array
         self.dtype = dtype
 
