@@ -171,16 +171,6 @@ except Exception as e:
     console.print(e)
 ```
 
-
-```{note}
-The UX of the pydantic models is somewhat limited by linkml's dual support for pydantic 1 and 2.
-After the deprecation of pydantic 1, the models will be able to more naturally handle arrays from numpy
-and other common formats. Eg. currently in Pydantic 1, an array must first be cast `.to_list()`,
-and the validation errors are difficult to read!
-
-See issue [#1925](https://github.com/linkml/linkml/issues/1925)
-```
-
 ### Specification
 
 NDArrays are defined by an {class}`~linkml_runtime.linkml_model.meta.ArrayExpression` ([metamodel docs](https://linkml.io/linkml-model/latest/docs/ArrayExpression/))
