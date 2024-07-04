@@ -6,7 +6,6 @@ from _decimal import Decimal
 
 import pytest
 from linkml_runtime.utils.formatutils import underscore
-from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
@@ -36,8 +35,6 @@ from tests.test_compliance.test_compliance import (
     SLOT_S2,
     SLOT_S3,
 )
-
-IS_PYDANTIC_V1 = PYDANTIC_VERSION[0] == "1"
 
 
 @pytest.mark.parametrize(
@@ -264,7 +261,7 @@ def test_min_max_values(framework, name, range, minimum, maximum, value, valid):
         test_min_max_values, name, framework, classes=classes, core_elements=["minimum_value", "maximum_value"]
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework in [SQL_DDL_SQLITE, PYTHON_DATACLASSES] or (framework == PYDANTIC and IS_PYDANTIC_V1):
+    if framework in [SQL_DDL_SQLITE, PYTHON_DATACLASSES]:
         if not valid:
             expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
@@ -454,7 +451,7 @@ def test_date_types(framework, linkml_type, example_value, is_valid):
         if linkml_type == "time" and "." in example_value and is_valid:
             expected_behavior = ValidationBehavior.FALSE_POSITIVE
     if framework == PYDANTIC:
-        if not IS_PYDANTIC_V1 and linkml_type == "datetime" and example_value == "2021-01-01":
+        if linkml_type == "datetime" and example_value == "2021-01-01":
             expected_behavior = ValidationBehavior.COERCES
         if linkml_type == "time" and is_valid is False:
             expected_behavior = ValidationBehavior.INCOMPLETE

@@ -5,7 +5,7 @@ class {{ name }}({% if bases is string %}{{ bases }}{% else %}{{ bases | join(',
     """
     {% endif -%}
     {% if meta != None %}
-    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({% if pydantic_ver == 1 %}__root__={% endif %}{{ meta | pprint | indent(width=8) }})
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({{ meta | pprint | indent(width=8) }})
 
     {% endif %}
     {%  if attributes or validators %}

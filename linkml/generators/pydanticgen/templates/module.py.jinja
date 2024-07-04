@@ -15,7 +15,7 @@ version = "{{version if version else None}}"
     {% endfor %}
 {% endif %}
 {% if meta != None %}
-linkml_meta = LinkMLMeta({% if pydantic_ver == 1 %}__root__={% endif %}{{ meta | pprint | indent(width=4) }} )
+linkml_meta = LinkMLMeta({{ meta | pprint | indent(width=4) }} )
 {% else %}
 linkml_meta = None
 {% endif %}

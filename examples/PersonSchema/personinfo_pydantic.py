@@ -14,20 +14,13 @@ from typing import (
     Optional,
     Union
 )
-from pydantic.version import VERSION  as PYDANTIC_VERSION
-if int(PYDANTIC_VERSION[0])>=2:
-    from pydantic import (
-        BaseModel,
-        ConfigDict,
-        Field,
-        field_validator
-    )
-else:
-    from pydantic import (
-        BaseModel,
-        Field,
-        validator
-    )
+
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_validator
+)
 
 metamodel_version = "None"
 version = "None"
