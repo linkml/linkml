@@ -1993,6 +1993,28 @@ files = [
 ]
 
 [[package]]
+name = "nptyping"
+version = "2.5.0"
+description = "Type hints for NumPy."
+optional = true
+python-versions = ">=3.7"
+files = [
+    {file = "nptyping-2.5.0-py3-none-any.whl", hash = "sha256:764e51836faae33a7ae2e928af574cfb701355647accadcc89f2ad793630b7c8"},
+    {file = "nptyping-2.5.0.tar.gz", hash = "sha256:e3d35b53af967e6fb407c3016ff9abae954d3a0568f7cc13a461084224e8e20a"},
+]
+
+[package.dependencies]
+numpy = {version = ">=1.20.0,<2.0.0", markers = "python_version >= \"3.8\""}
+typing-extensions = {version = ">=4.0.0,<5.0.0", markers = "python_version < \"3.10\""}
+
+[package.extras]
+build = ["invoke (>=1.6.0)", "pip-tools (>=6.5.0)"]
+complete = ["pandas", "pandas-stubs-fork"]
+dev = ["autoflake", "beartype (<0.10.0)", "beartype (>=0.10.0)", "black", "codecov (>=2.1.0)", "coverage", "feedparser", "invoke (>=1.6.0)", "isort", "mypy", "pandas", "pandas-stubs-fork", "pip-tools (>=6.5.0)", "pylint", "pyright", "setuptools", "typeguard", "wheel"]
+pandas = ["pandas", "pandas-stubs-fork"]
+qa = ["autoflake", "beartype (<0.10.0)", "beartype (>=0.10.0)", "black", "codecov (>=2.1.0)", "coverage", "feedparser", "isort", "mypy", "pylint", "pyright", "setuptools", "typeguard", "wheel"]
+
+[[package]]
 name = "numpy"
 version = "1.24.4"
 description = "Fundamental package for array computing in Python"
@@ -2073,6 +2095,32 @@ files = [
     {file = "numpy-1.26.4-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:7e50d0a0cc3189f9cb0aeb3a6a6af18c16f59f004b866cd2be1c14b36134a4a0"},
     {file = "numpy-1.26.4.tar.gz", hash = "sha256:2a02aba9ed12e4ac4eb3ea9421c420301a0c6460d9830d74a9df87efa4912010"},
 ]
+
+[[package]]
+name = "numpydantic"
+version = "1.2.1"
+description = "Type and shape validation and serialization for numpy arrays in pydantic models"
+optional = true
+python-versions = "<4.0,>=3.9"
+files = [
+    {file = "numpydantic-1.2.1-py3-none-any.whl", hash = "sha256:e21d7e272410b3a2013d2a6aeec2ed6efd13ea171b0200e2029d7c2f1453def0"},
+    {file = "numpydantic-1.2.1.tar.gz", hash = "sha256:d8a3e7371d78b99fa4a4733a5b873046f064993431ae63f97edcf9bda4dd5c7f"},
+]
+
+[package.dependencies]
+nptyping = ">=2.5.0"
+numpy = ">=1.24.0"
+pydantic = ">=2.3.0"
+
+[package.extras]
+arrays = ["numpydantic[dask,hdf5,video,zarr]"]
+dask = ["dask (>=2024.4.0)"]
+dev = ["black (>=24.1.1,<25.0.0)", "numpydantic[docs,tests]", "ruff (>=0.2.0,<1.0.0)", "sphinx-autobuild (>=2021.3.14)"]
+docs = ["autodoc-pydantic (>=2.0.1,<3.0.0)", "furo (>=2024.1.29)", "myst-parser (>=2.0.0,<3.0.0)", "sphinx (>=7.2.6,<8.0.0)", "sphinx-design (>=0.5.0,<1.0.0)", "sphinxcontrib-mermaid (>=0.9.2)"]
+hdf5 = ["h5py (>=3.10.0)"]
+tests = ["coverage (>=6.1.1)", "coveralls (>=3.3.1,<4.0.0)", "numpydantic[arrays]", "pytest (>=7.4.0)", "pytest-cov (>=4.1.0,<5.0.0)", "pytest-depends (>=1.0.1,<2.0.0)", "typing-extensions (>=4.11.0)"]
+video = ["opencv-python (>=4.9.0.80)"]
+zarr = ["zarr (>=2.17.2)"]
 
 [[package]]
 name = "openpyxl"
@@ -4144,10 +4192,11 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 
 [extras]
 black = ["black"]
+numpydantic = ["numpydantic"]
 shacl = ["pyshacl"]
-tests = ["black", "pyshacl"]
+tests = ["black", "numpydantic", "pyshacl"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.1"
-content-hash = "8f449a771501c7950800e518ba78d5e1f16893f410a6b8ad3e2d993d672610ec"
+content-hash = "3c2421acd81b3d5f6254abec4016f7f9742316f41705336d9078b50b996f7c63"
