@@ -1,17 +1,22 @@
 import sys
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, ClassVar, Generic, Iterable, List, Optional, Type, TypeVar, Union, get_args
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterable, List, Optional, Type, TypeVar, Union, get_args
 
 from linkml_runtime.linkml_model import Element
 from linkml_runtime.linkml_model.meta import ArrayExpression, DimensionExpression
+from linkml.utils.deprecation import deprecation_warning
 from pydantic import VERSION as PYDANTIC_VERSION
 
-if int(PYDANTIC_VERSION[0]) < 2:
-    pass
+if int(PYDANTIC_VERSION[0]) >= 2:
+    from pydantic_core import core_schema
 else:
+    # Support for having pydantic 1 installed in the same environment will be dropped in 1.9.0
+    deprecation_warning('pydantic-v1')
+
+if TYPE_CHECKING:
     from pydantic import GetCoreSchemaHandler
-    from pydantic_core import CoreSchema, core_schema
+    from pydantic_core import CoreSchema
 
 if sys.version_info.minor <= 8:
     from typing_extensions import Annotated
@@ -31,146 +36,72 @@ _BOUNDED_ARRAY_FIELDS = ("exact_number_dimensions", "minimum_number_dimensions",
 
 _T = TypeVar("_T")
 _RecursiveListType = Iterable[Union[_T, Iterable["_RecursiveListType"]]]
-if int(PYDANTIC_VERSION[0]) >= 2:
 
-    class AnyShapeArrayType(Generic[_T]):
-        @classmethod
-        def __get_pydantic_core_schema__(cls, source_type: Any, handler: GetCoreSchemaHandler) -> CoreSchema:
-            # double-nested parameterized types here
-            # source_type: List[Union[T,List[...]]]
-            item_type = Any if get_args(get_args(source_type)[0])[0] is _T else get_args(get_args(source_type)[0])[0]
+class AnyShapeArrayType(Generic[_T]):
+    @classmethod
+    def __get_pydantic_core_schema__(cls, source_type: Any, handler: 'GetCoreSchemaHandler') -> 'CoreSchema':
+        # double-nested parameterized types here
+        # source_type: List[Union[T,List[...]]]
+        item_type = Any if get_args(get_args(source_type)[0])[0] is _T else get_args(get_args(source_type)[0])[0]
 
-            item_schema = handler.generate_schema(item_type)
-            if item_schema.get("type", "any") != "any":
-                item_schema["strict"] = True
+        item_schema = handler.generate_schema(item_type)
+        if item_schema.get("type", "any") != "any":
+            item_schema["strict"] = True
 
-            if item_type is Any:
-                # Before python 3.11, `Any` type was a special object without a __name__
-                item_name = "Any"
-            else:
-                item_name = item_type.__name__
+        if item_type is Any:
+            # Before python 3.11, `Any` type was a special object without a __name__
+            item_name = "Any"
+        else:
+            item_name = item_type.__name__
 
-            array_ref = f"any-shape-array-{item_name}"
+        array_ref = f"any-shape-array-{item_name}"
 
-            schema = core_schema.definitions_schema(
-                core_schema.list_schema(core_schema.definition_reference_schema(array_ref)),
-                [
-                    core_schema.union_schema(
-                        [
-                            core_schema.list_schema(core_schema.definition_reference_schema(array_ref)),
-                            item_schema,
-                        ],
-                        ref=array_ref,
-                    )
-                ],
-            )
-
-            return schema
-
-    AnyShapeArray = Annotated[_RecursiveListType, AnyShapeArrayType]
-
-    _AnyShapeArrayImports = (
-        Imports()
-        + Import(
-            module="typing",
-            objects=[
-                ObjectImport(name="Generic"),
-                ObjectImport(name="Iterable"),
-                ObjectImport(name="TypeVar"),
-                ObjectImport(name="Union"),
-                ObjectImport(name="get_args"),
+        schema = core_schema.definitions_schema(
+            core_schema.list_schema(core_schema.definition_reference_schema(array_ref)),
+            [
+                core_schema.union_schema(
+                    [
+                        core_schema.list_schema(core_schema.definition_reference_schema(array_ref)),
+                        item_schema,
+                    ],
+                    ref=array_ref,
+                )
             ],
         )
-        + ConditionalImport(
-            condition="sys.version_info.minor > 8",
-            module="typing",
-            objects=[ObjectImport(name="Annotated")],
-            alternative=Import(module="typing_extensions", objects=[ObjectImport(name="Annotated")]),
-        )
-        + Import(module="pydantic", objects=[ObjectImport(name="GetCoreSchemaHandler")])
-        + Import(module="pydantic_core", objects=[ObjectImport(name="CoreSchema"), ObjectImport(name="core_schema")])
-    )
 
-    # annotated types are special and inspect.getsource() can't stringify them
-    _AnyShapeArrayInjects = [
-        '_T = TypeVar("_T")',
-        '_RecursiveListType = Iterable[Union[_T, Iterable["_RecursiveListType"]]]',
-        AnyShapeArrayType,
-        "AnyShapeArray = Annotated[_RecursiveListType, AnyShapeArrayType]",
-    ]
+        return schema
 
-else:
+AnyShapeArray = Annotated[_RecursiveListType, AnyShapeArrayType]
 
-    class AnyShapeArray(Generic[_T]):
-        type_: Type[Any] = Any
-
-        def __class_getitem__(cls, item):
-            alias = type(f"AnyShape_{str(item.__name__)}", (AnyShapeArray,), {"type_": item})
-            alias.type_ = item
-            return alias
-
-        @classmethod
-        def __get_validators__(cls):
-            yield cls.validate
-
-        @classmethod
-        def __modify_schema__(cls, field_schema):
-            try:
-                item_type = field_schema["allOf"][0]["type"]
-                type_schema = {"type": item_type}
-                del field_schema["allOf"]
-            except KeyError as e:
-                if "allOf" in str(e):
-                    item_type = "Any"
-                    type_schema = {}
-                else:
-                    raise e
-
-            array_id = f"#any-shape-array-{item_type}"
-            field_schema["anyOf"] = [
-                type_schema,
-                {"type": "array", "items": {"$ref": array_id}},
-            ]
-            field_schema["$id"] = array_id
-
-        @classmethod
-        def validate(cls, v: Union[List[_T], list]):
-            if str(type(v)) == "<class 'numpy.ndarray'>":
-                v = v.tolist()
-
-            if not isinstance(v, list):
-                raise TypeError(f"Must be a list of lists! got {v}")
-
-            def _validate(_v: Union[List[_T], list]):
-                for item in _v:
-                    if isinstance(item, list):
-                        _validate(item)
-                    else:
-                        try:
-                            anytype = cls.type_.__name__ in ("AnyType", "Any")
-                        except AttributeError:
-                            # in python 3.8 and 3.9, `typing.Any` has no __name__
-                            anytype = str(cls.type_).split(".")[-1] in ("AnyType", "Any")
-
-                        if not anytype and not isinstance(item, cls.type_):
-                            raise TypeError(
-                                (
-                                    f"List items must be list of lists, or the type used in "
-                                    f"the subscript ({cls.type_}. Got item {item} and outer value {v}"
-                                )
-                            )
-                return _v
-
-            return _validate(v)
-
-    _AnyShapeArrayImports = Imports() + Import(
+_AnyShapeArrayImports = (
+    Imports()
+    + Import(
         module="typing",
-        objects=[ObjectImport(name="Generic"), ObjectImport(name="TypeVar"), ObjectImport(name="_GenericAlias")],
+        objects=[
+            ObjectImport(name="Generic"),
+            ObjectImport(name="Iterable"),
+            ObjectImport(name="TypeVar"),
+            ObjectImport(name="Union"),
+            ObjectImport(name="get_args"),
+        ],
     )
-    _AnyShapeArrayInjects = [
-        '_T = TypeVar("_T")',
-        AnyShapeArray,
-    ]
+    + ConditionalImport(
+        condition="sys.version_info.minor > 8",
+        module="typing",
+        objects=[ObjectImport(name="Annotated")],
+        alternative=Import(module="typing_extensions", objects=[ObjectImport(name="Annotated")]),
+    )
+    + Import(module="pydantic", objects=[ObjectImport(name="GetCoreSchemaHandler")])
+    + Import(module="pydantic_core", objects=[ObjectImport(name="CoreSchema"), ObjectImport(name="core_schema")])
+)
+
+# annotated types are special and inspect.getsource() can't stringify them
+_AnyShapeArrayInjects = [
+    '_T = TypeVar("_T")',
+    '_RecursiveListType = Iterable[Union[_T, Iterable["_RecursiveListType"]]]',
+    AnyShapeArrayType,
+    "AnyShapeArray = Annotated[_RecursiveListType, AnyShapeArrayType]",
+]
 
 _ConListImports = Imports() + Import(module="pydantic", objects=[ObjectImport(name="conlist")])
 
@@ -198,19 +129,16 @@ class ArrayRangeGenerator(ABC):
     Attributes:
         array (:class:`.ArrayExpression` ): Array to create an annotation for
         dtype (Union[str, :class:`.Element` ): dtype of the entire array as a string
-        pydantic_ver (str): Pydantic version to generate array form for -
-            currently only pydantic 1 and 2 are differentiated, and pydantic 1 will be deprecated soon.
 
     """
 
     REPR: ClassVar[ArrayRepresentation]
 
     def __init__(
-        self, array: Optional[ArrayExpression], dtype: Union[str, Element], pydantic_ver: str = PYDANTIC_VERSION
+        self, array: Optional[ArrayExpression], dtype: Union[str, Element]
     ):
         self.array = array
         self.dtype = dtype
-        self.pydantic_ver = pydantic_ver
 
     def make(self) -> SlotResult:
         """Create the string form of the array representation"""
@@ -288,16 +216,11 @@ class ListOfListsArray(ArrayRangeGenerator):
             return SlotResult(annotation="List[" + dtype + "]")
 
         items = []
-        if int(PYDANTIC_VERSION[0]) >= 2:
-            if dmin is not None:
-                items.append(f"min_length={dmin}")
-            if dmax is not None:
-                items.append(f"max_length={dmax}")
-        else:
-            if dmin is not None:
-                items.append(f"min_items={dmin}")
-            if dmax is not None:
-                items.append(f"max_items={dmax}")
+        if dmin is not None:
+            items.append(f"min_length={dmin}")
+        if dmax is not None:
+            items.append(f"max_length={dmax}")
+
         items.append(f"item_type={dtype}")
         items = ", ".join(items)
         annotation = f"conlist({items})"

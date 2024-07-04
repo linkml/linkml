@@ -83,12 +83,12 @@ Direct support for array libraries like numpy, hdf5, dask, zarr, and xarray with
 """
 
 def render_module(path):
-    generator = PydanticGenerator(str(path), pydantic_version=2, array_representations=['list'])
+    generator = PydanticGenerator(str(path), array_representations=['list'])
     module = generator.render()
     return module
     
 def compile_module(path):
-    generator = PydanticGenerator(str(path), pydantic_version=2, array_representations=['list'])
+    generator = PydanticGenerator(str(path), array_representations=['list'])
     module = generator.compile_module()
     return module
 

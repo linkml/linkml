@@ -31,7 +31,6 @@ from linkml.generators.pydanticgen import includes
 from linkml.generators.pydanticgen.array import ArrayRangeGenerator, ArrayRepresentation
 from linkml.generators.pydanticgen.build import SlotResult
 from linkml.generators.pydanticgen.template import (
-    ConditionalImport,
     Import,
     Imports,
     ObjectImport,
@@ -84,9 +83,7 @@ DEFAULT_IMPORTS = (
             ObjectImport(name="Union"),
         ],
     )
-    + Import(module="pydantic.version", objects=[ObjectImport(name="VERSION", alias="PYDANTIC_VERSION")])
-    + ConditionalImport(
-        condition="int(PYDANTIC_VERSION[0])>=2",
+    + Import(
         module="pydantic",
         objects=[
             ObjectImport(name="BaseModel"),
@@ -94,15 +91,11 @@ DEFAULT_IMPORTS = (
             ObjectImport(name="Field"),
             ObjectImport(name="RootModel"),
             ObjectImport(name="field_validator"),
-        ],
-        alternative=Import(
-            module="pydantic",
-            objects=[ObjectImport(name="BaseModel"), ObjectImport(name="Field"), ObjectImport(name="validator")],
-        ),
+        ]
     )
 )
 
-DEFAULT_INJECTS = {1: [includes.LinkMLMeta_v1], 2: [includes.LinkMLMeta_v2]}
+DEFAULT_INJECTS = [includes.LinkMLMeta]
 
 
 class MetadataMode(str, Enum):
@@ -150,7 +143,7 @@ class PydanticGenerator(OOCodeGenerator):
     """
     If black is present in the environment, format the serialized code with it
     """
-    pydantic_version: int = int(PYDANTIC_VERSION[0])
+
     template_dir: Optional[Union[str, Path]] = None
     """
     Override templates for each TemplateModel.
@@ -247,8 +240,6 @@ class PydanticGenerator(OOCodeGenerator):
 
     def __post_init__(self):
         super().__post_init__()
-        if int(self.pydantic_version) == 1:
-            deprecation_warning("pydanticgen-v1")
 
     def compile_module(self, **kwargs) -> ModuleType:
         """
@@ -548,7 +539,7 @@ class PydanticGenerator(OOCodeGenerator):
         array_reps = []
         for repr in self.array_representations:
             generator = ArrayRangeGenerator.get_generator(repr)
-            result = generator(slot.array, range, self.pydantic_version).make()
+            result = generator(slot.array, range).make()
             array_reps.append(result)
 
         if len(array_reps) == 0:
@@ -621,7 +612,7 @@ class PydanticGenerator(OOCodeGenerator):
             description=schema.description.replace('"', '\\"') if schema.description else None,
         )
         enums = self.generate_enums(sv.all_enums())
-        injected_classes = copy(DEFAULT_INJECTS[self.pydantic_version])
+        injected_classes = copy(DEFAULT_INJECTS)
         if self.injected_classes is not None:
             injected_classes += self.injected_classes
 
@@ -726,7 +717,7 @@ class PydanticGenerator(OOCodeGenerator):
         injected_classes = [textwrap.dedent(c) for c in injected_classes]
 
         base_model = PydanticBaseModel(
-            pydantic_ver=self.pydantic_version, extra_fields=self.extra_fields, fields=self.injected_fields
+            extra_fields=self.extra_fields, fields=self.injected_fields
         )
 
         classes = {}
@@ -747,11 +738,11 @@ class PydanticGenerator(OOCodeGenerator):
                 new_fields["predefined"] = predef_slot
                 new_fields["name"] = attr_name
 
-                attrs[attr_name] = PydanticAttribute(**new_fields, pydantic_ver=self.pydantic_version)
+                attrs[attr_name] = PydanticAttribute(**new_fields)
                 attrs[attr_name] = self.include_metadata(attrs[attr_name], src_attr)
 
             new_class = PydanticClass(
-                name=k, attributes=attrs, description=c.description, pydantic_ver=self.pydantic_version
+                name=k, attributes=attrs, description=c.description
             )
             new_class = self.include_metadata(new_class, c)
             if k in bases:
@@ -759,7 +750,6 @@ class PydanticGenerator(OOCodeGenerator):
             classes[k] = new_class
 
         module = PydanticModule(
-            pydantic_ver=self.pydantic_version,
             metamodel_version=self.schema.metamodel_version,
             version=self.schema.version,
             python_imports=imports.imports,
@@ -806,12 +796,6 @@ Available templates to override:
     + "\n".join(["- " + name for name in _TEMPLATE_NAMES]),
 )
 @click.option(
-    "--pydantic-version",
-    type=click.IntRange(1, 2),
-    default=int(PYDANTIC_VERSION[0]),
-    help="Pydantic version to use (1 or 2)",
-)
-@click.option(
     "--array-representations",
     type=click.Choice([k.value for k in ArrayRepresentation]),
     multiple=True,
@@ -849,7 +833,6 @@ def cli(
     classvars=True,
     slots=True,
     array_representations=list("list"),
-    pydantic_version=int(PYDANTIC_VERSION[0]),
     extra_fields: Literal["allow", "forbid", "ignore"] = "forbid",
     black: bool = False,
     meta: MetadataMode = "auto",
@@ -870,7 +853,6 @@ def cli(
 
     gen = PydanticGenerator(
         yamlfile,
-        pydantic_version=pydantic_version,
         array_representations=[ArrayRepresentation(x) for x in array_representations],
         extra_fields=extra_fields,
         emit_metadata=head,
