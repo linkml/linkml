@@ -478,19 +478,6 @@ work without running <code class="docutils literal notranslate"><span class="pre
 </li>
 </ul>
 </section>
-<section id="testing-multiple-pydantic-versions">
-<h3>Testing multiple Pydantic versions<a class="headerlink" href="#testing-multiple-pydantic-versions" title="Permalink to this heading">#</a></h3>
-<p>LinkML both generates and depends on Pydantic. <a class="reference external" href="https://docs.pydantic.dev/2.4/migration/">Pydantic V2</a> brought a number of breaking changes, but we intend to support both V1 and V2. By default, the <code class="docutils literal notranslate"><span class="pre">PydanticGenerator</span></code> class will generate code compatible with the version of Pydantic that is installed in your environment. This can be overridden by explicitly setting the <code class="docutils literal notranslate"><span class="pre">pydantic_version</span></code> field.</p>
-<p>As of March 2024, our default development environment specifies Pydantic 2 (as determined by the <code class="docutils literal notranslate"><span class="pre">poetry.lock</span></code> file). But since we also support Pydantic 1 (as specified in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>), it is important to test with Pydantic 1 in your environment. To facilitate that there is a <code class="docutils literal notranslate"><span class="pre">tox</span></code> environment called <code class="docutils literal notranslate"><span class="pre">pydantic1</span></code>. To run all tests with Pydantic 1 installed:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>tox<span class="w"> </span>-e<span class="w"> </span>pydantic1
-</pre></div>
-</div>
-<p>Additional arguments will be passed to <code class="docutils literal notranslate"><span class="pre">pytest</span></code>. For example, to run a specific test:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>tox<span class="w"> </span>-e<span class="w"> </span>pydantic1<span class="w"> </span>--<span class="w"> </span>--<span class="w"> </span>tests/test_compliance/test_core_compliance.py
-</pre></div>
-</div>
-<p>Our main GitHub Actions testing workflow will also automatically perform at least one test run with Pydantic 1 in the environment.</p>
-</section>
 </section>
 <section id="code-formatting-and-linting">
 <h2>Code formatting and linting<a class="headerlink" href="#code-formatting-and-linting" title="Permalink to this heading">#</a></h2>
@@ -630,7 +617,6 @@ insight into your work and allows them to provide feedback early on.</p></li>
 <li><a class="reference internal" href="#ide-tips">IDE Tips</a></li>
 <li><a class="reference internal" href="#unittest-to-pytest-conversion">Unittest to pytest conversion</a></li>
 <li><a class="reference internal" href="#custom-pytest-fixtures">Custom pytest fixtures</a></li>
-<li><a class="reference internal" href="#testing-multiple-pydantic-versions">Testing multiple Pydantic versions</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#code-formatting-and-linting">Code formatting and linting</a></li>

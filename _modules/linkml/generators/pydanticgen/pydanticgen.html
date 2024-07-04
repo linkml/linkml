@@ -362,7 +362,6 @@
 <span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen.array</span> <span class="kn">import</span> <span class="n">ArrayRangeGenerator</span><span class="p">,</span> <span class="n">ArrayRepresentation</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen.build</span> <span class="kn">import</span> <span class="n">SlotResult</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen.template</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">ConditionalImport</span><span class="p">,</span>
     <span class="n">Import</span><span class="p">,</span>
     <span class="n">Imports</span><span class="p">,</span>
     <span class="n">ObjectImport</span><span class="p">,</span>
@@ -415,9 +414,7 @@
             <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Union&quot;</span><span class="p">),</span>
         <span class="p">],</span>
     <span class="p">)</span>
-    <span class="o">+</span> <span class="n">Import</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="s2">&quot;pydantic.version&quot;</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="p">[</span><span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;VERSION&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;PYDANTIC_VERSION&quot;</span><span class="p">)])</span>
-    <span class="o">+</span> <span class="n">ConditionalImport</span><span class="p">(</span>
-        <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;int(PYDANTIC_VERSION[0])&gt;=2&quot;</span><span class="p">,</span>
+    <span class="o">+</span> <span class="n">Import</span><span class="p">(</span>
         <span class="n">module</span><span class="o">=</span><span class="s2">&quot;pydantic&quot;</span><span class="p">,</span>
         <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
             <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;BaseModel&quot;</span><span class="p">),</span>
@@ -426,14 +423,10 @@
             <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;RootModel&quot;</span><span class="p">),</span>
             <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;field_validator&quot;</span><span class="p">),</span>
         <span class="p">],</span>
-        <span class="n">alternative</span><span class="o">=</span><span class="n">Import</span><span class="p">(</span>
-            <span class="n">module</span><span class="o">=</span><span class="s2">&quot;pydantic&quot;</span><span class="p">,</span>
-            <span class="n">objects</span><span class="o">=</span><span class="p">[</span><span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;BaseModel&quot;</span><span class="p">),</span> <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Field&quot;</span><span class="p">),</span> <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;validator&quot;</span><span class="p">)],</span>
-        <span class="p">),</span>
     <span class="p">)</span>
 <span class="p">)</span>
 
-<span class="n">DEFAULT_INJECTS</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="n">includes</span><span class="o">.</span><span class="n">LinkMLMeta_v1</span><span class="p">],</span> <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="n">includes</span><span class="o">.</span><span class="n">LinkMLMeta_v2</span><span class="p">]}</span>
+<span class="n">DEFAULT_INJECTS</span> <span class="o">=</span> <span class="p">[</span><span class="n">includes</span><span class="o">.</span><span class="n">LinkMLMeta</span><span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">MetadataMode</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
@@ -481,7 +474,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    If black is present in the environment, format the serialized code with it</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">pydantic_version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">PYDANTIC_VERSION</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
     <span class="n">template_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Override templates for each TemplateModel.</span>
@@ -578,8 +571,6 @@
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pydantic_version</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">deprecation_warning</span><span class="p">(</span><span class="s2">&quot;pydanticgen-v1&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PydanticGenerator.compile_module"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.compile_module">[docs]</a>    <span class="k">def</span> <span class="nf">compile_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModuleType</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -879,7 +870,7 @@
         <span class="n">array_reps</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="nb">repr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_representations</span><span class="p">:</span>
             <span class="n">generator</span> <span class="o">=</span> <span class="n">ArrayRangeGenerator</span><span class="o">.</span><span class="n">get_generator</span><span class="p">(</span><span class="nb">repr</span><span class="p">)</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="nb">range</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pydantic_version</span><span class="p">)</span><span class="o">.</span><span class="n">make</span><span class="p">()</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="nb">range</span><span class="p">)</span><span class="o">.</span><span class="n">make</span><span class="p">()</span>
             <span class="n">array_reps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">array_reps</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -952,7 +943,7 @@
             <span class="n">description</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&quot;&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">schema</span><span class="o">.</span><span class="n">description</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">enums</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_enums</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">all_enums</span><span class="p">())</span>
-        <span class="n">injected_classes</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">DEFAULT_INJECTS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pydantic_version</span><span class="p">])</span>
+        <span class="n">injected_classes</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">DEFAULT_INJECTS</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">injected_classes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">injected_classes</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">injected_classes</span>
 
@@ -1056,9 +1047,7 @@
         <span class="p">)</span>
         <span class="n">injected_classes</span> <span class="o">=</span> <span class="p">[</span><span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">injected_classes</span><span class="p">]</span>
 
-        <span class="n">base_model</span> <span class="o">=</span> <span class="n">PydanticBaseModel</span><span class="p">(</span>
-            <span class="n">pydantic_ver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pydantic_version</span><span class="p">,</span> <span class="n">extra_fields</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extra_fields</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">injected_fields</span>
-        <span class="p">)</span>
+        <span class="n">base_model</span> <span class="o">=</span> <span class="n">PydanticBaseModel</span><span class="p">(</span><span class="n">extra_fields</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extra_fields</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">injected_fields</span><span class="p">)</span>
 
         <span class="n">classes</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">predefined</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_predefined_slot_values</span><span class="p">()</span>
@@ -1078,19 +1067,16 @@
                 <span class="n">new_fields</span><span class="p">[</span><span class="s2">&quot;predefined&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">predef_slot</span>
                 <span class="n">new_fields</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr_name</span>
 
-                <span class="n">attrs</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">PydanticAttribute</span><span class="p">(</span><span class="o">**</span><span class="n">new_fields</span><span class="p">,</span> <span class="n">pydantic_ver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pydantic_version</span><span class="p">)</span>
+                <span class="n">attrs</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">PydanticAttribute</span><span class="p">(</span><span class="o">**</span><span class="n">new_fields</span><span class="p">)</span>
                 <span class="n">attrs</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_metadata</span><span class="p">(</span><span class="n">attrs</span><span class="p">[</span><span class="n">attr_name</span><span class="p">],</span> <span class="n">src_attr</span><span class="p">)</span>
 
-            <span class="n">new_class</span> <span class="o">=</span> <span class="n">PydanticClass</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attrs</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">pydantic_ver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pydantic_version</span>
-            <span class="p">)</span>
+            <span class="n">new_class</span> <span class="o">=</span> <span class="n">PydanticClass</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attrs</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
             <span class="n">new_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_metadata</span><span class="p">(</span><span class="n">new_class</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">bases</span><span class="p">:</span>
                 <span class="n">new_class</span><span class="o">.</span><span class="n">bases</span> <span class="o">=</span> <span class="n">bases</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
             <span class="n">classes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_class</span>
 
         <span class="n">module</span> <span class="o">=</span> <span class="n">PydanticModule</span><span class="p">(</span>
-            <span class="n">pydantic_ver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pydantic_version</span><span class="p">,</span>
             <span class="n">metamodel_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span><span class="p">,</span>
             <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
             <span class="n">python_imports</span><span class="o">=</span><span class="n">imports</span><span class="o">.</span><span class="n">imports</span><span class="p">,</span>
@@ -1137,12 +1123,6 @@
     <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;- &quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">_TEMPLATE_NAMES</span><span class="p">]),</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
-    <span class="s2">&quot;--pydantic-version&quot;</span><span class="p">,</span>
-    <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">IntRange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-    <span class="n">default</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">PYDANTIC_VERSION</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Pydantic version to use (1 or 2)&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--array-representations&quot;</span><span class="p">,</span>
     <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Choice</span><span class="p">([</span><span class="n">k</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ArrayRepresentation</span><span class="p">]),</span>
     <span class="n">multiple</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -1180,7 +1160,6 @@
     <span class="n">classvars</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">array_representations</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="s2">&quot;list&quot;</span><span class="p">),</span>
-    <span class="n">pydantic_version</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">PYDANTIC_VERSION</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
     <span class="n">extra_fields</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;allow&quot;</span><span class="p">,</span> <span class="s2">&quot;forbid&quot;</span><span class="p">,</span> <span class="s2">&quot;ignore&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;forbid&quot;</span><span class="p">,</span>
     <span class="n">black</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">meta</span><span class="p">:</span> <span class="n">MetadataMode</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
@@ -1201,7 +1180,6 @@
 
     <span class="n">gen</span> <span class="o">=</span> <span class="n">PydanticGenerator</span><span class="p">(</span>
         <span class="n">yamlfile</span><span class="p">,</span>
-        <span class="n">pydantic_version</span><span class="o">=</span><span class="n">pydantic_version</span><span class="p">,</span>
         <span class="n">array_representations</span><span class="o">=</span><span class="p">[</span><span class="n">ArrayRepresentation</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">array_representations</span><span class="p">],</span>
         <span class="n">extra_fields</span><span class="o">=</span><span class="n">extra_fields</span><span class="p">,</span>
         <span class="n">emit_metadata</span><span class="o">=</span><span class="n">head</span><span class="p">,</span>
