@@ -21,13 +21,20 @@ from linkml_runtime.linkml_model.types import SHEX
 from linkml_runtime.utils.formatutils import camelcase, sfx
 from linkml_runtime.utils.metamodelcore import URIorCURIE
 from rdflib import OWL, RDF, XSD, Graph, Namespace
-from ShExJSG import ShExC
-from ShExJSG.SchemaWithContext import Schema
-from ShExJSG.ShExJ import IRIREF, EachOf, NodeConstraint, Shape, ShapeOr, TripleConstraint
+
 
 from linkml import METAMODEL_NAMESPACE, METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.deprecation import deprecation_warning
+
+try:
+    from ShExJSG import ShExC
+    from ShExJSG.SchemaWithContext import Schema
+    from ShExJSG.ShExJ import IRIREF, EachOf, NodeConstraint, Shape, ShapeOr, TripleConstraint
+except ImportError as e:
+    deprecation_warning('generator-deps')
+    raise e
 
 
 @dataclass
@@ -43,8 +50,8 @@ class ShExGenerator(Generator):
     # ObjectVars
     shex: Schema = field(default_factory=lambda: Schema())  # ShEx Schema being generated
     shapes: List = field(default_factory=lambda: [])
-    shape: Optional[Shape] = None  # Current shape being defined
-    list_shapes: List[IRIREF] = field(default_factory=lambda: [])  # Shapes that have been defined as lists
+    shape: Optional["Shape"] = None  # Current shape being defined
+    list_shapes: List["IRIREF"] = field(default_factory=lambda: [])  # Shapes that have been defined as lists
 
     def __post_init__(self):
         super().__post_init__()
@@ -55,6 +62,8 @@ class ShExGenerator(Generator):
             self.namespaces.join(self.namespaces[METAMODEL_NAMESPACE_NAME], "")
         )  # URI for the metamodel
         self.base = Namespace(self.namespaces.join(self.namespaces._base, ""))  # Base URI for what is being modeled
+
+        deprecation_warning('generator-deps')
 
     def generate_header(self) -> str:
         out = f"# metamodel_version: {self.schema.metamodel_version}\n"
@@ -214,7 +223,7 @@ class ShExGenerator(Generator):
         else:
             self.shape.expression.expressions.append(constraint)
 
-    def _type_arc(self, target: URIorCURIE, opt: bool = False) -> TripleConstraint:
+    def _type_arc(self, target: URIorCURIE, opt: bool = False) -> "TripleConstraint":
         return TripleConstraint(
             predicate=RDF.type,
             valueExpr=NodeConstraint(values=[IRIREF(self.namespaces.uri_for(target))]),
