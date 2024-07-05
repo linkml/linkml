@@ -1228,8 +1228,7 @@ linkml:iec61360code a linkml:SlotDefinition ;
 
 linkml:ifabsent a linkml:SlotDefinition ;
     skos:closeMatch sh1:defaultValue ;
-    skos:definition """function that provides a default value for the slot.  Possible values for this slot are defined in
-linkml_runtime.utils.ifabsent_functions.default_library:
+    skos:definition """function that provides a default value for the slot.
   * [Tt]rue -- boolean True
   * [Ff]alse -- boolean False
   * int(value) -- integer value
