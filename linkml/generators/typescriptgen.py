@@ -120,7 +120,7 @@ class TypescriptGenerator(OOCodeGenerator):
     gen_type_utils: bool = False
     include_induced_slots: bool = False
 
-    def serialize(self) -> str:
+    def serialize(self, output=None) -> str:
         """Serialize a schema to typescript string"""
 
         sv: SchemaView = self.schemaview
@@ -132,6 +132,9 @@ class TypescriptGenerator(OOCodeGenerator):
             view=self.schemaview,
             enums=enums,
         )
+        if output is not None:
+            with open(output, "w") as out:
+                out.write(out_str)
         return out_str
 
     @staticmethod
@@ -264,8 +267,9 @@ class TypescriptGenerator(OOCodeGenerator):
 @click.version_option(__version__, "-V", "--version")
 @click.option("--gen-type-utils/", "-u", help="Generate Type checking utils", is_flag=True)
 @click.option("--include-induced-slots/", help="Generate slots induced through inheritance", is_flag=True)
+@click.option("--output", type=click.Path(dir_okay=False))
 @click.command()
-def cli(yamlfile, gen_type_utils=False, include_induced_slots=False, **args):
+def cli(yamlfile, gen_type_utils=False, include_induced_slots=False, output=None, **args):
     """Generate typescript interfaces and types
 
     See https://github.com/linkml/linkml-runtime.js
@@ -273,7 +277,7 @@ def cli(yamlfile, gen_type_utils=False, include_induced_slots=False, **args):
     gen = TypescriptGenerator(
         yamlfile, gen_type_utils=gen_type_utils, include_induced_slots=include_induced_slots, **args
     )
-    print(gen.serialize())
+    gen.serialize(output=output)
 
 
 if __name__ == "__main__":
