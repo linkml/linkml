@@ -5,12 +5,18 @@ from typing import List
 
 import click
 from linkml_runtime.utils.schemaview import SchemaView
-from openpyxl import Workbook
-from openpyxl.utils import get_column_letter
-from openpyxl.worksheet.datavalidation import DataValidation
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.deprecation import deprecation_warning
+
+try:
+    from openpyxl import Workbook
+    from openpyxl.utils import get_column_letter
+    from openpyxl.worksheet.datavalidation import DataValidation
+except ImportError as e:
+    deprecation_warning('generator-deps')
+    raise e
 
 
 @dataclass
@@ -29,6 +35,8 @@ class ExcelGenerator(Generator):
         super().__post_init__()
         self.logger = logging.getLogger(__name__)
         self.schemaview = SchemaView(self.schema)
+
+        deprecation_warning('generator-deps')
 
     @staticmethod
     def create_workbook(workbook_path: Path) -> Workbook:

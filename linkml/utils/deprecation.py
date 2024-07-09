@@ -222,6 +222,18 @@ DEPRECATIONS = (
         recommendation="Update dependent packages to use pydantic>=2",
         issue=1925,
     ),
+    Deprecation(
+        name="generator-deps",
+        deprecated_in=SemVer.from_str("1.8.0"),
+        removed_in=SemVer.from_str("1.9.0"),
+        message=(
+            "Dependencies for this generator will be made optional to modularize linkml's installation"
+        ),
+        recommendation=(
+            "Update your package dependencies to use the extras needed for the generators you use. "
+            "see https://linkml.io/linkml/intro/install.html for further information"),
+        issue=1784,
+    )
 )  # type: tuple[Deprecation, ...]
 
 EMITTED = set()  # type: set[str]

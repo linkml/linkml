@@ -106,23 +106,20 @@ isodate = ">=0.6.0"
 jinja2 = ">= 3.1.0"
 jsonasobj2 = "==1.*,>=1.0.0,>=1.0.3"
 jsonschema = {extras = ["format"], version = ">=4.0.0"}
-linkml-dataops = "*"
 linkml-runtime = "1.8.0"
-openpyxl = "*"
 parse = "*"
 prefixcommons = ">=0.1.7"
 prefixmaps = ">=0.2.2"
 pydantic = ">=1.0.0,<3.0.0"
-pyjsg = ">=0.11.6"
-pyshex = ">=0.7.20"
-pyshexc = ">=0.8.3"
 python-dateutil = "*"
 pyyaml = "*"
 rdflib = ">=6.0.0"
 requests = ">=2.22"
 sqlalchemy = ">=1.4.31"
 watchdog = ">=0.9.0"
-pyshacl = { version = "^0.25.0", optional = true }
+pyjsg = { version=">=0.11.6", optional = false }
+pyshacl = { version = "^0.25.0", optional = false }
+openpyxl = { version="*", optional= false }
 black = { version=">=24.0.0", optional = true }
 typing-extensions = { version=">=4.4.0", python="<3.9" }
 
@@ -138,6 +135,8 @@ requests-cache = "^1.2.0"
 myst-nb = {version=">=1.0.0", python=">=3.9"}
 sphinx-design = "^0.5.0"
 rich = "^13.7.1"
+pyshex = ">=0.7.20"
+jsonpatch = "^1.33"
 
 [tool.poetry.group.tests.dependencies]
 pytest = "^7.4.0"
@@ -150,8 +149,10 @@ requests-cache = "^1.2.0"
 
 [tool.poetry.extras]
 black = ["black"]
+excel = ["openpyxl"]
 shacl = ["pyshacl"]
-tests = ["black", "pyshacl"]
+shex  = ["pyjsg"]
+tests = ["black", "opynpyxl", "pyjsg", "pyshacl"]
 
 [tool.poetry.group.docs]
 optional = true

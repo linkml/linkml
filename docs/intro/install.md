@@ -42,6 +42,39 @@ linkml-ws --help
 gen-project --help
 ```
 
+## Modular Installation
+
+Starting in [`v1.9.0`](../code/deprecation.rst), to reduce the number of dependencies needed for the average installation,
+dependencies for some generators are organized as `extras`. To install them, you will need to
+specify them to pip like:
+
+```shell
+# From PyPI
+python -m pip install 'linkml[extra]'
+# multiple...
+python -m pip install 'linkml[extra1,extra2]'
+# From a local clone of the repository
+python -m pip install '.[extra]'
+# With Poetry
+poetry install -E extra
+```
+
+The following generators need extras:
+
+```{list-table} Extra Dependencies
+:header-rows: 1
+
+* - Generator
+  - Extras
+* - {class}`~linkml.generators.shaclgen.ShaclGenerator`
+  - `shacl`
+* - {class}`~linkml.generators.shexgen.ShexGenerator`
+  - `shex`
+* - {class}`~linkml.generators.excelgen.ExcelGenerator`
+  - `excel`
+
+```
+
 ## Installation for contributors
 
 *note for core developers and contributors*: consult the [developers guide](../developers/contributing-code) for using this codebase from GitHub
