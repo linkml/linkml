@@ -714,7 +714,7 @@ class Generator(metaclass=abc.ABCMeta):
         isn't valid.
         """
         slot = self.slot_for(name)
-        return underscore(self.aliased_slot_name(slot) if slot else ("unknown " + name))
+        return underscore(self.aliased_slot_name(slot) if slot else name)
 
     def subset_for(self, name: str) -> Optional[Element]:
         return self.schema.subsets.get(name)
