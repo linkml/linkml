@@ -13,6 +13,7 @@ import click
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
+    ClassDefinitionName,
     SchemaDefinition,
     SlotDefinition,
     TypeDefinition,
@@ -229,6 +230,49 @@ class PydanticGenerator(OOCodeGenerator):
     
     See :class:`.MetadataMode` for mode documentation
     """
+    split: bool = False
+    """
+    Generate schema that import other schema as separate python modules
+    that import from one another, rather than rolling all into a single
+    module (default, ``False``).
+    """
+    split_import_pattern: str = ".{{ schema.name }}"
+    """
+    When splitting generation, imported modules need to be generated separately
+    and placed in a python package and import from each other. Since the 
+    location of those imported modules is variable -- e.g. one might want to
+    generate schema in multiple packages depending on their version -- this
+    pattern is used to generate the module portion of the import statement.
+    
+    The pattern is a jinja template string that is given the ``SchemaDefinition``
+    of the imported schema in the environment. Additional variables can be passed
+    into the jinja environment with the ``split_environment`` argument.
+     
+    Further modification is possible by using jinja filters.
+    
+    After templating, the string is passed through a ``snake_case`` function
+    to replace whitespace and other characters that can't be used in module names.
+     
+    Examples:
+    
+        for a schema named ``ExampleSchema`` and version ``1.2.3`` ...   
+    
+        ``".{{ schema.name }}"`` (the default) becomes
+        
+        ``from .example_schema import ClassA, ...``
+        
+        ``"...{{ schema.name }}.v{{ schema.version | replace('.', '_') }}"`` becomes
+        
+        ``from ...example_schema.v1_2_3 import ClassA, ...``
+    """
+    split_context: Optional[dict] = None
+    """
+    Additional variables to pass into ``split_import_pattern`` when
+    generating imported module names. 
+    
+    Passed in as **kwargs, so e.g. if ``split_context = {'myval': 1}``
+    then one would use it in a template string like ``{{ myval }}``
+    """
 
     # ObjectVars (identical to pythongen)
     gen_classvars: bool = True
@@ -255,6 +299,14 @@ class PydanticGenerator(OOCodeGenerator):
             logging.error(f"Code:\n{pycode}")
             logging.error(f"Error compiling generated python code: {e}")
             raise e
+
+    def _get_classes(self, sv: SchemaView) -> List[ClassDefinition]:
+        if self.split:
+            classes = sv.all_classes(imports=False).values()
+        else:
+            classes = sv.all_classes(imports=True).values()
+
+        return list(classes)
 
     @staticmethod
     def sort_classes(clist: List[ClassDefinition]) -> List[ClassDefinition]:
@@ -711,6 +763,54 @@ class PydanticGenerator(OOCodeGenerator):
         model.meta = meta
         return model
 
+    def _get_imports(
+        self,
+        sv: SchemaView,
+        local_classes: List[ClassDefinition],
+        class_slots: Dict[str, List[SlotDefinition]],
+    ) -> Dict[str, List[str]]:
+        # import from local references, rather than serializing every class in every file
+        if not self.split:
+            # we are compiling this whole thing in one big file so we don't import anything
+            return {}
+
+        all_classes = sv.all_classes(imports=True)
+        needed_classes = []
+
+        # find needed classes - is_a and slot ranges
+        for cls in local_classes:
+            # get imports for this class
+            needed_classes.extend(self._get_class_imports(cls, sv, all_classes, class_slots))
+
+        # remove duplicates
+        needed_classes = [
+            cls for cls in set(needed_classes) if cls is not None
+        ]
+        imports = self._locate_imports(needed_classes, sv)
+
+        return imports
+
+    def _get_class_imports(
+        self,
+        cls: ClassDefinition,
+        all_classes: dict[ClassDefinitionName, ClassDefinition],
+        class_slots: dict[str, List[SlotDefinition]],
+    ) -> List[str]:
+        """Get the imports needed for a single class"""
+        needed_classes = []
+        needed_classes.append(cls.is_a)
+        # get needed classes used as ranges in class attributes
+        for slot in class_slots[cls.name]:
+            if slot.range in all_classes:
+                needed_classes.append(slot.range)
+            # handle when a range is a union of classes
+            if slot.any_of:
+                for any_slot_range in slot.any_of:
+                    if any_slot_range.range in all_classes:
+                        needed_classes.append(any_slot_range.range)
+
+        return needed_classes
+
     def render(self) -> PydanticModule:
         sv: SchemaView
         sv = self.schemaview
@@ -733,7 +833,8 @@ class PydanticGenerator(OOCodeGenerator):
 
         # schema classes
         classes = {}
-        source_classes = self.sort_classes(list(sv.all_classes().values()))
+        source_classes = self._get_classes(sv)
+        source_classes = self.sort_classes(source_classes)
         # Don't want to generate classes when class_uri is linkml:Any, will
         # just swap in typing.Any instead down below
         source_classes = [c for c in source_classes if c.class_uri != "linkml:Any"]
