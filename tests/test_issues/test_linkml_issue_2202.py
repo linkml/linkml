@@ -32,8 +32,10 @@ slots:
   name:
     range: string
     required: true
+  has_roommate: {}
+  has_pet:
   
-"""
+""" # todo boilerplate in fixture (could return schemabuidler) ; each method can use fixture and modify with schemabuilder
 
 minimal_household_data = """
 id: http://example.com/minimal_household_schema/1
