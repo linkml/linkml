@@ -95,6 +95,24 @@ def test_serialize_selected(kitchen_sink_path):
     assert FAMILIALRELATIONSHIP2PERSON in mermaid, "dangling references should be included"
 
 
+def test_serialize_selected_with_neighbors(kitchen_sink_path):
+    """Test serialization of selected elements"""
+    gen = ERDiagramGenerator(kitchen_sink_path)
+    mermaid = remove_whitespace(
+        gen.serialize_classes(
+            ["MedicalEvent"],
+            max_hops=0,
+            include_upstream=True,
+        )
+    )
+    assert "Person{" in mermaid, "Person is directly upstream from selected"
+    assert "MedicalEvent{" in mermaid, "Medical Event is selected"
+    assert "ProcedureConcept:" in mermaid, "Procedure is directly downstream from Medical Event"
+    assert "DiagnosisConcept:" in mermaid, "Diagnosis is directly downstream from Medical Event"
+    assert "CodeSystem" not in mermaid, "Place is too many hops away downstream from selected"
+    assert "Organization" not in mermaid, "Organization is not reachable either way from selected"
+
+
 def test_follow_references(kitchen_sink_path):
     """Test serialization of selected elements following non-inlined references"""
     gen = ERDiagramGenerator(kitchen_sink_path)

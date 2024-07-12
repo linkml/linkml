@@ -3,7 +3,6 @@ import re
 import pytest
 from linkml_runtime.utils.compile_python import compile_python
 from pydantic import ValidationError
-from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml.generators.pydanticgen import PydanticGenerator
 
@@ -42,10 +41,7 @@ def test_pydantic_load_poly_data(schema_str, data_str):
     gen = PydanticGenerator(schema_str)
     output = gen.serialize()
     mod = compile_python(output, "testschema")
-    if PYDANTIC_VERSION[0] == "1":
-        data = mod.Container.parse_raw(data_str)
-    else:
-        data = mod.Container.model_validate_json(data_str)
+    data = mod.Container.model_validate_json(data_str)
 
     assert len([x for x in data.things if isinstance(x, mod.Person)]) == 1
     assert len([x for x in data.things if isinstance(x, mod.Organisation)]) == 1

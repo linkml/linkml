@@ -3,12 +3,7 @@ from abc import ABC, abstractmethod
 from functools import lru_cache
 from typing import Callable, Iterable, List
 
-from linkml_runtime.linkml_model import (
-    ClassDefinition,
-    ClassDefinitionName,
-    Element,
-    SlotDefinition,
-)
+from linkml_runtime.linkml_model import ClassDefinition, ClassDefinitionName, Element, SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView
 from prefixmaps.io.parser import load_multi_context
 

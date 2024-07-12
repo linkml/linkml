@@ -7,7 +7,7 @@ from importlib.metadata import version
 from importlib.util import find_spec
 from pathlib import Path
 from types import GeneratorType, ModuleType
-from typing import ClassVar, Dict, List, Literal, Optional, Union, get_args, get_origin
+from typing import ClassVar, Dict, List, Literal, Optional, Type, Union
 
 import numpy as np
 import pytest
@@ -15,14 +15,14 @@ import yaml
 from jinja2 import DictLoader, Environment, Template
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import SchemaDefinition, SlotDefinition
+from linkml_runtime.linkml_model import Definition, SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
 from linkml_runtime.utils.schemaview import load_schema_wrap
 from pydantic import BaseModel, ValidationError
-from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml.generators import pydanticgen as pydanticgen_root
-from linkml.generators.pydanticgen import PydanticGenerator, array, build, pydanticgen, template
+from linkml.generators.pydanticgen import MetadataMode, PydanticGenerator, array, build, pydanticgen, template
 from linkml.generators.pydanticgen.array import AnyShapeArray, ArrayRepresentation
 from linkml.generators.pydanticgen.template import (
     ConditionalImport,
@@ -31,14 +31,13 @@ from linkml.generators.pydanticgen.template import (
     ObjectImport,
     PydanticAttribute,
     PydanticClass,
+    PydanticModule,
     PydanticValidator,
     TemplateModel,
 )
 from linkml.utils.schema_builder import SchemaBuilder
 
 from .conftest import MyInjectedClass
-
-PYDANTIC_VERSION = int(PYDANTIC_VERSION[0])
 
 PACKAGE = "kitchen_sink"
 
@@ -187,11 +186,9 @@ slots:
         """
     gen = PydanticGenerator(schema_str, package=PACKAGE)
     code = gen.serialize()
-    lines = code.splitlines()
-    ix = lines.index("class C(ConfiguredBaseModel):")
-    assert lines[ix + 2] == "    inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default_factory=dict)"
-    assert lines[ix + 3] == "    inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default_factory=list)"
-    assert lines[ix + 4] == "    not_inlined_things: Optional[List[str]] = Field(default_factory=list)"
+    assert "inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default_factory=dict" in code
+    assert "inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default_factory=list" in code
+    assert "not_inlined_things: Optional[List[str]] = Field(default_factory=list" in code
 
 
 @pytest.mark.parametrize(
@@ -271,11 +268,11 @@ slots:
 def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_identifier, expected, notes):
     # Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
     expected_default_factories = {
-        "Optional[List[str]]": "Field(default_factory=list)",
-        "Optional[List[B]]": "Field(default_factory=list)",
-        "Optional[Dict[str, B]]": "Field(default_factory=dict)",
-        "Optional[Dict[str, str]]": "Field(default_factory=dict)",
-        "Optional[Dict[str, Union[str, B]]]": "Field(default_factory=dict)",
+        "Optional[List[str]]": "Field(default_factory=list",
+        "Optional[List[B]]": "Field(default_factory=list",
+        "Optional[Dict[str, B]]": "Field(default_factory=dict",
+        "Optional[Dict[str, str]]": "Field(default_factory=dict",
+        "Optional[Dict[str, Union[str, B]]]": "Field(default_factory=dict",
     }
 
     sb = SchemaBuilder("test")
@@ -295,16 +292,12 @@ def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_i
     schema_str = yaml_dumper.dumps(schema)
     gen = PydanticGenerator(schema_str, package=PACKAGE)
     code = gen.serialize()
-    lines = code.splitlines()
-    ix = lines.index("class A(ConfiguredBaseModel):")
-    assert ix > 0
-    # assume a single blank line separating
-    slot_line = lines[ix + 1]
-    assert f"a2b: {expected}" in slot_line, f"did not find expected {expected} in {slot_line}"
+
+    assert f"a2b: {expected}" in code, f"did not find expected {expected} in {code}"
     if expected not in expected_default_factories:
         raise ValueError(f"unexpected default factory for {expected}")
     assert (
-        expected_default_factories[expected] in slot_line
+        expected_default_factories[expected] in code
     ), f"did not find expected default factory {expected_default_factories[expected]}"
 
 
@@ -347,20 +340,12 @@ classes:
 
     gen = PydanticGenerator(schema_str)
     code = gen.serialize()
-    lines = code.splitlines()
-    ix = lines.index("class Test(ConfiguredBaseModel):")
-    integer_slot_line = lines[ix + 4].strip()
-    assert integer_slot_line == "attr1: Optional[int] = Field(10)"
-    string_slot_line = lines[ix + 5].strip()
-    assert string_slot_line == 'attr2: Optional[str] = Field("hello world")'
-    boolean_slot_line = lines[ix + 6].strip()
-    assert boolean_slot_line == "attr3: Optional[bool] = Field(True)"
-    float_slot_line = lines[ix + 7].strip()
-    assert float_slot_line == "attr4: Optional[float] = Field(1.0)"
-    date_slot_line = lines[ix + 8].strip()
-    assert date_slot_line == "attr5: Optional[date] = Field(date(2020, 1, 1))"
-    datetime_slot_line = lines[ix + 9].strip()
-    assert datetime_slot_line == "attr6: Optional[datetime ] = Field(datetime(2020, 1, 1, 0, 0, 0))"
+    assert "attr1: Optional[int] = Field(10" in code
+    assert 'attr2: Optional[str] = Field("hello world"' in code
+    assert "attr3: Optional[bool] = Field(True" in code
+    assert "attr4: Optional[float] = Field(1.0" in code
+    assert "attr5: Optional[date] = Field(date(2020, 1, 1)" in code
+    assert "attr6: Optional[datetime ] = Field(datetime(2020, 1, 1, 0, 0, 0)" in code
 
 
 def test_multiline_module(input_path):
@@ -706,22 +691,11 @@ def test_inject_field(kitchen_sink_path, tmp_path, input_path, inject, name, typ
 
     base = getattr(module, "ConfiguredBaseModel")
 
-    if PYDANTIC_VERSION >= 2:
-        assert name in base.model_fields
-        field = base.model_fields[name]
-        assert field.annotation == type
-        assert field.default == default
-        assert field.description == description
-    else:
-        assert name in base.__fields__
-        field = base.__fields__[name]
-        # pydantic <2 mangles annotations so can't do direct annotation comparison
-        assert not field.required
-        if get_origin(type):
-            assert field.type_ is get_args(type)[0]
-        else:
-            assert field.type_ is type
-        assert field.field_info.description == description
+    assert name in base.model_fields
+    field = base.model_fields[name]
+    assert field.annotation == type
+    assert field.default == default
+    assert field.description == description
 
 
 # --------------------------------------------------
@@ -736,16 +710,6 @@ def sample_class() -> PydanticClass:
     attr_2 = PydanticAttribute(name="attr_2", range="List[float]")
     cls = PydanticClass(name="Sample", attributes={"attr_1": attr_1, "attr_2": attr_2})
     return cls
-
-
-@pytest.mark.parametrize(
-    "mode,expected",
-    [["python", {"pydantic_ver": PYDANTIC_VERSION}], ["json", f'{{"pydantic_ver": {PYDANTIC_VERSION}}}']],
-)
-def test_template_model_dump(mode: str, expected):
-    if mode == "json" and PYDANTIC_VERSION >= 2:
-        return
-    assert TemplateModel().model_dump(mode=mode) == expected
 
 
 def test_attribute_field():
@@ -1043,24 +1007,12 @@ def test_arrays_anyshape():
     class MyModel(BaseModel):
         array: AnyShapeArray[int]
 
-    # pdb.set_trace()
     arr = np.ones((2, 4, 5, 3, 2), dtype=int)
     _ = MyModel(array=arr.tolist())
 
     with pytest.raises(ValidationError):
         arr = np.random.random((2, 5, 3))
         _ = MyModel(array=arr.tolist())
-
-    # FIXME: Rescue JSON schema generation with generics that can be declared more than once in a module
-    # if PYDANTIC_VERSION < 2:
-    #     assert model.schema_json() == (
-    #         '{"title": "MyModel", "type": "object", "properties": {"array": {"title": '
-    #         '"Array", "anyOf": [{"type": "integer"}, {"type": "array", "items": '
-    #         '{"$ref": "#any-shape-array-integer"}}], "$id": "#any-shape-array-integer"}}, '
-    #         '"required": ["array"]}'
-    #     )
-    # else:
-    #     raise NotImplementedError("Get json schema representation for pydantic 2")
 
 
 # --------------------------------------------------
@@ -1569,7 +1521,7 @@ def test_generate_array_bounded_implicit_exact(representation, array_bounded):
     if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
         return
 
-    generated = PydanticGenerator(array_bounded, array_representations=representation).render()
+    generated = PydanticGenerator(array_bounded, array_representations=representation, metadata_mode=None).render()
     explicit = generated.classes["ExactDimensions"].attributes["array"]
     implicit = generated.classes["ImplicitExact"].attributes["array"]
     assert explicit.render() == implicit.render()
@@ -1584,7 +1536,7 @@ def test_generate_array_complex_implicit_exact(representation, array_complex):
     if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
         return
 
-    generated = PydanticGenerator(array_complex, array_representations=representation).render()
+    generated = PydanticGenerator(array_complex, array_representations=representation, metadata_mode=None).render()
     explicit = generated.classes["ComplexExactShapeArray"].attributes["array"]
     implicit = generated.classes["ComplexImplicitExactShapeArray"].attributes["array"]
     assert explicit.render() == implicit.render()
@@ -1599,8 +1551,12 @@ def test_generate_array_complex_noop_exact(representation, array_complex, array_
     if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
         return
 
-    generated_complex = PydanticGenerator(array_complex, array_representations=representation).render()
-    generated_parameterized = PydanticGenerator(array_parameterized, array_representations=representation).render()
+    generated_complex = PydanticGenerator(
+        array_complex, array_representations=representation, metadata_mode=None
+    ).render()
+    generated_parameterized = PydanticGenerator(
+        array_parameterized, array_representations=representation, metadata_mode=None
+    ).render()
     complex = generated_complex.classes["ComplexNoOpExactShapeArray"].attributes["array"]
     parameterized = generated_parameterized.classes["ParameterizedArray"].attributes["array"]
     assert complex.render() == parameterized.render()
@@ -1647,12 +1603,13 @@ def test_template_black(array_complex):
     """
     When black is installed, we should format template models with black :)
     """
-    generated = PydanticGenerator(array_complex, array_representations=[ArrayRepresentation.LIST]).render()
+    generated = PydanticGenerator(
+        array_complex, array_representations=[ArrayRepresentation.LIST], metadata_mode=None
+    ).render()
     array_repr = generated.classes["ComplexRangeShapeArray"].attributes["array"].render(black=True)
-    if PYDANTIC_VERSION >= 2:
-        assert (
-            array_repr
-            == """array: Optional[
+    assert (
+        array_repr
+        == """array: Optional[
     conlist(
         max_length=5,
         item_type=conlist(
@@ -1661,38 +1618,14 @@ def test_template_black(array_complex):
                 min_length=2,
                 max_length=5,
                 item_type=conlist(
-                    min_length=6,
-                    max_length=6,
-                    item_type=Union[List[int], List[List[int]], List[List[List[int]]]],
+                    min_length=6, max_length=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]]
                 ),
             ),
         ),
     )
 ] = Field(None)
 """
-        )
-    else:
-        assert (
-            array_repr
-            == """array: Optional[
-    conlist(
-        max_items=5,
-        item_type=conlist(
-            min_items=2,
-            item_type=conlist(
-                min_items=2,
-                max_items=5,
-                item_type=conlist(
-                    min_items=6,
-                    max_items=6,
-                    item_type=Union[List[int], List[List[int]], List[List[List[int]]]],
-                ),
-            ),
-        ),
     )
-] = Field(None)
-"""
-        )
 
 
 def test_template_noblack(array_complex, mock_black_import):
@@ -1717,19 +1650,73 @@ def test_template_noblack(array_complex, mock_black_import):
     from linkml.generators.pydanticgen import PydanticGenerator
     from linkml.generators.pydanticgen.array import ArrayRepresentation
 
-    generated = PydanticGenerator(array_complex, array_representations=[ArrayRepresentation.LIST]).render()
+    generated = PydanticGenerator(
+        array_complex, array_representations=[ArrayRepresentation.LIST], metadata_mode=None
+    ).render()
     array_repr = generated.classes["ComplexRangeShapeArray"].attributes["array"].render(black=False)
-    if PYDANTIC_VERSION >= 2:
-        assert (
-            array_repr
-            == "array: Optional[conlist(max_length=5, item_type=conlist(min_length=2, item_type=conlist(min_length=2, max_length=5, item_type=conlist(min_length=6, max_length=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]]))))] = Field(None)"  # noqa: E501
-        )
-    else:
-        assert (
-            array_repr
-            == "array: Optional[conlist(max_items=5, item_type=conlist(min_items=2, item_type=conlist(min_items=2, max_items=5, item_type=conlist(min_items=6, max_items=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]]))))] = Field(None)"  # noqa: E501
-        )
+
+    assert (
+        array_repr
+        == "array: Optional[conlist(max_length=5, item_type=conlist(min_length=2, item_type=conlist(min_length=2, max_length=5, item_type=conlist(min_length=6, max_length=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]]))))] = Field(None)"  # noqa: E501
+    )
 
     # trying to render with black when we don't have it should raise a ValueError
     with pytest.raises(ValueError):
         _ = generated.classes["ComplexRangeShapeArray"].attributes["array"].render(black=True)
+
+
+# --------------------------------------------------
+# Metadata inclusion
+# --------------------------------------------------
+
+
+def _test_meta(linkml_meta, definition: Definition, model: Type[TemplateModel], mode: str):
+    def_clean = remove_empty_items(definition)
+    for k, v in def_clean.items():
+        if mode == "auto":
+            if k in model.exclude_from_meta():
+                assert k not in linkml_meta
+            else:
+                assert k in linkml_meta
+        elif mode == "full":
+            assert k in linkml_meta
+        elif mode == "except_children":
+            # basically nothing that has a template model
+            if k in ("slots", "classes", "enums", "attributes"):
+                assert k not in linkml_meta
+            else:
+                assert k in linkml_meta
+        elif mode == "None":
+            assert linkml_meta is None or k not in linkml_meta
+        else:
+            raise ValueError(f"Don't know how to test this metadata mode: {mode}")
+
+
+@pytest.mark.parametrize("mode", MetadataMode)
+def test_linkml_meta(kitchen_sink_path, tmp_path, input_path, mode):
+    """
+    Pydanticgen can inject missing linkml metadata from schema definitions
+    with several different modes :)
+    """
+    schema = SchemaView(kitchen_sink_path)
+
+    gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE, metadata_mode=mode)
+    code = gen.serialize()
+    module = compile_python(code, PACKAGE)
+    _test_meta(module.linkml_meta, schema.schema, PydanticModule, mode)
+
+    for cls_name, cls_def in schema.all_classes().items():
+        if cls_def["class_uri"] == "linkml:Any":
+            continue
+        cls = getattr(module, camelcase(cls_name))  # type: Type[BaseModel]
+        if mode == MetadataMode.NONE:
+            assert not hasattr(cls, "linkml_meta")
+        else:
+            _test_meta(cls.linkml_meta, cls_def, PydanticClass, mode)
+
+        for slot_def in schema.class_induced_slots(cls_name):
+            extra = cls.model_fields[underscore(slot_def.name)].json_schema_extra
+            if mode == MetadataMode.NONE:
+                assert extra is None or "linkml_meta" not in extra
+            else:
+                _test_meta(extra["linkml_meta"], slot_def, PydanticAttribute, mode)

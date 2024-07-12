@@ -4,15 +4,25 @@ The following language features are experimental, behavior is not guaranteed to 
 
 ## LinkML Any type
 
-LinkML is currently best suited to 'strict' schemas, and doesn't have full support for being able to model arbitrary dictionaries/objects. Each slot must have a defined range, the range must be exactly one of a Class, Type, or Enum. It is currently impossible to define unions of these core ranges.
+Most of the time in LinkML, the ranges of slots are "committed" to being one of the following:
 
-The `linkml:Any` type is an experimental feature for allowing arbitrary objects
+- a class
+- a type
+- an enum
+
+Note that even if you don't explicitly declare a range, the [default_range](https://w3id.org/linkml/default_range) is used,
+(and the default value of default_range is `string`, reflecting the most common use case).
+
+In some cases you want to make slots more flexible, for example to allow for arbitrary objects.
+
+The `linkml:Any` states that the range of a slot can be any object. This isn't a builtin type, 
+but any class in the schema can take on this roll be being declared as `linkml:Any` using `class_uri`:
 
 ```yaml
 
 classes:
 
-  MetaObject:
+  Any:
     class_uri: linkml:Any
 
   ...
@@ -20,22 +30,52 @@ classes:
   Person:
    attributes:
      id:
-     name:
      metadata:
-       range: MetaObject
+       range: Any
 ```
 
-## Unions as ranges
+This means all the following are valid:
+
+```yaml
+name: person with string metadata 
+metadata: a string
+```  
+
+```yaml
+name: person with an object as metadata
+metadata:
+  name: a string
+  age: an integer
+```  
+
+```yaml
+name: person with an integer
+metadata: 42
+```
+
+## Boolean constraints
+
+The following LinkML constructs can be used to express boolean constraints:
+
+- [any_of](https://w3id.org/linkml/any_of)
+- [all_of](https://w3id.org/linkml/all_of)
+- [none_of](https://w3id.org/linkml/none_of)
+- [exactly_one_of](https://w3id.org/linkml/exactly_one_of)
+
+These can be applied at the class or slot level. The range of each of these is an array of *expressions*.
+
+### Unions as ranges
 
 [any_of](https://w3id.org/linkml/any_of) can be used to express that a range must satisfy any of a set of ranges.
 
-One way this can be used is to compose enums together, for example if we have a `vital_status` enum that can take on any a set of enums from VitalStatus OR a missing value with the type of missing value defined by an enum:
-
+One way this can be used is to compose enums together, for example if we have a `vital_status` enum\
+that can take on any a set of enums from VitalStatus OR a missing value with the type of missing value defined by an enum:
 
 ```yaml
 slots:
   vital_status:
     required: true
+    range: Any
     any_of:
       - range: MissingValueEnum
       - range: VitalStatusEnum
@@ -53,13 +93,15 @@ enums:
       UNDEAD:
 ```
 
-Note that these constructs may ignored by some generators in the linkml 1.1 series.
+Note that the range of `vital_status` is declared as `Any`, which is further constrained by the `any_of` expression.
 
-In the 1.2 series:
+Currently, it is important to always have a range declaration (even if it is `Any`), because LinkML constraint semantics are
+monotonic (i.e. new constraints can be specified but additional ones cannot be overridden - see [slots](slots.md) for more on this). 
+If this range declaration were not explicitly stated, then the `default_range` of string would be applied. 
 
-- generated python should use a Union
-- jsonschema should use [conditionals](https://json-schema.org/understanding-json-schema/reference/conditionals.html)
-- OWL should use UnionOf
+In future, LinkML may allow limited forms of non-monotonicity around default ranges, see:
+
+https://github.com/linkml/linkml/issues/1483
 
 ## Rules
 

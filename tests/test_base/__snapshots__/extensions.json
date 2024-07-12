@@ -336,13 +336,13 @@
       "from_schema": "https://w3id.org/linkml/extensions",
       "domain": "Extensible",
       "slot_uri": "https://w3id.org/linkml/extensions",
-      "multivalued": true,
       "owner": "Extensible",
       "domain_of": [
         "Extension",
         "Extensible"
       ],
       "range": "Extension",
+      "multivalued": true,
       "inlined": true,
       "@type": "SlotDefinition"
     },
@@ -366,6 +366,13 @@
     {
       "name": "extension_value",
       "definition_uri": "https://w3id.org/linkml/extension_value",
+      "annotations": [
+        {
+          "tag": "simple_dict_value",
+          "value": true,
+          "@type": "Annotation"
+        }
+      ],
       "description": "the actual annotation",
       "from_schema": "https://w3id.org/linkml/extensions",
       "domain": "Extension",

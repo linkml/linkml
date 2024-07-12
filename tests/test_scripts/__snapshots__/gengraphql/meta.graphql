@@ -109,6 +109,16 @@ type EmploymentEvent
     type: String
   }
 
+type EqualsString
+  {
+    attribute5: String
+  }
+
+type EqualsStringIn
+  {
+    attribute6: String
+  }
+
 type Event
   {
     startedAtTime: Date

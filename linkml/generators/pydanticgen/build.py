@@ -43,7 +43,7 @@ class BuildResult(BaseModel):
         Returns:
             :class:`.BuildResult`
         """
-        self_copy = self.copy()
+        self_copy = self.model_copy()
         if other.imports:
             if self.imports is not None:
                 self_copy.imports += other.imports

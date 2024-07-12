@@ -127,6 +127,39 @@ Generates:
     FamilialRelationship ||--|| Person : "related_to"
     EmploymentEvent ||--|o Organization : "employed_at"
 
+
+
+Also you can include upstream entities into selected entities diagram.
+This is helpful for creating smaller, focused diagrams that display the immediate
+neighborhood of a selected class.
+
+For example this
+
+.. code:: bash
+
+   erdiagramgen  kitchen-sink.yaml -c MedicalEvent --max-hops 0 --include-upstream --exclude-attributes
+
+Generates:
+
+.. mermaid::
+
+    erDiagram
+    MedicalEvent {
+    }
+    Person {
+    }
+    DiagnosisConcept {
+    }
+    ProcedureConcept {
+    }
+
+    MedicalEvent ||--|o Place : "in location"
+    MedicalEvent ||--|o DiagnosisConcept : "diagnosis"
+    MedicalEvent ||--|o ProcedureConcept : "procedure"
+    MedicalEvent ||--|o AnyObject : "metadata"
+    Person ||--}o MedicalEvent : "has medical history"
+
+
 Limitations
 -----------
 

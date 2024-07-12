@@ -18,4 +18,5 @@ Some of these guides are works in progress
    port-linkml
    multidimensional-arrays
    generate-ai-prompts
+   deprecating-elements
 

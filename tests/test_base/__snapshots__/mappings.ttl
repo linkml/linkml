@@ -295,12 +295,12 @@ linkml:mappings a linkml:SchemaDefinition,
     skos:mappingRelation skos:mappingRelation ;
     sh:declare [ sh:namespace linkml: ;
             sh:prefix "linkml" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/IAO_> ;
-            sh:prefix "IAO" ],
         [ sh:namespace skos: ;
             sh:prefix "skos" ],
         [ sh:namespace OIO: ;
-            sh:prefix "OIO" ] ;
+            sh:prefix "OIO" ],
+        [ sh:namespace <http://purl.obolibrary.org/obo/IAO_> ;
+            sh:prefix "IAO" ] ;
     linkml:default_curi_maps "semweb_context" ;
     linkml:default_prefix "linkml" ;
     linkml:default_range linkml:string ;

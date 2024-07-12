@@ -23,14 +23,7 @@ from linkml_runtime.linkml_model.meta import (
     TypeDefinition,
 )
 from linkml_runtime.utils.compile_python import compile_python
-from linkml_runtime.utils.formatutils import (
-    be,
-    camelcase,
-    sfx,
-    split_col,
-    underscore,
-    wrapped_annotation,
-)
+from linkml_runtime.utils.formatutils import be, camelcase, sfx, split_col, underscore, wrapped_annotation
 from linkml_runtime.utils.metamodelcore import builtinnames
 from rdflib import URIRef
 

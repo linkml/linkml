@@ -1,10 +1,12 @@
 from copy import copy
 from importlib.util import find_spec
-from typing import Any, ClassVar, Dict, Generator, List, Literal, Optional, Union, overload
+from typing import Any, ClassVar, Dict, Generator, List, Literal, Optional, Union
 
 from jinja2 import Environment, PackageLoader
 from pydantic import BaseModel, Field
 from pydantic.version import VERSION as PYDANTIC_VERSION
+
+from linkml.utils.deprecation import deprecation_warning
 
 try:
     if find_spec("black") is not None:
@@ -19,7 +21,11 @@ except ImportError:
 if int(PYDANTIC_VERSION[0]) >= 2:
     from pydantic import computed_field
 else:
-    from pydantic.fields import ModelField
+    deprecation_warning("pydantic-v1")
+
+    def computed_field(f):
+        """No-op decorator to allow this module to not break imports until 1.9.0"""
+        return f
 
 
 class TemplateModel(BaseModel):
@@ -59,7 +65,7 @@ class TemplateModel(BaseModel):
         loader=PackageLoader("linkml.generators.pydanticgen", "templates"), trim_blocks=True, lstrip_blocks=True
     )
 
-    pydantic_ver: int = int(PYDANTIC_VERSION[0])
+    meta_exclude: ClassVar[List[str]] = None
 
     def render(self, environment: Optional[Environment] = None, black: bool = False) -> str:
         """
@@ -77,10 +83,7 @@ class TemplateModel(BaseModel):
         if environment is None:
             environment = TemplateModel.environment()
 
-        if int(PYDANTIC_VERSION[0]) >= 2:
-            fields = {**self.model_fields, **self.model_computed_fields}
-        else:
-            fields = self.model_fields
+        fields = {**self.model_fields, **self.model_computed_fields}
 
         data = {k: _render(getattr(self, k, None), environment) for k in fields}
         template = environment.get_template(self.template)
@@ -106,31 +109,15 @@ class TemplateModel(BaseModel):
         """
         return copy(cls._environment)
 
-    if int(PYDANTIC_VERSION[0]) < 2:
-        # simulate pydantic 2's model_fields behavior
-        # without using classmethod + property decorators
-        # see:
-        # - https://docs.python.org/3/whatsnew/3.11.html#language-builtins
-        # - https://github.com/python/cpython/issues/89519
-        # and:
-        # - https://docs.python.org/3/reference/datamodel.html#customizing-class-creation
-        # for this version.
-        model_fields: ClassVar[Dict[str, "ModelField"]]
-
-        def __init_subclass__(cls, **kwargs):
-            super().__init_subclass__(**kwargs)
-            cls.model_fields = cls.__fields__
-
-        @overload
-        def model_dump(self, mode: Literal["python"] = "python") -> dict: ...
-
-        @overload
-        def model_dump(self, mode: Literal["json"] = "json") -> str: ...
-
-        def model_dump(self, mode: Literal["python", "json"] = "python", **kwargs) -> Union[dict, str]:
-            if mode == "json":
-                return self.json(**kwargs)
-            return self.dict(**kwargs)
+    @classmethod
+    def exclude_from_meta(cls: "TemplateModel") -> List[str]:
+        """
+        Attributes in the source definition to exclude from linkml_meta
+        """
+        ret = [*cls.model_fields.keys()]
+        if cls.meta_exclude is not None:
+            ret = ret + cls.meta_exclude
+        return ret
 
 
 def _render(
@@ -144,10 +131,7 @@ def _render(
     elif isinstance(item, dict):
         return {k: _render(v, environment) for k, v in item.items()}
     elif isinstance(item, BaseModel):
-        if int(PYDANTIC_VERSION[0]) >= 2:
-            fields = item.model_fields
-        else:
-            fields = item.__fields__
+        fields = item.model_fields
         return {k: _render(getattr(item, k, None), environment) for k in fields.keys()}
     else:
         return item
@@ -213,6 +197,7 @@ class PydanticAttribute(TemplateModel):
     """
 
     template: ClassVar[str] = "attribute.py.jinja"
+    meta_exclude: ClassVar[List[str]] = ["from_schema", "owner", "range", "multivalued", "inlined", "inlined_as_list"]
 
     name: str
     required: bool = False
@@ -228,30 +213,20 @@ class PydanticAttribute(TemplateModel):
     minimum_value: Optional[Union[int, float]] = None
     maximum_value: Optional[Union[int, float]] = None
     pattern: Optional[str] = None
+    meta: Optional[Dict[str, Any]] = None
+    """
+    Metadata for the slot to be included in a Field annotation
+    """
 
-    if int(PYDANTIC_VERSION[0]) >= 2:
-
-        @computed_field
-        def field(self) -> str:
-            """Computed value to use inside of the generated Field"""
-            if self.predefined:
-                return self.predefined
-            elif self.required or self.identifier or self.key:
-                return "..."
-            else:
-                return "None"
-
-    else:
-        field: Optional[str] = None
-
-        def __init__(self, **kwargs):
-            super(PydanticAttribute, self).__init__(**kwargs)
-            if self.predefined:
-                self.field = self.predefined
-            elif self.required or self.identifier or self.key:
-                self.field = "..."
-            else:
-                self.field = "None"
+    @computed_field
+    def field(self) -> str:
+        """Computed value to use inside of the generated Field"""
+        if self.predefined:
+            return self.predefined
+        elif self.required or self.identifier or self.key:
+            return "..."
+        else:
+            return "None"
 
 
 class PydanticValidator(PydanticAttribute):
@@ -274,11 +249,16 @@ class PydanticClass(TemplateModel):
     """
 
     template: ClassVar[str] = "class.py.jinja"
+    meta_exclude: ClassVar[List[str]] = ["slots", "is_a"]
 
     name: str
     bases: Union[List[str], str] = PydanticBaseModel.default_name
     description: Optional[str] = None
     attributes: Optional[Dict[str, PydanticAttribute]] = None
+    meta: Optional[Dict[str, Any]] = None
+    """
+    Metadata for the class to be included in a linkml_meta class attribute
+    """
 
     def _validators(self) -> Optional[Dict[str, PydanticValidator]]:
         if self.attributes is None:
@@ -286,24 +266,14 @@ class PydanticClass(TemplateModel):
 
         return {k: PydanticValidator(**v.model_dump()) for k, v in self.attributes.items() if v.pattern is not None}
 
-    if int(PYDANTIC_VERSION[0]) >= 2:
+    @computed_field
+    def validators(self) -> Optional[Dict[str, PydanticValidator]]:
+        return self._validators()
 
-        @computed_field
-        def validators(self) -> Optional[Dict[str, PydanticValidator]]:
-            return self._validators()
-
-    else:
-        validators: Optional[Dict[str, PydanticValidator]]
-
-        def __init__(self, **kwargs):
-            super(PydanticClass, self).__init__(**kwargs)
-            self.validators = self._validators()
-
-        def render(self, environment: Optional[Environment] = None, black: bool = False) -> str:
-            """Overridden in pydantic 1 to ensure that validators are regenerated at rendering time"""
-            # refresh in case attributes have changed since init
-            self.validators = self._validators()
-            return super(PydanticClass, self).render(environment, black)
+    @computed_field
+    def slots(self) -> Optional[Dict[str, PydanticAttribute]]:
+        """alias of attributes"""
+        return self.attributes
 
 
 class ObjectImport(BaseModel):
@@ -539,32 +509,20 @@ class PydanticModule(TemplateModel):
     """
 
     template: ClassVar[str] = "module.py.jinja"
+    meta_exclude: ClassVar[str] = ["slots"]
 
     metamodel_version: Optional[str] = None
     version: Optional[str] = None
     base_model: PydanticBaseModel = PydanticBaseModel()
     injected_classes: Optional[List[str]] = None
-    imports: List[Union[Import, ConditionalImport]] = Field(default_factory=list)
+    python_imports: List[Union[Import, ConditionalImport]] = Field(default_factory=list)
     enums: Dict[str, PydanticEnum] = Field(default_factory=dict)
     classes: Dict[str, PydanticClass] = Field(default_factory=dict)
+    meta: Optional[Dict[str, Any]] = None
+    """
+    Metadata for the schema to be included in a linkml_meta module-level instance of LinkMLMeta
+    """
 
-    if int(PYDANTIC_VERSION[0]) >= 2:
-
-        @computed_field
-        def class_names(self) -> List[str]:
-            return [c.name for c in self.classes.values()]
-
-    else:
-        class_names: List[str] = Field(default_factory=list)
-
-        def __init__(self, **kwargs):
-            super(PydanticModule, self).__init__(**kwargs)
-            self.class_names = [c.name for c in self.classes.values()]
-
-        def render(self, environment: Optional[Environment] = None, black: bool = False) -> str:
-            """
-            Trivial override of parent method for pydantic 1 to ensure that
-            :attr:`.class_names` are correct at render time
-            """
-            self.class_names = [c.name for c in self.classes.values()]
-            return super(PydanticModule, self).render(environment, black)
+    @computed_field
+    def class_names(self) -> List[str]:
+        return [c.name for c in self.classes.values()]

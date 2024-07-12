@@ -91,6 +91,18 @@ classes:
           - range: Person
           - range: EmploymentEventType
 
+  EqualsString:
+    attributes:
+      attribute5:
+        equals_string: "foo"
+
+  EqualsStringIn:
+    attributes:
+      attribute6:
+        equals_string_in:
+          - "foo"
+          - "bar"
+
   HasAliases:
     mixin: true
     attributes:
@@ -138,6 +150,11 @@ classes:
     see_also:
       - https://en.wikipedia.org/wiki/Person
       - schema:Person
+    annotations:
+      ks:viewer: ks:PersonViewer
+      resting: supine
+      opinions: 1000
+      fallible: true
 
   Organization:
     rank: 3

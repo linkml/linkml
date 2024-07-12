@@ -1,26 +1,27 @@
 
-Classes: 43
-	Referenced by: 26 classes, 229 slots, 0 types, 0 enums 
-	Root: 29
-	Leaf: 37
-	Standalone: 42
+Classes: 45
+	Referenced by: 28 classes, 234 slots, 0 types, 0 enums 
+	Root: 31
+	Leaf: 39
+	Standalone: 44
 	Declared mixin: 7
 	Undeclared mixin: 1
 		enum_expression
 	Abstract: 5
 
-Slots: 261
-	Referenced by: 39 classes, 62 slots, 0 types, 0 enums 
-	Root: 199
-	Leaf: 234
-	Standalone: 263
+Slots: 269
+	Referenced by: 41 classes, 63 slots, 0 types, 0 enums 
+	Root: 206
+	Leaf: 241
+	Standalone: 272
 	Declared mixin: 0
 	Undeclared mixin: 0
 	Abstract: 8
 	* Unowned slots: disjoint_with, inapplicable, inlined_as_simple_dict, owned_by, publisher, relational_logical_characteristic, rules, structured_imports, union_of
-	Not in domain: 13
+	Not in domain: 14
 		slot.name: slot.domain
 		---------  -----------
+		"bindings": "element"
 		"children_are_mutually_disjoint": "definition"
 		"disjoint_with": "definition"
 		"inapplicable": "slot_definition"
@@ -34,15 +35,15 @@ Slots: 261
 		"structured_imports": "schema_definition"
 		"structured_pattern": "definition"
 		"union_of": "element"
-	Domain unspecified: 49
+	Domain unspecified: 56
 	Ranges:
 		Type:
 			boolean: 41
 			datetime: 4
 			integer: 9
 			ncname: 7
-			string: 53
-			uri: 3
+			string: 55
+			uri: 4
 			uriorcurie: 38
 		Class:
 			AnyValue: 1
@@ -60,7 +61,8 @@ Slots: 261
 			definition: 5
 			dimension_expression: 1
 			element: 2
-			enum_definition: 2
+			enum_binding: 1
+			enum_definition: 3
 			enum_expression: 1
 			example: 1
 			expression: 6
@@ -77,16 +79,18 @@ Slots: 261
 			slot_definition: 18
 			structured_alias: 1
 			subset_definition: 2
-			type_definition: 4
+			type_definition: 5
+			type_mapping: 1
 			unique_key: 1
 		Unknown:
 			alias_predicate_enum: 1
+			obligation_level_enum: 1
 			presence_enum: 1
 			pv_formula_options: 1
 			relational_role_enum: 1
 
 Types: 19
-	Referenced by: 0 classes, 155 slots, 0 types, 0 enums 
+	Referenced by: 0 classes, 158 slots, 0 types, 0 enums 
 	Bases:
 		Bool:
 			boolean

@@ -99,20 +99,6 @@ URI: {{ gen.uri_link(element) }}
 
 {% include "common_metadata.md.jinja2" %}
 
-
-{% if schemaview.get_mappings(element.name).items() -%}
-## Mappings
-
-| Mapping Type | Mapped Value |
-| ---  | ---  |
-{% for m, mt in schemaview.get_mappings(element.name).items() -%}
-{% if mt|length > 0 -%}
-| {{ m }} | {{ mt|join(', ') }} |
-{% endif -%}
-{% endfor %}
-
-{% endif -%}
-
 {% if gen.example_object_blobs(element.name) -%}
 ## Examples
 {% for name, blob in gen.example_object_blobs(element.name) -%}

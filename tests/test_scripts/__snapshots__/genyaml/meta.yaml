@@ -473,11 +473,11 @@ slots:
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     rank: 7
     slot_uri: ks:has_employment_history
-    multivalued: true
     owner: Person
     domain_of:
     - Person
     range: EmploymentEvent
+    multivalued: true
     inlined: true
     inlined_as_list: true
   has marriage history:
@@ -487,8 +487,8 @@ slots:
     - subset B
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     slot_uri: ks:has_marriage_history
-    multivalued: true
     range: MarriageEvent
+    multivalued: true
     inlined: true
     inlined_as_list: true
   has medical history:
@@ -499,11 +499,11 @@ slots:
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     rank: 5
     slot_uri: ks:has_medical_history
-    multivalued: true
     owner: Person
     domain_of:
     - Person
     range: MedicalEvent
+    multivalued: true
     inlined: true
     inlined_as_list: true
   has familial relationships:
@@ -513,11 +513,11 @@ slots:
     - subset B
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     slot_uri: ks:has_familial_relationships
-    multivalued: true
     owner: Person
     domain_of:
     - Person
     range: FamilialRelationship
+    multivalued: true
     inlined: true
     inlined_as_list: true
   married to:
@@ -569,11 +569,11 @@ slots:
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/addresses
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     slot_uri: ks:addresses
-    multivalued: true
     owner: Person
     domain_of:
     - Person
     range: Address
+    multivalued: true
     inlined: true
   age in years:
     name: age in years
@@ -866,8 +866,8 @@ slots:
     definition_uri: https://w3id.org/linkml/tests/core/activity_set
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: core:activity_set
-    multivalued: true
     range: activity
+    multivalued: true
     inlined: true
     inlined_as_list: true
   agent set:
@@ -875,8 +875,8 @@ slots:
     definition_uri: https://w3id.org/linkml/tests/core/agent_set
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: core:agent_set
-    multivalued: true
     range: agent
+    multivalued: true
     inlined: true
     inlined_as_list: true
   anyOfSimpleType__attribute1:
@@ -928,18 +928,40 @@ slots:
     - range: integer
     - range: Person
     - range: EmploymentEventType
+  equalsString__attribute5:
+    name: equalsString__attribute5
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:attribute5
+    alias: attribute5
+    owner: EqualsString
+    domain_of:
+    - EqualsString
+    range: string
+    equals_string: foo
+  equalsStringIn__attribute6:
+    name: equalsStringIn__attribute6
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:attribute6
+    alias: attribute6
+    owner: EqualsStringIn
+    domain_of:
+    - EqualsStringIn
+    range: string
+    equals_string_in:
+    - foo
+    - bar
   hasAliases__aliases:
     name: hasAliases__aliases
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     mappings:
     - skos:altLabel
     slot_uri: skos:altLabel
-    multivalued: true
     alias: aliases
     owner: HasAliases
     domain_of:
     - HasAliases
     range: string
+    multivalued: true
   person__is_living:
     name: person__is_living
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -964,48 +986,48 @@ slots:
     name: dataset__persons
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     slot_uri: ks:persons
-    multivalued: true
     alias: persons
     owner: Dataset
     domain_of:
     - Dataset
     range: Person
+    multivalued: true
     inlined: true
     inlined_as_list: true
   dataset__companies:
     name: dataset__companies
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     slot_uri: ks:companies
-    multivalued: true
     alias: companies
     owner: Dataset
     domain_of:
     - Dataset
     range: Company
+    multivalued: true
     inlined: true
     inlined_as_list: true
   dataset__activities:
     name: dataset__activities
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     slot_uri: ks:activities
-    multivalued: true
     alias: activities
     owner: Dataset
     domain_of:
     - Dataset
     range: activity
+    multivalued: true
     inlined: true
     inlined_as_list: true
   dataset__code_systems:
     name: dataset__code_systems
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     slot_uri: ks:code_systems
-    multivalued: true
     alias: code systems
     owner: Dataset
     domain_of:
     - Dataset
     range: CodeSystem
+    multivalued: true
     inlined: true
     inlined_as_list: true
   fakeClass__test_attribute:
@@ -1214,6 +1236,30 @@ classes:
         - range: Person
         - range: EmploymentEventType
     class_uri: ks:AnyOfMix
+  EqualsString:
+    name: EqualsString
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/EqualsString
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slots:
+    - equalsString__attribute5
+    attributes:
+      attribute5:
+        name: attribute5
+        equals_string: foo
+    class_uri: ks:EqualsString
+  EqualsStringIn:
+    name: EqualsStringIn
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slots:
+    - equalsStringIn__attribute6
+    attributes:
+      attribute6:
+        name: attribute6
+        equals_string_in:
+        - foo
+        - bar
+    class_uri: ks:EqualsStringIn
   HasAliases:
     name: HasAliases
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/HasAliases
@@ -1240,6 +1286,19 @@ classes:
     id_prefixes:
     - P
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Person
+    annotations:
+      ks:viewer:
+        tag: ks:viewer
+        value: ks:PersonViewer
+      resting:
+        tag: resting
+        value: supine
+      opinions:
+        tag: opinions
+        value: 1000
+      fallible:
+        tag: fallible
+        value: true
     description: A person, living or dead
     in_subset:
     - subset A
@@ -1507,26 +1566,26 @@ classes:
     attributes:
       persons:
         name: persons
-        multivalued: true
         range: Person
+        multivalued: true
         inlined: true
         inlined_as_list: true
       companies:
         name: companies
-        multivalued: true
         range: Company
+        multivalued: true
         inlined: true
         inlined_as_list: true
       activities:
         name: activities
-        multivalued: true
         range: activity
+        multivalued: true
         inlined: true
         inlined_as_list: true
       code systems:
         name: code systems
-        multivalued: true
         range: CodeSystem
+        multivalued: true
         inlined_as_list: true
     class_uri: ks:Dataset
     tree_root: true

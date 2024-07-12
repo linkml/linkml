@@ -147,11 +147,8 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
         expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == JSON_SCHEMA:
         # if use_default_range and not is_valid:
-        #    # https://github.com/linkml/linkml/issues/1483
-        #    #expected_behavior = ValidationBehavior.INCOMPLETE
-        if data_name == "bad_obj":
-            expected_behavior = ValidationBehavior.INCOMPLETE
-        if is_valid and (use_any_type or use_default_range):
+        # https://github.com/linkml/linkml/issues/1483
+        if is_valid and use_default_range:
             expected_behavior = ValidationBehavior.FALSE_POSITIVE
     check_data(
         schema,
@@ -1440,7 +1437,7 @@ def test_min_max(framework, min_val, max_val, equals_number: Optional[int], valu
                     "equals_number": equals_number,
                     "_mappings": {
                         PYDANTIC: (
-                            f"{SLOT_S1}: int = Field(..., ge={min_val}, le={max_val})" if not equals_number else ""
+                            f"{SLOT_S1}: int = Field(..., ge={min_val}, le={max_val}" if not equals_number else ""
                         )
                     },
                 },

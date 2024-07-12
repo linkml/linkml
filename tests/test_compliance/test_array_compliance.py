@@ -1,10 +1,14 @@
 """Compliance tests for core constructs."""
 
 import pytest
-from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from tests.test_compliance.helper import (
+    OWL,
     PYDANTIC,
+    PYTHON_DATACLASSES,
+    SHACL,
+    SQL_DDL_SQLITE,
+    ValidationBehavior,
     check_data,
     validated_schema,
 )
@@ -13,8 +17,6 @@ from tests.test_compliance.test_compliance import (
     CORE_FRAMEWORKS,
     SLOT_S1,
 )
-
-IS_PYDANTIC_V1 = PYDANTIC_VERSION[0] == "1"
 
 
 @pytest.mark.parametrize(
@@ -95,9 +97,6 @@ def test_array(framework, description, ndim, object, is_valid):
     :param is_valid: whether the object is valid
     :return:
     """
-    if framework != PYDANTIC:
-        pytest.skip("Not implemented yet")
-
     expected_range = {
         1: "List[float]",
         3: "List[List[List[float]]]",
@@ -111,19 +110,25 @@ def test_array(framework, description, ndim, object, is_valid):
                         "exact_number_dimensions": ndim,
                     },
                     "_mappings": {
-                        PYDANTIC: f"s1: Optional[{expected_range[ndim]}] = Field(None)",
+                        PYDANTIC: f"s1: Optional[{expected_range[ndim]}] = Field(None",
                     },
                 },
             },
         },
     }
     schema = validated_schema(test_array, f"array-ndim{ndim}", framework, classes=classes, core_elements=["array"])
+    if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE, SHACL, OWL]:
+        pytest.skip("Not implemented yet")
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework != PYDANTIC and not is_valid:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         description.replace(" ", "_"),
         framework,
         object,
         is_valid,
+        expected_behavior=expected_behavior,
         target_class=CLASS_C,
         description="pattern",
     )

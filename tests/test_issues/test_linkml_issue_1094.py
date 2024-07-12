@@ -1,7 +1,5 @@
 from typing import Dict, List, Union
 
-from pydantic.version import VERSION
-
 from linkml.generators.pydanticgen import PydanticGenerator
 
 schema_str = """
@@ -55,20 +53,12 @@ def test_pydanticgen_inline_dict():
     mod = gen.compile_module()
     Person = getattr(mod, "Person")
     Bike = getattr(mod, "Bike")
-    if VERSION.startswith("1"):
-        dict_field = Person.__fields__["has_bikes"]
-        list_field = Person.__fields__["has_bike_list"]
-    else:
-        dict_field = Person.model_fields["has_bikes"]
-        list_field = Person.model_fields["has_bike_list"]
 
-    if VERSION.startswith("1"):
-        # pydantic 1 uses ForwardRef rather than replacing the forwardref
-        assert eval(dict_field.annotation.__forward_code__) == Dict[str, Union[str, Bike]]
-        assert eval(list_field.annotation.__forward_code__) == List[Bike]
-    else:
-        assert dict_field.annotation == Dict[str, Union[str, Bike]]
-        assert list_field.annotation == List[Bike]
+    dict_field = Person.model_fields["has_bikes"]
+    list_field = Person.model_fields["has_bike_list"]
+
+    assert dict_field.annotation == Dict[str, Union[str, Bike]]
+    assert list_field.annotation == List[Bike]
 
     assert dict_field.default_factory is None
     assert list_field.default_factory is None

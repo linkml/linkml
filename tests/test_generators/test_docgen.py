@@ -515,6 +515,8 @@ def test_class_hierarchy_as_tuples(kitchen_sink_path, input_path):
         (0, "AnyOfClasses"),
         (0, "AnyOfEnums"),
         (0, "AnyOfMix"),
+        (0, "EqualsString"),
+        (0, "EqualsStringIn"),
         (0, "AnyOfSimpleType"),
         (0, "class with spaces"),
         (1, "subclass test"),
@@ -736,5 +738,5 @@ def test_uml_diagram_classr(kitchen_sink_path, tmp_path):
     assert_mdfile_contains(
         tmp_path / "Person.md",
         "# Class: Person",
-        followed_by=["```puml", "@startuml", 'class "Person" {', "@enduml"],
+        followed_by=["```puml", "@startuml", 'class "Person" [[{A person, living or dead}]] {', "@enduml"],
     )

@@ -773,6 +773,64 @@
          }
       },
       {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/EqualsString",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "TripleConstraint",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/EqualsString_tes",
+                  "predicate": "https://w3id.org/linkml/tests/kitchen_sink/attribute5",
+                  "valueExpr": "https://w3id.org/linkml/String",
+                  "min": 0,
+                  "max": 1
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/EqualsString"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "TripleConstraint",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn_tes",
+                  "predicate": "https://w3id.org/linkml/tests/kitchen_sink/attribute6",
+                  "valueExpr": "https://w3id.org/linkml/String",
+                  "min": 0,
+                  "max": 1
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
          "type": "ShapeOr",
          "id": "https://w3id.org/linkml/tests/kitchen_sink/Event",
          "shapeExprs": [

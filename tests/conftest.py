@@ -53,6 +53,10 @@ class SnapshotFile(Snapshot):
         super().__init__(path, config)
         self.rdf_format: Optional[bool] = rdf_format
 
+    def __repr__(self):
+        with open(self.path, "r", encoding="utf-8") as snapshot_file:
+            return snapshot_file.read()
+
     def generate_snapshot(self, source: object) -> bool:
         # if we got a path, copy it into the snapshot directory
         if isinstance(source, Path):

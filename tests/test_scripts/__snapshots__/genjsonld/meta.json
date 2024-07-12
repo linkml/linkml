@@ -554,12 +554,12 @@
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "rank": 7,
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/has_employment_history",
-      "multivalued": true,
       "owner": "Person",
       "domain_of": [
         "Person"
       ],
       "range": "EmploymentEvent",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true
     },
@@ -571,8 +571,8 @@
       ],
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/has_marriage_history",
-      "multivalued": true,
       "range": "MarriageEvent",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true
     },
@@ -585,12 +585,12 @@
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "rank": 5,
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/has_medical_history",
-      "multivalued": true,
       "owner": "Person",
       "domain_of": [
         "Person"
       ],
       "range": "MedicalEvent",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true
     },
@@ -602,12 +602,12 @@
       ],
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/has_familial_relationships",
-      "multivalued": true,
       "owner": "Person",
       "domain_of": [
         "Person"
       ],
       "range": "FamilialRelationship",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true
     },
@@ -670,12 +670,12 @@
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/addresses",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/addresses",
-      "multivalued": true,
       "owner": "Person",
       "domain_of": [
         "Person"
       ],
       "range": "Address",
+      "multivalued": true,
       "inlined": true
     },
     {
@@ -1027,8 +1027,8 @@
       "definition_uri": "https://w3id.org/linkml/tests/core/activity_set",
       "from_schema": "https://w3id.org/linkml/tests/core",
       "slot_uri": "https://w3id.org/linkml/tests/core/activity_set",
-      "multivalued": true,
       "range": "Activity",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true
     },
@@ -1037,8 +1037,8 @@
       "definition_uri": "https://w3id.org/linkml/tests/core/agent_set",
       "from_schema": "https://w3id.org/linkml/tests/core",
       "slot_uri": "https://w3id.org/linkml/tests/core/agent_set",
-      "multivalued": true,
       "range": "Agent",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true
     },
@@ -1122,19 +1122,46 @@
       ]
     },
     {
+      "name": "equalsString__attribute5",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/attribute5",
+      "alias": "attribute5",
+      "owner": "EqualsString",
+      "domain_of": [
+        "EqualsString"
+      ],
+      "range": "string",
+      "equals_string": "foo"
+    },
+    {
+      "name": "equalsStringIn__attribute6",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/attribute6",
+      "alias": "attribute6",
+      "owner": "EqualsStringIn",
+      "domain_of": [
+        "EqualsStringIn"
+      ],
+      "range": "string",
+      "equals_string_in": [
+        "foo",
+        "bar"
+      ]
+    },
+    {
       "name": "hasAliases__aliases",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "mappings": [
         "http://www.w3.org/2004/02/skos/core#altLabel"
       ],
       "slot_uri": "http://www.w3.org/2004/02/skos/core#altLabel",
-      "multivalued": true,
       "alias": "aliases",
       "owner": "HasAliases",
       "domain_of": [
         "HasAliases"
       ],
-      "range": "string"
+      "range": "string",
+      "multivalued": true
     },
     {
       "name": "person__is_living",
@@ -1165,13 +1192,13 @@
       "name": "dataset__persons",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/persons",
-      "multivalued": true,
       "alias": "persons",
       "owner": "Dataset",
       "domain_of": [
         "Dataset"
       ],
       "range": "Person",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true
     },
@@ -1179,13 +1206,13 @@
       "name": "dataset__companies",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/companies",
-      "multivalued": true,
       "alias": "companies",
       "owner": "Dataset",
       "domain_of": [
         "Dataset"
       ],
       "range": "Company",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true
     },
@@ -1193,13 +1220,13 @@
       "name": "dataset__activities",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/activities",
-      "multivalued": true,
       "alias": "activities",
       "owner": "Dataset",
       "domain_of": [
         "Dataset"
       ],
       "range": "Activity",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true
     },
@@ -1207,13 +1234,13 @@
       "name": "dataset__code_systems",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/code_systems",
-      "multivalued": true,
       "alias": "code_systems",
       "owner": "Dataset",
       "domain_of": [
         "Dataset"
       ],
       "range": "CodeSystem",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true
     },
@@ -1492,6 +1519,41 @@
       "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix"
     },
     {
+      "name": "EqualsString",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/EqualsString",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "slots": [
+        "equalsString__attribute5"
+      ],
+      "slot_usage": {},
+      "attributes": [
+        {
+          "name": "attribute5",
+          "equals_string": "foo"
+        }
+      ],
+      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/EqualsString"
+    },
+    {
+      "name": "EqualsStringIn",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "slots": [
+        "equalsStringIn__attribute6"
+      ],
+      "slot_usage": {},
+      "attributes": [
+        {
+          "name": "attribute6",
+          "equals_string_in": [
+            "foo",
+            "bar"
+          ]
+        }
+      ],
+      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn"
+    },
+    {
       "name": "HasAliases",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/HasAliases",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
@@ -1526,6 +1588,24 @@
         "P"
       ],
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Person",
+      "annotations": [
+        {
+          "tag": "ks:viewer",
+          "value": "ks:PersonViewer"
+        },
+        {
+          "tag": "resting",
+          "value": "supine"
+        },
+        {
+          "tag": "opinions",
+          "value": 1000
+        },
+        {
+          "tag": "fallible",
+          "value": true
+        }
+      ],
       "description": "A person, living or dead",
       "in_subset": [
         "subset_A"
@@ -1827,29 +1907,29 @@
       "attributes": [
         {
           "name": "persons",
-          "multivalued": true,
           "range": "Person",
+          "multivalued": true,
           "inlined": true,
           "inlined_as_list": true
         },
         {
           "name": "companies",
-          "multivalued": true,
           "range": "Company",
+          "multivalued": true,
           "inlined": true,
           "inlined_as_list": true
         },
         {
           "name": "activities",
-          "multivalued": true,
           "range": "Activity",
+          "multivalued": true,
           "inlined": true,
           "inlined_as_list": true
         },
         {
           "name": "code_systems",
-          "multivalued": true,
           "range": "CodeSystem",
+          "multivalued": true,
           "inlined_as_list": true
         }
       ],

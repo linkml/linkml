@@ -178,6 +178,18 @@ core:Agent CLOSED {
     )
 }
 
+<EqualsString> CLOSED {
+    (  $<EqualsString_tes> <attribute5> @linkml:String ? ;
+       rdf:type [ <EqualsString> ] ?
+    )
+}
+
+<EqualsStringIn> CLOSED {
+    (  $<EqualsStringIn_tes> <attribute6> @linkml:String ? ;
+       rdf:type [ <EqualsStringIn> ] ?
+    )
+}
+
 <Event>  (
     CLOSED {
        (  $<Event_tes> (  core:started_at_time @linkml:Date ? ;

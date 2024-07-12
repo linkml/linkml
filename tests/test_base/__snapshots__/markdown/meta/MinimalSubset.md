@@ -24,6 +24,7 @@ URI: [linkml:MinimalSubset](https://w3id.org/linkml/MinimalSubset)
  * [classes](classes.md) - An index to the collection of all class definitions in the schema
  * [default_prefix](default_prefix.md) - The prefix that is used for all elements within a schema
  * [default_range](default_range.md) - default slot range to be used if range element is omitted from a slot definition
+ * [enum_binding➞range](enum_binding_range.md)
  * [id](id.md) - The official schema URI
  * [identifier](identifier.md) - True means that the key slot(s) uniquely identifies the elements. There can be at most one identifier or key per container
  * [multivalued](multivalued.md) - true means that slot can have more than one value and should be represented using a list or collection structure.
