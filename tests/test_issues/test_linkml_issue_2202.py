@@ -1,17 +1,10 @@
-import pprint
+from importlib import util
 
-import pytest
 from linkml_runtime import SchemaView
-from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders import YAMLLoader
-from linkml_runtime.utils.compile_python import compile_python
 
 from linkml.generators import PythonGenerator
-from linkml.validator import Validator, ValidationReport
-
-import types
-import sys
-from importlib import util
+from linkml.validator import ValidationReport, Validator
 
 minimal_household_schema = """
 name: minimal_household_schema
@@ -27,11 +20,19 @@ classes:
   NamedThing:
     slots:
       - id
+  Person:
+    is_a: NamedThing
+    slots:
+      - name
   
 slots:
   id:
     identifier: true
     range: curie
+  name:
+    range: string
+    required: true
+  
 """
 
 minimal_household_data = """
@@ -43,34 +44,34 @@ minimal_view = SchemaView(minimal_household_schema)
 validator_for_minimal = Validator(minimal_view.schema)
 
 
-class TestLinkmlIssue2202:
+def test_minimal_view():
+    assert minimal_view is not None
 
-    def test_minimal_view(self):
-        assert minimal_view is not None
 
-    def test_minimal_validation(self):
-        report_from_minimal_validation: ValidationReport = validator_for_minimal.validate(minimal_household_data,
-                                                                                          "NamedThing")
+def test_minimal_validation():
+    report_from_minimal_validation: ValidationReport = validator_for_minimal.validate(
+        minimal_household_data, "NamedThing"
+    )
 
-        assert len(report_from_minimal_validation.results) == 0
+    assert len(report_from_minimal_validation.results) == 0
 
-    def test_convert_to_rdf(self):
-        gen = PythonGenerator(schema=minimal_household_schema)
-        generated_python = gen.serialize()
 
-        # Create a new module
-        module_name = 'minimal_household_module'
-        spec = util.spec_from_loader(module_name, loader=None)
-        minimal_household_module = util.module_from_spec(spec)
+def test_convert_to_rdf():
+    gen = PythonGenerator(schema=minimal_household_schema)
+    generated_python = gen.serialize()
 
-        # Execute the code in the newly created module's namespace
-        exec(generated_python, minimal_household_module.__dict__)  # todo: doesn't linkml have a compile python method?
+    # Create a new module
+    module_name = "minimal_household_module"
+    spec = util.spec_from_loader(module_name, loader=None)
+    minimal_household_module = util.module_from_spec(spec)
 
-        # Now you can access the class NamedThing from dynamic_module
-        NamedThing = getattr(minimal_household_module, 'NamedThing')
+    # Execute the code in the newly created module's namespace
+    exec(generated_python, minimal_household_module.__dict__)  # todo: doesn't linkml have a compile python method?
 
-        my_loader = YAMLLoader()
-        minimal_instance = my_loader.load(source=minimal_household_data, target_class=NamedThing,
-                                          schema_view=minimal_view)
+    # Now you can access the class NamedThing from dynamic_module
+    NamedThing = getattr(minimal_household_module, "NamedThing")
 
-        assert minimal_instance.id == "http://example.com/minimal_household_schema/1"
+    my_loader = YAMLLoader()
+    minimal_instance = my_loader.load(source=minimal_household_data, target_class=NamedThing, schema_view=minimal_view)
+
+    assert minimal_instance.id == "http://example.com/minimal_household_schema/1"
