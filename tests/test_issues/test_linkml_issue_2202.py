@@ -6,6 +6,10 @@ from linkml_runtime.loaders import YAMLLoader
 from linkml.generators import PythonGenerator
 from linkml.validator import ValidationReport, Validator
 
+# THIS IS EXPERIMENTATION FOR CHECKINS
+# # SOME OF NMDC'S VALIDATION EXCEPTIONS
+# ASSUMPTIONS ABOUT
+
 minimal_household_schema = """
 name: minimal_household_schema
 id: http://example.com/minimal_household_schema
@@ -35,7 +39,9 @@ slots:
   has_roommate: {}
   has_pet:
   
-""" # todo boilerplate in fixture (could return schemabuidler) ; each method can use fixture and modify with schemabuilder
+"""
+# todo boilerplate in fixture (could return schemabuidler)
+#  each method can use fixture and modify with schemabuilder
 
 minimal_household_data = """
 id: http://example.com/minimal_household_schema/1
