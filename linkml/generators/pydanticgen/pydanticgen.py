@@ -10,10 +10,10 @@ from types import ModuleType
 from typing import Dict, List, Literal, Optional, Set, Type, TypeVar, Union, overload
 
 import click
-from jinja2 import ChoiceLoader, Environment, FileSystemLoader
+from jinja2 import ChoiceLoader, Environment, FileSystemLoader, Template
 from linkml_runtime.linkml_model.meta import (
+    ElementName,
     ClassDefinition,
-    ClassDefinitionName,
     SchemaDefinition,
     SlotDefinition,
     TypeDefinition,
@@ -765,51 +765,66 @@ class PydanticGenerator(OOCodeGenerator):
 
     def _get_imports(
         self,
-        sv: SchemaView,
-        local_classes: List[ClassDefinition],
-        class_slots: Dict[str, List[SlotDefinition]],
-    ) -> Dict[str, List[str]]:
+        element: Union[ClassDefinition, SlotDefinition]
+    ) -> Imports:
+        """
+        Get imports that are implied by their usage in slots or classes
+        (and thus need to be imported when generating schemas in :attr:`.split` == ``True`` mode).
+
+        **Note:**
+        Since in pydantic (currently) the only things that are materialized are classes, we don't
+        import class slots from imported schemas and abandon slots, directly expressing them
+        in the model.
+
+        This is a parent placeholder method in case that changes, "give me something and return
+        a set of imports" that calls subordinate methods. If slots become materialized, keep
+        this as the directly called method rather than spaghetti-ing out another
+        independent method. This method is also isolated in anticipation of structured imports,
+        where we will need to revise our expectations of what is imported when.
+        """
         # import from local references, rather than serializing every class in every file
         if not self.split:
             # we are compiling this whole thing in one big file so we don't import anything
-            return {}
+            return Imports()
 
-        all_classes = sv.all_classes(imports=True)
+        # gather a list of class names,
+        # remove local classes and transform to Imports later.
         needed_classes = []
 
-        # find needed classes - is_a and slot ranges
-        for cls in local_classes:
-            # get imports for this class
-            needed_classes.extend(self._get_class_imports(cls, sv, all_classes, class_slots))
+        # fine to call rather than pass bc it's cached
+        all_classes = self.schemaview.all_classes(imports=True)
+        local_classes = self.schemaview.all_classes(imports=False)
 
-        # remove duplicates
-        needed_classes = [
-            cls for cls in set(needed_classes) if cls is not None
-        ]
-        imports = self._locate_imports(needed_classes, sv)
+        if isinstance(element, ClassDefinition):
+            if element.is_a:
+                needed_classes.append(element.is_a)
+
+        elif isinstance(element, SlotDefinition):
+            # collapses `slot.range`, `slot.any_of`, and `slot.one_of` to a list
+            slot_ranges = self.schemaview.slot_range_as_union(element)
+            needed_classes.extend([a_range for a_range in slot_ranges if a_range in all_classes])
+
+        else:
+            raise ValueError(f"Unsupported type of element to get imports from: f{type(element)}")
+
+        skips = ('AnyType',)  # classes that are not generated for structural reasons placeholder.
+        class_imports = [self._get_element_import(cls) for cls in needed_classes if cls not in local_classes and cls not in skips]
+        imports = Imports()
+        for an_import in class_imports:
+            imports += an_import
 
         return imports
 
-    def _get_class_imports(
-        self,
-        cls: ClassDefinition,
-        all_classes: dict[ClassDefinitionName, ClassDefinition],
-        class_slots: dict[str, List[SlotDefinition]],
-    ) -> List[str]:
-        """Get the imports needed for a single class"""
-        needed_classes = []
-        needed_classes.append(cls.is_a)
-        # get needed classes used as ranges in class attributes
-        for slot in class_slots[cls.name]:
-            if slot.range in all_classes:
-                needed_classes.append(slot.range)
-            # handle when a range is a union of classes
-            if slot.any_of:
-                for any_slot_range in slot.any_of:
-                    if any_slot_range.range in all_classes:
-                        needed_classes.append(any_slot_range.range)
+    def _get_element_import(self, class_name: ElementName) -> Import:
+        """
+        Make an import object for an element from another schema, using the
+        :attr:`.split_import_pattern` to generate the module import part.
+        """
+        context = {} if self.split_context is None else self.split_context
+        schema = self.schemaview.schema_map[self.schemaview.element_by_schema_map()[class_name]]
+        module = Template(self.split_import_pattern).render(schema=schema, **context)
+        return Import(module=module, objects=[ObjectImport(name=class_name)])
 
-        return needed_classes
 
     def render(self) -> PydanticModule:
         sv: SchemaView
