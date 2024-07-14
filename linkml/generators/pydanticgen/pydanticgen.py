@@ -6,14 +6,15 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
+import re
 from types import ModuleType
-from typing import Dict, List, Literal, Optional, Set, Type, TypeVar, Union, overload
+from typing import ClassVar, Dict, List, Literal, Optional, Set, Type, TypeVar, Union, overload
 
 import click
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader, Template
 from linkml_runtime.linkml_model.meta import (
-    ElementName,
     ClassDefinition,
+    ElementName,
     SchemaDefinition,
     SlotDefinition,
     TypeDefinition,
@@ -250,7 +251,7 @@ class PydanticGenerator(OOCodeGenerator):
      
     Further modification is possible by using jinja filters.
     
-    After templating, the string is passed through a ``snake_case`` function
+    After templating, the string is passed through a :attr:`SNAKE_CASE` pattern
     to replace whitespace and other characters that can't be used in module names.
      
     Examples:
@@ -279,6 +280,10 @@ class PydanticGenerator(OOCodeGenerator):
     gen_slots: bool = True
     genmeta: bool = False
     emit_metadata: bool = True
+
+    # ClassVars
+    SNAKE_CASE: ClassVar[str] = r'((?<!^)(?=[A-Z]))|(\W+)'
+    """Substitute CamelCase and non-word characters with _"""
 
     # Private attributes
     _predefined_slot_values: Optional[Dict[str, Dict[str, str]]] = None
@@ -763,10 +768,7 @@ class PydanticGenerator(OOCodeGenerator):
         model.meta = meta
         return model
 
-    def _get_imports(
-        self,
-        element: Union[ClassDefinition, SlotDefinition]
-    ) -> Imports:
+    def _get_imports(self, element: Union[ClassDefinition, SlotDefinition]) -> Imports:
         """
         Get imports that are implied by their usage in slots or classes
         (and thus need to be imported when generating schemas in :attr:`.split` == ``True`` mode).
@@ -809,9 +811,11 @@ class PydanticGenerator(OOCodeGenerator):
 
         # SPECIAL CASE: classes that are not generated for structural reasons.
         # TODO: Do we want to have a general means of skipping class generation?
-        skips = ('AnyType',)
+        skips = ("AnyType",)
 
-        class_imports = [self._get_element_import(cls) for cls in needed_classes if (cls not in local_classes and cls not in skips)]
+        class_imports = [
+            self._get_element_import(cls) for cls in needed_classes if (cls not in local_classes and cls not in skips)
+        ]
         imports = Imports(imports=class_imports)
 
         return imports
@@ -824,8 +828,9 @@ class PydanticGenerator(OOCodeGenerator):
         context = {} if self.split_context is None else self.split_context
         schema = self.schemaview.schema_map[self.schemaview.element_by_schema_map()[class_name]]
         module = Template(self.split_import_pattern).render(schema=schema, **context)
-        return Import(module=module, objects=[ObjectImport(name=class_name)])
-
+        module = re.sub(self.SNAKE_CASE, '_', module) if self.SNAKE_CASE else module
+        module = module.lower()
+        return Import(module=module, objects=[ObjectImport(name=camelcase(class_name))])
 
     def render(self) -> PydanticModule:
         sv: SchemaView
@@ -890,6 +895,11 @@ def _subclasses(cls: Type):
 
 
 _TEMPLATE_NAMES = sorted(list(set([c.template for c in _subclasses(TemplateModel)])))
+
+
+def generate_split(schema: Union[str, Path, SchemaDefinition], module_pattern: str, output_path: Union[str, Path], **kwargs):
+    sv =
+    raise NotImplementedError()
 
 
 @shared_arguments(PydanticGenerator)

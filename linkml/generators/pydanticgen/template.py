@@ -321,6 +321,13 @@ class Import(TemplateModel):
     module: str
     alias: Optional[str] = None
     objects: Optional[List[ObjectImport]] = None
+    generated: bool = False
+    """
+    Whether or not this ``Import`` is a byproduct of model generation -- 
+    ie. that it is not expected to be provided by the environment, but might require additional
+    work on the part of the generator to provide. See :func:`.pydanticgen.generate_split` 
+    for example usage.
+    """
 
     def merge(self, other: "Import") -> List["Import"]:
         """
@@ -452,7 +459,9 @@ class Imports(TemplateModel):
     imports: List[Union[Import, ConditionalImport]] = Field(default_factory=list)
 
     @classmethod
-    def _merge(cls, imports: List[Union[Import, ConditionalImport]], other: Union[Import, "Imports", List[Import]]) -> List[Union[Import, ConditionalImport]]:
+    def _merge(
+        cls, imports: List[Union[Import, ConditionalImport]], other: Union[Import, "Imports", List[Import]]
+    ) -> List[Union[Import, ConditionalImport]]:
         """
         Add a new import to an existing imports list, handling deduplication and flattening.
 
@@ -508,7 +517,6 @@ class Imports(TemplateModel):
         imports = sorted(imports, key=lambda i: i.module == "__future__", reverse=True)
         return imports
 
-
     def __add__(self, other: Union[Import, "Imports", List[Import]]) -> "Imports":
         imports = self.imports.copy()
         imports = self._merge(imports, other)
@@ -524,9 +532,11 @@ class Imports(TemplateModel):
     def __getitem__(self, item: int) -> Import:
         return self.imports[item]
 
-    @field_validator('imports', mode='after')
+    @field_validator("imports", mode="after")
     @classmethod
-    def imports_are_merged(cls, imports: List[Union[Import, ConditionalImport]]) -> List[Union[Import, ConditionalImport]]:
+    def imports_are_merged(
+        cls, imports: List[Union[Import, ConditionalImport]]
+    ) -> List[Union[Import, ConditionalImport]]:
         """
         When creating from a list of imports, construct model as if we have done so by iteratively
         constructing with __add__ calls
