@@ -3,7 +3,7 @@ from importlib.util import find_spec
 from typing import Any, ClassVar, Dict, Generator, List, Literal, Optional, Union
 
 from jinja2 import Environment, PackageLoader
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml.utils.deprecation import deprecation_warning
@@ -451,19 +451,36 @@ class Imports(TemplateModel):
 
     imports: List[Union[Import, ConditionalImport]] = Field(default_factory=list)
 
-    def __add__(self, other: Union[Import, "Imports", List[Import]]) -> "Imports":
+    @classmethod
+    def _merge(cls, imports: List[Union[Import, ConditionalImport]], other: Union[Import, "Imports", List[Import]]) -> List[Union[Import, ConditionalImport]]:
+        """
+        Add a new import to an existing imports list, handling deduplication and flattening.
+
+        Mutates and returns ``imports``
+
+        Generally will prefer the imports in ``other`` , updating those in ``imports``.
+        If ``other`` ...
+        - doesn't match any ``module`` in ``imports``, add it!
+        - matches a single ``module`` in imports, :meth:`.Import.merge` the object imports
+        - matches multiple ``module``s in imports, then there must have been another
+            :class:`.ConditionalImport` already present, so we :meth:`.Import.merge` the existing
+            :class:`.Import` if it is one, and if it's a :class:`.ConditionalImport` just YOLO
+            and append it since there isn't a principled way to merge them from strings.
+        - is :class:`.Imports`  or a list of :class:`.Import` s, call this recursively for each
+          item.
+
+        Since imports can be merged in an undefined order depending on the generator configuration,
+        default behavior for imports with matching ``module`` is to remove them and append to the
+        end of the imports list (rather than keeping it in the position of the existing
+        :class:`.Import` ). :class:`.ConditionalImports` make it possible to have namespace
+        conflicts, so in imperative import style we assume the most recently added :class:`.Import`
+        is the one that should prevail.
+        """
+        #
         if isinstance(other, Imports) or (isinstance(other, list) and all([isinstance(i, Import) for i in other])):
-            if hasattr(self, "model_copy"):
-                self_copy = self.model_copy(deep=True)
-            else:
-                self_copy = self.copy()
-
             for i in other:
-                self_copy += i
-            return self_copy
-
-        # check if we have one of these already
-        imports = self.imports.copy()
+                imports = cls._merge(imports, i)
+            return imports
 
         existing = [i for i in imports if i.module == other.module]
 
@@ -489,8 +506,13 @@ class Imports(TemplateModel):
 
         # SPECIAL CASE - __future__ annotations must happen at the top of a file
         imports = sorted(imports, key=lambda i: i.module == "__future__", reverse=True)
+        return imports
 
-        return Imports(imports=imports)
+
+    def __add__(self, other: Union[Import, "Imports", List[Import]]) -> "Imports":
+        imports = self.imports.copy()
+        imports = self._merge(imports, other)
+        return Imports.model_construct(imports=imports)
 
     def __len__(self) -> int:
         return len(self.imports)
@@ -501,6 +523,18 @@ class Imports(TemplateModel):
 
     def __getitem__(self, item: int) -> Import:
         return self.imports[item]
+
+    @field_validator('imports', mode='after')
+    @classmethod
+    def imports_are_merged(cls, imports: List[Union[Import, ConditionalImport]]) -> List[Union[Import, ConditionalImport]]:
+        """
+        When creating from a list of imports, construct model as if we have done so by iteratively
+        constructing with __add__ calls
+        """
+        merged_imports = []
+        for i in imports:
+            merged_imports = cls._merge(merged_imports, i)
+        return merged_imports
 
 
 class PydanticModule(TemplateModel):

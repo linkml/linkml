@@ -807,11 +807,12 @@ class PydanticGenerator(OOCodeGenerator):
         else:
             raise ValueError(f"Unsupported type of element to get imports from: f{type(element)}")
 
-        skips = ('AnyType',)  # classes that are not generated for structural reasons placeholder.
-        class_imports = [self._get_element_import(cls) for cls in needed_classes if cls not in local_classes and cls not in skips]
-        imports = Imports()
-        for an_import in class_imports:
-            imports += an_import
+        # SPECIAL CASE: classes that are not generated for structural reasons.
+        # TODO: Do we want to have a general means of skipping class generation?
+        skips = ('AnyType',)
+
+        class_imports = [self._get_element_import(cls) for cls in needed_classes if (cls not in local_classes and cls not in skips)]
+        imports = Imports(imports=class_imports)
 
         return imports
 
