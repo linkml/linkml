@@ -1,16 +1,14 @@
 import os
+import tempfile
 from importlib import util
 
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import RDFLibDumper
 from linkml_runtime.loaders import YAMLLoader
+from owlready2 import get_ontology
 
 from linkml.generators import OwlSchemaGenerator, PythonGenerator
 from linkml.validator import ValidationReport, Validator
-
-from owlready2 import get_ontology, onto_path
-
-import tempfile
 
 # THIS IS EXPERIMENTATION FOR CHECKING
 # # SOME OF NMDC'S VALIDATION EXCEPTIONS
@@ -155,7 +153,7 @@ def test_convert_schema_to_owl():
     owl_ttl_string = my_generator.serialize()
 
     # Create a temporary file to store the ontology
-    with tempfile.NamedTemporaryFile(delete=False, suffix='.ttl', mode='w') as tmp:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".ttl", mode="w") as tmp:
         tmp.write(owl_ttl_string)
         tmp_path = tmp.name
 
