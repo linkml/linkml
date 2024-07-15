@@ -1,6 +1,7 @@
 import os
 import tempfile
 from importlib import util
+import io
 
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import RDFLibDumper
@@ -10,8 +11,10 @@ from owlready2 import get_ontology
 from linkml.generators import OwlSchemaGenerator, PythonGenerator
 from linkml.validator import ValidationReport, Validator
 
+import rdflib
+
 # THIS IS EXPERIMENTATION FOR CHECKING
-# # SOME OF NMDC'S VALIDATION EXCEPTIONS
+#   SOME OF NMDC'S VALIDATION EXCEPTIONS
 
 super_household_schema = """
 name: super_household_schema
@@ -151,19 +154,47 @@ def test_convert_data_to_rdf():
 def test_convert_schema_to_owl():
     my_generator = OwlSchemaGenerator(schema=super_household_schema)
     owl_ttl_string = my_generator.serialize()
+    print("\n")
+    print(len(owl_ttl_string))
 
-    # Create a temporary file to store the ontology
+
+# todo useful tests:
+#  - person claims to have pet but pet is not defined
+#  - person claims to have pet but it is of the wrong type
+#  - pet is defined but uses the wrong id pattern (pattern is defined only for pet id)
+
+def test_web():
+    print("\n")
+    print("hello web")
+    onto = get_ontology("https://raw.githubusercontent.com/owlcs/pizza-ontology/master/pizza.owl").load()
+    print(list(onto.classes()))
+
+
+def test_pizza_file():
+    print("\n")
+    print("hello pizza file")
+    # file:///home/mark/Downloads/pizza.owl
+    onto = get_ontology("file:///home/mark/Downloads/pizza.owl").load()
+    print(list(onto.classes()))
+
+
+def test_linkml_file():
+    my_generator = OwlSchemaGenerator(schema=super_household_schema)
+    owl_ttl_string = my_generator.serialize()
+
     with tempfile.NamedTemporaryFile(delete=False, suffix=".ttl", mode="w") as tmp:
         tmp.write(owl_ttl_string)
-        tmp_path = tmp.name
 
-    # Load the ontology from the temporary file, specifying the format explicitly
-    onto = get_ontology(f"file://{tmp_path}")
-    onto.load(format="turtle")  # Explicitly specify the format as 'turtle'
+    g = rdflib.Graph()
 
-    # Example assertion: Check if a specific class exists in the ontology
-    expected_class = "Person"
-    assert onto[expected_class] in onto.classes(), f"{expected_class} should be a class in the ontology"
+    # Parse the Turtle file
+    g.parse(tmp.name, format='ttl')
 
-    # Clean up the temporary file
-    os.remove(tmp_path)
+    # Serialize the graph to RDF/XML
+    rdf_xml_data = g.serialize(format='xml')
+
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".owl", mode="w") as tmp:
+        tmp.write(rdf_xml_data)
+
+    onto = get_ontology(tmp.name).load()
+    print(list(onto.classes()))
