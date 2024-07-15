@@ -1,8 +1,7 @@
-import os
 import tempfile
 from importlib import util
-import io
 
+import rdflib
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import RDFLibDumper
 from linkml_runtime.loaders import YAMLLoader
@@ -10,8 +9,6 @@ from owlready2 import get_ontology
 
 from linkml.generators import OwlSchemaGenerator, PythonGenerator
 from linkml.validator import ValidationReport, Validator
-
-import rdflib
 
 # THIS IS EXPERIMENTATION FOR CHECKING
 #   SOME OF NMDC'S VALIDATION EXCEPTIONS
@@ -145,40 +142,21 @@ def test_convert_data_to_rdf():
 
     my_dumper = RDFLibDumper()
     dumped_rdf = my_dumper.dumps(element=minimal_database, schemaview=super_household_view)
-    print("\n")
-    print(dumped_rdf)
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".ttl", mode="w") as tmp:
+        tmp.write(dumped_rdf)
 
-    # todo assertion # how to test the rdf within python ?
+    g = rdflib.Graph()
+    g.parse(tmp.name, format="ttl")
+
+    # Define the parts of the triple you are looking for
+    subject = rdflib.URIRef("http://example.com/super_household_schema/1")
+    predicate = rdflib.URIRef("http://example.com/super_household_schema/name")
+    object = rdflib.Literal("Superman")
+
+    assert (subject, predicate, object) in g
 
 
 def test_convert_schema_to_owl():
-    my_generator = OwlSchemaGenerator(schema=super_household_schema)
-    owl_ttl_string = my_generator.serialize()
-    print("\n")
-    print(len(owl_ttl_string))
-
-
-# todo useful tests:
-#  - person claims to have pet but pet is not defined
-#  - person claims to have pet but it is of the wrong type
-#  - pet is defined but uses the wrong id pattern (pattern is defined only for pet id)
-
-def test_web():
-    print("\n")
-    print("hello web")
-    onto = get_ontology("https://raw.githubusercontent.com/owlcs/pizza-ontology/master/pizza.owl").load()
-    print(list(onto.classes()))
-
-
-def test_pizza_file():
-    print("\n")
-    print("hello pizza file")
-    # file:///home/mark/Downloads/pizza.owl
-    onto = get_ontology("file:///home/mark/Downloads/pizza.owl").load()
-    print(list(onto.classes()))
-
-
-def test_linkml_file():
     my_generator = OwlSchemaGenerator(schema=super_household_schema)
     owl_ttl_string = my_generator.serialize()
 
@@ -188,13 +166,26 @@ def test_linkml_file():
     g = rdflib.Graph()
 
     # Parse the Turtle file
-    g.parse(tmp.name, format='ttl')
+    g.parse(tmp.name, format="ttl")
 
     # Serialize the graph to RDF/XML
-    rdf_xml_data = g.serialize(format='xml')
+    rdf_xml_data = g.serialize(format="xml")
 
+    # write as rdf/xml
     with tempfile.NamedTemporaryFile(delete=False, suffix=".owl", mode="w") as tmp:
         tmp.write(rdf_xml_data)
 
+    # parse with owlready2
     onto = get_ontology(tmp.name).load()
     print(list(onto.classes()))
+
+    assert onto.Person is not None
+
+    # todo ignore * Owlready2 * WARNING: ObjectProperty XYZ belongs to more than one entity types:
+    #    [owl.ObjectProperty, linkml.SlotDefinition]
+
+
+# todo useful tests:
+#  - person claims to have pet but pet is not defined
+#  - person claims to have pet but it is of the wrong type
+#  - pet is defined but uses the wrong id pattern (pattern is defined only for pet id)
