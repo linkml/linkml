@@ -85,6 +85,28 @@ Generator
 .. autoclass:: PydanticGenerator
     :members:
 
+Split Generation
+----------------
+
+Pydantic models can also be generated in a "split" mode where rather than
+rolling down all classes into a single file, schemas are kept as their own
+pydantic modules that import from one another.
+
+See:
+
+* :attr:`.PydanticGenerator.split`
+* :attr:`.PydanticGenerator.split_pattern`
+* :attr:`.PydanticGenerator.split_context`
+
+The implementation of ``split`` mode in the Generator itself still generates
+a single module, except for importing classes from other modules rather than
+including them directly. This is wrapped by :func:`.generate_split` which
+can be used to generate the module files directly
+
+.. autofunction:: generate_split
+    :members:
+
+
 Templates
 ---------
 

@@ -371,7 +371,14 @@ class Import(TemplateModel):
             }
             self_objs.update(other_objs)
 
-            return [Import(module=self.module, alias=alias, objects=list(self_objs.values()))]
+            return [
+                Import(
+                    module=self.module,
+                    alias=alias,
+                    objects=list(self_objs.values()),
+                    generated=self.generated or other.generated,
+                )
+            ]
         else:
             # one is a module, the other imports objects, keep both
             return [self, other]

@@ -1,5 +1,6 @@
 import importlib
 import inspect
+import re
 import typing
 from contextlib import nullcontext as does_not_raise
 from dataclasses import dataclass
@@ -22,7 +23,15 @@ from linkml_runtime.utils.schemaview import load_schema_wrap
 from pydantic import BaseModel, ValidationError
 
 from linkml.generators import pydanticgen as pydanticgen_root
-from linkml.generators.pydanticgen import MetadataMode, PydanticGenerator, array, build, pydanticgen, template
+from linkml.generators.pydanticgen import (
+    MetadataMode,
+    PydanticGenerator,
+    array,
+    build,
+    generate_split,
+    pydanticgen,
+    template,
+)
 from linkml.generators.pydanticgen.array import AnyShapeArray, ArrayRepresentation
 from linkml.generators.pydanticgen.template import (
     ConditionalImport,
@@ -1720,3 +1729,97 @@ def test_linkml_meta(kitchen_sink_path, tmp_path, input_path, mode):
                 assert extra is None or "linkml_meta" not in extra
             else:
                 _test_meta(extra["linkml_meta"], slot_def, PydanticAttribute, mode)
+
+
+# --------------------------------------------------
+# Split generation
+# --------------------------------------------------
+
+
+@pytest.mark.pydanticgen_split
+def test_generate_split(input_path):
+    """
+    Schemas can be generated such that they import from imported schemas in different modules rather than
+    having all models present in a single module
+    """
+    schema = input_path("split/main.yaml")
+    generator = PydanticGenerator(schema, split=True)
+    serialized = generator.serialize()
+
+    # imported classes should not be present
+    # (we do string tests here bc we can't import/execute this module since its imports
+    # won't be present)
+    for cls_name in ("S1", "S1Any", "S2", "S2Any"):
+        assert f"class {cls_name}(" not in serialized
+
+    # Test that the class imports are present (and may be formatted with a newline-separated () list or not)
+    assert re.search(r"from \.schema_1 import.*\n*\s*S1,.*\n*\s*S1Any", serialized, flags=re.MULTILINE)
+    assert re.search(r"from \.schema_2 import.*\n*\s*S2,.*\n*\s*S2Any", serialized, flags=re.MULTILINE)
+
+    # assert that `schema_3` is NOT present, because it was imported but no classes were used
+    assert "schema_3" not in serialized
+
+    # Inheritance should be respected
+    assert re.search(r"class S1Inheritance\(.*S1.*\)", serialized)
+
+
+@pytest.mark.pydanticgen_split
+def test_generate_split_pattern(input_path):
+    """
+    I can customize the module part of the import to use attributes from the imported schema
+    """
+    context_val = {"context_val": "A_CONTEXT_VALUE"}
+    custom_pattern = "...{{ schema.name }}.{{ schema.annotations.custom.value }}.{{ context_val }}"
+    schema = input_path("split/main.yaml")
+    generator = PydanticGenerator(schema, split=True, split_pattern=custom_pattern, split_context=context_val)
+    serialized = generator.serialize()
+
+    assert re.search(
+        r"from \.\.\.schema_1\.additional_metadata\.a_context_value import.*\n*\s*S1,.*\n*\s*S1Any",
+        serialized,
+        flags=re.MULTILINE,
+    )
+    assert re.search(
+        r"from \.\.\.schema_2\.additional_metadata\.a_context_value import.*\n*\s*S2,.*\n*\s*S2Any",
+        serialized,
+        flags=re.MULTILINE,
+    )
+
+
+@pytest.mark.pydanticgen_split
+def test_generate_split_directory(input_path, tmp_path):
+    schema = input_path("split/main.yaml")
+    pattern = "..{{ schema.version | replace('.', '_') }}.{{ schema.name }}"
+    output_file = tmp_path / "test_module" / "v1_2_3" / "main.py"
+    result = generate_split(schema, output_file, split_pattern=pattern)
+
+    # should be possible to import the main module
+    # (this checks that relative imports resolve correctly!)
+    main = [r for r in result if r.main][0]
+    imported_spec = importlib.util.spec_from_file_location("test_module.v1_2_3.main", main.path)
+    _ = importlib.util.module_from_spec(imported_spec)
+
+    # all expected files should exist in the places we expect them to be
+    pkg_path = tmp_path / "test_module"
+    all_paths = [
+        pkg_path / "__init__.py",
+        pkg_path / "v0_1_2" / "__init__.py",
+        pkg_path / "v0_1_2" / "schema_1.py",
+        pkg_path / "v1_2_3" / "__init__.py",
+        pkg_path / "v1_2_3" / "main.py",
+        pkg_path / "v2_3_4" / "__init__.py",
+        pkg_path / "v2_3_4" / "schema_2.py",
+    ]
+    for path in all_paths:
+        assert path.exists()
+
+    # we didn't generate __init__.py files outside the topmost common directory
+    assert not (tmp_path / "__init__.py").exists()
+
+
+@pytest.mark.parametrize(
+    "test,expected", [("Schema 1", "schema_1"), ("SchemaOneTwo", "schema_one_two"), ("Schema! One", "schema__one")]
+)
+@pytest.mark.pydanticgen_split
+def test_snake_case_regex(test, expected):
+    assert re.sub(PydanticGenerator.SNAKE_CASE, "_", test).lower() == expected

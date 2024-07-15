@@ -204,7 +204,8 @@ markers = [
   "network: mark tests that make external network requests",
   "slow: mark test as slow to run",
   "no_asserts: tests that don't have meaningful asserts, but are only snapshot comparisons, or historically had print statements, or other non-erroring behavior",
-  "strcmp: tests that compare stringified values rather than the values themselves"
+  "strcmp: tests that compare stringified values rather than the values themselves",
+  "pydanticgen_split: Split module generation in pydanticgen",
 ]
 
 [tool.ruff]
