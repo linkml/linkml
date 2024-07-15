@@ -1,12 +1,12 @@
 import inspect
 import logging
 import os
+import re
 import textwrap
 from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-import re
 from types import ModuleType
 from typing import ClassVar, Dict, List, Literal, Optional, Set, Tuple, Type, TypeVar, Union, overload
 
@@ -948,6 +948,7 @@ _TEMPLATE_NAMES = sorted(list(set([c.template for c in _subclasses(TemplateModel
 
 class SplitResult(BaseModel):
     """Build result when generating with :func:`.generate_split`"""
+
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     main: bool = False
