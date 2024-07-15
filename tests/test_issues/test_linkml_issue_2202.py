@@ -1,22 +1,26 @@
 from importlib import util
 
 from linkml_runtime import SchemaView
+from linkml_runtime.dumpers import RDFLibDumper
 from linkml_runtime.loaders import YAMLLoader
 
-from linkml.generators import PythonGenerator
+from linkml.generators import OwlSchemaGenerator, PythonGenerator
 from linkml.validator import ValidationReport, Validator
 
 # THIS IS EXPERIMENTATION FOR CHECKING
 # # SOME OF NMDC'S VALIDATION EXCEPTIONS
 
-minimal_household_schema = """
-name: minimal_household_schema
-id: http://example.com/minimal_household_schema
+super_household_schema = """
+name: super_household_schema
+id: http://example.com/super_household_schema
 
 prefixes:
   linkml: https://w3id.org/linkml/
-  minhouse: http://example.com/minimal_household_schema/
-    
+  superhouse: http://example.com/super_household_schema/
+  
+default_prefix: superhouse
+default_range: string
+
 imports:
   - linkml:types
 
@@ -38,7 +42,7 @@ classes:
     slots:
       - people
       - pets
-  
+
 slots:
   id:
     identifier: true
@@ -57,56 +61,92 @@ slots:
   pets:
     range: Pet
     multivalued: true
-    inlined_as_list: true    
-  
+    inlined_as_list: true
+
 """
 # todo boilerplate in fixture (could return schemabuidler)
 #  each method can use fixture and modify with schemabuilder
 
-minimal_household_database = """
+super_household_database = """
 people:
-  - id: minhouse:1
+  - id: superhouse:1
     name: Superman
-    has_pet: minhouse:2
-  - id: minhouse:3
-    name: Batman  
+    has_pet: superhouse:2
+  - id: superhouse:3
+    name: Batman
 pets:
-  - id: minhouse:2
-    name: Krypto    
+  - id: superhouse:2
+    name: Krypto the dog
 """
 
-minimal_view = SchemaView(minimal_household_schema)
+super_household_view = SchemaView(super_household_schema)
 
-validator_for_minimal = Validator(minimal_view.schema)
+validator_for_household = Validator(super_household_view.schema)
 
 
 def test_view_created():
-    assert type(minimal_view).__name__ == "SchemaView"
+    assert type(super_household_view).__name__ == "SchemaView"
 
 
 def test_minimal_validation():
-    report_from_minimal_validation: ValidationReport = validator_for_minimal.validate(
-        minimal_household_database, "Database"
+    report_from_minimal_validation: ValidationReport = validator_for_household.validate(
+        super_household_database, "Database"
     )
 
     assert len(report_from_minimal_validation.results) == 0
 
 
-def test_convert_to_rdf():
-    gen = PythonGenerator(schema=minimal_household_schema)
+def test_minimal_instantiation():
+    gen = PythonGenerator(schema=super_household_schema)
     generated_python = gen.serialize()
 
     # Create a new module
-    module_name = "minimal_household_module"
+    module_name = "super_household_module"
     spec = util.spec_from_loader(module_name, loader=None)
-    minimal_household_module = util.module_from_spec(spec)
+    super_household_module = util.module_from_spec(spec)
 
     # Execute the code in the newly created module's namespace
-    exec(generated_python, minimal_household_module.__dict__)  # todo: doesn't linkml have a compile python method?
+    exec(generated_python, super_household_module.__dict__)  # todo: doesn't linkml have a compile python method?
 
-    Database = getattr(minimal_household_module, "Database")
+    Database = getattr(super_household_module, "Database")
 
     my_loader = YAMLLoader()
-    minimal_database = my_loader.load(source=minimal_household_database, target_class=Database, schema_view=minimal_view)
+    minimal_database = my_loader.load(
+        source=super_household_database, target_class=Database, schema_view=super_household_view
+    )
 
-    assert minimal_database.people[0].id == "minhouse:1"
+    assert minimal_database.people[0].id == "superhouse:1"
+
+
+def test_convert_data_to_rdf():
+    gen = PythonGenerator(schema=super_household_schema)
+    generated_python = gen.serialize()
+
+    # Create a new module
+    module_name = "super_household_module"
+    spec = util.spec_from_loader(module_name, loader=None)
+    super_household_module = util.module_from_spec(spec)
+
+    # Execute the code in the newly created module's namespace
+    exec(generated_python, super_household_module.__dict__)  # todo: doesn't linkml have a compile python method?
+
+    Database = getattr(super_household_module, "Database")
+
+    my_loader = YAMLLoader()
+    minimal_database = my_loader.load(
+        source=super_household_database, target_class=Database, schema_view=super_household_view
+    )
+
+    my_dumper = RDFLibDumper()
+    dumped_rdf = my_dumper.dumps(element=minimal_database, schemaview=super_household_view)
+    print("\n")
+    print(dumped_rdf)
+
+    # todo assertion
+
+
+def test_convert_schema_to_owl():
+    my_generator = OwlSchemaGenerator(schema=super_household_schema)
+    print(my_generator.serialize())
+
+    # todo assertion
