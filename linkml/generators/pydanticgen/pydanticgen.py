@@ -277,7 +277,7 @@ class PydanticGenerator(OOCodeGenerator):
     Additional variables to pass into ``split_pattern`` when
     generating imported module names. 
     
-    Passed in as **kwargs, so e.g. if ``split_context = {'myval': 1}``
+    Passed in as ``**kwargs`` , so e.g. if ``split_context = {'myval': 1}``
     then one would use it in a template string like ``{{ myval }}``
     """
 

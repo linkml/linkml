@@ -104,7 +104,6 @@ including them directly. This is wrapped by :func:`.generate_split` which
 can be used to generate the module files directly
 
 .. autofunction:: generate_split
-    :members:
 
 
 Templates
