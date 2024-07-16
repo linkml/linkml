@@ -15,14 +15,14 @@ import yaml
 from jinja2 import DictLoader, Environment, Template
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import Definition, SchemaDefinition, SlotDefinition, ClassDefinition
+from linkml_runtime.linkml_model import ClassDefinition, Definition, SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
 from linkml_runtime.utils.schemaview import load_schema_wrap
 from pydantic import BaseModel, ValidationError
 
-from linkml.generators.common.lifecycle import TClass, TSlot
 from linkml.generators import pydanticgen as pydanticgen_root
+from linkml.generators.common.lifecycle import TClass, TSlot
 from linkml.generators.pydanticgen import MetadataMode, PydanticGenerator, array, build, pydanticgen, template
 from linkml.generators.pydanticgen.array import AnyShapeArray, ArrayRepresentation
 from linkml.generators.pydanticgen.template import (
@@ -1730,7 +1730,6 @@ def test_linkml_meta(kitchen_sink_path, tmp_path, input_path, mode):
 
 def test_lifecycle_classes(kitchen_sink_path):
     """We can modify the generation process by subclassing lifecycle hooks"""
-    sv = SchemaView(kitchen_sink_path)
 
     class TestPydanticGenerator(PydanticGenerator):
         def before_generate_classes(self, cls: Iterable[ClassDefinition], sv: SchemaView) -> Iterable[ClassDefinition]:
