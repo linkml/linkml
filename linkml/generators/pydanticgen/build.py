@@ -1,20 +1,25 @@
 from typing import List, Optional, Type, TypeVar, Union
 
-from pydantic import BaseModel
-
+from linkml.generators.common.build import (
+    BuildResult,
+)
+from linkml.generators.common.build import (
+    ClassResult as ClassResult_,
+)
+from linkml.generators.common.build import (
+    RangeResult as RangeResult_,
+)
+from linkml.generators.common.build import (
+    SlotResult as SlotResult_,
+)
 from linkml.generators.pydanticgen.template import Import, Imports, PydanticAttribute, PydanticClass
 
-T = TypeVar("T", bound="BuildResult", covariant=True)
+T = TypeVar("T", bound="PydanticBuildResult", covariant=True)
 
 
-class BuildResult(BaseModel):
+class PydanticBuildResult(BuildResult):
     """
-    The result of any build phase for any linkML object
-
-    BuildResults are merged in the serialization process, and are used
-    to keep track of not only the particular representation
-    of the thing in question, but any "side effects" that need to happen
-    elsewhere in the generation process (like adding imports, injecting classes, etc.)
+    BuildResult parent class for pydantic generator
     """
 
     imports: Optional[Union[List[Import], Imports]] = None
@@ -38,10 +43,11 @@ class BuildResult(BaseModel):
             This returns a (shallow) copy of ``self``, so subclasses don't need to make additional copies.
 
         Args:
-            other (:class:`.BuildResult`): A subclass of BuildResult, generic over whatever we have passed.
+            other (:class:`.PydanticBuildResult`): A subclass of PydanticBuildResult,
+            generic over whatever we have passed.
 
         Returns:
-            :class:`.BuildResult`
+            :class:`.PydanticBuildResult`
         """
         self_copy = self.model_copy()
         if other.imports:
@@ -58,7 +64,7 @@ class BuildResult(BaseModel):
         return self_copy
 
 
-class RangeResult(BuildResult):
+class RangeResult(PydanticBuildResult, RangeResult_):
     """
     The result of building just the range part of a slot
     """
@@ -72,7 +78,7 @@ class RangeResult(BuildResult):
         """
         Merge two SlotResults...
 
-        - calling :meth:`.BuildResult.merge`
+        - calling :meth:`.PydanticBuildResult.merge`
         - replacing the existing annotation with that given by ``other`` .
         - updating any ``field_extras`` with the other
 
@@ -92,10 +98,10 @@ class RangeResult(BuildResult):
         return res
 
 
-class SlotResult(BuildResult):
+class SlotResult(PydanticBuildResult, SlotResult_):
     attribute: PydanticAttribute
 
 
-class ClassResult(BuildResult):
+class ClassResult(PydanticBuildResult, ClassResult_):
     cls: PydanticClass
     """Constructed Template Model for class, including attributes/slots"""

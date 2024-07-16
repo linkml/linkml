@@ -32,8 +32,8 @@ from linkml.generators.pydanticgen.template import (
     PydanticAttribute,
     PydanticClass,
     PydanticModule,
+    PydanticTemplateModel,
     PydanticValidator,
-    TemplateModel,
 )
 from linkml.utils.schema_builder import SchemaBuilder
 
@@ -901,7 +901,7 @@ def test_template_models_templates():
     """
     All template models should have templates!
     """
-    for model in TemplateModel.__subclasses__():
+    for model in PydanticTemplateModel.__subclasses__():
         assert hasattr(model, "template")
         assert isinstance(model.template, str)
         env = model.environment()
@@ -913,7 +913,7 @@ def test_default_environment():
     """
     Check that the default environment has the configuration for our templates
     """
-    env = TemplateModel.environment()
+    env = PydanticTemplateModel.environment()
     assert env.trim_blocks
     assert env.lstrip_blocks
 
@@ -952,11 +952,11 @@ def test_template_render():
         plain_field: str = "plain_field"
         second: int = 1
 
-    class InnerTemplate(TemplateModel):
+    class InnerTemplate(PydanticTemplateModel):
         template: ClassVar[str] = "inner.jinja"
         value: Union[int, str] = 1
 
-    class TestTemplate(TemplateModel):
+    class TestTemplate(PydanticTemplateModel):
         template: ClassVar[str] = "test.jinja"
         a_list: List[InnerTemplate] = [InnerTemplate(value=1), InnerTemplate(value=2)]
         a_dict: Dict[str, InnerTemplate] = {"one": InnerTemplate(value="one"), "two": InnerTemplate(value="two")}
@@ -1670,7 +1670,7 @@ def test_template_noblack(array_complex, mock_black_import):
 # --------------------------------------------------
 
 
-def _test_meta(linkml_meta, definition: Definition, model: Type[TemplateModel], mode: str):
+def _test_meta(linkml_meta, definition: Definition, model: Type[PydanticTemplateModel], mode: str):
     def_clean = remove_empty_items(definition)
     for k, v in def_clean.items():
         if mode == "auto":
