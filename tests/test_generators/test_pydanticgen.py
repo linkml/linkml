@@ -892,8 +892,12 @@ def test_imports_future():
     future_2 = Import(module="__future__", objects=[ObjectImport(name="unicode_literals")])
     future_3 = Import(module="__future__", objects=[ObjectImport(name="generator_stop")])
     imports_2 = Imports(imports=[future_2, future_3])
-    # we haven't merged yet
-    assert imports_2.imports == [future_2, future_3]
+    # Declaring as a list should merge
+    assert imports_2.imports == [
+        Import(
+            module="__future__", objects=[ObjectImport(name="unicode_literals"), ObjectImport(name="generator_stop")]
+        )
+    ]
 
     imports += imports_2
     # now we should have merged and collapsed the future imports to a single expression at the top
