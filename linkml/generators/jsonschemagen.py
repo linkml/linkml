@@ -39,6 +39,9 @@ json_schema_types: Dict[str, Tuple[str, Optional[str]]] = {
     "xsddate": ("string", "date"),
     "xsddatetime": ("string", "date-time"),
     "xsdtime": ("string", "time"),
+    "uri": ("string", "uri"),
+    "uriorcurie": ("string", "uri"),
+    "curie": ("string", "uri"),
 }
 
 
