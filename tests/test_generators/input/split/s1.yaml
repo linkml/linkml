@@ -22,3 +22,13 @@ classes:
     attributes:
       value:
         range: string
+  S1Mixin:
+    description: "Mixin from schema 1"
+    attributes:
+      second_value:
+        range: string
+  S1Unused:
+    description: "Unused class in schema 1"
+    attributes:
+      value:
+        range: string

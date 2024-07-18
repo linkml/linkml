@@ -119,6 +119,22 @@ class MetadataMode(str, Enum):
     """
 
 
+class SplitMode(str, Enum):
+    FULL = "full"
+    """
+    Import all classes defined in imported schemas
+    """
+
+    AUTO = "auto"
+    """
+    Only import those classes that are actually used in the generated schema as
+    
+    * parents (``is_a``)
+    * mixins
+    * slot ranges
+    """
+
+
 DefinitionType = TypeVar("DefinitionType", bound=Union[SchemaDefinition, ClassDefinition, SlotDefinition])
 TemplateType = TypeVar("TemplateType", bound=Union[PydanticModule, PydanticClass, PydanticAttribute])
 
@@ -278,6 +294,12 @@ class PydanticGenerator(OOCodeGenerator):
     
     Passed in as ``**kwargs`` , so e.g. if ``split_context = {'myval': 1}``
     then one would use it in a template string like ``{{ myval }}``
+    """
+    split_mode: SplitMode = SplitMode.AUTO
+    """
+    How to filter imports from imported schema.
+    
+    See :class:`.SplitMode` for description of options
     """
 
     # ObjectVars (identical to pythongen)
@@ -792,7 +814,7 @@ class PydanticGenerator(OOCodeGenerator):
         model.meta = meta
         return model
 
-    def _get_imports(self, element: Union[ClassDefinition, SlotDefinition]) -> Imports:
+    def _get_imports(self, element: Union[ClassDefinition, SlotDefinition, None] = None) -> Imports:
         """
         Get imports that are implied by their usage in slots or classes
         (and thus need to be imported when generating schemas in :attr:`.split` == ``True`` mode).
@@ -807,10 +829,16 @@ class PydanticGenerator(OOCodeGenerator):
         this as the directly called method rather than spaghetti-ing out another
         independent method. This method is also isolated in anticipation of structured imports,
         where we will need to revise our expectations of what is imported when.
+
+        Args:
+            element (:class:`.ClassDefinition` , :class:`.SlotDefinition` , None): The element
+                to get import for. If ``None`` , get all needed imports (see :attr:`.split_mode`
         """
         # import from local references, rather than serializing every class in every file
-        if not self.split:
-            # we are compiling this whole thing in one big file so we don't import anything
+        if not self.split or (self.split_mode == SplitMode.FULL and element is not None):
+            # we are either compiling this whole thing in one big file (default)
+            # or going to import all classes from the imported schemas,
+            # so we don't import anything
             return Imports()
 
         # gather a list of class names,
@@ -824,11 +852,17 @@ class PydanticGenerator(OOCodeGenerator):
         if isinstance(element, ClassDefinition):
             if element.is_a:
                 needed_classes.append(element.is_a)
+            if element.mixins:
+                needed_classes.extend(element.mixins)
 
         elif isinstance(element, SlotDefinition):
             # collapses `slot.range`, `slot.any_of`, and `slot.one_of` to a list
             slot_ranges = self.schemaview.slot_range_as_union(element)
             needed_classes.extend([a_range for a_range in slot_ranges if a_range in all_classes])
+
+        elif element is None:
+            # get all imports
+            needed_classes.extend([cls for cls in all_classes if cls not in local_classes])
 
         else:
             raise ValueError(f"Unsupported type of element to get imports from: f{type(element)}")
@@ -879,6 +913,8 @@ class PydanticGenerator(OOCodeGenerator):
         if self.imports is not None:
             for i in self.imports:
                 imports += i
+        if self.split_mode == SplitMode.FULL:
+            imports += self._get_imports()
 
         # injected classes
         injected_classes = DEFAULT_INJECTS.copy()
@@ -950,6 +986,7 @@ def generate_split(
     output_path: Union[str, Path] = Path("."),
     split_pattern: Optional[str] = None,
     split_context: Optional[dict] = None,
+    split_mode: SplitMode = SplitMode.AUTO,
     **kwargs,
 ) -> List[SplitResult]:
     """
@@ -995,7 +1032,9 @@ def generate_split(
     # Main schema
     # --------------------------------------------------
     gen_kwargs = kwargs
-    gen_kwargs.update({"split": True, "split_pattern": split_pattern, "split_context": split_context})
+    gen_kwargs.update(
+        {"split": True, "split_pattern": split_pattern, "split_context": split_context, "split_mode": split_mode}
+    )
     generator = PydanticGenerator(schema, **gen_kwargs)
     # Generate the initial schema to figure out which of the imported schema actually need
     # to be generated

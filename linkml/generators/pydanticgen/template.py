@@ -536,8 +536,44 @@ class Imports(TemplateModel):
         for i in self.imports:
             yield i
 
-    def __getitem__(self, item: int) -> Import:
-        return self.imports[item]
+    def __getitem__(self, item: Union[int, str]) -> Import:
+        if isinstance(item, int):
+            return self.imports[item]
+        elif isinstance(item, str):
+            # the name of the module
+            an_import = [i for i in self.imports if i.module == item]
+            if len(an_import) == 0:
+                raise KeyError(f"No import with module {item} was found.\nWe have: {self.imports}")
+            return an_import[0]
+        else:
+            raise TypeError("Can only index with an int or a string as the name of the module," "\nGot: {type(item)}")
+
+    def __contains__(self, item: Union[Import, "Imports", List[Import]]) -> bool:
+        """
+        Check if all the objects are imported from the given module(s)
+
+        If the import is a bare module import (ie its :attr:`~.Import.objects` is ``None`` )
+        then we must also have a bare module import in this Imports (because even if
+        we import from the module, unless we import it specifically its name won't be
+        available in the namespace.
+
+        :attr:`.Import.alias` must always match for the same reason.
+        """
+        if isinstance(item, Imports):
+            return all([i in self for i in item.imports])
+        elif isinstance(item, list):
+            return all([i in self for i in item])
+        elif isinstance(item, Import):
+            try:
+                an_import = self[item.module]
+            except KeyError:
+                return False
+            if item.objects is None:
+                return an_import == item
+            else:
+                return all([obj in an_import.objects for obj in item.objects])
+        else:
+            raise TypeError("Imports only contains single Import objects or other Imports\n" f"Got: {type(item)}")
 
     @field_validator("imports", mode="after")
     @classmethod

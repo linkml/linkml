@@ -21,6 +21,10 @@ classes:
   S1_Inheritance:
     is_a: S1
 
+  S1_Has_Mixin:
+    mixins:
+      - S1Mixin
+
   AnyOfClass:
     slots:
       - any_of_slot

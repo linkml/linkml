@@ -3,7 +3,7 @@ import sys
 from abc import ABC, abstractmethod
 from importlib.abc import MetaPathFinder
 from pathlib import Path
-from typing import Callable, Optional, Union
+from typing import Callable, List, Optional, Union
 
 import pytest
 import requests_cache
@@ -187,7 +187,7 @@ def pytest_addoption(parser):
     parser.addoption("--without-cache", action="store_true", help="Don't use a sqlite cache for network requests")
 
 
-def pytest_collection_modifyitems(config, items):
+def pytest_collection_modifyitems(config, items: List[pytest.Item]):
     if not config.getoption("--with-slow"):
         skip_slow = pytest.mark.skip(reason="need --with-slow option to run")
         for item in items:
@@ -196,9 +196,17 @@ def pytest_collection_modifyitems(config, items):
 
     # make sure deprecation test happens at the end
     test_deps = [i for i in items if i.name == "test_removed_are_removed"]
+    test_black = [i for i in items if i.name == "test_template_noblack"]
     if len(test_deps) == 1:
         items.remove(test_deps[0])
         items.append(test_deps[0])
+
+    # the fixture that mocks black imports should always come all the way last
+    # see: https://github.com/linkml/linkml/pull/2209#issuecomment-2231548078
+    # this causes really hard to diagnose errors, so we should fail testing if
+    # eg. this test changes names and we no longer put it at the end.
+    items.remove(test_black[0])
+    items.append(test_black[0])
 
 
 def pytest_sessionstart(session: pytest.Session):
