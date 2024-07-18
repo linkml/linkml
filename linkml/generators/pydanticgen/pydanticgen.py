@@ -22,7 +22,6 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
 from linkml_runtime.utils.schemaview import SchemaView
-from pydantic import BaseModel, ConfigDict
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml._version import __version__
@@ -30,7 +29,7 @@ from linkml.generators.common.type_designators import get_accepted_type_designat
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.generators.pydanticgen import includes
 from linkml.generators.pydanticgen.array import ArrayRangeGenerator, ArrayRepresentation
-from linkml.generators.pydanticgen.build import ClassResult, SlotResult
+from linkml.generators.pydanticgen.build import ClassResult, SlotResult, SplitResult
 from linkml.generators.pydanticgen.template import (
     Import,
     Imports,
@@ -944,18 +943,6 @@ def _subclasses(cls: Type):
 
 
 _TEMPLATE_NAMES = sorted(list(set([c.template for c in _subclasses(TemplateModel)])))
-
-
-class SplitResult(BaseModel):
-    """Build result when generating with :func:`.generate_split`"""
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
-    main: bool = False
-    source_schema: SchemaDefinition
-    path: Path
-    serialized_module: str
-    module_import: Optional[str] = None
 
 
 def generate_split(
