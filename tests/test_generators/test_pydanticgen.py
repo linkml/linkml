@@ -249,7 +249,7 @@ slots:
             True,
             False,
             True,
-            "Optional[Dict[str, str]]",
+            "Optional[Dict[str, Union[str, B]]]",
             "references to class with identifier inlined ONLY ON REQUEST, with dict as default",
         ),
         # TODO: fix the next two
@@ -272,6 +272,7 @@ def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_i
         "Optional[List[B]]": "Field(default_factory=list",
         "Optional[Dict[str, B]]": "Field(default_factory=dict",
         "Optional[Dict[str, str]]": "Field(default_factory=dict",
+        "Optional[Dict[str, Union[str, B]]]": "Field(default_factory=dict",
     }
 
     sb = SchemaBuilder("test")
@@ -705,8 +706,8 @@ def test_inject_field(kitchen_sink_path, tmp_path, input_path, inject, name, typ
 @pytest.fixture
 def sample_class() -> PydanticClass:
     # no pattern makes no validators
-    attr_1 = PydanticAttribute(name="attr_1", annotations={"python_range": {"value": "Union[str,int]"}}, required=True)
-    attr_2 = PydanticAttribute(name="attr_2", annotations={"python_range": {"value": "List[float]"}})
+    attr_1 = PydanticAttribute(name="attr_1", range="Union[str,int]", required=True)
+    attr_2 = PydanticAttribute(name="attr_2", range="List[float]")
     cls = PydanticClass(name="Sample", attributes={"attr_1": attr_1, "attr_2": attr_2})
     return cls
 
@@ -927,7 +928,7 @@ def test_template_pass_environment(sample_class):
 {{ attr }} 
 {%- endfor -%}""",
         "attribute.py.jinja": """attr: {{ name }}
-range: {{ annotations.python_range.value }}""",
+range: {{ range }}""",
     }
     env = Environment(loader=DictLoader(templates))
     rendered = sample_class.render(env)

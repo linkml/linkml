@@ -72,13 +72,13 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
         (PYDANTIC, False, True, False, False): "D",  # odd but valid combo
         (PYDANTIC, False, True, False, True): "D",  # odd but valid combo
         (PYDANTIC, False, True, True, False): "List[D]",
-        # (PYDANTIC, False, True, True, True): "List[str]", ## TODO check this one
+        (PYDANTIC, False, True, True, True): "List[D]",
         (PYDANTIC, True, False, False, False): "D",
         (PYDANTIC, True, False, False, True): "D",
         (PYDANTIC, True, False, True, False): "List[D]",
         (PYDANTIC, True, False, True, True): "Dict[str, D]",  ## TODO: relax for CompactDict
         (PYDANTIC, True, True, False, False): "D",  # odd but valid combo
-        # (PYDANTIC, True, True, False, True): "str",  ## TODO check this one
+        (PYDANTIC, True, True, False, True): "D",
         (PYDANTIC, True, True, True, False): "List[D]",
         (PYDANTIC, True, True, True, True): "List[D]",
         (PYTHON_DATACLASSES, False, False, False, False): 'Union[dict, "D"]',
@@ -151,7 +151,10 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
         py_def = py_def_map[tpl]
         py_def = f"Optional[{py_def}]"
     else:
+        if framework in (PYDANTIC, PYTHON_DATACLASSES):
+            raise ValueError(f"No python annotation found for condition {tpl}")
         py_def = "Optional"
+
     classes = {
         CLASS_C: {
             "attributes": {
