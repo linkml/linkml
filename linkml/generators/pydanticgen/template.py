@@ -321,12 +321,11 @@ class Import(TemplateModel):
     module: str
     alias: Optional[str] = None
     objects: Optional[List[ObjectImport]] = None
-    generated: bool = False
+    schema: bool = False
     """
-    Whether or not this ``Import`` is a byproduct of model generation -- 
-    ie. that it is not expected to be provided by the environment, but might require additional
-    work on the part of the generator to provide. See :func:`.pydanticgen.generate_split` 
-    for example usage.
+    Whether or not this ``Import`` is importing another schema imported by the main schema -- 
+    ie. that it is not expected to be provided by the environment, but imported locally from within the package. 
+    Used primarily in split schema generation, see :func:`.pydanticgen.generate_split` for example usage.
     """
 
     def merge(self, other: "Import") -> List["Import"]:
@@ -376,7 +375,7 @@ class Import(TemplateModel):
                     module=self.module,
                     alias=alias,
                     objects=list(self_objs.values()),
-                    generated=self.generated or other.generated,
+                    schema=self.schema or other.schema,
                 )
             ]
         else:
