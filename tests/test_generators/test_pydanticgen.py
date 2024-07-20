@@ -28,7 +28,6 @@ from linkml.generators.pydanticgen import (
     PydanticGenerator,
     array,
     build,
-    generate_split,
     pydanticgen,
     template,
 )
@@ -1967,7 +1966,7 @@ def test_generate_split_directory(input_path, tmp_path):
     schema = input_path("split/main.yaml")
     pattern = "..{{ schema.version | replace('.', '_') }}.{{ schema.name }}"
     output_file = tmp_path / "test_module" / "v1_2_3" / "main.py"
-    result = generate_split(schema, output_file, split_pattern=pattern)
+    result = PydanticGenerator.generate_split(schema, output_file, split_pattern=pattern)
 
     # should be possible to import the main module
     # (this checks that relative imports resolve correctly!)

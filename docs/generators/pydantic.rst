@@ -97,10 +97,11 @@ See:
 * :attr:`.PydanticGenerator.split`
 * :attr:`.PydanticGenerator.split_pattern`
 * :attr:`.PydanticGenerator.split_context`
+* :meth:`.PydanticGenerator.generate_split`
 
 The implementation of ``split`` mode in the Generator itself still generates
 a single module, except for importing classes from other modules rather than
-including them directly. This is wrapped by :func:`.generate_split` which
+including them directly. This is wrapped by :meth:`.PydanticGenerator.generate_split` which
 can be used to generate the module files directly
 
 .. autofunction:: generate_split

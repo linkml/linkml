@@ -973,111 +973,113 @@ class PydanticGenerator(OOCodeGenerator):
     def default_value_for_type(self, typ: str) -> str:
         return "None"
 
+    @classmethod
+    def generate_split(
+        cls,
+        schema: Union[str, Path, SchemaDefinition],
+        output_path: Union[str, Path] = Path("."),
+        split_pattern: Optional[str] = None,
+        split_context: Optional[dict] = None,
+        split_mode: SplitMode = SplitMode.AUTO,
+        **kwargs,
+    ) -> List[SplitResult]:
+        """
+        Generate a schema that imports from other schema as a set of python modules that
+        import from one another, rather than generating all imported classes in a single schema.
+
+        Uses ``output_path`` for the main schema from ``schema`` , and then
+        generates any imported schema (from which classes are actually used)
+        to modules whose locations are determined by the module names generated
+        by the ``split_pattern`` (see :attr:`.PydanticGenerator.split_pattern` ).
+
+        For example, for
+
+        * a ``output_path`` of ``my_dir/v1_2_3/main.py``
+        * a schema ``main`` with a version ``v1.2.3``
+        * that imports from ``s2`` with version ``v4.5.6``,
+        * and a ``split_pattern`` of ``..{{ schema.version | replace('.', '_') }}.{{ schema.name }}``
+
+        One would get:
+        * ``my_dir/v1_2_3/main.py`` , as expected
+        * that imports ``from ..v4_5_6.s2``
+        * a module at ``my_dir/v4_5_6/s2.py``
+
+        ``__init__.py`` files are generated for any directories that are between
+        the generated modules and their highest common directory.
+
+        Args:
+            schema (str, :class:`.Path` , :class:`.SchemaDefinition` ): Main schema to generate
+            output_path (str, :class:`.Path` ): Python ``.py`` module to generate main schema to
+            split_pattern (str): Pattern to use to generate module names, see :attr:`.PydanticGenerator.split_pattern`
+            split_context (dict): Additional variables to pass into jinja context when generating module import names.
+
+        Returns:
+            list[:class:`.SplitResult`]
+        """
+        output_path = Path(output_path)
+        if not output_path.suffix == ".py":
+            raise ValueError(f"output path must be a python file to write the main schema to, got {output_path}")
+
+        results = []
+
+        # --------------------------------------------------
+        # Main schema
+        # --------------------------------------------------
+        gen_kwargs = kwargs
+        gen_kwargs.update(
+            {"split": True, "split_pattern": split_pattern, "split_context": split_context, "split_mode": split_mode}
+        )
+        generator = cls(schema, **gen_kwargs)
+        # Generate the initial schema to figure out which of the imported schema actually need
+        # to be generated
+        rendered = generator.render()
+        # write schema - we use the ``output_path`` for the main schema, and then
+        # interpret all imported schema paths as relative to that
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        serialized = generator.serialize(rendered_module=rendered)
+        with open(output_path, "w") as ofile:
+            ofile.write(serialized)
+
+        results.append(
+            SplitResult(
+                main=True, source_schema=generator.schemaview.schema, path=output_path, serialized_module=serialized
+            )
+        )
+
+        # --------------------------------------------------
+        # Imported schemas
+        # --------------------------------------------------
+        imported_schema = {
+            generator.generate_module_import(sch): sch for sch in generator.schemaview.schema_map.values()
+        }
+        for generated_import in [i for i in rendered.python_imports if i.schema]:
+            import_generator = cls(imported_schema[generated_import.module], **gen_kwargs)
+            serialized = import_generator.serialize()
+            rel_path = _import_to_path(generated_import.module)
+            abs_path = (output_path.parent / rel_path).resolve()
+            abs_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(abs_path, "w") as ofile:
+                ofile.write(serialized)
+
+            results.append(
+                SplitResult(
+                    main=False,
+                    source_schema=imported_schema[generated_import.module],
+                    path=abs_path,
+                    serialized_module=serialized,
+                    module_import=generated_import.module,
+                )
+            )
+
+        _ensure_inits([r.path for r in results])
+        return results
+
 
 def _subclasses(cls: Type):
     return set(cls.__subclasses__()).union([s for c in cls.__subclasses__() for s in _subclasses(c)])
 
 
 _TEMPLATE_NAMES = sorted(list(set([c.template for c in _subclasses(TemplateModel)])))
-
-
-def generate_split(
-    schema: Union[str, Path, SchemaDefinition],
-    output_path: Union[str, Path] = Path("."),
-    split_pattern: Optional[str] = None,
-    split_context: Optional[dict] = None,
-    split_mode: SplitMode = SplitMode.AUTO,
-    **kwargs,
-) -> List[SplitResult]:
-    """
-    Generate a schema that imports from other schema as a set of python modules that
-    import from one another, rather than generating all imported classes in a single schema.
-
-    Uses ``output_path`` for the main schema from ``schema`` , and then
-    generates any imported schema (from which classes are actually used)
-    to modules whose locations are determined by the module names generated
-    by the ``split_pattern`` (see :attr:`.PydanticGenerator.split_pattern` ).
-
-    For example, for
-
-    * a ``output_path`` of ``my_dir/v1_2_3/main.py``
-    * a schema ``main`` with a version ``v1.2.3``
-    * that imports from ``s2`` with version ``v4.5.6``,
-    * and a ``split_pattern`` of ``..{{ schema.version | replace('.', '_') }}.{{ schema.name }}``
-
-    One would get:
-    * ``my_dir/v1_2_3/main.py`` , as expected
-    * that imports ``from ..v4_5_6.s2``
-    * a module at ``my_dir/v4_5_6/s2.py``
-
-    ``__init__.py`` files are generated for any directories that are between
-    the generated modules and their highest common directory.
-
-    Args:
-        schema (str, :class:`.Path` , :class:`.SchemaDefinition` ): Main schema to generate
-        output_path (str, :class:`.Path` ): Python ``.py`` module to generate main schema to
-        split_pattern (str): Pattern to use to generate module names, see :attr:`.PydanticGenerator.split_pattern`
-        split_context (dict): Additional variables to pass into jinja context when generating module import names.
-
-    Returns:
-        list[:class:`.SplitResult`]
-    """
-    output_path = Path(output_path)
-    if not output_path.suffix == ".py":
-        raise ValueError(f"output path must be a python file to write the main schema to, got {output_path}")
-
-    results = []
-
-    # --------------------------------------------------
-    # Main schema
-    # --------------------------------------------------
-    gen_kwargs = kwargs
-    gen_kwargs.update(
-        {"split": True, "split_pattern": split_pattern, "split_context": split_context, "split_mode": split_mode}
-    )
-    generator = PydanticGenerator(schema, **gen_kwargs)
-    # Generate the initial schema to figure out which of the imported schema actually need
-    # to be generated
-    rendered = generator.render()
-    # write schema - we use the ``output_path`` for the main schema, and then
-    # interpret all imported schema paths as relative to that
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    serialized = generator.serialize(rendered_module=rendered)
-    with open(output_path, "w") as ofile:
-        ofile.write(serialized)
-
-    results.append(
-        SplitResult(
-            main=True, source_schema=generator.schemaview.schema, path=output_path, serialized_module=serialized
-        )
-    )
-
-    # --------------------------------------------------
-    # Imported schemas
-    # --------------------------------------------------
-    imported_schema = {generator.generate_module_import(sch): sch for sch in generator.schemaview.schema_map.values()}
-    for generated_import in [i for i in rendered.python_imports if i.schema]:
-
-        import_generator = PydanticGenerator(imported_schema[generated_import.module], **gen_kwargs)
-        serialized = import_generator.serialize()
-        rel_path = _import_to_path(generated_import.module)
-        abs_path = (output_path.parent / rel_path).resolve()
-        abs_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(abs_path, "w") as ofile:
-            ofile.write(serialized)
-
-        results.append(
-            SplitResult(
-                main=False,
-                source_schema=imported_schema[generated_import.module],
-                path=abs_path,
-                serialized_module=serialized,
-                module_import=generated_import.module,
-            )
-        )
-
-    _ensure_inits([r.path for r in results])
-    return results
 
 
 def _import_to_path(module: str) -> Path:
