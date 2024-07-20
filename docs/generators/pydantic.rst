@@ -104,8 +104,6 @@ a single module, except for importing classes from other modules rather than
 including them directly. This is wrapped by :meth:`.PydanticGenerator.generate_split` which
 can be used to generate the module files directly
 
-.. autofunction:: generate_split
-
 
 Templates
 ---------
