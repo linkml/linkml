@@ -3,7 +3,6 @@ from linkml.generators.pydanticgen.pydanticgen import (
     MetadataMode,
     PydanticGenerator,
     cli,
-    generate_split,
 )
 from linkml.generators.pydanticgen.template import (
     ConditionalImport,
