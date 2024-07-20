@@ -779,7 +779,6 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             result = self.generate_class(cls)
             result = self.after_generate_class(result, sv)
             class_results.append(result)
-            # classes[result.cls.name] = result.cls
             if result.imports is not None:
                 imports += result.imports
             if result.injected_classes is not None:
