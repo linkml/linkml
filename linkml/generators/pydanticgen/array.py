@@ -12,7 +12,7 @@ from linkml.utils.deprecation import deprecation_warning
 if int(PYDANTIC_VERSION[0]) >= 2:
     from pydantic_core import core_schema
 else:
-    #  Support for having pydantic 1 installed in the same environment will be dropped in 1.9.0
+    # Support for having pydantic 1 installed in the same environment will be dropped in 1.9.0
     deprecation_warning("pydantic-v1")
 
 if TYPE_CHECKING:
