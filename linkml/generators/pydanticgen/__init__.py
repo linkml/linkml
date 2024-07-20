@@ -21,7 +21,6 @@ __all__ = [
     "cli",
     "ConditionalImport",
     "DEFAULT_IMPORTS",
-    "generate_split",
     "Import",
     "Imports",
     "MetadataMode",
