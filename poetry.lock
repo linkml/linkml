@@ -217,13 +217,13 @@ css = ["tinycss2 (>=1.1.0,<1.3)"]
 
 [[package]]
 name = "cachetools"
-version = "5.3.3"
+version = "5.4.0"
 description = "Extensible memoizing collections and decorators"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "cachetools-5.3.3-py3-none-any.whl", hash = "sha256:0abad1021d3f8325b2fc1d2e9c8b9c9d57b04c3932657a72465447332c24d945"},
-    {file = "cachetools-5.3.3.tar.gz", hash = "sha256:ba29e2dfa0b8b556606f097407ed1aa62080ee108ab0dc5ec9d6a723a007d105"},
+    {file = "cachetools-5.4.0-py3-none-any.whl", hash = "sha256:3ae3b49a3d5e28a77a0be2b37dbcb89005058959cb2323858c2657c4a8cab474"},
+    {file = "cachetools-5.4.0.tar.gz", hash = "sha256:b8adc2e7c07f105ced7bc56dbb6dfbe7c4a00acce20e2227b3f355be89bc6827"},
 ]
 
 [[package]]
@@ -2355,13 +2355,13 @@ requests = ">=2.28.1,<3.0.0"
 
 [[package]]
 name = "prefixmaps"
-version = "0.2.4"
+version = "0.2.5"
 description = "A python library for retrieving semantic prefix maps"
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "prefixmaps-0.2.4-py3-none-any.whl", hash = "sha256:89bf0e6fb08c276f754f9624c42adf2e87c64ee92a3dde1f7eff01f22d85b512"},
-    {file = "prefixmaps-0.2.4.tar.gz", hash = "sha256:ae86a1b31189d0516d199756d5808f75f44b39e86546c356cc78c0fe8d2078af"},
+    {file = "prefixmaps-0.2.5-py3-none-any.whl", hash = "sha256:68caa04b3a6a8e058aa1c55affe32c62e44b564d031d63f768e267b796a1f3ee"},
+    {file = "prefixmaps-0.2.5.tar.gz", hash = "sha256:aaccd2425ade2ea97a502c58be49fe8f3536e3d5e919712ae0358a39fc800799"},
 ]
 
 [package.dependencies]
@@ -2441,13 +2441,13 @@ files = [
 
 [[package]]
 name = "pure-eval"
-version = "0.2.2"
+version = "0.2.3"
 description = "Safely evaluate AST nodes without side effects"
 optional = false
 python-versions = "*"
 files = [
-    {file = "pure_eval-0.2.2-py3-none-any.whl", hash = "sha256:01eaab343580944bc56080ebe0a674b39ec44a945e6d09ba7db3cb8cec289350"},
-    {file = "pure_eval-0.2.2.tar.gz", hash = "sha256:2b45320af6dfaa1750f543d714b6d1c520a1688dec6fd24d339063ce0aaa9ac3"},
+    {file = "pure_eval-0.2.3-py3-none-any.whl", hash = "sha256:1db8e35b67b3d218d818ae653e27f06c3aa420901fa7b081ca98cbedc874e0d0"},
+    {file = "pure_eval-0.2.3.tar.gz", hash = "sha256:5f4e983f40564c576c7c8635ae88db5956bb2229d7e9237d03b3c0b0190eaf42"},
 ]
 
 [package.extras]
