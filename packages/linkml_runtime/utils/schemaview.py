@@ -6,7 +6,7 @@ from functools import lru_cache
 from copy import copy, deepcopy
 from collections import defaultdict, deque
 from pathlib import Path
-from typing import Mapping, Tuple, TypeVar
+from typing import Mapping, Optional, Tuple, TypeVar
 import warnings
 
 from linkml_runtime.utils.namespaces import Namespaces
@@ -145,6 +145,11 @@ class SchemaView(object):
     modifications: int = 0
     uuid: str = None
 
+    ## private vars --------
+    # cached hash
+    _hash: Optional[int] = None
+
+
     def __init__(self, schema: Union[str, Path, SchemaDefinition],
                  importmap: Optional[Dict[str, str]] = None, merge_imports: bool = False, base_dir: str = None):
         if isinstance(schema, Path):
@@ -166,8 +171,10 @@ class SchemaView(object):
             return self.__key() == other.__key()
         return NotImplemented
 
-    def __hash__(self):
-        return hash(self.__key())
+    def __hash__(self) -> int:
+        if self._hash is None:
+            self._hash = hash(self.__key())
+        return self._hash
 
     @lru_cache(None)
     def namespaces(self) -> Namespaces:
@@ -1850,6 +1857,7 @@ class SchemaView(object):
         return s2
 
     def set_modified(self) -> None:
+        self._hash = None
         self.modifications += 1
 
     def materialize_patterns(self) -> None:
