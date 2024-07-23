@@ -312,9 +312,9 @@ class PydanticGenerator(OOCodeGenerator):
 
     def generate_slot(self, slot: SlotDefinition, cls: ClassDefinition) -> SlotResult:
         slot_args = {
-            k: slot._as_dict.get(k, None)
+            k: getattr(slot, k, None)
             for k in PydanticAttribute.model_fields.keys()
-            if slot._as_dict.get(k, None) is not None
+            if getattr(slot, k, None) is not None
         }
         slot_args["name"] = underscore(slot.name)
         slot_args["description"] = slot.description.replace('"', '\\"') if slot.description is not None else None
