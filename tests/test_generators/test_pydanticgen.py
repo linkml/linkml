@@ -578,7 +578,7 @@ classes:
     assert temperature_dataset.temperatures_in_K == temperatures
 
 
-def test_pydantic_array_cardinality():
+def test_pydantic_cardinality():
 
     unit_test_schema = """
 id: https://example.org/arrays
