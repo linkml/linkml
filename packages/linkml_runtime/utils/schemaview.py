@@ -1317,7 +1317,7 @@ class SchemaView(object):
         # attributes take priority over schema-level slot definitions, IF
         # the attributes is declared for the class or an ancestor
         slot_comes_from_attribute = False
-        if cls:
+        if cls is not None:
             slot = self.get_slot(slot_name, imports, attributes=False)
             # traverse ancestors (reflexive), starting with
             # the main class
@@ -1353,7 +1353,7 @@ class SchemaView(object):
             # inheritance of slots; priority order
             #   slot-level assignment < ancestor slot_usage < self slot_usage
             v = getattr(induced_slot, metaslot_name, None)
-            if not cls:
+            if cls is None:
                 propagated_from = []
             else:
                 propagated_from = self.class_ancestors(class_name, reflexive=True, mixins=True)
