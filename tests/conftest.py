@@ -202,11 +202,13 @@ def pytest_collection_modifyitems(config, items):
 
     # the fixture that mocks black import failures should always come all the way last
     # see: https://github.com/linkml/linkml/pull/2209#issuecomment-2231548078
-    # this causes really hard to diagnose errors, so we should fail testing if
-    # eg. this test changes names and we no longer put it at the end.
+    # this causes really hard to diagnose errors, but we can't fail a test run if
+    # it's not found because then we can't run a subset of the tests.
+    # so special care should be taken not to change this test in particular :)
     test_black = [i for i in items if i.name == "test_template_noblack"]
-    items.remove(test_black[0])
-    items.append(test_black[0])
+    if len(test_black) == 1:
+        items.remove(test_black[0])
+        items.append(test_black[0])
 
 
 def pytest_sessionstart(session: pytest.Session):
