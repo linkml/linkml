@@ -63,7 +63,5 @@ def test_pydanticgen_inline_dict():
     assert dict_field.default_factory is None
     assert list_field.default_factory is None
 
-    output = gen.serialize()
-    output_subset = [line for line in output.splitlines() if "has_bikes: " in line]
-    assert len(output_subset) == 1
-    assert "has_bikes: Dict[str, Union[str, Bike]] = Field(...," in output_subset[0]
+    assert str(dict_field.default) == "PydanticUndefined"
+    assert str(list_field.default) == "PydanticUndefined"
