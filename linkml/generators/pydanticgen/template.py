@@ -180,11 +180,11 @@ class PydanticBaseModel(TemplateModel):
     strict: bool = False
     """
     Enable strict mode in the base model.
-    
+
     .. note::
-    
+
         Pydantic 2 only! Pydantic 1 only has strict types, not strict mode. See: https://github.com/linkml/linkml/issues/1955
-    
+
     References:
         https://docs.pydantic.dev/latest/concepts/strict_mode
     """
@@ -212,6 +212,10 @@ class PydanticAttribute(TemplateModel):
     equals_number: Optional[Union[int, float]] = None
     minimum_value: Optional[Union[int, float]] = None
     maximum_value: Optional[Union[int, float]] = None
+    exact_cardinality: Optional[int] = None
+    minimum_cardinality: Optional[int] = None
+    maximum_cardinality: Optional[int] = None
+    multivalued: Optional[bool] = None
     pattern: Optional[str] = None
     meta: Optional[Dict[str, Any]] = None
     """

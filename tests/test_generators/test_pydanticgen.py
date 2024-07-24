@@ -578,6 +578,59 @@ classes:
     assert temperature_dataset.temperatures_in_K == temperatures
 
 
+def test_pydantic_array_cardinality():
+
+    unit_test_schema = """
+id: https://example.org/arrays
+name: arrays-cardinality-example
+title: Array Cardinality Example
+description: |-
+    Example LinkML schema to test array cardinality
+license: MIT
+
+default_prefix: example
+
+imports:
+    - linkml:types
+
+classes:
+    CardinalityArray:
+        description: A class with arrays of different cardinality constraints
+        attributes:
+            minimum_cardinality_array:
+                implements:
+                    - linkml:elements
+                range: float
+                multivalued: true
+                required: true
+                minimum_cardinality: 1
+            maximum_cardinality_array:
+                implements:
+                    - linkml:elements
+                range: float
+                multivalued: true
+                required: true
+                maximum_cardinality: 10
+            exact_cardinality_array:
+                implements:
+                    - linkml:elements
+                range: float
+                multivalued: true
+                required: true
+                exact_cardinality: 5
+"""
+
+    gen = PydanticGenerator(schema=unit_test_schema)
+    code = gen.serialize()
+
+    mod = compile_python(code)
+    assert mod.CardinalityArray.model_fields["minimum_cardinality_array"].annotation == List[float]
+    assert mod.CardinalityArray.model_fields["minimum_cardinality_array"].metadata[0].min_length == 1
+    assert mod.CardinalityArray.model_fields["maximum_cardinality_array"].metadata[0].max_length == 10
+    assert mod.CardinalityArray.model_fields["exact_cardinality_array"].metadata[0].min_length == 5
+    assert mod.CardinalityArray.model_fields["exact_cardinality_array"].metadata[1].max_length == 5
+
+
 @pytest.mark.skip("this format of arrays is not yet implemented in the metamodel??")
 def test_column_ordered_array_not_supported():
     unit_test_schema = """
@@ -925,7 +978,7 @@ def test_template_pass_environment(sample_class):
     templates = {
         "class.py.jinja": """{{ name }}
 {%- for attr in attributes.values() %}
-{{ attr }} 
+{{ attr }}
 {%- endfor -%}""",
         "attribute.py.jinja": """attr: {{ name }}
 range: {{ range }}""",
