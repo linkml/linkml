@@ -332,18 +332,20 @@
 <span></span><span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">textwrap</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ModuleType</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
-<span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">ChoiceLoader</span><span class="p">,</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">FileSystemLoader</span>
+<span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">ChoiceLoader</span><span class="p">,</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">FileSystemLoader</span><span class="p">,</span> <span class="n">Template</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ClassDefinition</span><span class="p">,</span>
+    <span class="n">ElementName</span><span class="p">,</span>
     <span class="n">SchemaDefinition</span><span class="p">,</span>
     <span class="n">SlotDefinition</span><span class="p">,</span>
     <span class="n">TypeDefinition</span><span class="p">,</span>
@@ -358,7 +360,7 @@
 <span class="kn">from</span> <span class="nn">linkml.generators.oocodegen</span> <span class="kn">import</span> <span class="n">OOCodeGenerator</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen</span> <span class="kn">import</span> <span class="n">includes</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen.array</span> <span class="kn">import</span> <span class="n">ArrayRangeGenerator</span><span class="p">,</span> <span class="n">ArrayRepresentation</span>
-<span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen.build</span> <span class="kn">import</span> <span class="n">ClassResult</span><span class="p">,</span> <span class="n">SlotResult</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen.build</span> <span class="kn">import</span> <span class="n">ClassResult</span><span class="p">,</span> <span class="n">SlotResult</span><span class="p">,</span> <span class="n">SplitResult</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen.template</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Import</span><span class="p">,</span>
     <span class="n">Imports</span><span class="p">,</span>
@@ -445,6 +447,22 @@
     <span class="n">NONE</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    No metadata will be included.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">SplitMode</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+    <span class="n">FULL</span> <span class="o">=</span> <span class="s2">&quot;full&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Import all classes defined in imported schemas</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">AUTO</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Only import those classes that are actually used in the generated schema as</span>
+<span class="sd">    </span>
+<span class="sd">    * parents (``is_a``)</span>
+<span class="sd">    * mixins</span>
+<span class="sd">    * slot ranges</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 
@@ -560,12 +578,74 @@
 <span class="sd">    </span>
 <span class="sd">    See :class:`.MetadataMode` for mode documentation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">split</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate schema that import other schema as separate python modules</span>
+<span class="sd">    that import from one another, rather than rolling all into a single</span>
+<span class="sd">    module (default, ``False``).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">split_pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;.{{ schema.name }}&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    When splitting generation, imported modules need to be generated separately</span>
+<span class="sd">    and placed in a python package and import from each other. Since the </span>
+<span class="sd">    location of those imported modules is variable -- e.g. one might want to</span>
+<span class="sd">    generate schema in multiple packages depending on their version -- this</span>
+<span class="sd">    pattern is used to generate the module portion of the import statement.</span>
+<span class="sd">    </span>
+<span class="sd">    These patterns should generally yield a relative module import, </span>
+<span class="sd">    since functions like :func:`.generate_split` will generate and write files</span>
+<span class="sd">    relative to some base file, though this is not a requirement since custom</span>
+<span class="sd">    split generation logic is also allowed.</span>
+<span class="sd">    </span>
+<span class="sd">    The pattern is a jinja template string that is given the ``SchemaDefinition``</span>
+<span class="sd">    of the imported schema in the environment. Additional variables can be passed</span>
+<span class="sd">    into the jinja environment with the :attr:`.split_context` argument.</span>
+<span class="sd">     </span>
+<span class="sd">    Further modification is possible by using jinja filters.</span>
+<span class="sd">    </span>
+<span class="sd">    After templating, the string is passed through a :attr:`SNAKE_CASE` pattern</span>
+<span class="sd">    to replace whitespace and other characters that can&#39;t be used in module names.</span>
+<span class="sd">    </span>
+<span class="sd">    See also :meth:`.generate_module_import`, which is used to generate the</span>
+<span class="sd">    module portion of the import statement (and can be overridden in subclasses).</span>
+<span class="sd">     </span>
+<span class="sd">    Examples:</span>
+<span class="sd">    </span>
+<span class="sd">        for a schema named ``ExampleSchema`` and version ``1.2.3`` ...   </span>
+<span class="sd">    </span>
+<span class="sd">        ``&quot;.{{ schema.name }}&quot;`` (the default) becomes</span>
+<span class="sd">        </span>
+<span class="sd">        ``from .example_schema import ClassA, ...``</span>
+<span class="sd">        </span>
+<span class="sd">        ``&quot;...{{ schema.name }}.v{{ schema.version | replace(&#39;.&#39;, &#39;_&#39;) }}&quot;`` becomes</span>
+<span class="sd">        </span>
+<span class="sd">        ``from ...example_schema.v1_2_3 import ClassA, ...``</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">split_context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Additional variables to pass into ``split_pattern`` when</span>
+<span class="sd">    generating imported module names. </span>
+<span class="sd">    </span>
+<span class="sd">    Passed in as ``**kwargs`` , so e.g. if ``split_context = {&#39;myval&#39;: 1}``</span>
+<span class="sd">    then one would use it in a template string like ``{{ myval }}``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">split_mode</span><span class="p">:</span> <span class="n">SplitMode</span> <span class="o">=</span> <span class="n">SplitMode</span><span class="o">.</span><span class="n">AUTO</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    How to filter imports from imported schema.</span>
+<span class="sd">    </span>
+<span class="sd">    See :class:`.SplitMode` for description of options</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># ObjectVars (identical to pythongen)</span>
     <span class="n">gen_classvars</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">gen_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">genmeta</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">emit_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># ClassVars</span>
+    <span class="n">SNAKE_CASE</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(((?&lt;!^)(?&lt;!\.))(?=[A-Z][a-z]))|([^\w\.]+)&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Substitute CamelCase and non-word characters with _&quot;&quot;&quot;</span>
 
     <span class="c1"># Private attributes</span>
     <span class="n">_predefined_slot_values</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -587,8 +667,20 @@
             <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error compiling generated python code: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">e</span></div>
 
+    <span class="k">def</span> <span class="nf">_get_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]]]:</span>
+        <span class="n">all_classes</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">:</span>
+            <span class="n">local_classes</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="n">imported_classes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">all_classes</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">local_classes</span><span class="p">]</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">local_classes</span><span class="p">),</span> <span class="n">imported_classes</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">all_classes</span><span class="p">),</span> <span class="kc">None</span>
+
 <div class="viewcode-block" id="PydanticGenerator.sort_classes"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.sort_classes">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">sort_classes</span><span class="p">(</span><span class="n">clist</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">sort_classes</span><span class="p">(</span>
+        <span class="n">clist</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">],</span> <span class="n">imported</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        sort classes such that if C is a child of P then C appears after P in the list</span>
 
@@ -596,6 +688,9 @@
 
 <span class="sd">        TODO: This should move to SchemaView</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">imported</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">imported</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">imported</span><span class="p">]</span>
+
         <span class="n">clist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">clist</span><span class="p">)</span>
         <span class="n">slist</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># sorted</span>
         <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">clist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -607,6 +702,11 @@
                     <span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span><span class="n">candidate</span><span class="o">.</span><span class="n">is_a</span><span class="p">]</span> <span class="o">+</span> <span class="n">candidate</span><span class="o">.</span><span class="n">mixins</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">candidates</span> <span class="o">=</span> <span class="n">candidate</span><span class="o">.</span><span class="n">mixins</span>
+
+                <span class="c1"># remove blocking classes imported from other schemas if in split mode</span>
+                <span class="k">if</span> <span class="n">imported</span><span class="p">:</span>
+                    <span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">candidates</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">imported</span><span class="p">]</span>
+
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">candidates</span><span class="p">:</span>
                     <span class="n">can_add</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -623,11 +723,13 @@
     <span class="k">def</span> <span class="nf">generate_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClassResult</span><span class="p">:</span>
         <span class="n">pyclass</span> <span class="o">=</span> <span class="n">PydanticClass</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
-            <span class="n">bases</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">class_bases</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">PydanticBaseModel</span><span class="o">.</span><span class="n">default_name</span><span class="p">),</span>
+            <span class="n">bases</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">class_bases</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">PydanticBaseModel</span><span class="o">.</span><span class="n">default_name</span><span class="p">),</span>
             <span class="n">description</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&quot;&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">result</span> <span class="o">=</span> <span class="n">ClassResult</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="n">pyclass</span><span class="p">)</span>
+        <span class="n">imports</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_imports</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">ClassResult</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="n">pyclass</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
 
         <span class="n">attributes</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">class_slots</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
@@ -679,7 +781,10 @@
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not generate python range for </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">pyslot</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="n">pyrange</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">SlotResult</span><span class="p">(</span><span class="n">attribute</span><span class="o">=</span><span class="n">pyslot</span><span class="p">)</span>
+
+        <span class="n">imports</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_imports</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">SlotResult</span><span class="p">(</span><span class="n">attribute</span><span class="o">=</span><span class="n">pyslot</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_array_representations_range</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
@@ -768,7 +873,9 @@
                     <span class="n">class_parents</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">camelcase</span><span class="p">(</span><span class="n">mixin</span><span class="p">)</span> <span class="k">for</span> <span class="n">mixin</span> <span class="ow">in</span> <span class="n">class_def</span><span class="o">.</span><span class="n">mixins</span><span class="p">])</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">class_parents</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="c1"># Use the sorted list of classes to order the parent classes, but reversed to match MRO needs</span>
-                    <span class="n">class_parents</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sorted_class_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+                    <span class="n">class_parents</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span>
+                        <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sorted_class_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sorted_class_names</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+                    <span class="p">)</span>
                     <span class="n">class_parents</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
                     <span class="n">parents</span><span class="p">[</span><span class="n">camelcase</span><span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">class_parents</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_class_bases</span> <span class="o">=</span> <span class="n">parents</span>
@@ -1042,6 +1149,96 @@
         <span class="n">model</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="n">meta</span>
         <span class="k">return</span> <span class="n">model</span></div>
 
+    <span class="k">def</span> <span class="nf">_get_imports</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Imports</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get imports that are implied by their usage in slots or classes</span>
+<span class="sd">        (and thus need to be imported when generating schemas in :attr:`.split` == ``True`` mode).</span>
+
+<span class="sd">        **Note:**</span>
+<span class="sd">        Since in pydantic (currently) the only things that are materialized are classes, we don&#39;t</span>
+<span class="sd">        import class slots from imported schemas and abandon slots, directly expressing them</span>
+<span class="sd">        in the model.</span>
+
+<span class="sd">        This is a parent placeholder method in case that changes, &quot;give me something and return</span>
+<span class="sd">        a set of imports&quot; that calls subordinate methods. If slots become materialized, keep</span>
+<span class="sd">        this as the directly called method rather than spaghetti-ing out another</span>
+<span class="sd">        independent method. This method is also isolated in anticipation of structured imports,</span>
+<span class="sd">        where we will need to revise our expectations of what is imported when.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            element (:class:`.ClassDefinition` , :class:`.SlotDefinition` , None): The element</span>
+<span class="sd">                to get import for. If ``None`` , get all needed imports (see :attr:`.split_mode`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># import from local references, rather than serializing every class in every file</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">split_mode</span> <span class="o">==</span> <span class="n">SplitMode</span><span class="o">.</span><span class="n">FULL</span> <span class="ow">and</span> <span class="n">element</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="c1"># we are either compiling this whole thing in one big file (default)</span>
+            <span class="c1"># or going to import all classes from the imported schemas,</span>
+            <span class="c1"># so we don&#39;t import anything</span>
+            <span class="k">return</span> <span class="n">Imports</span><span class="p">()</span>
+
+        <span class="c1"># gather a list of class names,</span>
+        <span class="c1"># remove local classes and transform to Imports later.</span>
+        <span class="n">needed_classes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># fine to call rather than pass bc it&#39;s cached</span>
+        <span class="n">all_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">local_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">is_a</span><span class="p">:</span>
+                <span class="n">needed_classes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">is_a</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">mixins</span><span class="p">:</span>
+                <span class="n">needed_classes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">mixins</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">):</span>
+            <span class="c1"># collapses `slot.range`, `slot.any_of`, and `slot.one_of` to a list</span>
+            <span class="n">slot_ranges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">slot_range_as_union</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+            <span class="n">needed_classes</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">a_range</span> <span class="k">for</span> <span class="n">a_range</span> <span class="ow">in</span> <span class="n">slot_ranges</span> <span class="k">if</span> <span class="n">a_range</span> <span class="ow">in</span> <span class="n">all_classes</span><span class="p">])</span>
+
+        <span class="k">elif</span> <span class="n">element</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># get all imports</span>
+            <span class="n">needed_classes</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">cls</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">all_classes</span> <span class="k">if</span> <span class="bp">cls</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">local_classes</span><span class="p">])</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported type of element to get imports from: f</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">element</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># SPECIAL CASE: classes that are not generated for structural reasons.</span>
+        <span class="c1"># TODO: Do we want to have a general means of skipping class generation?</span>
+        <span class="n">skips</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;AnyType&quot;</span><span class="p">,)</span>
+
+        <span class="n">class_imports</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_element_import</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">needed_classes</span> <span class="k">if</span> <span class="p">(</span><span class="bp">cls</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">local_classes</span> <span class="ow">and</span> <span class="bp">cls</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skips</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">imports</span> <span class="o">=</span> <span class="n">Imports</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">class_imports</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">imports</span>
+
+<div class="viewcode-block" id="PydanticGenerator.generate_module_import"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.generate_module_import">[docs]</a>    <span class="k">def</span> <span class="nf">generate_module_import</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate the module string for importing from python modules generated from imported schemas</span>
+<span class="sd">        when in :attr:`.split` mode.</span>
+
+<span class="sd">        Use the :attr:`.split_pattern` as a jinja template rendered with the :class:`.SchemaDefinition`</span>
+<span class="sd">        and any passed ``context``. Apply the :attr:`.SNAKE_CASE` regex to substitute matches with</span>
+<span class="sd">        ``_`` and ensure lowercase.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">context</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">split_pattern</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="o">**</span><span class="n">context</span><span class="p">)</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SNAKE_CASE</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">module</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">SNAKE_CASE</span> <span class="k">else</span> <span class="n">module</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">module</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_element_import</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="n">ElementName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Import</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make an import object for an element from another schema, using the</span>
+<span class="sd">        :attr:`.split_import_pattern` to generate the module import part.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">schema_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">element_by_schema_map</span><span class="p">()[</span><span class="n">class_name</span><span class="p">]</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema_map</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">schema_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_module_import</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_context</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Import</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">module</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="p">[</span><span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">camelcase</span><span class="p">(</span><span class="n">class_name</span><span class="p">))],</span> <span class="n">schema</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PydanticModule</span><span class="p">:</span>
         <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
@@ -1051,6 +1248,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="p">:</span>
                 <span class="n">imports</span> <span class="o">+=</span> <span class="n">i</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_mode</span> <span class="o">==</span> <span class="n">SplitMode</span><span class="o">.</span><span class="n">FULL</span><span class="p">:</span>
+            <span class="n">imports</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_imports</span><span class="p">()</span>
 
         <span class="c1"># injected classes</span>
         <span class="n">injected_classes</span> <span class="o">=</span> <span class="n">DEFAULT_INJECTS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -1064,7 +1263,8 @@
 
         <span class="c1"># schema classes</span>
         <span class="n">classes</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">source_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_classes</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="n">source_classes</span><span class="p">,</span> <span class="n">imported_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_classes</span><span class="p">(</span><span class="n">sv</span><span class="p">)</span>
+        <span class="n">source_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_classes</span><span class="p">(</span><span class="n">source_classes</span><span class="p">,</span> <span class="n">imported_classes</span><span class="p">)</span>
         <span class="c1"># Don&#39;t want to generate classes when class_uri is linkml:Any, will</span>
         <span class="c1"># just swap in typing.Any instead down below</span>
         <span class="n">source_classes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">source_classes</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">class_uri</span> <span class="o">!=</span> <span class="s2">&quot;linkml:Any&quot;</span><span class="p">]</span>
@@ -1091,12 +1291,123 @@
         <span class="n">module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_metadata</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">module</span>
 
-<div class="viewcode-block" id="PydanticGenerator.serialize"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+<div class="viewcode-block" id="PydanticGenerator.serialize"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rendered_module</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PydanticModule</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Serialize the schema to a pydantic module as a string</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            rendered_module ( :class:`.PydanticModule` ): Optional, if schema was previously</span>
+<span class="sd">                rendered with :meth:`.render` , use that, otherwise :meth:`.render` fresh.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">rendered_module</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="n">rendered_module</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">module</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_template_environment</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">black</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">default_value_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;None&quot;</span></div>
+        <span class="k">return</span> <span class="s2">&quot;None&quot;</span>
+
+<div class="viewcode-block" id="PydanticGenerator.generate_split"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.generate_split">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">generate_split</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span>
+        <span class="n">output_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">),</span>
+        <span class="n">split_pattern</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">split_context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">split_mode</span><span class="p">:</span> <span class="n">SplitMode</span> <span class="o">=</span> <span class="n">SplitMode</span><span class="o">.</span><span class="n">AUTO</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SplitResult</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a schema that imports from other schema as a set of python modules that</span>
+<span class="sd">        import from one another, rather than generating all imported classes in a single schema.</span>
+
+<span class="sd">        Uses ``output_path`` for the main schema from ``schema`` , and then</span>
+<span class="sd">        generates any imported schema (from which classes are actually used)</span>
+<span class="sd">        to modules whose locations are determined by the module names generated</span>
+<span class="sd">        by the ``split_pattern`` (see :attr:`.PydanticGenerator.split_pattern` ).</span>
+
+<span class="sd">        For example, for</span>
+
+<span class="sd">        * a ``output_path`` of ``my_dir/v1_2_3/main.py``</span>
+<span class="sd">        * a schema ``main`` with a version ``v1.2.3``</span>
+<span class="sd">        * that imports from ``s2`` with version ``v4.5.6``,</span>
+<span class="sd">        * and a ``split_pattern`` of ``..{{ schema.version | replace(&#39;.&#39;, &#39;_&#39;) }}.{{ schema.name }}``</span>
+
+<span class="sd">        One would get:</span>
+<span class="sd">        * ``my_dir/v1_2_3/main.py`` , as expected</span>
+<span class="sd">        * that imports ``from ..v4_5_6.s2``</span>
+<span class="sd">        * a module at ``my_dir/v4_5_6/s2.py``</span>
+
+<span class="sd">        ``__init__.py`` files are generated for any directories that are between</span>
+<span class="sd">        the generated modules and their highest common directory.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            schema (str, :class:`.Path` , :class:`.SchemaDefinition` ): Main schema to generate</span>
+<span class="sd">            output_path (str, :class:`.Path` ): Python ``.py`` module to generate main schema to</span>
+<span class="sd">            split_pattern (str): Pattern to use to generate module names, see :attr:`.PydanticGenerator.split_pattern`</span>
+<span class="sd">            split_context (dict): Additional variables to pass into jinja context when generating module import names.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[:class:`.SplitResult`]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">output_path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.py&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;output path must be a python file to write the main schema to, got </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># --------------------------------------------------</span>
+        <span class="c1"># Main schema</span>
+        <span class="c1"># --------------------------------------------------</span>
+        <span class="n">gen_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="n">gen_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;split&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;split_pattern&quot;</span><span class="p">:</span> <span class="n">split_pattern</span><span class="p">,</span> <span class="s2">&quot;split_context&quot;</span><span class="p">:</span> <span class="n">split_context</span><span class="p">,</span> <span class="s2">&quot;split_mode&quot;</span><span class="p">:</span> <span class="n">split_mode</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">generator</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="o">**</span><span class="n">gen_kwargs</span><span class="p">)</span>
+        <span class="c1"># Generate the initial schema to figure out which of the imported schema actually need</span>
+        <span class="c1"># to be generated</span>
+        <span class="n">rendered</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+        <span class="c1"># write schema - we use the ``output_path`` for the main schema, and then</span>
+        <span class="c1"># interpret all imported schema paths as relative to that</span>
+        <span class="n">output_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">serialized</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">rendered_module</span><span class="o">=</span><span class="n">rendered</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ofile</span><span class="p">:</span>
+            <span class="n">ofile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">serialized</span><span class="p">)</span>
+
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">SplitResult</span><span class="p">(</span>
+                <span class="n">main</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">source_schema</span><span class="o">=</span><span class="n">generator</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">output_path</span><span class="p">,</span> <span class="n">serialized_module</span><span class="o">=</span><span class="n">serialized</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># --------------------------------------------------</span>
+        <span class="c1"># Imported schemas</span>
+        <span class="c1"># --------------------------------------------------</span>
+        <span class="n">imported_schema</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">generator</span><span class="o">.</span><span class="n">generate_module_import</span><span class="p">(</span><span class="n">sch</span><span class="p">):</span> <span class="n">sch</span> <span class="k">for</span> <span class="n">sch</span> <span class="ow">in</span> <span class="n">generator</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema_map</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">generated_import</span> <span class="ow">in</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rendered</span><span class="o">.</span><span class="n">python_imports</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">schema</span><span class="p">]:</span>
+            <span class="n">import_generator</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">imported_schema</span><span class="p">[</span><span class="n">generated_import</span><span class="o">.</span><span class="n">module</span><span class="p">],</span> <span class="o">**</span><span class="n">gen_kwargs</span><span class="p">)</span>
+            <span class="n">serialized</span> <span class="o">=</span> <span class="n">import_generator</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
+            <span class="n">rel_path</span> <span class="o">=</span> <span class="n">_import_to_path</span><span class="p">(</span><span class="n">generated_import</span><span class="o">.</span><span class="n">module</span><span class="p">)</span>
+            <span class="n">abs_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">output_path</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="n">rel_path</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+            <span class="n">abs_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">abs_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ofile</span><span class="p">:</span>
+                <span class="n">ofile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">serialized</span><span class="p">)</span>
+
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">SplitResult</span><span class="p">(</span>
+                    <span class="n">main</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">source_schema</span><span class="o">=</span><span class="n">imported_schema</span><span class="p">[</span><span class="n">generated_import</span><span class="o">.</span><span class="n">module</span><span class="p">],</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">abs_path</span><span class="p">,</span>
+                    <span class="n">serialized_module</span><span class="o">=</span><span class="n">serialized</span><span class="p">,</span>
+                    <span class="n">module_import</span><span class="o">=</span><span class="n">generated_import</span><span class="o">.</span><span class="n">module</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">_ensure_inits</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">path</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">results</span></div></div>
 
 
 <span class="k">def</span> <span class="nf">_subclasses</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">):</span>
@@ -1104,6 +1415,38 @@
 
 
 <span class="n">_TEMPLATE_NAMES</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">template</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">_subclasses</span><span class="p">(</span><span class="n">TemplateModel</span><span class="p">)])))</span>
+
+
+<span class="k">def</span> <span class="nf">_import_to_path</span><span class="p">(</span><span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make a (relative) ``Path`` object from a python module import string&quot;&quot;&quot;</span>
+    <span class="c1"># handle leading .&#39;s separately..</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">dots</span><span class="p">,</span> <span class="n">module</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(^\.*)(?=\w)&quot;</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># treat zero or one dots as a relative import to the current directory</span>
+    <span class="n">dir_pieces</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;../&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dots</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))]</span>
+    <span class="n">dir_pieces</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">))</span>
+    <span class="n">dir_pieces</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">dir_pieces</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.py&quot;</span>
+    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="o">*</span><span class="n">dir_pieces</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_ensure_inits</span><span class="p">(</span><span class="n">paths</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;For a set of paths, find the common root and it and all the subdirectories have an __init__.py&quot;&quot;&quot;</span>
+    <span class="c1"># if there is only one file, there is no relative importing to be done</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">common_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">commonpath</span><span class="p">(</span><span class="n">paths</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">ipath</span> <span class="o">:=</span> <span class="p">(</span><span class="n">common_path</span> <span class="o">/</span> <span class="s2">&quot;__init__.py&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ipath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ifile</span><span class="p">:</span>
+            <span class="n">ifile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+        <span class="c1"># ensure __init__ for each directory from this path up to the common path</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">parent</span>
+        <span class="k">while</span> <span class="n">path</span> <span class="o">!=</span> <span class="n">common_path</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">ipath</span> <span class="o">:=</span> <span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;__init__.py&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ipath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ifile</span><span class="p">:</span>
+                    <span class="n">ifile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">parent</span>
 
 
 <span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">PydanticGenerator</span><span class="p">)</span>

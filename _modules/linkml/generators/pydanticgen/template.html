@@ -334,7 +334,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">PackageLoader</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span>
 <span class="kn">from</span> <span class="nn">pydantic.version</span> <span class="kn">import</span> <span class="n">VERSION</span> <span class="k">as</span> <span class="n">PYDANTIC_VERSION</span>
 
 <span class="kn">from</span> <span class="nn">linkml.utils.deprecation</span> <span class="kn">import</span> <span class="n">deprecation_warning</span>
@@ -652,6 +652,12 @@
     <span class="n">module</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">alias</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">objects</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ObjectImport</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">schema</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Whether or not this ``Import`` is importing another schema imported by the main schema -- </span>
+<span class="sd">    ie. that it is not expected to be provided by the environment, but imported locally from within the package. </span>
+<span class="sd">    Used primarily in split schema generation, see :func:`.pydanticgen.generate_split` for example usage.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Import.merge"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.template.Import.merge">[docs]</a>    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;Import&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Import&quot;</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -695,7 +701,14 @@
             <span class="p">}</span>
             <span class="n">self_objs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other_objs</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="p">[</span><span class="n">Import</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">self_objs</span><span class="o">.</span><span class="n">values</span><span class="p">()))]</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">Import</span><span class="p">(</span>
+                    <span class="n">module</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">,</span>
+                    <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span>
+                    <span class="n">objects</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">self_objs</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+                    <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># one is a module, the other imports objects, keep both</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">]</span></div></div>
@@ -782,19 +795,38 @@
 
     <span class="n">imports</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Import</span><span class="p">,</span> <span class="n">ConditionalImport</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Import</span><span class="p">,</span> <span class="s2">&quot;Imports&quot;</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Import</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Imports&quot;</span><span class="p">:</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_merge</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">imports</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Import</span><span class="p">,</span> <span class="n">ConditionalImport</span><span class="p">]],</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Import</span><span class="p">,</span> <span class="s2">&quot;Imports&quot;</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Import</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Import</span><span class="p">,</span> <span class="n">ConditionalImport</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a new import to an existing imports list, handling deduplication and flattening.</span>
+
+<span class="sd">        Mutates and returns ``imports``</span>
+
+<span class="sd">        Generally will prefer the imports in ``other`` , updating those in ``imports``.</span>
+<span class="sd">        If ``other`` ...</span>
+<span class="sd">        - doesn&#39;t match any ``module`` in ``imports``, add it!</span>
+<span class="sd">        - matches a single ``module`` in imports, :meth:`.Import.merge` the object imports</span>
+<span class="sd">        - matches multiple ``module``s in imports, then there must have been another</span>
+<span class="sd">            :class:`.ConditionalImport` already present, so we :meth:`.Import.merge` the existing</span>
+<span class="sd">            :class:`.Import` if it is one, and if it&#39;s a :class:`.ConditionalImport` just YOLO</span>
+<span class="sd">            and append it since there isn&#39;t a principled way to merge them from strings.</span>
+<span class="sd">        - is :class:`.Imports`  or a list of :class:`.Import` s, call this recursively for each</span>
+<span class="sd">          item.</span>
+
+<span class="sd">        Since imports can be merged in an undefined order depending on the generator configuration,</span>
+<span class="sd">        default behavior for imports with matching ``module`` is to remove them and append to the</span>
+<span class="sd">        end of the imports list (rather than keeping it in the position of the existing</span>
+<span class="sd">        :class:`.Import` ). :class:`.ConditionalImports` make it possible to have namespace</span>
+<span class="sd">        conflicts, so in imperative import style we assume the most recently added :class:`.Import`</span>
+<span class="sd">        is the one that should prevail.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Imports</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">Import</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">other</span><span class="p">])):</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;model_copy&quot;</span><span class="p">):</span>
-                <span class="n">self_copy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">self_copy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">other</span><span class="p">:</span>
-                <span class="n">self_copy</span> <span class="o">+=</span> <span class="n">i</span>
-            <span class="k">return</span> <span class="n">self_copy</span>
-
-        <span class="c1"># check if we have one of these already</span>
-        <span class="n">imports</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">imports</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_merge</span><span class="p">(</span><span class="n">imports</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">imports</span>
 
         <span class="n">existing</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">imports</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">module</span><span class="p">]</span>
 
@@ -820,8 +852,12 @@
 
         <span class="c1"># SPECIAL CASE - __future__ annotations must happen at the top of a file</span>
         <span class="n">imports</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">imports</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s2">&quot;__future__&quot;</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">imports</span>
 
-        <span class="k">return</span> <span class="n">Imports</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Import</span><span class="p">,</span> <span class="s2">&quot;Imports&quot;</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Import</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Imports&quot;</span><span class="p">:</span>
+        <span class="n">imports</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">imports</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_merge</span><span class="p">(</span><span class="n">imports</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Imports</span><span class="o">.</span><span class="n">model_construct</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="p">)</span>
@@ -830,8 +866,58 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">i</span>
 
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Import</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="p">[</span><span class="n">item</span><span class="p">]</span></div>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Import</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># the name of the module</span>
+            <span class="n">an_import</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="n">item</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">an_import</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No import with module </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2"> was found.</span><span class="se">\n</span><span class="s2">We have: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">an_import</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Can only index with an int or a string as the name of the module,</span><span class="se">\n</span><span class="s2">Got: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Import</span><span class="p">,</span> <span class="s2">&quot;Imports&quot;</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Import</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if all the objects are imported from the given module(s)</span>
+
+<span class="sd">        If the import is a bare module import (ie its :attr:`~.Import.objects` is ``None`` )</span>
+<span class="sd">        then we must also have a bare module import in this Imports (because even if</span>
+<span class="sd">        we import from the module, unless we import it specifically its name won&#39;t be</span>
+<span class="sd">        available in the namespace.</span>
+
+<span class="sd">        :attr:`.Import.alias` must always match for the same reason.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Imports</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">imports</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">item</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Import</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">an_import</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">module</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">objects</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">an_import</span> <span class="o">==</span> <span class="n">item</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">obj</span> <span class="ow">in</span> <span class="n">an_import</span><span class="o">.</span><span class="n">objects</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">objects</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Imports only contains single Import objects or other Imports</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="sa">f</span><span class="s2">&quot;Got: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Imports.imports_are_merged"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.template.Imports.imports_are_merged">[docs]</a>    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;imports&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">imports_are_merged</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">imports</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Import</span><span class="p">,</span> <span class="n">ConditionalImport</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Import</span><span class="p">,</span> <span class="n">ConditionalImport</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        When creating from a list of imports, construct model as if we have done so by iteratively</span>
+<span class="sd">        constructing with __add__ calls</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">merged_imports</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">imports</span><span class="p">:</span>
+            <span class="n">merged_imports</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_merge</span><span class="p">(</span><span class="n">merged_imports</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">merged_imports</span></div></div>
 
 
 <div class="viewcode-block" id="PydanticModule"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticModule">[docs]</a><span class="k">class</span> <span class="nc">PydanticModule</span><span class="p">(</span><span class="n">TemplateModel</span><span class="p">):</span>
