@@ -268,12 +268,15 @@ class PydanticGenerator(OOCodeGenerator):
     
     The pattern is a jinja template string that is given the ``SchemaDefinition``
     of the imported schema in the environment. Additional variables can be passed
-    into the jinja environment with the ``split_environment`` argument.
+    into the jinja environment with the :attr:`.split_context` argument.
      
     Further modification is possible by using jinja filters.
     
     After templating, the string is passed through a :attr:`SNAKE_CASE` pattern
     to replace whitespace and other characters that can't be used in module names.
+    
+    See also :meth:`.generate_module_import`, which is used to generate the
+    module portion of the import statement (and can be overridden in subclasses).
      
     Examples:
     
@@ -286,6 +289,7 @@ class PydanticGenerator(OOCodeGenerator):
         ``"...{{ schema.name }}.v{{ schema.version | replace('.', '_') }}"`` becomes
         
         ``from ...example_schema.v1_2_3 import ClassA, ...``
+    
     """
     split_context: Optional[dict] = None
     """

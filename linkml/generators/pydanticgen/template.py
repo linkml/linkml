@@ -545,7 +545,7 @@ class Imports(TemplateModel):
                 raise KeyError(f"No import with module {item} was found.\nWe have: {self.imports}")
             return an_import[0]
         else:
-            raise TypeError("Can only index with an int or a string as the name of the module," "\nGot: {type(item)}")
+            raise TypeError(f"Can only index with an int or a string as the name of the module,\nGot: {type(item)}")
 
     def __contains__(self, item: Union[Import, "Imports", List[Import]]) -> bool:
         """
