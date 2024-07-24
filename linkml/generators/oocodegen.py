@@ -76,6 +76,7 @@ class OOCodeGenerator(Generator):
     visit_all_class_slots = False
     uses_schemaloader = False
     requires_metamodel = False
+    schemaview: SchemaView = None
 
     template_file: str = None
     """Path to template"""
@@ -84,7 +85,7 @@ class OOCodeGenerator(Generator):
 
     def __post_init__(self):
         # TODO: consider moving up a level
-        self.schemaview = SchemaView(self.schema)
+        self.schemaview: SchemaView = SchemaView(self.schema)
         super().__post_init__()
 
     @abc.abstractmethod
