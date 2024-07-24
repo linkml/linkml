@@ -147,6 +147,7 @@ numpy = [
   { "version" = ">=1.25.2", "python" = ">=3.12" }
 ]
 requests-cache = "^1.2.0"
+mock = "^5.1.0"
 
 [tool.poetry.extras]
 black = ["black"]
