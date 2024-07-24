@@ -7,9 +7,9 @@
     {%- if minimum_value != None %}, ge={{minimum_value}}{% endif -%}
     {%- if maximum_value != None %}, le={{maximum_value}}{% endif -%}
 {%- endif -%}
-{%- if multivalued and exact_cardinality != None %}
-, min_length={{exact_cardinality}}, max_length={{exact_cardinality}}
-{%- elif multivalued %}
+{%- if multivalued and exact_cardinality != None -%}
+    , min_length={{exact_cardinality}}, max_length={{exact_cardinality}}
+{%- elif multivalued -%}
     {%- if minimum_cardinality != None %}, min_length={{minimum_cardinality}}{% endif -%}
     {%- if maximum_cardinality != None %}, max_length={{maximum_cardinality}}{% endif -%}
 {%- endif -%}
