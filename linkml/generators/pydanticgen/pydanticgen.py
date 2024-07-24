@@ -99,7 +99,7 @@ DEFAULT_INJECTS = [includes.LinkMLMeta]
 class MetadataMode(str, Enum):
     FULL = "full"
     """
-    all metadata from the source schema will be included, even if it is represented by the template classes, 
+    all metadata from the source schema will be included, even if it is represented by the template classes,
     and even if it is represented by some child class (eg. "classes" will be included with schema metadata
     """
     EXCEPT_CHILDREN = "except_children"
@@ -109,7 +109,7 @@ class MetadataMode(str, Enum):
     """
     AUTO = "auto"
     """
-    Only the metadata that isn't represented by the template classes or excluded with ``meta_exclude`` will be included 
+    Only the metadata that isn't represented by the template classes or excluded with ``meta_exclude`` will be included
     """
     NONE = None
     """
@@ -145,7 +145,7 @@ class PydanticGenerator(OOCodeGenerator):
     template_dir: Optional[Union[str, Path]] = None
     """
     Override templates for each TemplateModel.
-    
+
     Directory with templates that override the default :attr:`.TemplateModel.template`
     for each class. If a matching template is not found in the override directory,
     the default templates will be used.
@@ -155,62 +155,62 @@ class PydanticGenerator(OOCodeGenerator):
     injected_classes: Optional[List[Union[Type, str]]] = None
     """
     A list/tuple of classes to inject into the generated module.
-    
+
     Accepts either live classes or strings. Live classes will have their source code
     extracted with inspect.get - so they need to be standard python classes declared in a
-    source file (ie. the module they are contained in needs a ``__file__`` attr, 
+    source file (ie. the module they are contained in needs a ``__file__`` attr,
     see: :func:`inspect.getsource` )
     """
     injected_fields: Optional[List[str]] = None
     """
     A list/tuple of field strings to inject into the base class.
-    
+
     Examples:
-    
+
     .. code-block:: python
 
         injected_fields = (
             'object_id: Optional[str] = Field(None, description="Unique UUID for each object")',
         )
-    
+
     """
     imports: Optional[List[Import]] = None
     """
-    Additional imports to inject into generated module. 
-    
+    Additional imports to inject into generated module.
+
     Examples:
-        
+
     .. code-block:: python
-    
+
         from linkml.generators.pydanticgen.template import (
             ConditionalImport,
             ObjectImport,
             Import,
             Imports
         )
-        
-        imports = (Imports() + 
-            Import(module='sys') + 
-            Import(module='numpy', alias='np') + 
+
+        imports = (Imports() +
+            Import(module='sys') +
+            Import(module='numpy', alias='np') +
             Import(module='pathlib', objects=[
                 ObjectImport(name="Path"),
                 ObjectImport(name="PurePath", alias="RenamedPurePath")
-            ]) + 
+            ]) +
             ConditionalImport(
                 module="typing",
                 objects=[ObjectImport(name="Literal")],
                 condition="sys.version_info >= (3, 8)",
                 alternative=Import(
-                    module="typing_extensions", 
+                    module="typing_extensions",
                     objects=[ObjectImport(name="Literal")]
                 ),
             ).imports
         )
-        
+
     becomes:
-    
+
     .. code-block:: python
-    
+
         import sys
         import numpy as np
         from pathlib import (
@@ -221,12 +221,12 @@ class PydanticGenerator(OOCodeGenerator):
             from typing import Literal
         else:
             from typing_extensions import Literal
-        
+
     """
     metadata_mode: Union[MetadataMode, str, None] = MetadataMode.AUTO
     """
     How to include schema metadata in generated pydantic models.
-    
+
     See :class:`.MetadataMode` for mode documentation
     """
 
@@ -409,7 +409,7 @@ class PydanticGenerator(OOCodeGenerator):
                     # Multivalued slots that are either not inlined (just an identifier) or are
                     # inlined as lists should get default_factory list, if they're inlined but
                     # not as a list, that means a dictionary
-                    elif slot.multivalued and not slot.required:
+                    elif slot.multivalued:
                         has_identifier_slot = self.range_class_has_identifier_slot(slot)
 
                         if slot.inlined and not slot.inlined_as_list and has_identifier_slot:
@@ -783,11 +783,11 @@ _TEMPLATE_NAMES = sorted(list(set([c.template for c in _subclasses(TemplateModel
     help="""
 Optional jinja2 template directory to use for class generation.
 
-Pass a directory containing templates with the same name as any of the default 
-:class:`.TemplateModel` templates to override them. The given directory will be 
-searched for matching templates, and use the default templates as a fallback 
+Pass a directory containing templates with the same name as any of the default
+:class:`.TemplateModel` templates to override them. The given directory will be
+searched for matching templates, and use the default templates as a fallback
 if an override is not found
-  
+
 Available templates to override:
 
 \b
