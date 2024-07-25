@@ -290,7 +290,7 @@ class SQLTableGenerator(Generator):
 
 
 @shared_arguments(SQLTableGenerator)
-@click.command()
+@click.command(name="sqltables")
 @click.option(
     "--dialect",
     default="sqlite",

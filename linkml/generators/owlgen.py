@@ -1271,7 +1271,7 @@ class OwlSchemaGenerator(Generator):
 
 
 @shared_arguments(OwlSchemaGenerator)
-@click.command()
+@click.command(name="owl")
 @click.option("-o", "--output", help="Output file name")
 @click.option(
     "--metadata-profile",

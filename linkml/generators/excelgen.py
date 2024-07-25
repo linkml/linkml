@@ -167,7 +167,7 @@ class ExcelGenerator(Generator):
 
 
 @shared_arguments(ExcelGenerator)
-@click.command()
+@click.command(name="excel")
 @click.option(
     "--split-workbook-by-class",
     is_flag=True,

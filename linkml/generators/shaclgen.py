@@ -303,7 +303,7 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
 
 
 @shared_arguments(ShaclGenerator)
-@click.command()
+@click.command(name="shacl")
 @click.option(
     "--closed/--non-closed",
     default=True,

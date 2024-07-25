@@ -24,7 +24,7 @@ from linkml.utils.datautils import (
 )
 
 
-@click.command()
+@click.command(name="convert")
 @click.option("--module", "-m", help="Path to python datamodel module")
 @click.option("--output", "-o", help="Path to output file")
 @click.option(

@@ -264,7 +264,7 @@ class TypescriptGenerator(OOCodeGenerator):
 @click.version_option(__version__, "-V", "--version")
 @click.option("--gen-type-utils/", "-u", help="Generate Type checking utils", is_flag=True)
 @click.option("--include-induced-slots/", help="Generate slots induced through inheritance", is_flag=True)
-@click.command()
+@click.command(name="typescript")
 def cli(yamlfile, gen_type_utils=False, include_induced_slots=False, **args):
     """Generate typescript interfaces and types
 

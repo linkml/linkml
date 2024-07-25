@@ -203,7 +203,7 @@ class ContextGenerator(Generator):
 
 
 @shared_arguments(ContextGenerator)
-@click.command()
+@click.command(name="jsonld-context")
 @click.option("--base", help="Base URI for model")
 @click.option(
     "--prefixes/--no-prefixes",

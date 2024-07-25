@@ -132,6 +132,9 @@ def cli(
     include_range_class_descendants: bool,
     include_context: bool,
 ):
+    """
+    Validate a LinkML Schema
+    """
     if legacy_mode:
         from linkml.validators import jsonschemavalidator
 

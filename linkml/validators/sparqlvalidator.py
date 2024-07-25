@@ -85,7 +85,7 @@ class SparqlDataValidator(DataValidator):
         return self.schema
 
 
-@click.command()
+@click.command(name="sparql")
 @click.option("--named-graph", "-G", multiple=True, help="Constrain query to a named graph")
 @click.option("--input", "-i", help="Input file to validate")
 @click.option("--endpoint-url", "-U", help="URL of sparql endpoint")

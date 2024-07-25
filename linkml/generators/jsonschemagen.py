@@ -627,7 +627,7 @@ class JsonSchemaGenerator(Generator):
 
 
 @shared_arguments(JsonSchemaGenerator)
-@click.command()
+@click.command(name="json-schema")
 @click.option(
     "-i",
     "--inline",

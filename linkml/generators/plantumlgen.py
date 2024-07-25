@@ -339,7 +339,7 @@ class PlantumlGenerator(Generator):
 
 
 @shared_arguments(PlantumlGenerator)
-@click.command()
+@click.command(name="plantuml")
 @click.option("--classes", "-c", multiple=True, help="Class(es) to emit")
 @click.option(
     "--directory",

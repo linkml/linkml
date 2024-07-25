@@ -146,7 +146,7 @@ class JavaGenerator(OOCodeGenerator):
     help="Optional Java 17 record implementation",
 )
 @click.version_option(__version__, "-V", "--version")
-@click.command()
+@click.command(name="java")
 def cli(
     yamlfile,
     output_directory=None,

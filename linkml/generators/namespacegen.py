@@ -195,7 +195,7 @@ def curie(identifier) -> str:
 
 @shared_arguments(NamespaceGenerator)
 @click.version_option(__version__, "-V", "--version")
-@click.command()
+@click.command(name="namespaces")
 def cli(yamlfile, **args):
     """Generate a namespace manager for all of the prefixes represented in a LinkML model"""
     print(NamespaceGenerator(yamlfile, **args).serialize(**args))
