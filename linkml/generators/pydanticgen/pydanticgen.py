@@ -434,26 +434,6 @@ class PydanticGenerator(OOCodeGenerator):
             self._class_bases = parents
         return self._class_bases
 
-    def range_class_has_identifier_slot(self, slot):
-        """
-        Check if the range class of a slot has an identifier slot, via both slot.any_of and slot.range
-        Should return False if the range is not a class, and also if the range is a class but has no
-        identifier slot
-
-        :param slot: SlotDefinition
-        :return: bool
-        """
-        sv = self.schemaview
-        has_identifier_slot = False
-        if slot.any_of:
-            for slot_range in slot.any_of:
-                any_of_range = slot_range.range
-                if any_of_range in sv.all_classes() and sv.get_identifier_slot(any_of_range, use_key=True) is not None:
-                    has_identifier_slot = True
-        if slot.range in sv.all_classes() and sv.get_identifier_slot(slot.range, use_key=True) is not None:
-            has_identifier_slot = True
-        return has_identifier_slot
-
     def get_mixin_identifier_range(self, mixin) -> str:
         sv = self.schemaview
         id_ranges = list(
