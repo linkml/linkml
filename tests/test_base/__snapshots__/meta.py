@@ -35,7 +35,7 @@ import re
 from jsonasobj2 import JsonObj, as_dict
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, time
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
 
 from linkml_runtime.utils.slot import Slot
@@ -555,8 +555,6 @@ class SchemaDefinition(Element):
     bindings: Optional[Union[Union[dict, "EnumBinding"], List[Union[dict, "EnumBinding"]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.default_prefix is None:
-            self.default_prefix = sfx(str(self.id))
         if self._is_empty(self.name):
             self.MissingRequiredField("name")
         if not isinstance(self.name, SchemaDefinitionName):

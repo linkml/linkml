@@ -49,14 +49,6 @@ linkml.utils.helpers module
    :undoc-members:
    :show-inheritance:
 
-linkml.utils.ifabsent\_functions module
----------------------------------------
-
-.. automodule:: linkml.utils.ifabsent_functions
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 linkml.utils.mergeutils module
 ------------------------------
 

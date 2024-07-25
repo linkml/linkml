@@ -51,7 +51,6 @@
       },
       "predicate": {
          "@context": {
-            "@vocab": "@null",
             "text": "skos:notation",
             "description": "skos:prefLabel",
             "meaning": "@id"
@@ -578,7 +577,6 @@
       },
       "obligation_level": {
          "@context": {
-            "@vocab": "@null",
             "text": "skos:notation",
             "description": "skos:prefLabel",
             "meaning": "@id"
@@ -637,7 +635,6 @@
       },
       "pv_formula": {
          "@context": {
-            "@vocab": "@null",
             "text": "skos:notation",
             "description": "skos:prefLabel",
             "meaning": "@id"
@@ -685,7 +682,6 @@
       },
       "relational_role": {
          "@context": {
-            "@vocab": "@null",
             "text": "skos:notation",
             "description": "skos:prefLabel",
             "meaning": "@id"
@@ -897,7 +893,6 @@
       },
       "value_presence": {
          "@context": {
-            "@vocab": "@null",
             "text": "skos:notation",
             "description": "skos:prefLabel",
             "meaning": "@id"
