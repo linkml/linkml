@@ -1,3 +1,4 @@
+{#linkml-validate-cli}
 # `linkml validate`
 
 ```{eval-rst} 

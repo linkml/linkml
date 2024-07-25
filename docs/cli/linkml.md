@@ -1,3 +1,4 @@
+{#linkml-cli}
 # `linkml`
 
 ```{eval-rst} 

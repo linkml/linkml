@@ -1,3 +1,4 @@
+{#linkml-generate-cli}
 # `linkml generate`
 
 ## Summary

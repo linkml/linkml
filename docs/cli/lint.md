@@ -1,3 +1,4 @@
+{#linkml-lint-cli}
 # `linkml lint`
 
 ```{eval-rst} 
