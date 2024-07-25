@@ -420,7 +420,7 @@ class PydanticGenerator(OOCodeGenerator):
         }
         slot_args["name"] = underscore(slot.name)
         slot_args["description"] = slot.description.replace('"', '\\"') if slot.description is not None else None
-        predef = self.predefined_slot_values.get(camelcase(cls.name), {}).get(slot.name, None)
+        predef = self.predefined_slot_values.get(cls.name, {}).get(slot.name, None)
         if predef is not None:
             slot_args["predefined"] = str(predef)
 

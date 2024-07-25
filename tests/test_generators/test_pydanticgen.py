@@ -323,7 +323,7 @@ imports:
   - linkml:types
 
 classes:
-  Test_Class:
+  Test:
     description: just a test
     attributes:
       attr1:
