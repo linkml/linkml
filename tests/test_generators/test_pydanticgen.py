@@ -186,9 +186,9 @@ slots:
         """
     gen = PydanticGenerator(schema_str, package=PACKAGE)
     code = gen.serialize()
-    assert "inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default_factory=dict" in code
-    assert "inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default_factory=list" in code
-    assert "not_inlined_things: Optional[List[str]] = Field(default_factory=list" in code
+    assert "inlined_things: Optional[Dict[str, Union[A, B]]] = Field(None" in code
+    assert "inlined_as_list_things: Optional[List[Union[A, B]]] = Field(None" in code
+    assert "not_inlined_things: Optional[List[str]] = Field(None" in code
 
 
 @pytest.mark.parametrize(
@@ -268,11 +268,11 @@ slots:
 def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_identifier, expected, notes):
     # Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
     expected_default_factories = {
-        "Optional[List[str]]": "Field(default_factory=list",
-        "Optional[List[B]]": "Field(default_factory=list",
-        "Optional[Dict[str, B]]": "Field(default_factory=dict",
-        "Optional[Dict[str, str]]": "Field(default_factory=dict",
-        "Optional[Dict[str, Union[str, B]]]": "Field(default_factory=dict",
+        "Optional[List[str]]": "Field(None",
+        "Optional[List[B]]": "Field(None",
+        "Optional[Dict[str, B]]": "Field(None",
+        "Optional[Dict[str, str]]": "Field(None",
+        "Optional[Dict[str, Union[str, B]]]": "Field(None",
     }
 
     sb = SchemaBuilder("test")
@@ -315,7 +315,7 @@ imports:
   - linkml:types
 
 classes:
-  Test:
+  Test_Class:
     description: just a test
     attributes:
       attr1:

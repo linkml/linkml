@@ -318,7 +318,7 @@ class PydanticGenerator(OOCodeGenerator):
         }
         slot_args["name"] = underscore(slot.name)
         slot_args["description"] = slot.description.replace('"', '\\"') if slot.description is not None else None
-        predef = self.predefined_slot_values.get(cls.name, {}).get(slot.name, None)
+        predef = self.predefined_slot_values.get(camelcase(cls.name), {}).get(slot.name, None)
         if predef is not None:
             slot_args["predefined"] = str(predef)
 
@@ -406,16 +406,7 @@ class PydanticGenerator(OOCodeGenerator):
                     elif slot.ifabsent is not None:
                         value = ifabsent_value_declaration(slot.ifabsent, sv, class_def, slot)
                         slot_values[camelcase(class_def.name)][slot.name] = value
-                    # Multivalued slots that are either not inlined (just an identifier) or are
-                    # inlined as lists should get default_factory list, if they're inlined but
-                    # not as a list, that means a dictionary
-                    elif slot.multivalued and not slot.required:
-                        has_identifier_slot = self.range_class_has_identifier_slot(slot)
 
-                        if slot.inlined and not slot.inlined_as_list and has_identifier_slot:
-                            slot_values[camelcase(class_def.name)][slot.name] = "default_factory=dict"
-                        else:
-                            slot_values[camelcase(class_def.name)][slot.name] = "default_factory=list"
             self._predefined_slot_values = slot_values
 
         return self._predefined_slot_values
