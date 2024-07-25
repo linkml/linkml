@@ -420,7 +420,7 @@ class PydanticGenerator(OOCodeGenerator):
         }
         slot_args["name"] = underscore(slot.name)
         slot_args["description"] = slot.description.replace('"', '\\"') if slot.description is not None else None
-        predef = self.predefined_slot_values.get(cls.name, {}).get(slot.name, None)
+        predef = self.predefined_slot_values.get(camelcase(cls.name), {}).get(slot.name, None)
         if predef is not None:
             slot_args["predefined"] = str(predef)
 
@@ -639,6 +639,10 @@ class PydanticGenerator(OOCodeGenerator):
                 + ",".join(['"' + x + '"' for x in get_accepted_type_designator_values(sv, slot_def, class_def)])
                 + "]"
             )
+        elif slot_def.equals_string:
+            pyrange = f'Literal["{slot_def.equals_string}"]'
+        elif slot_def.equals_string_in:
+            pyrange = "Literal[" + ", ".join([f'"{a_string}"' for a_string in slot_def.equals_string_in]) + "]"
         elif slot_range in sv.all_classes():
             pyrange = self.get_class_slot_range(
                 slot_range,
