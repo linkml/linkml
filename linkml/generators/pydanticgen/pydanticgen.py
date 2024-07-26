@@ -420,7 +420,7 @@ class PydanticGenerator(OOCodeGenerator):
         }
         slot_args["name"] = underscore(slot.name)
         slot_args["description"] = slot.description.replace('"', '\\"') if slot.description is not None else None
-        predef = self.predefined_slot_values.get(cls.name, {}).get(slot.name, None)
+        predef = self.predefined_slot_values.get(camelcase(cls.name), {}).get(slot.name, None)
         if predef is not None:
             slot_args["predefined"] = str(predef)
 
@@ -511,16 +511,7 @@ class PydanticGenerator(OOCodeGenerator):
                     elif slot.ifabsent is not None:
                         value = ifabsent_value_declaration(slot.ifabsent, sv, class_def, slot)
                         slot_values[camelcase(class_def.name)][slot.name] = value
-                    # Multivalued slots that are either not inlined (just an identifier) or are
-                    # inlined as lists should get default_factory list, if they're inlined but
-                    # not as a list, that means a dictionary
-                    elif slot.multivalued and not slot.required:
-                        has_identifier_slot = self.range_class_has_identifier_slot(slot)
 
-                        if slot.inlined and not slot.inlined_as_list and has_identifier_slot:
-                            slot_values[camelcase(class_def.name)][slot.name] = "default=None"
-                        else:
-                            slot_values[camelcase(class_def.name)][slot.name] = "default=None"
             self._predefined_slot_values = slot_values
 
         return self._predefined_slot_values
@@ -549,26 +540,6 @@ class PydanticGenerator(OOCodeGenerator):
                     parents[camelcase(class_def.name)] = class_parents
             self._class_bases = parents
         return self._class_bases
-
-    def range_class_has_identifier_slot(self, slot):
-        """
-        Check if the range class of a slot has an identifier slot, via both slot.any_of and slot.range
-        Should return False if the range is not a class, and also if the range is a class but has no
-        identifier slot
-
-        :param slot: SlotDefinition
-        :return: bool
-        """
-        sv = self.schemaview
-        has_identifier_slot = False
-        if slot.any_of:
-            for slot_range in slot.any_of:
-                any_of_range = slot_range.range
-                if any_of_range in sv.all_classes() and sv.get_identifier_slot(any_of_range, use_key=True) is not None:
-                    has_identifier_slot = True
-        if slot.range in sv.all_classes() and sv.get_identifier_slot(slot.range, use_key=True) is not None:
-            has_identifier_slot = True
-        return has_identifier_slot
 
     def get_mixin_identifier_range(self, mixin) -> str:
         sv = self.schemaview
@@ -639,6 +610,10 @@ class PydanticGenerator(OOCodeGenerator):
                 + ",".join(['"' + x + '"' for x in get_accepted_type_designator_values(sv, slot_def, class_def)])
                 + "]"
             )
+        elif slot_def.equals_string:
+            pyrange = f'Literal["{slot_def.equals_string}"]'
+        elif slot_def.equals_string_in:
+            pyrange = "Literal[" + ", ".join([f'"{a_string}"' for a_string in slot_def.equals_string_in]) + "]"
         elif slot_range in sv.all_classes():
             pyrange = self.get_class_slot_range(
                 slot_range,

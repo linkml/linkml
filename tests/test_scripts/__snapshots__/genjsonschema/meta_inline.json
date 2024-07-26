@@ -401,6 +401,10 @@
             "description": "",
             "properties": {
                 "attribute6": {
+                    "enum": [
+                        "foo",
+                        "bar"
+                    ],
                     "type": "string"
                 }
             },
