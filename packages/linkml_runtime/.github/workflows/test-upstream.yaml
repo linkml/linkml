@@ -43,6 +43,13 @@ jobs:
           path: linkml-runtime
           fetch-depth: 0
 
+      - name: Ensure tags if not run from main repo
+        if: github.repository != 'linkml/linkml-runtime'
+        working-directory: linkml-runtime
+        run: |
+          git remote add upstream https://github.com/linkml/linkml-runtime
+          git fetch upstream --tags
+
       - name: set up python
         uses: actions/setup-python@v5
         with:
@@ -53,6 +60,9 @@ jobs:
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
+
+      - name: Install dynamic versioning plugin
+        run: poetry self add "poetry-dynamic-versioning[plugin]"
 
       - name: Load cached venv
         id: cached-poetry-dependencies
