@@ -764,6 +764,8 @@
         <span class="n">constraints</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;maximum&quot;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">maximum_value</span><span class="p">)</span>
         <span class="n">constraints</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;const&quot;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_string</span><span class="p">)</span>
         <span class="n">constraints</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;const&quot;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_number</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_string_in</span><span class="p">:</span>
+            <span class="n">constraints</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;enum&quot;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_string_in</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">constraints</span>
 
     <span class="k">def</span> <span class="nf">get_subschema_for_slot</span><span class="p">(</span>
