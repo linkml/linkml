@@ -845,7 +845,7 @@
                     <span class="c1"># Multivalued slots that are either not inlined (just an identifier) or are</span>
                     <span class="c1"># inlined as lists should get default_factory list, if they&#39;re inlined but</span>
                     <span class="c1"># not as a list, that means a dictionary</span>
-                    <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span><span class="p">:</span>
+                    <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
                         <span class="n">has_identifier_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">range_class_has_identifier_slot</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
 
                         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span> <span class="ow">and</span> <span class="n">has_identifier_slot</span><span class="p">:</span>
