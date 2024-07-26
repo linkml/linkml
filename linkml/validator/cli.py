@@ -133,7 +133,7 @@ def cli(
     include_context: bool,
 ):
     """
-    Validate a LinkML Schema
+    Validate data according to a LinkML Schema
     """
     if legacy_mode:
         from linkml.validators import jsonschemavalidator
