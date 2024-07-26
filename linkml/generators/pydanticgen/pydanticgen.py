@@ -1,18 +1,20 @@
 import inspect
 import logging
 import os
+import re
 import textwrap
 from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from types import ModuleType
-from typing import Dict, List, Literal, Optional, Set, Type, TypeVar, Union, overload
+from typing import ClassVar, Dict, List, Literal, Optional, Set, Tuple, Type, TypeVar, Union, overload
 
 import click
-from jinja2 import ChoiceLoader, Environment, FileSystemLoader
+from jinja2 import ChoiceLoader, Environment, FileSystemLoader, Template
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
+    ElementName,
     SchemaDefinition,
     SlotDefinition,
     TypeDefinition,
@@ -27,7 +29,7 @@ from linkml.generators.common.type_designators import get_accepted_type_designat
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.generators.pydanticgen import includes
 from linkml.generators.pydanticgen.array import ArrayRangeGenerator, ArrayRepresentation
-from linkml.generators.pydanticgen.build import ClassResult, SlotResult
+from linkml.generators.pydanticgen.build import ClassResult, SlotResult, SplitResult
 from linkml.generators.pydanticgen.template import (
     Import,
     Imports,
@@ -114,6 +116,22 @@ class MetadataMode(str, Enum):
     NONE = None
     """
     No metadata will be included.
+    """
+
+
+class SplitMode(str, Enum):
+    FULL = "full"
+    """
+    Import all classes defined in imported schemas
+    """
+
+    AUTO = "auto"
+    """
+    Only import those classes that are actually used in the generated schema as
+    
+    * parents (``is_a``)
+    * mixins
+    * slot ranges
     """
 
 
@@ -229,12 +247,74 @@ class PydanticGenerator(OOCodeGenerator):
     
     See :class:`.MetadataMode` for mode documentation
     """
+    split: bool = False
+    """
+    Generate schema that import other schema as separate python modules
+    that import from one another, rather than rolling all into a single
+    module (default, ``False``).
+    """
+    split_pattern: str = ".{{ schema.name }}"
+    """
+    When splitting generation, imported modules need to be generated separately
+    and placed in a python package and import from each other. Since the 
+    location of those imported modules is variable -- e.g. one might want to
+    generate schema in multiple packages depending on their version -- this
+    pattern is used to generate the module portion of the import statement.
+    
+    These patterns should generally yield a relative module import, 
+    since functions like :func:`.generate_split` will generate and write files
+    relative to some base file, though this is not a requirement since custom
+    split generation logic is also allowed.
+    
+    The pattern is a jinja template string that is given the ``SchemaDefinition``
+    of the imported schema in the environment. Additional variables can be passed
+    into the jinja environment with the :attr:`.split_context` argument.
+     
+    Further modification is possible by using jinja filters.
+    
+    After templating, the string is passed through a :attr:`SNAKE_CASE` pattern
+    to replace whitespace and other characters that can't be used in module names.
+    
+    See also :meth:`.generate_module_import`, which is used to generate the
+    module portion of the import statement (and can be overridden in subclasses).
+     
+    Examples:
+    
+        for a schema named ``ExampleSchema`` and version ``1.2.3`` ...   
+    
+        ``".{{ schema.name }}"`` (the default) becomes
+        
+        ``from .example_schema import ClassA, ...``
+        
+        ``"...{{ schema.name }}.v{{ schema.version | replace('.', '_') }}"`` becomes
+        
+        ``from ...example_schema.v1_2_3 import ClassA, ...``
+    
+    """
+    split_context: Optional[dict] = None
+    """
+    Additional variables to pass into ``split_pattern`` when
+    generating imported module names. 
+    
+    Passed in as ``**kwargs`` , so e.g. if ``split_context = {'myval': 1}``
+    then one would use it in a template string like ``{{ myval }}``
+    """
+    split_mode: SplitMode = SplitMode.AUTO
+    """
+    How to filter imports from imported schema.
+    
+    See :class:`.SplitMode` for description of options
+    """
 
     # ObjectVars (identical to pythongen)
     gen_classvars: bool = True
     gen_slots: bool = True
     genmeta: bool = False
     emit_metadata: bool = True
+
+    # ClassVars
+    SNAKE_CASE: ClassVar[str] = r"(((?<!^)(?<!\.))(?=[A-Z][a-z]))|([^\w\.]+)"
+    """Substitute CamelCase and non-word characters with _"""
 
     # Private attributes
     _predefined_slot_values: Optional[Dict[str, Dict[str, str]]] = None
@@ -256,8 +336,20 @@ class PydanticGenerator(OOCodeGenerator):
             logging.error(f"Error compiling generated python code: {e}")
             raise e
 
+    def _get_classes(self, sv: SchemaView) -> Tuple[List[ClassDefinition], Optional[List[ClassDefinition]]]:
+        all_classes = sv.all_classes(imports=True).values()
+
+        if self.split:
+            local_classes = sv.all_classes(imports=False).values()
+            imported_classes = [c for c in all_classes if c not in local_classes]
+            return list(local_classes), imported_classes
+        else:
+            return list(all_classes), None
+
     @staticmethod
-    def sort_classes(clist: List[ClassDefinition]) -> List[ClassDefinition]:
+    def sort_classes(
+        clist: List[ClassDefinition], imported: Optional[List[ClassDefinition]] = None
+    ) -> List[ClassDefinition]:
         """
         sort classes such that if C is a child of P then C appears after P in the list
 
@@ -265,6 +357,9 @@ class PydanticGenerator(OOCodeGenerator):
 
         TODO: This should move to SchemaView
         """
+        if imported is not None:
+            imported = [i.name for i in imported]
+
         clist = list(clist)
         slist = []  # sorted
         while len(clist) > 0:
@@ -276,6 +371,11 @@ class PydanticGenerator(OOCodeGenerator):
                     candidates = [candidate.is_a] + candidate.mixins
                 else:
                     candidates = candidate.mixins
+
+                # remove blocking classes imported from other schemas if in split mode
+                if imported:
+                    candidates = [c for c in candidates if c not in imported]
+
                 if not candidates:
                     can_add = True
                 else:
@@ -292,11 +392,13 @@ class PydanticGenerator(OOCodeGenerator):
     def generate_class(self, cls: ClassDefinition) -> ClassResult:
         pyclass = PydanticClass(
             name=camelcase(cls.name),
-            bases=self.class_bases.get(cls.name, PydanticBaseModel.default_name),
+            bases=self.class_bases.get(camelcase(cls.name), PydanticBaseModel.default_name),
             description=cls.description.replace('"', '\\"') if cls.description is not None else None,
         )
 
-        result = ClassResult(cls=pyclass)
+        imports = self._get_imports(cls) if self.split else None
+
+        result = ClassResult(cls=pyclass, imports=imports)
 
         attributes = {}
         for sn in self.schemaview.class_slots(cls.name):
@@ -348,7 +450,10 @@ class PydanticGenerator(OOCodeGenerator):
             raise Exception(f"Could not generate python range for {cls.name}.{slot.name}")
 
         pyslot.range = pyrange
-        result = SlotResult(attribute=pyslot)
+
+        imports = self._get_imports(slot) if self.split else None
+
+        result = SlotResult(attribute=pyslot, imports=imports)
 
         if slot.array is not None:
             results = self.get_array_representations_range(slot, result.attribute.range)
@@ -428,7 +533,9 @@ class PydanticGenerator(OOCodeGenerator):
                     class_parents.extend([camelcase(mixin) for mixin in class_def.mixins])
                 if len(class_parents) > 0:
                     # Use the sorted list of classes to order the parent classes, but reversed to match MRO needs
-                    class_parents.sort(key=lambda x: self.sorted_class_names.index(x))
+                    class_parents.sort(
+                        key=lambda x: self.sorted_class_names.index(x) if x in self.sorted_class_names else -1
+                    )
                     class_parents.reverse()
                     parents[camelcase(class_def.name)] = class_parents
             self._class_bases = parents
@@ -682,6 +789,96 @@ class PydanticGenerator(OOCodeGenerator):
         model.meta = meta
         return model
 
+    def _get_imports(self, element: Union[ClassDefinition, SlotDefinition, None] = None) -> Imports:
+        """
+        Get imports that are implied by their usage in slots or classes
+        (and thus need to be imported when generating schemas in :attr:`.split` == ``True`` mode).
+
+        **Note:**
+        Since in pydantic (currently) the only things that are materialized are classes, we don't
+        import class slots from imported schemas and abandon slots, directly expressing them
+        in the model.
+
+        This is a parent placeholder method in case that changes, "give me something and return
+        a set of imports" that calls subordinate methods. If slots become materialized, keep
+        this as the directly called method rather than spaghetti-ing out another
+        independent method. This method is also isolated in anticipation of structured imports,
+        where we will need to revise our expectations of what is imported when.
+
+        Args:
+            element (:class:`.ClassDefinition` , :class:`.SlotDefinition` , None): The element
+                to get import for. If ``None`` , get all needed imports (see :attr:`.split_mode`
+        """
+        # import from local references, rather than serializing every class in every file
+        if not self.split or (self.split_mode == SplitMode.FULL and element is not None):
+            # we are either compiling this whole thing in one big file (default)
+            # or going to import all classes from the imported schemas,
+            # so we don't import anything
+            return Imports()
+
+        # gather a list of class names,
+        # remove local classes and transform to Imports later.
+        needed_classes = []
+
+        # fine to call rather than pass bc it's cached
+        all_classes = self.schemaview.all_classes(imports=True)
+        local_classes = self.schemaview.all_classes(imports=False)
+
+        if isinstance(element, ClassDefinition):
+            if element.is_a:
+                needed_classes.append(element.is_a)
+            if element.mixins:
+                needed_classes.extend(element.mixins)
+
+        elif isinstance(element, SlotDefinition):
+            # collapses `slot.range`, `slot.any_of`, and `slot.one_of` to a list
+            slot_ranges = self.schemaview.slot_range_as_union(element)
+            needed_classes.extend([a_range for a_range in slot_ranges if a_range in all_classes])
+
+        elif element is None:
+            # get all imports
+            needed_classes.extend([cls for cls in all_classes if cls not in local_classes])
+
+        else:
+            raise ValueError(f"Unsupported type of element to get imports from: f{type(element)}")
+
+        # SPECIAL CASE: classes that are not generated for structural reasons.
+        # TODO: Do we want to have a general means of skipping class generation?
+        skips = ("AnyType",)
+
+        class_imports = [
+            self._get_element_import(cls) for cls in needed_classes if (cls not in local_classes and cls not in skips)
+        ]
+        imports = Imports(imports=class_imports)
+
+        return imports
+
+    def generate_module_import(self, schema: SchemaDefinition, context: Optional[dict] = None) -> str:
+        """
+        Generate the module string for importing from python modules generated from imported schemas
+        when in :attr:`.split` mode.
+
+        Use the :attr:`.split_pattern` as a jinja template rendered with the :class:`.SchemaDefinition`
+        and any passed ``context``. Apply the :attr:`.SNAKE_CASE` regex to substitute matches with
+        ``_`` and ensure lowercase.
+        """
+        if context is None:
+            context = {}
+        module = Template(self.split_pattern).render(schema=schema, **context)
+        module = re.sub(self.SNAKE_CASE, "_", module) if self.SNAKE_CASE else module
+        module = module.lower()
+        return module
+
+    def _get_element_import(self, class_name: ElementName) -> Import:
+        """
+        Make an import object for an element from another schema, using the
+        :attr:`.split_import_pattern` to generate the module import part.
+        """
+        schema_name = self.schemaview.element_by_schema_map()[class_name]
+        schema = [s for s in self.schemaview.schema_map.values() if s.name == schema_name][0]
+        module = self.generate_module_import(schema, self.split_context)
+        return Import(module=module, objects=[ObjectImport(name=camelcase(class_name))], schema=True)
+
     def render(self) -> PydanticModule:
         sv: SchemaView
         sv = self.schemaview
@@ -691,6 +888,8 @@ class PydanticGenerator(OOCodeGenerator):
         if self.imports is not None:
             for i in self.imports:
                 imports += i
+        if self.split_mode == SplitMode.FULL:
+            imports += self._get_imports()
 
         # injected classes
         injected_classes = DEFAULT_INJECTS.copy()
@@ -704,7 +903,8 @@ class PydanticGenerator(OOCodeGenerator):
 
         # schema classes
         classes = {}
-        source_classes = self.sort_classes(list(sv.all_classes().values()))
+        source_classes, imported_classes = self._get_classes(sv)
+        source_classes = self.sort_classes(source_classes, imported_classes)
         # Don't want to generate classes when class_uri is linkml:Any, will
         # just swap in typing.Any instead down below
         source_classes = [c for c in source_classes if c.class_uri != "linkml:Any"]
@@ -731,12 +931,123 @@ class PydanticGenerator(OOCodeGenerator):
         module = self.include_metadata(module, self.schemaview.schema)
         return module
 
-    def serialize(self) -> str:
-        module = self.render()
+    def serialize(self, rendered_module: Optional[PydanticModule] = None) -> str:
+        """
+        Serialize the schema to a pydantic module as a string
+
+        Args:
+            rendered_module ( :class:`.PydanticModule` ): Optional, if schema was previously
+                rendered with :meth:`.render` , use that, otherwise :meth:`.render` fresh.
+        """
+        if rendered_module is not None:
+            module = rendered_module
+        else:
+            module = self.render()
         return module.render(self._template_environment(), self.black)
 
     def default_value_for_type(self, typ: str) -> str:
         return "None"
+
+    @classmethod
+    def generate_split(
+        cls,
+        schema: Union[str, Path, SchemaDefinition],
+        output_path: Union[str, Path] = Path("."),
+        split_pattern: Optional[str] = None,
+        split_context: Optional[dict] = None,
+        split_mode: SplitMode = SplitMode.AUTO,
+        **kwargs,
+    ) -> List[SplitResult]:
+        """
+        Generate a schema that imports from other schema as a set of python modules that
+        import from one another, rather than generating all imported classes in a single schema.
+
+        Uses ``output_path`` for the main schema from ``schema`` , and then
+        generates any imported schema (from which classes are actually used)
+        to modules whose locations are determined by the module names generated
+        by the ``split_pattern`` (see :attr:`.PydanticGenerator.split_pattern` ).
+
+        For example, for
+
+        * a ``output_path`` of ``my_dir/v1_2_3/main.py``
+        * a schema ``main`` with a version ``v1.2.3``
+        * that imports from ``s2`` with version ``v4.5.6``,
+        * and a ``split_pattern`` of ``..{{ schema.version | replace('.', '_') }}.{{ schema.name }}``
+
+        One would get:
+        * ``my_dir/v1_2_3/main.py`` , as expected
+        * that imports ``from ..v4_5_6.s2``
+        * a module at ``my_dir/v4_5_6/s2.py``
+
+        ``__init__.py`` files are generated for any directories that are between
+        the generated modules and their highest common directory.
+
+        Args:
+            schema (str, :class:`.Path` , :class:`.SchemaDefinition` ): Main schema to generate
+            output_path (str, :class:`.Path` ): Python ``.py`` module to generate main schema to
+            split_pattern (str): Pattern to use to generate module names, see :attr:`.PydanticGenerator.split_pattern`
+            split_context (dict): Additional variables to pass into jinja context when generating module import names.
+
+        Returns:
+            list[:class:`.SplitResult`]
+        """
+        output_path = Path(output_path)
+        if not output_path.suffix == ".py":
+            raise ValueError(f"output path must be a python file to write the main schema to, got {output_path}")
+
+        results = []
+
+        # --------------------------------------------------
+        # Main schema
+        # --------------------------------------------------
+        gen_kwargs = kwargs
+        gen_kwargs.update(
+            {"split": True, "split_pattern": split_pattern, "split_context": split_context, "split_mode": split_mode}
+        )
+        generator = cls(schema, **gen_kwargs)
+        # Generate the initial schema to figure out which of the imported schema actually need
+        # to be generated
+        rendered = generator.render()
+        # write schema - we use the ``output_path`` for the main schema, and then
+        # interpret all imported schema paths as relative to that
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        serialized = generator.serialize(rendered_module=rendered)
+        with open(output_path, "w") as ofile:
+            ofile.write(serialized)
+
+        results.append(
+            SplitResult(
+                main=True, source_schema=generator.schemaview.schema, path=output_path, serialized_module=serialized
+            )
+        )
+
+        # --------------------------------------------------
+        # Imported schemas
+        # --------------------------------------------------
+        imported_schema = {
+            generator.generate_module_import(sch): sch for sch in generator.schemaview.schema_map.values()
+        }
+        for generated_import in [i for i in rendered.python_imports if i.schema]:
+            import_generator = cls(imported_schema[generated_import.module], **gen_kwargs)
+            serialized = import_generator.serialize()
+            rel_path = _import_to_path(generated_import.module)
+            abs_path = (output_path.parent / rel_path).resolve()
+            abs_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(abs_path, "w") as ofile:
+                ofile.write(serialized)
+
+            results.append(
+                SplitResult(
+                    main=False,
+                    source_schema=imported_schema[generated_import.module],
+                    path=abs_path,
+                    serialized_module=serialized,
+                    module_import=generated_import.module,
+                )
+            )
+
+        _ensure_inits([r.path for r in results])
+        return results
 
 
 def _subclasses(cls: Type):
@@ -744,6 +1055,38 @@ def _subclasses(cls: Type):
 
 
 _TEMPLATE_NAMES = sorted(list(set([c.template for c in _subclasses(TemplateModel)])))
+
+
+def _import_to_path(module: str) -> Path:
+    """Make a (relative) ``Path`` object from a python module import string"""
+    # handle leading .'s separately..
+    _, dots, module = re.split(r"(^\.*)(?=\w)", module, maxsplit=1)
+    # treat zero or one dots as a relative import to the current directory
+    dir_pieces = ["../" for _ in range(max(len(dots) - 1, 0))]
+    dir_pieces.extend(module.split("."))
+    dir_pieces[-1] = dir_pieces[-1] + ".py"
+    return Path(*dir_pieces)
+
+
+def _ensure_inits(paths: List[Path]):
+    """For a set of paths, find the common root and it and all the subdirectories have an __init__.py"""
+    # if there is only one file, there is no relative importing to be done
+    if len(paths) <= 1:
+        return
+    common_path = Path(os.path.commonpath(paths))
+
+    if not (ipath := (common_path / "__init__.py")).exists():
+        with open(ipath, "w") as ifile:
+            ifile.write(" \n")
+
+    for path in paths:
+        # ensure __init__ for each directory from this path up to the common path
+        path = path.parent
+        while path != common_path:
+            if not (ipath := (path / "__init__.py")).exists():
+                with open(ipath, "w") as ifile:
+                    ifile.write(" \n")
+            path = path.parent
 
 
 @shared_arguments(PydanticGenerator)

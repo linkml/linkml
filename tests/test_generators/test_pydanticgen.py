@@ -1,5 +1,6 @@
 import importlib
 import inspect
+import re
 import typing
 from contextlib import nullcontext as does_not_raise
 from dataclasses import dataclass
@@ -22,7 +23,14 @@ from linkml_runtime.utils.schemaview import load_schema_wrap
 from pydantic import BaseModel, ValidationError
 
 from linkml.generators import pydanticgen as pydanticgen_root
-from linkml.generators.pydanticgen import MetadataMode, PydanticGenerator, array, build, pydanticgen, template
+from linkml.generators.pydanticgen import (
+    MetadataMode,
+    PydanticGenerator,
+    array,
+    build,
+    pydanticgen,
+    template,
+)
 from linkml.generators.pydanticgen.array import AnyShapeArray, ArrayRepresentation
 from linkml.generators.pydanticgen.template import (
     ConditionalImport,
@@ -883,8 +891,12 @@ def test_imports_future():
     future_2 = Import(module="__future__", objects=[ObjectImport(name="unicode_literals")])
     future_3 = Import(module="__future__", objects=[ObjectImport(name="generator_stop")])
     imports_2 = Imports(imports=[future_2, future_3])
-    # we haven't merged yet
-    assert imports_2.imports == [future_2, future_3]
+    # Declaring as a list should merge
+    assert imports_2.imports == [
+        Import(
+            module="__future__", objects=[ObjectImport(name="unicode_literals"), ObjectImport(name="generator_stop")]
+        )
+    ]
 
     imports += imports_2
     # now we should have merged and collapsed the future imports to a single expression at the top
@@ -895,6 +907,93 @@ def test_imports_future():
         ObjectImport(name="generator_stop"),
     ]
     assert not any([i.module == "__future__" for i in imports.imports[1:]])
+
+
+def test_imports_getitem():
+    """
+    Can get an import from Imports with an integer index or the name of a module
+    """
+    import_a = Import(module="module_a.submodule")
+    import_b = Import(module="module_b")
+    import_a_objects = Import(module="module_a", objects=[ObjectImport(name="object_1"), ObjectImport(name="object_2")])
+    imports = Imports(imports=[import_a, import_b, import_a_objects])
+
+    assert imports[1] == import_b
+    with pytest.raises(IndexError):
+        _ = imports[3]
+
+    assert imports["module_a.submodule"] == import_a
+    with pytest.raises(KeyError):
+        _ = imports["fake_module"]
+
+    with pytest.raises(TypeError):
+        _ = imports[(1, 2)]
+
+
+def test_imports_contains():
+    """
+    Can test whetheran Imports contains another Import or Imports
+    """
+    import_a = Import(module="module_a.submodule")
+    import_b = Import(module="module_b")
+    import_c = Import(module="module_c", alias="WhackyNamedModule")
+    import_a_objects = Import(
+        module="module_a",
+        objects=[ObjectImport(name="object_1"), ObjectImport(name="object_2"), ObjectImport(name="object_3")],
+    )
+    import_d_objects = Import(module="module_d", objects=[ObjectImport(name="object_1", alias="WhackyObjectName")])
+    all_imports = [import_a, import_b, import_c, import_a_objects, import_d_objects]
+    imports = Imports(imports=all_imports)
+
+    # everything we added should be in there
+    for an_import in all_imports:
+        assert an_import in imports
+
+    # a subset of objects
+    import_a_subset = Import(module="module_a", objects=[ObjectImport(name="object_1"), ObjectImport(name="object_3")])
+    assert import_a_subset in imports
+
+    # Imports and lists of imports succeed too
+    sub_imports = [import_a, import_d_objects]
+    sub_imports_subset = [import_b, import_a_subset]
+    assert sub_imports in imports
+    assert sub_imports_subset in imports
+    assert Imports(imports=sub_imports) in imports
+    assert Imports(imports=sub_imports_subset) in imports
+
+    # failures ------
+    # Alias mismatches fail
+    assert Import(module="module_c") not in imports
+    assert Import(module="module_d", alias="WhackyNamedModule") not in imports
+    assert Import(module="module_d", alias="WhackyObjectName") not in imports
+    assert Import(module="module_d", objects=[ObjectImport(name="object_1")]) not in imports
+    assert Import(module="module_d", objects=[ObjectImport(name="object_2", alias="WhackyObjectName")]) not in imports
+    assert Import(module="module_a", objects=[ObjectImport(name="object_1", alias="WhackyObjectName")]) not in imports
+
+    # supersets fail
+    superset_a = Import(
+        module="module_a",
+        objects=[
+            ObjectImport(name="object_1"),
+            ObjectImport(name="object_2"),
+            ObjectImport(name="object_3"),
+            ObjectImport(name="object_4"),
+        ],
+    )
+    assert superset_a not in imports
+    assert [import_a, superset_a] not in imports
+    assert Imports(imports=[import_a, superset_a]) not in imports
+    import_e = Import(module="module_e")
+    assert import_e not in imports
+    module_superset = [import_e, import_b]
+    assert module_superset not in imports
+    assert Imports(imports=module_superset) not in imports
+
+    # module/class import mismatches fail
+    assert Import(module="module_a") not in imports
+
+    with pytest.raises(TypeError):
+        _ = "a string!?!?" in imports
 
 
 def test_template_models_templates():
@@ -1720,3 +1819,182 @@ def test_linkml_meta(kitchen_sink_path, tmp_path, input_path, mode):
                 assert extra is None or "linkml_meta" not in extra
             else:
                 _test_meta(extra["linkml_meta"], slot_def, PydanticAttribute, mode)
+
+
+# --------------------------------------------------
+# Split generation
+# --------------------------------------------------
+
+
+@pytest.mark.pydanticgen_split
+def test_generate_split(input_path):
+    """
+    Schemas can be generated such that they import from imported schemas in different modules rather than
+    having all models present in a single module
+    """
+    schema = input_path("split/main.yaml")
+    generator = PydanticGenerator(schema, split=True)
+    rendered = generator.render()
+    imports = Imports(imports=rendered.python_imports)
+
+    should_have = [
+        Import(
+            module=".schema_1",
+            objects=[ObjectImport(name="S1"), ObjectImport(name="S1Any"), ObjectImport(name="S1Mixin")],
+        ),
+        Import(module=".schema_2", objects=[ObjectImport(name="S2"), ObjectImport(name="S2Any")]),
+    ]
+    shouldnt_have = [
+        Import(module=".schema_3"),
+        Import(module=".schema_3", objects=[ObjectImport(name="S3")]),
+        Import(module=".schema_1", objects=[ObjectImport(name="S1Unused")]),
+        Import(module=".schema_2", objects=[ObjectImport(name="S2Unused")]),
+    ]
+
+    for an_import in should_have:
+        assert an_import in imports
+    for an_import in shouldnt_have:
+        assert an_import not in imports
+
+    # imported classes should not be defined
+    # (we do string tests here bc we can't import/execute this module since its imports
+    # won't be present)
+    for cls_name in ("S1", "S1Any", "S2", "S2Any"):
+        assert cls_name not in rendered.classes
+
+    # inheritance should be respected
+    assert "S1" in rendered.classes["S1Inheritance"].bases
+    assert "S1Mixin" in rendered.classes["S1HasMixin"].bases
+
+
+@pytest.mark.pydanticgen_split
+def test_generate_split_full(input_path):
+    """
+    When the split mode is full, we should get all imports regardless of whether or not
+    they are used.
+
+    Basic functionality is tested above, so this just checks for the presence of the
+    unused classes
+    """
+    schema = input_path("split/main.yaml")
+    generator = PydanticGenerator(schema, split=True, split_mode=pydanticgen.SplitMode.FULL)
+    rendered = generator.render()
+    imports = Imports(imports=rendered.python_imports)
+
+    # all imported modules should be present
+    should_have = [
+        Import(
+            module=".schema_1",
+            objects=[
+                ObjectImport(name="S1"),
+                ObjectImport(name="S1Any"),
+                ObjectImport(name="S1Mixin"),
+                ObjectImport(name="S1Unused"),
+            ],
+        ),
+        Import(
+            module=".schema_2",
+            objects=[ObjectImport(name="S2"), ObjectImport(name="S2Any"), ObjectImport(name="S2Unused")],
+        ),
+        Import(module=".schema_3", objects=[ObjectImport(name="S3")]),
+    ]
+    for an_import in should_have:
+        assert an_import in imports
+
+    # All imported modules and classes should not be generated
+    for cls_name in (
+        "S1",
+        "S1Any",
+        "S1Unused",
+        "S1Mixin",
+        "S2",
+        "S2Any",
+        "S2Unused",
+        "S3",
+    ):
+        assert cls_name not in rendered.classes
+
+
+@pytest.mark.pydanticgen_split
+def test_generate_split_pattern(input_path):
+    """
+    I can customize the module part of the import to use attributes from the imported schema
+    """
+    context_val = {"context_val": "A_CONTEXT_VALUE"}
+    custom_pattern = "...{{ schema.name }}.{{ schema.annotations.custom.value }}.{{ context_val }}"
+    schema = input_path("split/main.yaml")
+    generator = PydanticGenerator(schema, split=True, split_pattern=custom_pattern, split_context=context_val)
+    rendered = generator.render()
+    imports = Imports(imports=rendered.python_imports)
+
+    should_have = [
+        Import(
+            module="...schema_1.additional_metadata.a_context_value",
+            objects=[
+                ObjectImport(name="S1"),
+                ObjectImport(name="S1Any"),
+                ObjectImport(name="S1Mixin"),
+            ],
+        ),
+        Import(
+            module="...schema_2.different_metadata.a_context_value",
+            objects=[ObjectImport(name="S2"), ObjectImport(name="S2Any")],
+        ),
+    ]
+    shouldnt_have = [
+        Import(module=".schema_3"),
+        Import(module=".schema_3", objects=[ObjectImport(name="S3")]),
+        Import(module=".schema_1", objects=[ObjectImport(name="S1Unused")]),
+        Import(module=".schema_2", objects=[ObjectImport(name="S2Unused")]),
+        Import(
+            module=".schema_1",
+            objects=[ObjectImport(name="S1"), ObjectImport(name="S1Any"), ObjectImport(name="S1Mixin")],
+        ),
+        Import(module=".schema_2", objects=[ObjectImport(name="S2"), ObjectImport(name="S2Any")]),
+    ]
+
+    for an_import in should_have:
+        assert an_import in imports, "Missed a necessary import when generating from a pattern"
+    for an_import in shouldnt_have:
+        assert an_import not in imports, (
+            "Got one of the imports with the default template " "instead of the supplied pattern"
+        )
+
+
+@pytest.mark.pydanticgen_split
+def test_generate_split_directory(input_path, tmp_path):
+    schema = input_path("split/main.yaml")
+    pattern = "..{{ schema.version | replace('.', '_') }}.{{ schema.name }}"
+    output_file = tmp_path / "test_module" / "v1_2_3" / "main.py"
+    result = PydanticGenerator.generate_split(schema, output_file, split_pattern=pattern)
+
+    # should be possible to import the main module
+    # (this checks that relative imports resolve correctly!)
+    main = [r for r in result if r.main][0]
+    imported_spec = importlib.util.spec_from_file_location("test_module.v1_2_3.main", main.path)
+    _ = importlib.util.module_from_spec(imported_spec)
+
+    # all expected files should exist in the places we expect them to be
+    pkg_path = tmp_path / "test_module"
+    all_paths = [
+        pkg_path / "__init__.py",
+        pkg_path / "v0_1_2" / "__init__.py",
+        pkg_path / "v0_1_2" / "schema_1.py",
+        pkg_path / "v1_2_3" / "__init__.py",
+        pkg_path / "v1_2_3" / "main.py",
+        pkg_path / "v2_3_4" / "__init__.py",
+        pkg_path / "v2_3_4" / "schema_2.py",
+    ]
+    for path in all_paths:
+        assert path.exists()
+
+    # we didn't generate __init__.py files outside the topmost common directory
+    assert not (tmp_path / "__init__.py").exists()
+
+
+@pytest.mark.parametrize(
+    "test,expected", [("Schema 1", "schema_1"), ("SchemaOneTwo", "schema_one_two"), ("Schema! One", "schema__one")]
+)
+@pytest.mark.pydanticgen_split
+def test_snake_case_regex(test, expected):
+    assert re.sub(PydanticGenerator.SNAKE_CASE, "_", test).lower() == expected
