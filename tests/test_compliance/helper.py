@@ -808,7 +808,11 @@ def check_data(
             # TODO: make this a validator
             if not exclude_rdf:
                 ttl_path = out_dir / f"{data_name}.ttl"
-                _convert_data_to_rdf(schema, object_to_validate, target_class, ttl_path)
+                try:
+                    _convert_data_to_rdf(schema, object_to_validate, target_class, ttl_path)
+                except Exception as e:
+                    if valid:
+                        raise e
                 # if not ttl_path.exists():
                 #    raise ValueError(f"Could not convert {object_to_validate} to RDF")
                 coherent = robot_check_coherency(ttl_path, output_path, str(ttl_path) + ".reasoned.owl")
@@ -833,7 +837,11 @@ def check_data(
             expected_behavior = ValidationBehavior.UNTESTED
         elif framework == SQL_DDL_SQLITE:
             # TODO: make this a validator
-            endpoint = _get_sql_store(schema)
+            try:
+                endpoint = _get_sql_store(schema)
+            except Exception as e:
+                if not valid:
+                    raise e
             endpoint.db_exists(force=True)
             py_cls = endpoint.native_module.__dict__[target_class]
             if valid:
@@ -854,7 +862,10 @@ def check_data(
         # validator = JsonSchemaDataValidator(schema=yaml.dump(schema))
         # errors = list(validator.iter_validate_dict(_clean_dict(object_to_validate), target_class, closed=True))
 
-        errors = list(validator.iter_results(clean_null_terms(object_to_validate), target_class))
+        try:
+            errors = list(validator.iter_results(clean_null_terms(object_to_validate), target_class))
+        except Exception as e:
+            errors = [e]
         logging.info(f"Expecting {valid}, Validating {object_to_validate} against {target_class}, errors: {errors}")
         if valid:
             assert errors == [], f"Errors found in json schema validation: {errors}"

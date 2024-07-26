@@ -356,6 +356,80 @@ classes:
     assert "attr6: Optional[datetime ] = Field(datetime(2020, 1, 1, 0, 0, 0)" in code
 
 
+def test_equals_string():
+    equals_string = "THIS_IS_THE_ONLY_VALUE"
+    another_string = "ANY OTHER STRING"
+    schema_str = f"""
+id: test_schema
+name: test_info
+imports:
+  - linkml:types
+classes:
+  A:
+    attributes:
+      my_slot:
+        range: string
+        equals_string: {equals_string}
+        required: true
+"""
+    gen = PydanticGenerator(schema_str, package=PACKAGE)
+    rendered = gen.render()
+    code = gen.serialize(rendered_module=rendered)
+    mod = compile_python(code)
+
+    assert equals_string != another_string
+
+    # our annotation should be a literal
+    annotation = mod.A.model_fields["my_slot"].annotation
+    assert annotation.__origin__ is Literal
+    assert annotation.__args__ == (equals_string,)
+
+    # can instantiate with the ONE STRING WE ALLOW
+    _ = mod.A(my_slot=equals_string)
+
+    # but any other string should fail
+    with pytest.raises(ValidationError):
+        _ = mod.A(my_slot=another_string)
+
+
+def test_equals_string_in():
+    equals_string_in = ["THIS_IS_THE_ONLY_VALUE", "THAT WAS A LIE", "THERE ARE MULTIPLE"]
+    another_string_in = ["ANY OTHER STRING THOUGH", "STRICTLY NOT ALLOWED", "WE ARE SERIOUS"]
+    schema_str = f"""
+id: test_schema
+name: test_info
+imports:
+  - linkml:types
+classes:
+  A:
+    attributes:
+      my_slot:
+        range: string
+        equals_string_in: [{", ".join(equals_string_in)}]
+        required: true
+"""
+    gen = PydanticGenerator(schema_str, package=PACKAGE)
+    rendered = gen.render()
+    code = gen.serialize(rendered_module=rendered)
+    mod = compile_python(code)
+
+    assert not any([a_string in equals_string_in for a_string in another_string_in])
+
+    # our annotation should be a literal
+    annotation = mod.A.model_fields["my_slot"].annotation
+    assert annotation.__origin__ is Literal
+    assert annotation.__args__ == tuple(equals_string_in)
+
+    # can instantiate with the ONE STRING WE ALLOW
+    for a_string in equals_string_in:
+        _ = mod.A(my_slot=a_string)
+
+    # but any other string should fail
+    for a_string in another_string_in:
+        with pytest.raises(ValidationError):
+            _ = mod.A(my_slot=a_string)
+
+
 def test_multiline_module(input_path):
     """
     Ensure that multi-line enum descriptions and enums containing
