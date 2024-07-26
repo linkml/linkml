@@ -769,22 +769,6 @@ see: <a class="reference external" href="https://docs.python.org/3/library/inspe
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.pydanticgen.PydanticGenerator.range_class_has_identifier_slot">
-<span class="sig-name descname"><span class="pre">range_class_has_identifier_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/pydanticgen/pydanticgen.html#PydanticGenerator.range_class_has_identifier_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pydanticgen.PydanticGenerator.range_class_has_identifier_slot" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if the range class of a slot has an identifier slot, via both slot.any_of and slot.range
-Should return False if the range is not a class, and also if the range is a class but has no
-identifier slot</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>slot</strong> – SlotDefinition</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.pydanticgen.PydanticGenerator.serialize">
 <span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rendered_module</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#linkml.generators.pydanticgen.template.PydanticModule" title="linkml.generators.pydanticgen.template.PydanticModule"><span class="pre">PydanticModule</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/pydanticgen/pydanticgen.html#PydanticGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pydanticgen.PydanticGenerator.serialize" title="Permalink to this definition">#</a></dt>
 <dd><p>Serialize the schema to a pydantic module as a string</p>
