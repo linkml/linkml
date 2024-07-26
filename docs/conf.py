@@ -42,6 +42,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinxcontrib.mermaid',
+    'sphinxcontrib.programoutput',
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
     'myst_nb',
