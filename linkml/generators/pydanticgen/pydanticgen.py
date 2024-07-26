@@ -128,7 +128,7 @@ class SplitMode(str, Enum):
     AUTO = "auto"
     """
     Only import those classes that are actually used in the generated schema as
-    
+
     * parents (``is_a``)
     * mixins
     * slot ranges
@@ -256,53 +256,53 @@ class PydanticGenerator(OOCodeGenerator):
     split_pattern: str = ".{{ schema.name }}"
     """
     When splitting generation, imported modules need to be generated separately
-    and placed in a python package and import from each other. Since the 
+    and placed in a python package and import from each other. Since the
     location of those imported modules is variable -- e.g. one might want to
     generate schema in multiple packages depending on their version -- this
     pattern is used to generate the module portion of the import statement.
-    
-    These patterns should generally yield a relative module import, 
+
+    These patterns should generally yield a relative module import,
     since functions like :func:`.generate_split` will generate and write files
     relative to some base file, though this is not a requirement since custom
     split generation logic is also allowed.
-    
+
     The pattern is a jinja template string that is given the ``SchemaDefinition``
     of the imported schema in the environment. Additional variables can be passed
     into the jinja environment with the :attr:`.split_context` argument.
-     
+
     Further modification is possible by using jinja filters.
-    
+
     After templating, the string is passed through a :attr:`SNAKE_CASE` pattern
     to replace whitespace and other characters that can't be used in module names.
-    
+
     See also :meth:`.generate_module_import`, which is used to generate the
     module portion of the import statement (and can be overridden in subclasses).
-     
+
     Examples:
-    
-        for a schema named ``ExampleSchema`` and version ``1.2.3`` ...   
-    
+
+        for a schema named ``ExampleSchema`` and version ``1.2.3`` ...
+
         ``".{{ schema.name }}"`` (the default) becomes
-        
+
         ``from .example_schema import ClassA, ...``
-        
+
         ``"...{{ schema.name }}.v{{ schema.version | replace('.', '_') }}"`` becomes
-        
+
         ``from ...example_schema.v1_2_3 import ClassA, ...``
-    
+
     """
     split_context: Optional[dict] = None
     """
     Additional variables to pass into ``split_pattern`` when
-    generating imported module names. 
-    
+    generating imported module names.
+
     Passed in as ``**kwargs`` , so e.g. if ``split_context = {'myval': 1}``
     then one would use it in a template string like ``{{ myval }}``
     """
     split_mode: SplitMode = SplitMode.AUTO
     """
     How to filter imports from imported schema.
-    
+
     See :class:`.SplitMode` for description of options
     """
 
@@ -518,9 +518,9 @@ class PydanticGenerator(OOCodeGenerator):
                         has_identifier_slot = self.range_class_has_identifier_slot(slot)
 
                         if slot.inlined and not slot.inlined_as_list and has_identifier_slot:
-                            slot_values[camelcase(class_def.name)][slot.name] = "default_factory=dict"
+                            slot_values[camelcase(class_def.name)][slot.name] = "default=None"
                         else:
-                            slot_values[camelcase(class_def.name)][slot.name] = "default_factory=list"
+                            slot_values[camelcase(class_def.name)][slot.name] = "default=None"
             self._predefined_slot_values = slot_values
 
         return self._predefined_slot_values

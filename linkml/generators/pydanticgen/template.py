@@ -197,7 +197,7 @@ class PydanticAttribute(TemplateModel):
     """
 
     template: ClassVar[str] = "attribute.py.jinja"
-    meta_exclude: ClassVar[List[str]] = ["from_schema", "owner", "range", "multivalued", "inlined", "inlined_as_list"]
+    meta_exclude: ClassVar[List[str]] = ["from_schema", "owner", "range", "inlined", "inlined_as_list"]
 
     name: str
     required: bool = False
@@ -327,8 +327,8 @@ class Import(TemplateModel):
     objects: Optional[List[ObjectImport]] = None
     schema: bool = False
     """
-    Whether or not this ``Import`` is importing another schema imported by the main schema -- 
-    ie. that it is not expected to be provided by the environment, but imported locally from within the package. 
+    Whether or not this ``Import`` is importing another schema imported by the main schema --
+    ie. that it is not expected to be provided by the environment, but imported locally from within the package.
     Used primarily in split schema generation, see :func:`.pydanticgen.generate_split` for example usage.
     """
 
