@@ -62,3 +62,6 @@ def test_pydanticgen_inline_dict():
 
     assert dict_field.default_factory is None
     assert list_field.default_factory is None
+
+    assert str(dict_field.default) == "PydanticUndefined"
+    assert str(list_field.default) == "PydanticUndefined"

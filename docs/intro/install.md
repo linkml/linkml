@@ -37,10 +37,15 @@ docker run -v ./:/work -w /work/ --rm -ti docker.io/linkml/linkml
 ```
 
 Then try some commands:
-```bash
-linkml-ws --help
-gen-project --help
+
+```{command-output} gen-project --help
+---
+ellipsis: 5
+---
 ```
+
+See the [generators](../generators/index.rst) section for more cli entrypoints, or 
+[continue to the tutorial](./tutorial.rst)
 
 ## Installation for contributors
 
