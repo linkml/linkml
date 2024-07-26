@@ -11,18 +11,9 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest ]
         python-version: [ "3.8", "3.9", "3.10", "3.11" ]
-        pydantic-version: [ "1", "2" ]
         exclude:
           - os: windows-latest
             python-version: "3.8"
-          - os: windows-latest
-            pydantic-version: "1"
-          - python-version: "3.8"
-            pydantic-version: "1"
-          - python-version: "3.9"
-            pydantic-version: "1"
-          - python-version: "3.10"
-            pydantic-version: "1"
     runs-on: ${{ matrix.os }}
     env:
       POETRY_VIRTUALENVS_IN_PROJECT: true
@@ -80,11 +71,6 @@ jobs:
       - name: add linkml-runtime to lockfile
         working-directory: linkml
         run: poetry add ../linkml-runtime
-
-      # use correct pydantic version
-      - name: install pydantic
-        working-directory: linkml
-        run: poetry add pydantic@^${{ matrix.pydantic-version }}
 
       # note that we run the installation step always, even if we restore a venv,
       # the cache will restore the old version of linkml-runtime, but the lockfile
