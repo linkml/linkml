@@ -433,6 +433,8 @@ class JsonSchemaGenerator(Generator):
         constraints.add_keyword("maximum", slot.maximum_value)
         constraints.add_keyword("const", slot.equals_string)
         constraints.add_keyword("const", slot.equals_number)
+        if slot.equals_string_in:
+            constraints.add_keyword("enum", slot.equals_string_in)
         return constraints
 
     def get_subschema_for_slot(

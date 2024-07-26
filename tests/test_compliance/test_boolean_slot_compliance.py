@@ -518,6 +518,211 @@ def test_class_any_of(framework, data_name, s1value, s2value, is_valid):
     )
 
 
+@pytest.mark.parametrize("value", ("EQUALS_STRING", "NOT_EQUALS_STRING"))
+@pytest.mark.parametrize("value_is_multivalued", (True, False, "wrong"))
+@pytest.mark.parametrize("multivalued", (True, False))
+@pytest.mark.parametrize(
+    "range",
+    ("string", "integer"),
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_equals_string(framework, range, multivalued, value_is_multivalued, value):
+    """
+    Base test for `equals_string`
+
+    A slot with equals_string must have
+    * range: string
+    * value equal to the specified value
+
+    the equals_string value is hardcoded in the test, no need to vary that.
+    validity is calculated within the test as well.
+
+    Args:
+        value: test data
+        value_is_multivalued: whether the value should be
+            * multiplied as a list (True)
+            * left as is (False)
+            * made a list with an incorrect value ("wrong")
+        multivalued: whether the slot definition is multivalued
+        range: range of the slot
+    """
+    # --------------------------------------------------
+    # Create value
+    # --------------------------------------------------
+    EQUALS_STRING = "EQUALS_STRING"
+
+    if value_is_multivalued == "wrong":
+        value = [value, "SOMETHING ELSE"]
+    elif value_is_multivalued:
+        value = [value] * 3
+
+    # --------------------------------------------------
+    # Decide validity
+    # --------------------------------------------------
+    ACCEPT_WRONG_TYPE = (PYDANTIC,)
+    COERCE_SCALAR = (SHACL,)
+
+    schema_generation_failure = False
+    if range != "string" and framework not in ACCEPT_WRONG_TYPE:
+        valid = False
+        schema_generation_failure = True
+    else:
+        if multivalued:
+            if not value_is_multivalued and framework not in COERCE_SCALAR:
+                valid = False
+            elif value_is_multivalued:
+                valid = all([v == EQUALS_STRING for v in value])
+            else:
+                valid = value == EQUALS_STRING
+        else:
+            valid = value == EQUALS_STRING
+
+    # --------------------------------------------------
+    # Declare behavior
+    # --------------------------------------------------
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework in (PYTHON_DATACLASSES, SQL_DDL_SQLITE):
+        # frameworks that haven't implemented equals_string
+        pytest.skip(f"{framework} has not implemented equals_string")
+
+    slots = {SLOT_S1: {"range": range, "multivalued": multivalued, "equals_string": EQUALS_STRING}}
+    classes = {CLASS_C: {"slots": [SLOT_S1]}}
+    key = f"equals_string-multivalued{multivalued}-value_is_multivalued{value_is_multivalued}-range{range}"
+
+    # --------------------------------------------------
+    # Run test
+    # --------------------------------------------------
+
+    # Frameworks that use SchemaLoader will fail at generation time if the range is not string
+    try:
+        schema = validated_schema(
+            test_equals_string,
+            key,
+            framework,
+            classes=classes,
+            slots=slots,
+            core_elements=["equals_string", "ClassDefinition"],
+        )
+    except ValueError as e:
+        if not schema_generation_failure:
+            raise e
+        else:
+            return
+    check_data(
+        schema,
+        key,
+        framework,
+        {SLOT_S1: value},
+        valid,
+        target_class=CLASS_C,
+        expected_behavior=expected_behavior,
+        description=f"validity {valid} check for value {value}",
+        # exclude_rdf=True,
+    )
+
+
+@pytest.mark.parametrize("value", ("EQUALS_STRING_A", "NOT_EQUALS_STRING"))
+@pytest.mark.parametrize("value_is_multivalued", (True, False, "wrong"))
+@pytest.mark.parametrize("multivalued", (True, False))
+@pytest.mark.parametrize(
+    "range",
+    ("string", "integer"),
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_equals_string_in(framework, range, multivalued, value_is_multivalued, value):
+    """
+    Base test for `equals_string_in`
+
+    A slot with equals_string_in must have
+    * range: string
+    * value equal to one of the specified values
+
+    the equals_string value is hardcoded in the test, no need to vary that.
+    validity is calculated within the test as well.
+
+    Args:
+        value: test data
+        value_is_multivalued: whether the value should be
+            * multiplied as a list (True)
+            * left as is (False)
+            * made a list with an incorrect value ("wrong")
+        multivalued: whether the slot definition is multivalued
+        range: range of the slot
+    """
+    # --------------------------------------------------
+    # Create value
+    # --------------------------------------------------
+    EQUALS_STRING_IN = ["EQUALS_STRING_A", "EQUALS_STRING_B"]
+
+    if value_is_multivalued == "wrong":
+        value = [value, "SOMETHING ELSE"]
+    elif value_is_multivalued:
+        value = [value] * 3
+
+    # --------------------------------------------------
+    # Decide validity
+    # --------------------------------------------------
+    ACCEPT_WRONG_TYPE = (PYDANTIC,)
+    COERCE_SCALAR = (SHACL,)
+
+    schema_generation_failure = False
+    if range != "string" and framework not in ACCEPT_WRONG_TYPE:
+        valid = False
+        schema_generation_failure = True
+    else:
+        if multivalued:
+            if not value_is_multivalued and framework not in COERCE_SCALAR:
+                valid = False
+            elif value_is_multivalued:
+                valid = all([v in EQUALS_STRING_IN for v in value])
+            else:
+                valid = value in EQUALS_STRING_IN
+        else:
+            valid = value in EQUALS_STRING_IN
+
+    # --------------------------------------------------
+    # Declare behavior
+    # --------------------------------------------------
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework in (PYTHON_DATACLASSES, SQL_DDL_SQLITE):
+        pytest.skip(f"{framework} has not implemented equals_string_in")
+
+    slots = {SLOT_S1: {"range": range, "multivalued": multivalued, "equals_string_in": EQUALS_STRING_IN}}
+    classes = {CLASS_C: {"slots": [SLOT_S1]}}
+    key = f"equals_string_in-multivalued{multivalued}-value_is_multivalued{value_is_multivalued}-range{range}"
+
+    # --------------------------------------------------
+    # Run test
+    # --------------------------------------------------
+
+    # Frameworks that use SchemaLoader will fail at generation time if the range is not string
+    try:
+        schema = validated_schema(
+            test_equals_string_in,
+            key,
+            framework,
+            classes=classes,
+            slots=slots,
+            core_elements=["equals_string_in", "ClassDefinition"],
+        )
+    except ValueError as e:
+        if not schema_generation_failure:
+            raise e
+        else:
+            return
+    check_data(
+        schema,
+        key,
+        framework,
+        {SLOT_S1: value},
+        valid,
+        target_class=CLASS_C,
+        expected_behavior=expected_behavior,
+        description=f"validity {valid} check for value {value}",
+        # exclude_rdf=True,
+    )
+
+
 @pytest.mark.parametrize(
     "schema_name,s1_range,s2_range,op,s1_expression,s2_expression,data_name,s1value,s2value,is_valid",
     [
