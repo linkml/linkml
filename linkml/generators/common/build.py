@@ -43,6 +43,13 @@ class SchemaResult(BuildResult):
 
     source: SchemaDefinition
 
+    def merge(self, other: T) -> T:
+        """
+        SchemaResults are special and don't need a merge method, since generating
+        multiple schemas at once is not common or expected behavior for a generator.
+        """
+        raise NotImplementedError("SchemaResult doesnt need a merge method, and none has been defined")
+
 
 class ClassResult(BuildResult):
     """Abstract results container for built classes"""
