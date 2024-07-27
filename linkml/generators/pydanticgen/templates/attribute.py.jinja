@@ -7,6 +7,6 @@
     {%- if minimum_value != None %}, ge={{minimum_value}}{% endif -%}
     {%- if maximum_value != None %}, le={{maximum_value}}{% endif -%}
 {%- endif -%}
-{%- if meta != None -%}
+{%- if meta -%}
     , json_schema_extra = { "linkml_meta": {{ meta | pprint | indent(width=8) }} }
 {%- endif -%})
