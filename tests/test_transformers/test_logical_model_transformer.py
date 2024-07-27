@@ -144,7 +144,7 @@ def test_unrestricted_range(default_range, preserve_class_is_a):
             raise ValueError(f"Unexpected default_range: {default_range}")
 
 
-def test_unsatifiable():
+def test_unsatisfiable():
     """
     Test a schema that is unsatisfiable, e.g. when maximum/minimum value ranges do not intersect.
 
@@ -155,7 +155,7 @@ def test_unsatifiable():
     """
     sb = SchemaBuilder()
     sb.add_class("Thing", slots=["id", "name"])
-    sb.add_class("Person", slots={"age": {"range": "integer"}}, is_a="Thing")
+    sb.add_class("Person", slots={"age": {"range": "integer"}, "pets": {"multivalued": True}}, is_a="Thing")
     sb.add_class("Person2", is_a="Person", slot_usage={"age": {"range": "string"}})
     tr = LogicalModelTransformer()
     sb.add_defaults()
@@ -174,6 +174,64 @@ def test_unsatifiable():
     assert sb.schema.slots["age"].minimum_value == 0, "check direct assignment"
     with pytest.raises(UnsatisfiableAttribute):
         _ = tr.transform()
+
+
+@pytest.mark.parametrize(
+    "person_min,person_max,person2_min,person2_max",
+    [
+        (0, 5, 1, 3),
+        (2, None, None, 1),
+        (None, None, None, None),
+        (1, 1, 1, 1),
+        (2, 1, None, None),
+        (None, None, 2, 1),
+    ],
+)
+def test_cardinality(person_min, person_max, person2_min, person2_max):
+    """
+    Test a schema that is unsatisfiable via min/max cardinality
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Thing", slots=["id", "name"])
+    sb.add_class(
+        "Person",
+        slots={"pets": {"multivalued": True, "minimum_cardinality": person_min, "maximum_cardinality": person_max}},
+        is_a="Thing",
+    )
+    sb.add_class(
+        "Person2",
+        is_a="Person",
+        slot_usage={"pets": {"minimum_cardinality": person2_min, "maximum_cardinality": person2_max}},
+    )
+    tr = LogicalModelTransformer()
+    sb.add_defaults()
+    tr.set_schema(sb.schema)
+    if person_min is None:
+        entailed_person2_min = person2_min
+    elif person2_min is None:
+        entailed_person2_min = person_min
+    else:
+        entailed_person2_min = max(person_min, person2_min)
+    if person_max is None:
+        entailed_person2_max = person2_max
+    elif person2_max is None:
+        entailed_person2_max = person_max
+    else:
+        entailed_person2_max = min(person_max, person2_max)
+    if entailed_person2_max is None or entailed_person2_min is None:
+        satisfiable = True
+    else:
+        satisfiable = entailed_person2_min <= entailed_person2_max
+    if satisfiable:
+        s2 = tr.transform()
+        entailed_att = s2.classes["Person2"].attributes["pets"]
+        assert (entailed_att.minimum_cardinality, entailed_att.maximum_cardinality) == (
+            entailed_person2_min,
+            entailed_person2_max,
+        )
+    else:
+        with pytest.raises(UnsatisfiableAttribute):
+            _ = tr.transform()
 
 
 def test_type_inheritance():

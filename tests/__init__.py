@@ -77,6 +77,10 @@ USE_LOCAL_IMPORT_MAP = test_settings.getboolean("USE_LOCAL_IMPORT_MAP", False)
 # set by --with-output cli flag
 WITH_OUTPUT = False
 
+# set by --with-logical-model-transformer cli flag
+# see https://github.com/linkml/linkml/issues/2234
+WITH_LOGICAL_MODEL_TRANSFORMER = False
+
 # For separating metamodel tests from other base model tests
 LOCAL_MODEL_YAML_NO_META = [model for model in LOCAL_MODEL_YAML_FILES if model != LOCAL_METAMODEL_YAML_FILE]
 NAMESPACES_NO_META = [ns for ns in NAMESPACES if ns != METAMODEL_NAMESPACE]

@@ -81,6 +81,8 @@ HERITABLE_METASLOT = [
     "range_expression",
     "minimum_value",
     "maximum_value",
+    "minimum_cardinality",
+    "maximum_cardinality",
     "pattern",
     "structured_pattern",
     "required",
@@ -108,6 +110,8 @@ DIRECT_ROLL_DOWN = ["multivalued", "key", "identifier", "designates_type"]
 HERITABLE_TYPE_METASLOT = [
     "minimum_value",
     "maximum_value",
+    # "minimum_cardinality",
+    # "maximum_cardinality",
     "pattern",
     "structured_pattern",
     "all_of",
@@ -599,6 +603,10 @@ class LogicalModelTransformer(ModelTransformer):
         return logictools.Variable("value")
 
     @property
+    def _length_var(self) -> logictools.Variable:
+        return logictools.Variable("length")
+
+    @property
     def _type_var(self) -> logictools.Variable:
         return logictools.Variable("type")
 
@@ -609,10 +617,15 @@ class LogicalModelTransformer(ModelTransformer):
         exprs = []
         value_var = self._value_var
         type_var = self._type_var
+        length_var = self._length_var
         if slot_expression.minimum_value is not None:
             exprs.append(value_var >= slot_expression.minimum_value)
         if slot_expression.maximum_value is not None:
             exprs.append(value_var <= slot_expression.maximum_value)
+        if slot_expression.minimum_cardinality is not None:
+            exprs.append(length_var >= slot_expression.minimum_cardinality)
+        if slot_expression.maximum_cardinality is not None:
+            exprs.append(length_var <= slot_expression.maximum_cardinality)
         if slot_expression.pattern is not None:
             exprs.append(logictools.Term(MATCHES_PREDICATE, value_var, slot_expression.pattern))
         if slot_expression.range:
@@ -697,6 +710,17 @@ class LogicalModelTransformer(ModelTransformer):
                     return AnonymousSlotExpression(maximum_value=val)
                 elif expr.predicate == "<":
                     return AnonymousSlotExpression(maximum_value=val - 1)
+                else:
+                    raise ValueError(f"Unknown predicate {expr.predicate} for {var}")
+            elif var == self._length_var:
+                if expr.predicate == ">=":
+                    return AnonymousSlotExpression(minimum_cardinality=val)
+                elif expr.predicate == ">":
+                    return AnonymousSlotExpression(minimum_cardinality=val + 1)
+                elif expr.predicate == "<=":
+                    return AnonymousSlotExpression(maximum_cardinality=val)
+                elif expr.predicate == "<":
+                    return AnonymousSlotExpression(maximum_cardinality=val - 1)
                 else:
                     raise ValueError(f"Unknown predicate {expr.predicate} for {var}")
             elif var == self._type_var:
