@@ -1,23 +1,67 @@
 """
-A model transformer that transforms a schema into logical form with inheritance remaoved.
+A model transformer that transforms a schema into logical form.
 
 Formally, this transformer generates a logical model of the schema in which inheritance
-of slots/attributes is replaced by boolean conjunctions.
+of slots/attributes is replaced by boolean conjunctions, and the final form is simplified.
 
-For example, given a slot s and two classes C and D, where C is_a D. If both C and D
-place constraints on s (for example, C may refine the range, or make more restricted
-value constraints), then an attribute is generated for C that for which the conjunction
-of constraints in both classes hold.
+For example, given a slot `s`:
 
-These logical constraints are then simplified by translating to disjunctive normal form,
-and applying simplification rules.
+```
+slots:
+  s:
+    range: integer
+    minimum_value: 1
+```
+
+Which is reused and refined by C and C (where C is_a D):
+
+```
+classes:
+  D:
+    slots:
+     - s
+    slot_usage:
+      s:
+         minimum_value: 2
+  C:
+    is_a: D
+    slot_usage:
+      s:
+        minimum_value: 3
+```
+
+The hierarchy unrolling step will create an attribute `s` for C that is the conjunction of usages for that
+class, ancestors, and the base slot:
+
+```
+s:
+    range: integer
+    all_of:
+        - minimum_value: 1
+        - minimum_value: 2
+        - minimum_value: 3
+```
+
+This is then simplified using symbolic reasoning to:
+
+```
+s:
+    range: integer
+    minimum_value: 3
+```
+
+See logictools.py for the symbolic reasoning engine.
+
+
+
 """
 
 import logging
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Iterator, List, Union
+from typing import Any, Callable, Dict, Iterator, List, Union, Optional
 
+from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.linkml_model import ClassDefinitionName, SchemaDefinition
 from linkml_runtime.linkml_model.meta import (
@@ -103,6 +147,7 @@ class LogicalModelTransformer(ModelTransformer):
     >>> _ = sb.add_class("Person", slots={"age": {"range": "integer"}}, is_a="Thing")
     >>> _ = sb.add_class("Organization", slots={"category": {"range": "OrganizationType"}}, is_a="Thing")
     >>> _ = sb.add_enum("OrganizationType", ["commercial", "non-profit"])
+    >>> _ = sb.add_defaults()
     >>> from linkml.transformers.logical_model_transformer import LogicalModelTransformer
     >>> tr = LogicalModelTransformer()
     >>> tr.set_schema(sb.schema)
@@ -113,8 +158,10 @@ class LogicalModelTransformer(ModelTransformer):
     attributes:
       id:
         name: id
+        range: string
       name:
         name: name
+        range: string
       age:
         name: age
         range: integer
@@ -141,6 +188,10 @@ class LogicalModelTransformer(ModelTransformer):
         - range: Thing
 
     ...
+
+    This has "compiled away" the hierarchy. The type of the values of 'entities' for Container can
+    be checked against the any_of expression, without needing to know the full class hierarchy.
+    This is useful when compiling to a framework that does not support inheritance.
 
     If you are compiling to a framework that does have inheritance, then you can specify that these are
     preserved:
@@ -173,6 +224,9 @@ class LogicalModelTransformer(ModelTransformer):
         name: entities2
         multivalued: true
         any_of:
+        - range: Organization
+        - range: Person
+
     ...
 
     Note that defaults are always applied after reasoning. So if you set a default_range to
@@ -211,6 +265,10 @@ class LogicalModelTransformer(ModelTransformer):
     minimum_value: 40
     maximum_value: 60
 
+    Here the slot-level constraints seem to have been "overridden". In fact, LinkML is monotonic, and there
+    is no overriding. In fact the constraints have been combined as a conjunction (And), and then the resulting
+    entailed attribute has been *simplified* (age >= 40 & age >= 0 ==> age >= 40).
+
     The reasoning engine can also detect unsatisfiable constraints:
 
     >>> from linkml.transformers.logical_model_transformer import UnsatisfiableAttribute
@@ -227,6 +285,9 @@ class LogicalModelTransformer(ModelTransformer):
     Let's get rid of the problematic class:
 
     >>> del sb.schema.classes["YoungAdult"]
+
+    And try a different example - we will try and override the range of the age slot with a string:
+
     >>> _ = sb.add_class("Person2", is_a="Person", slot_usage={"age": {"range": "string"}})
     >>> tr.set_schema(sb.schema)
     >>> try:
@@ -236,8 +297,6 @@ class LogicalModelTransformer(ModelTransformer):
     <BLANKLINE>
     Attribute Person2.age is unsatisfiable
     <BLANKLINE>
-
-
 
     """
 
@@ -277,16 +336,24 @@ class LogicalModelTransformer(ModelTransformer):
     a lack of range assignment.
     """
 
-    def transform(self, tgt_schema_name: str = None, simplify=True, **kwargs) -> Any:
+    reason_over_metamodel_slots: Optional[List[str]] = None
+    """
+    If set, only reason over the specified metamodel slots.
+    """
+
+    def transform(self, tgt_schema_name: str = None, simplify=True, force_any_of=False, **kwargs) -> Any:
         """
-        Transform the schema to a logical model, translating inheritance to boolean expressions.
+        Transform the schema using logical reasoning, materializing entailed simple attributes.
 
         :param tgt_schema_name:
         :param simplify: If True (default), simplify the schema after transformation
+        :param force_any_of: If True, force the use of any_of expressions for range, even for singletons
         :return:
         """
         sv = self.schemaview
-        target_schema = deepcopy(self.source_schema)
+        target_schemaview = SchemaView(deepcopy(self.source_schema))
+        target_schemaview.merge_imports()
+        target_schema = target_schemaview.schema
         for tn, typ in target_schema.types.items():
             ancs = sv.type_ancestors(tn, reflexive=False)
             logging.debug(f"Unrolling type {tn}, merging {len(ancs)}")
@@ -312,7 +379,7 @@ class LogicalModelTransformer(ModelTransformer):
             self._roll_down(target_schema, cn, ancs)
         self.apply_defaults(target_schema)
         if simplify:
-            self.simplify(target_schema)
+            self.simplify(target_schema, force_any_of=force_any_of)
         if self.tidy_slots:
             target_schema.slots = {}
         if self.tidy_inheritance:
@@ -366,7 +433,8 @@ class LogicalModelTransformer(ModelTransformer):
         :return:
         """
         new_slot_dict = {}
-        for p in HERITABLE_METASLOT:
+        heritable_metaslots = self.reason_over_metamodel_slots or HERITABLE_METASLOT
+        for p in heritable_metaslots:
             pv = getattr(source, p)
             if pv is not None and pv != [] and pv != {} and pv is not False:
                 new_slot_dict[p] = pv
@@ -377,7 +445,7 @@ class LogicalModelTransformer(ModelTransformer):
         sv = self.schemaview
         if source.range in sv.all_types():
             typ = sv.get_type(source.range)
-            for p in set(HERITABLE_TYPE_METASLOT).intersection(HERITABLE_METASLOT):
+            for p in set(HERITABLE_TYPE_METASLOT).intersection(heritable_metaslots):
                 pv = getattr(typ, p)
                 if pv is not None and pv != [] and pv != {} and pv is not False:
                     new_slot_dict[p] = pv
@@ -395,6 +463,9 @@ class LogicalModelTransformer(ModelTransformer):
         """
         new_slot_dict = {}
         for p in HERITABLE_TYPE_METASLOT:
+            if p in ["repr"]:
+                # not on anonymous types
+                continue
             pv = getattr(source, p)
             if pv is not None and pv != [] and pv != {} and pv is not False:
                 new_slot_dict[p] = pv
@@ -431,7 +502,7 @@ class LogicalModelTransformer(ModelTransformer):
         for sx in att.all_of + att.exactly_one_of + att.none_of + att.any_of:
             yield from self._collection_slot_expressions(sx, filter_function)
 
-    def simplify(self, target_schema: SchemaDefinition):
+    def simplify(self, target_schema: SchemaDefinition, force_any_of=False):
         for cls in target_schema.classes.values():
             for att in cls.attributes.values():
                 x = self._as_logical_expression(att)
@@ -441,6 +512,9 @@ class LogicalModelTransformer(ModelTransformer):
                 if logictools.is_contradiction(x):
                     raise UnsatisfiableAttribute(f"Attribute {cls.name}.{att.name} is unsatisfiable")
                 self._simplify_member_ofs(x)
+                if force_any_of:
+                    if not isinstance(x, logictools.Or):
+                        x = logictools.Or(x)
                 logger.debug(f"Simplified member of: {x}")
                 simplified_att = self._from_logical_expression(x)
                 for k, v in simplified_att.__dict__.items():
@@ -576,6 +650,7 @@ class LogicalModelTransformer(ModelTransformer):
                 "none_of",
                 "any_of",
             ]:
+                # already accounted for
                 continue
             v = getattr(slot_expression, p, None)
             if v is not None and v != [] and v != {}:

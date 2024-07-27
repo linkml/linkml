@@ -1351,7 +1351,7 @@ def test_class_boolean_with_expressions(
 
 
 @pytest.mark.parametrize(
-    "schema_name,range,op,expression1,expression2,data_name,value,is_valid",
+    "schema_name,range,op,expression1,expression2,data_name,value,is_valid,unsatisfiable",
     [
         # any-type
         (
@@ -1363,6 +1363,7 @@ def test_class_boolean_with_expressions(
             "matches_one",
             "x",
             True,
+            False,
         ),
         (
             "any_of_anytype",
@@ -1372,6 +1373,7 @@ def test_class_boolean_with_expressions(
             {"range": "string", "equals_string": "y"},
             "matches_none",
             "z",
+            False,
             False,
         ),
         (
@@ -1383,6 +1385,7 @@ def test_class_boolean_with_expressions(
             "matches_str",
             "x",
             True,
+            False,
         ),
         (
             "mixed",
@@ -1393,6 +1396,7 @@ def test_class_boolean_with_expressions(
             "matches_int",
             8,
             True,
+            False,
         ),
         (
             "mixed",
@@ -1403,23 +1407,24 @@ def test_class_boolean_with_expressions(
             "matches_none",
             1,
             False,
+            False,
         ),
-        ("mixed_cls_int", "Any", "any_of", {"range": CLASS_D}, {"range": "integer"}, "matches_int", 1, True),
-        ("mixed_cls_int", "Any", "any_of", {"range": CLASS_D}, {"range": "integer"}, "matches_obj", "test:x", True),
-        ("mixed_enum_int", "Any", "any_of", {"range": ENUM_E}, {"range": "integer"}, "matches_int", 1, True),
-        ("mixed_enum_int", "Any", "any_of", {"range": ENUM_E}, {"range": "integer"}, "matches_pv", PV_1, True),
-        ("mixed_enum_int", "Any", "any_of", {"range": ENUM_E}, {"range": "integer"}, "matches_none", "z", False),
-        ("mixed_all_of_enum_enum", "Any", "all_of", {"range": ENUM_E}, {"range": ENUM_F}, "matches_pv", PV_2, True),
-        ("mixed_all_of_enum_enum", "Any", "all_of", {"range": ENUM_E}, {"range": ENUM_F}, "matches_pv", PV_1, False),
-        ("mixed_all_of_enum_enum", "Any", "all_of", {"range": ENUM_E}, {"range": ENUM_F}, "matches_pv", PV_3, False),
-        ("mixed_all_of_enum_enum", "Any", "all_of", {"range": ENUM_E}, {"range": ENUM_F}, "matches_pv", "z", False),
+        ("mixed_cls_int", "Any", "any_of", {"range": CLASS_D}, {"range": "integer"}, "matches_int", 1, True, False),
+        ("mixed_cls_int", "Any", "any_of", {"range": CLASS_D}, {"range": "integer"}, "matches_obj", "test:x", True, False),
+        ("mixed_enum_int", "Any", "any_of", {"range": ENUM_E}, {"range": "integer"}, "matches_int", 1, True, False),
+        ("mixed_enum_int", "Any", "any_of", {"range": ENUM_E}, {"range": "integer"}, "matches_pv", PV_1, True, False),
+        ("mixed_enum_int", "Any", "any_of", {"range": ENUM_E}, {"range": "integer"}, "matches_none", "z", False, False),
+        ("mixed_all_of_enum_enum", "Any", "all_of", {"range": ENUM_E}, {"range": ENUM_F}, "matches_pv", PV_2, True, True),
+        ("mixed_all_of_enum_enum", "Any", "all_of", {"range": ENUM_E}, {"range": ENUM_F}, "matches_pv", PV_1, False, True),
+        ("mixed_all_of_enum_enum", "Any", "all_of", {"range": ENUM_E}, {"range": ENUM_F}, "matches_pv", PV_3, False, True),
+        ("mixed_all_of_enum_enum", "Any", "all_of", {"range": ENUM_E}, {"range": ENUM_F}, "matches_pv", "z", False, True),
         # mixed cardinality; not yet allowed at expression level
         # ("todo, "string", "any_of", {"multivalued": True}, {"multivalued": False}, "match_sv", "x", True),
         # ("todo", "string", "any_of", {"multivalued": True}, {"multivalued": False}, "match_mv", ["x"], True),
         # strings
-        ("any_of_streq", "string", "any_of", {"equals_string": "x"}, {"equals_string": "y"}, "none", None, True),
-        ("any_of_streq", "string", "any_of", {"equals_string": "x"}, {"equals_string": "y"}, "matches", "x", True),
-        ("any_of_streq", "string", "any_of", {"equals_string": "x"}, {"equals_string": "y"}, "no_matches", "z", False),
+        ("any_of_streq", "string", "any_of", {"equals_string": "x"}, {"equals_string": "y"}, "none", None, True, False),
+        ("any_of_streq", "string", "any_of", {"equals_string": "x"}, {"equals_string": "y"}, "matches", "x", True, False),
+        ("any_of_streq", "string", "any_of", {"equals_string": "x"}, {"equals_string": "y"}, "no_matches", "z", False, False),
         # list of strings
         (
             "any_of_streq_MV",
@@ -1429,7 +1434,7 @@ def test_class_boolean_with_expressions(
             {"equals_string_in": ["y"]},
             "none",
             None,
-            True,
+            True, False
         ),
         (
             "any_of_streq_MV",
@@ -1439,7 +1444,7 @@ def test_class_boolean_with_expressions(
             {"equals_string_in": ["y", "a"]},
             "one",
             ["y", "z"],
-            False,
+            False, False,
         ),
         (
             "any_of_streq_MV",
@@ -1449,7 +1454,7 @@ def test_class_boolean_with_expressions(
             {"equals_string_in": ["y", "a"]},
             "neither",
             ["z"],
-            False,
+            False, False,
         ),
         # strings, object reference
         (
@@ -1460,7 +1465,7 @@ def test_class_boolean_with_expressions(
             {"equals_string": "TEST:y"},
             "none",
             None,
-            True,
+            True, False,
         ),
         (
             "any_of_streq_ref",
@@ -1470,7 +1475,7 @@ def test_class_boolean_with_expressions(
             {"equals_string": "TEST:y"},
             "match",
             "TEST:x",
-            True,
+            True, False,
         ),
         (
             "any_of_streq_ref",
@@ -1480,28 +1485,28 @@ def test_class_boolean_with_expressions(
             {"equals_string": "TEST:y"},
             "neither",
             "TEST:z",
-            False,
+            False, False,
         ),
         # ints, all_of
-        ("all_of_min_min_INT", "integer", "all_of", {"minimum_value": 10}, {"minimum_value": 20}, "none", None, True),
-        ("all_of_min_min_INT", "integer", "all_of", {"minimum_value": 10}, {"minimum_value": 20}, "both", 20, True),
-        ("all_of_min_min_INT", "integer", "all_of", {"minimum_value": 10}, {"minimum_value": 20}, "one", 10, False),
-        ("all_of_min_min_INT", "integer", "all_of", {"minimum_value": 10}, {"minimum_value": 20}, "neither", 0, False),
+        ("all_of_min_min_INT", "integer", "all_of", {"minimum_value": 10}, {"minimum_value": 20}, "none", None, True, False),
+        ("all_of_min_min_INT", "integer", "all_of", {"minimum_value": 10}, {"minimum_value": 20}, "both", 20, True, False),
+        ("all_of_min_min_INT", "integer", "all_of", {"minimum_value": 10}, {"minimum_value": 20}, "one", 10, False, False),
+        ("all_of_min_min_INT", "integer", "all_of", {"minimum_value": 10}, {"minimum_value": 20}, "neither", 0, False, False),
         # ints, none_of
-        ("none_of_min_min_INT", "integer", "none_of", {"minimum_value": 10}, {"minimum_value": 20}, "none", None, True),
-        ("none_of_min_min_INT", "integer", "none_of", {"minimum_value": 10}, {"minimum_value": 20}, "both", 20, False),
-        ("none_of_min_min_INT", "integer", "none_of", {"minimum_value": 10}, {"minimum_value": 20}, "first", 10, False),
-        ("none_of_min_min_INT", "integer", "none_of", {"minimum_value": 10}, {"minimum_value": 20}, "neither", 0, True),
+        ("none_of_min_min_INT", "integer", "none_of", {"minimum_value": 10}, {"minimum_value": 20}, "none", None, True, False),
+        ("none_of_min_min_INT", "integer", "none_of", {"minimum_value": 10}, {"minimum_value": 20}, "both", 20, False, False),
+        ("none_of_min_min_INT", "integer", "none_of", {"minimum_value": 10}, {"minimum_value": 20}, "first", 10, False, False),
+        ("none_of_min_min_INT", "integer", "none_of", {"minimum_value": 10}, {"minimum_value": 20}, "neither", 0, True, False),
         # ints, any_of
-        ("any_of_min_min_INT", "integer", "any_of", {"minimum_value": 10}, {"minimum_value": 20}, "none", None, True),
-        ("any_of_min_min_INT", "integer", "any_of", {"minimum_value": 10}, {"minimum_value": 20}, "both", 20, True),
-        ("any_of_min_min_INT", "integer", "any_of", {"minimum_value": 10}, {"minimum_value": 20}, "first", 10, True),
-        ("any_of_min_min_INT", "integer", "any_of", {"minimum_value": 10}, {"minimum_value": 20}, "neither", 0, False),
+        ("any_of_min_min_INT", "integer", "any_of", {"minimum_value": 10}, {"minimum_value": 20}, "none", None, True, False),
+        ("any_of_min_min_INT", "integer", "any_of", {"minimum_value": 10}, {"minimum_value": 20}, "both", 20, True, False),
+        ("any_of_min_min_INT", "integer", "any_of", {"minimum_value": 10}, {"minimum_value": 20}, "first", 10, True, False),
+        ("any_of_min_min_INT", "integer", "any_of", {"minimum_value": 10}, {"minimum_value": 20}, "neither", 0, False, False),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_slot_boolean_with_expressions(
-    framework, schema_name, range, op, expression1, expression2, data_name, value, is_valid
+    framework, schema_name, range, op, expression1, expression2, data_name, value, is_valid, unsatisfiable
 ):
     """
     Tests behavior of any_of for slot expressions.
@@ -1573,6 +1578,7 @@ def test_slot_boolean_with_expressions(
         slots=slots,
         enums=enums,
         core_elements=["any_of", "ClassDefinition"],
+        unsatisfiable=unsatisfiable,
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if not is_valid and framework not in [OWL, JSON_SCHEMA]:
@@ -1673,6 +1679,7 @@ def test_min_max(framework, min_val, max_val, equals_number: Optional[int], valu
         classes=classes,
         core_elements=["minimum_value", "maximum_value", "range"],
         comments=comments,
+        unsatisfiable=not satisfiable,
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if equals_number is not None and is_valid:

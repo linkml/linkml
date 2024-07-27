@@ -18,13 +18,15 @@ OUTPUT_DIR = THIS_DIR / "output"
 @pytest.mark.parametrize("abstract", [False, True])
 @pytest.mark.parametrize("default_range", [None, "string", "Any"])
 @pytest.mark.parametrize("preserve_class_is_a", [False, True])
-def test_simple(default_range, preserve_class_is_a, abstract):
+@pytest.mark.parametrize("force_any_of", [False, True])
+def test_simple(default_range, preserve_class_is_a, abstract, force_any_of):
     """
     Test with a simple schema structure involving inheritance.
 
     :param default_range:
     :param preserve_class_is_a:
     :param abstract:
+    :param force_any_of:
     :return:
     """
     sb = SchemaBuilder()
@@ -38,18 +40,27 @@ def test_simple(default_range, preserve_class_is_a, abstract):
     sb.add_defaults()
     sb.schema.default_range = default_range
     tr.set_schema(sb.schema)
-    flat_schema = tr.transform()
+    flat_schema = tr.transform(force_any_of=force_any_of)
     thing = flat_schema.classes["Thing"]
     actual_default_range = default_range if default_range != "Any" else None
-    assert thing.attributes["name"].range == actual_default_range
+    if not force_any_of:
+        assert thing.attributes["name"].range == actual_default_range
+    else:
+        assert len(thing.attributes["name"].any_of) == 1
+        assert thing.attributes["name"].any_of[0].range == actual_default_range
     person = flat_schema.classes["Person"]
-    assert person.attributes["age"].range == "integer"
+    if not force_any_of:
+        assert person.attributes["age"].range == "integer"
+    else:
+        assert len(person.attributes["age"].any_of) == 1
+        assert person.attributes["age"].any_of[0].range == "integer"
     if preserve_class_is_a:
         assert "id" not in person.attributes
     else:
         assert person.attributes["id"].identifier is True
-        assert person.attributes["name"].range == actual_default_range
-        assert person.attributes["name"].required is True
+        if not force_any_of:
+            assert person.attributes["name"].range == actual_default_range
+            assert person.attributes["name"].required is True
     sb.add_class("Organization", is_a="Thing")
     sb.add_class("Container", slots=[SlotDefinition("entities", range="Thing", multivalued=True)])
     tr.set_schema(sb.schema)
@@ -58,7 +69,8 @@ def test_simple(default_range, preserve_class_is_a, abstract):
     entities_att = container.attributes["entities"]
     if preserve_class_is_a:
         # range is preserved
-        assert entities_att.range == "Thing"
+        if not force_any_of:
+            assert entities_att.range == "Thing"
     else:
         # when fully unrolled a non-leaf class as range becomes as any_of ranges
         assert entities_att.range is None
@@ -75,6 +87,13 @@ def test_simple(default_range, preserve_class_is_a, abstract):
 @pytest.mark.parametrize("default_range", [None, "string", "Any"])
 @pytest.mark.parametrize("preserve_class_is_a", [False, True])
 def test_unrestricted_range(default_range, preserve_class_is_a):
+    """
+    Test a schema with unrestricted ranges at slot level.
+
+    :param default_range:
+    :param preserve_class_is_a:
+    :return:
+    """
     sb = SchemaBuilder()
     sb.add_class("Thing", slots=["id", "name", "a_number", "foo"])
     sb.add_class(
@@ -127,7 +146,7 @@ def test_unrestricted_range(default_range, preserve_class_is_a):
 
 def test_unsatifiable():
     """
-    Test a schema that is unsatisfiable.
+    Test a schema that is unsatisfiable, e.g. when maximum/minimum value ranges do not intersect.
 
     Tests for:
 

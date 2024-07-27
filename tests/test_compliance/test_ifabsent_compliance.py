@@ -14,8 +14,9 @@ from tests.test_compliance.helper import (
     check_data,
     validated_schema,
 )
-from tests.test_compliance.test_compliance import CLASS_C, CLASS_D, CORE_FRAMEWORKS, SLOT_ID, SLOT_S1
+from tests.test_compliance.test_compliance import CLASS_C, CLASS_D, CORE_FRAMEWORKS, SLOT_ID, SLOT_S1, ENUM_E, PV_1
 
+FUZZ_STR = "a b_c!@#$%^&*_+{}|:<>?[]()'\""
 
 @pytest.mark.parametrize(
     "schema_name,range,ifabsent,data_name,initial_value,expected,schema_valid,valid",
@@ -23,11 +24,16 @@ from tests.test_compliance.test_compliance import CLASS_C, CLASS_D, CORE_FRAMEWO
         ("str", "string", "string(x)", "no_value", None, "x", True, True),
         ("str", "string", "string(x)", "has_value", "y", "x", True, True),
         ("int", "integer", "int(5)", "no_value", None, 5, True, True),
+        ("float", "float", "float(5.0)", "no_value", None, 5.0, True, True),
         ("boolT", "boolean", "true", "no_value", None, True, True, True),
         ("boolF", "boolean", "false", "no_value", None, False, True, True),
         ("class_curie", "uriorcurie", "class_curie", "no_value", None, "ex:C", True, True),
         ("D", CLASS_D, "string(p1)", "no_value", None, "p1", False, True),
-        ("incompat", "integer", "string(x)", "has_value", None, "x", True, False),
+        ("incompat_string", "integer", "string(x)", "has_value", None, None, True, False),
+        ("incompat_bool", "boolean", "string(x)", "has_value", None, None, True, False),
+        ("incompat_float", "float", "string(x)", "has_value", None, None, True, False),
+        ("fuzz_str", "string", f"string({FUZZ_STR})", "has_value", None, FUZZ_STR, True, True),
+        #("enum", ENUM_E, f"(EnumName({PV_1})", "has_value", None, PV_1, True, True),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
@@ -54,10 +60,13 @@ def test_ifabsent(framework, schema_name, range, ifabsent, data_name, initial_va
             }
         }
     }
+    enums = {}
+    if range == ENUM_E:
+        enums = {ENUM_E: {"permissible_values": {PV_1: {}}}}
     if range == CLASS_D:
         classes[CLASS_D] = {"attributes": {SLOT_ID: {"range": "string", "identifier": True}}}
     try:
-        schema = validated_schema(test_ifabsent, schema_name, framework, classes=classes, core_elements=["ifabsent"])
+        schema = validated_schema(test_ifabsent, schema_name, framework, classes=classes, enums=enums, core_elements=["ifabsent"])
     except ValueError as e:
         if schema_valid:
             raise e
