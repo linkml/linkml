@@ -1066,7 +1066,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
         results.append(
             SplitResult(
-                main=True, source_schema=generator.schemaview.schema, path=output_path, serialized_module=serialized
+                main=True, source=generator.schemaview.schema, path=output_path, serialized_module=serialized
             )
         )
 
@@ -1088,7 +1088,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             results.append(
                 SplitResult(
                     main=False,
-                    source_schema=imported_schema[generated_import.module],
+                    source=imported_schema[generated_import.module],
                     path=abs_path,
                     serialized_module=serialized,
                     module_import=generated_import.module,
