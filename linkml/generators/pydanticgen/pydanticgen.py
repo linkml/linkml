@@ -138,7 +138,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     Accordingly, the ``before_`` and ``after_generate_slots`` are called before and after each class's
     slot generation, rather than all slot generation.
 
-    * :meth:`~.LifecycleMixin.before_generated_classes`
+    * :meth:`~.LifecycleMixin.before_generate_classes`
     * :meth:`~.LifecycleMixin.before_generate_class`
     * :meth:`~.LifecycleMixin.after_generate_class`
     * :meth:`~.LifecycleMixin.after_generate_classes`
