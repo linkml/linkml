@@ -3,7 +3,7 @@ import sys
 from abc import ABC, abstractmethod
 from importlib.abc import MetaPathFinder
 from pathlib import Path
-from typing import Callable, Optional, Union
+from typing import Callable, List, Optional, Union
 
 import pytest
 import requests_cache
@@ -187,7 +187,7 @@ def pytest_addoption(parser):
     parser.addoption("--without-cache", action="store_true", help="Don't use a sqlite cache for network requests")
 
 
-def pytest_collection_modifyitems(config, items):
+def pytest_collection_modifyitems(config, items: List[pytest.Item]):
     if not config.getoption("--with-slow"):
         skip_slow = pytest.mark.skip(reason="need --with-slow option to run")
         for item in items:

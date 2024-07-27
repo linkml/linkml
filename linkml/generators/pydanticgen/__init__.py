@@ -1,4 +1,9 @@
-from linkml.generators.pydanticgen.pydanticgen import DEFAULT_IMPORTS, MetadataMode, PydanticGenerator, cli
+from linkml.generators.pydanticgen.pydanticgen import (
+    DEFAULT_IMPORTS,
+    MetadataMode,
+    PydanticGenerator,
+    cli,
+)
 from linkml.generators.pydanticgen.template import (
     ConditionalImport,
     Import,

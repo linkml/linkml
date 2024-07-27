@@ -19,7 +19,7 @@ standards for structuring data such as JSON-Schema, Protocol Buffers
 (ProtoBuf), and GraphQL.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Contents:
 
    json-schema
@@ -36,7 +36,7 @@ schemas, can be translated directly into RDF, or they can be mapped to
 OWL, or translated to shape languages such as ShEx and SHACL.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Contents:
 
    jsonld-context
@@ -55,7 +55,7 @@ including UML class diagrams and markdown websites that can be easily
 published on static hosting sites.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Contents:
 
    markdown
@@ -73,7 +73,7 @@ These will generate object models that are particular to specific
 languages such as Python, Javascript, or Java.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Contents:
 
    python
@@ -87,7 +87,7 @@ Database
 Generators specific to database frameworks. Currently only SQL databases.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Contents:
 
    sqltable
@@ -97,7 +97,7 @@ Others
 ------
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Contents:
 
    linkml

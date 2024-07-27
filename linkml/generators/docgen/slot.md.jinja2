@@ -34,6 +34,10 @@ _{{ element_description_line }}_
 {% endfor %}
 {% endif %}
 
+{% if element.abstract %}
+* __NOTE__: this is an abstract slot and should not be populated directly
+{% endif %}
+
 URI: {{ gen.uri_link(element) }}
 
 
