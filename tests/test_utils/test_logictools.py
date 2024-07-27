@@ -189,7 +189,7 @@ def test_logic_functions(expr, expected_contradiction, dnf, simplified):
         (a | ~a, T),
         ((a | b) & c, (a & c) | (b & c)),
         ((a | b) & (c | d), Or(a & c, a & d, b & c, b & d)),
-        (( ~b) & (a | b), (a & ~b) | F),
+        ((~b) & (a | b), (a & ~b) | F),
         (Term("P", a, b), Term("P", a, b)),
         (Term("<", 5), Term("<", 5)),
     ],

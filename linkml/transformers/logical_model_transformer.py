@@ -59,7 +59,7 @@ See logictools.py for the symbolic reasoning engine.
 import logging
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Iterator, List, Union, Optional
+from typing import Any, Callable, Dict, Iterator, List, Optional, Union
 
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper

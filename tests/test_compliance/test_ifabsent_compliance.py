@@ -14,9 +14,10 @@ from tests.test_compliance.helper import (
     check_data,
     validated_schema,
 )
-from tests.test_compliance.test_compliance import CLASS_C, CLASS_D, CORE_FRAMEWORKS, SLOT_ID, SLOT_S1, ENUM_E, PV_1
+from tests.test_compliance.test_compliance import CLASS_C, CLASS_D, CORE_FRAMEWORKS, ENUM_E, PV_1, SLOT_ID, SLOT_S1
 
 FUZZ_STR = "a b_c!@#$%^&*_+{}|:<>?[]()'\""
+
 
 @pytest.mark.parametrize(
     "schema_name,range,ifabsent,data_name,initial_value,expected,schema_valid,valid",
@@ -33,7 +34,7 @@ FUZZ_STR = "a b_c!@#$%^&*_+{}|:<>?[]()'\""
         ("incompat_bool", "boolean", "string(x)", "has_value", None, None, True, False),
         ("incompat_float", "float", "string(x)", "has_value", None, None, True, False),
         ("fuzz_str", "string", f"string({FUZZ_STR})", "has_value", None, FUZZ_STR, True, True),
-        #("enum", ENUM_E, f"(EnumName({PV_1})", "has_value", None, PV_1, True, True),
+        # ("enum", ENUM_E, f"(EnumName({PV_1})", "has_value", None, PV_1, True, True),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
@@ -66,7 +67,9 @@ def test_ifabsent(framework, schema_name, range, ifabsent, data_name, initial_va
     if range == CLASS_D:
         classes[CLASS_D] = {"attributes": {SLOT_ID: {"range": "string", "identifier": True}}}
     try:
-        schema = validated_schema(test_ifabsent, schema_name, framework, classes=classes, enums=enums, core_elements=["ifabsent"])
+        schema = validated_schema(
+            test_ifabsent, schema_name, framework, classes=classes, enums=enums, core_elements=["ifabsent"]
+        )
     except ValueError as e:
         if schema_valid:
             raise e

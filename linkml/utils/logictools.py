@@ -26,6 +26,7 @@ OPS = {
 
 class Expression:
     """Base class for logic expressions"""
+
     def __eq__(self, other: "Expression"):
         if isinstance(other, Expression):
             return self._ordered_str() == other._ordered_str()
@@ -105,6 +106,7 @@ class Bottom(Expression):
 
 class Not(Expression):
     """Negation of an expression"""
+
     def __init__(self, operand: Expression):
         self.operand = operand
 

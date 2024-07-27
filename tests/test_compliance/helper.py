@@ -560,8 +560,9 @@ def _make_schema(
     if not schema["name"]:
         raise ValueError(f"Schema name not set: {schema}")
 
-    if True:
+    if tests.WITH_LOGICAL_MODEL_TRANSFORMER:
         from linkml.transformers.logical_model_transformer import LogicalModelTransformer
+
         tr = LogicalModelTransformer()
         tr.set_schema(SchemaDefinition(**schema))
         try:
