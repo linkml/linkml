@@ -52,6 +52,8 @@ class LifecycleMixin:
     * :meth:`.after_generate_class`
     * :meth:`.after_generate_classes`
     * :meth:`.after_generate_schema`
+    * :meth:`.before_render_template`
+    * :meth:`.after_render_template`
 
     (Add other examples of ordering from other generators as implemented)
 
