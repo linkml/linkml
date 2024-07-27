@@ -3,6 +3,7 @@ from typing import List, Optional, Type, TypeVar, Union
 
 from linkml.generators.common.build import (
     BuildResult,
+    SchemaResult,
 )
 from linkml.generators.common.build import (
     ClassResult as ClassResult_,
@@ -13,7 +14,6 @@ from linkml.generators.common.build import (
 from linkml.generators.common.build import (
     SlotResult as SlotResult_,
 )
-from linkml.generators.common.build import SchemaResult
 from linkml.generators.pydanticgen.template import Import, Imports, PydanticAttribute, PydanticClass
 
 T = TypeVar("T", bound="PydanticBuildResult", covariant=True)

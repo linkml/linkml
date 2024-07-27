@@ -1065,9 +1065,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             ofile.write(serialized)
 
         results.append(
-            SplitResult(
-                main=True, source=generator.schemaview.schema, path=output_path, serialized_module=serialized
-            )
+            SplitResult(main=True, source=generator.schemaview.schema, path=output_path, serialized_module=serialized)
         )
 
         # --------------------------------------------------
