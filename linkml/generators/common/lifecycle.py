@@ -43,7 +43,7 @@ class LifecycleMixin:
     slots are generated hierarchically within classes as in the pydantic generator...
 
     * :meth:`.before_generate_schema`
-    * :meth:`.before_generated_classes`
+    * :meth:`.before_generate_classes`
     * :meth:`.before_generate_class`
     * :meth:`.before_generate_slots`
     * :meth:`.before_generate_slot`
