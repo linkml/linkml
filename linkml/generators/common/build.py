@@ -48,7 +48,7 @@ class SchemaResult(BuildResult):
         SchemaResults are special and don't need a merge method, since generating
         multiple schemas at once is not common or expected behavior for a generator.
         """
-        raise NotImplementedError("SchemaResult doesnt need a merge method, and none has been defined")
+        raise NotImplementedError("SchemaResult doesn't need a merge method, and none has been defined")
 
 
 class ClassResult(BuildResult):
