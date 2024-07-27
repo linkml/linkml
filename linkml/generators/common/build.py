@@ -7,7 +7,14 @@ Models for intermediate build results
 from abc import abstractmethod
 from typing import TypeVar
 
-from pydantic import BaseModel
+from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    EnumDefinition,
+    SchemaDefinition,
+    SlotDefinition,
+    TypeDefinition,
+)
+from pydantic import BaseModel, ConfigDict
 
 T = TypeVar("T", bound="BuildResult", covariant=True)
 
@@ -22,6 +29,8 @@ class BuildResult(BaseModel):
     elsewhere in the generation process (like adding imports, injecting classes, etc.)
     """
 
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     @abstractmethod
     def merge(self, other: T) -> T:
         """
@@ -32,21 +41,31 @@ class BuildResult(BaseModel):
 class SchemaResult(BuildResult):
     """Abstract results container for built schemas"""
 
+    source: SchemaDefinition
+
 
 class ClassResult(BuildResult):
     """Abstract results container for built classes"""
+
+    source: ClassDefinition
 
 
 class SlotResult(BuildResult):
     """Abstract results container for built slots"""
 
+    source: SlotDefinition
+
 
 class TypeResult(BuildResult):
     """Abstract results container for built types"""
 
+    source: TypeDefinition
+
 
 class EnumResult(BuildResult):
     """Abstract results container for built enums"""
+
+    source: EnumDefinition
 
 
 class RangeResult(BuildResult):

@@ -320,7 +320,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             description=cls.description.replace('"', '\\"') if cls.description is not None else None,
         )
 
-        result = ClassResult(cls=pyclass)
+        result = ClassResult(cls=pyclass, source=cls)
 
         # Gather slots
         slots = [self.schemaview.induced_slot(sn, cls.name) for sn in self.schemaview.class_slots(cls.name)]
@@ -380,7 +380,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             raise Exception(f"Could not generate python range for {cls.name}.{slot.name}")
 
         pyslot.range = pyrange
-        result = SlotResult(attribute=pyslot)
+        result = SlotResult(attribute=pyslot, source=slot)
 
         if slot.array is not None:
             results = self.get_array_representations_range(slot, result.attribute.range)
