@@ -8,7 +8,7 @@ from importlib.metadata import version
 from importlib.util import find_spec
 from pathlib import Path
 from types import GeneratorType, ModuleType
-from typing import ClassVar, Dict, List, Literal, Optional, Type, Union
+from typing import ClassVar, Dict, Iterable, List, Literal, Optional, Type, Union
 
 import numpy as np
 import pytest
@@ -16,13 +16,14 @@ import yaml
 from jinja2 import DictLoader, Environment, Template
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import Definition, SchemaDefinition, SlotDefinition
+from linkml_runtime.linkml_model import ClassDefinition, Definition, SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
 from linkml_runtime.utils.schemaview import load_schema_wrap
 from pydantic import BaseModel, ValidationError
 
 from linkml.generators import pydanticgen as pydanticgen_root
+from linkml.generators.common.lifecycle import TClass, TSlot
 from linkml.generators.pydanticgen import (
     MetadataMode,
     PydanticGenerator,
@@ -40,8 +41,8 @@ from linkml.generators.pydanticgen.template import (
     PydanticAttribute,
     PydanticClass,
     PydanticModule,
+    PydanticTemplateModel,
     PydanticValidator,
-    TemplateModel,
 )
 from linkml.utils.schema_builder import SchemaBuilder
 
@@ -1074,7 +1075,7 @@ def test_template_models_templates():
     """
     All template models should have templates!
     """
-    for model in TemplateModel.__subclasses__():
+    for model in PydanticTemplateModel.__subclasses__():
         assert hasattr(model, "template")
         assert isinstance(model.template, str)
         env = model.environment()
@@ -1086,7 +1087,7 @@ def test_default_environment():
     """
     Check that the default environment has the configuration for our templates
     """
-    env = TemplateModel.environment()
+    env = PydanticTemplateModel.environment()
     assert env.trim_blocks
     assert env.lstrip_blocks
 
@@ -1125,11 +1126,11 @@ def test_template_render():
         plain_field: str = "plain_field"
         second: int = 1
 
-    class InnerTemplate(TemplateModel):
+    class InnerTemplate(PydanticTemplateModel):
         template: ClassVar[str] = "inner.jinja"
         value: Union[int, str] = 1
 
-    class TestTemplate(TemplateModel):
+    class TestTemplate(PydanticTemplateModel):
         template: ClassVar[str] = "test.jinja"
         a_list: List[InnerTemplate] = [InnerTemplate(value=1), InnerTemplate(value=2)]
         a_dict: Dict[str, InnerTemplate] = {"one": InnerTemplate(value="one"), "two": InnerTemplate(value="two")}
@@ -1843,7 +1844,7 @@ def test_template_noblack(array_complex, mock_black_import):
 # --------------------------------------------------
 
 
-def _test_meta(linkml_meta, definition: Definition, model: Type[TemplateModel], mode: str):
+def _test_meta(linkml_meta, definition: Definition, model: Type[PydanticTemplateModel], mode: str):
     def_clean = remove_empty_items(definition)
     for k, v in def_clean.items():
         if mode == "auto":
@@ -2072,3 +2073,81 @@ def test_generate_split_directory(input_path, tmp_path):
 @pytest.mark.pydanticgen_split
 def test_snake_case_regex(test, expected):
     assert re.sub(PydanticGenerator.SNAKE_CASE, "_", test).lower() == expected
+
+
+# --------------------------------------------------
+# Lifecycle methods
+# --------------------------------------------------
+
+
+def test_lifecycle_classes(kitchen_sink_path):
+    """We can modify the generation process by subclassing lifecycle hooks"""
+
+    class TestPydanticGenerator(PydanticGenerator):
+        def before_generate_classes(self, cls: Iterable[ClassDefinition], sv: SchemaView) -> Iterable[ClassDefinition]:
+            all_classes = sv.all_classes()
+            assert len(cls) == len(all_classes) - 1
+
+            for a_cls in cls:
+                assert a_cls.name in all_classes
+
+            # delete a class and make sure we don't get it in the output
+            assert cls[0].name == "activity"
+            del cls[0]
+            return cls
+
+        def after_generate_classes(self, cls: Iterable[TClass], sv: SchemaView) -> Iterable[TClass]:
+            for a_cls in cls:
+                a_cls.cls.attributes["test"] = PydanticAttribute(name="test", range="str")
+            return cls
+
+        def before_generate_class(self, cls: ClassDefinition, sv: SchemaView) -> ClassDefinition:
+            # change all the descriptions, idk
+            cls.description = "TEST MODIFYING CLASSES"
+            return cls
+
+        def after_generate_class(self, cls: TClass, sv: SchemaView) -> TClass:
+            cls.imports = Imports(imports=[Import(module="csv")])
+            return cls
+
+    generator = TestPydanticGenerator(kitchen_sink_path)
+    rendered = generator.render()
+    assert "activity" not in rendered.classes
+    for cls in rendered.classes.values():
+        assert cls.description == "TEST MODIFYING CLASSES"
+        assert "test" in cls.attributes
+    assert "csv" in [i.module for i in rendered.python_imports]
+
+
+def test_lifecycle_slots(kitchen_sink_path):
+    """We can modify the generation process by subclassing lifecycle hooks"""
+
+    class TestPydanticGenerator(PydanticGenerator):
+        def before_generate_slots(self, slot: Iterable[SlotDefinition], sv: SchemaView) -> Iterable[SlotDefinition]:
+            # make a new slot that's the number of slots for some reason
+            slot.append(SlotDefinition(name="number_of_slots", range="integer", ifabsent=f"integer({len(slot)})"))
+            return slot
+
+        def after_generate_slots(self, slot: Iterable[TSlot], sv: SchemaView) -> Iterable[TSlot]:
+            for a_slot in slot:
+                a_slot.attribute.meta["extra_meta_field"] = True
+            return slot
+
+        def before_generate_slot(self, slot: SlotDefinition, sv: SchemaView) -> SlotDefinition:
+            slot.description = "TEST MODIFYING SLOTS"
+            return slot
+
+        def after_generate_slot(self, slot: TSlot, sv: SchemaView) -> TSlot:
+            # make em all required
+            slot.attribute.required = True
+            return slot
+
+    generator = TestPydanticGenerator(kitchen_sink_path)
+    rendered = generator.render()
+
+    for cls in rendered.classes.values():
+        assert "number_of_slots" in cls.attributes
+        for attr in cls.attributes.values():
+            assert attr.description == "TEST MODIFYING SLOTS"
+            assert attr.required
+            assert attr.meta["extra_meta_field"]
