@@ -25,6 +25,7 @@ from linkml_runtime.utils.schemaview import SchemaView
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml._version import __version__
+from linkml.generators.common.lifecycle import LifecycleMixin
 from linkml.generators.common.type_designators import get_accepted_type_designator_values, get_type_designator_value
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.generators.pydanticgen import includes
@@ -38,7 +39,7 @@ from linkml.generators.pydanticgen.template import (
     PydanticBaseModel,
     PydanticClass,
     PydanticModule,
-    TemplateModel,
+    PydanticTemplateModel,
 )
 from linkml.utils import deprecation_warning
 from linkml.utils.generator import shared_arguments
@@ -140,11 +141,34 @@ TemplateType = TypeVar("TemplateType", bound=Union[PydanticModule, PydanticClass
 
 
 @dataclass
-class PydanticGenerator(OOCodeGenerator):
+class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     """
     Generates Pydantic-compliant classes from a schema
 
     This is an alternative to the dataclasses-based Pythongen
+
+    Lifecycle methods (see :class:`.LifecycleMixin` ) supported:
+
+    * :meth:`~.LifecycleMixin.before_generate_enums`
+
+    Slot generation is nested within class generation, since the pydantic generator currently doesn't
+    create an independent representation of slots aside from their materialization as class fields.
+    Accordingly, the ``before_`` and ``after_generate_slots`` are called before and after each class's
+    slot generation, rather than all slot generation.
+
+    * :meth:`~.LifecycleMixin.before_generate_classes`
+    * :meth:`~.LifecycleMixin.before_generate_class`
+    * :meth:`~.LifecycleMixin.after_generate_class`
+    * :meth:`~.LifecycleMixin.after_generate_classes`
+
+    * :meth:`~.LifecycleMixin.before_generate_slots`
+    * :meth:`~.LifecycleMixin.before_generate_slot`
+    * :meth:`~.LifecycleMixin.after_generate_slot`
+    * :meth:`~.LifecycleMixin.after_generate_slots`
+
+    * :meth:`~.LifecycleMixin.before_render_template`
+    * :meth:`~.LifecycleMixin.after_render_template`
+
     """
 
     # ClassVar overrides
@@ -162,9 +186,9 @@ class PydanticGenerator(OOCodeGenerator):
 
     template_dir: Optional[Union[str, Path]] = None
     """
-    Override templates for each TemplateModel.
-
-    Directory with templates that override the default :attr:`.TemplateModel.template`
+    Override templates for each PydanticTemplateModel.
+    
+    Directory with templates that override the default :attr:`.PydanticTemplateModel.template`
     for each class. If a matching template is not found in the override directory,
     the default templates will be used.
     """
@@ -398,14 +422,22 @@ class PydanticGenerator(OOCodeGenerator):
 
         imports = self._get_imports(cls) if self.split else None
 
-        result = ClassResult(cls=pyclass, imports=imports)
+        result = ClassResult(cls=pyclass, source=cls, imports=imports)
 
-        attributes = {}
-        for sn in self.schemaview.class_slots(cls.name):
-            slot = self.generate_slot(self.schemaview.induced_slot(sn, cls.name), cls)
-            # TODO: handle imports and a proper slot result
-            attributes[slot.attribute.name] = slot.attribute
+        # Gather slots
+        slots = [self.schemaview.induced_slot(sn, cls.name) for sn in self.schemaview.class_slots(cls.name)]
+        slots = self.before_generate_slots(slots, self.schemaview)
+
+        slot_results = []
+        for slot in slots:
+            slot = self.before_generate_slot(slot, self.schemaview)
+            slot = self.generate_slot(slot, cls)
+            slot = self.after_generate_slot(slot, self.schemaview)
+            slot_results.append(slot)
             result = result.merge(slot)
+
+        slot_results = self.after_generate_slots(slot_results, self.schemaview)
+        attributes = {slot.attribute.name: slot.attribute for slot in slot_results}
 
         result.cls.attributes = attributes
         result.cls = self.include_metadata(result.cls, cls)
@@ -453,7 +485,7 @@ class PydanticGenerator(OOCodeGenerator):
 
         imports = self._get_imports(slot) if self.split else None
 
-        result = SlotResult(attribute=pyslot, imports=imports)
+        result = SlotResult(attribute=pyslot, source=slot, imports=imports)
 
         if slot.array is not None:
             results = self.get_array_representations_range(slot, result.attribute.range)
@@ -717,7 +749,7 @@ class PydanticGenerator(OOCodeGenerator):
         return None
 
     def _template_environment(self) -> Environment:
-        env = TemplateModel.environment()
+        env = PydanticTemplateModel.environment()
         if self.template_dir is not None:
             loader = ChoiceLoader([FileSystemLoader(self.template_dir), env.loader])
             env.loader = loader
@@ -754,7 +786,7 @@ class PydanticGenerator(OOCodeGenerator):
         Metadata inclusion mode is dependent on :attr:`.metadata_mode` - see:
 
         - :class:`.MetadataMode`
-        - :meth:`.TemplateModel.exclude_from_meta`
+        - :meth:`.PydanticTemplateModel.exclude_from_meta`
 
         """
         if self.metadata_mode is None or self.metadata_mode == MetadataMode.NONE:
@@ -773,13 +805,15 @@ class PydanticGenerator(OOCodeGenerator):
                     continue
 
                 model_attr = getattr(model, k)
-                if isinstance(model_attr, list) and not any([isinstance(item, TemplateModel) for item in model_attr]):
-                    meta[k] = v
-                elif isinstance(model_attr, dict) and not any(
-                    [isinstance(item, TemplateModel) for item in model_attr.values()]
+                if isinstance(model_attr, list) and not any(
+                    [isinstance(item, PydanticTemplateModel) for item in model_attr]
                 ):
                     meta[k] = v
-                elif not isinstance(model_attr, (list, dict, TemplateModel)):
+                elif isinstance(model_attr, dict) and not any(
+                    [isinstance(item, PydanticTemplateModel) for item in model_attr.values()]
+                ):
+                    meta[k] = v
+                elif not isinstance(model_attr, (list, dict, PydanticTemplateModel)):
                     meta[k] = v
 
         elif self.metadata_mode in (MetadataMode.FULL, MetadataMode.FULL.value):
@@ -901,25 +935,33 @@ class PydanticGenerator(OOCodeGenerator):
             injected_classes += self.injected_classes.copy()
 
         # enums
-        enums = self.generate_enums(sv.all_enums())
+        enums = self.before_generate_enums(list(sv.all_enums().values()), sv)
+        enums = self.generate_enums({e.name: e for e in enums})
 
         base_model = PydanticBaseModel(extra_fields=self.extra_fields, fields=self.injected_fields)
 
         # schema classes
-        classes = {}
+        class_results = []
         source_classes, imported_classes = self._get_classes(sv)
         source_classes = self.sort_classes(source_classes, imported_classes)
         # Don't want to generate classes when class_uri is linkml:Any, will
         # just swap in typing.Any instead down below
         source_classes = [c for c in source_classes if c.class_uri != "linkml:Any"]
+        source_classes = self.before_generate_classes(source_classes, sv)
         self.sorted_class_names = [camelcase(c.name) for c in source_classes]
         for cls in source_classes:
+            cls = self.before_generate_class(cls, sv)
             result = self.generate_class(cls)
-            classes[result.cls.name] = result.cls
+            result = self.after_generate_class(result, sv)
+            class_results.append(result)
             if result.imports is not None:
                 imports += result.imports
             if result.injected_classes is not None:
                 injected_classes.extend(result.injected_classes)
+
+        class_results = self.after_generate_classes(class_results, sv)
+
+        classes = {r.cls.name: r.cls for r in class_results}
 
         injected_classes = self._clean_injected_classes(injected_classes)
 
@@ -933,6 +975,7 @@ class PydanticGenerator(OOCodeGenerator):
             classes=classes,
         )
         module = self.include_metadata(module, self.schemaview.schema)
+        module = self.before_render_template(module, self.schemaview)
         return module
 
     def serialize(self, rendered_module: Optional[PydanticModule] = None) -> str:
@@ -947,7 +990,9 @@ class PydanticGenerator(OOCodeGenerator):
             module = rendered_module
         else:
             module = self.render()
-        return module.render(self._template_environment(), self.black)
+        serialized = module.render(self._template_environment(), self.black)
+        serialized = self.after_render_template(serialized, self.schemaview)
+        return serialized
 
     def default_value_for_type(self, typ: str) -> str:
         return "None"
@@ -1020,9 +1065,7 @@ class PydanticGenerator(OOCodeGenerator):
             ofile.write(serialized)
 
         results.append(
-            SplitResult(
-                main=True, source_schema=generator.schemaview.schema, path=output_path, serialized_module=serialized
-            )
+            SplitResult(main=True, source=generator.schemaview.schema, path=output_path, serialized_module=serialized)
         )
 
         # --------------------------------------------------
@@ -1043,7 +1086,7 @@ class PydanticGenerator(OOCodeGenerator):
             results.append(
                 SplitResult(
                     main=False,
-                    source_schema=imported_schema[generated_import.module],
+                    source=imported_schema[generated_import.module],
                     path=abs_path,
                     serialized_module=serialized,
                     module_import=generated_import.module,
@@ -1058,7 +1101,7 @@ def _subclasses(cls: Type):
     return set(cls.__subclasses__()).union([s for c in cls.__subclasses__() for s in _subclasses(c)])
 
 
-_TEMPLATE_NAMES = sorted(list(set([c.template for c in _subclasses(TemplateModel)])))
+_TEMPLATE_NAMES = sorted(list(set([c.template for c in _subclasses(PydanticTemplateModel)])))
 
 
 def _import_to_path(module: str) -> Path:
@@ -1101,9 +1144,9 @@ def _ensure_inits(paths: List[Path]):
     help="""
 Optional jinja2 template directory to use for class generation.
 
-Pass a directory containing templates with the same name as any of the default
-:class:`.TemplateModel` templates to override them. The given directory will be
-searched for matching templates, and use the default templates as a fallback
+Pass a directory containing templates with the same name as any of the default 
+:class:`.PydanticTemplateModel` templates to override them. The given directory will be 
+searched for matching templates, and use the default templates as a fallback 
 if an override is not found
 
 Available templates to override:

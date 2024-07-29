@@ -14,7 +14,7 @@ version = "{{version if version else None}}"
 {{ c }}
     {% endfor %}
 {% endif %}
-{% if meta != None %}
+{% if meta %}
 linkml_meta = LinkMLMeta({{ meta | pprint | indent(width=4) }} )
 {% else %}
 linkml_meta = None

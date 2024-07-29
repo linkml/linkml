@@ -107,3 +107,14 @@ Others
    excel
    csv
    yaml
+
+Common
+------
+
+Classes and utilities used by all generators
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Common:
+
+   common/index
