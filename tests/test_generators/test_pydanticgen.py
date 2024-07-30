@@ -812,8 +812,6 @@ classes:
     gen = PydanticGenerator(schema=unit_test_schema)
     code = gen.serialize()
 
-    print(code)
-
     mod = compile_python(code)
     assert mod.CardinalityArray.model_fields["minimum_cardinality_array"].annotation == List[float]
     assert mod.CardinalityArray.model_fields["minimum_cardinality_array"].metadata[0].min_length == 1
