@@ -661,6 +661,167 @@ classes:
     assert temperature_dataset.temperatures_in_K == temperatures
 
 
+@pytest.mark.parametrize(
+    "value, required, minimium_cardinality, maximum_cardinality, exact_cardinality, valid",
+    (
+        (
+            None,
+            False,
+            None,
+            None,
+            None,
+            True,
+        ),  # if it is not required and the passed in value is None, it should be valid
+        (None, False, 1, None, None, True),
+        (None, False, None, 1, None, True),
+        (None, False, None, None, 1, True),
+        (None, True, None, None, None, False),  # if it is required, None should not be valid
+        (None, True, 1, None, None, False),
+        (None, True, None, 1, None, False),
+        (None, True, None, None, 1, False),
+        ([], False, None, None, None, True),  # empty arrays should be treated like regular array values nevertheless
+        ([], False, 1, None, None, False),
+        ([], False, None, 1, None, True),
+        ([], False, None, None, 1, False),
+        ([], True, None, None, None, True),
+        ([], True, 1, None, None, False),
+        ([], True, None, None, 2, False),
+        ([], True, 0, None, None, True),
+        ([], True, None, 0, None, True),
+        ([1, 2, 3], False, None, None, None, True),  # typical case, not required
+        ([1, 2, 3], False, 1, None, None, True),
+        ([1, 2, 3], False, 3, None, None, True),
+        ([1, 2, 3], False, 4, None, None, False),
+        ([1, 2, 3], False, None, 1, None, False),
+        ([1, 2, 3], False, None, 3, None, True),
+        ([1, 2, 3], False, None, 4, None, True),
+        ([1, 2, 3], False, None, None, 2, False),
+        ([1, 2, 3], False, None, None, 3, True),
+        ([1, 2, 3], False, 1, 3, None, True),
+        ([1, 2, 3], False, 1, 2, None, False),
+        ([5] * 11, False, None, 10, None, False),
+        ([1, 2, 3], True, None, None, None, True),  # typical case, required
+        ([1, 2, 3], True, 1, None, None, True),
+        ([1, 2, 3], True, 3, None, None, True),
+        ([1, 2, 3], True, 4, None, None, False),
+        ([1, 2, 3], True, None, 1, None, False),
+        ([1, 2, 3], True, None, 3, None, True),
+        ([1, 2, 3], True, None, 4, None, True),
+        ([1, 2, 3], True, None, None, 2, False),
+        ([1, 2, 3], True, None, None, 3, True),
+        ([1, 2, 3], True, 1, 3, None, True),
+        ([1, 2, 3], True, 1, 2, None, False),
+        ([5] * 11, True, None, 10, None, False),
+        ([1, 2, 3], True, 3, 3, 3, True),
+    ),
+)
+def test_pydantic_cardinality(value, required, minimium_cardinality, maximum_cardinality, exact_cardinality, valid):
+    """
+    Ensure that the cardinality constraints for list length are correctly applied
+    to the generated pydantic model, using SchemaBuilder.
+    """
+    schema_builder = SchemaBuilder("cardinality_test")
+    schema_builder.add_class(
+        "CardinalityArray",
+        slots=[
+            SlotDefinition(
+                "cardinality_array",
+                range="float",
+                multivalued=True,
+                required=required,
+                minimum_cardinality=minimium_cardinality,
+                maximum_cardinality=maximum_cardinality,
+                exact_cardinality=exact_cardinality,
+            )
+        ],
+    )
+    schema_builder.add_defaults()
+
+    gen = PydanticGenerator(schema=schema_builder.schema)
+    code = gen.serialize()
+
+    mod = compile_python(code)
+    cls = mod.CardinalityArray
+    field = cls.model_fields["cardinality_array"]
+
+    assert field.is_required() == required
+    assert field.annotation == List[float] if required else Optional[List[float]]
+
+    # filter down the metadata to only min_length and max_length entries
+    min_length = [entry.min_length for entry in field.metadata if getattr(entry, "min_length", None) is not None]
+    max_length = [entry.max_length for entry in field.metadata if getattr(entry, "max_length", None) is not None]
+
+    if exact_cardinality:
+        assert len(min_length) == 1
+        assert len(max_length) == 1
+        assert exact_cardinality == min_length[0]
+        assert exact_cardinality == max_length[0]
+    if minimium_cardinality:
+        assert len(min_length) == 1
+        assert minimium_cardinality == min_length[0]
+    if maximum_cardinality:
+        assert len(max_length) == 1
+        assert maximum_cardinality == max_length[0]
+
+    if valid:
+        cls(cardinality_array=value)
+    else:
+        with pytest.raises(ValidationError):
+            cls(cardinality_array=value)
+
+
+def test_pydantic_cardinality_plain():
+    """
+    Ensure that the cardinality constraints for list length are correctly applied to
+    the generated pydantic model, from plaintext schema.
+    """
+    unit_test_schema = """
+id: https://example.org/arrays
+name: arrays-cardinality-example
+title: Array Cardinality Example
+description: |-
+    Example LinkML schema to test array cardinality
+license: MIT
+default_prefix: example
+imports:
+    - linkml:types
+classes:
+    CardinalityArray:
+        description: A class with arrays of different cardinality constraints
+        attributes:
+            minimum_cardinality_array:
+                range: float
+                multivalued: true
+                required: true
+                minimum_cardinality: 1
+            maximum_cardinality_array:
+                range: float
+                multivalued: true
+                maximum_cardinality: 10
+            exact_cardinality_array:
+                range: float
+                multivalued: true
+                exact_cardinality: 5
+            min_max_cardinality_array:
+                range: float
+                multivalued: true
+                minimum_cardinality: 0
+                maximum_cardinality: 8
+"""
+
+    gen = PydanticGenerator(schema=unit_test_schema)
+    code = gen.serialize()
+
+    mod = compile_python(code)
+    assert mod.CardinalityArray.model_fields["minimum_cardinality_array"].annotation == List[float]
+    assert mod.CardinalityArray.model_fields["minimum_cardinality_array"].metadata[0].min_length == 1
+    assert mod.CardinalityArray.model_fields["maximum_cardinality_array"].metadata[0].max_length == 10
+    assert mod.CardinalityArray.model_fields["exact_cardinality_array"].metadata[0].min_length == 5
+    assert mod.CardinalityArray.model_fields["exact_cardinality_array"].metadata[1].max_length == 5
+    assert mod.CardinalityArray.model_fields["min_max_cardinality_array"].metadata[0].min_length == 0
+    assert mod.CardinalityArray.model_fields["min_max_cardinality_array"].metadata[1].max_length == 8
+
+
 @pytest.mark.skip("this format of arrays is not yet implemented in the metamodel??")
 def test_column_ordered_array_not_supported():
     unit_test_schema = """
@@ -1099,7 +1260,7 @@ def test_template_pass_environment(sample_class):
     templates = {
         "class.py.jinja": """{{ name }}
 {%- for attr in attributes.values() %}
-{{ attr }} 
+{{ attr }}
 {%- endfor -%}""",
         "attribute.py.jinja": """attr: {{ name }}
 range: {{ range }}""",

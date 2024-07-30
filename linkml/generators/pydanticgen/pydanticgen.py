@@ -102,7 +102,7 @@ DEFAULT_INJECTS = [includes.LinkMLMeta]
 class MetadataMode(str, Enum):
     FULL = "full"
     """
-    all metadata from the source schema will be included, even if it is represented by the template classes, 
+    all metadata from the source schema will be included, even if it is represented by the template classes,
     and even if it is represented by some child class (eg. "classes" will be included with schema metadata
     """
     EXCEPT_CHILDREN = "except_children"
@@ -112,7 +112,7 @@ class MetadataMode(str, Enum):
     """
     AUTO = "auto"
     """
-    Only the metadata that isn't represented by the template classes or excluded with ``meta_exclude`` will be included 
+    Only the metadata that isn't represented by the template classes or excluded with ``meta_exclude`` will be included
     """
     NONE = None
     """
@@ -129,7 +129,7 @@ class SplitMode(str, Enum):
     AUTO = "auto"
     """
     Only import those classes that are actually used in the generated schema as
-    
+
     * parents (``is_a``)
     * mixins
     * slot ranges
@@ -197,62 +197,62 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     injected_classes: Optional[List[Union[Type, str]]] = None
     """
     A list/tuple of classes to inject into the generated module.
-    
+
     Accepts either live classes or strings. Live classes will have their source code
     extracted with inspect.get - so they need to be standard python classes declared in a
-    source file (ie. the module they are contained in needs a ``__file__`` attr, 
+    source file (ie. the module they are contained in needs a ``__file__`` attr,
     see: :func:`inspect.getsource` )
     """
     injected_fields: Optional[List[str]] = None
     """
     A list/tuple of field strings to inject into the base class.
-    
+
     Examples:
-    
+
     .. code-block:: python
 
         injected_fields = (
             'object_id: Optional[str] = Field(None, description="Unique UUID for each object")',
         )
-    
+
     """
     imports: Optional[List[Import]] = None
     """
-    Additional imports to inject into generated module. 
-    
+    Additional imports to inject into generated module.
+
     Examples:
-        
+
     .. code-block:: python
-    
+
         from linkml.generators.pydanticgen.template import (
             ConditionalImport,
             ObjectImport,
             Import,
             Imports
         )
-        
-        imports = (Imports() + 
-            Import(module='sys') + 
-            Import(module='numpy', alias='np') + 
+
+        imports = (Imports() +
+            Import(module='sys') +
+            Import(module='numpy', alias='np') +
             Import(module='pathlib', objects=[
                 ObjectImport(name="Path"),
                 ObjectImport(name="PurePath", alias="RenamedPurePath")
-            ]) + 
+            ]) +
             ConditionalImport(
                 module="typing",
                 objects=[ObjectImport(name="Literal")],
                 condition="sys.version_info >= (3, 8)",
                 alternative=Import(
-                    module="typing_extensions", 
+                    module="typing_extensions",
                     objects=[ObjectImport(name="Literal")]
                 ),
             ).imports
         )
-        
+
     becomes:
-    
+
     .. code-block:: python
-    
+
         import sys
         import numpy as np
         from pathlib import (
@@ -263,12 +263,12 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             from typing import Literal
         else:
             from typing_extensions import Literal
-        
+
     """
     metadata_mode: Union[MetadataMode, str, None] = MetadataMode.AUTO
     """
     How to include schema metadata in generated pydantic models.
-    
+
     See :class:`.MetadataMode` for mode documentation
     """
     split: bool = False
@@ -280,53 +280,53 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     split_pattern: str = ".{{ schema.name }}"
     """
     When splitting generation, imported modules need to be generated separately
-    and placed in a python package and import from each other. Since the 
+    and placed in a python package and import from each other. Since the
     location of those imported modules is variable -- e.g. one might want to
     generate schema in multiple packages depending on their version -- this
     pattern is used to generate the module portion of the import statement.
-    
-    These patterns should generally yield a relative module import, 
+
+    These patterns should generally yield a relative module import,
     since functions like :func:`.generate_split` will generate and write files
     relative to some base file, though this is not a requirement since custom
     split generation logic is also allowed.
-    
+
     The pattern is a jinja template string that is given the ``SchemaDefinition``
     of the imported schema in the environment. Additional variables can be passed
     into the jinja environment with the :attr:`.split_context` argument.
-     
+
     Further modification is possible by using jinja filters.
-    
+
     After templating, the string is passed through a :attr:`SNAKE_CASE` pattern
     to replace whitespace and other characters that can't be used in module names.
-    
+
     See also :meth:`.generate_module_import`, which is used to generate the
     module portion of the import statement (and can be overridden in subclasses).
-     
+
     Examples:
-    
-        for a schema named ``ExampleSchema`` and version ``1.2.3`` ...   
-    
+
+        for a schema named ``ExampleSchema`` and version ``1.2.3`` ...
+
         ``".{{ schema.name }}"`` (the default) becomes
-        
+
         ``from .example_schema import ClassA, ...``
-        
+
         ``"...{{ schema.name }}.v{{ schema.version | replace('.', '_') }}"`` becomes
-        
+
         ``from ...example_schema.v1_2_3 import ClassA, ...``
-    
+
     """
     split_context: Optional[dict] = None
     """
     Additional variables to pass into ``split_pattern`` when
-    generating imported module names. 
-    
+    generating imported module names.
+
     Passed in as ``**kwargs`` , so e.g. if ``split_context = {'myval': 1}``
     then one would use it in a template string like ``{{ myval }}``
     """
     split_mode: SplitMode = SplitMode.AUTO
     """
     How to filter imports from imported schema.
-    
+
     See :class:`.SplitMode` for description of options
     """
 
@@ -1148,7 +1148,7 @@ Pass a directory containing templates with the same name as any of the default
 :class:`.PydanticTemplateModel` templates to override them. The given directory will be 
 searched for matching templates, and use the default templates as a fallback 
 if an override is not found
-  
+
 Available templates to override:
 
 \b
