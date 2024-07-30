@@ -439,7 +439,7 @@
 <span class="k">class</span> <span class="nc">MetadataMode</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
     <span class="n">FULL</span> <span class="o">=</span> <span class="s2">&quot;full&quot;</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    all metadata from the source schema will be included, even if it is represented by the template classes, </span>
+<span class="sd">    all metadata from the source schema will be included, even if it is represented by the template classes,</span>
 <span class="sd">    and even if it is represented by some child class (eg. &quot;classes&quot; will be included with schema metadata</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">EXCEPT_CHILDREN</span> <span class="o">=</span> <span class="s2">&quot;except_children&quot;</span>
@@ -449,7 +449,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">AUTO</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Only the metadata that isn&#39;t represented by the template classes or excluded with ``meta_exclude`` will be included </span>
+<span class="sd">    Only the metadata that isn&#39;t represented by the template classes or excluded with ``meta_exclude`` will be included</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">NONE</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -466,7 +466,7 @@
     <span class="n">AUTO</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Only import those classes that are actually used in the generated schema as</span>
-<span class="sd">    </span>
+
 <span class="sd">    * parents (``is_a``)</span>
 <span class="sd">    * mixins</span>
 <span class="sd">    * slot ranges</span>
@@ -534,62 +534,62 @@
     <span class="n">injected_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A list/tuple of classes to inject into the generated module.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Accepts either live classes or strings. Live classes will have their source code</span>
 <span class="sd">    extracted with inspect.get - so they need to be standard python classes declared in a</span>
-<span class="sd">    source file (ie. the module they are contained in needs a ``__file__`` attr, </span>
+<span class="sd">    source file (ie. the module they are contained in needs a ``__file__`` attr,</span>
 <span class="sd">    see: :func:`inspect.getsource` )</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">injected_fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A list/tuple of field strings to inject into the base class.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Examples:</span>
-<span class="sd">    </span>
+
 <span class="sd">    .. code-block:: python</span>
 
 <span class="sd">        injected_fields = (</span>
 <span class="sd">            &#39;object_id: Optional[str] = Field(None, description=&quot;Unique UUID for each object&quot;)&#39;,</span>
 <span class="sd">        )</span>
-<span class="sd">    </span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">imports</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Import</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Additional imports to inject into generated module. </span>
-<span class="sd">    </span>
+<span class="sd">    Additional imports to inject into generated module.</span>
+
 <span class="sd">    Examples:</span>
-<span class="sd">        </span>
+
 <span class="sd">    .. code-block:: python</span>
-<span class="sd">    </span>
+
 <span class="sd">        from linkml.generators.pydanticgen.template import (</span>
 <span class="sd">            ConditionalImport,</span>
 <span class="sd">            ObjectImport,</span>
 <span class="sd">            Import,</span>
 <span class="sd">            Imports</span>
 <span class="sd">        )</span>
-<span class="sd">        </span>
-<span class="sd">        imports = (Imports() + </span>
-<span class="sd">            Import(module=&#39;sys&#39;) + </span>
-<span class="sd">            Import(module=&#39;numpy&#39;, alias=&#39;np&#39;) + </span>
+
+<span class="sd">        imports = (Imports() +</span>
+<span class="sd">            Import(module=&#39;sys&#39;) +</span>
+<span class="sd">            Import(module=&#39;numpy&#39;, alias=&#39;np&#39;) +</span>
 <span class="sd">            Import(module=&#39;pathlib&#39;, objects=[</span>
 <span class="sd">                ObjectImport(name=&quot;Path&quot;),</span>
 <span class="sd">                ObjectImport(name=&quot;PurePath&quot;, alias=&quot;RenamedPurePath&quot;)</span>
-<span class="sd">            ]) + </span>
+<span class="sd">            ]) +</span>
 <span class="sd">            ConditionalImport(</span>
 <span class="sd">                module=&quot;typing&quot;,</span>
 <span class="sd">                objects=[ObjectImport(name=&quot;Literal&quot;)],</span>
 <span class="sd">                condition=&quot;sys.version_info &gt;= (3, 8)&quot;,</span>
 <span class="sd">                alternative=Import(</span>
-<span class="sd">                    module=&quot;typing_extensions&quot;, </span>
+<span class="sd">                    module=&quot;typing_extensions&quot;,</span>
 <span class="sd">                    objects=[ObjectImport(name=&quot;Literal&quot;)]</span>
 <span class="sd">                ),</span>
 <span class="sd">            ).imports</span>
 <span class="sd">        )</span>
-<span class="sd">        </span>
+
 <span class="sd">    becomes:</span>
-<span class="sd">    </span>
+
 <span class="sd">    .. code-block:: python</span>
-<span class="sd">    </span>
+
 <span class="sd">        import sys</span>
 <span class="sd">        import numpy as np</span>
 <span class="sd">        from pathlib import (</span>
@@ -600,12 +600,12 @@
 <span class="sd">            from typing import Literal</span>
 <span class="sd">        else:</span>
 <span class="sd">            from typing_extensions import Literal</span>
-<span class="sd">        </span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">metadata_mode</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">MetadataMode</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">MetadataMode</span><span class="o">.</span><span class="n">AUTO</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    How to include schema metadata in generated pydantic models.</span>
-<span class="sd">    </span>
+
 <span class="sd">    See :class:`.MetadataMode` for mode documentation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">split</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -617,53 +617,53 @@
     <span class="n">split_pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;.{{ schema.name }}&quot;</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    When splitting generation, imported modules need to be generated separately</span>
-<span class="sd">    and placed in a python package and import from each other. Since the </span>
+<span class="sd">    and placed in a python package and import from each other. Since the</span>
 <span class="sd">    location of those imported modules is variable -- e.g. one might want to</span>
 <span class="sd">    generate schema in multiple packages depending on their version -- this</span>
 <span class="sd">    pattern is used to generate the module portion of the import statement.</span>
-<span class="sd">    </span>
-<span class="sd">    These patterns should generally yield a relative module import, </span>
+
+<span class="sd">    These patterns should generally yield a relative module import,</span>
 <span class="sd">    since functions like :func:`.generate_split` will generate and write files</span>
 <span class="sd">    relative to some base file, though this is not a requirement since custom</span>
 <span class="sd">    split generation logic is also allowed.</span>
-<span class="sd">    </span>
+
 <span class="sd">    The pattern is a jinja template string that is given the ``SchemaDefinition``</span>
 <span class="sd">    of the imported schema in the environment. Additional variables can be passed</span>
 <span class="sd">    into the jinja environment with the :attr:`.split_context` argument.</span>
-<span class="sd">     </span>
+
 <span class="sd">    Further modification is possible by using jinja filters.</span>
-<span class="sd">    </span>
+
 <span class="sd">    After templating, the string is passed through a :attr:`SNAKE_CASE` pattern</span>
 <span class="sd">    to replace whitespace and other characters that can&#39;t be used in module names.</span>
-<span class="sd">    </span>
+
 <span class="sd">    See also :meth:`.generate_module_import`, which is used to generate the</span>
 <span class="sd">    module portion of the import statement (and can be overridden in subclasses).</span>
-<span class="sd">     </span>
+
 <span class="sd">    Examples:</span>
-<span class="sd">    </span>
-<span class="sd">        for a schema named ``ExampleSchema`` and version ``1.2.3`` ...   </span>
-<span class="sd">    </span>
+
+<span class="sd">        for a schema named ``ExampleSchema`` and version ``1.2.3`` ...</span>
+
 <span class="sd">        ``&quot;.{{ schema.name }}&quot;`` (the default) becomes</span>
-<span class="sd">        </span>
+
 <span class="sd">        ``from .example_schema import ClassA, ...``</span>
-<span class="sd">        </span>
+
 <span class="sd">        ``&quot;...{{ schema.name }}.v{{ schema.version | replace(&#39;.&#39;, &#39;_&#39;) }}&quot;`` becomes</span>
-<span class="sd">        </span>
+
 <span class="sd">        ``from ...example_schema.v1_2_3 import ClassA, ...``</span>
-<span class="sd">    </span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">split_context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Additional variables to pass into ``split_pattern`` when</span>
-<span class="sd">    generating imported module names. </span>
-<span class="sd">    </span>
+<span class="sd">    generating imported module names.</span>
+
 <span class="sd">    Passed in as ``**kwargs`` , so e.g. if ``split_context = {&#39;myval&#39;: 1}``</span>
 <span class="sd">    then one would use it in a template string like ``{{ myval }}``</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">split_mode</span><span class="p">:</span> <span class="n">SplitMode</span> <span class="o">=</span> <span class="n">SplitMode</span><span class="o">.</span><span class="n">AUTO</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    How to filter imports from imported schema.</span>
-<span class="sd">    </span>
+
 <span class="sd">    See :class:`.SplitMode` for description of options</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1485,7 +1485,7 @@
 <span class="s2">:class:`.PydanticTemplateModel` templates to override them. The given directory will be </span>
 <span class="s2">searched for matching templates, and use the default templates as a fallback </span>
 <span class="s2">if an override is not found</span>
-<span class="s2">  </span>
+
 <span class="s2">Available templates to override:</span>
 
 <span class="se">\b</span>
