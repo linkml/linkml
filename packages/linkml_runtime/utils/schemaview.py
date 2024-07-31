@@ -12,6 +12,7 @@ import warnings
 from linkml_runtime.utils.namespaces import Namespaces
 from deprecated.classic import deprecated
 from linkml_runtime.utils.context_utils import parse_import_map, map_import
+from linkml_runtime.utils.formatutils import is_empty
 from linkml_runtime.utils.pattern import PatternResolver
 from linkml_runtime.linkml_model.meta import *
 from linkml_runtime.exceptions import OrderingError
@@ -1369,7 +1370,10 @@ class SchemaView(object):
                         if v2 is not None:
                             v = COMBINE[metaslot_name](v, v2)
                     else:
-                        if v2 is not None:
+                        # can rewrite below as:
+                        # 1. if v2:
+                        # 2. if v2 is not None and ((isinstance(v2, (dict, list)) and v2) or (isinstance(v2, JsonObj) and as_dict(v2)))
+                        if not is_empty(v2):
                             v = v2
                             logging.debug(f'{v} takes precedence over {v2} for {induced_slot.name}.{metaslot_name}')
             if v is None:
