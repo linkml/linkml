@@ -5,6 +5,7 @@
       "source": "linkml_issue_384.yaml"
    },
    "@context": {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "ex": "https://w3id.org/linkml/examples/personinfo/",
       "linkml": "https://w3id.org/linkml/",
       "sdo": "http://schema.org/",

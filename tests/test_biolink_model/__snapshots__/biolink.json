@@ -29110,6 +29110,7 @@
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",
     {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "AGRKB": "https://www.alliancegenome.org/",
       "APO": {
         "@id": "http://purl.obolibrary.org/obo/APO_",
@@ -29674,7 +29675,6 @@
         "@id": "http://www.w3.org/2003/01/geo/wgs84_pos",
         "@prefix": true
       },
-      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "@vocab": "https://w3id.org/biolink/vocab/",
       "active_in": {
         "@type": "@id",
@@ -29740,7 +29740,7 @@
         "@id": "affects_risk_for"
       },
       "affiliation": {
-        "@type": "@id",
+        "@type": "xsd:anyURI",
         "@id": "affiliation"
       },
       "id": "@id",
@@ -29875,7 +29875,7 @@
         "@id": "catalyzes"
       },
       "category": {
-        "@type": "@id",
+        "@type": "xsd:anyURI",
         "@id": "category"
       },
       "causal_mechanism_qualifier": {
@@ -30561,7 +30561,7 @@
         "@id": "interbase_coordinate"
       },
       "iri": {
-        "@type": "@id",
+        "@type": "xsd:anyURI",
         "@id": "iri"
       },
       "is_active_ingredient_of": {
@@ -30744,7 +30744,7 @@
         "@id": "mentions"
       },
       "mesh_terms": {
-        "@type": "@id",
+        "@type": "xsd:anyURI",
         "@id": "mesh_terms"
       },
       "missing_from": {
@@ -30851,7 +30851,7 @@
         "@id": "original_object"
       },
       "original_predicate": {
-        "@type": "@id",
+        "@type": "xsd:anyURI",
         "@id": "original_predicate"
       },
       "original_subject": {
@@ -30929,7 +30929,7 @@
         "@id": "precedes"
       },
       "predicate": {
-        "@type": "@id",
+        "@type": "xsd:anyURI",
         "@id": "rdf:predicate"
       },
       "predicate_mappings": {
@@ -30976,7 +30976,7 @@
         "@id": "publications"
       },
       "published_in": {
-        "@type": "@id",
+        "@type": "xsd:anyURI",
         "@id": "published_in"
       },
       "publisher": {
@@ -31217,7 +31217,7 @@
         "@id": "supporting_document_year"
       },
       "supporting_documents": {
-        "@type": "@id",
+        "@type": "xsd:anyURI",
         "@id": "supporting_documents"
       },
       "supporting_study_cohort": {
@@ -31233,11 +31233,11 @@
         "@id": "supporting_study_metadata"
       },
       "supporting_study_method_description": {
-        "@type": "@id",
+        "@type": "xsd:anyURI",
         "@id": "supporting_study_method_description"
       },
       "supporting_study_method_type": {
-        "@type": "@id",
+        "@type": "xsd:anyURI",
         "@id": "supporting_study_method_type"
       },
       "supporting_study_size": {
@@ -31337,7 +31337,7 @@
         "@id": "xenologous_to"
       },
       "xref": {
-        "@type": "@id",
+        "@type": "xsd:anyURI",
         "@id": "xref"
       },
       "Activity": {
