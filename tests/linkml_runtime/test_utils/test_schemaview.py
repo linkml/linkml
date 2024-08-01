@@ -6,8 +6,10 @@ from pathlib import Path
 from typing import List
 from unittest import TestCase
 
+from jsonasobj2 import JsonObj
+
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinitionName, SlotDefinition, \
+from linkml_runtime.linkml_model.meta import Example, SchemaDefinition, ClassDefinition, SlotDefinitionName, SlotDefinition, \
     ClassDefinitionName, Prefix
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.introspection import package_schemaview
@@ -944,6 +946,34 @@ class SchemaViewTestCase(unittest.TestCase):
                 slot = sv.get_slot(slot_name)
                 actual_result = sv.is_inlined(slot)
                 self.assertEqual(actual_result, expected_result)
+
+    def test_materialize_nonscalar_slot_usage(self):
+        schema_path = os.path.join(INPUT_DIR, "DJ_controller_schema.yaml")
+        sv = SchemaView(schema_path)
+        cls = sv.induced_class("DJController")
+
+        # jog_wheels is a slot asserted at the schema level
+        # check that the range (scalar value) is being materialized properly
+        assert cls.attributes["jog_wheels"].range == "integer"
+        # check that the examples (list) is being materialized properly
+        assert isinstance(cls.attributes["jog_wheels"].examples, list)
+        for example in cls.attributes["jog_wheels"].examples:
+            assert example.value == "2"
+        for example in cls.attributes["volume_faders"].examples:
+            assert example.value == "4"
+        for example in cls.attributes["crossfaders"].examples:
+            assert example.value == "1"
+        # check that the annotations (dictionary) is being materialized properly
+        assert isinstance(cls.attributes["jog_wheels"].annotations, JsonObj)
+        assert cls.attributes["jog_wheels"].annotations.expected_value.value == "an integer between 0 and 4"
+        assert cls.attributes["volume_faders"].annotations.expected_value.value == "an integer between 0 and 8"
+
+        # examples being overridden by slot_usage modification
+        assert cls.attributes["tempo"].examples == [Example(value='120.0'), Example(value='144.0'), Example(value='126.8'), Example(value='102.6')]
+        # annotations remain the same / propagated as is from schema-level 
+        # definition of `tempo` slot
+        assert cls.attributes["tempo"].annotations.expected_value.value == "a number between 0 and 200"
+        assert cls.attributes["tempo"].annotations.preferred_unit.value == "BPM"
 
 
 if __name__ == '__main__':
