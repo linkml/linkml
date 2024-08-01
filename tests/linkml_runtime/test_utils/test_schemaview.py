@@ -948,6 +948,14 @@ class SchemaViewTestCase(unittest.TestCase):
                 self.assertEqual(actual_result, expected_result)
 
     def test_materialize_nonscalar_slot_usage(self):
+        """
+        ``slot_usage`` overrides values in the base slot definition without
+        clobbering unrelated, nonscalar values.
+        
+        See: 
+        - https://github.com/linkml/linkml/issues/2224
+        - https://github.com/linkml/linkml-runtime/pull/335
+        """
         schema_path = os.path.join(INPUT_DIR, "DJ_controller_schema.yaml")
         sv = SchemaView(schema_path)
         cls = sv.induced_class("DJController")
