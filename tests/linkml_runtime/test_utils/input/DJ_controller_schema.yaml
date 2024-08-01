@@ -17,9 +17,6 @@ classes:
         - value: 144.0
         - value: 126.8
         - value: 102.6
-        annotations:
-          expected_value: a number between 0 and 300
-          preferred_unit: BPM
 slots:
   jog_wheels:
     description: The number of jog wheels on the DJ controller

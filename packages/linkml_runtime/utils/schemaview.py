@@ -1372,7 +1372,11 @@ class SchemaView(object):
                     else:
                         # can rewrite below as:
                         # 1. if v2:
-                        # 2. if v2 is not None and ((isinstance(v2, (dict, list)) and v2) or (isinstance(v2, JsonObj) and as_dict(v2)))
+                        # 2. if v2 is not None and 
+                        #    (
+                        #      (isinstance(v2, (dict, list)) and v2) or 
+                        #      (isinstance(v2, JsonObj) and as_dict(v2))
+                        #    )
                         if not is_empty(v2):
                             v = v2
                             logging.debug(f'{v} takes precedence over {v2} for {induced_slot.name}.{metaslot_name}')
