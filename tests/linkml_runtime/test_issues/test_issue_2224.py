@@ -36,8 +36,7 @@ class Issue2224TestCase(TestCase):
         )
 
         # examples being overriden by slot_usage modification
-        for example in cls.attributes["tempo"].examples:
-            self.assertIn(example.value, ["120.0", "144.0", "126.8", "102.6"])
+        assert cls.attributes["tempo"].examples == [Example(value='120.0'), Example(value='144.0'), Example(value='126.8'), Example(value='102.6')]
         # annotations being overriden by slot_usage modification
         self.assertEqual(
             cls.attributes["tempo"].annotations.expected_value.value,
