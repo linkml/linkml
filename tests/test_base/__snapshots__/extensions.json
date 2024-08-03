@@ -437,10 +437,11 @@
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",
     {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "linkml": "https://w3id.org/linkml/",
       "@vocab": "https://w3id.org/linkml/",
       "tag": {
-        "@type": "@id",
+        "@type": "xsd:anyURI",
         "@id": "tag"
       },
       "value": {

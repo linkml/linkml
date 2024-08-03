@@ -1,5 +1,6 @@
 {
    "@context": {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "bar": {
          "@id": "http://samples.r.us/bar_",
          "@prefix": true
@@ -9,7 +10,7 @@
       "simple_uri_test": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/",
       "@vocab": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/",
       "tag": {
-         "@type": "@id",
+         "@type": "xsd:anyURI",
          "@id": "linkml:tag"
       },
       "value": {

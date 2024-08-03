@@ -1,5 +1,6 @@
 {
    "@context": {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "bar": "http://samples.r.us/bar_",
       "foo": "http://samples.r.us/foo#",
       "linkml": "https://w3id.org/linkml/",

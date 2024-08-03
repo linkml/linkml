@@ -18,8 +18,7 @@ from rdflib import SKOS, XSD, Namespace
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
-URI_RANGES = (XSD.anyURI, SHEX.nonliteral, SHEX.bnode, SHEX.iri)
-
+URI_RANGES = (SHEX.nonliteral, SHEX.bnode, SHEX.iri)
 
 ENUM_CONTEXT = {
     "@vocab": "@null",
@@ -99,7 +98,7 @@ class ContextGenerator(Generator):
             comments.generation_date = self.schema.generation_date
             comments.source = self.schema.source_file
             context.comments = comments
-        context_content = {}
+        context_content = {"xsd": "http://www.w3.org/2001/XMLSchema#"}
         if base:
             base = str(base)
             if "://" not in base:
@@ -193,6 +192,7 @@ class ContextGenerator(Generator):
         elif not uri_prefix or is_default_namespace:
             definition["@id"] = uri_suffix
         else:
+
             definition["@id"] = (uri_prefix + ":" + uri_suffix) if uri_prefix else uri
 
         if uri_prefix and not is_default_namespace:

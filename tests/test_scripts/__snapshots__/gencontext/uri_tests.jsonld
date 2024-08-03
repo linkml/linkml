@@ -5,6 +5,7 @@
       "source": "uri_tests.yaml"
    },
    "@context": {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "OIO": "http://www.geneontology.org/formats/oboInOwl#",
       "linkml": "https://w3id.org/linkml/",
       "meta": "https://w3id.org/linkml/meta/",
