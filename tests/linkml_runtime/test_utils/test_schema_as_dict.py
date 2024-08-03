@@ -7,6 +7,7 @@ from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.schema_as_dict import schema_as_yaml_dump, schema_as_dict
 from linkml_runtime.utils.schemaview import SchemaView
+from linkml_runtime.utils.schema_builder import ClassDefinition, SchemaBuilder, SlotDefinition
 
 from tests.test_utils import INPUT_DIR, OUTPUT_DIR
 
@@ -44,6 +45,32 @@ class SchemaAsDictTestCase(unittest.TestCase):
                     for pv in e.get('permissible_values', {}).values():
                         assert 'text' not in pv
         self.assertIn('name', obj['slots'])
+
+
+    def test_as_dict_with_attributes(self):
+        """
+        tests schema_as_dict, see https://github.com/linkml/linkml/issues/100
+        """
+
+        # Create a class with an attribute named 'name'
+        cls = ClassDefinition(name="Patient")
+        slots = [
+            SlotDefinition(name="id", range="string"),
+            SlotDefinition(name="name", range="string"),
+        ]
+        builder = SchemaBuilder()
+        builder.add_class(cls=cls, slots=slots, use_attributes=True)
+
+        # Verify that the 'name' slot exists in the schema
+        view = SchemaView(builder.schema)
+        self.assertIn('name', view.all_slots())
+
+        # Convert the schema to a dict
+        obj = schema_as_dict(view.schema)
+
+        # Verify that the 'name' slot still exists, as an attribute
+        self.assertIn('name', obj['classes']['Patient']['attributes'])
+
 
 if __name__ == '__main__':
     unittest.main()
