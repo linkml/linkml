@@ -14,6 +14,8 @@ schemas in YAML that describe the structure of your data. Additionally, it is a 
 of formats (JSON, RDF, TSV), with generators for compiling LinkML
 schemas to other frameworks.
 
+LinkML is open source (licensed under the Apache-2.0 license) and community-driven. You can find the code on `GitHub <https://github.com/linkml/>`_.
+
 
 Documentation
 -------------
