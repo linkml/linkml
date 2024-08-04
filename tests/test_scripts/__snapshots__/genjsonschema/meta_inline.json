@@ -5,27 +5,48 @@
             "description": "a provence-generating activity",
             "properties": {
                 "description": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "ended_at_time": {
                     "format": "date",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "id": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "started_at_time": {
                     "format": "date",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "used": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "was_associated_with": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "was_informed_by": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "required": [
@@ -39,13 +60,22 @@
             "description": "",
             "properties": {
                 "altitude": {
-                    "type": "number"
+                    "type": [
+                        "number",
+                        "null"
+                    ]
                 },
                 "city": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "street": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "title": "Address",
@@ -56,13 +86,19 @@
             "description": "a provence-generating agent",
             "properties": {
                 "acted_on_behalf_of": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "id": {
                     "type": "string"
                 },
                 "was_informed_by": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "required": [
@@ -94,6 +130,9 @@
                         },
                         {
                             "type": "string"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
                     "type": "string"
@@ -113,6 +152,9 @@
                         },
                         {
                             "$ref": "#/$defs/EmploymentEventType"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
                     "type": "string"
@@ -135,6 +177,9 @@
                         },
                         {
                             "$ref": "#/$defs/EmploymentEventType"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
                     "type": "string"
@@ -154,6 +199,9 @@
                         },
                         {
                             "type": "integer"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
                     "type": "string"
@@ -168,21 +216,40 @@
             "properties": {
                 "ended_at_time": {
                     "format": "date",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "in_location": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "is_current": {
-                    "type": "boolean"
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
                 },
                 "metadata": {
-                    "$ref": "#/$defs/AnyObject",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/AnyObject"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Example of a slot that has an unconstrained range"
                 },
                 "started_at_time": {
                     "format": "date",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "title": "BirthEvent",
@@ -193,7 +260,10 @@
             "description": "",
             "properties": {
                 "slot_with_space_1": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "title": "ClassWithSpaces",
@@ -207,7 +277,10 @@
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "required": [
@@ -224,16 +297,25 @@
                     "items": {
                         "type": "string"
                     },
-                    "type": "array"
+                    "type": [
+                        "array",
+                        "null"
+                    ]
                 },
                 "ceo": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "id": {
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "required": [
@@ -250,10 +332,16 @@
                     "type": "string"
                 },
                 "in_code_system": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "name": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "required": [
@@ -280,29 +368,48 @@
                     "items": {
                         "$ref": "#/$defs/Activity"
                     },
-                    "type": "array"
+                    "type": [
+                        "array",
+                        "null"
+                    ]
                 },
                 "code_systems": {
                     "items": {
                         "$ref": "#/$defs/CodeSystem"
                     },
-                    "type": "array"
+                    "type": [
+                        "array",
+                        "null"
+                    ]
                 },
                 "companies": {
                     "items": {
                         "$ref": "#/$defs/Company"
                     },
-                    "type": "array"
+                    "type": [
+                        "array",
+                        "null"
+                    ]
                 },
                 "metadata": {
-                    "$ref": "#/$defs/AnyObject",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/AnyObject"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Example of a slot that has an unconstrained range"
                 },
                 "persons": {
                     "items": {
                         "$ref": "#/$defs/Person"
                     },
-                    "type": "array"
+                    "type": [
+                        "array",
+                        "null"
+                    ]
                 }
             },
             "title": "Dataset",
@@ -316,10 +423,16 @@
                     "type": "string"
                 },
                 "in_code_system": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "name": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "required": [
@@ -341,22 +454,41 @@
             "description": "",
             "properties": {
                 "employed_at": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "ended_at_time": {
                     "format": "date",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "is_current": {
-                    "type": "boolean"
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
                 },
                 "metadata": {
-                    "$ref": "#/$defs/AnyObject",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/AnyObject"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Example of a slot that has an unconstrained range"
                 },
                 "started_at_time": {
                     "format": "date",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "type": {
                     "anyOf": [
@@ -365,6 +497,9 @@
                         },
                         {
                             "$ref": "#/$defs/EmploymentEventType"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
                     "type": "string"
@@ -390,7 +525,10 @@
             "properties": {
                 "attribute5": {
                     "const": "foo",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "title": "EqualsString",
@@ -405,7 +543,10 @@
                         "foo",
                         "bar"
                     ],
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "title": "EqualsStringIn",
@@ -417,18 +558,34 @@
             "properties": {
                 "ended_at_time": {
                     "format": "date",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "is_current": {
-                    "type": "boolean"
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
                 },
                 "metadata": {
-                    "$ref": "#/$defs/AnyObject",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/AnyObject"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Example of a slot that has an unconstrained range"
                 },
                 "started_at_time": {
                     "format": "date",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "title": "Event",
@@ -439,7 +596,10 @@
             "description": "",
             "properties": {
                 "test_attribute": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "title": "FakeClass",
@@ -454,14 +614,20 @@
                 },
                 "ended_at_time": {
                     "format": "date",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "related_to": {
                     "type": "string"
                 },
                 "started_at_time": {
                     "format": "date",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "type": {
                     "$ref": "#/$defs/FamilialRelationshipType"
@@ -500,24 +666,46 @@
             "properties": {
                 "ended_at_time": {
                     "format": "date",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "in_location": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "is_current": {
-                    "type": "boolean"
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
                 },
                 "married_to": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "metadata": {
-                    "$ref": "#/$defs/AnyObject",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/AnyObject"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Example of a slot that has an unconstrained range"
                 },
                 "started_at_time": {
                     "format": "date",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "title": "MarriageEvent",
@@ -528,28 +716,61 @@
             "description": "",
             "properties": {
                 "diagnosis": {
-                    "$ref": "#/$defs/DiagnosisConcept"
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DiagnosisConcept"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 },
                 "ended_at_time": {
                     "format": "date",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "in_location": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "is_current": {
-                    "type": "boolean"
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
                 },
                 "metadata": {
-                    "$ref": "#/$defs/AnyObject",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/AnyObject"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Example of a slot that has an unconstrained range"
                 },
                 "procedure": {
-                    "$ref": "#/$defs/ProcedureConcept"
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ProcedureConcept"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 },
                 "started_at_time": {
                     "format": "date",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "title": "MedicalEvent",
@@ -563,13 +784,19 @@
                     "items": {
                         "type": "string"
                     },
-                    "type": "array"
+                    "type": [
+                        "array",
+                        "null"
+                    ]
                 },
                 "id": {
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "required": [
@@ -594,40 +821,65 @@
                     "items": {
                         "$ref": "#/$defs/Address"
                     },
-                    "type": "array"
+                    "type": [
+                        "array",
+                        "null"
+                    ]
                 },
                 "age_in_years": {
                     "description": "number of years since birth",
                     "maximum": 999,
                     "minimum": 0,
-                    "type": "integer"
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
                 },
                 "aliases": {
                     "items": {
                         "type": "string"
                     },
-                    "type": "array"
+                    "type": [
+                        "array",
+                        "null"
+                    ]
                 },
                 "has_birth_event": {
-                    "$ref": "#/$defs/BirthEvent"
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/BirthEvent"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 },
                 "has_employment_history": {
                     "items": {
                         "$ref": "#/$defs/EmploymentEvent"
                     },
-                    "type": "array"
+                    "type": [
+                        "array",
+                        "null"
+                    ]
                 },
                 "has_familial_relationships": {
                     "items": {
                         "$ref": "#/$defs/FamilialRelationship"
                     },
-                    "type": "array"
+                    "type": [
+                        "array",
+                        "null"
+                    ]
                 },
                 "has_medical_history": {
                     "items": {
                         "$ref": "#/$defs/MedicalEvent"
                     },
-                    "type": "array"
+                    "type": [
+                        "array",
+                        "null"
+                    ]
                 },
                 "id": {
                     "type": "string"
@@ -637,16 +889,25 @@
                 },
                 "name": {
                     "pattern": "^\\S+ \\S+$",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "species_name": {
                     "const": "human",
                     "pattern": "^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\\.[A-Z]+(-[0-9]{4})?$",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "stomach_count": {
                     "const": 1,
-                    "type": "integer"
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
                 }
             },
             "required": [
@@ -663,13 +924,19 @@
                     "items": {
                         "type": "string"
                     },
-                    "type": "array"
+                    "type": [
+                        "array",
+                        "null"
+                    ]
                 },
                 "id": {
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "required": [
@@ -686,10 +953,16 @@
                     "type": "string"
                 },
                 "in_code_system": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "name": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "required": [
@@ -707,17 +980,29 @@
                 },
                 "ended_at_time": {
                     "format": "date",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "related_to": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "started_at_time": {
                     "format": "date",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "type": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "title": "Relationship",
@@ -728,10 +1013,20 @@
             "description": "",
             "properties": {
                 "slot_with_space_1": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "slot_with_space_2": {
-                    "$ref": "#/$defs/ClassWithSpaces"
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ClassWithSpaces"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 }
             },
             "title": "SubSubClass2",
@@ -742,10 +1037,20 @@
             "description": "",
             "properties": {
                 "slot_with_space_1": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "slot_with_space_2": {
-                    "$ref": "#/$defs/ClassWithSpaces"
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ClassWithSpaces"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 }
             },
             "title": "SubclassTest",
@@ -756,10 +1061,20 @@
             "description": "Same depth as Sub sub class 1",
             "properties": {
                 "slot_with_space_1": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "slot_with_space_2": {
-                    "$ref": "#/$defs/ClassWithSpaces"
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ClassWithSpaces"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 }
             },
             "title": "TubSubClass1",
@@ -776,29 +1091,48 @@
             "items": {
                 "$ref": "#/$defs/Activity"
             },
-            "type": "array"
+            "type": [
+                "array",
+                "null"
+            ]
         },
         "code_systems": {
             "items": {
                 "$ref": "#/$defs/CodeSystem"
             },
-            "type": "array"
+            "type": [
+                "array",
+                "null"
+            ]
         },
         "companies": {
             "items": {
                 "$ref": "#/$defs/Company"
             },
-            "type": "array"
+            "type": [
+                "array",
+                "null"
+            ]
         },
         "metadata": {
-            "$ref": "#/$defs/AnyObject",
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/AnyObject"
+                },
+                {
+                    "type": "null"
+                }
+            ],
             "description": "Example of a slot that has an unconstrained range"
         },
         "persons": {
             "items": {
                 "$ref": "#/$defs/Person"
             },
-            "type": "array"
+            "type": [
+                "array",
+                "null"
+            ]
         }
     },
     "title": "kitchen_sink",

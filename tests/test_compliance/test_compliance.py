@@ -1,5 +1,6 @@
 """Constants for compliance tests. See README.md for more information."""
 
+import pytest
 import rdflib
 
 from tests.test_compliance.helper import (
@@ -60,17 +61,17 @@ PV_3 = "pv3"
 SUBSET_SS = "Subset1"
 
 CORE_FRAMEWORKS = [
-    PYTHON_DATACLASSES,
-    PYDANTIC,
-    JAVA,
-    JSON_SCHEMA,
-    SHACL,
-    SHEX,
+    pytest.param(PYTHON_DATACLASSES, marks=[pytest.mark.pythongen]),
+    pytest.param(PYDANTIC, marks=[pytest.mark.pydanticgen]),
+    pytest.param(JAVA, marks=[pytest.mark.javagen]),
+    pytest.param(JSON_SCHEMA, marks=[pytest.mark.jsonschemagen]),
+    pytest.param(SHACL, marks=[pytest.mark.shaclgen]),
+    pytest.param(SHEX, marks=[pytest.mark.shexgen]),
     # JSONLD,
-    JSONLD_CONTEXT,
+    pytest.param(JSONLD_CONTEXT, marks=[pytest.mark.jsonldcontextgen]),
     #    SQL_ALCHEMY_IMPERATIVE,
     #    SQL_ALCHEMY_DECLARATIVE,
-    SQL_DDL_SQLITE,
-    SQL_DDL_POSTGRES,
-    OWL,
+    pytest.param(SQL_DDL_SQLITE, marks=[pytest.mark.sqlddlgen]),
+    pytest.param(SQL_DDL_POSTGRES, marks=[pytest.mark.sqlddlpostgresgen]),
+    pytest.param(OWL, marks=[pytest.mark.owlgen]),
 ]

@@ -5,10 +5,16 @@
             "description": "",
             "properties": {
                 "sa": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "sb": {
-                    "type": "integer"
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
                 }
             },
             "title": "C1",
@@ -19,7 +25,10 @@
             "description": "",
             "properties": {
                 "sb": {
-                    "type": "integer"
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
                 }
             },
             "title": "C2",
@@ -33,10 +42,16 @@
     "metamodel_version": "1.7.0",
     "properties": {
         "sa": {
-            "type": "string"
+            "type": [
+                "string",
+                "null"
+            ]
         },
         "sb": {
-            "type": "integer"
+            "type": [
+                "integer",
+                "null"
+            ]
         }
     },
     "title": "issue177",
