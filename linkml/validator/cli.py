@@ -64,7 +64,7 @@ def _resolve_loaders(loader_config: Iterable[Union[str, Dict[str, Dict[str, str]
 DEPRECATED = "[DEPRECATED: only used in legacy mode]"
 
 
-@click.command()
+@click.command(name="validate")
 @click.option(
     "-s",
     "--schema",

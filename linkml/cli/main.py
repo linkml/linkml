@@ -46,8 +46,6 @@ from linkml.utils.execute_tutorial import cli as run_tutorial
 from linkml.utils.schema_fixer import main as linkml_schema_fixer
 from linkml.utils.sqlutils import main as linkml_sqldb
 from linkml.validator.cli import cli as linkml_validate
-from linkml.validators.jsonschemavalidator import cli as linkml_jsonschema_validate
-from linkml.validators.sparqlvalidator import cli as linkml_sparql_validate
 from linkml.workspaces.example_runner import cli as linkml_run_examples
 
 # --------------------------------------------------
@@ -69,16 +67,6 @@ def generate():
     """
 
 
-@linkml.group(invoke_without_command=True)
-@click.pass_context
-def validate(ctx: click.Context):
-    """
-    Validate a LinkML Schema
-    """
-    if ctx.invoked_subcommand is None:
-        ctx.forward(linkml_validate)
-
-
 @linkml.group()
 def dev():
     """
@@ -96,6 +84,7 @@ linkml.add_command(linkml_lint, name="lint")
 linkml.add_command(linkml_sqldb, name="sqldb")
 linkml.add_command(linkml_schema_fixer, name="fix")
 linkml.add_command(linkml_run_examples, name="examples")
+linkml.add_command(linkml_validate, name="validate")
 
 # Generators
 generate.add_command(gen_jsonld_context, name="jsonld-context")
@@ -132,10 +121,6 @@ generate.add_command(gen_project, name="project")
 generate.add_command(gen_excel, name="excel")
 generate.add_command(gen_sssom, name="sssom")
 generate.add_command(gen_linkml, name="linkml")
-
-# Validators
-validate.add_command(linkml_jsonschema_validate, name="jsonschema")
-validate.add_command(linkml_sparql_validate, name="sparql")
 
 # Dev helpers
 dev.add_command(run_tutorial, name="tutorial")
