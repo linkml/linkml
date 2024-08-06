@@ -2,7 +2,7 @@ from collections import Counter
 from typing import Any, List, Tuple
 
 import rdflib
-from rdflib import SH, Literal, URIRef
+from rdflib import RDFS, SH, Literal, URIRef
 
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shaclgen import ShaclGenerator
@@ -167,7 +167,6 @@ EXPECTED_with_annotations = [
         rdflib.term.Literal("true", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#boolean")),
     ),
 ]
-
 
 EXPECTED_equals_string = [
     (
@@ -435,3 +434,16 @@ def test_custom_class_range_is_blank_node_or_iri(input_path):
     assert persons_node
 
     assert (persons_node, SH.nodeKind, SH.BlankNodeOrIRI) in g
+
+
+def test_is_a_becomes_a_rdfs_subclass_of(input_path):
+    shacl = ShaclGenerator(input_path("shaclgen_subclass_of.yaml"), mergeimports=True).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    assert (
+        URIRef("https://w3id.org/linkml/examples/personinfo/Citizen"),
+        RDFS.subClassOf,
+        URIRef("https://w3id.org/linkml/examples/personinfo/Person"),
+    ) in g
