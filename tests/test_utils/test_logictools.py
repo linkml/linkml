@@ -17,6 +17,7 @@ from linkml.utils.logictools import (
     to_dnf,
 )
 
+# constants for variables and builtin terms for testing
 a = Variable("a")
 b = Variable("b")
 c = Variable("c")
@@ -43,6 +44,14 @@ T = Top()
     ],
 )
 def test_eq(expr1, expr2, is_eq):
+    """
+    Test structural equality of expressions.
+
+    :param expr1:
+    :param expr2:
+    :param is_eq:
+    :return:
+    """
     if is_eq:
         assert expr1 == expr2
     else:
@@ -128,6 +137,19 @@ def test_eq(expr1, expr2, is_eq):
     ],
 )
 def test_logic_functions(expr, expected_contradiction, dnf, simplified):
+    """
+    Test logic functions.
+
+    - First expr is checked for satisfiability (contradictions);
+    - next, the expression is converted to Disjunctive Normal Form (DNF)
+    - next, the DNF is simplified.
+
+    :param expr:
+    :param expected_contradiction:
+    :param dnf:
+    :param simplified:
+    :return:
+    """
     assert is_contradiction(expr, apply_dnf=True) == expected_contradiction
     expr_to_dnf = to_dnf(expr)
     assert expr_to_dnf == dnf
@@ -138,21 +160,36 @@ def test_logic_functions(expr, expected_contradiction, dnf, simplified):
 @pytest.mark.parametrize(
     "expr,expected",
     [
+        (T, T),
+        (F, F),
+        (T & T, T),
+        (T | T, T),
+        (F & F, F),
+        (F | F, F),
+        (F & T, F),
+        (T | F, T),
+        (~T, F),
+        (~F, T),
+        (~~T, T),
+        (~~F, F),
         (a, a),
         (a & a, a),
-        # ((a & a) & a, a),
+        ((a & a) & a, a),
         (a & b, a & b),
         (a & b, b & a),
         (a | a, a),
         (a | b, a | b),
         (a | b, b | a),
         (~a, ~a),
+        (~~a, a),
+        (a & F, F),
+        (a | F, a | F),
         (a & ~b, a & ~b),
         (a & ~a, F),
         (a | ~a, T),
         ((a | b) & c, (a & c) | (b & c)),
         ((a | b) & (c | d), Or(a & c, a & d, b & c, b & d)),
-        # ((a | b) & ( ~b), a),
+        ((~b) & (a | b), (a & ~b) | F),
         (Term("P", a, b), Term("P", a, b)),
         (Term("<", 5), Term("<", 5)),
     ],

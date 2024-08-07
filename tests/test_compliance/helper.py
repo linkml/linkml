@@ -29,6 +29,8 @@ from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.yamlutils import YAMLRoot
 from pydantic import BaseModel
 
+from linkml.transformers.logical_model_transformer import UnsatisfiableAttribute
+
 try:
     from yaml import CSafeDumper as SafeDumper
 except ImportError:
@@ -435,6 +437,7 @@ def _make_schema(
     merge_type_imports=True,
     imported_schemas: List[Dict] = None,
     mappings: Optional[Dict[str, Any]] = None,
+    unsatisfiable: bool = False,
     **kwargs,
 ) -> Tuple[Dict, List]:
     """
@@ -556,6 +559,20 @@ def _make_schema(
 
     if not schema["name"]:
         raise ValueError(f"Schema name not set: {schema}")
+
+    if tests.WITH_LOGICAL_MODEL_TRANSFORMER:
+        from linkml.transformers.logical_model_transformer import LogicalModelTransformer
+
+        tr = LogicalModelTransformer()
+        tr.set_schema(SchemaDefinition(**schema))
+        try:
+            tr.transform()
+        except UnsatisfiableAttribute as e:
+            if unsatisfiable:
+                pass
+            else:
+                raise e
+
     return schema, mappings
 
 
@@ -922,9 +939,10 @@ def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_pa
     ttl_output = g.serialize(format="turtle")
     g = rdflib.Graph()
     g.parse(data=ttl_output, format="turtle")
-    roundtripped = rdflib_loader.load(ttl_output, target_class=py_cls, schemaview=schemaview)
+    _roundtripped = rdflib_loader.load(ttl_output, target_class=py_cls, schemaview=schemaview)
     if tests.WITH_OUTPUT:
-        yaml_dumper.dump(roundtripped, to_file=ttl_path)
+        with open(ttl_path, "w", encoding="utf-8") as stream:
+            stream.write(ttl_output)
     return g
 
 

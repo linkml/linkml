@@ -18,13 +18,15 @@ OUTPUT_DIR = THIS_DIR / "output"
 @pytest.mark.parametrize("abstract", [False, True])
 @pytest.mark.parametrize("default_range", [None, "string", "Any"])
 @pytest.mark.parametrize("preserve_class_is_a", [False, True])
-def test_simple(default_range, preserve_class_is_a, abstract):
+@pytest.mark.parametrize("force_any_of", [False, True])
+def test_simple(default_range, preserve_class_is_a, abstract, force_any_of):
     """
     Test with a simple schema structure involving inheritance.
 
     :param default_range:
     :param preserve_class_is_a:
     :param abstract:
+    :param force_any_of:
     :return:
     """
     sb = SchemaBuilder()
@@ -38,18 +40,27 @@ def test_simple(default_range, preserve_class_is_a, abstract):
     sb.add_defaults()
     sb.schema.default_range = default_range
     tr.set_schema(sb.schema)
-    flat_schema = tr.transform()
+    flat_schema = tr.transform(force_any_of=force_any_of)
     thing = flat_schema.classes["Thing"]
     actual_default_range = default_range if default_range != "Any" else None
-    assert thing.attributes["name"].range == actual_default_range
+    if not force_any_of:
+        assert thing.attributes["name"].range == actual_default_range
+    else:
+        assert len(thing.attributes["name"].any_of) == 1
+        assert thing.attributes["name"].any_of[0].range == actual_default_range
     person = flat_schema.classes["Person"]
-    assert person.attributes["age"].range == "integer"
+    if not force_any_of:
+        assert person.attributes["age"].range == "integer"
+    else:
+        assert len(person.attributes["age"].any_of) == 1
+        assert person.attributes["age"].any_of[0].range == "integer"
     if preserve_class_is_a:
         assert "id" not in person.attributes
     else:
         assert person.attributes["id"].identifier is True
-        assert person.attributes["name"].range == actual_default_range
-        assert person.attributes["name"].required is True
+        if not force_any_of:
+            assert person.attributes["name"].range == actual_default_range
+            assert person.attributes["name"].required is True
     sb.add_class("Organization", is_a="Thing")
     sb.add_class("Container", slots=[SlotDefinition("entities", range="Thing", multivalued=True)])
     tr.set_schema(sb.schema)
@@ -58,7 +69,8 @@ def test_simple(default_range, preserve_class_is_a, abstract):
     entities_att = container.attributes["entities"]
     if preserve_class_is_a:
         # range is preserved
-        assert entities_att.range == "Thing"
+        if not force_any_of:
+            assert entities_att.range == "Thing"
     else:
         # when fully unrolled a non-leaf class as range becomes as any_of ranges
         assert entities_att.range is None
@@ -75,6 +87,13 @@ def test_simple(default_range, preserve_class_is_a, abstract):
 @pytest.mark.parametrize("default_range", [None, "string", "Any"])
 @pytest.mark.parametrize("preserve_class_is_a", [False, True])
 def test_unrestricted_range(default_range, preserve_class_is_a):
+    """
+    Test a schema with unrestricted ranges at slot level.
+
+    :param default_range:
+    :param preserve_class_is_a:
+    :return:
+    """
     sb = SchemaBuilder()
     sb.add_class("Thing", slots=["id", "name", "a_number", "foo"])
     sb.add_class(
@@ -125,9 +144,9 @@ def test_unrestricted_range(default_range, preserve_class_is_a):
             raise ValueError(f"Unexpected default_range: {default_range}")
 
 
-def test_unsatifiable():
+def test_unsatisfiable():
     """
-    Test a schema that is unsatisfiable.
+    Test a schema that is unsatisfiable, e.g. when maximum/minimum value ranges do not intersect.
 
     Tests for:
 
@@ -136,7 +155,7 @@ def test_unsatifiable():
     """
     sb = SchemaBuilder()
     sb.add_class("Thing", slots=["id", "name"])
-    sb.add_class("Person", slots={"age": {"range": "integer"}}, is_a="Thing")
+    sb.add_class("Person", slots={"age": {"range": "integer"}, "pets": {"multivalued": True}}, is_a="Thing")
     sb.add_class("Person2", is_a="Person", slot_usage={"age": {"range": "string"}})
     tr = LogicalModelTransformer()
     sb.add_defaults()
@@ -155,6 +174,64 @@ def test_unsatifiable():
     assert sb.schema.slots["age"].minimum_value == 0, "check direct assignment"
     with pytest.raises(UnsatisfiableAttribute):
         _ = tr.transform()
+
+
+@pytest.mark.parametrize(
+    "person_min,person_max,person2_min,person2_max",
+    [
+        (0, 5, 1, 3),
+        (2, None, None, 1),
+        (None, None, None, None),
+        (1, 1, 1, 1),
+        (2, 1, None, None),
+        (None, None, 2, 1),
+    ],
+)
+def test_cardinality(person_min, person_max, person2_min, person2_max):
+    """
+    Test a schema that is unsatisfiable via min/max cardinality
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Thing", slots=["id", "name"])
+    sb.add_class(
+        "Person",
+        slots={"pets": {"multivalued": True, "minimum_cardinality": person_min, "maximum_cardinality": person_max}},
+        is_a="Thing",
+    )
+    sb.add_class(
+        "Person2",
+        is_a="Person",
+        slot_usage={"pets": {"minimum_cardinality": person2_min, "maximum_cardinality": person2_max}},
+    )
+    tr = LogicalModelTransformer()
+    sb.add_defaults()
+    tr.set_schema(sb.schema)
+    if person_min is None:
+        entailed_person2_min = person2_min
+    elif person2_min is None:
+        entailed_person2_min = person_min
+    else:
+        entailed_person2_min = max(person_min, person2_min)
+    if person_max is None:
+        entailed_person2_max = person2_max
+    elif person2_max is None:
+        entailed_person2_max = person_max
+    else:
+        entailed_person2_max = min(person_max, person2_max)
+    if entailed_person2_max is None or entailed_person2_min is None:
+        satisfiable = True
+    else:
+        satisfiable = entailed_person2_min <= entailed_person2_max
+    if satisfiable:
+        s2 = tr.transform()
+        entailed_att = s2.classes["Person2"].attributes["pets"]
+        assert (entailed_att.minimum_cardinality, entailed_att.maximum_cardinality) == (
+            entailed_person2_min,
+            entailed_person2_max,
+        )
+    else:
+        with pytest.raises(UnsatisfiableAttribute):
+            _ = tr.transform()
 
 
 def test_type_inheritance():

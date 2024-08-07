@@ -1,7 +1,7 @@
 import operator
 from copy import deepcopy
 from itertools import product
-from typing import Any, Collection, List, Optional, Tuple
+from typing import Any, Collection, List, Optional, Tuple, Type
 
 
 def member_of(item: Any, collection: Collection[Any]) -> bool:
@@ -25,6 +25,8 @@ OPS = {
 
 
 class Expression:
+    """Base class for logic expressions"""
+
     def __eq__(self, other: "Expression"):
         if isinstance(other, Expression):
             return self._ordered_str() == other._ordered_str()
@@ -60,6 +62,7 @@ class Expression:
 
     def __contains__(self, other: Any):
         return Term("contains", self, other)
+        return Term("contains", self, other)
 
     def _ordered_str(self, **kwargs):
         return str(self)
@@ -69,6 +72,8 @@ class Expression:
 
 
 class Variable(Expression):
+    """A variable in a logic expression"""
+
     def __init__(self, name: str):
         self.name = name
 
@@ -80,6 +85,8 @@ class Variable(Expression):
 
 
 class Top(Expression):
+    """True expression"""
+
     def __str__(self):
         return "T"
 
@@ -88,6 +95,8 @@ class Top(Expression):
 
 
 class Bottom(Expression):
+    """False expression"""
+
     def __str__(self):
         return "F"
 
@@ -96,6 +105,8 @@ class Bottom(Expression):
 
 
 class Not(Expression):
+    """Negation of an expression"""
+
     def __init__(self, operand: Expression):
         self.operand = operand
 
@@ -107,6 +118,8 @@ class Not(Expression):
 
 
 class And(Expression):
+    """Conjunction of expressions"""
+
     def __init__(self, *operands: Expression):
         self.operands: List[Expression] = list(operands)
 
@@ -306,6 +319,45 @@ def distribute_and_over_or(expr: Expression) -> Expression:
 
 
 def is_contradiction(expr: Expression, apply_dnf=False) -> Optional[bool]:
+    """
+    Check if the given expression is a contradiction.
+
+    >>> a = Variable("a")
+    >>> b = Variable("b")
+    >>> c = Variable("c")
+    >>> d = Variable("d")
+    >>> F = Bottom()
+    >>> T = Top()
+    >>> is_contradiction(T)
+    False
+    >>> is_contradiction(F)
+    True
+    >>> is_contradiction(~T)
+    True
+    >>> is_contradiction(~F)
+    False
+    >>> is_contradiction(~~T)
+    False
+    >>> is_contradiction(~~F)
+    True
+    >>> is_contradiction(F & F)
+    True
+    >>> is_contradiction(F & T)
+    True
+    >>> is_contradiction(F | T)
+    False
+    >>> is_contradiction(a & F )
+    True
+    >>> is_contradiction(a & ~a)
+    True
+    >>> assert is_contradiction(a & T) is None
+    >>> assert is_contradiction(a) is None
+    >>> assert is_contradiction(And(a)) is None
+
+    :param expr:
+    :param apply_dnf:
+    :return:
+    """
     if apply_dnf:
         expr = to_dnf(expr)
         expr = simplify(expr)
@@ -354,6 +406,32 @@ def evals_to_true(expr: Expression, apply_dnf=False) -> Optional[bool]:
     """
     Two-valued logic
 
+    >>> a = Variable("a")
+    >>> b = Variable("b")
+    >>> c = Variable("c")
+    >>> d = Variable("d")
+    >>> F = Bottom()
+    >>> T = Top()
+    >>> evals_to_true(T)
+    True
+    >>> evals_to_true(F)
+    False
+    >>> evals_to_true(~T)
+    False
+    >>> evals_to_true(~F)
+    True
+    >>> evals_to_true(a & b)
+    False
+    >>> evals_to_true(a | b)
+    False
+    >>> evals_to_true(a & a)
+    False
+
+    Note that this does not perform unification, so the following does not evaluate to True
+
+    >>> evals_to_true(a & ~a)
+    False
+
     :param expr:
     :param apply_dnf:
     :return:
@@ -363,7 +441,7 @@ def evals_to_true(expr: Expression, apply_dnf=False) -> Optional[bool]:
     if isinstance(expr, And):
         return all([evals_to_true(operand) for operand in expr.operands])
     elif isinstance(expr, Not):
-        if is_contradiction(expr.operand) is False:
+        if is_contradiction(expr.operand) is True:
             return True
         else:
             return False
@@ -376,32 +454,6 @@ def evals_to_true(expr: Expression, apply_dnf=False) -> Optional[bool]:
             return True
     else:
         return False
-
-
-def is_tautology(expr):
-    """
-    Checks if the given propositional logic formula is a tautology.
-
-    A formula is a tautology if it is true under every possible valuation of its variables.
-
-    Args:
-        expr (Expression): The input formula which is an instance of Expression or its subclasses.
-
-    Returns:
-        bool: True if the formula is a tautology, False otherwise.
-    """
-    if isinstance(expr, Or):
-        for i in range(len(expr.operands)):
-            for j in range(i + 1, len(expr.operands)):
-                if isinstance(expr.operands[i], Not) and expr.operands[i].operand == expr.operands[j]:
-                    return True
-                elif isinstance(expr.operands[j], Not) and expr.operands[j].operand == expr.operands[i]:
-                    return True
-    elif isinstance(expr, And):
-        for operand in expr.operands:
-            if is_tautology(operand):
-                return True
-    return False
 
 
 def eliminate_redundant(expr: Expression) -> Expression:
@@ -443,6 +495,23 @@ def simplify_full(expr: Expression) -> Expression:
 def simplify(expr: Expression) -> Expression:
     """
     Simplifies the given propositional logic formula.
+
+    >>> a = Variable("a")
+    >>> b = Variable("b")
+    >>> c = Variable("c")
+    >>> d = Variable("d")
+    >>> simplify(a & b)
+    (a & b)
+    >>> simplify(a | b)
+    (a | b)
+    >>> simplify(a & a)
+    a
+    >>> simplify(a | a)
+    a
+    >>> simplify(a & ~a)
+    F
+    >>> simplify(a | ~a)
+    T
 
     :param expr:
     :return:
@@ -521,6 +590,30 @@ COMPOSITIONS = {
 
 
 def _unsat(x: Expression, y: Expression) -> bool:
+    """
+    Check if two terms are unsatisfiable when combined.
+
+    >>> a = Variable("a")
+    >>> b = Variable("b")
+    >>> _unsat( a < b, a > b)
+    True
+    >>> _unsat( a < b, a < b)
+    False
+    >>> _unsat( a <= b, b >= a)
+    False
+    >>> _unsat( a < b, a <= b)
+    False
+    >>> _unsat( a < b, b <= a)
+    False
+    >>> _unsat( IsIn(a, [1, 2]), IsIn(a, [2, 3]))
+    False
+    >>> _unsat( IsIn(a, [1, 2]), IsIn(a, [3, 4]))
+    True
+
+    :param x:
+    :param y:
+    :return:
+    """
     if isinstance(x, Term) and isinstance(y, Term):
         if x.operands[0] == y.operands[0]:
             xp = x.predicate
@@ -547,7 +640,27 @@ def _unsat(x: Expression, y: Expression) -> bool:
     return False
 
 
-def compose_operators(boolean_op, op1, v1, op2, v2) -> Optional[Tuple]:
+def compose_operators(boolean_op: Type[Expression], op1: str, v1: Any, op2: str, v2: Any) -> Optional[Tuple]:
+    """
+    Compose two expressions.
+
+    >>> assert compose_operators(And, '<', 1, '<', 2) == (operator.__lt__, 1)
+    >>> assert compose_operators(Or, '<', 1, '<', 2) == (operator.__lt__, 2)
+    >>> assert compose_operators(Or, '=', 1, '=', 2) is None
+    >>> assert compose_operators(And, '=', 1, '=', 2) is None
+    >>> assert compose_operators(And, "in", [1, 2], "in", [2, 3]) == (member_of, [2])
+    >>> assert compose_operators(Or, "in", [1, 2], "in", [2, 3]) == (member_of, [1, 2, 3])
+    >>> assert compose_operators(And, "in", [1], "in", [3]) == (member_of, [])
+    >>> assert compose_operators(And, "in", [1], "in", UniversalSet()) == (member_of, [1])
+    >>> assert compose_operators(Or, "in", [1], "in", UniversalSet()) == (member_of, UniversalSet())
+
+    :param boolean_op:
+    :param op1:
+    :param v1:
+    :param op2:
+    :param v2:
+    :return: New expression OR None if the expressions cannot be reduced
+    """
     rev_op_map = {v: k for k, v in OPS.items()}
     if not (op1 in rev_op_map and op2 in rev_op_map):
         return None
