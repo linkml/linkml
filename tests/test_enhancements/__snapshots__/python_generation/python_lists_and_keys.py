@@ -42,7 +42,7 @@ DEFAULT_ = LISTS_AND_KEYS
 
 
 
-@dataclass
+@dataclass(repr=False)
 class OptionalOneElementRange(YAMLRoot):
     """
     Range is a optional class that contains one non-key/non-identifier element
@@ -63,7 +63,7 @@ class OptionalOneElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredOneElementRange(YAMLRoot):
     """
     Range is a required class that contains one non-key/non-identifier element
@@ -86,7 +86,7 @@ class RequiredOneElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OptionalOneElementRangeList(YAMLRoot):
     """
     Range is a optional list of a class that contain one non-key/non-identifier element
@@ -108,7 +108,7 @@ class OptionalOneElementRangeList(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredOneElementRangeList(OptionalOneElementRangeList):
     """
     Range is a required list of a class that contain one non-key/non-identifier element
@@ -132,7 +132,7 @@ class RequiredOneElementRangeList(OptionalOneElementRangeList):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredTwoElementRangeList(YAMLRoot):
     """
     Range is a required list of a class that contain two non-key/non-identifier elements
@@ -156,7 +156,7 @@ class RequiredTwoElementRangeList(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredThreeElementRangeList(YAMLRoot):
     """
     Range is a required list of a class that contain two non-key/non-identifier elements
@@ -180,7 +180,7 @@ class RequiredThreeElementRangeList(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OptionalKeyedOneElementRange(YAMLRoot):
     """
     Range is a optional class that contains one key element
@@ -201,7 +201,7 @@ class OptionalKeyedOneElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OptionalKeyedOneElementRangeList(YAMLRoot):
     """
     Range is a optional list of a class that contains one key element
@@ -223,7 +223,7 @@ class OptionalKeyedOneElementRangeList(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OptionalIdentifiedOneElementRange(YAMLRoot):
     """
     Range is a optional class that contains one identifier element
@@ -244,7 +244,7 @@ class OptionalIdentifiedOneElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OptionalIdentifiedOneElementRangeList(YAMLRoot):
     """
     Range is a optional list of a class that contains one identifier element
@@ -266,7 +266,7 @@ class OptionalIdentifiedOneElementRangeList(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OptionalKeyedTwoElementRange(YAMLRoot):
     """
     Range is a optional class that contains one key and one regular element
@@ -287,7 +287,7 @@ class OptionalKeyedTwoElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OptionalKeyedTwoElementRangeList(YAMLRoot):
     """
     Range is a optional list of a class that contains one key and one regular element
@@ -309,7 +309,7 @@ class OptionalKeyedTwoElementRangeList(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OptionalKeyedThreeElementRange(YAMLRoot):
     """
     Range is a optional class that contains one key and two regular elements
@@ -330,7 +330,7 @@ class OptionalKeyedThreeElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OptionalKeyedThreeElementRangeList(YAMLRoot):
     """
     Range is a optional list of a class that contains one key and two regular elements
@@ -352,7 +352,7 @@ class OptionalKeyedThreeElementRangeList(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredIdentifiedThreeElementRange(YAMLRoot):
     """
     Range is a required class that contains one identifier and two regular elements
@@ -375,7 +375,7 @@ class RequiredIdentifiedThreeElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredIdentifiedThreeElementRangeList(YAMLRoot):
     """
     Range is a optional list of a class that contains one identifier and two regular elements
@@ -399,7 +399,7 @@ class RequiredIdentifiedThreeElementRangeList(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredKeyedThreeElementRangeList(YAMLRoot):
     """
     Range is a optional list of a class that contains one key and two regular elements
@@ -423,7 +423,7 @@ class RequiredKeyedThreeElementRangeList(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredInlinedOneElementRange(RequiredOneElementRange):
     """
     Range is a required inlined class that contains one non-key/non-identifier element
@@ -447,7 +447,7 @@ class RequiredInlinedOneElementRange(RequiredOneElementRange):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredInlinedOneElementRangeList(RequiredOneElementRangeList):
     """
     Range is a required inlined list of a class that contains one non-key/non-identifier element
@@ -471,7 +471,7 @@ class RequiredInlinedOneElementRangeList(RequiredOneElementRangeList):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredInlinedTwoElementRangeList(RequiredTwoElementRangeList):
     """
     Range is a required inlined list of a class that contains two non-key/non-identifier elements
@@ -495,7 +495,7 @@ class RequiredInlinedTwoElementRangeList(RequiredTwoElementRangeList):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredInlinedThreeElementRangeList(RequiredThreeElementRangeList):
     """
     Range is a required inlined list of a class that contains two non-key/non-identifier elements
@@ -519,7 +519,7 @@ class RequiredInlinedThreeElementRangeList(RequiredThreeElementRangeList):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredInlinedKeyedOneElementRange(OptionalKeyedOneElementRange):
     """
     Range is an inlined required class that contains one key element
@@ -541,7 +541,7 @@ class RequiredInlinedKeyedOneElementRange(OptionalKeyedOneElementRange):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredInlinedKeyedOneElementRangeList(OptionalKeyedOneElementRangeList):
     """
     Range is an inlined required list of a class that contains one key element
@@ -563,7 +563,7 @@ class RequiredInlinedKeyedOneElementRangeList(OptionalKeyedOneElementRangeList):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredInlinedKeyedTwoElementRange(OptionalKeyedTwoElementRange):
     """
     Range is an inlined required class that contains one key element and one non-key
@@ -585,7 +585,7 @@ class RequiredInlinedKeyedTwoElementRange(OptionalKeyedTwoElementRange):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredInlinedKeyedTwoElementRangeList(OptionalKeyedTwoElementRangeList):
     """
     Range is an inlined required list of a class that contains one key element and  one non-key
@@ -607,7 +607,7 @@ class RequiredInlinedKeyedTwoElementRangeList(OptionalKeyedTwoElementRangeList):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredInlinedKeyedThreeElementRange(OptionalKeyedThreeElementRange):
     """
     Range is an inlined required class that contains one key element and two non-keys
@@ -629,7 +629,7 @@ class RequiredInlinedKeyedThreeElementRange(OptionalKeyedThreeElementRange):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredInlinedKeyedThreeElementRangeList(OptionalKeyedThreeElementRangeList):
     """
     Range is an inlined required list of a class that contains one key element and two non-keys
@@ -651,7 +651,7 @@ class RequiredInlinedKeyedThreeElementRangeList(OptionalKeyedThreeElementRangeLi
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredInlinedIdentifiedOneElementRangeList(YAMLRoot):
     """
     Range is an inlined required list of a class that contains one identified element
@@ -673,7 +673,7 @@ class RequiredInlinedIdentifiedOneElementRangeList(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class EntryList(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -690,7 +690,7 @@ class EntryList(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OptionalThreeElementRange(YAMLRoot):
     """
     Case 1.1(o) -- single values optional slot - range has no keys or identifiers
@@ -711,7 +711,7 @@ class OptionalThreeElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredThreeElementRange(YAMLRoot):
     """
     Case 1.1(r) -- single values optional slot - range has no keys or identifiers
@@ -734,7 +734,7 @@ class RequiredThreeElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OptionalIdentifiedThreeElementRange(YAMLRoot):
     """
     Case 1.2(o) -- single values optional slot - range has an identifier
@@ -755,7 +755,7 @@ class OptionalIdentifiedThreeElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredKeyedThreeElementRange(YAMLRoot):
     """
     Case 1.2(r) -- single values optional slot - range has a key
@@ -778,7 +778,7 @@ class RequiredKeyedThreeElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OptionalInlinedKeyedThreeElementRange(YAMLRoot):
     """
     Case 1.3(o) -- single values optional slot - range has an identifier
@@ -799,7 +799,7 @@ class OptionalInlinedKeyedThreeElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredInlinedIdentifiedThreeElementRange(YAMLRoot):
     """
     Case 1.3(r) -- single values optional slot - range has a key
@@ -822,7 +822,7 @@ class RequiredInlinedIdentifiedThreeElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OptionalInlinedAsListKeyedThreeElementRange(YAMLRoot):
     """
     Case 1.4(o) -- single values optional slot - range has an identifier
@@ -843,7 +843,7 @@ class OptionalInlinedAsListKeyedThreeElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredInlinedAsListIdentifiedThreeElementRange(YAMLRoot):
     """
     Case 1.4(r) -- single values optional slot - range has a key
@@ -866,7 +866,7 @@ class RequiredInlinedAsListIdentifiedThreeElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OptionalMultivaluedThreeElementRange(YAMLRoot):
     """
     Case 2.1(o) -- multivalued optional slot - range has no key or identifier
@@ -888,7 +888,7 @@ class OptionalMultivaluedThreeElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredMultivaluedThreeElementRange(YAMLRoot):
     """
     Case 2.1(r) -- multivalued optional slot - range has no key or identifier
@@ -912,7 +912,7 @@ class RequiredMultivaluedThreeElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OptionalMultivaluedKeyedThreeElementRange(YAMLRoot):
     """
     Case 2.2(o) -- multivalued optional slot - range has a key
@@ -934,7 +934,7 @@ class OptionalMultivaluedKeyedThreeElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredMultivaluedIdentifiedThreeElementRange(YAMLRoot):
     """
     Case 2.2(r) -- multivalued required slot - range has an identifier
@@ -958,7 +958,7 @@ class RequiredMultivaluedIdentifiedThreeElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OptionalMultivaluedInlinedListIdentifiedThreeElementRange(YAMLRoot):
     """
     2.3(o) Range is an optional identified three element class that is represented as an inlined list
@@ -978,7 +978,7 @@ class OptionalMultivaluedInlinedListIdentifiedThreeElementRange(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredMultivaluedInlinedListKeyedThreeElementRangeList(YAMLRoot):
     """
     2.3(r) Range is a required keyed three element class that is represented as an inlined list
@@ -1000,7 +1000,7 @@ class RequiredMultivaluedInlinedListKeyedThreeElementRangeList(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OptionalMultivaluedInlinedIdentifiedThreeElementRangeList(YAMLRoot):
     """
     2.4(o) Range is an optional identified three element class that is represented as an inlined dictionary
@@ -1020,7 +1020,7 @@ class OptionalMultivaluedInlinedIdentifiedThreeElementRangeList(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RequiredMultivaluedInlinedKeyedThreeElementRange(YAMLRoot):
     """
     2.4(r) Range is a required keyed three element class that is represented as an inlined dictionary

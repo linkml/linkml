@@ -69,7 +69,7 @@ class IdentifiedElementId(URIorCURIE):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class Strings(YAMLRoot):
     """
     various permutations of the string type
@@ -108,7 +108,7 @@ class Strings(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class InheritedStrings1(Strings):
     """
     Inherited class with no changes from base
@@ -123,7 +123,7 @@ class InheritedStrings1(Strings):
     mand_string: str = None
     mand_multi_string: Union[str, List[str]] = None
 
-@dataclass
+@dataclass(repr=False)
 class InheritedStrings2(Strings):
     """
     Inherited class with base change
@@ -146,7 +146,7 @@ class InheritedStrings2(Strings):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Integers(YAMLRoot):
     """
     various permutations of the integer type
@@ -185,7 +185,7 @@ class Integers(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Booleans(YAMLRoot):
     """
     various permutations of the boolean type
@@ -224,7 +224,7 @@ class Booleans(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Floats(YAMLRoot):
     """
     various permutations of the float type
@@ -263,7 +263,7 @@ class Floats(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Doubles(YAMLRoot):
     """
     various permutations of the double type
@@ -302,7 +302,7 @@ class Doubles(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Times(YAMLRoot):
     """
     various permutations of the time type
@@ -341,7 +341,7 @@ class Times(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Dates(YAMLRoot):
     """
     various permutations of the date type
@@ -380,7 +380,7 @@ class Dates(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class DateTimes(YAMLRoot):
     """
     various permutations of the datetime type
@@ -419,7 +419,7 @@ class DateTimes(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class URIorCURIEs(YAMLRoot):
     """
     various permutations of the uriorcurie type
@@ -458,7 +458,7 @@ class URIorCURIEs(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class URIs(YAMLRoot):
     """
     various permutations of the uri type
@@ -497,7 +497,7 @@ class URIs(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class NCNames(YAMLRoot):
     """
     various permutations of the ncname type
@@ -536,7 +536,7 @@ class NCNames(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ObjectIdentifiers(YAMLRoot):
     """
     various permutations of the objectidentifier type
@@ -575,7 +575,7 @@ class ObjectIdentifiers(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class NodeIdentifiers(YAMLRoot):
     """
     various permutations of the nodeidentifier type
@@ -614,7 +614,7 @@ class NodeIdentifiers(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class InheritedTypes(YAMLRoot):
     """
     various permutations of a typeof referencing a builtin
@@ -653,7 +653,7 @@ class InheritedTypes(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class InheritedType2s(YAMLRoot):
     """
     various permutations of a typeof referencing a metamodelcore type
@@ -692,7 +692,7 @@ class InheritedType2s(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class InheritedType3s(YAMLRoot):
     """
     various permutations of a typeof referencing another defined type
@@ -731,7 +731,7 @@ class InheritedType3s(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class KeyedElement(YAMLRoot):
     """
     keyed  example
@@ -758,7 +758,7 @@ class KeyedElement(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class IdentifiedElement(YAMLRoot):
     """
     identifier example
