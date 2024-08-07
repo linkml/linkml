@@ -279,7 +279,15 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../developers/index.html">Developers guide</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Developers guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cli/index.html">CLI</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of CLI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cli/linkml.html"><code class="docutils literal notranslate"><span class="pre">linkml</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli/generate.html"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">generate</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli/lint.html"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">lint</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli/validate.html"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">validate</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli/entrypoints.html">Entrypoints</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../developers/index.html">Developers guide</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Developers guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../developers/organization.html">GitHub Organization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/notebooks.html">Jupyter Notebooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/manipulating-schemas.html">Manipulating Schemas</a></li>
@@ -295,7 +303,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../developers/deprecation.html">Deprecations</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Code</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Code</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Code</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Code</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../code/metamodel.html">MetaModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../code/utils.html">Utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../code/validator.html">Validator</a></li>
@@ -461,6 +469,103 @@
 <p>If the linter encounters rule violations with <code class="docutils literal notranslate"><span class="pre">level:</span> <span class="pre">error</span></code> it will exit with code <code class="docutils literal notranslate"><span class="pre">2</span></code>. This will be the case regardless of whether there are also rule violations with <code class="docutils literal notranslate"><span class="pre">level:</span> <span class="pre">warning</span></code>.</p>
 <p>By default, if the linter encounters <em>only</em> rule violations with <code class="docutils literal notranslate"><span class="pre">level:</span> <span class="pre">warning</span></code> it will exit with code <code class="docutils literal notranslate"><span class="pre">1</span></code>. This behavior can be changed with command line options. In this scenario, if the <code class="docutils literal notranslate"><span class="pre">--ignore-warnings</span></code> flag is provided the exit code will be <code class="docutils literal notranslate"><span class="pre">0</span></code>. If instead the <code class="docutils literal notranslate"><span class="pre">--max-warnings</span> <span class="pre">&lt;int&gt;</span></code> option is passed, the exit code will be <code class="docutils literal notranslate"><span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">0</span></code> depending on whether the number of warning rule violations is greater than the provided number or not. If both <code class="docutils literal notranslate"><span class="pre">--ignore-warnings</span></code> and <code class="docutils literal notranslate"><span class="pre">--max-warnings</span></code> are used <code class="docutils literal notranslate"><span class="pre">--ignore-warnings</span></code> takes precedence.</p>
 </section>
+<section id="api-docs">
+<h2>API Docs<a class="headerlink" href="#api-docs" title="Permalink to this heading">#</a></h2>
+<section id="linkml-lint">
+<h3>linkml-lint<a class="headerlink" href="#linkml-lint" title="Permalink to this heading">#</a></h3>
+<p>Run linter on SCHEMA.</p>
+<p>SCHEMA can be a single LinkML YAML file or a directory. If it is a directory
+every YAML file found in the directory (recursively) will be linted.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>linkml-lint<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>SCHEMA
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-lint-a">
+<span id="cmdoption-linkml-lint-all"></span><span class="sig-name descname"><span class="pre">-a</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--all</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-a" title="Permalink to this definition">#</a></dt>
+<dd><p>Process files that start with ‘.’.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-lint-c">
+<span id="cmdoption-linkml-lint-config"></span><span class="sig-name descname"><span class="pre">-c</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--config</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;config&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-lint-c" title="Permalink to this definition">#</a></dt>
+<dd><p>Custom linter configuration file.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-lint-f">
+<span id="cmdoption-linkml-lint-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-lint-f" title="Permalink to this definition">#</a></dt>
+<dd><p>Report format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'terminal'</span></code></p>
+</dd>
+<dt class="field-even">Options<span class="colon">:</span></dt>
+<dd class="field-even"><p>terminal | markdown | json | tsv</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-lint-validate">
+<span class="sig-name descname"><span class="pre">--validate</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-validate" title="Permalink to this definition">#</a></dt>
+<dd><p>Validate the schema against the LinkML Metamodel before linting.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-lint-validate-only">
+<span class="sig-name descname"><span class="pre">--validate-only</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-validate-only" title="Permalink to this definition">#</a></dt>
+<dd><p>Validate the schema against the LinkML Metamodel and then exit without checking linter rules.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-lint-v">
+<span id="cmdoption-linkml-lint-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-v" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-lint-o">
+<span id="cmdoption-linkml-lint-output"></span><span class="sig-name descname"><span class="pre">-o</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-lint-o" title="Permalink to this definition">#</a></dt>
+<dd><p>Report file name.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-lint-ignore-warnings">
+<span class="sig-name descname"><span class="pre">--ignore-warnings</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-ignore-warnings" title="Permalink to this definition">#</a></dt>
+<dd><p>Do not exit with an error status if only warnings are found.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-lint-max-warnings">
+<span class="sig-name descname"><span class="pre">--max-warnings</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;max_warnings&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-lint-max-warnings" title="Permalink to this definition">#</a></dt>
+<dd><p>Do not exit with an error status if up to this number of warnings (and no errors) are found.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-lint-fix">
+<span id="cmdoption-linkml-lint-no-fix"></span><span class="sig-name descname"><span class="pre">--fix</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-fix</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-fix" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-lint-V">
+<span id="cmdoption-linkml-lint-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-V" title="Permalink to this definition">#</a></dt>
+<dd><p>Show the version and exit.</p>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-lint-arg-SCHEMA">
+<span class="sig-name descname"><span class="pre">SCHEMA</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-arg-SCHEMA" title="Permalink to this definition">#</a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</section>
+</section>
 </section>
 
         </article>
@@ -534,6 +639,10 @@
 </li>
 <li><a class="reference internal" href="#reports">Reports</a></li>
 <li><a class="reference internal" href="#exit-codes">Exit Codes</a></li>
+<li><a class="reference internal" href="#api-docs">API Docs</a><ul>
+<li><a class="reference internal" href="#linkml-lint">linkml-lint</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

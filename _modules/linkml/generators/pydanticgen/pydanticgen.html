@@ -278,7 +278,15 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../developers/index.html">Developers guide</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Developers guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../cli/index.html">CLI</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of CLI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../cli/linkml.html"><code class="docutils literal notranslate"><span class="pre">linkml</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../cli/generate.html"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">generate</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../cli/lint.html"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">lint</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../cli/validate.html"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">validate</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../cli/entrypoints.html">Entrypoints</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../developers/index.html">Developers guide</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Developers guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developers/organization.html">GitHub Organization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developers/notebooks.html">Jupyter Notebooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developers/manipulating-schemas.html">Manipulating Schemas</a></li>
@@ -294,7 +302,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../developers/deprecation.html">Deprecations</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../code/index.html">Code</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Code</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../code/index.html">Code</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Code</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../code/metamodel.html">MetaModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../code/utils.html">Utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../code/validator.html">Validator</a></li>
@@ -1252,7 +1260,7 @@
         <span class="n">schema_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">element_by_schema_map</span><span class="p">()[</span><span class="n">class_name</span><span class="p">]</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema_map</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">schema_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_module_import</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_context</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Import</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">module</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="p">[</span><span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">camelcase</span><span class="p">(</span><span class="n">class_name</span><span class="p">))],</span> <span class="n">schema</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Import</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">module</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="p">[</span><span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">camelcase</span><span class="p">(</span><span class="n">class_name</span><span class="p">))],</span> <span class="n">is_schema</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PydanticModule</span><span class="p">:</span>
         <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span>
@@ -1411,7 +1419,7 @@
         <span class="n">imported_schema</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">generator</span><span class="o">.</span><span class="n">generate_module_import</span><span class="p">(</span><span class="n">sch</span><span class="p">):</span> <span class="n">sch</span> <span class="k">for</span> <span class="n">sch</span> <span class="ow">in</span> <span class="n">generator</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema_map</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
         <span class="p">}</span>
-        <span class="k">for</span> <span class="n">generated_import</span> <span class="ow">in</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rendered</span><span class="o">.</span><span class="n">python_imports</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">schema</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">generated_import</span> <span class="ow">in</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rendered</span><span class="o">.</span><span class="n">python_imports</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">is_schema</span><span class="p">]:</span>
             <span class="n">import_generator</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">imported_schema</span><span class="p">[</span><span class="n">generated_import</span><span class="o">.</span><span class="n">module</span><span class="p">],</span> <span class="o">**</span><span class="n">gen_kwargs</span><span class="p">)</span>
             <span class="n">serialized</span> <span class="o">=</span> <span class="n">import_generator</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
             <span class="n">rel_path</span> <span class="o">=</span> <span class="n">_import_to_path</span><span class="p">(</span><span class="n">generated_import</span><span class="o">.</span><span class="n">module</span><span class="p">)</span>
@@ -1520,7 +1528,7 @@
     <span class="s2">&quot;Default (auto) is to include all metadata that can&#39;t be otherwise represented&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;pydantic&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">cli</span><span class="p">(</span>
     <span class="n">yamlfile</span><span class="p">,</span>
     <span class="n">template_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>

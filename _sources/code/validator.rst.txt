@@ -17,3 +17,10 @@ Plugins
 .. automodule:: linkml.validator.plugins
     :members:
     :exclude-members: process, pre_process, post_process
+
+CLI
+---
+
+.. click:: linkml.validator.cli:cli
+    :prog: linkml-validate
+
