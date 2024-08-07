@@ -223,7 +223,7 @@ class ShExGenerator(Generator):
 
 
 @shared_arguments(ShExGenerator)
-@click.command()
+@click.command(name="shex")
 @click.option("-o", "--output", help="Output file name")
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):

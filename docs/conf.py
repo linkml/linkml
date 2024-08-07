@@ -124,6 +124,8 @@ nb_execution_show_tb = True
 # myst
 myst_heading_anchors = 3
 myst_enable_extensions = [
+    "attrs_inline",
+    "attrs_block",
     "fieldlist"
 ]
 

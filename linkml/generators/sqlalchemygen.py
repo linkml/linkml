@@ -216,7 +216,7 @@ class SQLAlchemyGenerator(Generator):
     help="Emit FK declarations",
 )
 @click.version_option(__version__, "-V", "--version")
-@click.command()
+@click.command(name="sqla")
 def cli(yamlfile, declarative, generate_classes, pydantic, use_foreign_keys=True, **args):
     """Generate SQL DDL representation"""
     if pydantic:

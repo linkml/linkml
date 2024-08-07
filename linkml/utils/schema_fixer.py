@@ -382,7 +382,7 @@ class SchemaFixer:
         return schema
 
 
-@click.group()
+@click.group(name="fix")
 @click.option("-v", "--verbose", count=True)
 @click.option("-q", "--quiet")
 def main(verbose: int, quiet: bool):

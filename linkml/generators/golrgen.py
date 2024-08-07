@@ -101,7 +101,7 @@ class GolrSchemaGenerator(Generator):
 
 
 @shared_arguments(GolrSchemaGenerator)
-@click.command()
+@click.command(name="golr-views")
 @click.option("--dir", "-d", default="golr-views", show_default=True, help="Output directory")
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, dir=None, **args):

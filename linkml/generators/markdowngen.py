@@ -789,7 +789,7 @@ def pad_heading(text: str) -> str:
 
 
 @shared_arguments(MarkdownGenerator)
-@click.command()
+@click.command(name="markdown")
 @click.option("--dir", "-d", required=True, help="Output directory")
 @click.option("--classes", "-c", multiple=True, help="Class(es) to emit")
 @click.option("--map-fields", "-M", multiple=True, help="Map metamodel fields, e.g. slot=field")

@@ -189,7 +189,7 @@ class GolangGenerator(Generator):
 
 @shared_arguments(GolangGenerator)
 @click.version_option(__version__, "-V", "--version")
-@click.command()
+@click.command(name="golang")
 def cli(yamlfile, **args):
     """Generate Golang types
 

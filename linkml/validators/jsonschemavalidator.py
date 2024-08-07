@@ -114,7 +114,7 @@ class JsonSchemaDataValidator(DataValidator):
             yield f"{best_error.message} in {best_error.json_path}"
 
 
-@click.command()
+@click.command(name="jsonschema")
 @click.option("--module", "-m", help="Path to python datamodel module")
 @click.option(
     "--input-format",

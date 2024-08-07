@@ -97,7 +97,7 @@ class LinkmlGenerator(Generator):
     help="Name of JSON or YAML file to be created",
 )
 @click.version_option(__version__, "-V", "--version")
-@click.command()
+@click.command(name="linkml")
 def cli(
     yamlfile,
     materialize_attributes: bool,

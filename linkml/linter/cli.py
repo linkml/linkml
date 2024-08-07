@@ -33,7 +33,7 @@ def get_yaml_files(root: Path, accept_dot_files: bool) -> Iterable[str]:
                     yield str(path)
 
 
-@click.command()
+@click.command(name="lint")
 @click.argument(
     "schema",
     type=click.Path(exists=True, dir_okay=True, file_okay=True, resolve_path=True, path_type=Path),

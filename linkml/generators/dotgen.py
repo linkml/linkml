@@ -136,7 +136,7 @@ class DotGenerator(Generator):
 
 
 @shared_arguments(DotGenerator)
-@click.command()
+@click.command(name="graphviz")
 @click.option(
     "--directory",
     "-d",

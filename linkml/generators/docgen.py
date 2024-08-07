@@ -978,7 +978,7 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 """,
 )
 @click.version_option(__version__, "-V", "--version")
-@click.command()
+@click.command(name="doc")
 def cli(
     yamlfile,
     directory,

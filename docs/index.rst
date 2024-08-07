@@ -65,6 +65,7 @@ for you:
    :maxdepth: 2
    :caption: Developers guide:
 
+   cli/index
    developers/index
    code/index
 

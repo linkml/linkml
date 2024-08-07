@@ -112,7 +112,7 @@ class PrefixGenerator(Generator):
 
 
 @shared_arguments(PrefixGenerator)
-@click.command()
+@click.command(name="prefix-map")
 @click.option("--base", help="Base URI for model")
 @click.option("--output", "-o", help="Output file path")
 @click.version_option(__version__, "-V", "--version")
