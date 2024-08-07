@@ -38,18 +38,24 @@ def test_pythongen(kitchen_sink_path):
     assert str(p) == "Person({'id': 'P:1', 'has_employment_history': [EmploymentEvent({'employed_at': 'ROR:1'})]})"
 
     f = kitchen_module.FamilialRelationship(related_to="me", type="SIBLING_OF", cordialness="heartfelt")
-    assert str(f) == """FamilialRelationship({
+    assert (
+        str(f)
+        == """FamilialRelationship({
   'related_to': 'me',
   'type': 'SIBLING_OF',
   'cordialness': CordialnessEnum(text='heartfelt', description='warm and hearty friendliness')
 })"""
+    )
 
     diagnosis = kitchen_module.DiagnosisConcept(id="CODE:D0001", name="headache")
     event = kitchen_module.MedicalEvent(in_location="GEO:1234", diagnosis=diagnosis)
-    assert str(event) == """MedicalEvent({
+    assert (
+        str(event)
+        == """MedicalEvent({
   'in_location': 'GEO:1234',
   'diagnosis': DiagnosisConcept({'id': 'CODE:D0001', 'name': 'headache'})
 })"""
+    )
 
 
 def test_multiline_stuff(input_path):
@@ -104,21 +110,19 @@ class ParentClass:
         pass
 """
 
-
     pstr = str(PythonGenerator(kitchen_sink_path).serialize())
     pstr = parentclass + pstr
-    pstr = re.sub(r'\(YAMLRoot\)', '(ParentClass)', pstr)
+    pstr = re.sub(r"\(YAMLRoot\)", "(ParentClass)", pstr)
     kitchen_module = compile_python(pstr)
 
     # if a dataclass has `repr=False`, it shouldn't override the parent class's
-    friend = kitchen_module.Friend(name='bestie')
-    assert repr(friend) == 'overridden'
+    friend = kitchen_module.Friend(name="bestie")
+    assert repr(friend) == "overridden"
 
     # but we should be able to make pythongenerator do `repr=True`, where the dataclasses _do_ override
     pstr = str(PythonGenerator(kitchen_sink_path, dataclass_repr=True).serialize())
     pstr = parentclass + pstr
-    pstr = re.sub(r'\(YAMLRoot\)', '(ParentClass)', pstr)
+    pstr = re.sub(r"\(YAMLRoot\)", "(ParentClass)", pstr)
     kitchen_module = compile_python(pstr)
-    friend = kitchen_module.Friend(name='bestie')
-    assert repr(friend) != 'overridden'
-
+    friend = kitchen_module.Friend(name="bestie")
+    assert repr(friend) != "overridden"

@@ -108,7 +108,7 @@ def test_python_types_snapshot(input_path, snapshot):
             ("True", "false", 1, [1, 0, True, False]),
             {},
             (
-            """Booleans({
+                """Booleans({
   'mand_boolean': True,
   'mand_multi_boolean': [False],
   'opt_boolean': True,
