@@ -1287,7 +1287,7 @@ class OrganismTaxonToEnvironmentAssociationId(AssociationId):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class MappingCollection(YAMLRoot):
     """
     A collection of deprecated mappings.
@@ -1309,7 +1309,7 @@ class MappingCollection(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class PredicateMapping(YAMLRoot):
     """
     A deprecated predicate mapping object contains the deprecated predicate and an example of the rewiring that should
@@ -1413,7 +1413,7 @@ class PredicateMapping(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OntologyClass(YAMLRoot):
     """
     a concept or class in an ontology, vocabulary or thesaurus. Note that nodes in a biolink compatible KG can be
@@ -1451,7 +1451,7 @@ class Annotation(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = BIOLINK.Annotation
 
 
-@dataclass
+@dataclass(repr=False)
 class QuantityValue(Annotation):
     """
     A value of an attribute that is quantitative and measurable, expressed as a combination of a unit and a numeric
@@ -1517,7 +1517,7 @@ class PathognomonicityQuantifier(SpecificityQuantifier):
     class_model_uri: ClassVar[URIRef] = BIOLINK.PathognomonicityQuantifier
 
 
-@dataclass
+@dataclass(repr=False)
 class FrequencyQuantifier(RelationshipQuantifier):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -1556,7 +1556,7 @@ class ChemicalOrDrugOrTreatment(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalOrDrugOrTreatment
 
 
-@dataclass
+@dataclass(repr=False)
 class Entity(YAMLRoot):
     """
     Root Biolink Model class for all things and informational relationships, real or imagined.
@@ -1630,7 +1630,7 @@ class Entity(YAMLRoot):
 
 
 
-@dataclass
+@dataclass(repr=False)
 class NamedThing(Entity):
     """
     a databased entity or concept/class
@@ -1700,7 +1700,7 @@ class NamedThing(Entity):
 
 
 
-@dataclass
+@dataclass(repr=False)
 class Attribute(NamedThing):
     """
     A property or characteristic of an entity. For example, an apple may have properties such as color, shape, age,
@@ -1753,7 +1753,7 @@ class Attribute(NamedThing):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ChemicalRole(Attribute):
     """
     A role played by the molecular entity or part thereof within a chemical context.
@@ -1783,7 +1783,7 @@ class ChemicalRole(Attribute):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class BiologicalSex(Attribute):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -1810,7 +1810,7 @@ class BiologicalSex(Attribute):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class PhenotypicSex(BiologicalSex):
     """
     An attribute corresponding to the phenotypic sex of the individual, based upon the reproductive organs present.
@@ -1840,7 +1840,7 @@ class PhenotypicSex(BiologicalSex):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GenotypicSex(BiologicalSex):
     """
     An attribute corresponding to the genotypic sex of the individual, based upon genotypic composition of sex
@@ -1871,7 +1871,7 @@ class GenotypicSex(BiologicalSex):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class SeverityValue(Attribute):
     """
     describes the severity of a phenotypic feature or disease
@@ -1901,7 +1901,7 @@ class SeverityValue(Attribute):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class RelationshipType(OntologyClass):
     """
     An OWL property used as an edge label
@@ -1924,7 +1924,7 @@ class RelationshipType(OntologyClass):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class TaxonomicRank(OntologyClass):
     """
     A descriptor for the rank within a taxonomic classification. Example instance: TAXRANK:0000017 (kingdom)
@@ -1947,7 +1947,7 @@ class TaxonomicRank(OntologyClass):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OrganismTaxon(NamedThing):
     """
     A classification of a set of organisms. Example instances: NCBITaxon:9606 (Homo sapiens), NCBITaxon:2 (Bacteria).
@@ -1981,7 +1981,7 @@ class OrganismTaxon(NamedThing):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Event(NamedThing):
     """
     Something that happens at a given place and time.
@@ -2010,7 +2010,7 @@ class Event(NamedThing):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class AdministrativeEntity(NamedThing):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -2032,7 +2032,7 @@ class AdministrativeEntity(NamedThing):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Agent(AdministrativeEntity):
     """
     person, group, organization or project that provides a piece of information (i.e. a knowledge association)
@@ -2074,7 +2074,7 @@ class Agent(AdministrativeEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class InformationContentEntity(NamedThing):
     """
     a piece of information that typically describes some topic of discourse or is used as support.
@@ -2114,7 +2114,7 @@ class InformationContentEntity(NamedThing):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class StudyResult(InformationContentEntity):
     """
     A collection of data items from a study that are about a particular study subject or experimental unit (the
@@ -2141,7 +2141,7 @@ class StudyResult(InformationContentEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Study(InformationContentEntity):
     """
     a detailed investigation and/or analysis
@@ -2170,7 +2170,7 @@ class Study(InformationContentEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class StudyVariable(InformationContentEntity):
     """
     a variable that is used as a measure in the investigation of a study
@@ -2199,7 +2199,7 @@ class StudyVariable(InformationContentEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class CommonDataElement(InformationContentEntity):
     """
     A Common Data Element (CDE) is a standardized, precisely defined question, paired with a set of allowable
@@ -2230,7 +2230,7 @@ class CommonDataElement(InformationContentEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ConceptCountAnalysisResult(StudyResult):
     """
     A result of a concept count analysis.
@@ -2259,7 +2259,7 @@ class ConceptCountAnalysisResult(StudyResult):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ObservedExpectedFrequencyAnalysisResult(StudyResult):
     """
     A result of a observed expected frequency analysis.
@@ -2288,7 +2288,7 @@ class ObservedExpectedFrequencyAnalysisResult(StudyResult):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class RelativeFrequencyAnalysisResult(StudyResult):
     """
     A result of a relative frequency analysis.
@@ -2317,7 +2317,7 @@ class RelativeFrequencyAnalysisResult(StudyResult):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class TextMiningResult(StudyResult):
     """
     A result of text mining.
@@ -2346,7 +2346,7 @@ class TextMiningResult(StudyResult):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ChiSquaredAnalysisResult(StudyResult):
     """
     A result of a chi squared analysis.
@@ -2375,7 +2375,7 @@ class ChiSquaredAnalysisResult(StudyResult):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Dataset(InformationContentEntity):
     """
     an item that refers to a collection of data from a data source.
@@ -2404,7 +2404,7 @@ class Dataset(InformationContentEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class DatasetDistribution(InformationContentEntity):
     """
     an item that holds distribution level information about a dataset.
@@ -2437,7 +2437,7 @@ class DatasetDistribution(InformationContentEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class DatasetVersion(InformationContentEntity):
     """
     an item that holds version level information about a dataset.
@@ -2478,7 +2478,7 @@ class DatasetVersion(InformationContentEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class DatasetSummary(InformationContentEntity):
     """
     an item that holds summary level information about a dataset.
@@ -2515,7 +2515,7 @@ class DatasetSummary(InformationContentEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ConfidenceLevel(InformationContentEntity):
     """
     Level of confidence in a statement
@@ -2544,7 +2544,7 @@ class ConfidenceLevel(InformationContentEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class EvidenceType(InformationContentEntity):
     """
     Class of evidence that supports an association
@@ -2573,7 +2573,7 @@ class EvidenceType(InformationContentEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class InformationResource(InformationContentEntity):
     """
     A database or knowledgebase and its supporting ecosystem of interfaces and services that deliver content to
@@ -2606,7 +2606,7 @@ class InformationResource(InformationContentEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Publication(InformationContentEntity):
     """
     Any published piece of information. Can refer to a whole publication, its encompassing publication (i.e. journal
@@ -2677,7 +2677,7 @@ class Publication(InformationContentEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Book(Publication):
     """
     This class may rarely be instantiated except if use cases of a given knowledge graph support its utility.
@@ -2712,7 +2712,7 @@ class Book(Publication):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class BookChapter(Publication):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -2753,7 +2753,7 @@ class BookChapter(Publication):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Serial(Publication):
     """
     This class may rarely be instantiated except if use cases of a given knowledge graph support its utility.
@@ -2800,7 +2800,7 @@ class Serial(Publication):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Article(Publication):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -2869,7 +2869,7 @@ class PhysicalEssence(PhysicalEssenceOrOccurrent):
     class_model_uri: ClassVar[URIRef] = BIOLINK.PhysicalEssence
 
 
-@dataclass
+@dataclass(repr=False)
 class PhysicalEntity(NamedThing):
     """
     An entity that has material reality (a.k.a. physical essence).
@@ -2922,7 +2922,7 @@ class ActivityAndBehavior(Occurrent):
     class_model_uri: ClassVar[URIRef] = BIOLINK.ActivityAndBehavior
 
 
-@dataclass
+@dataclass(repr=False)
 class Activity(NamedThing):
     """
     An activity is something that occurs over a period of time and acts upon or with entities; it may include
@@ -2952,7 +2952,7 @@ class Activity(NamedThing):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Procedure(NamedThing):
     """
     A series of actions conducted in a certain order or manner
@@ -2981,7 +2981,7 @@ class Procedure(NamedThing):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Phenomenon(NamedThing):
     """
     a fact or situation that is observed to exist or happen, especially one whose cause or explanation is in question
@@ -3010,7 +3010,7 @@ class Phenomenon(NamedThing):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Device(NamedThing):
     """
     A thing made or adapted for a particular purpose, especially a piece of mechanical or electronic equipment
@@ -3051,7 +3051,7 @@ class SubjectOfInvestigation(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = BIOLINK.SubjectOfInvestigation
 
 
-@dataclass
+@dataclass(repr=False)
 class MaterialSample(PhysicalEntity):
     """
     A sample is a limited quantity of something (e.g. an individual or set of individuals from a population, or a
@@ -3082,7 +3082,7 @@ class MaterialSample(PhysicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class PlanetaryEntity(NamedThing):
     """
     Any entity or process that exists at the level of the whole planet
@@ -3111,7 +3111,7 @@ class PlanetaryEntity(NamedThing):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class EnvironmentalProcess(PlanetaryEntity):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -3137,7 +3137,7 @@ class EnvironmentalProcess(PlanetaryEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class EnvironmentalFeature(PlanetaryEntity):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -3163,7 +3163,7 @@ class EnvironmentalFeature(PlanetaryEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GeographicLocation(PlanetaryEntity):
     """
     a location that can be described in lat/long coordinates
@@ -3200,7 +3200,7 @@ class GeographicLocation(PlanetaryEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GeographicLocationAtTime(GeographicLocation):
     """
     a location that can be described in lat/long coordinates, for a particular time
@@ -3233,7 +3233,7 @@ class GeographicLocationAtTime(GeographicLocation):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ThingWithTaxon(YAMLRoot):
     """
     A mixin that can be used on any entity that can be taxonomically classified. This includes individual organisms;
@@ -3256,7 +3256,7 @@ class ThingWithTaxon(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class BiologicalEntity(NamedThing):
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
@@ -3282,7 +3282,7 @@ class BiologicalEntity(NamedThing):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GenomicEntity(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -3300,7 +3300,7 @@ class GenomicEntity(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class EpigenomicEntity(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -3318,7 +3318,7 @@ class EpigenomicEntity(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ChemicalEntity(NamedThing):
     """
     A chemical entity is a physical entity that pertains to chemistry or biochemistry.
@@ -3369,7 +3369,7 @@ class ChemicalEntity(NamedThing):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class MolecularEntity(ChemicalEntity):
     """
     A molecular entity is a chemical entity composed of individual or covalently bonded atoms.
@@ -3402,7 +3402,7 @@ class MolecularEntity(ChemicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class SmallMolecule(MolecularEntity):
     """
     A small molecule entity is a molecular entity characterized by availability in small-molecule databases of SMILES,
@@ -3434,7 +3434,7 @@ class SmallMolecule(MolecularEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ChemicalMixture(ChemicalEntity):
     """
     A chemical mixture is a chemical entity composed of two or more molecular entities.
@@ -3480,7 +3480,7 @@ class ChemicalMixture(ChemicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class NucleicAcidEntity(MolecularEntity):
     """
     A nucleic acid entity is a molecular entity characterized by availability in gene databases of nucleotide-based
@@ -3520,7 +3520,7 @@ class NucleicAcidEntity(MolecularEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class MolecularMixture(ChemicalMixture):
     """
     A molecular mixture is a chemical mixture composed of two or more molecular entities with known concentration and
@@ -3550,7 +3550,7 @@ class MolecularMixture(ChemicalMixture):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ComplexMolecularMixture(ChemicalMixture):
     """
     A complex molecular mixture is a chemical mixture composed of two or more molecular entities with unknown
@@ -3580,7 +3580,7 @@ class ComplexMolecularMixture(ChemicalMixture):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class BiologicalProcessOrActivity(BiologicalEntity):
     """
     Either an individual molecular activity, or a collection of causally connected molecular activities in a
@@ -3625,7 +3625,7 @@ class BiologicalProcessOrActivity(BiologicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class MolecularActivity(BiologicalProcessOrActivity):
     """
     An execution of a molecular function carried out by a gene product or macromolecular complex.
@@ -3669,7 +3669,7 @@ class MolecularActivity(BiologicalProcessOrActivity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class BiologicalProcess(BiologicalProcessOrActivity):
     """
     One or more causally connected executions of molecular functions
@@ -3698,7 +3698,7 @@ class BiologicalProcess(BiologicalProcessOrActivity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Pathway(BiologicalProcess):
     _inherited_slots: ClassVar[List[str]] = ["in_taxon", "has_input", "has_output", "enabled_by"]
 
@@ -3724,7 +3724,7 @@ class Pathway(BiologicalProcess):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class PhysiologicalProcess(BiologicalProcess):
     _inherited_slots: ClassVar[List[str]] = ["in_taxon", "has_input", "has_output", "enabled_by"]
 
@@ -3750,7 +3750,7 @@ class PhysiologicalProcess(BiologicalProcess):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Behavior(BiologicalProcess):
     _inherited_slots: ClassVar[List[str]] = ["in_taxon", "has_input", "has_output", "enabled_by"]
 
@@ -3776,7 +3776,7 @@ class Behavior(BiologicalProcess):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ProcessedMaterial(ChemicalMixture):
     """
     A chemical entity (often a mixture) processed for consumption for nutritional, medical or technical use. Is a
@@ -3806,7 +3806,7 @@ class ProcessedMaterial(ChemicalMixture):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Drug(MolecularMixture):
     """
     A substance intended for use in the diagnosis, cure, mitigation, treatment, or prevention of disease
@@ -3835,7 +3835,7 @@ class Drug(MolecularMixture):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class EnvironmentalFoodContaminant(ChemicalEntity):
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role"]
 
@@ -3861,7 +3861,7 @@ class EnvironmentalFoodContaminant(ChemicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class FoodAdditive(ChemicalEntity):
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role"]
 
@@ -3887,7 +3887,7 @@ class FoodAdditive(ChemicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Food(ChemicalMixture):
     """
     A substance consumed by a living organism as a source of nutrition
@@ -3916,7 +3916,7 @@ class Food(ChemicalMixture):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class OrganismAttribute(Attribute):
     """
     describes a characteristic of an organismal entity.
@@ -3946,7 +3946,7 @@ class OrganismAttribute(Attribute):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class PhenotypicQuality(OrganismAttribute):
     """
     A property of a phenotype
@@ -3976,7 +3976,7 @@ class PhenotypicQuality(OrganismAttribute):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GeneticInheritance(BiologicalEntity):
     """
     The pattern or 'mode' in which a particular genetic trait or disorder is passed from one generation to the next,
@@ -4006,7 +4006,7 @@ class GeneticInheritance(BiologicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class OrganismalEntity(BiologicalEntity):
     """
     A named entity that is either a part of an organism, a whole organism, population or clade of organisms, excluding
@@ -4036,7 +4036,7 @@ class OrganismalEntity(BiologicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Virus(OrganismalEntity):
     """
     A virus is a microorganism that replicates itself as a microRNA and infects the host cell.
@@ -4065,7 +4065,7 @@ class Virus(OrganismalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class CellularOrganism(OrganismalEntity):
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
@@ -4091,7 +4091,7 @@ class CellularOrganism(OrganismalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class LifeStage(OrganismalEntity):
     """
     A stage of development or growth of an organism, including post-natal adult stages
@@ -4120,7 +4120,7 @@ class LifeStage(OrganismalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class IndividualOrganism(OrganismalEntity):
     """
     An instance of an organism. For example, Richard Nixon, Charles Darwin, my pet cat. Example ID:
@@ -4150,7 +4150,7 @@ class IndividualOrganism(OrganismalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class PopulationOfIndividualOrganisms(OrganismalEntity):
     """
     A collection of individuals from the same taxonomic class distinguished by one or more characteristics.
@@ -4180,7 +4180,7 @@ class PopulationOfIndividualOrganisms(OrganismalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class StudyPopulation(PopulationOfIndividualOrganisms):
     """
     A group of people banded together or treated as a group as participants in a research study.
@@ -4209,7 +4209,7 @@ class StudyPopulation(PopulationOfIndividualOrganisms):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class DiseaseOrPhenotypicFeature(BiologicalEntity):
     """
     Either one of a disease or an individual phenotypic feature. Some knowledge resources such as Monarch treat these
@@ -4241,7 +4241,7 @@ class DiseaseOrPhenotypicFeature(BiologicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Disease(DiseaseOrPhenotypicFeature):
     """
     A disorder of structure or function, especially one that produces specific signs, phenotypes or symptoms or that
@@ -4272,7 +4272,7 @@ class Disease(DiseaseOrPhenotypicFeature):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class PhenotypicFeature(DiseaseOrPhenotypicFeature):
     """
     A combination of entity and quality that makes up a phenotyping statement. An observable characteristic of an
@@ -4302,7 +4302,7 @@ class PhenotypicFeature(DiseaseOrPhenotypicFeature):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class BehavioralFeature(PhenotypicFeature):
     """
     A phenotypic feature which is behavioral in nature.
@@ -4331,7 +4331,7 @@ class BehavioralFeature(PhenotypicFeature):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class AnatomicalEntity(OrganismalEntity):
     """
     A subcellular location, cell type or gross anatomical part
@@ -4360,7 +4360,7 @@ class AnatomicalEntity(OrganismalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class CellularComponent(AnatomicalEntity):
     """
     A location in or around a cell
@@ -4389,7 +4389,7 @@ class CellularComponent(AnatomicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Cell(AnatomicalEntity):
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
@@ -4415,7 +4415,7 @@ class Cell(AnatomicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class CellLine(OrganismalEntity):
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
@@ -4441,7 +4441,7 @@ class CellLine(OrganismalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GrossAnatomicalStructure(AnatomicalEntity):
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
@@ -4493,7 +4493,7 @@ class ChemicalEntityOrProteinOrPolypeptide(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalEntityOrProteinOrPolypeptide
 
 
-@dataclass
+@dataclass(repr=False)
 class MacromolecularMachineMixin(YAMLRoot):
     """
     A union of gene locus, gene product, and macromolecular complex. These are the basic units of function in a cell.
@@ -4527,7 +4527,7 @@ class GeneOrGeneProduct(MacromolecularMachineMixin):
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneOrGeneProduct
 
 
-@dataclass
+@dataclass(repr=False)
 class Gene(BiologicalEntity):
     """
     A region (or regions) that includes all of the sequence elements necessary to encode a functional transcript. A
@@ -4579,7 +4579,7 @@ class Gene(BiologicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GeneProductMixin(GeneOrGeneProduct):
     """
     The functional molecular product of a single gene locus. Gene products are either proteins or functional RNA
@@ -4621,7 +4621,7 @@ class GeneProductIsoformMixin(GeneProductMixin):
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneProductIsoformMixin
 
 
-@dataclass
+@dataclass(repr=False)
 class MacromolecularComplex(BiologicalEntity):
     """
     A stable assembly of two or more macromolecules, i.e. proteins, nucleic acids, carbohydrates or lipids, in which
@@ -4655,7 +4655,7 @@ class MacromolecularComplex(BiologicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class NucleosomeModification(BiologicalEntity):
     """
     A chemical modification of a histone protein within a nucleosome octomer or a substitution of a histone with a
@@ -4703,7 +4703,7 @@ class NucleosomeModification(BiologicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Genome(BiologicalEntity):
     """
     A genome is the sum of genetic material within a cell or virion.
@@ -4736,7 +4736,7 @@ class Genome(BiologicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Exon(NucleicAcidEntity):
     """
     A region of the transcript sequence within a gene which is not removed from the primary RNA transcript by RNA
@@ -4766,7 +4766,7 @@ class Exon(NucleicAcidEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Transcript(NucleicAcidEntity):
     """
     An RNA synthesized on a DNA or RNA template by an RNA polymerase.
@@ -4795,7 +4795,7 @@ class Transcript(NucleicAcidEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class CodingSequence(NucleicAcidEntity):
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role", "in_taxon"]
 
@@ -4821,7 +4821,7 @@ class CodingSequence(NucleicAcidEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Polypeptide(BiologicalEntity):
     """
     A polypeptide is a molecular entity characterized by availability in protein databases of amino-acid-based
@@ -4852,7 +4852,7 @@ class Polypeptide(BiologicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Protein(Polypeptide):
     """
     A gene product that is composed of a chain of amino acid sequences and is produced by ribosome-mediated
@@ -4896,7 +4896,7 @@ class Protein(Polypeptide):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ProteinIsoform(Protein):
     """
     Represents a protein that is a specific isoform of the canonical or reference protein. See
@@ -4940,7 +4940,7 @@ class ProteinIsoform(Protein):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ProteinDomain(BiologicalEntity):
     """
     A conserved part of protein sequence and (tertiary) structure that can evolve, function, and exist independently
@@ -4976,7 +4976,7 @@ class ProteinDomain(BiologicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class PosttranslationalModification(BiologicalEntity):
     """
     A chemical modification of a polypeptide or protein that occurs after translation. e.g. polypeptide cleavage to
@@ -5020,7 +5020,7 @@ class PosttranslationalModification(BiologicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ProteinFamily(BiologicalEntity):
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
@@ -5051,7 +5051,7 @@ class ProteinFamily(BiologicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class NucleicAcidSequenceMotif(BiologicalEntity):
     """
     A linear nucleotide sequence pattern that is widespread and has, or is conjectured to have, a biological
@@ -5081,7 +5081,7 @@ class NucleicAcidSequenceMotif(BiologicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class RNAProduct(Transcript):
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role", "in_taxon"]
 
@@ -5121,7 +5121,7 @@ class RNAProduct(Transcript):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class RNAProductIsoform(RNAProduct):
     """
     Represents a protein that is a specific isoform of the canonical or reference RNA
@@ -5164,7 +5164,7 @@ class RNAProductIsoform(RNAProduct):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class NoncodingRNAProduct(RNAProduct):
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role", "in_taxon"]
 
@@ -5190,7 +5190,7 @@ class NoncodingRNAProduct(RNAProduct):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class MicroRNA(NoncodingRNAProduct):
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role", "in_taxon"]
 
@@ -5216,7 +5216,7 @@ class MicroRNA(NoncodingRNAProduct):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class SiRNA(NoncodingRNAProduct):
     """
     A small RNA molecule that is the product of a longer exogenous or endogenous dsRNA, which is either a bimolecular
@@ -5247,7 +5247,7 @@ class SiRNA(NoncodingRNAProduct):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GeneGroupingMixin(YAMLRoot):
     """
     any grouping of multiple genes or gene products
@@ -5269,7 +5269,7 @@ class GeneGroupingMixin(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class GeneFamily(BiologicalEntity):
     """
     any grouping of multiple genes or gene products related by common descent
@@ -5303,7 +5303,7 @@ class GeneFamily(BiologicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Zygosity(Attribute):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -5330,7 +5330,7 @@ class Zygosity(Attribute):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Genotype(BiologicalEntity):
     """
     An information content entity that describes a genome by specifying the total variation in genomic sequence and/or
@@ -5368,7 +5368,7 @@ class Genotype(BiologicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Haplotype(BiologicalEntity):
     """
     A set of zero or more Alleles on a single instance of a Sequence[VMC]
@@ -5401,7 +5401,7 @@ class Haplotype(BiologicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class SequenceVariant(BiologicalEntity):
     """
     A sequence_variant is a non exact copy of a sequence_feature or genome exhibiting one or more sequence_alteration.
@@ -5439,7 +5439,7 @@ class SequenceVariant(BiologicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Snv(SequenceVariant):
     """
     SNVs are single nucleotide positions in genomic DNA at which different sequence alternatives exist
@@ -5468,7 +5468,7 @@ class Snv(SequenceVariant):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ReagentTargetedGene(BiologicalEntity):
     """
     A gene altered in its expression level in the context of some experiment as a result of being targeted by
@@ -5502,7 +5502,7 @@ class ReagentTargetedGene(BiologicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ClinicalAttribute(Attribute):
     """
     Attributes relating to a clinical manifestation
@@ -5532,7 +5532,7 @@ class ClinicalAttribute(Attribute):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ClinicalMeasurement(ClinicalAttribute):
     """
     A clinical measurement is a special kind of attribute which results from a laboratory observation from a subject
@@ -5568,7 +5568,7 @@ class ClinicalMeasurement(ClinicalAttribute):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ClinicalModifier(ClinicalAttribute):
     """
     Used to characterize and specify the phenotypic abnormalities defined in the phenotypic abnormality sub-ontology,
@@ -5599,7 +5599,7 @@ class ClinicalModifier(ClinicalAttribute):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ClinicalCourse(ClinicalAttribute):
     """
     The course a disease typically takes from its onset, progression in time, and eventual resolution or death of the
@@ -5630,7 +5630,7 @@ class ClinicalCourse(ClinicalAttribute):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Onset(ClinicalCourse):
     """
     The age group in which (disease) symptom manifestations appear
@@ -5660,7 +5660,7 @@ class Onset(ClinicalCourse):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ClinicalEntity(NamedThing):
     """
     Any entity or process that exists in the clinical domain and outside the biological realm. Diseases are placed
@@ -5690,7 +5690,7 @@ class ClinicalEntity(NamedThing):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ClinicalTrial(ClinicalEntity):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -5716,7 +5716,7 @@ class ClinicalTrial(ClinicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ClinicalIntervention(ClinicalEntity):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -5742,7 +5742,7 @@ class ClinicalIntervention(ClinicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ClinicalFinding(PhenotypicFeature):
     """
     this category is currently considered broad enough to tag clinical lab measurements and other biological
@@ -5777,7 +5777,7 @@ class ClinicalFinding(PhenotypicFeature):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Hospitalization(ClinicalIntervention):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -5803,7 +5803,7 @@ class Hospitalization(ClinicalIntervention):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class SocioeconomicAttribute(Attribute):
     """
     Attributes relating to a socioeconomic manifestation
@@ -5833,7 +5833,7 @@ class SocioeconomicAttribute(Attribute):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Case(IndividualOrganism):
     """
     An individual (human) organism that has a patient role in some clinical context.
@@ -5862,7 +5862,7 @@ class Case(IndividualOrganism):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Cohort(StudyPopulation):
     """
     A group of people banded together or treated as a group who share common characteristics. A cohort 'study' is a
@@ -5892,7 +5892,7 @@ class Cohort(StudyPopulation):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ExposureEvent(OntologyClass):
     """
     A (possibly time bounded) incidence of a feature of the environment of an organism that influences one or more
@@ -5915,7 +5915,7 @@ class ExposureEvent(OntologyClass):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class GenomicBackgroundExposure(Attribute):
     """
     A genomic background exposure is where an individual's specific genomic background of genes, sequence variants or
@@ -5977,7 +5977,7 @@ class PathologicalEntityMixin(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = BIOLINK.PathologicalEntityMixin
 
 
-@dataclass
+@dataclass(repr=False)
 class PathologicalProcess(BiologicalProcess):
     """
     A biologic function or a process having an abnormal or deleterious effect at the subcellular, cellular,
@@ -6007,7 +6007,7 @@ class PathologicalProcess(BiologicalProcess):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class PathologicalProcessExposure(Attribute):
     """
     A pathological process, when viewed as an exposure, representing a precondition, leading to or influencing an
@@ -6042,7 +6042,7 @@ class PathologicalProcessExposure(Attribute):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class PathologicalAnatomicalStructure(AnatomicalEntity):
     """
     An anatomical structure with the potential of have an abnormal or deleterious effect at the subcellular, cellular,
@@ -6072,7 +6072,7 @@ class PathologicalAnatomicalStructure(AnatomicalEntity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class PathologicalAnatomicalExposure(Attribute):
     """
     An abnormal anatomical structure, when viewed as an exposure, representing an precondition, leading to or
@@ -6107,7 +6107,7 @@ class PathologicalAnatomicalExposure(Attribute):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class DiseaseOrPhenotypicFeatureExposure(Attribute):
     """
     A disease or phenotypic feature state, when viewed as an exposure, represents an precondition, leading to or
@@ -6143,7 +6143,7 @@ class DiseaseOrPhenotypicFeatureExposure(Attribute):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ChemicalExposure(Attribute):
     """
     A chemical exposure is an intake of a particular chemical entity.
@@ -6182,7 +6182,7 @@ class ChemicalExposure(Attribute):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ComplexChemicalExposure(Attribute):
     """
     A complex chemical exposure is an intake of a chemical mixture (e.g. gasoline), other than a drug.
@@ -6212,7 +6212,7 @@ class ComplexChemicalExposure(Attribute):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class DrugExposure(ChemicalExposure):
     """
     A drug exposure is an intake of a particular drug.
@@ -6246,7 +6246,7 @@ class DrugExposure(ChemicalExposure):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class DrugToGeneInteractionExposure(DrugExposure):
     """
     drug to gene interaction exposure is a drug exposure is where the interactions of the drug with specific genes are
@@ -6282,7 +6282,7 @@ class DrugToGeneInteractionExposure(DrugExposure):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class Treatment(NamedThing):
     """
     A treatment is targeted at a disease or phenotype and may involve multiple drug 'exposures', medical devices
@@ -6331,7 +6331,7 @@ class Treatment(NamedThing):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class BioticExposure(Attribute):
     """
     An external biotic exposure is an intake of (sometimes pathological) biological organisms (including viruses).
@@ -6365,7 +6365,7 @@ class BioticExposure(Attribute):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class EnvironmentalExposure(Attribute):
     """
     A environmental exposure is a factor relating to abiotic processes in the environment including sunlight (UV-B),
@@ -6400,7 +6400,7 @@ class EnvironmentalExposure(Attribute):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GeographicExposure(EnvironmentalExposure):
     """
     A geographic exposure is a factor relating to geographic proximity to some impactful entity.
@@ -6434,7 +6434,7 @@ class GeographicExposure(EnvironmentalExposure):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class BehavioralExposure(Attribute):
     """
     A behavioral exposure is a factor relating to behavior impacting an individual.
@@ -6468,7 +6468,7 @@ class BehavioralExposure(Attribute):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class SocioeconomicExposure(Attribute):
     """
     A socioeconomic exposure is a factor relating to social and financial status of an affected individual (e.g.
@@ -6622,7 +6622,7 @@ class SocioeconomicOutcome(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = BIOLINK.SocioeconomicOutcome
 
 
-@dataclass
+@dataclass(repr=False)
 class Association(Entity):
     """
     A typed association between two entities, supported by evidence
@@ -6748,7 +6748,7 @@ class Association(Entity):
 
 
 
-@dataclass
+@dataclass(repr=False)
 class ChemicalEntityAssessesNamedThingAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -6789,7 +6789,7 @@ class ChemicalEntityAssessesNamedThingAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ContributorAssociation(Association):
     """
     Any association between an entity (such as a publication) and various agents that contribute to its realisation
@@ -6838,7 +6838,7 @@ class ContributorAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GenotypeToGenotypePartAssociation(Association):
     """
     Any association between one genotype and a genotypic entity that is a sub-component of it
@@ -6882,7 +6882,7 @@ class GenotypeToGenotypePartAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GenotypeToGeneAssociation(Association):
     """
     Any association between a genotype and a gene. The genotype have have multiple variants in that gene or a single
@@ -6927,7 +6927,7 @@ class GenotypeToGeneAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GenotypeToVariantAssociation(Association):
     """
     Any association between a genotype and a sequence variant.
@@ -6971,7 +6971,7 @@ class GenotypeToVariantAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GeneToGeneAssociation(Association):
     """
     abstract parent class for different kinds of gene-gene or gene product to gene product relationships. Includes
@@ -7006,7 +7006,7 @@ class GeneToGeneAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GeneToGeneHomologyAssociation(GeneToGeneAssociation):
     """
     A homology association between two genes. May be orthology (in which case the species of subject and object should
@@ -7051,7 +7051,7 @@ class GeneToGeneHomologyAssociation(GeneToGeneAssociation):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GeneToGeneFamilyAssociation(Association):
     """
     Set membership of a gene in a family of genes related by common evolutionary ancestry usually inferred by sequence
@@ -7097,7 +7097,7 @@ class GeneToGeneFamilyAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GeneExpressionMixin(YAMLRoot):
     """
     Observed gene expression intensity, context (site, stage) and associated phenotypic status within which the
@@ -7131,7 +7131,7 @@ class GeneExpressionMixin(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class GeneToGeneCoexpressionAssociation(GeneToGeneAssociation):
     """
     Indicates that two genes are co-expressed, generally under the same conditions.
@@ -7181,7 +7181,7 @@ class GeneToGeneCoexpressionAssociation(GeneToGeneAssociation):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class PairwiseGeneToGeneInteraction(GeneToGeneAssociation):
     """
     An interaction between two genes or two gene products. May be physical (e.g. protein binding) or genetic (between
@@ -7216,7 +7216,7 @@ class PairwiseGeneToGeneInteraction(GeneToGeneAssociation):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class PairwiseMolecularInteraction(PairwiseGeneToGeneInteraction):
     """
     An interaction at the molecular level between two physical entities
@@ -7264,7 +7264,7 @@ class PairwiseMolecularInteraction(PairwiseGeneToGeneInteraction):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class CellLineToEntityAssociationMixin(YAMLRoot):
     """
     An relationship between a cell line and another entity
@@ -7287,7 +7287,7 @@ class CellLineToEntityAssociationMixin(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class CellLineToDiseaseOrPhenotypicFeatureAssociation(Association):
     """
     An relationship between a cell line and a disease or a phenotype, where the cell line is derived from an
@@ -7322,7 +7322,7 @@ class CellLineToDiseaseOrPhenotypicFeatureAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ChemicalEntityToEntityAssociationMixin(YAMLRoot):
     """
     An interaction between a chemical entity and another entity
@@ -7345,7 +7345,7 @@ class ChemicalEntityToEntityAssociationMixin(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class DrugToEntityAssociationMixin(ChemicalEntityToEntityAssociationMixin):
     """
     An interaction between a drug and another entity
@@ -7368,7 +7368,7 @@ class DrugToEntityAssociationMixin(ChemicalEntityToEntityAssociationMixin):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ChemicalToEntityAssociationMixin(ChemicalEntityToEntityAssociationMixin):
     """
     An interaction between a chemical entity and another entity
@@ -7391,7 +7391,7 @@ class ChemicalToEntityAssociationMixin(ChemicalEntityToEntityAssociationMixin):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class CaseToEntityAssociationMixin(YAMLRoot):
     """
     An abstract association for use where the case is the subject
@@ -7414,7 +7414,7 @@ class CaseToEntityAssociationMixin(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ChemicalToChemicalAssociation(Association):
     """
     A relationship between two chemical entities. This can encompass actual interactions as well as temporal causal
@@ -7449,7 +7449,7 @@ class ChemicalToChemicalAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ReactionToParticipantAssociation(ChemicalToChemicalAssociation):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -7492,7 +7492,7 @@ class ReactionToParticipantAssociation(ChemicalToChemicalAssociation):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ReactionToCatalystAssociation(ReactionToParticipantAssociation):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -7523,7 +7523,7 @@ class ReactionToCatalystAssociation(ReactionToParticipantAssociation):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ChemicalToChemicalDerivationAssociation(ChemicalToChemicalAssociation):
     """
     A causal relationship between two chemical entities, where the subject represents the upstream entity and the
@@ -7580,7 +7580,7 @@ class ChemicalToChemicalDerivationAssociation(ChemicalToChemicalAssociation):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ChemicalToDiseaseOrPhenotypicFeatureAssociation(Association):
     """
     An interaction between a chemical entity and a phenotype or disease, where the presence of the chemical gives rise
@@ -7615,7 +7615,7 @@ class ChemicalToDiseaseOrPhenotypicFeatureAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation(Association):
     """
     This association defines a relationship between a chemical or treatment (or procedure) and a disease or phenotypic
@@ -7654,7 +7654,7 @@ class ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation(Associati
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation(ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation):
     """
     This association defines a relationship between a chemical or treatment (or procedure) and a disease or phenotypic
@@ -7689,7 +7689,7 @@ class ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation(C
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GeneToPathwayAssociation(Association):
     """
     An interaction between a gene or gene product and a biological process or pathway.
@@ -7728,7 +7728,7 @@ class GeneToPathwayAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class MolecularActivityToPathwayAssociation(Association):
     """
     Association that holds the relationship between a reaction and the pathway it participates in.
@@ -7772,7 +7772,7 @@ class MolecularActivityToPathwayAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ChemicalToPathwayAssociation(Association):
     """
     An interaction between a chemical entity and a biological process or pathway.
@@ -7811,7 +7811,7 @@ class ChemicalToPathwayAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class NamedThingAssociatedWithLikelihoodOfNamedThingAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -7858,7 +7858,7 @@ class NamedThingAssociatedWithLikelihoodOfNamedThingAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ChemicalGeneInteractionAssociation(Association):
     """
     describes a physical interaction between a chemical entity and a gene or gene product. Any biological or chemical
@@ -7936,7 +7936,7 @@ class ChemicalGeneInteractionAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ChemicalAffectsGeneAssociation(Association):
     """
     Describes an effect that a chemical has on a gene or gene product (e.g. an impact of on its abundance, activity,
@@ -8041,7 +8041,7 @@ class ChemicalAffectsGeneAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class DrugToGeneAssociation(Association):
     """
     An interaction between a drug and a gene or gene product.
@@ -8075,7 +8075,7 @@ class DrugToGeneAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class MaterialSampleToEntityAssociationMixin(YAMLRoot):
     """
     An association between a material sample and something.
@@ -8098,7 +8098,7 @@ class MaterialSampleToEntityAssociationMixin(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class MaterialSampleDerivationAssociation(Association):
     """
     An association between a material sample and the material entity from which it is derived.
@@ -8142,7 +8142,7 @@ class MaterialSampleDerivationAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class MaterialSampleToDiseaseOrPhenotypicFeatureAssociation(Association):
     """
     An association between a material sample and a disease or phenotype.
@@ -8171,7 +8171,7 @@ class MaterialSampleToDiseaseOrPhenotypicFeatureAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class DiseaseToEntityAssociationMixin(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -8191,7 +8191,7 @@ class DiseaseToEntityAssociationMixin(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class EntityToExposureEventAssociationMixin(YAMLRoot):
     """
     An association between some entity and an exposure event.
@@ -8214,7 +8214,7 @@ class EntityToExposureEventAssociationMixin(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class DiseaseToExposureEventAssociation(Association):
     """
     An association between an exposure event and a disease.
@@ -8243,7 +8243,7 @@ class DiseaseToExposureEventAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class EntityToOutcomeAssociationMixin(YAMLRoot):
     """
     An association between some entity and an outcome
@@ -8266,7 +8266,7 @@ class EntityToOutcomeAssociationMixin(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ExposureEventToOutcomeAssociation(Association):
     """
     An association between an exposure event and an outcome.
@@ -8303,7 +8303,7 @@ class ExposureEventToOutcomeAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class FrequencyQualifierMixin(YAMLRoot):
     """
     Qualifier for frequency type associations
@@ -8324,7 +8324,7 @@ class FrequencyQualifierMixin(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class EntityToFeatureOrDiseaseQualifiersMixin(FrequencyQualifierMixin):
     """
     Qualifiers for entity to disease or phenotype associations.
@@ -8349,7 +8349,7 @@ class EntityToFeatureOrDiseaseQualifiersMixin(FrequencyQualifierMixin):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class EntityToPhenotypicFeatureAssociationMixin(EntityToFeatureOrDiseaseQualifiersMixin):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -8389,7 +8389,7 @@ class EntityToPhenotypicFeatureAssociationMixin(EntityToFeatureOrDiseaseQualifie
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class InformationContentEntityToNamedThingAssociation(Association):
     """
     association between a named thing and a information content entity where the specific context of the relationship
@@ -8438,7 +8438,7 @@ class InformationContentEntityToNamedThingAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class EntityToDiseaseAssociationMixin(EntityToFeatureOrDiseaseQualifiersMixin):
     """
     mixin class for any association whose object (target node) is a disease
@@ -8461,7 +8461,7 @@ class EntityToDiseaseAssociationMixin(EntityToFeatureOrDiseaseQualifiersMixin):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class DiseaseOrPhenotypicFeatureToEntityAssociationMixin(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -8481,7 +8481,7 @@ class DiseaseOrPhenotypicFeatureToEntityAssociationMixin(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class DiseaseOrPhenotypicFeatureToLocationAssociation(Association):
     """
     An association between either a disease or a phenotypic feature and an anatomical entity, where the
@@ -8516,7 +8516,7 @@ class DiseaseOrPhenotypicFeatureToLocationAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation(Association):
     """
     An association between either a disease or a phenotypic feature and its mode of (genetic) inheritance.
@@ -8555,7 +8555,7 @@ class DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class EntityToDiseaseOrPhenotypicFeatureAssociationMixin(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -8575,7 +8575,7 @@ class EntityToDiseaseOrPhenotypicFeatureAssociationMixin(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class GenotypeToEntityAssociationMixin(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -8595,7 +8595,7 @@ class GenotypeToEntityAssociationMixin(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class GenotypeToPhenotypicFeatureAssociation(Association):
     """
     Any association between one genotype and a phenotypic feature, where having the genotype confers the phenotype,
@@ -8651,7 +8651,7 @@ class GenotypeToPhenotypicFeatureAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ExposureEventToPhenotypicFeatureAssociation(Association):
     """
     Any association between an environment and a phenotypic feature, where being in the environment influences the
@@ -8702,7 +8702,7 @@ class ExposureEventToPhenotypicFeatureAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class DiseaseToPhenotypicFeatureAssociation(Association):
     """
     An association between a disease and a phenotypic feature in which the phenotypic feature is associated with the
@@ -8758,7 +8758,7 @@ class DiseaseToPhenotypicFeatureAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class CaseToPhenotypicFeatureAssociation(Association):
     """
     An association between a case (e.g. individual patient) and a phenotypic feature in which the individual has or
@@ -8804,7 +8804,7 @@ class CaseToPhenotypicFeatureAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class BehaviorToBehavioralFeatureAssociation(Association):
     """
     An association between an mixture behavior and a behavioral feature manifested by the individual exhibited or has
@@ -8860,7 +8860,7 @@ class BehaviorToBehavioralFeatureAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GeneToEntityAssociationMixin(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -8880,7 +8880,7 @@ class GeneToEntityAssociationMixin(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class VariantToEntityAssociationMixin(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -8900,7 +8900,7 @@ class VariantToEntityAssociationMixin(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class GeneToPhenotypicFeatureAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -8952,7 +8952,7 @@ class GeneToPhenotypicFeatureAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GeneToDiseaseAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -9000,7 +9000,7 @@ class GeneToDiseaseAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class DruggableGeneToDiseaseAssociation(GeneToDiseaseAssociation):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -9053,7 +9053,7 @@ class DruggableGeneToDiseaseAssociation(GeneToDiseaseAssociation):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class VariantToGeneAssociation(Association):
     """
     An association between a variant and a gene, where the variant has a genetic association with the gene (i.e. is in
@@ -9093,7 +9093,7 @@ class VariantToGeneAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class VariantToGeneExpressionAssociation(VariantToGeneAssociation):
     """
     An association between a variant and expression of a gene (i.e. e-QTL)
@@ -9143,7 +9143,7 @@ class VariantToGeneExpressionAssociation(VariantToGeneAssociation):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class VariantToPopulationAssociation(Association):
     """
     An association between a variant and a population, where the variant has particular frequency in the population
@@ -9202,7 +9202,7 @@ class VariantToPopulationAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class PopulationToPopulationAssociation(Association):
     """
     An association between a two populations
@@ -9246,7 +9246,7 @@ class PopulationToPopulationAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class VariantToPhenotypicFeatureAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -9293,7 +9293,7 @@ class VariantToPhenotypicFeatureAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class VariantToDiseaseAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -9346,7 +9346,7 @@ class VariantToDiseaseAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GenotypeToDiseaseAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -9399,7 +9399,7 @@ class GenotypeToDiseaseAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ModelToDiseaseAssociationMixin(YAMLRoot):
     """
     This mixin is used for any association class for which the subject (source node) plays the role of a 'model', in
@@ -9430,7 +9430,7 @@ class ModelToDiseaseAssociationMixin(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class GeneAsAModelOfDiseaseAssociation(GeneToDiseaseAssociation):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -9473,7 +9473,7 @@ class GeneAsAModelOfDiseaseAssociation(GeneToDiseaseAssociation):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class VariantAsAModelOfDiseaseAssociation(VariantToDiseaseAssociation):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -9516,7 +9516,7 @@ class VariantAsAModelOfDiseaseAssociation(VariantToDiseaseAssociation):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GenotypeAsAModelOfDiseaseAssociation(GenotypeToDiseaseAssociation):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -9559,7 +9559,7 @@ class GenotypeAsAModelOfDiseaseAssociation(GenotypeToDiseaseAssociation):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class CellLineAsAModelOfDiseaseAssociation(CellLineToDiseaseOrPhenotypicFeatureAssociation):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -9602,7 +9602,7 @@ class CellLineAsAModelOfDiseaseAssociation(CellLineToDiseaseOrPhenotypicFeatureA
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class OrganismalEntityAsAModelOfDiseaseAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -9645,7 +9645,7 @@ class OrganismalEntityAsAModelOfDiseaseAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class OrganismToOrganismAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -9681,7 +9681,7 @@ class OrganismToOrganismAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class TaxonToTaxonAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -9717,7 +9717,7 @@ class TaxonToTaxonAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GeneHasVariantThatContributesToDiseaseAssociation(GeneToDiseaseAssociation):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -9762,7 +9762,7 @@ class GeneHasVariantThatContributesToDiseaseAssociation(GeneToDiseaseAssociation
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GeneToExpressionSiteAssociation(Association):
     """
     An association between a gene and a gene expression site, possibly qualified by stage/timing info.
@@ -9814,7 +9814,7 @@ class GeneToExpressionSiteAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class SequenceVariantModulatesTreatmentAssociation(Association):
     """
     An association between a sequence variant and a treatment or health intervention. The treatment object itself
@@ -9849,7 +9849,7 @@ class SequenceVariantModulatesTreatmentAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class FunctionalAssociation(Association):
     """
     An association between a macromolecular machine mixin (gene, gene product or complex of gene products) and either
@@ -9889,7 +9889,7 @@ class FunctionalAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class MacromolecularMachineToEntityAssociationMixin(YAMLRoot):
     """
     an association which has a macromolecular machine mixin as a subject
@@ -9912,7 +9912,7 @@ class MacromolecularMachineToEntityAssociationMixin(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class MacromolecularMachineToMolecularActivityAssociation(FunctionalAssociation):
     """
     A functional association between a macromolecular machine (gene, gene product or complex) and a molecular activity
@@ -9948,7 +9948,7 @@ class MacromolecularMachineToMolecularActivityAssociation(FunctionalAssociation)
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class MacromolecularMachineToBiologicalProcessAssociation(FunctionalAssociation):
     """
     A functional association between a macromolecular machine (gene, gene product or complex) and a biological process
@@ -9984,7 +9984,7 @@ class MacromolecularMachineToBiologicalProcessAssociation(FunctionalAssociation)
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class MacromolecularMachineToCellularComponentAssociation(FunctionalAssociation):
     """
     A functional association between a macromolecular machine (gene, gene product or complex) and a cellular component
@@ -10020,7 +10020,7 @@ class MacromolecularMachineToCellularComponentAssociation(FunctionalAssociation)
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class MolecularActivityToChemicalEntityAssociation(Association):
     """
     Added in response to capturing relationship between microbiome activities as measured via measurements of blood
@@ -10060,7 +10060,7 @@ class MolecularActivityToChemicalEntityAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class MolecularActivityToMolecularActivityAssociation(Association):
     """
     Added in response to capturing relationship between microbiome activities as measured via measurements of blood
@@ -10100,7 +10100,7 @@ class MolecularActivityToMolecularActivityAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GeneToGoTermAssociation(FunctionalAssociation):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -10136,7 +10136,7 @@ class GeneToGoTermAssociation(FunctionalAssociation):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class EntityToDiseaseAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -10166,7 +10166,7 @@ class EntityToDiseaseAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class EntityToPhenotypicFeatureAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -10196,7 +10196,7 @@ class EntityToPhenotypicFeatureAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class SequenceAssociation(Association):
     """
     An association between a sequence feature and a nucleic acid entity it is localized to.
@@ -10225,7 +10225,7 @@ class SequenceAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GenomicSequenceLocalization(SequenceAssociation):
     """
     A relationship between a sequence feature and a nucleic acid entity it is localized to. The reference entity may
@@ -10290,7 +10290,7 @@ class GenomicSequenceLocalization(SequenceAssociation):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class SequenceFeatureRelationship(Association):
     """
     For example, a particular exon is part of a particular transcript or gene
@@ -10329,7 +10329,7 @@ class SequenceFeatureRelationship(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class TranscriptToGeneRelationship(SequenceFeatureRelationship):
     """
     A gene is a collection of transcripts
@@ -10368,7 +10368,7 @@ class TranscriptToGeneRelationship(SequenceFeatureRelationship):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class GeneToGeneProductRelationship(SequenceFeatureRelationship):
     """
     A gene is transcribed and potentially translated to a gene product
@@ -10412,7 +10412,7 @@ class GeneToGeneProductRelationship(SequenceFeatureRelationship):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ExonToTranscriptRelationship(SequenceFeatureRelationship):
     """
     A transcript is formed from multiple exons
@@ -10451,7 +10451,7 @@ class ExonToTranscriptRelationship(SequenceFeatureRelationship):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation(Association):
     """
     A regulatory relationship between two genes
@@ -10499,7 +10499,7 @@ class ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class AnatomicalEntityToAnatomicalEntityAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -10530,7 +10530,7 @@ class AnatomicalEntityToAnatomicalEntityAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class AnatomicalEntityToAnatomicalEntityPartOfAssociation(AnatomicalEntityToAnatomicalEntityAssociation):
     """
     A relationship between two anatomical entities where the relationship is mereological, i.e the two entities are
@@ -10576,7 +10576,7 @@ class AnatomicalEntityToAnatomicalEntityPartOfAssociation(AnatomicalEntityToAnat
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class AnatomicalEntityToAnatomicalEntityOntogenicAssociation(AnatomicalEntityToAnatomicalEntityAssociation):
     """
     A relationship between two anatomical entities where the relationship is ontogenic, i.e. the two entities are
@@ -10622,7 +10622,7 @@ class AnatomicalEntityToAnatomicalEntityOntogenicAssociation(AnatomicalEntityToA
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class OrganismTaxonToEntityAssociation(YAMLRoot):
     """
     An association between an organism taxon and another entity
@@ -10645,7 +10645,7 @@ class OrganismTaxonToEntityAssociation(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OrganismTaxonToOrganismTaxonAssociation(Association):
     """
     A relationship between two organism taxon nodes
@@ -10679,7 +10679,7 @@ class OrganismTaxonToOrganismTaxonAssociation(Association):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class OrganismTaxonToOrganismTaxonSpecialization(OrganismTaxonToOrganismTaxonAssociation):
     """
     A child-parent relationship between two taxa. For example: Homo sapiens subclass_of Homo
@@ -10723,7 +10723,7 @@ class OrganismTaxonToOrganismTaxonSpecialization(OrganismTaxonToOrganismTaxonAss
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class OrganismTaxonToOrganismTaxonInteraction(OrganismTaxonToOrganismTaxonAssociation):
     """
     An interaction relationship between two taxa. This may be a symbiotic relationship (encompassing mutualism and
@@ -10773,7 +10773,7 @@ class OrganismTaxonToOrganismTaxonInteraction(OrganismTaxonToOrganismTaxonAssoci
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
-@dataclass
+@dataclass(repr=False)
 class OrganismTaxonToEnvironmentAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 

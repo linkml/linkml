@@ -42,7 +42,7 @@ DEFAULT_ = CurieNamespace('', 'http://example.org/tests/namespace/')
 
 
 
-@dataclass
+@dataclass(repr=False)
 class C1(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 

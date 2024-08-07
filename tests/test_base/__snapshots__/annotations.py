@@ -44,7 +44,7 @@ class AnnotationTag(ExtensionTag):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class Annotatable(YAMLRoot):
     """
     mixin for classes that support annotations
@@ -64,7 +64,7 @@ class Annotatable(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Annotation(Extension):
     """
     a tag/value pair with the semantics of OWL Annotation

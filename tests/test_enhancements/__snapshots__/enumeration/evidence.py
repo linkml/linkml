@@ -44,7 +44,7 @@ class EvidencerName(extended_str):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class Evidencer(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 

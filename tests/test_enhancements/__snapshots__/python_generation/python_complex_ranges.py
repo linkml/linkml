@@ -64,7 +64,7 @@ class IdentifiedThreeElementClassName(extended_str):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class OneElementClass(YAMLRoot):
     """
     A class with a single non-key integer as a value
@@ -85,7 +85,7 @@ class OneElementClass(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class TwoElementClass(YAMLRoot):
     """
     A class with a two non-key strings as a values
@@ -110,7 +110,7 @@ class TwoElementClass(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ThreeElementClass(YAMLRoot):
     """
     A class with three non-key doubles as values
@@ -139,7 +139,7 @@ class ThreeElementClass(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class KeyedOneElementClass(YAMLRoot):
     """
     A keyed class with one element
@@ -162,7 +162,7 @@ class KeyedOneElementClass(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class KeyedTwoElementClass(YAMLRoot):
     """
     A keyed class with an additional integer
@@ -189,7 +189,7 @@ class KeyedTwoElementClass(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class KeyedThreeElementClass(YAMLRoot):
     """
     A keyed class with an additional integer and date
@@ -220,7 +220,7 @@ class KeyedThreeElementClass(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class IdentifiedOneElementClass(YAMLRoot):
     """
     A identified class with one element
@@ -243,7 +243,7 @@ class IdentifiedOneElementClass(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class IdentifiedTwoElementClass(YAMLRoot):
     """
     A identified class with an additional integer
@@ -270,7 +270,7 @@ class IdentifiedTwoElementClass(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class IdentifiedThreeElementClass(YAMLRoot):
     """
     A identified class with an additional integer and date

@@ -43,7 +43,7 @@ class DiskDeviceLabel(extended_str):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class DiskDevice(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 

@@ -41,7 +41,7 @@ DEFAULT_ = LINKML
 
 
 
-@dataclass
+@dataclass(repr=False)
 class FirstClass(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 

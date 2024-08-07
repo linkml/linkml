@@ -56,7 +56,7 @@ class TestClass3Id(extended_str):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class TestClass1(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -86,7 +86,7 @@ class TestClass1(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class TestClass2(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -116,7 +116,7 @@ class TestClass2(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class TestClass3(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 

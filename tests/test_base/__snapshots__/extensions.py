@@ -45,7 +45,7 @@ class ExtensionTag(URIorCURIE):
 
 AnyValue = Any
 
-@dataclass
+@dataclass(repr=False)
 class Extension(YAMLRoot):
     """
     a tag/value pair used to add non-model information to an entry
@@ -72,7 +72,7 @@ class Extension(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Extensible(YAMLRoot):
     """
     mixin for classes that support extension

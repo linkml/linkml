@@ -208,7 +208,7 @@ class ObjectRange1Id(NamedThingId):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class NamedThing(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -246,7 +246,7 @@ class NamedThing(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class MixinOwner(NamedThing):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -278,7 +278,7 @@ class MixinOwner(NamedThing):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class SubjectRange1(NamedThing):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -301,7 +301,7 @@ class SubjectRange1(NamedThing):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ObjectRange1(NamedThing):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -324,7 +324,7 @@ class ObjectRange1(NamedThing):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class MixinClass(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 

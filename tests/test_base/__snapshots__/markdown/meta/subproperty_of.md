@@ -25,4 +25,14 @@ URI: [linkml:subproperty_of](https://w3id.org/linkml/subproperty_of)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | rdfs:subPropertyOf |
-| **Examples:** | | Example(value='RO:HOM0000001', description='this is the RO term for "in homology relationship with", and used as a value of subproperty of this means that any ontological child (related to RO:HOM0000001 via an is_a relationship), is a valid value for the slot that declares this with the subproperty_of tag.  This differs from the \'values_from\' meta model component in that \'values_from\' requires the id of a value set (said another way, if an entire ontology had a curie/identifier that was the identifier for the entire ontology, then that identifier would be used in \'values_from.\')', object=None) |
+| **Examples:** | | Example({
+  'value': 'RO:HOM0000001',
+  'description': ('this is the RO term for "in homology relationship with", and used as a value '
+     'of subproperty of this means that any ontological child (related to '
+     'RO:HOM0000001 via an is_a relationship), is a valid value for the slot that '
+     'declares this with the subproperty_of tag.  This differs from the '
+     "'values_from' meta model component in that 'values_from' requires the id of "
+     'a value set (said another way, if an entire ontology had a curie/identifier '
+     'that was the identifier for the entire ontology, then that identifier would '
+     "be used in 'values_from.')")
+}) |

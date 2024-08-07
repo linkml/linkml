@@ -49,7 +49,7 @@ class String(str):
 
 
 
-@dataclass
+@dataclass(repr=False)
 class Student(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -71,7 +71,7 @@ class Student(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Course(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 

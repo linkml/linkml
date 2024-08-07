@@ -48,7 +48,7 @@ URI: [linkml:status](https://w3id.org/linkml/status)
 | --- | --- | --- |
 | **Aliases:** | | workflow status |
 | **Mappings:** | | bibo:status |
-| **Examples:** | | Example(value='bibo:draft', description=None, object=None) |
+| **Examples:** | | Example({'value': 'bibo:draft'}) |
 | **In Subsets:** | | BasicSubset |
 | **See also:** | | [https://www.hl7.org/fhir/valueset-publication-status.html](https://www.hl7.org/fhir/valueset-publication-status.html) |
 |  | | [https://www.hl7.org/fhir/versions.html#std-process](https://www.hl7.org/fhir/versions.html#std-process) |

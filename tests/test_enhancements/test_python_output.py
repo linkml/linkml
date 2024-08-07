@@ -40,7 +40,12 @@ def test_python_types_snapshot(input_path, snapshot):
             "Strings",
             ("s1", "s2", "s3", "s4"),
             {},
-            "Strings(mand_string='s1', mand_multi_string=['s2'], opt_string='s3', opt_multi_string=['s4'])",
+            """Strings({
+  'mand_string': 's1',
+  'mand_multi_string': ['s2'],
+  'opt_string': 's3',
+  'opt_multi_string': ['s4']
+})""",
             None,
         ],
         [
@@ -48,8 +53,12 @@ def test_python_types_snapshot(input_path, snapshot):
             ("s1", ["s21", "s22"], "s3", ["s41", "s42"]),
             {},
             (
-                "Strings(mand_string='s1', mand_multi_string=['s21', 's22'], "
-                "opt_string='s3', opt_multi_string=['s41', 's42'])"
+                """Strings({
+  'mand_string': 's1',
+  'mand_multi_string': ['s21', 's22'],
+  'opt_string': 's3',
+  'opt_multi_string': ['s41', 's42']
+})"""
             ),
             None,
         ],
@@ -57,14 +66,19 @@ def test_python_types_snapshot(input_path, snapshot):
             "Strings",
             ("s1", ["s21", "s22"], None, None),
             {},
-            "Strings(mand_string='s1', mand_multi_string=['s21', 's22'], opt_string=None, opt_multi_string=[])",
+            "Strings({'mand_string': 's1', 'mand_multi_string': ['s21', 's22']})",
             None,
         ],
         [
             "Strings",
             (NonStr("s1"), NonStr("s2"), NonStr("s3"), NonStr("s4")),
             {},
-            "Strings(mand_string='s1', mand_multi_string=['s2'], opt_string='s3', opt_multi_string=['s4'])",
+            """Strings({
+  'mand_string': 's1',
+  'mand_multi_string': ['s2'],
+  'opt_string': 's3',
+  'opt_multi_string': ['s4']
+})""",
             None,
         ],
         [
@@ -77,8 +91,12 @@ def test_python_types_snapshot(input_path, snapshot):
             ),
             {},
             (
-                "Strings(mand_string='s1', mand_multi_string=['s21', 's22'], "
-                "opt_string='s3', opt_multi_string=['s41', 's42'])"
+                """Strings({
+  'mand_string': 's1',
+  'mand_multi_string': ['s21', 's22'],
+  'opt_string': 's3',
+  'opt_multi_string': ['s41', 's42']
+})"""
             ),
             None,
         ],
@@ -90,8 +108,12 @@ def test_python_types_snapshot(input_path, snapshot):
             ("True", "false", 1, [1, 0, True, False]),
             {},
             (
-                "Booleans(mand_boolean=True, mand_multi_boolean=[False], opt_boolean=True, "
-                "opt_multi_boolean=[True, False, True, False])"
+                """Booleans({
+  'mand_boolean': True,
+  'mand_multi_boolean': [False],
+  'opt_boolean': True,
+  'opt_multi_boolean': [True, False, True, False]
+})"""
             ),
             None,
         ],
@@ -99,7 +121,12 @@ def test_python_types_snapshot(input_path, snapshot):
             "Integers",
             ("17", -2, 12 + 3, [42, "17"]),
             {},
-            "Integers(mand_integer=17, mand_multi_integer=[-2], opt_integer=15, opt_multi_integer=[42, 17])",
+            """Integers({
+  'mand_integer': 17,
+  'mand_multi_integer': [-2],
+  'opt_integer': 15,
+  'opt_multi_integer': [42, 17]
+})""",
             None,
         ],
         [

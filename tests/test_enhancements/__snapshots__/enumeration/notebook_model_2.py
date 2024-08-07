@@ -43,7 +43,7 @@ class SampleId(extended_str):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class Sample(YAMLRoot):
     id: Union[str, SampleId] = None
     position: Union[Union[str, "UnusualEnumPatterns"], List[Union[str, "UnusualEnumPatterns"]]] = None

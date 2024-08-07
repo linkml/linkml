@@ -43,7 +43,7 @@ class PositionalRecordId(extended_str):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class PositionalRecord(YAMLRoot):
     id: Union[str, PositionalRecordId] = None
     position: Union[str, "OpenEnum"] = None
