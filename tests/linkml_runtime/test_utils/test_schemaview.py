@@ -983,6 +983,11 @@ class SchemaViewTestCase(unittest.TestCase):
         assert cls.attributes["tempo"].annotations.expected_value.value == "a number between 0 and 200"
         assert cls.attributes["tempo"].annotations.preferred_unit.value == "BPM"
 
+        assert cls.attributes["tempo"].domain_of == ["DJController"]
+        # ensure that domain_of is not being populated in slot_usage
+        # test for https://github.com/linkml/linkml/pull/2262 from upstream linkml
+        assert cls.slot_usage["tempo"].domain_of == [] 
+
 
 if __name__ == '__main__':
     unittest.main()
