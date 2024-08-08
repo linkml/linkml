@@ -1,8 +1,11 @@
 import json
+from pathlib import Path
 
 import pytest
 from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition, SlotDefinition
+from linkml_runtime.loaders import yaml_loader
 
+from linkml.validator.loaders import default_loader_for_file
 from linkml.validator.plugins import JsonschemaValidationPlugin
 from linkml.validator.validation_context import ValidationContext
 
@@ -96,3 +99,26 @@ def test_include_range_class_descendants():
     results = list(plugin.process({"thing": {"a": "1", "b": "2"}}, validation_context))
     assert len(results) == 1
     assert "'b' was unexpected" in results[0].message
+
+
+@pytest.mark.parametrize("closed", [True, False])
+def test_null_for_optional_slots(input_path, closed):
+    """
+    Null values for optional slots should be valid
+    """
+
+    data = input_path("not_required_data.yaml")
+    data_loader = default_loader_for_file(data)
+
+    # borrow the schema from the generator tests
+    schema_file = str(Path(__file__).parents[1] / "test_generators" / "input" / "not_required.yaml")
+    schema = yaml_loader.load(schema_file, SchemaDefinition)
+    ctx = ValidationContext(schema, "Optionals")
+
+    plugin = JsonschemaValidationPlugin(closed=closed)
+
+    results = []
+    for index, instance in enumerate(data_loader.iter_instances()):
+        results.extend(plugin.process(instance, ctx))
+
+    assert len(results) == 0

@@ -1,8 +1,10 @@
 import jsonasobj
+import pytest
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 
 
+@pytest.mark.jsonschemagen
 def test_issue_types(input_path):
     """Make sure that types are generated as part of the output"""
 
@@ -14,16 +16,16 @@ def test_issue_types(input_path):
     defs = sobj["$defs"]
     C = defs["C"]
     props = C["properties"]
-    assert props["age_in_years"]["type"] == "integer"
-    assert props["has_prop"]["type"] == "boolean"
+    assert "integer" in props["age_in_years"]["type"]
+    assert "boolean" in props["has_prop"]["type"]
     # multivalued primitive type, inlined
-    assert props["scores"]["type"] == "array"
-    assert props["scores"]["items"]["type"] == "number"
+    assert "array" in props["scores"]["type"]
+    assert "number" in props["scores"]["items"]["type"]
     # single-valued complex type, inlined
-    assert props["has_d"]["$ref"] == "#/$defs/D"
+    assert props["has_d"]["anyOf"][0]["$ref"] == "#/$defs/D"
 
     # multi-valued, inlined_as_list
-    assert props["has_ds"]["type"] == "array"
+    assert "array" in props["has_ds"]["type"]
     assert props["has_ds"]["items"]["$ref"] == "#/$defs/D"
 
     # multi-valued, inlined (as dict) #411
@@ -38,8 +40,8 @@ def test_issue_types(input_path):
     assert D_type_null
 
     # single-valued, non-inlined (foreign key)
-    assert props["parent"]["type"] == "string"
+    assert "string" in props["parent"]["type"]
 
     # multi-valued, non-inlined (foreign key)
-    assert props["children"]["type"] == "array"
+    assert "array" in props["children"]["type"]
     assert props["children"]["items"]["type"] == "string"
