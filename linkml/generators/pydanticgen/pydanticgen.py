@@ -497,10 +497,14 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                 result = result.merge(res)
 
         elif slot.multivalued:
+            collection_key = None
             if slot.inlined or slot.inlined_as_list:
                 collection_key = self.generate_collection_key(slot_ranges, slot, cls)
-            else:
-                collection_key = None
+                if slot.inlined_as_list:
+                    result.attribute.meta["inlined_as"] = "list"
+                else:
+                    result.attribute.meta["inlined_as"] = "dict"
+
             if slot.inlined is False or collection_key is None or slot.inlined_as_list is True:
                 result.attribute.range = f"List[{result.attribute.range}]"
             else:
@@ -513,10 +517,17 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                     if simple_dict_value != result.attribute.range:
                         simple_dict_value = f"Union[{simple_dict_value}, {result.attribute.range}]"
                     result.attribute.range = f"Dict[str, {simple_dict_value}]"
+                    if self.metadata_mode != MetadataMode.NONE:
+                        result.attribute.meta["inlined_as"] = "simple_dict"
                 else:
                     result.attribute.range = f"Dict[{collection_key}, {result.attribute.range}]"
         if not (slot.required or slot.identifier or slot.key) and not slot.designates_type:
             result.attribute.range = f"Optional[{result.attribute.range}]"
+
+        # -------------
+        # gather any additional metadata that comes from generation process rather than source schema
+        result = self._include_key_validator(result)
+
         return result
 
     @property
@@ -543,6 +554,8 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                     elif slot.ifabsent is not None:
                         value = ifabsent_value_declaration(slot.ifabsent, sv, class_def, slot)
                         slot_values[camelcase(class_def.name)][slot.name] = value
+                    elif slot.required or slot.identifier or slot.key:
+                        slot_values[camelcase(class_def.name)][slot.name] = "..."
 
             self._predefined_slot_values = slot_values
 
@@ -588,6 +601,31 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             return id_ranges[0]
         else:
             return f"Union[{'.'.join(id_ranges)}]"
+
+    def _include_key_validator(self, slot: SlotResult) -> SlotResult:
+        """
+        If we are a class slot where the class has an identifier/key,
+        include the key/identifier slot name in the meta and inject a validator
+        into the base class that allows us to instantiate from inlined data.
+
+        See docstring in ``includes.unnest_identifier`` for example
+        """
+
+        if (
+            slot.source.range in self.schemaview.all_classes()
+            and (identifier_slot := self.schemaview.get_identifier_slot(slot.source.range, use_key=True)) is not None
+        ):
+            if self.metadata_mode != MetadataMode.NONE:
+                slot.attribute.meta["identifier_slot"] = identifier_slot.name
+            if slot.imports is None:
+                slot.imports = includes.unnest_identifier_imports
+            else:
+                slot.imports += includes.unnest_identifier_imports
+            if slot.injected_fields is None:
+                slot.injected_fields = [includes.unnest_identifier]
+            else:
+                slot.injected_fields.append(includes.unnest_identifier)
+        return slot
 
     def get_class_slot_range(self, slot_range: str, inlined: bool, inlined_as_list: bool) -> str:
         sv = self.schemaview
@@ -928,6 +966,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                 imports += i
         if self.split_mode == SplitMode.FULL:
             imports += self._get_imports()
+        injected_fields = [] if self.injected_fields is None else self.injected_fields.copy()
 
         # injected classes
         injected_classes = DEFAULT_INJECTS.copy()
@@ -937,8 +976,6 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         # enums
         enums = self.before_generate_enums(list(sv.all_enums().values()), sv)
         enums = self.generate_enums({e.name: e for e in enums})
-
-        base_model = PydanticBaseModel(extra_fields=self.extra_fields, fields=self.injected_fields)
 
         # schema classes
         class_results = []
@@ -958,6 +995,10 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                 imports += result.imports
             if result.injected_classes is not None:
                 injected_classes.extend(result.injected_classes)
+            if result.injected_fields is not None:
+                injected_fields.extend(result.injected_fields)
+
+        base_model = PydanticBaseModel(extra_fields=self.extra_fields, fields=injected_fields)
 
         class_results = self.after_generate_classes(class_results, sv)
 
@@ -978,7 +1019,9 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         module = self.before_render_template(module, self.schemaview)
         return module
 
-    def serialize(self, rendered_module: Optional[PydanticModule] = None) -> str:
+    def serialize(
+        self, output: Optional[Union[str, Path]] = None, rendered_module: Optional[PydanticModule] = None
+    ) -> str:
         """
         Serialize the schema to a pydantic module as a string
 
@@ -992,6 +1035,9 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             module = self.render()
         serialized = module.render(self._template_environment(), self.black)
         serialized = self.after_render_template(serialized, self.schemaview)
+        if output is not None:
+            with open(output, "w") as ofile:
+                ofile.write(serialized)
         return serialized
 
     def default_value_for_type(self, typ: str) -> str:
@@ -1182,6 +1228,8 @@ Available templates to override:
     "See docs for MetadataMode for full description of choices. "
     "Default (auto) is to include all metadata that can't be otherwise represented",
 )
+@click.option("-o", "--output", type=click.Path(), help="Output file name", required=False)
+@click.option("--quiet/--not-quiet", default=False, help="Suppress printing output to stdout")
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="pydantic")
 def cli(
@@ -1196,7 +1244,9 @@ def cli(
     extra_fields: Literal["allow", "forbid", "ignore"] = "forbid",
     black: bool = False,
     meta: MetadataMode = "auto",
-    **args,
+    output: Optional[Path] = None,
+    quiet: bool = False,
+    **kwargs,
 ):
     """Generate pydantic classes to represent a LinkML model"""
     if template_file is not None:
@@ -1222,9 +1272,11 @@ def cli(
         template_dir=template_dir,
         black=black,
         metadata_mode=meta,
-        **args,
+        **kwargs,
     )
-    print(gen.serialize())
+    serialized = gen.serialize(output)
+    if not quiet:
+        print(serialized)
 
 
 if __name__ == "__main__":

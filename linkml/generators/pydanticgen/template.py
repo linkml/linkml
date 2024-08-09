@@ -160,9 +160,8 @@ class PydanticAttribute(PydanticTemplateModel):
     meta_exclude: ClassVar[List[str]] = ["from_schema", "owner", "range", "inlined", "inlined_as_list"]
 
     name: str
+    alias: Optional[str] = None
     required: bool = False
-    identifier: bool = False
-    key: bool = False
     predefined: Optional[str] = None
     """Fixed string to use in body of field"""
     range: Optional[str] = None
@@ -187,8 +186,6 @@ class PydanticAttribute(PydanticTemplateModel):
         """Computed value to use inside of the generated Field"""
         if self.predefined:
             return self.predefined
-        elif self.required or self.identifier or self.key:
-            return "..."
         else:
             return "None"
 

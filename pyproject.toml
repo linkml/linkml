@@ -183,12 +183,9 @@ quiet-level = 3
 [tool.black]
 line-length = 120
 target-version = ["py38", "py39", "py310", "py311"]
-force-exclude = '''
+extend-exclude = '''
 /(
-  # default exclude
-  \.direnv|\.eggs|\.git|\.hg|\.ipynb_checkpoints|\.mypy_cache|\.nox|\.pytest_cache|\.ruff_cache|\.tox|\.svn|\.venv|\.vscode|__pypackages__|_build|buck-out|build|dist|venv
-  # additional exclude
-  | tests.*/output
+  tests.*/output
   | __snapshots__
   | docs
   | examples
@@ -247,3 +244,13 @@ target-version = "py38"
 
 # Notebooks can have unsorted imports
 "tests/test_notebooks/input/*" = ["E402"]
+
+[tool.linkml]
+
+[tool.linkml.schema]
+build_schema = "linkml/cli/build/build_schema.yaml"
+
+[tool.linkml.build.build_schema.pydanticgen]
+enabled = true
+output = "linkml/cli/build/models.py"
+extra_fields = "allow"
