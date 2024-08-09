@@ -115,6 +115,7 @@ class TypescriptGenerator(OOCodeGenerator):
     generatorversion = "0.0.1"
     valid_formats = ["text"]
     uses_schemaloader = False
+    file_extension = "ts"
 
     # ObjectVars
     gen_type_utils: bool = False

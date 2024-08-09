@@ -18,6 +18,7 @@ class GraphqlGenerator(Generator):
     visit_all_class_slots = True
     uses_schemaloader = True
     requires_metamodel = False
+    file_extension = "graphql"
 
     def visit_schema(self, **kwargs) -> str:
         return self.generate_header()

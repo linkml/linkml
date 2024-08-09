@@ -122,6 +122,7 @@ class DocGenerator(Generator):
     valid_formats = ["markdown", "rst", "html", "latex"]
     uses_schemaloader = False
     requires_metamodel = False
+    file_extension = "md"
 
     # ObjectVars
     dialect: Optional[Union[DIALECT, str]] = None

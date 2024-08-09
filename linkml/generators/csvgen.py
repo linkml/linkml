@@ -31,6 +31,7 @@ class CsvGenerator(Generator):
     valid_formats = ["csv", "tsv"]
     uses_schemaloader = True
     requires_metamodel = False
+    file_extension = "csv"
 
     # ObjectVars
     sep: Optional[str] = None
