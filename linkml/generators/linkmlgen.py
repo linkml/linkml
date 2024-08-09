@@ -29,6 +29,7 @@ class LinkmlGenerator(Generator):
     valid_formats = ["json", "yaml"]
     uses_schemaloader = False
     requires_metamodel = False
+    file_extension = "yaml"
 
     materialize_attributes: bool = False
     materialize_patterns: bool = False

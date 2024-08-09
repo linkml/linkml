@@ -105,7 +105,7 @@ class OwlSchemaGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["owl", "ttl"] + [x.name for x in rdflib_plugins(None, rdflib_Parser) if "/" not in str(x.name)]
-    file_extension = "owl"
+    file_extension = "owl.ttl"
     uses_schemaloader = False
 
     ontology_uri_suffix: str = None

@@ -6,6 +6,7 @@ Gathers all the other linkml click entrypoints and puts them under ``linkml`` :)
 
 import click
 
+from linkml.cli.build import build
 from linkml.generators.csvgen import cli as gen_csv
 from linkml.generators.docgen import cli as gen_doc
 from linkml.generators.dotgen import cli as gen_graphviz
@@ -79,6 +80,7 @@ def dev():
 # --------------------------------------------------
 
 # Top-level linkml commands
+linkml.add_command(build, name="build")
 linkml.add_command(linkml_convert, name="convert")
 linkml.add_command(linkml_lint, name="lint")
 linkml.add_command(linkml_sqldb, name="sqldb")

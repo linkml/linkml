@@ -88,9 +88,10 @@ class PydanticTemplateModel(TemplateModel):
         if format_black is not None and black:
             try:
                 return format_black(rendered)
-            except Exception:
+            except Exception as e:
                 # TODO: it would nice to have a standard logging module here ;)
-                return rendered
+                raise e
+                # return rendered
         elif black and format_black is None:
             raise ValueError("black formatting was requested, but black is not installed in this environment")
         else:
@@ -160,9 +161,8 @@ class PydanticAttribute(PydanticTemplateModel):
     meta_exclude: ClassVar[List[str]] = ["from_schema", "owner", "range", "inlined", "inlined_as_list"]
 
     name: str
+    alias: Optional[str] = None
     required: bool = False
-    identifier: bool = False
-    key: bool = False
     predefined: Optional[str] = None
     """Fixed string to use in body of field"""
     range: Optional[str] = None
@@ -187,8 +187,6 @@ class PydanticAttribute(PydanticTemplateModel):
         """Computed value to use inside of the generated Field"""
         if self.predefined:
             return self.predefined
-        elif self.required or self.identifier or self.key:
-            return "..."
         else:
             return "None"
 
@@ -559,7 +557,7 @@ class PydanticModule(PydanticTemplateModel):
     """
 
     template: ClassVar[str] = "module.py.jinja"
-    meta_exclude: ClassVar[str] = ["slots"]
+    meta_exclude: ClassVar[str] = ["slots", "source_file"]
 
     metamodel_version: Optional[str] = None
     version: Optional[str] = None

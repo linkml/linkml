@@ -24,6 +24,7 @@ class YAMLGenerator(Generator):
     generatorversion = "0.1.0"
     valid_formats = ["yaml"]
     uses_schemaloader = True
+    file_extension = "yaml"
 
     # ObjectVars
     validateonly: bool = False

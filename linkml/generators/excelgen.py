@@ -21,6 +21,7 @@ class ExcelGenerator(Generator):
     valid_formats = ["xlsx"]
     uses_schemaloader = False
     requires_metamodel = False
+    file_extension = "xlsx"
 
     split_workbook_by_class: bool = False
     include_mixins: bool = False

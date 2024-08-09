@@ -40,6 +40,7 @@ class MarkdownGenerator(Generator):
     valid_formats = ["md"]
     visit_all_class_slots = False
     uses_schemaloader = True
+    file_extension = "md"
 
     # ObjectVars
     directory: Optional[str] = None

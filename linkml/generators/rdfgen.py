@@ -33,6 +33,7 @@ class RDFGenerator(Generator):
     valid_formats = ["ttl"] + sorted([x.name for x in rdflib_plugins(None, rdflib_Parser) if "/" not in str(x.name)])
     visit_all_class_slots = False
     uses_schemaloader = True
+    file_extension = "ttl"
 
     # ObjectVars
     emit_metadata: bool = False
