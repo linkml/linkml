@@ -1,0 +1,149 @@
+id: linkml-build-schema
+name: linkml-build-schema
+description: | 
+  schema for the tables in pyproject.toml under "tool.linkml" that
+  are used by the build commands
+imports:
+  - linkml:types
+  - ../../generators/generator_params.yaml
+default_range: string
+
+enums:
+  HookTypes:
+    permissible_values:
+      module:
+        description: "python.module:function"
+      python:
+        description: "python code literal"
+      shell:
+        description: "shell script"
+  GeneratorNames:
+    permissible_values:
+      {% for name in generator_names %}
+      {{ name }}
+      {% endfor %}
+
+classes:
+  LinkmlConfig:
+    slots:
+      - schema_
+      - generate
+      - build
+      - config_file
+
+  Schema:
+    slots:
+      - schema_name
+      - schema_path
+
+  SchemaBuildConfig:
+    slots:
+      - schema_name
+      - global_
+      - generator_configs
+
+
+  Generate:
+    slots:
+      - global_
+
+  AnonymousGeneratorConfig:
+    description: |
+      Settings for a general generator without one being specified,
+      used for global configs
+    slots:
+      - enable
+      - output
+      - pre_build
+      - post_build
+
+  GeneratorConfig:
+    is_a: AnonymousGeneratorConfig
+    description: |
+      Settings for an individual generator, either global or per schema.
+      Individual settings are variable and depending on the specific generator,
+      so this is intended to be an "open" schema where generator-specific
+      options are ass passed as "extra" values.
+    slots:
+      - generator_name
+
+  FlatSchemaBuildConfig:
+    description:
+      The final build configuration for a schema for a given generator, after
+      flattening out the configuration hierarchy
+    slots:
+      - schema_name
+      - schema_path
+      - generator_name
+      - config_file
+      - generator_config
+    slot_usage:
+      generator_name:
+        identifier: false
+
+
+  BuildHook:
+    slots:
+      - hook_type
+      - hook_value
+
+
+  GeneratorParamSpec:
+    description: "parent class to describe parameters accepted by "
+
+slots:
+  anonymous_config:
+    range: AnonymousGeneratorConfig
+  enable:
+    range: boolean
+  schema_:
+    alias: "schema"
+    range: Schema
+    multivalued: true
+    inlined: true
+    inlined_as_list: false
+  schema_name:
+    key: true
+  schema_path:
+  output:
+  generator_name:
+    identifier: true
+    required: false
+    range: GeneratorNames
+  hook_type:
+    ifabsent: string(module)
+    range: HookTypes
+    key: true
+    inlined: true
+    inlined_as_list: false
+  hook_value:
+    range: string
+
+  pre_build:
+    any_of:
+      - range: string
+      - range: BuildHook
+  post_build:
+    any_of:
+      - range: string
+      - range: BuildHook
+  build:
+    range: SchemaBuildConfig
+    multivalued: true
+    inlined: true
+    inlined_as_list: false
+  global_:
+    alias: "global"
+    range: AnonymousGeneratorConfig
+  generate:
+    range: Generate
+
+  generator_configs:
+    range: GeneratorConfig
+    multivalued: true
+    inlined: true
+    inlined_as_list: false
+
+  generator_config:
+    range: AnonymousGeneratorConfig
+  config_file:

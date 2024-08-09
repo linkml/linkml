@@ -1,0 +1,5151 @@
+
+id: linkml-generator-params
+name: linkml-generator-params
+description: | 
+  schema for the arguments accepted by linkml generators
+imports:
+  - linkml:types
+
+enums:
+  GeneratorNames:
+    permissible_values:
+      
+      csvgen:
+      
+      docgen:
+      
+      dotgen:
+      
+      erdiagramgen:
+      
+      excelgen:
+      
+      golanggen:
+      
+      golrgen:
+      
+      graphqlgen:
+      
+      javagen:
+      
+      jsonldcontextgen:
+      
+      jsonldgen:
+      
+      jsonschemagen:
+      
+      linkmlgen:
+      
+      markdowngen:
+      
+      namespacegen:
+      
+      owlgen:
+      
+      plantumlgen:
+      
+      prefixmapgen:
+      
+      protogen:
+      
+      pydanticgen:
+      
+      pythongen:
+      
+      rdfgen:
+      
+      shaclgen:
+      
+      shexgen:
+      
+      sparqlgen:
+      
+      sqlalchemygen:
+      
+      sqltablegen:
+      
+      sssomgen:
+      
+      summarygen:
+      
+      terminusdbgen:
+      
+      typescriptgen:
+      
+      yamlgen:
+      
+      yumlgen:
+      
+
+classes:
+  GeneratorParams:
+    description: metaclass for all generator param specifications
+  
+  
+  ContextGeneratorParams:
+    attributes:
+      base:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: base
+        required: false
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      context_body:
+        multivalued: false
+        name: context_body
+        range: linkml:Any
+        required: false
+      default_ns:
+        multivalued: false
+        name: default_ns
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_metadata:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: emit_metadata
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      flatprefixes:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(False)
+        multivalued: false
+        name: flatprefixes
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      model:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: model
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      prefixes:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: prefixes
+        required: false
+      slot_class_maps:
+        multivalued: false
+        name: slot_class_maps
+        range: linkml:Any
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: 'ContextGenerator(schema: Union[str, TextIO, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      ForwardRef(''Generator''), pathlib.Path], schemaview: Optional[linkml_runtime.utils.schemaview.SchemaView]
+      = None, format: Optional[str] = None, metadata: bool = True, useuris: Optional[bool]
+      = None, log_level: Optional[int] = 30, mergeimports: Optional[bool] = True, source_file_date:
+      Optional[str] = None, source_file_size: Optional[int] = None, logger: Optional[logging.Logger]
+      = None, verbose: Optional[bool] = None, output: Optional[str] = None, namespaces:
+      Optional[linkml_runtime.utils.namespaces.Namespaces] = None, directory_output: bool
+      = False, base_dir: str = None, metamodel_name_map: Dict[str, str] = None, importmap:
+      Union[str, Mapping[str, str], NoneType] = None, emit_prefixes: Set[str] = <factory>,
+      metamodel: linkml.utils.schemaloader.SchemaLoader = None, stacktrace: bool = False,
+      include: Union[str, pathlib.Path, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      NoneType] = None, default_ns: str = None, context_body: Dict = <factory>, slot_class_maps:
+      Dict = <factory>, emit_metadata: bool = False, model: Optional[bool] = True, base:
+      Union[str, rdflib.namespace.Namespace, NoneType] = None, prefixes: Optional[bool]
+      = True, flatprefixes: Optional[bool] = False, **_kwargs)'
+    is_a: GeneratorParams
+    name: ContextGeneratorParams
+
+  
+  JSONLDGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      context:
+        multivalued: false
+        name: context
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      original_schema:
+        multivalued: false
+        name: original_schema
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: "\n    Generates JSON-LD from a Schema\n\n    Status: incompletely implemented\n\
+      \n    Note: this is distinct from\n    :class:`~linkml.generators.jsonldcontextgen.ContextGenerator`,\
+      \ which generates a JSON-LD context\n    "
+    is_a: GeneratorParams
+    name: JSONLDGeneratorParams
+
+  
+  JsonSchemaGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      include_null:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: include_null
+        range: boolean
+        required: false
+      include_range_class_descendants:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: include_range_class_descendants
+        range: boolean
+        required: false
+      indent:
+        ifabsent: integer(4)
+        multivalued: false
+        name: indent
+        range: integer
+        required: false
+      inline:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: inline
+        range: boolean
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      not_closed:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: not_closed
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      title_from:
+        ifabsent: string(name)
+        multivalued: false
+        name: title_from
+        range: string
+        required: false
+      topClass:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: topClass
+        required: false
+      top_class:
+        any_of:
+        - range: string
+        - range: linkml:Any
+        multivalued: false
+        name: top_class
+        required: false
+      top_level_schema:
+        multivalued: false
+        name: top_level_schema
+        range: linkml:Any
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: "\n    Generates JSONSchema documents from a LinkML SchemaDefinition\n\
+      \n    - Each linkml class generates a schema\n    - inheritance hierarchies are\
+      \ rolled-down from ancestors\n    - Composition not yet implemented\n    - Enumerations\
+      \ treated as strings\n    - Foreign key references are treated as semantics-free\
+      \ strings\n    "
+    is_a: GeneratorParams
+    name: JsonSchemaGeneratorParams
+
+  
+  OwlSchemaGeneratorParams:
+    attributes:
+      add_ols_annotations:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: add_ols_annotations
+        range: boolean
+        required: false
+      add_root_classes:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: add_root_classes
+        range: boolean
+        required: false
+      assert_equivalent_classes:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: assert_equivalent_classes
+        range: boolean
+        required: false
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      default_permissible_value_type:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: default_permissible_value_type
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      graph:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: graph
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metaclasses:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metaclasses
+        range: boolean
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metadata_profile:
+        multivalued: true
+        name: metadata_profile
+        range: linkml:Any
+        required: false
+      metadata_profiles:
+        multivalued: true
+        name: metadata_profiles
+        range: linkml:Any
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      metamodel_schemaview:
+        multivalued: false
+        name: metamodel_schemaview
+        range: linkml:Any
+        required: false
+      mixins_as_expressions:
+        multivalued: false
+        name: mixins_as_expressions
+        range: boolean
+        required: false
+      node_owltypes:
+        multivalued: false
+        name: node_owltypes
+        range: linkml:Any
+        required: false
+      ontology_uri_suffix:
+        multivalued: false
+        name: ontology_uri_suffix
+        range: string
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      simplify:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: simplify
+        range: boolean
+        required: false
+      slot_is_literal_map:
+        multivalued: false
+        name: slot_is_literal_map
+        range: linkml:Any
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      target_profile:
+        multivalued: true
+        name: target_profile
+        range: linkml:Any
+        required: false
+      top_value_uri:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: top_value_uri
+        required: false
+      type_objects:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: type_objects
+        range: boolean
+        required: false
+      use_native_uris:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: use_native_uris
+        range: boolean
+        required: false
+      use_swrl:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: use_swrl
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: "\n    Generates a schema-oriented OWL representation of a LinkML model\n\
+      \n    `OWL Generator Docs <https://linkml.io/linkml/generators/owl>`_\n\n    .\n\
+      \n    - LinkML ClassDefinitions are translated to OWL Classes\n    - LinkML SlotDefinitions\
+      \ are translated to OWL Properties\n    - LinkML Enumerations are translated to\
+      \ OWL Classes\n    - LinkML TypeDefinitions are translated to OWL Datatypes\n\n\
+      \    The translation aims to be as faithful as possible. But note that OWL is open-world,\n\
+      \    whereas LinkML is closed-world\n    "
+    is_a: GeneratorParams
+    name: OwlSchemaGeneratorParams
+
+  
+  PythonGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: emit_metadata
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      gen_classvars:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: gen_classvars
+        range: boolean
+        required: false
+      gen_slots:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: gen_slots
+        range: boolean
+        required: false
+      genmeta:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: genmeta
+        range: boolean
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: "\n    Generates Python dataclasses from a LinkML model\n\n    See `Python\
+      \ Generator Docs <https://linkml.io/linkml/generators/python.html>`_\n    "
+    is_a: GeneratorParams
+    name: PythonGeneratorParams
+
+  
+  ShaclGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      closed:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: closed
+        range: boolean
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      include_annotations:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: include_annotations
+        range: boolean
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      suffix:
+        multivalued: false
+        name: suffix
+        range: string
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: 'ShaclGenerator(schema: Union[str, TextIO, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      ForwardRef(''Generator''), pathlib.Path], schemaview: Optional[linkml_runtime.utils.schemaview.SchemaView]
+      = None, format: Optional[str] = None, metadata: bool = True, useuris: Optional[bool]
+      = None, log_level: Optional[int] = 30, mergeimports: Optional[bool] = True, source_file_date:
+      Optional[str] = None, source_file_size: Optional[int] = None, logger: Optional[logging.Logger]
+      = None, verbose: Optional[bool] = None, output: Optional[str] = None, namespaces:
+      Optional[linkml_runtime.utils.namespaces.Namespaces] = None, directory_output: bool
+      = False, base_dir: str = None, metamodel_name_map: Dict[str, str] = None, importmap:
+      Union[str, Mapping[str, str], NoneType] = None, emit_prefixes: Set[str] = <factory>,
+      metamodel: linkml.utils.schemaloader.SchemaLoader = None, stacktrace: bool = False,
+      include: Union[str, pathlib.Path, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      NoneType] = None, closed: bool = True, suffix: str = None, include_annotations:
+      bool = False, **_kwargs)'
+    is_a: GeneratorParams
+    name: ShaclGeneratorParams
+
+  
+  ShExGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      list_shapes:
+        multivalued: false
+        name: list_shapes
+        range: linkml:Any
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      shape:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: shape
+        required: false
+      shapes:
+        multivalued: false
+        name: shapes
+        range: linkml:Any
+        required: false
+      shex:
+        multivalued: false
+        name: shex
+        range: linkml:Any
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: 'ShExGenerator(schema: Union[str, TextIO, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      ForwardRef(''Generator''), pathlib.Path], schemaview: Optional[linkml_runtime.utils.schemaview.SchemaView]
+      = None, format: Optional[str] = None, metadata: bool = True, useuris: Optional[bool]
+      = None, log_level: Optional[int] = 30, mergeimports: Optional[bool] = True, source_file_date:
+      Optional[str] = None, source_file_size: Optional[int] = None, logger: Optional[logging.Logger]
+      = None, verbose: Optional[bool] = None, output: Optional[str] = None, namespaces:
+      Optional[linkml_runtime.utils.namespaces.Namespaces] = None, directory_output: bool
+      = False, base_dir: str = None, metamodel_name_map: Dict[str, str] = None, importmap:
+      Union[str, Mapping[str, str], NoneType] = None, emit_prefixes: Set[str] = <factory>,
+      metamodel: linkml.utils.schemaloader.SchemaLoader = None, stacktrace: bool = False,
+      include: Union[str, pathlib.Path, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      NoneType] = None, shex: ShExJSG.SchemaWithContext.Schema = <factory>, shapes: List
+      = <factory>, shape: Optional[ShExJSG.ShExJ.Shape] = None, list_shapes: List[ShExJSG.ShExJ.IRIREF]
+      = <factory>, **_kwargs)'
+    is_a: GeneratorParams
+    name: ShExGeneratorParams
+
+  
+  SQLTableGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      dialect:
+        ifabsent: string(sqlite)
+        multivalued: false
+        name: dialect
+        range: string
+        required: false
+      direct_mapping:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: direct_mapping
+        range: boolean
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      inject_primary_keys:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: inject_primary_keys
+        range: boolean
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      relative_slot_num:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: relative_slot_num
+        range: boolean
+        required: false
+      rename_foreign_keys:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: rename_foreign_keys
+        range: boolean
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      use_foreign_keys:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: use_foreign_keys
+        range: boolean
+        required: false
+      use_inherits:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: use_inherits
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: "\n    A :class:`~linkml.utils.generator.Generator` for creating SQL\
+      \ DDL\n\n    The basic algorithm for mapping a linkml schema S is as follows:\n\n\
+      \    - Each schema S corresponds to one database schema D (see SQLSchema)\n    -\
+      \ Each Class C in S is mapped to a table T (see SQLTable)\n    - Each slot S in\
+      \ each C is mapped to a column Col (see SQLColumn)\n\n    if the direct_mapping\
+      \ attribute is set to true, then no further transformations\n    are applied. Note\
+      \ that this means:\n\n    - inline objects are modeled as Text strings\n    - multivalued\
+      \ fields are modeled as single Text strings\n\n    this direct mapping is useful\
+      \ for simple spreadsheet/denormalized representations of complex data.\n    however,\
+      \ for other applications, additional transformations should occur. these are:\n\n\
+      \    MULTIVALUED SLOTS\n\n    The relational model does not have direct representation\
+      \ of lists. These are normalized as follows.\n\n    If the range of the slot is\
+      \ a class, and there are no other slots whose range is this class,\n    and the\
+      \ slot is for a class that has a singular primary key, then a backref is added.\n\
+      \n    E.g. if we have User 0..* Address,\n    then add a field User_id to Address.\n\
+      \n    When SQLAlchemy bindings are created, a backref mapping is added\n\n    If\
+      \ the range of the slot is an enum or type, then a new linktable is created, and\
+      \ a backref added\n\n    E.g. if a class User has a multivalues slot alias whose\
+      \ range is a string,\n    then create a table user_aliases, with two columns (1)\
+      \ alias [a string] and (2) a backref to user\n\n    Each mapped slot C.S has a range\
+      \ R\n\n    ranges that are types (literals):\n\n    * If R is a type, and the slot\
+      \ is NOT multivalued, do a direct type conversion\n    * If R is a type, and the\
+      \ slot is multivalued:\n\n        * do not include the mapped column\n        *\
+      \ create a new table T_S, with 2 columns: S, and a backref to T\n\n    ranges that\
+      \ are classes:\n\n    * Ref = map_class_to_table(R)\n    * if R is a class, and\
+      \ the slot is NOT multivalued, and Ref has a singular primary key:\n\n        *\
+      \ Col.type = ForeignKey(Ref.PK)\n\n    * if R is a class, and the slot is NOT multivalued,\
+      \ and Ref has NO singular primary key:\n\n        * add a foreign key C.pk to Ref\n\
+      \        * add a backref C.S => Ref, C.pk\n        * remove Col from T\n\n    *\
+      \ If R is a class, and the slot IS multivalued\n\n    "
+    is_a: GeneratorParams
+    name: SQLTableGeneratorParams
+
+  
+  SQLAlchemyGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      original_schema:
+        any_of:
+        - range: string
+        - range: linkml:Any
+        multivalued: false
+        name: original_schema
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      template:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: template
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: "\n    Generates SQL Alchemy classes\n\n    See also: :class:`~linkml.generators.sqltablegen.SQLTableGenerator`\n\
+      \    "
+    is_a: GeneratorParams
+    name: SQLAlchemyGeneratorParams
+
+  
+  CsvGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      closure:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: closure
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      sep:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: sep
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+      writer:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: writer
+        required: false
+    description: "\n    Generates CSV summaries\n\n    Note: this generator is not widely\
+      \ used,\n    and has largely been supplanted by schemasheets\n    "
+    is_a: GeneratorParams
+    name: CsvGeneratorParams
+
+  
+  ERDiagramGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      exclude_attributes:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: exclude_attributes
+        range: boolean
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      gen_classvars:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: gen_classvars
+        range: boolean
+        required: false
+      gen_slots:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: gen_slots
+        range: boolean
+        required: false
+      genmeta:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: genmeta
+        range: boolean
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      no_types_dir:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: no_types_dir
+        range: boolean
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      structural:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: structural
+        range: boolean
+        required: false
+      use_slot_uris:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: use_slot_uris
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: "\n    A generator for serializing schemas as Entity-Relationship diagrams.\n\
+      \n    Currently this generates diagrams in mermaid syntax, but in future\n    this\
+      \ could easily be extended to have for example a direct SVG or PNG\n    generator\
+      \ using PyGraphViz, similar to erdantic.\n    "
+    is_a: GeneratorParams
+    name: ERDiagramGeneratorParams
+
+  
+  PlantumlGeneratorParams:
+    attributes:
+      associations_generated:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: associations_generated
+        required: false
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      class_generated:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: class_generated
+        required: false
+      classes:
+        multivalued: false
+        name: classes
+        range: linkml:Any
+        required: false
+      directory:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: directory
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      focus_classes:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: focus_classes
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      gen_classes:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: gen_classes
+        required: false
+      generated:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: generated
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      kroki_server:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        ifabsent: string(https://kroki.io)
+        multivalued: false
+        name: kroki_server
+        required: false
+      load_image:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: load_image
+        range: boolean
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      output_file_name:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output_file_name
+        required: false
+      referenced:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: referenced
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      tooltips_flag:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: tooltips_flag
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: 'PlantumlGenerator(schema: Union[str, TextIO, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      ForwardRef(''Generator''), pathlib.Path], schemaview: Optional[linkml_runtime.utils.schemaview.SchemaView]
+      = None, format: Optional[str] = None, metadata: bool = True, useuris: Optional[bool]
+      = None, log_level: Optional[int] = 30, mergeimports: Optional[bool] = True, source_file_date:
+      Optional[str] = None, source_file_size: Optional[int] = None, logger: Optional[logging.Logger]
+      = None, verbose: Optional[bool] = None, output: Optional[str] = None, namespaces:
+      Optional[linkml_runtime.utils.namespaces.Namespaces] = None, directory_output: bool
+      = False, base_dir: str = None, metamodel_name_map: Dict[str, str] = None, importmap:
+      Union[str, Mapping[str, str], NoneType] = None, emit_prefixes: Set[str] = <factory>,
+      metamodel: linkml.utils.schemaloader.SchemaLoader = None, stacktrace: bool = False,
+      include: Union[str, pathlib.Path, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      NoneType] = None, referenced: Optional[Set[linkml_runtime.linkml_model.meta.ClassDefinitionName]]
+      = None, generated: Optional[Set[linkml_runtime.linkml_model.meta.ClassDefinitionName]]
+      = None, class_generated: Optional[Set[linkml_runtime.linkml_model.meta.ClassDefinitionName]]
+      = None, associations_generated: Optional[Set[linkml_runtime.linkml_model.meta.ClassDefinitionName]]
+      = None, focus_classes: Optional[Set[linkml_runtime.linkml_model.meta.ClassDefinitionName]]
+      = None, gen_classes: Optional[Set[linkml_runtime.linkml_model.meta.ClassDefinitionName]]
+      = None, output_file_name: Optional[str] = None, classes: Set[linkml_runtime.linkml_model.meta.ClassDefinitionName]
+      = None, directory: Optional[str] = None, kroki_server: Optional[str] = ''https://kroki.io'',
+      load_image: bool = True, tooltips_flag: bool = False, **_kwargs)'
+    is_a: GeneratorParams
+    name: PlantumlGeneratorParams
+
+  
+  DocGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      diagram_type:
+        any_of:
+        - range: string
+        - range: linkml:Any
+        multivalued: false
+        name: diagram_type
+        required: false
+      dialect:
+        any_of:
+        - range: string
+        - range: linkml:Any
+        multivalued: false
+        name: dialect
+        required: false
+      directory:
+        multivalued: false
+        name: directory
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      example_directory:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: example_directory
+        required: false
+      example_runner:
+        multivalued: false
+        name: example_runner
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      gen_classvars:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: gen_classvars
+        range: boolean
+        required: false
+      gen_slots:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: gen_slots
+        range: boolean
+        required: false
+      genmeta:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: genmeta
+        range: boolean
+        required: false
+      hierarchical_class_view:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: hierarchical_class_view
+        range: boolean
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      include_top_level_diagram:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: include_top_level_diagram
+        range: boolean
+        required: false
+      index_name:
+        ifabsent: string(index)
+        multivalued: false
+        name: index_name
+        range: string
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      no_types_dir:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: no_types_dir
+        range: boolean
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      sort_by:
+        ifabsent: string(name)
+        multivalued: false
+        name: sort_by
+        range: string
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      template_directory:
+        multivalued: false
+        name: template_directory
+        range: string
+        required: false
+      template_mappings:
+        multivalued: false
+        name: template_mappings
+        range: linkml:Any
+        required: false
+      use_class_uris:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: use_class_uris
+        range: boolean
+        required: false
+      use_slot_uris:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: use_slot_uris
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: "\n    Generates documentation from a schema\n\n    Note: this is a replacement\
+      \ for MarkdownGenerator\n\n    Documents can be generated using either provided\
+      \ Jinja2 templates, or by\n    providing your own\n\n    Currently the provided\
+      \ templates are for markdown but this framework allows\n    direct generation to\
+      \ rst, html, etc\n\n    This works via jinja2 templates (found in docgen/ folder).\
+      \ By default, only\n    markdown templates are provided. You can either override\
+      \ these, or you can\n    create entirely different templates e.g. for html, latex,\
+      \ etc\n\n    The template folder is expected to have files:\n\n        - class.FMT.jinja2\n\
+      \        - enum.FMT.jinja2\n        - type.FMT.jinja2\n        - slot.FMT.jinja2\n\
+      \        - schema.FMT.jinja2\n        - subset.FMT.jinja2\n        - index.FMT.jinja2\n\
+      \n    Most of these accept a jinja2 variable `element`, except index, schema,\n\
+      \    which accept `schema`. See docgen for examples This will generate a single\n\
+      \    document for every\n\n    - class, enum, type, slot\n    - subset\n    - imported\
+      \ schema\n\n    It will also create an index file\n    "
+    is_a: GeneratorParams
+    name: DocGeneratorParams
+
+  
+  DotGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      classdot:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: classdot
+        required: false
+      classname:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: classname
+        required: false
+      classnames:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: classnames
+        required: false
+      cls_obj:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: cls_obj
+        required: false
+      cls_subj:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: cls_subj
+        required: false
+      directory:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: directory
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      dirname:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: dirname
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      filedot:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: filedot
+        required: false
+      filename:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: filename
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: "\n    Generates dotfiles\n\n    No longer in use: use mermaid generator\
+      \ instead\n    "
+    is_a: GeneratorParams
+    name: DotGeneratorParams
+
+  
+  ExcelGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      include_mixins:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: include_mixins
+        range: boolean
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      split_workbook_by_class:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: split_workbook_by_class
+        range: boolean
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: 'ExcelGenerator(schema: Union[str, TextIO, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      ForwardRef(''Generator''), pathlib.Path], schemaview: Optional[linkml_runtime.utils.schemaview.SchemaView]
+      = None, format: Optional[str] = None, metadata: bool = True, useuris: Optional[bool]
+      = None, log_level: Optional[int] = 30, mergeimports: Optional[bool] = True, source_file_date:
+      Optional[str] = None, source_file_size: Optional[int] = None, logger: Optional[logging.Logger]
+      = None, verbose: Optional[bool] = None, output: Optional[str] = None, namespaces:
+      Optional[linkml_runtime.utils.namespaces.Namespaces] = None, directory_output: bool
+      = False, base_dir: str = None, metamodel_name_map: Dict[str, str] = None, importmap:
+      Union[str, Mapping[str, str], NoneType] = None, emit_prefixes: Set[str] = <factory>,
+      metamodel: linkml.utils.schemaloader.SchemaLoader = None, stacktrace: bool = False,
+      include: Union[str, pathlib.Path, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      NoneType] = None, split_workbook_by_class: bool = False, include_mixins: bool =
+      False, **_kwargs)'
+    is_a: GeneratorParams
+    name: ExcelGeneratorParams
+
+  
+  GolangGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: "\n    Generates Golang code from a schema\n    "
+    is_a: GeneratorParams
+    name: GolangGeneratorParams
+
+  
+  GolrSchemaGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      class_obj:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: class_obj
+        required: false
+      directory:
+        multivalued: false
+        name: directory
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: 'GolrSchemaGenerator(schema: Union[str, TextIO, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      ForwardRef(''Generator''), pathlib.Path], schemaview: Optional[linkml_runtime.utils.schemaview.SchemaView]
+      = None, format: Optional[str] = None, metadata: bool = True, useuris: Optional[bool]
+      = None, log_level: Optional[int] = 30, mergeimports: Optional[bool] = True, source_file_date:
+      Optional[str] = None, source_file_size: Optional[int] = None, logger: Optional[logging.Logger]
+      = None, verbose: Optional[bool] = None, output: Optional[str] = None, namespaces:
+      Optional[linkml_runtime.utils.namespaces.Namespaces] = None, directory_output: bool
+      = False, base_dir: str = None, metamodel_name_map: Dict[str, str] = None, importmap:
+      Union[str, Mapping[str, str], NoneType] = None, emit_prefixes: Set[str] = <factory>,
+      metamodel: linkml.utils.schemaloader.SchemaLoader = None, stacktrace: bool = False,
+      include: Union[str, pathlib.Path, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      NoneType] = None, directory: str = None, class_obj: Optional[linkml.generators.golrgen.GOLRClass]
+      = None, **_kwargs)'
+    is_a: GeneratorParams
+    name: GolrSchemaGeneratorParams
+
+  
+  GraphqlGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: 'GraphqlGenerator(schema: Union[str, TextIO, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      ForwardRef(''Generator''), pathlib.Path], schemaview: Optional[linkml_runtime.utils.schemaview.SchemaView]
+      = None, format: Optional[str] = None, metadata: bool = True, useuris: Optional[bool]
+      = None, log_level: Optional[int] = 30, mergeimports: Optional[bool] = True, source_file_date:
+      Optional[str] = None, source_file_size: Optional[int] = None, logger: Optional[logging.Logger]
+      = None, verbose: Optional[bool] = None, output: Optional[str] = None, namespaces:
+      Optional[linkml_runtime.utils.namespaces.Namespaces] = None, directory_output: bool
+      = False, base_dir: str = None, metamodel_name_map: Dict[str, str] = None, importmap:
+      Union[str, Mapping[str, str], NoneType] = None, emit_prefixes: Set[str] = <factory>,
+      metamodel: linkml.utils.schemaloader.SchemaLoader = None, stacktrace: bool = False,
+      include: Union[str, pathlib.Path, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      NoneType] = None, **_kwargs)'
+    is_a: GeneratorParams
+    name: GraphqlGeneratorParams
+
+  
+  LinkmlGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      materialize_attributes:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: materialize_attributes
+        range: boolean
+        required: false
+      materialize_patterns:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: materialize_patterns
+        range: boolean
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: "This generator provides a direct conversion of a LinkML schema\n   \
+      \ into json, optionally merging imports and unrolling induced slots\n    into attributes\n\
+      \    "
+    is_a: GeneratorParams
+    name: LinkmlGeneratorParams
+
+  
+  YumlGeneratorParams:
+    attributes:
+      associations_generated:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: associations_generated
+        required: false
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      box_generated:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: box_generated
+        required: false
+      classes:
+        multivalued: false
+        name: classes
+        range: linkml:Any
+        required: false
+      diagram_name:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: diagram_name
+        required: false
+      directory:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: directory
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      focus_classes:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: focus_classes
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      gen_classes:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: gen_classes
+        required: false
+      generated:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: generated
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      load_image:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: load_image
+        range: boolean
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      output_file_name:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output_file_name
+        required: false
+      referenced:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: referenced
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: 'YumlGenerator(schema: Union[str, TextIO, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      ForwardRef(''Generator''), pathlib.Path], schemaview: Optional[linkml_runtime.utils.schemaview.SchemaView]
+      = None, format: Optional[str] = None, metadata: bool = True, useuris: Optional[bool]
+      = None, log_level: Optional[int] = 30, mergeimports: Optional[bool] = True, source_file_date:
+      Optional[str] = None, source_file_size: Optional[int] = None, logger: Optional[logging.Logger]
+      = None, verbose: Optional[bool] = None, output: Optional[str] = None, namespaces:
+      Optional[linkml_runtime.utils.namespaces.Namespaces] = None, directory_output: bool
+      = False, base_dir: str = None, metamodel_name_map: Dict[str, str] = None, importmap:
+      Union[str, Mapping[str, str], NoneType] = None, emit_prefixes: Set[str] = <factory>,
+      metamodel: linkml.utils.schemaloader.SchemaLoader = None, stacktrace: bool = False,
+      include: Union[str, pathlib.Path, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      NoneType] = None, referenced: Optional[Set[linkml_runtime.linkml_model.meta.ClassDefinitionName]]
+      = None, generated: Optional[Set[linkml_runtime.linkml_model.meta.ClassDefinitionName]]
+      = None, box_generated: Optional[Set[linkml_runtime.linkml_model.meta.ClassDefinitionName]]
+      = None, associations_generated: Optional[Set[linkml_runtime.linkml_model.meta.ClassDefinitionName]]
+      = None, focus_classes: Optional[Set[linkml_runtime.linkml_model.meta.ClassDefinitionName]]
+      = None, gen_classes: Optional[Set[linkml_runtime.linkml_model.meta.ClassDefinitionName]]
+      = None, output_file_name: Optional[str] = None, classes: Set[linkml_runtime.linkml_model.meta.ClassDefinitionName]
+      = None, directory: Optional[str] = None, diagram_name: Optional[str] = None, load_image:
+      bool = True, **_kwargs)'
+    is_a: GeneratorParams
+    name: YumlGeneratorParams
+
+  
+  MarkdownGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      classes:
+        multivalued: false
+        name: classes
+        range: linkml:Any
+        required: false
+      directory:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: directory
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      gen_classes:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: gen_classes
+        required: false
+      gen_classes_neighborhood:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: gen_classes_neighborhood
+        required: false
+      image_dir:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: image_dir
+        range: boolean
+        required: false
+      image_directory:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: image_directory
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      index_file:
+        ifabsent: string(index.md)
+        multivalued: false
+        name: index_file
+        range: string
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      no_types_dir:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: no_types_dir
+        range: boolean
+        required: false
+      noimages:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: noimages
+        range: boolean
+        required: false
+      noyuml:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: noyuml
+        range: boolean
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+      warn_on_exist:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: warn_on_exist
+        range: boolean
+        required: false
+    description: "\n    Generates markdown documentation for a LinkML schema\n\n    Each\
+      \ schema element (class, slot, type, enum) is translated into its own markdown file;\n\
+      \    additionally, an index.md is generated that links everything together.\n\n\
+      \    The markdown is suitable for deployment as a MkDocs or Sphinx site\n    "
+    is_a: GeneratorParams
+    name: MarkdownGeneratorParams
+
+  
+  PrefixGeneratorParams:
+    attributes:
+      base:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: base
+        required: false
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      context_body:
+        multivalued: false
+        name: context_body
+        range: linkml:Any
+        required: false
+      default_ns:
+        multivalued: false
+        name: default_ns
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      slot_class_maps:
+        multivalued: false
+        name: slot_class_maps
+        range: linkml:Any
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: 'PrefixGenerator(schema: Union[str, TextIO, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      ForwardRef(''Generator''), pathlib.Path], schemaview: Optional[linkml_runtime.utils.schemaview.SchemaView]
+      = None, format: Optional[str] = None, metadata: bool = True, useuris: Optional[bool]
+      = None, log_level: Optional[int] = 30, mergeimports: Optional[bool] = True, source_file_date:
+      Optional[str] = None, source_file_size: Optional[int] = None, logger: Optional[logging.Logger]
+      = None, verbose: Optional[bool] = None, output: Optional[str] = None, namespaces:
+      Optional[linkml_runtime.utils.namespaces.Namespaces] = None, directory_output: bool
+      = False, base_dir: str = None, metamodel_name_map: Dict[str, str] = None, importmap:
+      Union[str, Mapping[str, str], NoneType] = None, emit_prefixes: Set[str] = <factory>,
+      metamodel: linkml.utils.schemaloader.SchemaLoader = None, stacktrace: bool = False,
+      include: Union[str, pathlib.Path, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      NoneType] = None, default_ns: str = None, context_body: Dict = <factory>, slot_class_maps:
+      Dict = <factory>, base: Union[str, rdflib.namespace.Namespace, NoneType] = None,
+      **_kwargs)'
+    is_a: GeneratorParams
+    name: PrefixGeneratorParams
+
+  
+  ProtoGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      relative_slot_num:
+        ifabsent: integer(0)
+        multivalued: false
+        name: relative_slot_num
+        range: integer
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: "\n    A `Generator` for creating Protobuf schemas from a linkml schema.\n\
+      \n    "
+    is_a: GeneratorParams
+    name: ProtoGeneratorParams
+
+  
+  RDFGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      context:
+        multivalued: false
+        name: context
+        range: linkml:Any
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_metadata:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: emit_metadata
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      original_schema:
+        multivalued: false
+        name: original_schema
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: 'RDFGenerator(schema: Union[str, TextIO, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      ForwardRef(''Generator''), pathlib.Path], schemaview: Optional[linkml_runtime.utils.schemaview.SchemaView]
+      = None, format: Optional[str] = None, metadata: bool = True, useuris: Optional[bool]
+      = None, log_level: Optional[int] = 30, mergeimports: Optional[bool] = True, source_file_date:
+      Optional[str] = None, source_file_size: Optional[int] = None, logger: Optional[logging.Logger]
+      = None, verbose: Optional[bool] = None, output: Optional[str] = None, namespaces:
+      Optional[linkml_runtime.utils.namespaces.Namespaces] = None, directory_output: bool
+      = False, base_dir: str = None, metamodel_name_map: Dict[str, str] = None, importmap:
+      Union[str, Mapping[str, str], NoneType] = None, emit_prefixes: Set[str] = <factory>,
+      metamodel: linkml.utils.schemaloader.SchemaLoader = None, stacktrace: bool = False,
+      include: Union[str, pathlib.Path, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      NoneType] = None, emit_metadata: bool = False, context: List[str] = None, original_schema:
+      linkml_runtime.linkml_model.meta.SchemaDefinition = None, **_kwargs)'
+    is_a: GeneratorParams
+    name: RDFGeneratorParams
+
+  
+  SparqlGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      limit:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: limit
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      named_graphs:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: named_graphs
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      sparql:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: sparql
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: "\n    Generates SPARQL queries that can be used for delayed validation\n\
+      \    "
+    is_a: GeneratorParams
+    name: SparqlGeneratorParams
+
+  
+  SSSOMGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: "\n    Generates Simple Standard for Sharing Ontology Mappings (SSSOM)\
+      \ TSVs\n    "
+    is_a: GeneratorParams
+    name: SSSOMGeneratorParams
+
+  
+  SummaryGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      classtab:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: classtab
+        required: false
+      dialect:
+        ifabsent: string(excel-tab)
+        multivalued: false
+        name: dialect
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      dirname:
+        multivalued: false
+        name: dirname
+        range: string
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      slottab:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: slottab
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: 'SummaryGenerator(schema: Union[str, TextIO, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      ForwardRef(''Generator''), pathlib.Path], schemaview: Optional[linkml_runtime.utils.schemaview.SchemaView]
+      = None, format: Optional[str] = None, metadata: bool = True, useuris: Optional[bool]
+      = None, log_level: Optional[int] = 30, mergeimports: Optional[bool] = True, source_file_date:
+      Optional[str] = None, source_file_size: Optional[int] = None, logger: Optional[logging.Logger]
+      = None, verbose: Optional[bool] = None, output: Optional[str] = None, namespaces:
+      Optional[linkml_runtime.utils.namespaces.Namespaces] = None, directory_output: bool
+      = False, base_dir: str = None, metamodel_name_map: Dict[str, str] = None, importmap:
+      Union[str, Mapping[str, str], NoneType] = None, emit_prefixes: Set[str] = <factory>,
+      metamodel: linkml.utils.schemaloader.SchemaLoader = None, stacktrace: bool = False,
+      include: Union[str, pathlib.Path, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      NoneType] = None, dirname: str = None, classtab: Optional[csv.DictWriter] = None,
+      slottab: Optional[csv.DictWriter] = None, dialect: str = ''excel-tab'', _str_io:
+      Optional[_io.StringIO] = None, **_kwargs)'
+    is_a: GeneratorParams
+    name: SummaryGeneratorParams
+
+  
+  TerminusdbGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      classes:
+        multivalued: false
+        name: classes
+        range: linkml:Any
+        required: false
+      clswq:
+        multivalued: false
+        name: clswq
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      raw_additions:
+        multivalued: false
+        name: raw_additions
+        range: linkml:Any
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: "\n    Experimental generator for TerminusDB\n\n    Generates JSON-LD\
+      \ to pass to `WOQLQuery()`.\n\n    Assumes an \"inference/main\" graph if any slots\
+      \ have \"is_a\" values, because any statements with\n    rdfs:subPropertyOf as the\
+      \ predicate must live in a TerminusDB \"inference\" graph rather than the\n    \"\
+      schema\" graph. When creating a new TerminusDB database, only the \"schema\" and\
+      \ \"instance\" graphs\n    are created. Thus, you may need to e.g. `WOQLClient.create_graph(\"\
+      inference\", \"main\")`.\n\n    "
+    is_a: GeneratorParams
+    name: TerminusdbGeneratorParams
+
+  
+  YAMLGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      validateonly:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: validateonly
+        range: boolean
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: "\n    A generator that produces a schema as a YAML Document\n    "
+    is_a: GeneratorParams
+    name: YAMLGeneratorParams
+
+  
+  JavaGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: emit_metadata
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      gen_classvars:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: gen_classvars
+        range: boolean
+        required: false
+      gen_slots:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: gen_slots
+        range: boolean
+        required: false
+      generate_records:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: generate_records
+        range: boolean
+        required: false
+      genmeta:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: genmeta
+        range: boolean
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      package:
+        ifabsent: string(example)
+        multivalued: false
+        name: package
+        range: string
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      template_file:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: template_file
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: "\n    Generates java code from a LinkML schema.\n\n    Two styles are\
+      \ supported:\n\n    - java classes, using lombok annotations\n    - java records\n\
+      \    "
+    is_a: GeneratorParams
+    name: JavaGeneratorParams
+
+  
+  PydanticGeneratorParams:
+    attributes:
+      array_representations:
+        multivalued: true
+        name: array_representations
+        range: linkml:Any
+        required: false
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      black:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: black
+        range: boolean
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: emit_metadata
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      extra_fields:
+        ifabsent: string(forbid)
+        multivalued: true
+        name: extra_fields
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      gen_classvars:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: gen_classvars
+        range: boolean
+        required: false
+      gen_mixin_inheritance:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: gen_mixin_inheritance
+        range: boolean
+        required: false
+      gen_slots:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: gen_slots
+        range: boolean
+        required: false
+      genmeta:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: genmeta
+        range: boolean
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      imports:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: imports
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      injected_classes:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: injected_classes
+        required: false
+      injected_fields:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: injected_fields
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metadata_mode:
+        any_of:
+        - range: string
+        - range: linkml:Any
+        ifabsent: string(MetadataMode.AUTO)
+        multivalued: false
+        name: metadata_mode
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      package:
+        ifabsent: string(example)
+        multivalued: false
+        name: package
+        range: string
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      split:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: split
+        range: boolean
+        required: false
+      split_context:
+        any_of:
+        - range: linkml:Any
+        multivalued: false
+        name: split_context
+        required: false
+      split_mode:
+        ifabsent: string(SplitMode.AUTO)
+        multivalued: true
+        name: split_mode
+        range: linkml:Any
+        required: false
+      split_pattern:
+        ifabsent: string(.{{ schema.name }})
+        multivalued: false
+        name: split_pattern
+        range: string
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      template_dir:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: template_dir
+        required: false
+      template_file:
+        multivalued: false
+        name: template_file
+        range: string
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: "\n    Generates Pydantic-compliant classes from a schema\n\n    This\
+      \ is an alternative to the dataclasses-based Pythongen\n\n    Lifecycle methods\
+      \ (see :class:`.LifecycleMixin` ) supported:\n\n    * :meth:`~.LifecycleMixin.before_generate_enums`\n\
+      \n    Slot generation is nested within class generation, since the pydantic generator\
+      \ currently doesn't\n    create an independent representation of slots aside from\
+      \ their materialization as class fields.\n    Accordingly, the ``before_`` and ``after_generate_slots``\
+      \ are called before and after each class's\n    slot generation, rather than all\
+      \ slot generation.\n\n    * :meth:`~.LifecycleMixin.before_generate_classes`\n \
+      \   * :meth:`~.LifecycleMixin.before_generate_class`\n    * :meth:`~.LifecycleMixin.after_generate_class`\n\
+      \    * :meth:`~.LifecycleMixin.after_generate_classes`\n\n    * :meth:`~.LifecycleMixin.before_generate_slots`\n\
+      \    * :meth:`~.LifecycleMixin.before_generate_slot`\n    * :meth:`~.LifecycleMixin.after_generate_slot`\n\
+      \    * :meth:`~.LifecycleMixin.after_generate_slots`\n\n    * :meth:`~.LifecycleMixin.before_render_template`\n\
+      \    * :meth:`~.LifecycleMixin.after_render_template`\n\n    "
+    is_a: GeneratorParams
+    name: PydanticGeneratorParams
+
+  
+  TypescriptGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      gen_type_utils:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: gen_type_utils
+        range: boolean
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      include_induced_slots:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: include_induced_slots
+        range: boolean
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      package:
+        ifabsent: string(example)
+        multivalued: false
+        name: package
+        range: string
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      template_file:
+        multivalued: false
+        name: template_file
+        range: string
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: "\n    Generates typescript from a schema\n    "
+    is_a: GeneratorParams
+    name: TypescriptGeneratorParams
+
+  
+  NamespaceGeneratorParams:
+    attributes:
+      base_dir:
+        multivalued: false
+        name: base_dir
+        range: string
+        required: false
+      directory_output:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: directory_output
+        range: boolean
+        required: false
+      emit_metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: emit_metadata
+        range: boolean
+        required: false
+      emit_prefixes:
+        multivalued: false
+        name: emit_prefixes
+        range: linkml:Any
+        required: false
+      format:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: format
+        required: false
+      gen_classvars:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: gen_classvars
+        range: boolean
+        required: false
+      gen_slots:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: gen_slots
+        range: boolean
+        required: false
+      genmeta:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: genmeta
+        range: boolean
+        required: false
+      importmap:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: importmap
+        required: false
+      include:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: include
+        required: false
+      log_level:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        ifabsent: integer(30)
+        multivalued: false
+        name: log_level
+        required: false
+      mergeimports:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        ifabsent: boolean(True)
+        multivalued: false
+        name: mergeimports
+        required: false
+      metadata:
+        ifabsent: boolean(True)
+        multivalued: false
+        name: metadata
+        range: boolean
+        required: false
+      metamodel_name_map:
+        multivalued: false
+        name: metamodel_name_map
+        range: linkml:Any
+        required: false
+      output:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: output
+        required: false
+      source_file_date:
+        any_of:
+        - range: linkml:Any
+        - range: string
+        multivalued: false
+        name: source_file_date
+        required: false
+      source_file_size:
+        any_of:
+        - range: integer
+        - range: linkml:Any
+        multivalued: false
+        name: source_file_size
+        required: false
+      stacktrace:
+        ifabsent: boolean(False)
+        multivalued: false
+        name: stacktrace
+        range: boolean
+        required: false
+      useuris:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: useuris
+        required: false
+      verbose:
+        any_of:
+        - range: boolean
+        - range: linkml:Any
+        multivalued: false
+        name: verbose
+        required: false
+    description: 'NamespaceGenerator(schema: Union[str, TextIO, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      ForwardRef(''Generator''), pathlib.Path], schemaview: Optional[linkml_runtime.utils.schemaview.SchemaView]
+      = None, format: Optional[str] = None, metadata: bool = True, useuris: Optional[bool]
+      = None, log_level: Optional[int] = 30, mergeimports: Optional[bool] = True, source_file_date:
+      Optional[str] = None, source_file_size: Optional[int] = None, logger: Optional[logging.Logger]
+      = None, verbose: Optional[bool] = None, output: Optional[str] = None, namespaces:
+      Optional[linkml_runtime.utils.namespaces.Namespaces] = None, directory_output: bool
+      = False, base_dir: str = None, metamodel_name_map: Dict[str, str] = None, importmap:
+      Union[str, Mapping[str, str], NoneType] = None, emit_prefixes: Set[str] = <factory>,
+      metamodel: linkml.utils.schemaloader.SchemaLoader = None, stacktrace: bool = False,
+      include: Union[str, pathlib.Path, linkml_runtime.linkml_model.meta.SchemaDefinition,
+      NoneType] = None, gen_classvars: bool = True, gen_slots: bool = True, genmeta: bool
+      = False, emit_metadata: bool = True, **_kwargs)'
+    is_a: GeneratorParams
+    name: NamespaceGeneratorParams
+
+  

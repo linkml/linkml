@@ -4,6 +4,7 @@ CLI command for building based on a project-level configuration
 TODO: This is in a very draft-y state!!!!! in progress!!!!!
 """
 
+import importlib
 import inspect
 import io
 import warnings
@@ -13,11 +14,14 @@ from typing import Dict, List, Optional, Type
 
 import click
 import tomllib
+import yaml
 from jinja2 import Template
+from linkml_runtime.utils.formatutils import remove_empty_items
 from linkml_runtime.utils.schemaview import load_schema_wrap
 from tqdm import tqdm
 
 from linkml.cli.build.models import AnonymousGeneratorConfig, FlatSchemaBuildConfig, LinkmlConfig
+from linkml.generators.inverters import DataclassInverter
 from linkml.utils.generator import Generator
 
 
@@ -45,8 +49,11 @@ def build(c: Optional[Path] = None):
 
 
 def build_from_config(config: FlatSchemaBuildConfig):
-    if config.generator_config.pre_build or config.generator_config.post_build:
-        raise NotImplementedError("build hooks are not implemented yet!")
+
+    if config.generator_config.pre_build:
+        if not isinstance(config.generator_config.pre_build, str):
+            raise NotImplementedError("build hooks are not implemented yet!")
+        call_module_hook(config.generator_config.pre_build)
 
     base_dir = Path(config.config_file).parent
 
@@ -73,6 +80,9 @@ def build_from_config(config: FlatSchemaBuildConfig):
         with open(output_path, "w") as ofile:
             ofile.write(write_string)
 
+    if config.generator_config.post_build:
+        raise NotImplementedError("build hooks are not implemented yet!")
+
 
 def find_config(base_path: Optional[Path] = None) -> Optional[Path]:
     if base_path is None:
@@ -86,7 +96,10 @@ def find_config(base_path: Optional[Path] = None) -> Optional[Path]:
             return pyproject_file
 
 
-def load_config(pyproject_path: Path) -> LinkmlConfig:
+def load_config(pyproject_path: Optional[Path] = None) -> LinkmlConfig:
+    if pyproject_path is None:
+        pyproject_path = find_config()
+
     with open(pyproject_path, "rb") as tfile:
         pyproject = tomllib.load(tfile)
 
@@ -187,6 +200,66 @@ def get_all_generators() -> Dict[str, Type[Generator]]:
     subclasses = _get_generator_subclasses(Generator)
     subclasses = {gen.generatorname.rstrip(".py"): gen for gen in subclasses if gen.generatorname is not None}
     return subclasses
+
+
+def call_module_hook(hook: str):
+    """
+    TODO: pass configs if requested
+    """
+    mod, fn_name = hook.split(":")
+    fn = getattr(importlib.import_module(mod), fn_name)
+    fn()
+
+
+PARAMS_STUB = """
+id: linkml-generator-params
+name: linkml-generator-params
+description: | 
+  schema for the arguments accepted by linkml generators
+imports:
+  - linkml:types
+
+enums:
+  GeneratorNames:
+    permissible_values:
+      {% for name in generator_names %}
+      {{ name }}:
+      {% endfor %}
+
+classes:
+  GeneratorParams:
+    description: metaclass for all generator param specifications
+  
+  {% for config in generator_configs %}
+  {{ config.name }}:
+    {{ config.body | indent(4, False) }}
+  {% endfor %}
+"""
+
+
+def render_generator_paramspec():
+    config = load_config()
+    exclude_keys = (
+        "schema",
+        "schemaview",
+        "logger",
+        "namespaces",
+        "metamodel",
+    )
+
+    generators = get_all_generators()
+    generator_names = sorted(list(generators.keys()))
+    generator_configs = []
+    for generator_name, generator in generators.items():
+        classdef = DataclassInverter(generator, exclude_attributes=exclude_keys).render()
+        classdef.name = classdef.name + "Params"
+        classdef.is_a = "GeneratorParams"
+        classdef_dict = remove_empty_items(classdef)
+        generator_configs.append({"name": classdef.name, "body": yaml.safe_dump(classdef_dict)})
+
+    rendered = Template(PARAMS_STUB).render(generator_names=generator_names, generator_configs=generator_configs)
+    with open(Path(config.config_file).parent / config.schema_["generator_params"], "w") as pfile:
+        pfile.write(rendered)
 
 
 def _get_generator_subclasses(cls: Type[Generator]) -> List[Type[Generator]]:

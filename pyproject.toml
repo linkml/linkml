@@ -252,9 +252,11 @@ select = [
 
 [tool.linkml.schema]
 build_schema = "linkml/cli/build/build_schema.yaml"
+generator_params = "linkml/generators/generator_params.yaml"
 
 [tool.linkml.build.build_schema.pydanticgen]
 enable = true
 output = "linkml/cli/build/models.py"
 extra_fields = "allow"
 black = true
+pre_build = "linkml.cli.build.build:render_generator_paramspec"
