@@ -1,7 +1,11 @@
 [tool.linkml]
 # inject a schema map into the top-level __init__.py file to discover
 # schema sources and yaml files.
-inject_init = true
+include_schemas = true
+# or, for namespace packages...
+# include_schemas = [
+#   package_name
+# ]
 
 [tool.linkml.schema]
 # define a mapping between short IDs and paths
@@ -16,19 +20,17 @@ owlgen.enabled = true
 
 [tool.linkml.generate.global]
 # global settings that apply to all generators (if applicable)
-# (in separate table than .build so the only keys in that table are schema names)
 
 # can use jinja template strings, and the context has
 # ``schema`` : the SchemaDefinition
 # ``generator`` : the instantiated generator class
 output = "path/{{ schema.version }}/{{ schema.name }}.{{ generator.file_extension }} "
 
-
 [tool.linkml.generate.pydantic]
-# not enabled for all defined schema,
-# but can set options anyway and enable for specific subset of schemas as below
+# equivalent to `pythongen.enabled = true` syntax above but expanded...
 enable = false
-# set additional defaults whether globally enabled or not
+# set additional defaults whether globally enabled for the `build` command or not,
+# defaults are used when doing `linkml generate {generator}`
 meta = "full"
 # override global defaults
 output = "path/otherpath/pydantic/{{ schema.name }}.py"
@@ -45,7 +47,7 @@ output = "specific/path.py"
 
 # can use pre-build and post-build hooks.
 # pre-build hooks receive the schema and the build config model if they
-# request them in the function signature (example below)
+# request them in the function signature
 pre_build = "mypackage.module:function"
 # by default "type" is "module", but can also call shell scripts
 post_build = {type = "shell", value="black {{ config.output }}" }
