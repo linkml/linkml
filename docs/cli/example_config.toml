@@ -12,6 +12,8 @@ include_schemas = true
 # ideally these would match the `id` of the schema, but whatever.
 my_schema = "path/from/root.yaml"
 other_schema = "different/path.yaml"
+# should also be able to support eg including from a url
+# linkml = "https://example.com/wherever/the/actual/schema/is.yaml
 
 [tool.linkml.generate]
 # settings for individual generator for all schema
