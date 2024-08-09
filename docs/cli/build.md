@@ -3,7 +3,7 @@
 
 ## Configuration
 
-```{literalinclude}
+```{literalinclude} example_config.toml
 ---
 language: toml
 linenos: true
@@ -18,6 +18,6 @@ Order of precedence (least to greatest, ie. later entries override previous):
 
 ```{eval-rst} 
 .. click:: linkml.cli.build:build
-    :prog: linkml lint
+    :prog: linkml build
     :nested: full
 ```

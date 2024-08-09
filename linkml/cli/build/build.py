@@ -121,7 +121,7 @@ def flatten_config(config: LinkmlConfig) -> List[FlatSchemaBuildConfig]:
         # we shouldn't support generating all generators for all schema - too many busted generators
         if global_config.get("enable", False):
             warnings.warn(
-                "Cant use enable=true in tool.linkml.generate.global - enable individual generators specifically"
+                "Can't use enable=true in tool.linkml.generate.global - enable individual generators specifically"
             )
 
         # update with all global generator-level configs
