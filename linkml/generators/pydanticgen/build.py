@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import List, Optional, Type, TypeVar, Union
 
+from pydantic import Field
+
 from linkml.generators.common.build import (
     BuildResult,
     SchemaResult,
@@ -26,7 +28,7 @@ class PydanticBuildResult(BuildResult):
 
     imports: Optional[Union[List[Import], Imports]] = None
     injected_classes: Optional[List[Union[str, Type]]] = None
-    injected_fields: Optional[List[Union[str]]] = None
+    injected_fields: Optional[List[str]] = Field(default_factory=list)
     """Fields as strings to inject into the ConfiguredBaseModel"""
 
     def merge(self, other: T) -> T:
@@ -65,11 +67,13 @@ class PydanticBuildResult(BuildResult):
                 self_copy.injected_classes = list(dict.fromkeys(self_copy.injected_classes))
             else:
                 self_copy.injected_classes = other.injected_classes
-        if other.injected_fields and other.injected_fields != self_copy.injected_fields:
-            if self_copy.injected_fields is None:
-                self_copy.injected_fields = other.injected_fields
-            else:
-                self_copy.injected_fields = list(dict.fromkeys(self_copy.injected_fields + other.injected_fields))
+        if other.injected_fields:
+            if not self_copy.injected_fields:
+                self_copy.injected_fields = other.injected_fields.copy()
+            elif other.injected_fields != self_copy.injected_fields:
+                self_copy.injected_fields = list(
+                    dict.fromkeys(self_copy.injected_fields + other.injected_fields.copy())
+                )
 
         return self_copy
 

@@ -1,9 +1,11 @@
 from __future__ import annotations
-
+from datetime import datetime, date
+from decimal import Decimal
 from enum import Enum
-from typing import Any, ClassVar, Dict, Optional, Union
-
-from pydantic import BaseModel, ConfigDict, Field, RootModel, ValidationInfo, field_validator
+import re
+import sys
+from typing import Any, ClassVar, List, Literal, Dict, Optional, Union
+from pydantic import BaseModel, ConfigDict, Field, RootModel, field_validator, ValidationInfo
 
 metamodel_version = "None"
 version = "None"
@@ -100,17 +102,21 @@ class LinkmlConfig(ConfiguredBaseModel):
         None,
         alias="schema",
         json_schema_extra={
-            "linkml_meta": {"domain_of": ["Linkml"], "identifier_slot": "schema_name", "inlined_as": "simple_dict"}
+            "linkml_meta": {
+                "domain_of": ["LinkmlConfig"],
+                "identifier_slot": "schema_name",
+                "inlined_as": "simple_dict",
+            }
         },
     )
     generate: Optional[Generate] = Field(
-        None, alias="generate", json_schema_extra={"linkml_meta": {"domain_of": ["Linkml"]}}
+        None, alias="generate", json_schema_extra={"linkml_meta": {"domain_of": ["LinkmlConfig"]}}
     )
     build: Optional[Dict[str, SchemaBuildConfig]] = Field(
         None,
         alias="build",
         json_schema_extra={
-            "linkml_meta": {"domain_of": ["Linkml"], "identifier_slot": "schema_name", "inlined_as": "dict"}
+            "linkml_meta": {"domain_of": ["LinkmlConfig"], "identifier_slot": "schema_name", "inlined_as": "dict"}
         },
     )
 
@@ -121,10 +127,12 @@ class Schema(ConfiguredBaseModel):
     schema_name: str = Field(
         ...,
         alias="schema_name",
-        json_schema_extra={"linkml_meta": {"domain_of": ["Schema", "SchemaBuildConfig"], "key": True}},
+        json_schema_extra={
+            "linkml_meta": {"domain_of": ["Schema", "SchemaBuildConfig", "FlatSchemaBuildConfig"], "key": True}
+        },
     )
     schema_path: Optional[str] = Field(
-        None, alias="schema_path", json_schema_extra={"linkml_meta": {"domain_of": ["Schema"]}}
+        None, alias="schema_path", json_schema_extra={"linkml_meta": {"domain_of": ["Schema", "FlatSchemaBuildConfig"]}}
     )
 
 
@@ -134,7 +142,9 @@ class SchemaBuildConfig(ConfiguredBaseModel):
     schema_name: str = Field(
         ...,
         alias="schema_name",
-        json_schema_extra={"linkml_meta": {"domain_of": ["Schema", "SchemaBuildConfig"], "key": True}},
+        json_schema_extra={
+            "linkml_meta": {"domain_of": ["Schema", "SchemaBuildConfig", "FlatSchemaBuildConfig"], "key": True}
+        },
     )
     global_: Optional[AnonymousGeneratorConfig] = Field(
         None, alias="global", json_schema_extra={"linkml_meta": {"domain_of": ["SchemaBuildConfig", "Generate"]}}
@@ -144,7 +154,7 @@ class SchemaBuildConfig(ConfiguredBaseModel):
         alias="generator_config",
         json_schema_extra={
             "linkml_meta": {
-                "domain_of": ["SchemaBuildConfig"],
+                "domain_of": ["SchemaBuildConfig", "FlatSchemaBuildConfig"],
                 "identifier_slot": "generator_name",
                 "inlined_as": "dict",
             }
@@ -175,7 +185,9 @@ class AnonymousGeneratorConfig(ConfiguredBaseModel):
         json_schema_extra={"linkml_meta": {"domain_of": ["AnonymousGeneratorConfig"], "ifabsent": "false"}},
     )
     output_path: Optional[str] = Field(
-        None, alias="output_path", json_schema_extra={"linkml_meta": {"domain_of": ["AnonymousGeneratorConfig"]}}
+        None,
+        alias="output_path",
+        json_schema_extra={"linkml_meta": {"domain_of": ["AnonymousGeneratorConfig", "FlatSchemaBuildConfig"]}},
     )
     pre_build: Optional[str] = Field(
         None,
@@ -213,7 +225,9 @@ class GeneratorConfig(AnonymousGeneratorConfig):
     generator_name: str = Field(
         ...,
         alias="generator_name",
-        json_schema_extra={"linkml_meta": {"domain_of": ["GeneratorConfig"], "identifier": True}},
+        json_schema_extra={
+            "linkml_meta": {"domain_of": ["GeneratorConfig", "FlatSchemaBuildConfig"], "identifier": True}
+        },
     )
     enable: Optional[bool] = Field(
         False,
@@ -221,7 +235,9 @@ class GeneratorConfig(AnonymousGeneratorConfig):
         json_schema_extra={"linkml_meta": {"domain_of": ["AnonymousGeneratorConfig"], "ifabsent": "false"}},
     )
     output_path: Optional[str] = Field(
-        None, alias="output_path", json_schema_extra={"linkml_meta": {"domain_of": ["AnonymousGeneratorConfig"]}}
+        None,
+        alias="output_path",
+        json_schema_extra={"linkml_meta": {"domain_of": ["AnonymousGeneratorConfig", "FlatSchemaBuildConfig"]}},
     )
     pre_build: Optional[str] = Field(
         None,
@@ -245,6 +261,59 @@ class GeneratorConfig(AnonymousGeneratorConfig):
     )
 
 
+class FlatSchemaBuildConfig(ConfiguredBaseModel):
+    """
+    The final build configuration for a schema for a given generator, after flattening out the configuration hierarchy
+    """
+
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {
+            "from_schema": "linkml-build-schema",
+            "slot_usage": {
+                "generator_name": {
+                    "domain_of": ["GeneratorConfig", "FlatSchemaBuildConfig"],
+                    "identifier": False,
+                    "name": "generator_name",
+                }
+            },
+        }
+    )
+
+    schema_name: str = Field(
+        ...,
+        alias="schema_name",
+        json_schema_extra={
+            "linkml_meta": {"domain_of": ["Schema", "SchemaBuildConfig", "FlatSchemaBuildConfig"], "key": True}
+        },
+    )
+    schema_path: Optional[str] = Field(
+        None, alias="schema_path", json_schema_extra={"linkml_meta": {"domain_of": ["Schema", "FlatSchemaBuildConfig"]}}
+    )
+    output_path: Optional[str] = Field(
+        None,
+        alias="output_path",
+        json_schema_extra={"linkml_meta": {"domain_of": ["AnonymousGeneratorConfig", "FlatSchemaBuildConfig"]}},
+    )
+    generator_name: str = Field(
+        ...,
+        alias="generator_name",
+        json_schema_extra={
+            "linkml_meta": {"domain_of": ["GeneratorConfig", "FlatSchemaBuildConfig"], "identifier": False}
+        },
+    )
+    generator_config: Optional[Dict[str, GeneratorConfig]] = Field(
+        None,
+        alias="generator_config",
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["SchemaBuildConfig", "FlatSchemaBuildConfig"],
+                "identifier_slot": "generator_name",
+                "inlined_as": "dict",
+            }
+        },
+    )
+
+
 class BuildHook(ConfiguredBaseModel):
     linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({"from_schema": "linkml-build-schema"})
 
@@ -260,10 +329,11 @@ class BuildHook(ConfiguredBaseModel):
 
 # Model rebuild
 # see https://pydantic-docs.helpmanual.io/usage/models/#rebuilding-a-model
-Linkml.model_rebuild()
+LinkmlConfig.model_rebuild()
 Schema.model_rebuild()
 SchemaBuildConfig.model_rebuild()
 Generate.model_rebuild()
 AnonymousGeneratorConfig.model_rebuild()
 GeneratorConfig.model_rebuild()
+FlatSchemaBuildConfig.model_rebuild()
 BuildHook.model_rebuild()

@@ -621,10 +621,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                 slot.imports = includes.unnest_identifier_imports
             else:
                 slot.imports += includes.unnest_identifier_imports
-            if slot.injected_fields is None:
-                slot.injected_fields = [includes.unnest_identifier]
-            else:
-                slot.injected_fields.append(includes.unnest_identifier)
+            slot.injected_fields.append(includes.unnest_identifier)
         return slot
 
     def get_class_slot_range(self, slot_range: str, inlined: bool, inlined_as_list: bool) -> str:
@@ -998,6 +995,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             if result.injected_fields is not None:
                 injected_fields.extend(result.injected_fields)
 
+        injected_fields = list(dict.fromkeys(injected_fields))
         base_model = PydanticBaseModel(extra_fields=self.extra_fields, fields=injected_fields)
 
         class_results = self.after_generate_classes(class_results, sv)

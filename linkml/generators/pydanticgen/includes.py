@@ -24,7 +24,7 @@ class LinkMLMeta(RootModel):
 """
 
 
-unnest_identifier = """    @field_validator("*", mode="before")
+unnest_identifier = """@field_validator("*", mode="before")
     @classmethod
     def _unnest_identifier(cls, val: Any, info: ValidationInfo):
         \"\"\"
