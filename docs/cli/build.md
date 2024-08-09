@@ -1,5 +1,5 @@
 {#build-cli}
-# `build`
+# `linkml build`
 
 ## Configuration
 
@@ -15,3 +15,9 @@ Order of precedence (least to greatest, ie. later entries override previous):
 - generate.{{ generator_name }}
 - build.{{ schema_name }}.global
 - build.{{ schema_name }}.{{ generator_name }}
+
+```{eval-rst} 
+.. click:: linkml.cli.build:build
+    :prog: linkml lint
+    :nested: full
+```

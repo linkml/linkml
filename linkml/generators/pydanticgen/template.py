@@ -88,9 +88,10 @@ class PydanticTemplateModel(TemplateModel):
         if format_black is not None and black:
             try:
                 return format_black(rendered)
-            except Exception:
+            except Exception as e:
                 # TODO: it would nice to have a standard logging module here ;)
-                return rendered
+                raise e
+                # return rendered
         elif black and format_black is None:
             raise ValueError("black formatting was requested, but black is not installed in this environment")
         else:
@@ -556,7 +557,7 @@ class PydanticModule(PydanticTemplateModel):
     """
 
     template: ClassVar[str] = "module.py.jinja"
-    meta_exclude: ClassVar[str] = ["slots"]
+    meta_exclude: ClassVar[str] = ["slots", "source_file"]
 
     metamodel_version: Optional[str] = None
     version: Optional[str] = None

@@ -12,6 +12,7 @@ The CLI interface to LinkML is currently divided into two styles:
 maxdepth: 1
 ---
 linkml
+build
 generate
 lint
 validate

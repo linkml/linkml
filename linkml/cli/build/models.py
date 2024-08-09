@@ -1,11 +1,9 @@
 from __future__ import annotations
-from datetime import datetime, date
-from decimal import Decimal
+
 from enum import Enum
-import re
-import sys
-from typing import Any, ClassVar, List, Literal, Dict, Optional, Union
-from pydantic import BaseModel, ConfigDict, Field, RootModel, field_validator, ValidationInfo
+from typing import Any, ClassVar, Dict, Optional, Union
+
+from pydantic import BaseModel, ConfigDict, Field, RootModel, ValidationInfo, field_validator
 
 metamodel_version = "None"
 version = "None"
@@ -81,7 +79,6 @@ linkml_meta = LinkMLMeta(
         "id": "linkml-build-schema",
         "imports": ["linkml:types"],
         "name": "linkml-build-schema",
-        "source_file": "./build_schema.yaml",
     }
 )
 
@@ -119,6 +116,11 @@ class LinkmlConfig(ConfiguredBaseModel):
             "linkml_meta": {"domain_of": ["LinkmlConfig"], "identifier_slot": "schema_name", "inlined_as": "dict"}
         },
     )
+    config_file: Optional[str] = Field(
+        None,
+        alias="config_file",
+        json_schema_extra={"linkml_meta": {"domain_of": ["LinkmlConfig", "FlatSchemaBuildConfig"]}},
+    )
 
 
 class Schema(ConfiguredBaseModel):
@@ -149,12 +151,12 @@ class SchemaBuildConfig(ConfiguredBaseModel):
     global_: Optional[AnonymousGeneratorConfig] = Field(
         None, alias="global", json_schema_extra={"linkml_meta": {"domain_of": ["SchemaBuildConfig", "Generate"]}}
     )
-    generator_config: Optional[Dict[str, GeneratorConfig]] = Field(
+    generator_configs: Optional[Dict[str, GeneratorConfig]] = Field(
         None,
-        alias="generator_config",
+        alias="generator_configs",
         json_schema_extra={
             "linkml_meta": {
-                "domain_of": ["SchemaBuildConfig", "FlatSchemaBuildConfig"],
+                "domain_of": ["SchemaBuildConfig"],
                 "identifier_slot": "generator_name",
                 "inlined_as": "dict",
             }
@@ -180,14 +182,10 @@ class AnonymousGeneratorConfig(ConfiguredBaseModel):
     linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({"from_schema": "linkml-build-schema"})
 
     enable: Optional[bool] = Field(
-        False,
-        alias="enable",
-        json_schema_extra={"linkml_meta": {"domain_of": ["AnonymousGeneratorConfig"], "ifabsent": "false"}},
+        None, alias="enable", json_schema_extra={"linkml_meta": {"domain_of": ["AnonymousGeneratorConfig"]}}
     )
-    output_path: Optional[str] = Field(
-        None,
-        alias="output_path",
-        json_schema_extra={"linkml_meta": {"domain_of": ["AnonymousGeneratorConfig", "FlatSchemaBuildConfig"]}},
+    output: Optional[str] = Field(
+        None, alias="output", json_schema_extra={"linkml_meta": {"domain_of": ["AnonymousGeneratorConfig"]}}
     )
     pre_build: Optional[str] = Field(
         None,
@@ -230,14 +228,10 @@ class GeneratorConfig(AnonymousGeneratorConfig):
         },
     )
     enable: Optional[bool] = Field(
-        False,
-        alias="enable",
-        json_schema_extra={"linkml_meta": {"domain_of": ["AnonymousGeneratorConfig"], "ifabsent": "false"}},
+        None, alias="enable", json_schema_extra={"linkml_meta": {"domain_of": ["AnonymousGeneratorConfig"]}}
     )
-    output_path: Optional[str] = Field(
-        None,
-        alias="output_path",
-        json_schema_extra={"linkml_meta": {"domain_of": ["AnonymousGeneratorConfig", "FlatSchemaBuildConfig"]}},
+    output: Optional[str] = Field(
+        None, alias="output", json_schema_extra={"linkml_meta": {"domain_of": ["AnonymousGeneratorConfig"]}}
     )
     pre_build: Optional[str] = Field(
         None,
@@ -289,11 +283,6 @@ class FlatSchemaBuildConfig(ConfiguredBaseModel):
     schema_path: Optional[str] = Field(
         None, alias="schema_path", json_schema_extra={"linkml_meta": {"domain_of": ["Schema", "FlatSchemaBuildConfig"]}}
     )
-    output_path: Optional[str] = Field(
-        None,
-        alias="output_path",
-        json_schema_extra={"linkml_meta": {"domain_of": ["AnonymousGeneratorConfig", "FlatSchemaBuildConfig"]}},
-    )
     generator_name: str = Field(
         ...,
         alias="generator_name",
@@ -301,16 +290,13 @@ class FlatSchemaBuildConfig(ConfiguredBaseModel):
             "linkml_meta": {"domain_of": ["GeneratorConfig", "FlatSchemaBuildConfig"], "identifier": False}
         },
     )
-    generator_config: Optional[Dict[str, GeneratorConfig]] = Field(
+    config_file: Optional[str] = Field(
         None,
-        alias="generator_config",
-        json_schema_extra={
-            "linkml_meta": {
-                "domain_of": ["SchemaBuildConfig", "FlatSchemaBuildConfig"],
-                "identifier_slot": "generator_name",
-                "inlined_as": "dict",
-            }
-        },
+        alias="config_file",
+        json_schema_extra={"linkml_meta": {"domain_of": ["LinkmlConfig", "FlatSchemaBuildConfig"]}},
+    )
+    generator_config: Optional[AnonymousGeneratorConfig] = Field(
+        None, alias="generator_config", json_schema_extra={"linkml_meta": {"domain_of": ["FlatSchemaBuildConfig"]}}
     )
 
 

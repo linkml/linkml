@@ -24,6 +24,7 @@ classes:
       - schema_
       - generate
       - build
+      - config_file
 
   Schema:
     slots:
@@ -34,7 +35,7 @@ classes:
     slots:
       - schema_name
       - global_
-      - generator_config
+      - generator_configs
 
 
   Generate:
@@ -47,7 +48,7 @@ classes:
       used for global configs
     slots:
       - enable
-      - output_path
+      - output
       - pre_build
       - post_build
 
@@ -68,8 +69,8 @@ classes:
     slots:
       - schema_name
       - schema_path
-      - output_path
       - generator_name
+      - config_file
       - generator_config
     slot_usage:
       generator_name:
@@ -87,7 +88,6 @@ slots:
     range: AnonymousGeneratorConfig
   enable:
     range: boolean
-    ifabsent: "false"
   schema_:
     alias: "schema"
     range: Schema
@@ -97,7 +97,7 @@ slots:
   schema_name:
     key: true
   schema_path:
-  output_path:
+  output:
   generator_name:
     identifier: true
     required: false
@@ -129,8 +129,12 @@ slots:
   generate:
     range: Generate
 
-  generator_config:
+  generator_configs:
     range: GeneratorConfig
     multivalued: true
     inlined: true
     inlined_as_list: false
+
+  generator_config:
+    range: AnonymousGeneratorConfig
+  config_file:
