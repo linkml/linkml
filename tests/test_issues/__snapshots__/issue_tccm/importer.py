@@ -42,7 +42,7 @@ class ChildId(BaseId):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class Child(Base):
     _inherited_slots: ClassVar[List[str]] = []
 

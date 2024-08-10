@@ -150,7 +150,7 @@ class TypeMappingFramework(extended_str):
 
 Anything = Any
 
-@dataclass
+@dataclass(repr=False)
 class CommonMetadata(YAMLRoot):
     """
     Generic metadata shared across definitions
@@ -313,7 +313,7 @@ class CommonMetadata(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Element(YAMLRoot):
     """
     A named element in the model
@@ -518,7 +518,7 @@ class Element(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class SchemaDefinition(Element):
     """
     A collection of definitions that make up a schema or a data model.
@@ -630,7 +630,7 @@ class SchemaDefinition(Element):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class AnonymousTypeExpression(YAMLRoot):
     """
     A type expression that is not a top-level named type definition. Used for nesting.
@@ -698,7 +698,7 @@ class AnonymousTypeExpression(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class TypeDefinition(Element):
     """
     an element that whose instances are atomic scalar values that can be mapped to primitive types
@@ -793,7 +793,7 @@ class TypeDefinition(Element):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class SubsetDefinition(Element):
     """
     an element that can be used to group other metamodel elements
@@ -816,7 +816,7 @@ class SubsetDefinition(Element):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Definition(Element):
     """
     abstract base class for core metaclasses
@@ -865,7 +865,7 @@ class Definition(Element):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class AnonymousEnumExpression(YAMLRoot):
     """
     An enum_expression that is not named
@@ -929,7 +929,7 @@ class AnonymousEnumExpression(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class EnumDefinition(Definition):
     """
     an element whose instances must be drawn from a specified set of permissible values
@@ -1003,7 +1003,7 @@ class EnumDefinition(Definition):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class EnumBinding(YAMLRoot):
     """
     A binding of a slot or a class to a permissible value from an enumeration.
@@ -1188,7 +1188,7 @@ class EnumBinding(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class MatchQuery(YAMLRoot):
     """
     A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that
@@ -1214,7 +1214,7 @@ class MatchQuery(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ReachabilityQuery(YAMLRoot):
     """
     A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a
@@ -1258,7 +1258,7 @@ class ReachabilityQuery(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class StructuredAlias(YAMLRoot):
     """
     object that contains meta data about a synonym or alias including where it came from (source) and its scope
@@ -1455,7 +1455,7 @@ class Expression(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = LINKML.Expression
 
 
-@dataclass
+@dataclass(repr=False)
 class TypeExpression(Expression):
     """
     An abstract class grouping named types and anonymous type expressions
@@ -1523,7 +1523,7 @@ class TypeExpression(Expression):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class EnumExpression(Expression):
     """
     An expression that constrains the range of a slot
@@ -1587,7 +1587,7 @@ class EnumExpression(Expression):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class AnonymousExpression(YAMLRoot):
     """
     An abstract parent class for any nested expression
@@ -1756,7 +1756,7 @@ class AnonymousExpression(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class PathExpression(YAMLRoot):
     """
     An expression that describes an abstract path from an object to another through a sequence of slot lookups
@@ -1961,7 +1961,7 @@ class PathExpression(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class SlotExpression(Expression):
     """
     an expression that constrains the range of values a slot can take
@@ -2094,7 +2094,7 @@ class SlotExpression(Expression):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class AnonymousSlotExpression(AnonymousExpression):
     _inherited_slots: ClassVar[List[str]] = ["range", "required", "recommended", "multivalued", "inlined", "inlined_as_list", "minimum_value", "maximum_value", "pattern", "structured_pattern", "value_presence", "equals_string", "equals_string_in", "equals_number", "equals_expression", "exact_cardinality", "minimum_cardinality", "maximum_cardinality"]
 
@@ -2224,7 +2224,7 @@ class AnonymousSlotExpression(AnonymousExpression):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class SlotDefinition(Definition):
     """
     an element that describes how instances are related to other instances
@@ -2533,7 +2533,7 @@ class SlotDefinition(Definition):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ClassExpression(YAMLRoot):
     """
     A boolean expression that can be used to dynamically determine membership of a class
@@ -2573,7 +2573,7 @@ class ClassExpression(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class AnonymousClassExpression(AnonymousExpression):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -2614,7 +2614,7 @@ class AnonymousClassExpression(AnonymousExpression):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ClassDefinition(Definition):
     """
     an element whose instances are complex objects that may have slot-value assignments
@@ -2749,7 +2749,7 @@ class ClassLevelRule(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = LINKML.ClassLevelRule
 
 
-@dataclass
+@dataclass(repr=False)
 class ClassRule(ClassLevelRule):
     """
     A rule that applies to instances of a class
@@ -2942,7 +2942,7 @@ class ClassRule(ClassLevelRule):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ArrayExpression(YAMLRoot):
     """
     defines the dimensions of an array
@@ -3125,7 +3125,7 @@ class ArrayExpression(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class DimensionExpression(YAMLRoot):
     """
     defines one of the dimensions of an array
@@ -3310,7 +3310,7 @@ class DimensionExpression(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class PatternExpression(YAMLRoot):
     """
     a regular expression pattern used to evaluate conformance of a string
@@ -3491,7 +3491,7 @@ class PatternExpression(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ImportExpression(YAMLRoot):
     """
     an expression describing an import
@@ -3673,7 +3673,7 @@ class ImportExpression(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Setting(YAMLRoot):
     """
     assignment of a key to a value
@@ -3702,7 +3702,7 @@ class Setting(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Prefix(YAMLRoot):
     """
     prefix URI tuple
@@ -3731,7 +3731,7 @@ class Prefix(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class LocalName(YAMLRoot):
     """
     an attributed label
@@ -3760,7 +3760,7 @@ class LocalName(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Example(YAMLRoot):
     """
     usage example and description
@@ -3786,7 +3786,7 @@ class Example(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class AltDescription(YAMLRoot):
     """
     an attributed description
@@ -3815,7 +3815,7 @@ class AltDescription(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class PermissibleValue(YAMLRoot):
     """
     a permissible value, accompanied by intended text and an optional mapping to a concept URI
@@ -4017,7 +4017,7 @@ class PermissibleValue(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class UniqueKey(YAMLRoot):
     """
     a collection of slots whose values uniquely identify an instance of a class
@@ -4203,7 +4203,7 @@ class UniqueKey(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class TypeMapping(YAMLRoot):
     """
     Represents how a slot or type can be serialized to a format.

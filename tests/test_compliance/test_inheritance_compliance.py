@@ -139,7 +139,7 @@ def test_basic_class_inheritance(framework, description, cls: str, object, is_va
             },
             "_mappings": {
                 PYDANTIC: "class C(D):",
-                PYTHON_DATACLASSES: "@dataclass\nclass C(D):",
+                PYTHON_DATACLASSES: "@dataclass(repr=False)\nclass C(D):",
                 JSON_SCHEMA: {"$defs": json_schema_defs},
             },
         },
@@ -279,7 +279,7 @@ def test_mixins(framework, description, cls, object, is_valid):
             },
             "_mappings": {
                 PYDANTIC: "class C(MC2, MC1):",
-                PYTHON_DATACLASSES: "@dataclass\nclass C(YAMLRoot):",  # DC rolls up
+                PYTHON_DATACLASSES: "@dataclass(repr=False)\nclass C(YAMLRoot):",  # DC rolls up
                 JSON_SCHEMA: json_schema_defs,
             },
         },

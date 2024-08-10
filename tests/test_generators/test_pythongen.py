@@ -1,3 +1,4 @@
+import re
 from types import ModuleType
 
 from linkml_runtime.loaders import json_loader
@@ -16,12 +17,9 @@ def test_pythongen(kitchen_sink_path):
     """python"""
     kitchen_module = make_python(kitchen_sink_path)
     c = kitchen_module.Company("ROR:1")
-    assert str(c) == "Company(id='ROR:1', name=None, aliases=[], ceo=None)"
+    assert str(c) == "Company({'id': 'ROR:1'})"
     h = kitchen_module.EmploymentEvent(employed_at=c.id)
-    assert str(h) == (
-        "EmploymentEvent(started_at_time=None, ended_at_time=None, is_current=None, "
-        "metadata=None, employed_at='ROR:1', type=None)"
-    )
+    assert str(h) == "EmploymentEvent({'employed_at': 'ROR:1'})"
     p = kitchen_module.Person("P:1", has_employment_history=[h])
     assert p.id == "P:1"
     assert p.has_employment_history[0] is not None
@@ -37,25 +35,26 @@ def test_pythongen(kitchen_sink_path):
     # however, inline in a non-list context does not
     p2dict = {"id": "P:2", "has_birth_event": {"started_at_time": "1981-01-01"}}
     json_loader.loads(p2dict, kitchen_module.Person)
-    assert str(p) == (
-        "Person(id='P:1', name=None, has_employment_history=[EmploymentEvent(started_at_time=None, "
-        "ended_at_time=None, is_current=None, metadata=None, employed_at='ROR:1', type=None)], "
-        "has_familial_relationships=[], has_medical_history=[], age_in_years=None, addresses=[], "
-        "has_birth_event=None, species_name=None, stomach_count=None, is_living=None, aliases=[])"
-    )
+    assert str(p) == "Person({'id': 'P:1', 'has_employment_history': [EmploymentEvent({'employed_at': 'ROR:1'})]})"
 
     f = kitchen_module.FamilialRelationship(related_to="me", type="SIBLING_OF", cordialness="heartfelt")
-    assert str(f) == (
-        "FamilialRelationship(started_at_time=None, ended_at_time=None, related_to='me', "
-        "type='SIBLING_OF', cordialness=(text='heartfelt', description='warm and hearty friendliness'))"
+    assert (
+        str(f)
+        == """FamilialRelationship({
+  'related_to': 'me',
+  'type': 'SIBLING_OF',
+  'cordialness': CordialnessEnum(text='heartfelt', description='warm and hearty friendliness')
+})"""
     )
 
     diagnosis = kitchen_module.DiagnosisConcept(id="CODE:D0001", name="headache")
     event = kitchen_module.MedicalEvent(in_location="GEO:1234", diagnosis=diagnosis)
-    assert str(event) == (
-        "MedicalEvent(started_at_time=None, ended_at_time=None, is_current=None, "
-        "metadata=None, in_location='GEO:1234', diagnosis=DiagnosisConcept(id='CODE:D0001', "
-        "name='headache', in_code_system=None), procedure=None)"
+    assert (
+        str(event)
+        == """MedicalEvent({
+  'in_location': 'GEO:1234',
+  'diagnosis': DiagnosisConcept({'id': 'CODE:D0001', 'name': 'headache'})
+})"""
     )
 
 
@@ -96,3 +95,34 @@ types:
 
     output = PythonGenerator(yaml, format="py", metadata=False).serialize()
     assert output.startswith("\n# id: https://w3id.org/biolink/metamodel")
+
+
+def test_repr(kitchen_sink_path):
+    """
+    Be default, don't create __repr__ for dataclasses, but do if requested!
+    """
+    parentclass = """
+class ParentClass:
+    def __repr__(self):
+        return "overridden"
+        
+    def __post_init__(self, *args, **kwargs):
+        pass
+"""
+
+    pstr = str(PythonGenerator(kitchen_sink_path).serialize())
+    pstr = parentclass + pstr
+    pstr = re.sub(r"\(YAMLRoot\)", "(ParentClass)", pstr)
+    kitchen_module = compile_python(pstr)
+
+    # if a dataclass has `repr=False`, it shouldn't override the parent class's
+    friend = kitchen_module.Friend(name="bestie")
+    assert repr(friend) == "overridden"
+
+    # but we should be able to make pythongenerator do `repr=True`, where the dataclasses _do_ override
+    pstr = str(PythonGenerator(kitchen_sink_path, dataclass_repr=True).serialize())
+    pstr = parentclass + pstr
+    pstr = re.sub(r"\(YAMLRoot\)", "(ParentClass)", pstr)
+    kitchen_module = compile_python(pstr)
+    friend = kitchen_module.Friend(name="bestie")
+    assert repr(friend) != "overridden"

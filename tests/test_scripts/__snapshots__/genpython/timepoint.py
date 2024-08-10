@@ -55,7 +55,7 @@ class GeographicLocationAtTimeK(GeographicLocationK):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class GeographicLocation(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -75,7 +75,7 @@ class GeographicLocation(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class GeographicLocationAtTime(GeographicLocation):
     _inherited_slots: ClassVar[List[str]] = []
 

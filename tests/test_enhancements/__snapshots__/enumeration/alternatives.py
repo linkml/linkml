@@ -45,7 +45,7 @@ class AllEnumsEntryName(extended_str):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class AllEnums(YAMLRoot):
     """
     A class that incorporates all of the enumeration examples above

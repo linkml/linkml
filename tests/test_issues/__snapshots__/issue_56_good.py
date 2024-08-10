@@ -56,7 +56,7 @@ class C3Id(C2Id):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class C1(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -76,7 +76,7 @@ class C1(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class C2(C1):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -100,7 +100,7 @@ class C2(C1):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class C3(C2):
     _inherited_slots: ClassVar[List[str]] = []
 

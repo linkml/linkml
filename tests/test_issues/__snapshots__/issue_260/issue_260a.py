@@ -48,7 +48,7 @@ class String(str):
 
 
 
-@dataclass
+@dataclass(repr=False)
 class C260a(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 

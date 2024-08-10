@@ -44,7 +44,7 @@ class FavoriteColorId(extended_str):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class FavoriteColor(YAMLRoot):
     id: Union[str, FavoriteColorId] = None
     position: Union[str, "Colors"] = None

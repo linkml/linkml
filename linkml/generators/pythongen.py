@@ -54,6 +54,16 @@ class PythonGenerator(Generator):
     gen_slots: bool = True
     genmeta: bool = False
     emit_metadata: bool = True
+    dataclass_repr: bool = False
+    """
+    Whether generated dataclasses should also generate a default __repr__ method.
+    
+    Default ``False`` so that the parent :class:`linkml_runtime.utils.yamlutils.YAMLRoot` 's
+    ``__repr__`` method is inherited for model pretty printing.
+    
+    References:
+        - https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass
+    """
 
     def __post_init__(self) -> None:
         if isinstance(self.schema, Path):
@@ -388,7 +398,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             return f"\n{self.class_or_type_name(cls.name)} = Any"
 
         cd_str = (
-            ("\n@dataclass" if slotdefs else "")
+            (f"\n@dataclass(repr={self.dataclass_repr})" if slotdefs else "")
             + f"\nclass {self.class_or_type_name(cls.name)}{parentref}:{wrapped_description}"
             + f"{self.gen_inherited_slots(cls)}"
             + f"{self.gen_class_meta(cls)}"

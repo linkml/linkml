@@ -46,7 +46,7 @@ class PersonId(ElementIdentifier):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class Person(YAMLRoot):
     """
     A person, living or dead
