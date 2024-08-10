@@ -50,8 +50,9 @@ The LinkML registry collects some existing schemas and allows for basic browsing
 
  * [linkml/linkml-registry](https://linkml.io/linkml-registry/registry/)
 
-## Presentations on LinkML
+## Presentations about LinkML
 
+ * [Introduction to LinkML by Sierra Moxon]<https://www.youtube.com/watch?v=nyNp09WYLzw&t=183s> (video, 47 min.) 2023-10-04
  * [An introduction to LinkML](https://www.slideshare.net/cmungall/linkml-intro-july-2022pptx) (slides) July 2022
  * [Yosemite Project Webinar](https://www.youtube.com/watch?v=1cZu4kZ2ufQ) (video) - April 2021
  * [ICBO 2021 talk](http://ceur-ws.org/Vol-3073/paper24.pdf) (proceedings) Sept 2021
