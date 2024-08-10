@@ -101,12 +101,13 @@ class SchemaBuilder:
                     for k, v in slots.items():
                         cls.slots.append(k)
                         self.add_slot(SlotDefinition(k, **v), replace_if_present=replace_if_present)
-                for s in slots:
-                    cls.slots.append(s.name if isinstance(s, SlotDefinition) else s)
-                    if isinstance(s, str) and s in self.schema.slots:
-                        # top-level slot already exists
-                        continue
-                    self.add_slot(s, replace_if_present=replace_if_present)
+                else:
+                    for s in slots:
+                        cls.slots.append(s.name if isinstance(s, SlotDefinition) else s)
+                        if isinstance(s, str) and s in self.schema.slots:
+                            # top-level slot already exists
+                            continue
+                        self.add_slot(s, replace_if_present=replace_if_present)
             if slot_usage:
                 if isinstance(slot_usage, dict):
                     for k, v in slot_usage.items():
