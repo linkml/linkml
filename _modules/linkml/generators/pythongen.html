@@ -399,6 +399,16 @@
     <span class="n">gen_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">genmeta</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">emit_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">dataclass_repr</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Whether generated dataclasses should also generate a default __repr__ method.</span>
+<span class="sd">    </span>
+<span class="sd">    Default ``False`` so that the parent :class:`linkml_runtime.utils.yamlutils.YAMLRoot` &#39;s</span>
+<span class="sd">    ``__repr__`` method is inherited for model pretty printing.</span>
+<span class="sd">    </span>
+<span class="sd">    References:</span>
+<span class="sd">        - https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
@@ -733,7 +743,7 @@
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">class_or_type_name</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2"> = Any&quot;</span>
 
         <span class="n">cd_str</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">@dataclass&quot;</span> <span class="k">if</span> <span class="n">slotdefs</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">@dataclass(repr=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dataclass_repr</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">if</span> <span class="n">slotdefs</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
             <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">class </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">class_or_type_name</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}{</span><span class="n">parentref</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">wrapped_description</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_inherited_slots</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_class_meta</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>

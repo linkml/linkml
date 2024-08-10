@@ -493,7 +493,7 @@
 
 <span class="n">Anything</span> <span class="o">=</span> <span class="n">Any</span>
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">CommonMetadata</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic metadata shared across definitions</span>
@@ -656,7 +656,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Element</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A named element in the model</span>
@@ -861,7 +861,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="SchemaDefinition"><a class="viewcode-back" href="../../../code/metamodel.html#linkml_runtime.linkml_model.meta.SchemaDefinition">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="SchemaDefinition"><a class="viewcode-back" href="../../../code/metamodel.html#linkml_runtime.linkml_model.meta.SchemaDefinition">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">SchemaDefinition</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A collection of definitions that make up a schema or a data model.</span>
@@ -973,7 +973,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">AnonymousTypeExpression</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A type expression that is not a top-level named type definition. Used for nesting.</span>
@@ -1041,7 +1041,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="TypeDefinition"><a class="viewcode-back" href="../../../code/metamodel.html#linkml_runtime.linkml_model.meta.TypeDefinition">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="TypeDefinition"><a class="viewcode-back" href="../../../code/metamodel.html#linkml_runtime.linkml_model.meta.TypeDefinition">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">TypeDefinition</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    an element that whose instances are atomic scalar values that can be mapped to primitive types</span>
@@ -1136,7 +1136,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">SubsetDefinition</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    an element that can be used to group other metamodel elements</span>
@@ -1159,7 +1159,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Definition</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    abstract base class for core metaclasses</span>
@@ -1208,7 +1208,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">AnonymousEnumExpression</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An enum_expression that is not named</span>
@@ -1272,7 +1272,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="EnumDefinition"><a class="viewcode-back" href="../../../code/metamodel.html#linkml_runtime.linkml_model.meta.EnumDefinition">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="EnumDefinition"><a class="viewcode-back" href="../../../code/metamodel.html#linkml_runtime.linkml_model.meta.EnumDefinition">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">EnumDefinition</span><span class="p">(</span><span class="n">Definition</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    an element whose instances must be drawn from a specified set of permissible values</span>
@@ -1346,7 +1346,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">EnumBinding</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A binding of a slot or a class to a permissible value from an enumeration.</span>
@@ -1531,7 +1531,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">MatchQuery</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that</span>
@@ -1557,7 +1557,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">ReachabilityQuery</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a</span>
@@ -1601,7 +1601,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">StructuredAlias</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    object that contains meta data about a synonym or alias including where it came from (source) and its scope</span>
@@ -1798,7 +1798,7 @@
     <span class="n">class_model_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">LINKML</span><span class="o">.</span><span class="n">Expression</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">TypeExpression</span><span class="p">(</span><span class="n">Expression</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An abstract class grouping named types and anonymous type expressions</span>
@@ -1866,7 +1866,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">EnumExpression</span><span class="p">(</span><span class="n">Expression</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An expression that constrains the range of a slot</span>
@@ -1930,7 +1930,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">AnonymousExpression</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An abstract parent class for any nested expression</span>
@@ -2099,7 +2099,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">PathExpression</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An expression that describes an abstract path from an object to another through a sequence of slot lookups</span>
@@ -2304,7 +2304,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">SlotExpression</span><span class="p">(</span><span class="n">Expression</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    an expression that constrains the range of values a slot can take</span>
@@ -2437,7 +2437,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">AnonymousSlotExpression</span><span class="p">(</span><span class="n">AnonymousExpression</span><span class="p">):</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">,</span> <span class="s2">&quot;required&quot;</span><span class="p">,</span> <span class="s2">&quot;recommended&quot;</span><span class="p">,</span> <span class="s2">&quot;multivalued&quot;</span><span class="p">,</span> <span class="s2">&quot;inlined&quot;</span><span class="p">,</span> <span class="s2">&quot;inlined_as_list&quot;</span><span class="p">,</span> <span class="s2">&quot;minimum_value&quot;</span><span class="p">,</span> <span class="s2">&quot;maximum_value&quot;</span><span class="p">,</span> <span class="s2">&quot;pattern&quot;</span><span class="p">,</span> <span class="s2">&quot;structured_pattern&quot;</span><span class="p">,</span> <span class="s2">&quot;value_presence&quot;</span><span class="p">,</span> <span class="s2">&quot;equals_string&quot;</span><span class="p">,</span> <span class="s2">&quot;equals_string_in&quot;</span><span class="p">,</span> <span class="s2">&quot;equals_number&quot;</span><span class="p">,</span> <span class="s2">&quot;equals_expression&quot;</span><span class="p">,</span> <span class="s2">&quot;exact_cardinality&quot;</span><span class="p">,</span> <span class="s2">&quot;minimum_cardinality&quot;</span><span class="p">,</span> <span class="s2">&quot;maximum_cardinality&quot;</span><span class="p">]</span>
 
@@ -2567,7 +2567,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="SlotDefinition"><a class="viewcode-back" href="../../../code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="SlotDefinition"><a class="viewcode-back" href="../../../code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">SlotDefinition</span><span class="p">(</span><span class="n">Definition</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    an element that describes how instances are related to other instances</span>
@@ -2876,7 +2876,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">ClassExpression</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A boolean expression that can be used to dynamically determine membership of a class</span>
@@ -2916,7 +2916,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">AnonymousClassExpression</span><span class="p">(</span><span class="n">AnonymousExpression</span><span class="p">):</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -2957,7 +2957,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="ClassDefinition"><a class="viewcode-back" href="../../../code/metamodel.html#linkml_runtime.linkml_model.meta.ClassDefinition">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="ClassDefinition"><a class="viewcode-back" href="../../../code/metamodel.html#linkml_runtime.linkml_model.meta.ClassDefinition">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">ClassDefinition</span><span class="p">(</span><span class="n">Definition</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    an element whose instances are complex objects that may have slot-value assignments</span>
@@ -3092,7 +3092,7 @@
     <span class="n">class_model_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">LINKML</span><span class="o">.</span><span class="n">ClassLevelRule</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">ClassRule</span><span class="p">(</span><span class="n">ClassLevelRule</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A rule that applies to instances of a class</span>
@@ -3285,7 +3285,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="ArrayExpression"><a class="viewcode-back" href="../../../code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="ArrayExpression"><a class="viewcode-back" href="../../../code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">ArrayExpression</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    defines the dimensions of an array</span>
@@ -3468,7 +3468,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DimensionExpression"><a class="viewcode-back" href="../../../code/metamodel.html#linkml_runtime.linkml_model.meta.DimensionExpression">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="DimensionExpression"><a class="viewcode-back" href="../../../code/metamodel.html#linkml_runtime.linkml_model.meta.DimensionExpression">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">DimensionExpression</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    defines one of the dimensions of an array</span>
@@ -3653,7 +3653,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">PatternExpression</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    a regular expression pattern used to evaluate conformance of a string</span>
@@ -3834,7 +3834,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">ImportExpression</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    an expression describing an import</span>
@@ -4016,7 +4016,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Setting</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    assignment of a key to a value</span>
@@ -4045,7 +4045,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Prefix</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    prefix URI tuple</span>
@@ -4074,7 +4074,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">LocalName</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    an attributed label</span>
@@ -4103,7 +4103,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Example</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    usage example and description</span>
@@ -4129,7 +4129,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">AltDescription</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    an attributed description</span>
@@ -4158,7 +4158,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">PermissibleValue</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    a permissible value, accompanied by intended text and an optional mapping to a concept URI</span>
@@ -4360,7 +4360,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">UniqueKey</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    a collection of slots whose values uniquely identify an instance of a class</span>
