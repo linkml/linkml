@@ -1,6 +1,9 @@
 from copy import copy
 from json import JSONDecoder
 from typing import Union, Any, List, Optional, Type, Callable, Dict
+from pprint import pformat
+import textwrap
+import re
 
 import yaml
 from deprecated.classic import deprecated
@@ -10,7 +13,7 @@ from rdflib import Graph, URIRef
 from yaml.constructor import ConstructorError
 
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE, merge_contexts
-from linkml_runtime.utils.formatutils import is_empty
+from linkml_runtime.utils.formatutils import is_empty, remove_empty_items, is_list, is_dict, items
 
 YAMLObjTypes = Union[JsonObjTypes, "YAMLRoot"]
 
@@ -276,6 +279,47 @@ class YAMLRoot(JsonObj):
     def MissingRequiredField(self, field_name: str) -> None:
         """ Generic loader error handler """
         raise ValueError(f"{field_name} must be supplied")
+
+    def __repr__(self):
+        return _pformat(items(self), self.__class__.__name__)
+
+    def __str__(self):
+        return repr(self)
+
+def _pformat(fields:dict, cls_name:str, indent:str = '  ') -> str:
+    """
+    pretty format the fields of the items of a ``YAMLRoot`` object without the wonky indentation of pformat.
+    see ``YAMLRoot.__repr__``.
+
+    formatting is similar to black - items at similar levels of nesting have similar levels of indentation,
+    rather than getting placed at essentially random levels of indentation depending on what came before them.
+    """
+    res = []
+    total_len = 0
+    for key, val in fields:
+        if val == [] or val == {} or val is None:
+            continue
+        # pformat handles everything else that isn't a YAMLRoot object, but it sure does look ugly
+        # use it to split lines and as the thing of last resort, but otherwise indent = 0, we'll do that
+        val_str = pformat(val, indent=0, compact=True, sort_dicts=False)
+        # now we indent everything except the first line by indenting and then using regex to remove just the first indent
+        val_str = re.sub(rf'\A{re.escape(indent)}', '', textwrap.indent(val_str, indent))
+        # now recombine with the key in a format that can be re-eval'd into an object if indent is just whitespace
+        val_str = f"'{key}': " + val_str
+
+        # count the total length of this string so we know if we need to linebreak or not later
+        total_len += len(val_str)
+        res.append(val_str)
+
+    if total_len > 80:
+        inside = ',\n'.join(res)
+        # we indent twice - once for the inner contents of every inner object, and one to
+        # offset from the root element. that keeps us from needing to be recursive except for the
+        # single pformat call
+        inside = textwrap.indent(inside, indent)
+        return cls_name + '({\n' + inside + '\n})'
+    else:
+        return cls_name + '({' + ', '.join(res) + '})'
 
 
 def root_representer(dumper: yaml.Dumper, data: YAMLRoot):
