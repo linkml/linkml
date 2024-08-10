@@ -270,7 +270,7 @@ class SQLStore:
             return obj
 
 
-@click.group()
+@click.group(name="sqldb")
 @click.option("-v", "--verbose", count=True)
 @click.option("-q", "--quiet")
 @click.option(

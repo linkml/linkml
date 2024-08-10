@@ -4,8 +4,15 @@ Models for intermediate build results
 (see PydanticGenerator for example implementation and use)
 """
 
+import dataclasses
 from abc import abstractmethod
-from typing import TypeVar
+from typing import Any, TypeVar
+
+try:
+    from typing import Annotated
+except ImportError:
+    from typing_extensions import Annotated
+
 
 from linkml_runtime.linkml_model import (
     ClassDefinition,
@@ -14,9 +21,28 @@ from linkml_runtime.linkml_model import (
     SlotDefinition,
     TypeDefinition,
 )
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, GetCoreSchemaHandler
+from pydantic_core import core_schema
 
 T = TypeVar("T", bound="BuildResult", covariant=True)
+
+
+@dataclasses.dataclass()
+class SkipValidation:
+    """
+    A version of :class:`pydantic.SkipValidation` that actually skips generating the
+    schema for the field entirely - useful for including types that don't need to be validated
+    like the metamodel dataclasses
+    """
+
+    def __class_getitem__(cls, item: Any) -> Any:
+        return Annotated[item, SkipValidation()]
+
+    @classmethod
+    def __get_pydantic_core_schema__(cls, source: Any, handler: GetCoreSchemaHandler) -> core_schema.CoreSchema:
+        return core_schema.any_schema()
+
+    __hash__ = object.__hash__
 
 
 class BuildResult(BaseModel):
@@ -41,7 +67,7 @@ class BuildResult(BaseModel):
 class SchemaResult(BuildResult):
     """Abstract results container for built schemas"""
 
-    source: SchemaDefinition
+    source: SkipValidation[SchemaDefinition]
 
     def merge(self, other: T) -> T:
         """
@@ -54,25 +80,25 @@ class SchemaResult(BuildResult):
 class ClassResult(BuildResult):
     """Abstract results container for built classes"""
 
-    source: ClassDefinition
+    source: SkipValidation[ClassDefinition]
 
 
 class SlotResult(BuildResult):
     """Abstract results container for built slots"""
 
-    source: SlotDefinition
+    source: SkipValidation[SlotDefinition]
 
 
 class TypeResult(BuildResult):
     """Abstract results container for built types"""
 
-    source: TypeDefinition
+    source: SkipValidation[TypeDefinition]
 
 
 class EnumResult(BuildResult):
     """Abstract results container for built enums"""
 
-    source: EnumDefinition
+    source: SkipValidation[EnumDefinition]
 
 
 class RangeResult(BuildResult):

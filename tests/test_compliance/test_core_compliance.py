@@ -102,8 +102,8 @@ def test_attributes(framework, description, object, is_valid):
                             "additionalProperties": False,
                             "description": "",
                             "properties": {
-                                "s1": {"type": "string"},
-                                "s2": {"type": "string"},
+                                "s1": {"type": ["string", "null"]},
+                                "s2": {"type": ["string", "null"]},
                             },
                             "title": "C",
                             "type": "object",

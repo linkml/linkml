@@ -255,7 +255,7 @@ class ExampleRunner:
             return dict_obj
 
 
-@click.command()
+@click.command(name="examples")
 @click.option("--schema", "-s", required=True, help="Path to linkml schema yaml file")
 @click.option("--prefixes", "-P", help="Path to prefixes")
 @click.option("--input-directory", "-e", help="folder containing positive examples that MUST pass validation")

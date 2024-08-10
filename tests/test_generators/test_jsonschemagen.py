@@ -13,6 +13,8 @@ from linkml_runtime.loaders import yaml_loader
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from tests.test_generators.test_pythongen import make_python
 
+pytestmark = pytest.mark.jsonschemagen
+
 
 def test_jsonschema_integration(kitchen_sink_path, input_path):
     """Integration test for JsonSchemaGenerator.
@@ -72,7 +74,10 @@ def test_class_uri_any(kitchen_sink_path, subtests):
         {"data": {"metadata": 0}},
         {"data": {"metadata": None}},
         {"data": {"metadata": True}},
-        {"data": {"metadata": ["array", "not", "allowed"]}, "error_message": "is not of type"},
+        {
+            "data": {"metadata": ["array", "not", "allowed"]},
+            "error_message": "is not valid under any of the given schemas",
+        },
     ]
     assert_schema_validates(subtests, kitchen_sink_path, expected_json_schema_subset, data_cases)
 
@@ -148,7 +153,7 @@ def test_class_inheritance_multivalued(subtests, input_path):
     external_file_test(
         subtests,
         input_path("jsonschema_class_inheritance_multivalued.yaml"),
-        {"not_closed": False, "include_range_class_descendants": True},
+        {"not_closed": False, "include_range_class_descendants": True, "include_null": False},
     )
 
 
@@ -302,6 +307,26 @@ def test_slot_title_from_title_slot(subtests, input_path):
     external_file_test(subtests, input_path("jsonschema_slot_title_from_title.yaml"), {"title_from": "title"})
 
 
+@pytest.mark.parametrize("not_closed", [True, False])
+def test_slot_not_required_nullability(input_path, not_closed):
+    """
+    Non-required slots should also have an allowed "null" type so that the key can be present
+    in data without a value (in addition to the key being allowed to be absent)
+
+    References:
+        - https://github.com/linkml/linkml/issues/2155
+    """
+    schema = input_path("not_required.yaml")
+    generator = JsonSchemaGenerator(schema, mergeimports=True, top_class="Optionals", not_closed=not_closed)
+    generated = json.loads(generator.serialize())
+    properties = generated["$defs"]["Optionals"]["properties"]
+    for key, prop in properties.items():
+        if "type" in prop:
+            assert "null" in prop["type"], f"{key} does not allow null"
+        elif "anyOf" in prop:
+            assert {"type": "null"} in prop["anyOf"], f"{key} does not allow null"
+
+
 # **********************************************************
 #
 #    Utility functions
@@ -319,7 +344,7 @@ def test_slot_title_from_title_slot(subtests, input_path):
 
 def external_file_test(subtests, file: Union[str, Path], generator_args: Optional[Dict] = None) -> None:
     if generator_args is None:
-        generator_args = {"not_closed": False}
+        generator_args = {"not_closed": False, "include_null": False}
 
     with open(file) as f:
         test_definition = yaml.safe_load(f)

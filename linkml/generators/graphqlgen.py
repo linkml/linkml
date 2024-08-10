@@ -52,7 +52,7 @@ class GraphqlGenerator(Generator):
 
 
 @shared_arguments(GraphqlGenerator)
-@click.command()
+@click.command(name="graphql")
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
     """Generate graphql representation of a LinkML model"""

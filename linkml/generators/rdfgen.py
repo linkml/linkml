@@ -76,7 +76,7 @@ class RDFGenerator(Generator):
 
 
 @shared_arguments(RDFGenerator)
-@click.command()
+@click.command(name="rdf")
 @click.option("-o", "--output", help="Output file name")
 @click.option(
     "--context",

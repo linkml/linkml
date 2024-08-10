@@ -180,7 +180,7 @@ class SSSOMGenerator(Generator):
 
 
 @shared_arguments(SSSOMGenerator)
-@click.command()
+@click.command(name="sssom")
 @click.option("-o", "--output", help="Output file name")
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):

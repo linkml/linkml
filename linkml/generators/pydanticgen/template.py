@@ -285,7 +285,7 @@ class Import(PydanticTemplateModel):
     module: str
     alias: Optional[str] = None
     objects: Optional[List[ObjectImport]] = None
-    schema: bool = False
+    is_schema: bool = False
     """
     Whether or not this ``Import`` is importing another schema imported by the main schema --
     ie. that it is not expected to be provided by the environment, but imported locally from within the package.
@@ -339,7 +339,7 @@ class Import(PydanticTemplateModel):
                     module=self.module,
                     alias=alias,
                     objects=list(self_objs.values()),
-                    schema=self.schema or other.schema,
+                    is_schema=self.is_schema or other.is_schema,
                 )
             ]
         else:

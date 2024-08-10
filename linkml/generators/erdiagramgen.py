@@ -312,7 +312,7 @@ class ERDiagramGenerator(Generator):
 @click.option("--classes", "-c", multiple=True, help="List of classes to serialize")
 @click.option("--include-upstream", is_flag=True, help="Include upstream classes")
 @click.version_option(__version__, "-V", "--version")
-@click.command()
+@click.command(name="erdiagram")
 def cli(
     yamlfile,
     classes: List[str],

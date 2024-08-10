@@ -64,7 +64,7 @@ def _resolve_loaders(loader_config: Iterable[Union[str, Dict[str, Dict[str, str]
 DEPRECATED = "[DEPRECATED: only used in legacy mode]"
 
 
-@click.command()
+@click.command(name="validate")
 @click.option(
     "-s",
     "--schema",
@@ -132,6 +132,9 @@ def cli(
     include_range_class_descendants: bool,
     include_context: bool,
 ):
+    """
+    Validate data according to a LinkML Schema
+    """
     if legacy_mode:
         from linkml.validators import jsonschemavalidator
 

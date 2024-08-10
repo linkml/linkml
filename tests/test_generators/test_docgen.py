@@ -313,11 +313,11 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
     )
 
     # checks correctness of the YAML representation of source schema
-    person_source = gen.yaml(gen.schemaview.get_class("Person"))
+    person_source = gen.yaml(gen.schemaview.induced_class("Person"))
     person_dict = yaml.load(person_source, Loader=yaml.Loader)
     # consider the species name slot
     # species name has the Person class repeated multiple times in domain_of
-    domain_of_species_name = person_dict["slot_usage"]["species name"]["domain_of"]
+    domain_of_species_name = person_dict["attributes"]["species name"]["domain_of"]
     assert len(set(domain_of_species_name)) == len(domain_of_species_name)
 
 

@@ -126,7 +126,13 @@ class JsonSchema(dict):
 
     @property
     def is_array(self):
-        return self.get("type") == "array"
+        typ = self.get("type", False)
+        if isinstance(typ, str):
+            return typ == "array"
+        elif isinstance(typ, list):
+            return "array" in typ
+        else:
+            return False
 
     @property
     def is_object(self):
@@ -136,7 +142,7 @@ class JsonSchema(dict):
         return json.dumps(self, **kwargs)
 
     @classmethod
-    def ref_for(cls, class_name: Union[str, List[str]], identifier_optional: bool = False):
+    def ref_for(cls, class_name: Union[str, List[str]], identifier_optional: bool = False, required: bool = True):
         def _ref(class_name):
             def_name = camelcase(class_name)
             def_suffix = cls.OPTIONAL_IDENTIFIER_SUFFIX if identifier_optional else ""
@@ -144,15 +150,27 @@ class JsonSchema(dict):
 
         if isinstance(class_name, list):
             if len(class_name) == 1:
-                return _ref(class_name[0])
+                ref = _ref(class_name[0])
             else:
-                return JsonSchema({"anyOf": [_ref(name) for name in class_name]})
+                ref = JsonSchema({"anyOf": [_ref(name) for name in class_name]})
         else:
-            return _ref(class_name)
+            ref = _ref(class_name)
+
+        if not required:
+            if "anyOf" in ref:
+                ref["anyOf"].append({"type": "null"})
+            else:
+                ref = JsonSchema({"anyOf": [ref, {"type": "null"}]})
+        return ref
 
     @classmethod
-    def array_of(cls, subschema: "JsonSchema") -> "JsonSchema":
-        schema = {"type": "array", "items": subschema}
+    def array_of(cls, subschema: "JsonSchema", required: bool = True) -> "JsonSchema":
+        if required:
+            typ = "array"
+        else:
+            typ = ["array", "null"]
+
+        schema = {"type": typ, "items": subschema}
 
         return JsonSchema(schema)
 
@@ -198,6 +216,9 @@ class JsonSchemaGenerator(Generator):
     """The slot from which to populate JSONSchema title annotation."""
 
     top_level_schema: JsonSchema = None
+
+    include_null: bool = True
+    """Whether to include a "null" type in optional slots"""
 
     def __post_init__(self):
         if self.topClass:
@@ -315,7 +336,7 @@ class JsonSchemaGenerator(Generator):
 
         subschema = JsonSchema()
         for slot in cls.slot_conditions.values():
-            prop = self.get_subschema_for_slot(slot, omit_type=True)
+            prop = self.get_subschema_for_slot(slot, omit_type=True, include_null=False)
             value_required = False
             value_disallowed = False
             if slot.value_presence:
@@ -438,8 +459,12 @@ class JsonSchemaGenerator(Generator):
         return constraints
 
     def get_subschema_for_slot(
-        self, slot: Union[SlotDefinition, AnonymousSlotExpression], omit_type: bool = False
+        self, slot: Union[SlotDefinition, AnonymousSlotExpression], omit_type: bool = False, include_null: bool = True
     ) -> JsonSchema:
+        """
+        Args:
+            include_null: Include ``type: null`` when generating ranges that are not required
+        """
         prop = JsonSchema()
         if isinstance(slot, SlotDefinition) and slot.array:
             # TODO: this is currently too lax, in that it will validate ANY array.
@@ -450,9 +475,10 @@ class JsonSchemaGenerator(Generator):
                     "additionalProperties": True,
                 }
             )
-            return JsonSchema.array_of(prop)
+            return JsonSchema.array_of(prop, required=slot.required)
         slot_is_multivalued = "multivalued" in slot and slot.multivalued
         slot_is_inlined = self.schemaview.is_inlined(slot)
+        slot_is_boolean = any([slot.any_of, slot.all_of, slot.exactly_one_of, slot.none_of])
         if not omit_type:
             typ, fmt, reference = self.get_type_info_for_slot_subschema(slot)
             if slot_is_inlined:
@@ -473,7 +499,9 @@ class JsonSchemaGenerator(Generator):
                         # If the range can be collected as a simple dict, then we can also accept the value
                         # of that simple dict directly.
                         if range_simple_dict_value_slot is not None:
-                            additionalProps.append(self.get_subschema_for_slot(range_simple_dict_value_slot))
+                            additionalProps.append(
+                                self.get_subschema_for_slot(range_simple_dict_value_slot, include_null=False)
+                            )
 
                         # If the range has no required slots, then null is acceptable
                         if len(range_required_slots) == 0:
@@ -485,12 +513,17 @@ class JsonSchemaGenerator(Generator):
                             additionalProps = additionalProps[0]
                         else:
                             additionalProps = JsonSchema({"anyOf": additionalProps})
-                        prop = JsonSchema({"type": "object", "additionalProperties": additionalProps})
+                        if slot.required or not include_null:
+                            typ = "object"
+                        else:
+                            typ = ["object", "null"]
+                        prop = JsonSchema({"type": typ, "additionalProperties": additionalProps})
                         self.top_level_schema.add_lax_def(reference, self.aliased_slot_name(range_id_slot))
                     else:
-                        prop = JsonSchema.array_of(JsonSchema.ref_for(reference))
+                        prop = JsonSchema.array_of(JsonSchema.ref_for(reference), required=slot.required)
                 else:
-                    prop = JsonSchema.ref_for(reference)
+                    prop = JsonSchema.ref_for(reference, required=slot.required or not include_null)
+
             else:
                 if reference is not None:
                     prop = JsonSchema.ref_for(reference)
@@ -500,7 +533,12 @@ class JsonSchemaGenerator(Generator):
                     prop = JsonSchema({"type": typ, "format": fmt})
 
                 if slot_is_multivalued:
-                    prop = JsonSchema.array_of(prop)
+                    prop = JsonSchema.array_of(prop, required=slot.required)
+                else:
+                    # handle optionals - bools like any_of, etc. below as they call this method recursively
+                    if not slot.required and not slot_is_boolean and include_null:
+                        if "type" in prop:
+                            prop["type"] = [prop["type"], "null"]
 
         prop.add_keyword("description", slot.description)
         if self.title_from == "title" and slot.title:
@@ -526,22 +564,29 @@ class JsonSchemaGenerator(Generator):
 
         bool_subschema = JsonSchema()
         if slot.any_of is not None and len(slot.any_of) > 0:
-            bool_subschema["anyOf"] = [self.get_subschema_for_slot(s) for s in slot.any_of]
+            bool_subschema["anyOf"] = [self.get_subschema_for_slot(s, include_null=False) for s in slot.any_of]
+            if not slot.required and not prop.is_array and include_null:
+                bool_subschema["anyOf"].append({"type": "null"})
 
         if slot.all_of is not None and len(slot.all_of) > 0:
-            bool_subschema["allOf"] = [self.get_subschema_for_slot(s) for s in slot.all_of]
+            bool_subschema["allOf"] = [self.get_subschema_for_slot(s, include_null=False) for s in slot.all_of]
 
         if slot.exactly_one_of is not None and len(slot.exactly_one_of) > 0:
-            bool_subschema["oneOf"] = [self.get_subschema_for_slot(s) for s in slot.exactly_one_of]
+            bool_subschema["oneOf"] = [self.get_subschema_for_slot(s, include_null=False) for s in slot.exactly_one_of]
 
         if slot.none_of is not None and len(slot.none_of) > 0:
-            bool_subschema["not"] = {"anyOf": [self.get_subschema_for_slot(s) for s in slot.none_of]}
+            bool_subschema["not"] = {
+                "anyOf": [self.get_subschema_for_slot(s, include_null=False) for s in slot.none_of]
+            }
 
         if bool_subschema:
             if prop.is_array:
                 if "items" not in prop:
                     prop["items"] = {}
-                prop["type"] = "array"
+                if slot.required or not include_null:
+                    prop["type"] = "array"
+                else:
+                    prop["type"] = ["array", "null"]
                 prop["items"].update(bool_subschema)
             else:
                 prop.update(bool_subschema)
@@ -556,7 +601,7 @@ class JsonSchemaGenerator(Generator):
         value_disallowed = slot.value_presence == PresenceEnum(PresenceEnum.ABSENT)
 
         aliased_slot_name = self.aliased_slot_name(slot)
-        prop = self.get_subschema_for_slot(slot)
+        prop = self.get_subschema_for_slot(slot, include_null=self.include_null)
         subschema.add_property(
             aliased_slot_name, prop, value_required=value_required, value_disallowed=value_disallowed
         )
@@ -627,7 +672,7 @@ class JsonSchemaGenerator(Generator):
 
 
 @shared_arguments(JsonSchemaGenerator)
-@click.command()
+@click.command(name="json-schema")
 @click.option(
     "-i",
     "--inline",

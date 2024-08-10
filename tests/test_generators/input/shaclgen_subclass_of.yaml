@@ -1,0 +1,18 @@
+id: https://w3id.org/linkml/examples/personinfo
+name: personinfo
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://w3id.org/linkml/examples/personinfo/
+imports:
+  - linkml:types
+default_range: string
+default_prefix: ex
+
+classes:
+  Person:
+    attributes:
+      name:
+        range: string
+
+  Citizen:
+    is_a: Person

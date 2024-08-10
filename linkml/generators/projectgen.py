@@ -159,7 +159,7 @@ class ProjectGenerator:
                     gen.serialize(**serialize_args)
 
 
-@click.command()
+@click.command(name="project")
 @click.option(
     "--dir",
     "-d",

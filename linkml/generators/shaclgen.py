@@ -11,7 +11,7 @@ from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import TypedNode, extended_float, extended_int, extended_str
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
-from rdflib.namespace import RDF, SH, XSD
+from rdflib.namespace import RDF, RDFS, SH, XSD
 
 from linkml._version import __version__
 from linkml.generators.shacl.ifabsent_processor import IfAbsentProcessor
@@ -73,6 +73,10 @@ class ShaclGenerator(Generator):
                 class_uri_with_suffix += self.suffix
             shape_pv(RDF.type, SH.NodeShape)
             shape_pv(SH.targetClass, class_uri)  # TODO
+
+            if c.is_a:
+                shape_pv(RDFS.subClassOf, URIRef(sv.get_uri(c.is_a, expand=True)))
+
             if self.closed:
                 if c.mixin or c.abstract:
                     shape_pv(SH.closed, Literal(False))
@@ -303,7 +307,7 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
 
 
 @shared_arguments(ShaclGenerator)
-@click.command()
+@click.command(name="shacl")
 @click.option(
     "--closed/--non-closed",
     default=True,

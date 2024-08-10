@@ -262,7 +262,7 @@ class YumlGenerator(Generator):
 
 
 @shared_arguments(YumlGenerator)
-@click.command()
+@click.command(name="yuml")
 @click.option("--classes", "-c", multiple=True, help="Class(es) to emit")
 @click.option(
     "--directory",

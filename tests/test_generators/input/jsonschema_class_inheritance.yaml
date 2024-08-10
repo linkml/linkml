@@ -40,12 +40,16 @@ json_schema:
         - "$ref": "#/$defs/Alpha"
         - "$ref": "#/$defs/Beta"
         - "$ref": "#/$defs/Gamma"
+        - "type": "null"
     beta_obj:
       anyOf:
         - "$ref": "#/$defs/Beta"
         - "$ref": "#/$defs/Gamma"
+        - "type": "null"
     gamma_obj:
-      "$ref": "#/$defs/Gamma"
+      anyOf:
+        - "$ref": "#/$defs/Gamma"
+        - "type": "null"
 
 data_cases:
   - data:

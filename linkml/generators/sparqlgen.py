@@ -188,7 +188,7 @@ class SparqlGenerator(Generator):
 
 
 @shared_arguments(SparqlGenerator)
-@click.command()
+@click.command(name="sparql")
 @click.option("--dir", "-d", help="Directory in which queries will be deposited")
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, dir, **kwargs):

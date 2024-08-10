@@ -192,7 +192,7 @@ class JSONLDGenerator(Generator):
 
 
 @shared_arguments(JSONLDGenerator)
-@click.command()
+@click.command(name="jsonld")
 @click.option(
     "--context",
     multiple=True,

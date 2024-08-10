@@ -95,7 +95,7 @@ class CsvGenerator(Generator):
 
 
 @shared_arguments(CsvGenerator)
-@click.command()
+@click.command(name="csv")
 @click.version_option(__version__, "-V", "--version")
 @click.option("--root", "-r", multiple=True, help="Class(es) to transform")
 def cli(yamlfile, root=None, **args):
