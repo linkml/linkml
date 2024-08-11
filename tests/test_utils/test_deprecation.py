@@ -177,7 +177,7 @@ def test_deprecation_props(deprecated, deprecated_val, removed, removed_val, lin
     if removed is not None:
         remver = SemVer(major=linkml_version.major + removed)
 
-    dep = Deprecation(name="test-dep", message="testing our properites", deprecated_in=depver, removed_in=remver)
+    dep = Deprecation(name="test-dep", message="testing our properties", deprecated_in=depver, removed_in=remver)
     assert dep.deprecated == deprecated_val
     assert dep.removed == removed_val
 
