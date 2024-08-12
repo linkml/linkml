@@ -14,8 +14,8 @@ from rdflib.collection import Collection
 from rdflib.namespace import RDF, RDFS, SH, XSD
 
 from linkml._version import __version__
-from linkml.generators.shacl.ifabsent_processor import IfAbsentProcessor
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
+from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
 
 
@@ -56,7 +56,7 @@ class ShaclGenerator(Generator):
         g = Graph()
         g.bind("sh", SH)
 
-        ifabsent_processor = IfAbsentProcessor(sv)
+        ifabsent_processor = ShaclIfAbsentProcessor(sv)
 
         for pfx in self.schema.prefixes.values():
             g.bind(str(pfx.prefix_prefix), pfx.prefix_reference)
@@ -208,7 +208,9 @@ class ShaclGenerator(Generator):
                         # Map equal_string and equal_string_in to sh:in
                         self._and_equals_string(g, prop_pv, s.equals_string_in)
 
-                ifabsent_processor.process_slot(prop_pv, s, class_uri)
+                default_value = ifabsent_processor.process_slot(s, c)
+                if default_value:
+                    prop_pv(SH.defaultValue, default_value)
 
         return g
 

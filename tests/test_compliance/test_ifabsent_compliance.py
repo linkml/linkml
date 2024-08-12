@@ -9,6 +9,7 @@ from tests.test_compliance.helper import (
     OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
+    SHACL,
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
@@ -20,25 +21,58 @@ FUZZ_STR = "a b_c!@#$%^&*_+{}|:<>?[]()'\""
 
 
 @pytest.mark.parametrize(
-    "schema_name,range,ifabsent,data_name,initial_value,expected,schema_valid,valid",
+    "schema_name,range,ifabsent,data_name,initial_value,expected,schema_valid,valid,skip_for",
     [
-        ("str", "string", "string(x)", "no_value", None, "x", True, True),
-        ("str", "string", "string(x)", "has_value", "y", "x", True, True),
-        ("int", "integer", "int(5)", "no_value", None, 5, True, True),
-        ("float", "float", "float(5.0)", "no_value", None, 5.0, True, True),
-        ("boolT", "boolean", "true", "no_value", None, True, True, True),
-        ("boolF", "boolean", "false", "no_value", None, False, True, True),
-        ("class_curie", "uriorcurie", "class_curie", "no_value", None, "ex:C", True, True),
-        ("D", CLASS_D, "string(p1)", "no_value", None, "p1", False, True),
-        ("incompat_string", "integer", "string(x)", "has_value", None, None, True, False),
-        ("incompat_bool", "boolean", "string(x)", "has_value", None, None, True, False),
-        ("incompat_float", "float", "string(x)", "has_value", None, None, True, False),
-        ("fuzz_str", "string", f"string({FUZZ_STR})", "has_value", None, FUZZ_STR, True, True),
+        ("str", "string", "string(x)", "no_value", None, "x", True, True, []),
+        ("str", "string", "string(x)", "has_value", "y", "x", True, True, []),
+        ("int", "integer", "int(5)", "no_value", None, 5, True, True, []),
+        ("float", "float", "float(5.0)", "no_value", None, 5.0, True, True, []),
+        ("boolT", "boolean", "true", "no_value", None, True, True, True, []),
+        ("boolF", "boolean", "false", "no_value", None, False, True, True, []),
+        ("class_curie", "uriorcurie", "class_curie", "no_value", None, "ex:C", True, True, []),
+        ("D", CLASS_D, "string(p1)", "no_value", None, "p1", False, True, []),
+        # Skip Python, Pydantic and Shacl frameworks because this incompatibility is not possible with the processor
+        (
+            "incompat_string",
+            "integer",
+            "string(x)",
+            "has_value",
+            None,
+            None,
+            True,
+            False,
+            [PYTHON_DATACLASSES, PYDANTIC],
+        ),
+        (
+            "incompat_bool",
+            "boolean",
+            "string(x)",
+            "has_value",
+            None,
+            None,
+            True,
+            False,
+            [PYTHON_DATACLASSES, PYDANTIC, SHACL],
+        ),
+        (
+            "incompat_float",
+            "float",
+            "string(x)",
+            "has_value",
+            None,
+            None,
+            True,
+            False,
+            [PYTHON_DATACLASSES, PYDANTIC, SHACL],
+        ),
+        ("fuzz_str", "string", f"string({FUZZ_STR})", "has_value", None, FUZZ_STR, True, True, []),
         # ("enum", ENUM_E, f"(EnumName({PV_1})", "has_value", None, PV_1, True, True),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_ifabsent(framework, schema_name, range, ifabsent, data_name, initial_value, expected, schema_valid, valid):
+def test_ifabsent(
+    framework, schema_name, range, ifabsent, data_name, initial_value, expected, schema_valid, valid, skip_for
+):
     """
     Tests behavior of ifabsent (defaults).
 
@@ -51,6 +85,10 @@ def test_ifabsent(framework, schema_name, range, ifabsent, data_name, initial_va
     :param expected: expected value
     :return:
     """
+
+    if framework in skip_for:
+        return
+
     classes = {
         CLASS_C: {
             "attributes": {
