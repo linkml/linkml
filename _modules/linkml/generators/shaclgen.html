@@ -359,8 +359,8 @@
 <span class="kn">from</span> <span class="nn">rdflib.namespace</span> <span class="kn">import</span> <span class="n">RDF</span><span class="p">,</span> <span class="n">RDFS</span><span class="p">,</span> <span class="n">SH</span><span class="p">,</span> <span class="n">XSD</span>
 
 <span class="kn">from</span> <span class="nn">linkml._version</span> <span class="kn">import</span> <span class="n">__version__</span>
-<span class="kn">from</span> <span class="nn">linkml.generators.shacl.ifabsent_processor</span> <span class="kn">import</span> <span class="n">IfAbsentProcessor</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.shacl.shacl_data_type</span> <span class="kn">import</span> <span class="n">ShaclDataType</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.shacl.shacl_ifabsent_processor</span> <span class="kn">import</span> <span class="n">ShaclIfAbsentProcessor</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 
 
@@ -401,7 +401,7 @@
         <span class="n">g</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
         <span class="n">g</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;sh&quot;</span><span class="p">,</span> <span class="n">SH</span><span class="p">)</span>
 
-        <span class="n">ifabsent_processor</span> <span class="o">=</span> <span class="n">IfAbsentProcessor</span><span class="p">(</span><span class="n">sv</span><span class="p">)</span>
+        <span class="n">ifabsent_processor</span> <span class="o">=</span> <span class="n">ShaclIfAbsentProcessor</span><span class="p">(</span><span class="n">sv</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">pfx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">g</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pfx</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">),</span> <span class="n">pfx</span><span class="o">.</span><span class="n">prefix_reference</span><span class="p">)</span>
@@ -553,7 +553,9 @@
                         <span class="c1"># Map equal_string and equal_string_in to sh:in</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_and_equals_string</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">prop_pv</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">equals_string_in</span><span class="p">)</span>
 
-                <span class="n">ifabsent_processor</span><span class="o">.</span><span class="n">process_slot</span><span class="p">(</span><span class="n">prop_pv</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">class_uri</span><span class="p">)</span>
+                <span class="n">default_value</span> <span class="o">=</span> <span class="n">ifabsent_processor</span><span class="o">.</span><span class="n">process_slot</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">default_value</span><span class="p">:</span>
+                    <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">defaultValue</span><span class="p">,</span> <span class="n">default_value</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">g</span>
 
