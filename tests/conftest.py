@@ -238,7 +238,9 @@ def patch_requests_cache(pytestconfig):
         urls_expire_after={"localhost": requests_cache.DO_NOT_CACHE},
     )
     requests_cache.clear()
-    yield
+    with requests_cache.enabled():
+        yield
+    requests_cache.uninstall_cache()
     # delete cache file unless we have requested it to persist for inspection
     if not pytestconfig.getoption("--with-output"):
         cache_file.unlink(missing_ok=True)

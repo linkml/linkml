@@ -17,7 +17,7 @@ class NotebookTests(unittest.TestCase):
         output_file.parent.mkdir(parents=True, exist_ok=True)
         with redirect_stdout(output):
             importlib.import_module(import_module)
-        with open(output_file, "w") as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             f.write(
                 re.sub(
                     r'Generation date: .*?(["\n])',

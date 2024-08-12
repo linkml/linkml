@@ -43,7 +43,7 @@ class NotebookTestCase(TestEnvironmentTestCase):
             )
             and self.env.fail_on_error
         ):
-            with open(nbenv.temp_file_path(nbname), "w") as actualf:
+            with open(nbenv.temp_file_path(nbname), "w", encoding="utf-8") as actualf:
                 actualf.write(outf.getvalue())
 
     def test_redo_notebooks(self):

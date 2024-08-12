@@ -1061,7 +1061,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         # interpret all imported schema paths as relative to that
         output_path.parent.mkdir(parents=True, exist_ok=True)
         serialized = generator.serialize(rendered_module=rendered)
-        with open(output_path, "w") as ofile:
+        with open(output_path, "w", encoding="utf-8") as ofile:
             ofile.write(serialized)
 
         results.append(
@@ -1080,7 +1080,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             rel_path = _import_to_path(generated_import.module)
             abs_path = (output_path.parent / rel_path).resolve()
             abs_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(abs_path, "w") as ofile:
+            with open(abs_path, "w", encoding="utf-8") as ofile:
                 ofile.write(serialized)
 
             results.append(
@@ -1123,7 +1123,7 @@ def _ensure_inits(paths: List[Path]):
     common_path = Path(os.path.commonpath(paths))
 
     if not (ipath := (common_path / "__init__.py")).exists():
-        with open(ipath, "w") as ifile:
+        with open(ipath, "w", encoding="utf-8") as ifile:
             ifile.write(" \n")
 
     for path in paths:
@@ -1131,7 +1131,7 @@ def _ensure_inits(paths: List[Path]):
         path = path.parent
         while path != common_path:
             if not (ipath := (path / "__init__.py")).exists():
-                with open(ipath, "w") as ifile:
+                with open(ipath, "w", encoding="utf-8") as ifile:
                     ifile.write(" \n")
             path = path.parent
 
