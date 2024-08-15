@@ -6,6 +6,7 @@ Gathers all the other linkml click entrypoints and puts them under ``linkml`` :)
 
 import click
 
+from linkml._version import __version__
 from linkml.generators.csvgen import cli as gen_csv
 from linkml.generators.docgen import cli as gen_doc
 from linkml.generators.dotgen import cli as gen_graphviz
@@ -54,6 +55,7 @@ from linkml.workspaces.example_runner import cli as linkml_run_examples
 
 
 @click.group()
+@click.version_option(__version__, "-V", "--version")
 def linkml():
     """
     LinkML: A flexible linked data modeling language
@@ -61,6 +63,7 @@ def linkml():
 
 
 @linkml.group()
+@click.version_option(__version__, "-V", "--version")
 def generate():
     """
     Generate formats from a LinkML schema
@@ -68,6 +71,7 @@ def generate():
 
 
 @linkml.group()
+@click.version_option(__version__, "-V", "--version")
 def dev():
     """
     Helper tools for linkml development
