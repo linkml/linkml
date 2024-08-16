@@ -417,7 +417,7 @@ class SchemaView(object):
     @lru_cache(None)
     def all_classes(self, ordered_by=OrderedBy.PRESERVE, imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
         """
-        :param ordered_by: an enumerated parameter that returns all the slots in the order specified.
+        :param ordered_by: an enumerated parameter that returns all the classes in the order specified.
         :param imports: include imports closure
         :return: all classes in schema view
         """
