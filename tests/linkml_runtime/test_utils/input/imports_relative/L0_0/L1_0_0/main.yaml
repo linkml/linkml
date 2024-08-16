@@ -1,0 +1,17 @@
+id: main
+name: main
+title: main
+imports:
+  - linkml:types
+  - neighbor
+  - ../parent
+  - ../../L0_1/cousin
+  - ./L2_0_0_0/child
+  - ./L2_0_0_1/child
+classes:
+  Main:
+    description: "Our intrepid main class!"
+    attributes:
+      value:
+        range: string
+        ifabsent: "Main"

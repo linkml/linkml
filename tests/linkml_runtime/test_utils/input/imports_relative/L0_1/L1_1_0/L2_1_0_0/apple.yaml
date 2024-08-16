@@ -1,0 +1,9 @@
+id: apple
+name: apple
+title: apple
+classes:
+  Apple:
+    attributes:
+      value:
+        range: string
+        ifabsent: "Apple"

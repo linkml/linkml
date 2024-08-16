@@ -21,6 +21,7 @@ SCHEMA_NO_IMPORTS = Path(INPUT_DIR) / 'kitchen_sink_noimports.yaml'
 SCHEMA_WITH_IMPORTS = Path(INPUT_DIR) / 'kitchen_sink.yaml'
 SCHEMA_WITH_STRUCTURED_PATTERNS = Path(INPUT_DIR) / "pattern-example.yaml"
 SCHEMA_IMPORT_TREE = Path(INPUT_DIR) / 'imports' / 'main.yaml'
+SCHEMA_RELATIVE_IMPORT_TREE = Path(INPUT_DIR) / 'imports_relative' / 'L0_0' / 'L1_0_0' / 'main.yaml'
 
 yaml_loader = YAMLLoader()
 IS_CURRENT = 'is current'
@@ -579,6 +580,41 @@ class SchemaViewTestCase(unittest.TestCase):
 
         self.assertEqual(defaults, target)
 
+    def test_imports_relative(self):
+        """
+        Relative imports from relative imports should evaluate relative to the *importing* schema,
+        not the *origin* schema.
+
+        See
+            - input/imports_relative/README.md for an explanation of the test schema
+        """
+        sv = SchemaView(SCHEMA_RELATIVE_IMPORT_TREE)
+        closure = sv.imports_closure(imports=True)
+
+        assert len(closure) == len(sv.schema_map.keys())
+        assert closure == [
+            'linkml:types',
+            '../neighborhood_parent',
+            'neighbor',
+            '../parent',
+            '../L1_0_1/L2_0_1_0/grandchild',
+            '../../L0_1/L1_1_0/L2_1_0_0/apple',
+            '../../L0_1/L1_1_0/L2_1_0_0/index',
+            '../../L0_1/L1_1_0/L2_1_0_1/banana',
+            '../../L0_1/L1_1_0/L2_1_0_1/index',
+            '../../L0_1/L1_1_0/index',
+            '../../L0_1/cousin',
+            '../L1_0_1/dupe',
+            './L2_0_0_0/child',
+            './L2_0_0_1/child',
+            'main'
+        ]
+
+        # check that we can actually get the classes from the same-named schema
+        classes = sv.all_classes(imports=True)
+        assert 'L110Index' in classes
+        assert 'L2100Index' in classes
+        assert 'L2101Index' in classes
 
     def test_direct_remote_imports(self):
         """

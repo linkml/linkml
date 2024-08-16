@@ -280,8 +280,25 @@ class SchemaView(object):
             if sn not in visited:
                 for i in self.schema_map[sn].imports:
                     # no self imports ;)
-                    if i != sn:
-                        todo.append(i)
+                    if i == sn:
+                        continue
+
+                    # resolve relative imports relative to the importing schema, rather than the
+                    # origin schema. Imports can be a URI or Curie, and imports from the same
+                    # directory don't require a ./, so if the current (sn) import is a relative
+                    # path, and the target import doesn't have : (as in a curie or a URI)
+                    # we prepend the relative path. This WILL make the key in the `schema_map` not
+                    # equal to the literal text specified in the importing schema, but this is
+                    # essential to sensible deduplication: eg. for
+                    # - main.yaml (imports ./types.yaml, ./subdir/subschema.yaml)
+                    # - types.yaml
+                    # - subdir/subschema.yaml (imports ./types.yaml)
+                    # - subdir/types.yaml
+                    # we should treat the two `types.yaml` as separate schemas from the POV of the
+                    # origin schema.
+                    if sn.startswith('.') and ':' not in i:
+                        i = os.path.normpath(str(Path(sn).parent / i))
+                    todo.append(i)
 
             # add item to closure
             # append + pop (above) is FILO queue, which correctly extends tree leaves,
