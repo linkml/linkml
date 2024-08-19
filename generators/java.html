@@ -529,7 +529,7 @@ pip<span class="w"> </span>install<span class="w"> </span>linkml
 </pre></div>
 </div>
 <p>Now generate the classes using the <cite>gen-java</cite> command</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-java<span class="w"> </span>--package<span class="w"> </span>org.biolink.model<span class="w"> </span>--output_directory<span class="w"> </span>org/biolink/model<span class="w"> </span>biolink-model.yaml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-java<span class="w"> </span>--package<span class="w"> </span>org.biolink.model<span class="w"> </span>--output-directory<span class="w"> </span>org/biolink/model<span class="w"> </span>biolink-model.yaml
 </pre></div>
 </div>
 <p>Finally, fetch the Lombok jar, build the java classes and package into a jar file</p>
@@ -565,7 +565,7 @@ public class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif 
 </pre></div>
 </div>
 <p>The alternate template for the generator can be specified with the <cite>–template_file</cite> option</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span><span class="o">-</span><span class="n">java</span> <span class="o">--</span><span class="n">package</span> <span class="n">org</span><span class="o">.</span><span class="n">biolink</span><span class="o">.</span><span class="n">model</span> <span class="o">--</span><span class="n">output_directory</span> <span class="n">org</span><span class="o">/</span><span class="n">biolink</span><span class="o">/</span><span class="n">model</span> \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span><span class="o">-</span><span class="n">java</span> <span class="o">--</span><span class="n">package</span> <span class="n">org</span><span class="o">.</span><span class="n">biolink</span><span class="o">.</span><span class="n">model</span> <span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">directory</span> <span class="n">org</span><span class="o">/</span><span class="n">biolink</span><span class="o">/</span><span class="n">model</span> \
          <span class="o">--</span><span class="n">template_file</span> <span class="n">example_template</span><span class="o">.</span><span class="n">java</span><span class="o">.</span><span class="n">jinja2</span> <span class="n">biolink</span><span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">yaml</span>
 </pre></div>
 </div>
