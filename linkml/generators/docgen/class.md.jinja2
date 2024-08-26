@@ -8,6 +8,17 @@
     {%- endif -%}
 {%- endif -%}
 
+{%- if element.deprecated %}
+    {%- set title = '~~' ~ title ~ '~~' -%}
+    {%- set title = 'Class: ' ~ title ~ '<span style="color: #ff5252;"><strong> (DEPRECATED) </strong></span>' -%}
+{%- endif -%}
+{%- if element.abstract %}
+    {%- set title = title ~ ' <span style="color: pink;"><strong><small> (Abstract) </small></strong></span> ' -%}
+{%- endif -%}
+{%- if element.multivalued %}
+    {%- set title = title ~ ' (multivalued)' %}
+{%- endif -%}
+
 {% macro compute_range(slot) -%}
     {%- if slot.any_of or slot.exactly_one_of -%}
         {%- for subslot_range in schemaview.slot_range_as_union(slot) -%}
@@ -21,7 +32,7 @@
     {%- endif -%}
 {% endmacro %}
 
-# Class: {{ title }}
+# {{ title }}
 
 {%- if header -%}
 {{header}}
@@ -37,6 +48,12 @@ _{{ element_description_line }}_
 
 {% if element.abstract %}
 * __NOTE__: this is an abstract class and should not be instantiated directly
+{% endif %}
+
+{% if element.deprecated %}
+* __NOTE__ this element has been deprecated with the following note:
+    * *{{ element.deprecated }}*
+    {% if element.deprecated_element_has_exact_replacement %}* Element has been replaced by {{ gen.link(element.deprecated_element_has_exact_replacement) }}{% endif %}
 {% endif %}
 
 URI: {{ gen.uri_link(element) }}
@@ -68,12 +85,12 @@ URI: {{ gen.uri_link(element) }}
 | ---  | --- | --- | --- |
 {% if gen.get_direct_slots(element)|length > 0 %}
 {%- for slot in gen.get_direct_slots(element) -%}
-| {{ gen.link(slot) }} | {{ gen.cardinality(slot) }} <br/> {{ compute_range(slot) }} | {{ slot.description|enshorten }} | direct |
+| {% if slot.deprecated -%}~~{{ gen.link(slot) }}~~{% else -%}{{ gen.link(slot) }}{% endif %} | {{ gen.cardinality(slot) }} <br/> {{ compute_range(slot) }} | {{ slot.description|enshorten }} | direct |
 {% endfor -%}
 {% endif -%}
 {% if gen.get_indirect_slots(element)|length > 0 %}
 {%- for slot in gen.get_indirect_slots(element) -%}
-| {{ gen.link(slot) }} | {{ gen.cardinality(slot) }} <br/> {{ compute_range(slot) }} | {{ slot.description|enshorten }} | {{ gen.links(gen.get_slot_inherited_from(element.name, slot.name))|join(', ') }} |
+| {% if slot.deprecated -%}~~{{ gen.link(slot) }}~~{% else -%}{{ gen.link(slot) }}{% endif %} | {{ gen.cardinality(slot) }} <br/> {{ compute_range(slot) }} | {{ slot.description|enshorten }} | {{ gen.links(gen.get_slot_inherited_from(element.name, slot.name))|join(', ') }} |
 {% endfor -%}
 {% endif %}
 

@@ -1,10 +1,37 @@
-# Enum: {{ gen.name(element) }}
+{%- if element.title %}
+    {%- set title = element.title ~ ' (' ~ element.name ~ ')' -%}
+{%- else %}
+    {%- if gen.use_enum_uris -%}
+        {%- set title = element.name -%}
+    {%- else -%}
+        {%- set title = gen.name(element) -%}
+    {%- endif -%}
+{%- endif -%}
+
+{%- if element.deprecated %}
+    {%- set title = '~~' ~ title ~ '~~' -%}
+    {%- set title = 'Enum: ' ~ title ~ '<span style="color: #ff5252;"><strong> (DEPRECATED) </strong></span>' -%}
+{%- endif -%}
+{%- if element.abstract %}
+    {%- set title = title ~ ' <span style="color: pink;"><strong><small> (Abstract) </small></strong></span> ' -%}
+{%- endif -%}
+{%- if element.multivalued %}
+    {%- set title = title ~ ' (multivalued)' %}
+{%- endif -%}
+
+# {{ title }}
 
 {% if element.description %}
 {% set element_description_lines = element.description.split('\n') %}
 {% for element_description_line in element_description_lines %}
 _{{ element_description_line }}_
 {% endfor %}
+{% endif %}
+
+{% if element.deprecated %}
+* __NOTE__ this element has been deprecated with the following note:
+    * *{{ element.deprecated }}*
+    {% if element.deprecated_element_has_exact_replacement %}* Element has been replaced by {{ gen.link(element.deprecated_element_has_exact_replacement) }}{% endif %}
 {% endif %}
 
 URI: {{ gen.link(element) }}
