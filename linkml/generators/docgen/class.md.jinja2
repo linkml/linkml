@@ -1,3 +1,5 @@
+{%- set header = 'Class:' -%}
+
 {%- if element.title %}
     {%- set title = element.title ~ ' (' ~ element.name ~ ')' -%}
 {%- else %}
@@ -10,7 +12,7 @@
 
 {%- if element.deprecated %}
     {%- set title = '~~' ~ title ~ '~~' -%}
-    {%- set title = 'Class: ' ~ title ~ '<span style="color: #ff5252;"><strong> (DEPRECATED) </strong></span>' -%}
+    {%- set title = title ~ '<span style="color: #ff5252;"><strong> (DEPRECATED) </strong></span>' -%}
 {%- endif -%}
 {%- if element.abstract %}
     {%- set title = title ~ ' <span style="color: pink;"><strong><small> (Abstract) </small></strong></span> ' -%}
@@ -32,7 +34,7 @@
     {%- endif -%}
 {% endmacro %}
 
-# {{ title }}
+# {{ header }} {{ title }}
 
 {%- if header -%}
 {{header}}

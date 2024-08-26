@@ -1,3 +1,5 @@
+{%- set header = 'Enum:' -%}
+
 {%- if element.title %}
     {%- set title = element.title ~ ' (' ~ element.name ~ ')' -%}
 {%- else %}
@@ -10,7 +12,7 @@
 
 {%- if element.deprecated %}
     {%- set title = '~~' ~ title ~ '~~' -%}
-    {%- set title = 'Enum: ' ~ title ~ '<span style="color: #ff5252;"><strong> (DEPRECATED) </strong></span>' -%}
+    {%- set title = title ~ '<span style="color: #ff5252;"><strong> (DEPRECATED) </strong></span>' -%}
 {%- endif -%}
 {%- if element.abstract %}
     {%- set title = title ~ ' <span style="color: pink;"><strong><small> (Abstract) </small></strong></span> ' -%}
@@ -19,7 +21,7 @@
     {%- set title = title ~ ' (multivalued)' %}
 {%- endif -%}
 
-# {{ title }}
+# {{ header }} {{ title }}
 
 {% if element.description %}
 {% set element_description_lines = element.description.split('\n') %}

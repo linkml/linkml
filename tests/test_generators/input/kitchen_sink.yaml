@@ -321,6 +321,9 @@ classes:
     deprecated: this is not a real class, we are using it to test deprecation
     attributes:
       test_attribute:
+      test_deprecated_attribute:
+        deprecated: true
+        deprecated_element_has_exact_replacement: test_attribute
 
   class with spaces:
     attributes:

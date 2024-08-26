@@ -617,6 +617,48 @@ def test_class_slots_inheritance(kitchen_sink_path):
 
     assert expected_result == actual_result
 
+def test_deprecated(kitchen_sink_path, input_path, tmp_path):
+    tdir = input_path("docgen_html_templates")
+    gen = DocGenerator(
+        kitchen_sink_path,
+        mergeimports=True,
+        no_types_dir=True,
+        template_directory=str(tdir),
+        use_slot_uris=True,
+    )
+
+    gen.serialize(directory=str(tmp_path))
+
+    # this is a deprecated class
+    assert_mdfile_contains(
+        tmp_path / "FakeClass.md", 
+        "# Class: ~~FakeClass~~",
+    )
+    assert_mdfile_contains(
+        tmp_path / "FakeClass.md",
+        "__NOTE__ this element has been deprecated with the following note:"
+    )
+
+    # check that deprecated slot has strikethrough on class page
+    assert_mdfile_contains(
+        tmp_path / "FakeClass.md", 
+        "~~[test_deprecated_attribute](test_deprecated_attribute.md)~~", 
+        after="## Slots"
+    )
+
+    # check that deprecated slot has strikethrough title
+    assert_mdfile_contains(
+        tmp_path / "test_deprecated_attribute.md", 
+        "# Slot: ~~test_deprecated_attribute~~",
+    )
+
+    # check deprecated class strikethrough and note in index.md
+    assert_mdfile_contains(
+        tmp_path / "index.md",
+        "| ~~[FakeClass](FakeClass.md)~~ | *(Deprecated)*  |",
+        after="| [Event](Event.md) |  |"
+    )
+
 
 def test_use_slot_uris(kitchen_sink_path, input_path, tmp_path):
     tdir = input_path("docgen_html_templates")
