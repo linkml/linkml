@@ -267,6 +267,13 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             from typing_extensions import Literal
 
     """
+    sort_imports: bool = True
+    """
+    Before returning from :meth:`.render`, sort imports with :meth:`.Imports.sort`
+
+    Default ``True``, but optional in case import order must be explicitly given,
+    eg. to avoid circular import errors in complex generator subclasses.
+    """
     metadata_mode: Union[MetadataMode, str, None] = MetadataMode.AUTO
     """
     How to include schema metadata in generated pydantic models.
@@ -965,13 +972,14 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         class_results = self.after_generate_classes(class_results, sv)
 
         classes = {r.cls.name: r.cls for r in class_results}
-
         injected_classes = self._clean_injected_classes(injected_classes)
+
+        imports.render_sorted = self.sort_imports
 
         module = PydanticModule(
             metamodel_version=self.schema.metamodel_version,
             version=self.schema.version,
-            python_imports=imports.imports,
+            python_imports=imports,
             base_model=base_model,
             injected_classes=injected_classes,
             enums=enums,
