@@ -351,7 +351,7 @@
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span><span class="p">,</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">deque</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.namespaces</span> <span class="kn">import</span> <span class="n">Namespaces</span>
@@ -490,6 +490,11 @@
     <span class="n">modifications</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
 
+    <span class="c1">## private vars --------</span>
+    <span class="c1"># cached hash</span>
+    <span class="n">_hash</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span>
                  <span class="n">importmap</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">merge_imports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
@@ -511,8 +516,10 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__key</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">__key</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">NotImplemented</span>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__key</span><span class="p">())</span>
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__key</span><span class="p">())</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span>
 
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">namespaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespaces</span><span class="p">:</span>
@@ -625,8 +632,25 @@
             <span class="k">if</span> <span class="n">sn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema_map</span><span class="p">[</span><span class="n">sn</span><span class="p">]</span><span class="o">.</span><span class="n">imports</span><span class="p">:</span>
                     <span class="c1"># no self imports ;)</span>
-                    <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">sn</span><span class="p">:</span>
-                        <span class="n">todo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">sn</span><span class="p">:</span>
+                        <span class="k">continue</span>
+
+                    <span class="c1"># resolve relative imports relative to the importing schema, rather than the</span>
+                    <span class="c1"># origin schema. Imports can be a URI or Curie, and imports from the same</span>
+                    <span class="c1"># directory don&#39;t require a ./, so if the current (sn) import is a relative</span>
+                    <span class="c1"># path, and the target import doesn&#39;t have : (as in a curie or a URI)</span>
+                    <span class="c1"># we prepend the relative path. This WILL make the key in the `schema_map` not</span>
+                    <span class="c1"># equal to the literal text specified in the importing schema, but this is</span>
+                    <span class="c1"># essential to sensible deduplication: eg. for</span>
+                    <span class="c1"># - main.yaml (imports ./types.yaml, ./subdir/subschema.yaml)</span>
+                    <span class="c1"># - types.yaml</span>
+                    <span class="c1"># - subdir/subschema.yaml (imports ./types.yaml)</span>
+                    <span class="c1"># - subdir/types.yaml</span>
+                    <span class="c1"># we should treat the two `types.yaml` as separate schemas from the POV of the</span>
+                    <span class="c1"># origin schema.</span>
+                    <span class="k">if</span> <span class="n">sn</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;:&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
+                        <span class="n">i</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="n">i</span><span class="p">))</span>
+                    <span class="n">todo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 
             <span class="c1"># add item to closure</span>
             <span class="c1"># append + pop (above) is FILO queue, which correctly extends tree leaves,</span>
@@ -745,7 +769,7 @@
 <div class="viewcode-block" id="SchemaView.all_classes"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_classes">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">all_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ordered_by</span><span class="o">=</span><span class="n">OrderedBy</span><span class="o">.</span><span class="n">PRESERVE</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param ordered_by: an enumerated parameter that returns all the slots in the order specified.</span>
+<span class="sd">        :param ordered_by: an enumerated parameter that returns all the classes in the order specified.</span>
 <span class="sd">        :param imports: include imports closure</span>
 <span class="sd">        :return: all classes in schema view</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2178,6 +2202,7 @@
         <span class="k">return</span> <span class="n">s2</span>
 
     <span class="k">def</span> <span class="nf">set_modified</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">modifications</span> <span class="o">+=</span> <span class="mi">1</span>
 
 <div class="viewcode-block" id="SchemaView.materialize_patterns"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.materialize_patterns">[docs]</a>    <span class="k">def</span> <span class="nf">materialize_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
