@@ -43,7 +43,6 @@ from linkml.generators.yamlgen import cli as gen_yaml
 from linkml.generators.yumlgen import cli as gen_yuml
 from linkml.linter.cli import main as linkml_lint
 from linkml.utils.converter import cli as linkml_convert
-from linkml.utils.execute_tutorial import cli as run_tutorial
 from linkml.utils.schema_fixer import main as linkml_schema_fixer
 from linkml.utils.sqlutils import main as linkml_sqldb
 from linkml.validator.cli import cli as linkml_validate
@@ -67,14 +66,6 @@ def linkml():
 def generate():
     """
     Generate formats from a LinkML schema
-    """
-
-
-@linkml.group()
-@click.version_option(__version__, "-V", "--version")
-def dev():
-    """
-    Helper tools for linkml development
     """
 
 
@@ -125,6 +116,3 @@ generate.add_command(gen_project, name="project")
 generate.add_command(gen_excel, name="excel")
 generate.add_command(gen_sssom, name="sssom")
 generate.add_command(gen_linkml, name="linkml")
-
-# Dev helpers
-dev.add_command(run_tutorial, name="tutorial")

@@ -61,11 +61,6 @@ linkml/workspaces/datamodel/workspaces.py: linkml/workspaces/datamodel/workspace
 linkml/linter/config/datamodel/config.py: linkml/linter/config/datamodel/config.yaml
 	$(RUN) gen-python $< > $@.tmp && mv $@.tmp $@
 
-TUTORIALS = 01 02 03 04 05 06 07 08 09 10
-test-tutorials: $(patsubst %, test-tutorial-%, $(TUTORIALS))
-test-tutorial-%: docs/intro/tutorial%.md
-	$(RUN) python -m linkml.utils.execute_tutorial -d /tmp/tutorial $<
-
 docs:
 	cd docs && $(RUN) make html
 
