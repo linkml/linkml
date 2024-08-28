@@ -101,7 +101,7 @@ def test_alias(framework, class_uri, slot_uri, slot_alias, type_uri, data_name, 
             "slots": [SLOT_S1],
             "_mappings": {
                 OWL: [(class_uriref, RDF.type, OWLNS.Class)],
-                PYDANTIC: f"{expected_slot_name}: Optional[int]",  ## May change in future, does not current support aliases
+                PYDANTIC: f"{expected_slot_name}: Optional[int]",
                 PYTHON_DATACLASSES: f"{expected_slot_name}: Optional[Union[int, T]]",
                 JSONLD_CONTEXT: expected_class_jsonld_context,
             },
