@@ -1,3 +1,4 @@
+import os
 import shutil
 import sys
 from abc import ABC, abstractmethod
@@ -15,6 +16,9 @@ from tests.utils.compare_rdf import compare_rdf
 from tests.utils.dirutils import are_dir_trees_equal
 
 KITCHEN_SINK_PATH = str(Path(__file__).parent / "test_generators" / "input" / "kitchen_sink.yaml")
+
+# avoid an error from nbconvert -> jupyter_core. remove this after jupyter_core v6
+os.environ["JUPYTER_PLATFORM_DIRS"] = "1"
 
 
 def normalize_line_endings(string: str):
