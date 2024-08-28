@@ -314,7 +314,9 @@ class Import(PydanticTemplateModel):
         """
         if self.module == "__future__":
             return "future"
-        elif self.module in sys.stdlib_module_names:
+        elif sys.version_info.minor >= 10 and self.module in sys.stdlib_module_names:
+            return "stdlib"
+        elif sys.version_info.minor < 10 and self.module in _some_stdlib_module_names:
             return "stdlib"
         elif self.module.startswith("."):
             return "local"
@@ -627,7 +629,7 @@ class Imports(PydanticTemplateModel):
         * Then alphabetically by module name
         """
 
-        def _sort_key(i: Import) -> tuple[int, int, str]:
+        def _sort_key(i: Import) -> Tuple[int, int, str]:
             return (self.group_order.index(i.group), int(i.objects is not None), i.module)
 
         imports = sorted(self.imports, key=_sort_key)
@@ -671,3 +673,11 @@ class PydanticModule(PydanticTemplateModel):
     @computed_field
     def class_names(self) -> List[str]:
         return [c.name for c in self.classes.values()]
+
+
+_some_stdlib_module_names = {"copy", "datetime", "decimal", "enum", "inspect", "os", "re", "sys", "typing"}
+"""
+sys.stdlib_module_names is only present in 3.10 and later
+so we make a cheap copy of the stdlib modules that we commonly use here,
+but this should be removed whenever support for 3.9 is dropped.
+"""

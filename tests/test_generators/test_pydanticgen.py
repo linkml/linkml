@@ -2389,3 +2389,26 @@ def test_lifecycle_slots(kitchen_sink_path):
             assert attr.description == "TEST MODIFYING SLOTS"
             assert attr.required
             assert attr.meta["extra_meta_field"]
+
+
+def test_crappy_stdlib_set_removed():
+    """
+    After support for <3.10 is dropped, remove the dang stdlib list stub
+
+    since this is just a tidiness test rather than a correctness test,
+    wrap the whole thing in a try and self-contain its imports
+    """
+    try:
+        from importlib.metadata import metadata
+
+        from packaging.specifiers import SpecifierSet
+        from packaging.version import Version
+
+        linkml_meta = metadata("linkml")
+        req_python = SpecifierSet(linkml_meta.json["requires_python"])
+        assert req_python.contains(
+            Version("3.9")
+        ), "REMOVE _some_stdlib_module_names from the bottom of pydanticgen/template.py, "
+        "and then REMOVE THIS TEST!"
+    except Exception:
+        pass
