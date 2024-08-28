@@ -7,7 +7,6 @@
 - `linkml-sqldb`
 - `linkml-schema-fixer`
 - `linkml-run-examples`
-- `run-tutorial`
 
 ## Validators
 
