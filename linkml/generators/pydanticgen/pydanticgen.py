@@ -269,7 +269,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     """
     sort_imports: bool = True
     """
-    Before returning from :meth:`.render`, sort imports with :meth:`.Imports.sort`
+    Before returning from :meth:`.PydanticGenerator.render`, sort imports with :meth:`.Imports.sort`
 
     Default ``True``, but optional in case import order must be explicitly given,
     eg. to avoid circular import errors in complex generator subclasses.
@@ -928,6 +928,9 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         return Import(module=module, objects=[ObjectImport(name=camelcase(class_name))], is_schema=True)
 
     def render(self) -> PydanticModule:
+        """
+        Render the schema to a :class:`PydanticModule` model
+        """
         sv: SchemaView
         sv = self.schemaview
 
@@ -995,7 +998,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
         Args:
             rendered_module ( :class:`.PydanticModule` ): Optional, if schema was previously
-                rendered with :meth:`.render` , use that, otherwise :meth:`.render` fresh.
+                rendered with :meth:`~.PydanticGenerator.render` , use that, otherwise :meth:`~.PydanticGenerator.render` fresh.
         """
         if rendered_module is not None:
             module = rendered_module
