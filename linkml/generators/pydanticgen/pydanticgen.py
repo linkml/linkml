@@ -998,7 +998,8 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
         Args:
             rendered_module ( :class:`.PydanticModule` ): Optional, if schema was previously
-                rendered with :meth:`~.PydanticGenerator.render` , use that, otherwise :meth:`~.PydanticGenerator.render` fresh.
+                rendered with :meth:`~.PydanticGenerator.render` , use that,
+                otherwise :meth:`~.PydanticGenerator.render` fresh.
         """
         if rendered_module is not None:
             module = rendered_module
