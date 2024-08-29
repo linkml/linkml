@@ -4396,6 +4396,8 @@
           <li><a href="generators/yuml.html#linkml.generators.yumlgen.YumlGenerator.cardinality">(linkml.generators.yumlgen.YumlGenerator static method)</a>
 </li>
         </ul></li>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticModule.cast_imports">cast_imports() (linkml.generators.pydanticgen.template.PydanticModule class method)</a>
+</li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.categories">categories (linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
 
         <ul>
@@ -6348,6 +6350,14 @@
 </li>
         <li><a href="generators/graphql.html#linkml.generators.graphqlgen.GraphqlGenerator">GraphqlGenerator (class in linkml.generators.graphqlgen)</a>
 </li>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.ConditionalImport.group">group (linkml.generators.pydanticgen.template.ConditionalImport property)</a>
+
+        <ul>
+          <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Import.group">(linkml.generators.pydanticgen.template.Import property)</a>
+</li>
+        </ul></li>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Imports.group_order">group_order (linkml.generators.pydanticgen.template.Imports attribute)</a>
+</li>
     </ul></td>
   </tr></table>
 </section>
@@ -6393,6 +6403,10 @@
 </li>
         </ul></li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Import">Import (class in linkml.generators.pydanticgen.template)</a>
+</li>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.IMPORT_GROUPS">IMPORT_GROUPS (in module linkml.generators.pydanticgen.template)</a>
+</li>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Imports.import_groups">import_groups (linkml.generators.pydanticgen.template.Imports property)</a>
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.imported_from">imported_from (linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
 
@@ -6460,10 +6474,10 @@
 </li>
         <li><a href="code/utils.html#linkml.utils.datautils.infer_root_class">infer_root_class() (in module linkml.utils.datautils)</a>
 </li>
-        <li><a href="developers/inference.html#linkml_runtime.utils.inference_utils.infer_slot_value">infer_slot_value() (in module linkml_runtime.utils.inference_utils)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="developers/inference.html#linkml_runtime.utils.inference_utils.infer_slot_value">infer_slot_value() (in module linkml_runtime.utils.inference_utils)</a>
+</li>
         <li><a href="generators/docgen.html#linkml.generators.docgen.DocGenerator.inheritance_tree">inheritance_tree() (linkml.generators.docgen.DocGenerator method)</a>
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.inherited">inherited (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
@@ -9572,12 +9586,12 @@
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.reflexive">reflexive (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.reflexive_transitive_form_of">reflexive_transitive_form_of (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.typereferences.RefType">RefType (class in linkml.utils.typereferences)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.related_mappings">related_mappings (linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
 
         <ul>
@@ -9592,7 +9606,15 @@
 </li>
         <li><a href="developers/deprecation.html#linkml.utils.deprecation.Deprecation.removed_in">removed_in (linkml.utils.deprecation.Deprecation attribute)</a>
 </li>
-        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticTemplateModel.render">render() (linkml.generators.pydanticgen.template.PydanticTemplateModel method)</a>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.render">render() (linkml.generators.pydanticgen.PydanticGenerator method)</a>
+
+        <ul>
+          <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Imports.render">(linkml.generators.pydanticgen.template.Imports method)</a>
+</li>
+          <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticTemplateModel.render">(linkml.generators.pydanticgen.template.PydanticTemplateModel method)</a>
+</li>
+        </ul></li>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Imports.render_sorted">render_sorted (linkml.generators.pydanticgen.template.Imports attribute)</a>
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.TypeDefinition.repr">repr (linkml_runtime.linkml_model.meta.TypeDefinition attribute)</a>
 </li>
@@ -9763,12 +9785,12 @@
 </li>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.slot_name">slot_name() (linkml.utils.generator.Generator method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="code/utils.html#linkml.utils.schemaloader.SchemaLoader.slot_name_for">slot_name_for() (linkml.utils.schemaloader.SchemaLoader static method)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_name_mappings">slot_name_mappings() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ClassDefinition.slot_names_unique">slot_names_unique (linkml_runtime.linkml_model.meta.ClassDefinition attribute)</a>
 
         <ul>
@@ -9813,11 +9835,21 @@
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.SNAKE_CASE">SNAKE_CASE (linkml.generators.pydanticgen.PydanticGenerator attribute)</a>
 </li>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.ConditionalImport.sort">sort() (linkml.generators.pydanticgen.template.ConditionalImport method)</a>
+
+        <ul>
+          <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Import.sort">(linkml.generators.pydanticgen.template.Import method)</a>
+</li>
+          <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Imports.sort">(linkml.generators.pydanticgen.template.Imports method)</a>
+</li>
+        </ul></li>
         <li><a href="generators/docgen.html#linkml.generators.docgen.DocGenerator.sort_by">sort_by (linkml.generators.docgen.DocGenerator attribute)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.sort_class_slots">sort_class_slots (linkml.utils.generator.Generator attribute)</a>
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.sort_classes">sort_classes() (linkml.generators.pydanticgen.PydanticGenerator static method)</a>
+</li>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.sort_imports">sort_imports (linkml.generators.pydanticgen.PydanticGenerator attribute)</a>
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.source">source (linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
 

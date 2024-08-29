@@ -343,8 +343,9 @@
         </div>
         <article role="main">
           <h1>Source code for linkml.generators.pydanticgen.template</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">importlib.util</span> <span class="kn">import</span> <span class="n">find_spec</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">importlib.util</span> <span class="kn">import</span> <span class="n">find_spec</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">get_args</span>
 
 <span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">PackageLoader</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span>
@@ -371,6 +372,14 @@
     <span class="k">def</span> <span class="nf">computed_field</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;No-op decorator to allow this module to not break imports until 1.9.0&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">f</span>
+
+
+<span class="n">IMPORT_GROUPS</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;future&quot;</span><span class="p">,</span> <span class="s2">&quot;stdlib&quot;</span><span class="p">,</span> <span class="s2">&quot;thirdparty&quot;</span><span class="p">,</span> <span class="s2">&quot;local&quot;</span><span class="p">,</span> <span class="s2">&quot;conditional&quot;</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">See :attr:`.Import.group` and :attr:`.Imports.sort`</span>
+
+<span class="sd">Order of this literal is used in sort and therefore not arbitrary.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 
 <div class="viewcode-block" id="PydanticTemplateModel"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticTemplateModel">[docs]</a><span class="k">class</span> <span class="nc">PydanticTemplateModel</span><span class="p">(</span><span class="n">TemplateModel</span><span class="p">):</span>
@@ -637,6 +646,28 @@
 <span class="sd">    Used primarily in split schema generation, see :func:`.pydanticgen.generate_split` for example usage.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="nd">@computed_field</span>
+    <span class="k">def</span> <span class="nf">group</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IMPORT_GROUPS</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Import group used when sorting</span>
+
+<span class="sd">        * ``future`` - from `__future__` import...</span>
+<span class="sd">        * ``stdlib`` - ... the standard library</span>
+<span class="sd">        * ``thirdparty`` - other dependencies not in the standard library</span>
+<span class="sd">        * ``local`` - relative imports (eg. from split generation)</span>
+<span class="sd">        * ``conditional`` - a :class:`.ConditionalImport`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s2">&quot;__future__&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;future&quot;</span>
+        <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span> <span class="o">&gt;=</span> <span class="mi">10</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdlib_module_names</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;stdlib&quot;</span>
+        <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="ow">in</span> <span class="n">_some_stdlib_module_names</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;stdlib&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;local&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;thirdparty&quot;</span>
+
 <div class="viewcode-block" id="Import.merge"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.template.Import.merge">[docs]</a>    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;Import&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Import&quot;</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Merge one import with another, see :meth:`.Imports` for an example.</span>
@@ -689,7 +720,17 @@
             <span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># one is a module, the other imports objects, keep both</span>
-            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">]</span></div></div>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Import.sort"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.template.Import.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sort imported objects</span>
+
+<span class="sd">        * First by whether the first letter is capitalized or not,</span>
+<span class="sd">        * Then alphabetically (by object name rather than alias)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">objects</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">obj</span><span class="p">:</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">islower</span><span class="p">(),</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">))</span></div></div>
 
 
 <div class="viewcode-block" id="ConditionalImport"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.template.ConditionalImport">[docs]</a><span class="k">class</span> <span class="nc">ConditionalImport</span><span class="p">(</span><span class="n">Import</span><span class="p">):</span>
@@ -734,7 +775,18 @@
 
     <span class="n">template</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;conditional_import.py.jinja&quot;</span>
     <span class="n">condition</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">alternative</span><span class="p">:</span> <span class="n">Import</span></div>
+    <span class="n">alternative</span><span class="p">:</span> <span class="n">Import</span>
+
+    <span class="nd">@computed_field</span>
+    <span class="k">def</span> <span class="nf">group</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;conditional&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="s2">&quot;conditional&quot;</span>
+
+<div class="viewcode-block" id="ConditionalImport.sort"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.template.ConditionalImport.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :meth:`.Import.sort` called for self and :attr:`.alternative`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ConditionalImport</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alternative</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="Imports"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.template.Imports">[docs]</a><span class="k">class</span> <span class="nc">Imports</span><span class="p">(</span><span class="n">PydanticTemplateModel</span><span class="p">):</span>
@@ -772,6 +824,10 @@
     <span class="n">template</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;imports.py.jinja&quot;</span>
 
     <span class="n">imports</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Import</span><span class="p">,</span> <span class="n">ConditionalImport</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">group_order</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">IMPORT_GROUPS</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Order in which to sort imports by their :attr:`.Import.group`&quot;&quot;&quot;</span>
+    <span class="n">render_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;When rendering, render in sorted groups&quot;&quot;&quot;</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_merge</span><span class="p">(</span>
@@ -829,13 +885,17 @@
                         <span class="k">break</span>
 
         <span class="c1"># SPECIAL CASE - __future__ annotations must happen at the top of a file</span>
+        <span class="c1"># sort here outside of sort method because our imports are invalid without it,</span>
+        <span class="c1"># where calling ``sort`` should be optional.</span>
         <span class="n">imports</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">imports</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s2">&quot;__future__&quot;</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">imports</span>
 
     <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Import</span><span class="p">,</span> <span class="s2">&quot;Imports&quot;</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Import</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Imports&quot;</span><span class="p">:</span>
         <span class="n">imports</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">imports</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_merge</span><span class="p">(</span><span class="n">imports</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Imports</span><span class="o">.</span><span class="n">model_construct</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Imports</span><span class="o">.</span><span class="n">model_construct</span><span class="p">(</span>
+            <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_fields</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">&quot;imports&quot;</span><span class="p">}</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="p">)</span>
@@ -895,7 +955,37 @@
         <span class="n">merged_imports</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">imports</span><span class="p">:</span>
             <span class="n">merged_imports</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_merge</span><span class="p">(</span><span class="n">merged_imports</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">merged_imports</span></div></div>
+        <span class="k">return</span> <span class="n">merged_imports</span></div>
+
+    <span class="nd">@computed_field</span>
+    <span class="k">def</span> <span class="nf">import_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">IMPORT_GROUPS</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List of what group each import belongs to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">group</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Imports.sort"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.template.Imports.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sort imports recursively, mimicking isort:</span>
+
+<span class="sd">        * First by :attr:`.Import.group` according to :attr:`.Imports.group_order`</span>
+<span class="sd">        * Then by whether the :class:`.Import` has any objects</span>
+<span class="sd">          (``import module`` comes before ``from module import name``)</span>
+<span class="sd">        * Then alphabetically by module name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">_sort_key</span><span class="p">(</span><span class="n">i</span><span class="p">:</span> <span class="n">Import</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">group_order</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">group</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">objects</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">),</span> <span class="n">i</span><span class="o">.</span><span class="n">module</span><span class="p">)</span>
+
+        <span class="n">imports</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">_sort_key</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">imports</span><span class="p">:</span>
+            <span class="n">i</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imports</span> <span class="o">=</span> <span class="n">imports</span></div>
+
+<div class="viewcode-block" id="Imports.render"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.template.Imports.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Environment</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">black</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_sorted</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Imports</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">environment</span><span class="o">=</span><span class="n">environment</span><span class="p">,</span> <span class="n">black</span><span class="o">=</span><span class="n">black</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="PydanticModule"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticModule">[docs]</a><span class="k">class</span> <span class="nc">PydanticModule</span><span class="p">(</span><span class="n">PydanticTemplateModel</span><span class="p">):</span>
@@ -910,7 +1000,7 @@
     <span class="n">version</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">base_model</span><span class="p">:</span> <span class="n">PydanticBaseModel</span> <span class="o">=</span> <span class="n">PydanticBaseModel</span><span class="p">()</span>
     <span class="n">injected_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">python_imports</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Import</span><span class="p">,</span> <span class="n">ConditionalImport</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">python_imports</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Imports</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Import</span><span class="p">,</span> <span class="n">ConditionalImport</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">Imports</span><span class="p">()</span>
     <span class="n">enums</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PydanticEnum</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
     <span class="n">classes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PydanticClass</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
     <span class="n">meta</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -918,9 +1008,24 @@
 <span class="sd">    Metadata for the schema to be included in a linkml_meta module-level instance of LinkMLMeta</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="PydanticModule.cast_imports"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticModule.cast_imports">[docs]</a>    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;python_imports&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">cast_imports</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">imports</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Imports</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Import</span><span class="p">,</span> <span class="n">ConditionalImport</span><span class="p">]]])</span> <span class="o">-&gt;</span> <span class="n">Imports</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">imports</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">imports</span> <span class="o">=</span> <span class="n">Imports</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">imports</span></div>
+
     <span class="nd">@computed_field</span>
     <span class="k">def</span> <span class="nf">class_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span></div>
+
+
+<span class="n">_some_stdlib_module_names</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;copy&quot;</span><span class="p">,</span> <span class="s2">&quot;datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;decimal&quot;</span><span class="p">,</span> <span class="s2">&quot;enum&quot;</span><span class="p">,</span> <span class="s2">&quot;inspect&quot;</span><span class="p">,</span> <span class="s2">&quot;os&quot;</span><span class="p">,</span> <span class="s2">&quot;re&quot;</span><span class="p">,</span> <span class="s2">&quot;sys&quot;</span><span class="p">,</span> <span class="s2">&quot;typing&quot;</span><span class="p">}</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">sys.stdlib_module_names is only present in 3.10 and later</span>
+<span class="sd">so we make a cheap copy of the stdlib modules that we commonly use here,</span>
+<span class="sd">but this should be removed whenever support for 3.9 is dropped.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
         </article>
       </div>
