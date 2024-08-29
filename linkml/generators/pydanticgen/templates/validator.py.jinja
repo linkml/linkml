@@ -3,7 +3,7 @@
         pattern=re.compile(r"{{pattern}}")
         if isinstance(v,list):
             for element in v:
-                if not pattern.match(element):
+                if isinstance(v, str) and not pattern.match(element):
                     raise ValueError(f"Invalid {{name}} format: {element}")
         elif isinstance(v,str):
             if not pattern.match(v):
