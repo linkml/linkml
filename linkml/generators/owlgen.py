@@ -503,9 +503,9 @@ class OwlSchemaGenerator(Generator):
             owl_exprs.append(self._complement_of_union_of([self.transform_class_expression(x) for x in cls.none_of]))
         for slot in own_slots:
             if slot.name:
-                owltypes = self.slot_node_owltypes(sv.get_slot(slot.name))
+                owltypes = self.slot_node_owltypes(sv.get_slot(slot.name), owning_class=cls)
             else:
-                owltypes = self.slot_node_owltypes(slot)
+                owltypes = self.slot_node_owltypes(slot, owning_class=cls)
             x = self.transform_class_slot_expression(cls, slot, slot, owltypes)
             if not x:
                 range = sv.schema.default_range
@@ -552,12 +552,28 @@ class OwlSchemaGenerator(Generator):
                     owl_exprs.append(self._some_values_from(slot_uri, has_member_expr))
         return self._intersection_of(owl_exprs)
 
-    def slot_node_owltypes(self, slot: Union[SlotDefinition, AnonymousSlotExpression]) -> Set[URIRef]:
+    def slot_node_owltypes(
+        self,
+        slot: Union[SlotDefinition, AnonymousSlotExpression],
+        owning_class: Optional[Union[ClassDefinition, AnonymousClassExpression]] = None,
+    ) -> Set[URIRef]:
+        """
+        Determine the OWL types of a named slot or slot expression
+
+        The OWL type is either OWL.Thing or RDFS.Datatype
+
+        :param slot:
+        :param owning_class:
+        :return:
+        """
         sv = self.schemaview
         node_types = set()
         if isinstance(slot, SlotDefinition):
-            if slot.range in sv.all_classes():
-                range_class = sv.get_class(slot.range)
+            slot_range = slot.range
+            if isinstance(owning_class, ClassDefinition):
+                slot_range = sv.induced_slot(slot.name, owning_class.name).range
+            if slot_range in sv.all_classes():
+                range_class = sv.get_class(slot_range)
                 if not (range_class and range_class.class_uri == "linkml:Any"):
                     node_types.add(OWL.Thing)
             if slot.range in sv.all_types():
@@ -565,7 +581,7 @@ class OwlSchemaGenerator(Generator):
         for k in ["any_of", "all_of", "exactly_one_of", "none_of"]:
             subslot = getattr(slot, k, None)
             if subslot:
-                node_types.update(self.slot_node_owltypes(subslot))
+                node_types.update(self.slot_node_owltypes(subslot, owning_class=owning_class))
         return node_types
 
     def transform_class_slot_expression(
@@ -845,6 +861,7 @@ class OwlSchemaGenerator(Generator):
                 if not isinstance(v, list):
                     v = [v]
                 impls.extend(v)
+            impls.extend(element.implements)
         for impl in impls:
             if impl.startswith("owl:"):
                 return OWL[impl.split(":")[1]]
