@@ -515,6 +515,80 @@ def test_class_any_of(framework, data_name, s1value, s2value, is_valid):
     )
 
 
+@pytest.mark.parametrize(
+    "op,name,family_name,given_name,is_valid",
+    [
+        ("any_of", None, None, None, False),
+        ("any_of", None, "a", None, False),
+        ("any_of", None, None, "b", False),
+        ("any_of", "a b", None, None, True),
+        ("any_of", None, "a", "b", True),
+    ],
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_class_any_of_with_required(framework, op, name, family_name, given_name, is_valid):
+    """
+    https://github.com/linkml/linkml/issues/2282
+    """
+    slots = {
+        SLOT_S1: {
+            "range": "string",
+        },
+        SLOT_S2: {
+            "range": "string",
+        },
+        SLOT_S3: {
+            "range": "string",
+        },
+    }
+    classes = {
+        CLASS_C: {
+            "slots": [SLOT_S1, SLOT_S2, SLOT_S3],
+            op: [
+                {
+                    "slot_conditions": {
+                        SLOT_S1: {
+                            "required": "true",
+                        },
+                    },
+                },
+                {
+                    "slot_conditions": {
+                        SLOT_S2: {
+                            "required": "true",
+                        },
+                        SLOT_S3: {
+                            "required": "true",
+                        },
+                    },
+                },
+            ],
+        },
+    }
+    schema = validated_schema(
+        test_class_any_of_with_required,
+        op,
+        framework,
+        classes=classes,
+        slots=slots,
+        core_elements=["any_of", "required"],
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework not in [JSON_SCHEMA]:
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    check_data(
+        schema,
+        f"N{name}-FN{family_name}-GN{given_name}",
+        framework,
+        {SLOT_S1: name, SLOT_S2: family_name, SLOT_S3: given_name},
+        is_valid,
+        target_class=CLASS_C,
+        expected_behavior=expected_behavior,
+        description=f"validity {is_valid} check for value {name}, {family_name}, {given_name}",
+        # exclude_rdf=True,
+    )
+
+
 @pytest.mark.parametrize("value", ("EQUALS_STRING", "NOT_EQUALS_STRING"))
 @pytest.mark.parametrize("value_is_multivalued", (True, False, "wrong"))
 @pytest.mark.parametrize("multivalued", (True, False))
