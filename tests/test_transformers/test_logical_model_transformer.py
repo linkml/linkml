@@ -368,6 +368,24 @@ def test_any_of_with_required(preserve_class_is_a, pattern, multivalued, inlined
         # assert "xx" == py_field
 
 
+def test_simple_union_with_constraint():
+    sb = SchemaBuilder()
+    sb.add_slot(
+        SlotDefinition(
+            name="string_and_min_number", any_of=[{"range": "string"}, {"range": "integer", "minimum_value": 5}]
+        )
+    )
+    sb.add_class("A", slots=["id", "string_and_min_number"])
+    sb.add_defaults()
+    sv = SchemaView(sb.schema)
+    flattener = LogicalModelTransformer(sv)
+    new_schema = flattener.transform()
+    print("## NEW SCHEMA")
+    print(yaml_dumper.dumps(new_schema))
+    py_def = flattener.attribute_as_python_field(new_schema.classes["A"].attributes["string_and_min_number"])
+    print(py_def)
+
+
 @pytest.mark.parametrize("specify_redundant", [False, True])
 @pytest.mark.parametrize("preserve_class_is_a", [False, True])
 def test_deep_schema(specify_redundant, preserve_class_is_a):
