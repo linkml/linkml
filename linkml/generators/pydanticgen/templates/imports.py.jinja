@@ -20,12 +20,20 @@ from {{ module }} import (
     {%- endif %}
 {%- endif %}
 {% endmacro %}
+{#- For when used with Import model -#}
 {%- if module %}
 {{ import_(module, alias, objects) }}
 {% endif -%}
 {#- For when used with Imports container -#}
 {%- if imports -%}
-{%- for i in imports -%}
-{{ i }}
-{%- endfor -%}
+    {%- if render_sorted -%}
+        {% for i in range(imports | length) %}
+{{ imports[i] }}
+{%- if not loop.last and import_groups[i] != import_groups[i+1] %}{{ '\n' }}{% endif -%}
+        {% endfor %}
+    {%- else -%}
+        {%- for import in imports -%}
+{{ import }}
+        {%- endfor -%}
+    {%- endif -%}
 {% endif -%}

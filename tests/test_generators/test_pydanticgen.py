@@ -49,6 +49,7 @@ from linkml.utils.schema_builder import SchemaBuilder
 from .conftest import MyInjectedClass
 
 PACKAGE = "kitchen_sink"
+pytestmark = pytest.mark.pydanticgen
 
 
 def test_pydantic(kitchen_sink_path, tmp_path, input_path):
@@ -1046,7 +1047,7 @@ def test_imports_add():
     import_cond_a = ConditionalImport(module="module_a", condition="1 == 1", alternative=Import(module="module_b"))
     import_cond_b = ConditionalImport(module="module_a", condition="2 == 2", alternative=Import(module="module_c"))
 
-    imports = Imports() + import_a
+    imports = Imports(render_sorted=False) + import_a
 
     imports_1 = imports + import_b
     assert len(imports_1) == len(imports) + 1
@@ -1230,6 +1231,82 @@ def test_imports_contains():
 
     with pytest.raises(TypeError):
         _ = "a string!?!?" in imports
+
+
+def test_import_sort():
+    """
+    Import.sort should sort its objects alphabetically and according to capitalization
+    """
+    an_import = Import(
+        module="module_a",
+        objects=[
+            ObjectImport(name="A"),
+            ObjectImport(name="C"),
+            ObjectImport(name="a"),
+            ObjectImport(name="B", alias="Z"),
+        ],
+    )
+
+    an_import.sort()
+    obj_names = [o.name for o in an_import.objects]
+    assert obj_names == ["A", "B", "C", "a"]
+
+
+@pytest.mark.parametrize(
+    "module,group",
+    (
+        ("__future__", "future"),
+        ("typing", "stdlib"),
+        ("numpy", "thirdparty"),
+        (".mymodule", "local"),
+    ),
+)
+def test_import_group(module, group):
+    """Import.group should correctly identify import group"""
+    assert Import(module=module).group == group
+
+
+def test_imports_sort():
+    """
+    Imports.sort should sort like isort
+    """
+    imports = Imports(
+        imports=[
+            # ConditionalImports come last
+            ConditionalImport(module="aaa", condition="True", alternative=Import(module="bbb")),
+            # local modules come after thirdparty
+            Import(module=".mymodule"),
+            # thirdparty come after stdlib
+            Import(module="numpy"),
+            # __future__ always comes first
+            Import(module="__future__", objects=[ObjectImport(name="print")]),
+            Import(module="typing", objects=[ObjectImport(name="List")]),
+            # objects should be sorted within an Import
+            Import(module="datetime", objects=[ObjectImport(name="time"), ObjectImport(name="datetime")]),
+            # imports without objects come first within a group
+            Import(module="sys"),
+            Import(module="enum"),
+        ]
+    )
+    imports.sort()
+    module_order = [i.module for i in imports.imports]
+    assert module_order == ["__future__", "enum", "sys", "datetime", "typing", "numpy", ".mymodule", "aaa"]
+    assert [o.name for o in imports["datetime"].objects] == ["datetime", "time"]
+
+
+def test_imports_groups_rendering(kitchen_sink_path):
+    """
+    When rendering, python import groups should be rendered by newline-delimited groups
+    """
+    gen = PydanticGenerator(
+        kitchen_sink_path, imports=[Import(module=".mymodule"), Import(module="numpy")], sort_imports=True
+    )
+    rendered = gen.render()
+    rendered_imports = rendered.python_imports.render()
+    # yes line break between builtins and thirdparty
+    assert re.search(r"\)\n\nimport numpy", rendered_imports)
+    # no line break between builtins
+    assert re.search("import re\nimport sys", rendered_imports)
 
 
 def test_template_models_templates():
@@ -2312,3 +2389,26 @@ def test_lifecycle_slots(kitchen_sink_path):
             assert attr.description == "TEST MODIFYING SLOTS"
             assert attr.required
             assert attr.meta["extra_meta_field"]
+
+
+def test_crappy_stdlib_set_removed():
+    """
+    After support for <3.10 is dropped, remove the dang stdlib list stub
+
+    since this is just a tidiness test rather than a correctness test,
+    wrap the whole thing in a try and self-contain its imports
+    """
+    try:
+        from importlib.metadata import metadata
+
+        from packaging.specifiers import SpecifierSet
+        from packaging.version import Version
+
+        linkml_meta = metadata("linkml")
+        req_python = SpecifierSet(linkml_meta.json["requires_python"])
+        assert req_python.contains(
+            Version("3.9")
+        ), "REMOVE _some_stdlib_module_names from the bottom of pydanticgen/template.py, "
+        "and then REMOVE THIS TEST!"
+    except Exception:
+        pass

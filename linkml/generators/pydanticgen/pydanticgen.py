@@ -267,6 +267,13 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             from typing_extensions import Literal
 
     """
+    sort_imports: bool = True
+    """
+    Before returning from :meth:`.PydanticGenerator.render`, sort imports with :meth:`.Imports.sort`
+
+    Default ``True``, but optional in case import order must be explicitly given,
+    eg. to avoid circular import errors in complex generator subclasses.
+    """
     metadata_mode: Union[MetadataMode, str, None] = MetadataMode.AUTO
     """
     How to include schema metadata in generated pydantic models.
@@ -921,6 +928,9 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         return Import(module=module, objects=[ObjectImport(name=camelcase(class_name))], is_schema=True)
 
     def render(self) -> PydanticModule:
+        """
+        Render the schema to a :class:`PydanticModule` model
+        """
         sv: SchemaView
         sv = self.schemaview
 
@@ -965,13 +975,14 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         class_results = self.after_generate_classes(class_results, sv)
 
         classes = {r.cls.name: r.cls for r in class_results}
-
         injected_classes = self._clean_injected_classes(injected_classes)
+
+        imports.render_sorted = self.sort_imports
 
         module = PydanticModule(
             metamodel_version=self.schema.metamodel_version,
             version=self.schema.version,
-            python_imports=imports.imports,
+            python_imports=imports,
             base_model=base_model,
             injected_classes=injected_classes,
             enums=enums,
@@ -987,7 +998,8 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
         Args:
             rendered_module ( :class:`.PydanticModule` ): Optional, if schema was previously
-                rendered with :meth:`.render` , use that, otherwise :meth:`.render` fresh.
+                rendered with :meth:`~.PydanticGenerator.render` , use that,
+                otherwise :meth:`~.PydanticGenerator.render` fresh.
         """
         if rendered_module is not None:
             module = rendered_module
