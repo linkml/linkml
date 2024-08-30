@@ -382,7 +382,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pydantic_model</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">pydantic_model</span><span class="p">(</span><span class="n">closed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">closed</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">instance</span> <span class="o">=</span> <span class="n">pydantic_model</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+            <span class="n">instance</span> <span class="o">=</span> <span class="n">pydantic_model</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">ValidationResult</span><span class="p">(</span>
                 <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;Pydantic validation&quot;</span><span class="p">,</span>
