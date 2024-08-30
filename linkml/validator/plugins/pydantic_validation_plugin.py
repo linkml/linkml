@@ -37,7 +37,7 @@ class PydanticValidationPlugin(ValidationPlugin):
         """
         pydantic_model = context.pydantic_model(closed=self.closed)
         try:
-            instance = pydantic_model.parse_obj(instance)
+            instance = pydantic_model.model_validate(instance)
         except Exception as e:
             yield ValidationResult(
                 type="Pydantic validation",

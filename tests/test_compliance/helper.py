@@ -27,7 +27,7 @@ from linkml_runtime.loaders import rdflib_loader
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.yamlutils import YAMLRoot
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from linkml.transformers.logical_model_transformer import UnsatisfiableAttribute
 
@@ -132,13 +132,12 @@ class Feature(BaseModel):
     A category of tests that can be implemented by multiple frameworks.
     """
 
+    model_config = ConfigDict(use_enum_values=True)
+
     name: str
     description: str
     implementations: Dict[FRAMEWORK, ValidationBehavior]
     num_tests: int = 0
-
-    class Config:
-        use_enum_values = True
 
     def set_framework_behavior(self, framework: FRAMEWORK, behavior: ValidationBehavior) -> ValidationBehavior:
         if framework not in self.implementations:
@@ -418,7 +417,8 @@ def _schema_out_path(schema: Dict, parent=False) -> Path:
 
 @lru_cache
 def _get_linkml_types() -> dict:
-    type_schema = yaml.safe_load(open(linkml_runtime.SCHEMA_DIRECTORY / "types.yaml"))
+    with open(linkml_runtime.SCHEMA_DIRECTORY / "types.yaml", "r") as tfile:
+        type_schema = yaml.safe_load(tfile)
     for typ in type_schema.get("types", {}).values():
         typ["from_schema"] = "https://w3id.org/linkml/types"
     return type_schema

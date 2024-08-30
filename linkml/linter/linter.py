@@ -8,6 +8,7 @@ from typing import Any, Dict, Iterable, Union
 import jsonschema
 import yaml
 from jsonschema.exceptions import best_match
+from jsonschema.protocols import Validator
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SchemaDefinition
@@ -35,7 +36,7 @@ def get_named_config(name: str) -> Dict[str, Any]:
 
 
 @lru_cache
-def get_metamodel_validator() -> jsonschema.Validator:
+def get_metamodel_validator() -> Validator:
     meta_json_gen = JsonSchemaGenerator(LOCAL_METAMODEL_YAML_FILE, not_closed=False)
     meta_json_schema = meta_json_gen.generate()
     validator_cls = jsonschema.validators.validator_for(meta_json_schema, default=jsonschema.Draft7Validator)
