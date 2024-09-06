@@ -2,7 +2,7 @@ import os
 from dataclasses import dataclass
 
 import click
-from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
+from linkml_runtime.linkml_model.meta import ClassDefinition, EnumDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, lcamelcase
 
 from linkml._version import __version__
@@ -49,6 +49,13 @@ class GraphqlGenerator(Generator):
         if slot.required:
             slotrange = slotrange + "!"
         return f"\n    {lcamelcase(aliased_slot_name)}: {slotrange}"
+
+    def visit_enum(self, enum: EnumDefinition):
+        out = f"enum {enum.name}\n  {{"
+        for permissible_value in enum.permissible_values:
+            out = "\n    ".join([out, permissible_value])
+        out = "\n".join([out, "  }\n\n"])
+        return out
 
 
 @shared_arguments(GraphqlGenerator)
