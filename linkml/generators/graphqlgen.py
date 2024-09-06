@@ -39,11 +39,29 @@ class GraphqlGenerator(Generator):
         return "\n  }\n\n"
 
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> str:
-        slotrange = (
-            camelcase(slot.range)
-            if slot.range in self.schema.classes or slot.range in self.schema.types or slot.range in self.schema.enums
-            else "String"
-        )
+        if slot.range in self.schema.classes or slot.range in self.schema.slots or slot.range in self.schema.enums:
+            slotrange = camelcase(slot.range)
+        elif slot.range in self.schema.types:
+            if self.schema.types[slot.range].from_schema != "https://w3id.org/linkml/types":
+                slotrange = camelcase(slot.range)
+            else:
+                graphql_scalars = ["Int", "Float", "String", "Boolean", "ID"]
+                if slot.range == "integer":
+                    slotrange = "Int"
+                elif slot.range == "decimal":
+                    slotrange = "Float"
+                elif camelcase(slot.range) in graphql_scalars:
+                    slotrange = camelcase(slot.range)
+                else:
+                    if self.schema.types[slot.range].repr:
+                        python_type = self.schema.types[slot.range].repr
+                    elif self.schema.types[slot.range].base:
+                        python_type = self.schema.types[slot.range].base
+                    if str(python_type) == "float":
+                        slotrange = "Float"
+                    elif str(python_type) == "str":
+                        slotrange = "String"
+
         if slot.multivalued:
             slotrange = f"[{slotrange}]"
         if slot.required:
