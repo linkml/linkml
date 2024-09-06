@@ -10,11 +10,11 @@ type Person implements HasAliases
     hasEmploymentHistory: [EmploymentEvent]
     hasFamilialRelationships: [FamilialRelationship]
     hasMedicalHistory: [MedicalEvent]
-    ageInYears: Integer
+    ageInYears: Int
     addresses: [Address]
     hasBirthEvent: BirthEvent
     speciesName: String
-    stomachCount: Integer
+    stomachCount: Int
     isLiving: LifeStatusEnum
     aliases: [String]
   }
@@ -23,8 +23,8 @@ type Person implements HasAliases
 MEDICALEVENT = """
 type MedicalEvent
   {
-    startedAtTime: Date
-    endedAtTime: Date
+    startedAtTime: String
+    endedAtTime: String
     isCurrent: Boolean
     metadata: AnyObject
     inLocation: Place
@@ -36,8 +36,8 @@ type MedicalEvent
 FAMILIALRELATIONSHIP = """
 type FamilialRelationship
   {
-    startedAtTime: Date
-    endedAtTime: Date
+    startedAtTime: String
+    endedAtTime: String
     cordialness: String
     type: FamilialRelationshipType!
     relatedTo: Person!
