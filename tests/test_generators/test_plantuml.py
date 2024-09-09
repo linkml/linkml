@@ -2,6 +2,9 @@ import os
 from xml.dom import minidom
 
 import pytest
+from docker.errors import ImageNotFound
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.waiting_utils import wait_for_logs
 
 from linkml.generators.plantumlgen import PlantumlGenerator
 
@@ -40,6 +43,25 @@ DATASET2PERSON = """
 """
 
 
+@pytest.fixture(scope="module")
+def kroki_url(request):
+    kroki_container = DockerContainer("yuzutech/kroki").with_exposed_ports(8000)
+
+    def stop_container():
+        kroki_container.stop()
+
+    try:
+        kroki_container.start()
+        wait_for_logs(kroki_container, ".*Succeeded in deploying verticle.*")
+        request.addfinalizer(stop_container)
+
+        return f"http://{kroki_container.get_container_host_ip()}:{kroki_container.get_exposed_port(8000)}"
+    except ImageNotFound:
+        print("Kroki container cannot be started, falling back to the Kroki official servers")
+
+    return "https://kroki.io/"
+
+
 @pytest.mark.parametrize(
     "input_class,expected",
     [
@@ -51,9 +73,12 @@ DATASET2PERSON = """
         ("FamilialRelationship", FAMILIALRELATIONSHIP2PERSON),
     ],
 )
-def test_serialize_selected(input_class, expected, kitchen_sink_path):
+def test_serialize_selected(input_class, expected, kitchen_sink_path, kroki_url):
     """Test serialization of select plantUML class diagrams from schema."""
-    generator = PlantumlGenerator(kitchen_sink_path)
+    generator = PlantumlGenerator(
+        kitchen_sink_path,
+        kroki_server=kroki_url,
+    )
     plantuml = generator.serialize(classes=[input_class])
 
     # check that the expected block/relationships are present
@@ -67,9 +92,12 @@ def test_serialize_selected(input_class, expected, kitchen_sink_path):
         assert 'class "MarriageEvent"' not in plantuml, f"MarriageEvent not reachable from {input_class}"
 
 
-def test_serialize(kitchen_sink_path):
+def test_serialize(kitchen_sink_path, kroki_url):
     """Test serialization of complete plantUML class diagram from schema."""
-    generator = PlantumlGenerator(kitchen_sink_path)
+    generator = PlantumlGenerator(
+        kitchen_sink_path,
+        kroki_server=kroki_url,
+    )
     plantuml = generator.serialize()
 
     # check that plantUML start and end blocks are present
@@ -84,9 +112,12 @@ def test_serialize(kitchen_sink_path):
     assert 'class "MarriageEvent"' in plantuml
 
 
-def test_generate_svg(tmp_path, kitchen_sink_path):
+def test_generate_svg(tmp_path, kitchen_sink_path, kroki_url):
     """Test the correctness of SVG rendering of plantUML diagram."""
-    generator = PlantumlGenerator(kitchen_sink_path)
+    generator = PlantumlGenerator(
+        kitchen_sink_path,
+        kroki_server=kroki_url,
+    )
     generator.serialize(directory=tmp_path)
 
     # name of SVG file will be inferred from schema name because
