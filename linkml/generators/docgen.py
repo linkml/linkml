@@ -50,6 +50,13 @@ DIALECT = MarkdownDialect
 MAX_CHARS_IN_TABLE = 80
 MAX_RANK = 1000
 
+SCHEMA_SUBFOLDER = "schemas"
+CLASS_SUBFOLDER = "classes"
+SLOT_SUBFOLDER = "slots"
+ENUM_SUBFOLDER = "enums"
+TYPE_SUBFOLDER = "types"
+SUBSET_SUBFOLDER = "subsets"
+
 
 def enshorten(input):
     """
@@ -144,6 +151,9 @@ class DocGenerator(Generator):
     include_top_level_diagram: bool = False
     """Whether the index page should include a schema diagram"""
 
+    subfolder_type_separation: bool = False
+    """Whether each type (class, slot, etc.) should be put in separate subfolder for navigation purposes"""
+
     example_directory: Optional[str] = None
     example_runner: ExampleRunner = field(default_factory=lambda: ExampleRunner())
 
@@ -205,7 +215,11 @@ class DocGenerator(Generator):
             self.logger.debug(f"  Generating doc for {schema_name}")
             imported_schema = sv.schema_map.get(schema_name)
             out_str = template.render(gen=self, schema=imported_schema, schemaview=sv, **template_vars)
-            self._write(out_str, directory, imported_schema.name)
+            self._write(
+                out_str,
+                f"{directory}/{SCHEMA_SUBFOLDER}" if self.subfolder_type_separation else directory,
+                imported_schema.name,
+            )
         self.logger.debug("Processing Classes...")
         template = self._get_template("class")
         for cn, c in sv.all_classes().items():
@@ -214,7 +228,7 @@ class DocGenerator(Generator):
             n = self.name(c)
             self.logger.debug(f"  Generating doc for {n}")
             out_str = template.render(gen=self, element=c, schemaview=sv, **template_vars)
-            self._write(out_str, directory, n)
+            self._write(out_str, f"{directory}/{CLASS_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
         self.logger.debug("Processing Slots...")
         template = self._get_template("slot")
         for sn, s in sv.all_slots().items():
@@ -224,7 +238,7 @@ class DocGenerator(Generator):
             self.logger.debug(f"  Generating doc for {n}")
             s = sv.induced_slot(sn)
             out_str = template.render(gen=self, element=s, schemaview=sv, **template_vars)
-            self._write(out_str, directory, n)
+            self._write(out_str, f"{directory}/{SLOT_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
         self.logger.debug("Processing Enums...")
         template = self._get_template("enum")
         for en, e in sv.all_enums().items():
@@ -233,7 +247,7 @@ class DocGenerator(Generator):
             n = self.name(e)
             self.logger.debug(f"  Generating doc for {n}")
             out_str = template.render(gen=self, element=e, schemaview=sv, **template_vars)
-            self._write(out_str, directory, n)
+            self._write(out_str, f"{directory}/{ENUM_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
         self.logger.debug("Processing Types...")
         template = self._get_template("type")
         for tn, t in sv.all_types().items():
@@ -243,7 +257,7 @@ class DocGenerator(Generator):
             self.logger.debug(f"  Generating doc for {n}")
             t = sv.induced_type(tn)
             out_str = template.render(gen=self, element=t, schemaview=sv, **template_vars)
-            self._write(out_str, directory, n)
+            self._write(out_str, f"{directory}/{TYPE_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
         self.logger.debug("Processing Subsets...")
         template = self._get_template("subset")
         for _, s in sv.all_subsets().items():
@@ -252,7 +266,7 @@ class DocGenerator(Generator):
             n = self.name(s)
             self.logger.debug(f"  Generating doc for {n}")
             out_str = template.render(gen=self, element=s, schemaview=sv, **template_vars)
-            self._write(out_str, directory, n)
+            self._write(out_str, f"{directory}/{SUBSET_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
 
     def _write(self, out_str: str, directory: str, name: str) -> None:
         """
@@ -384,13 +398,19 @@ class DocGenerator(Generator):
         curie = self.uri(element, expand=False)
         return f"[{curie}]({uri})"
 
-    def link(self, e: Union[Definition, DefinitionName]) -> str:
+    def link(self, e: Union[Definition, DefinitionName], index_link: bool = False) -> str:
         """
         Render an element as a hyperlink
 
         :param e:
+        :param index_link: Whether this is a link for the index page or not
         :return:
         """
+        if index_link:
+            subfolder = ""
+        else:
+            subfolder = "../"
+
         if e is None:
             return "NONE"
         if not isinstance(e, Definition):
@@ -401,20 +421,43 @@ class DocGenerator(Generator):
             if self.use_class_uris:
                 curie = self.schemaview.get_uri(e)
                 if curie is not None:
-                    return self._markdown_link(n=curie.split(":")[1], name=e.name)
-            return self._markdown_link(camelcase(e.name))
+                    return self._markdown_link(
+                        n=curie.split(":")[1],
+                        name=e.name,
+                        subfolder=subfolder + CLASS_SUBFOLDER if self.subfolder_type_separation else None,
+                    )
+            return self._markdown_link(
+                camelcase(e.name),
+                subfolder=subfolder + CLASS_SUBFOLDER if self.subfolder_type_separation else None,
+            )
         elif isinstance(e, EnumDefinition):
-            return self._markdown_link(camelcase(e.name))
+            return self._markdown_link(
+                camelcase(e.name),
+                subfolder=subfolder + ENUM_SUBFOLDER if self.subfolder_type_separation else None,
+            )
         elif isinstance(e, SlotDefinition):
             if self.use_slot_uris:
                 curie = self.schemaview.get_uri(e)
                 if curie is not None:
-                    return self._markdown_link(n=curie.split(":")[1], name=e.name)
-            return self._markdown_link(underscore(e.name))
+                    return self._markdown_link(
+                        n=curie.split(":")[1],
+                        name=e.name,
+                        subfolder=subfolder + SLOT_SUBFOLDER if self.subfolder_type_separation else None,
+                    )
+            return self._markdown_link(
+                underscore(e.name),
+                subfolder=subfolder + SLOT_SUBFOLDER if self.subfolder_type_separation else None,
+            )
         elif isinstance(e, TypeDefinition):
-            return self._markdown_link(camelcase(e.name))
+            return self._markdown_link(
+                camelcase(e.name),
+                subfolder=subfolder + TYPE_SUBFOLDER if self.subfolder_type_separation else None,
+            )
         elif isinstance(e, SubsetDefinition):
-            return self._markdown_link(camelcase(e.name))
+            return self._markdown_link(
+                camelcase(e.name),
+                subfolder=subfolder + SUBSET_SUBFOLDER if self.subfolder_type_separation else None,
+            )
         else:
             return e.name
 
@@ -977,6 +1020,11 @@ Include LinkML Schema outside of imports mechanism.  Helpful in including deprec
 YAML, and including it when necessary but not by default (e.g. in documentation or for backwards compatibility)
 """,
 )
+@click.option(
+    "--subfolder-type-separation/--no-subfolder-type-separation",
+    default=False,
+    help="Separate type (class, slot, etc.) outputs in different subfolders for navigation purposes",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="doc")
 def cli(
@@ -988,6 +1036,7 @@ def cli(
     use_slot_uris,
     use_class_uris,
     hierarchical_class_view,
+    subfolder_type_separation,
     **args,
 ):
     """Generate documentation folder from a LinkML YAML schema
@@ -1018,6 +1067,7 @@ def cli(
         use_class_uris=use_class_uris,
         hierarchical_class_view=hierarchical_class_view,
         index_name=index_name,
+        subfolder_type_separation=subfolder_type_separation,
         **args,
     )
     print(gen.serialize())
