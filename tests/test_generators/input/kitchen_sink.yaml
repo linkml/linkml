@@ -190,7 +190,7 @@ classes:
     slots:
       - street
       - city
-      - altitude
+      - alt
 
   Concept:
     slots:
@@ -432,6 +432,7 @@ slots:
   cordialness:
   altitude:
     range: decimal
+    alias: alt
 
 enums:
   FamilialRelationshipType:

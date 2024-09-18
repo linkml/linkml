@@ -312,6 +312,9 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
         tmp_path / "EmploymentEvent.md", "[EmploymentEventType](EmploymentEventType.md)", after="## Slots"
     )
 
+    # check that the altitude.md file has the Alias property rendered
+    assert_mdfile_contains(tmp_path / "altitude.md", "Alias: alt", after="URI")
+
     # checks correctness of the YAML representation of source schema
     person_source = gen.yaml(gen.schemaview.induced_class("Person"))
     person_dict = yaml.load(person_source, Loader=yaml.Loader)

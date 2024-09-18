@@ -40,6 +40,9 @@ _{{ element_description_line }}_
 
 URI: {{ gen.uri_link(element) }}
 
+{%- if element.alias %}
+Alias: {{ element.alias }}
+{% endif -%}
 
 {% if schemaview.slot_parents(element.name) or schemaview.slot_children(element.name, mixins=False) %}
 
