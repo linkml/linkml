@@ -13,6 +13,8 @@ from linkml_runtime.loaders import yaml_loader
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from tests.test_generators.test_pythongen import make_python
 
+logger = logging.getLogger(__name__)
+
 pytestmark = pytest.mark.jsonschemagen
 
 
@@ -39,11 +41,11 @@ def test_jsonschema_integration(kitchen_sink_path, input_path):
     ok_metadata = True
     for p in inst.persons:
         for a in p.addresses:
-            logging.debug(f"{p.id} address = {a.street}")
+            logger.debug(f"{p.id} address = {a.street}")
             if a.street.startswith("1 foo"):
                 ok_address = True
         for h in p.has_medical_history:
-            logging.debug(f"{p.id} history = {h}")
+            logger.debug(f"{p.id} history = {h}")
             if h.in_location == "GEO:1234" and h.diagnosis.name == "headache":
                 ok_history = True
             # test the metadata slot, which has an unconstrained range

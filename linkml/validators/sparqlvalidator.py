@@ -15,6 +15,8 @@ from linkml.reporting import CheckResult, Report
 from linkml.utils.datautils import _get_format, dumpers_loaders, get_dumper
 from linkml.utils.datavalidator import DataValidator
 
+logger = logging.getLogger(__name__)
+
 
 def sparqljson2dict(row: dict):
     return {k: v["value"] for k, v in row.items()}
@@ -55,7 +57,7 @@ class SparqlDataValidator(DataValidator):
                 for row in qres:
                     invalid += row
             except Exception:
-                logging.error(f"FAILED: {qn}")
+                logger.error(f"FAILED: {qn}")
         return invalid
 
     def validate_endpoint(self, url: str, **kwargs):
@@ -65,8 +67,8 @@ class SparqlDataValidator(DataValidator):
         report = Report()
         for qn, q in self.queries.items():
             q += " LIMIT 20"
-            logging.debug(f"QUERY: {qn}")
-            logging.debug(f"{q}")
+            logger.debug(f"QUERY: {qn}")
+            logger.debug(f"{q}")
             sw = SPARQLWrapper(url)
             sw.setQuery(q)
             sw.setReturnFormat(JSON)

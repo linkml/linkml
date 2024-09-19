@@ -19,6 +19,9 @@ from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments
 
+logger = logging.getLogger(__name__)
+
+
 type_map = {
     "str": "string",
     "int": "number",
@@ -207,7 +210,7 @@ class TypescriptGenerator(OOCodeGenerator):
                 elif t.typeof and t.typeof in type_map:
                     tsrange = type_map[t.typeof]
                 else:
-                    logging.warning(f"Unknown type.base: {t.name}")
+                    logger.warning(f"Unknown type.base: {t.name}")
                 if slot.multivalued:
                     tsrange = f"{tsrange}[]"
                 return tsrange
@@ -241,7 +244,7 @@ class TypescriptGenerator(OOCodeGenerator):
                 elif t.typeof and t.typeof in type_map:
                     return type_init_map[t.typeof]
                 else:
-                    logging.warning(f"Unknown type.base: {t.name}")
+                    logger.warning(f"Unknown type.base: {t.name}")
                 return "null"
             return "null"
 

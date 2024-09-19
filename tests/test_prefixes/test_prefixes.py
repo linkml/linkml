@@ -19,6 +19,8 @@ PM_OUTPUT = env.expected_path("prefixtest.prefixmap.json")
 CONTEXT_OUTPUT = env.expected_path("prefixtest.context.jsonld")
 TSV_OUTPUT = env.expected_path("prefix_map_prefixtest.tsv")
 
+logger = logging.getLogger(__name__)
+
 
 class PrefixTestCase(unittest.TestCase):
     def test_owlgen(self):
@@ -82,10 +84,10 @@ class PrefixTestCase(unittest.TestCase):
         for k, v in expected.items():
             if k in obj:
                 if v != obj[k]:
-                    logging.error(f"{k} = {v} expected {expected[k]}")
+                    logger.error(f"{k} = {v} expected {expected[k]}")
                     fails += 1
             else:
-                logging.error(f"Missing key: {k}")
+                logger.error(f"Missing key: {k}")
                 fails += 1
         assert fails == 0
 
@@ -148,10 +150,10 @@ class PrefixTestCase(unittest.TestCase):
             if k in obj:
                 if v != obj[k]:
                     if not ("@id" in v and "@id" in obj[k] and v["@id"] == obj[k]["@id"]):
-                        logging.error(f"{k} = {v} expected {expected[k]}")
+                        logger.error(f"{k} = {v} expected {expected[k]}")
                         fails += 1
             else:
-                logging.error(f"Missing key: {k}")
+                logger.error(f"Missing key: {k}")
                 fails += 1
         assert fails == 0
 
@@ -186,11 +188,11 @@ class PrefixTestCase(unittest.TestCase):
                     expected.remove(v)
         for v in exceptions:
             if v in expected:
-                logging.warning(f"TODO: figure why {v} not present")
+                logger.warning(f"TODO: figure why {v} not present")
                 expected.remove(v)
         if len(expected) > 0:
             for e in expected:
-                logging.error(f"Did not find {e}")
+                logger.error(f"Did not find {e}")
             assert False
         else:
             assert True

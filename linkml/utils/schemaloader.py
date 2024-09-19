@@ -176,7 +176,7 @@ class SchemaLoader:
                     # mangled names are overwritten if a schema with attributes is passed in
                     # TODO: handle this in a more graceful way
                     #  see https://github.com/linkml/linkml/issues/872
-                    logging.warning(
+                    self.logger.warning(
                         f'Class: "{cls.name}" attribute "{attribute.name}" - '
                         f"mangled name: {mangled_slot_name} already exists",
                     )
@@ -770,7 +770,7 @@ class SchemaLoader:
             if slotname in self.schema.slots:
                 base_slot = self.schema.slots[slotname]
             else:
-                logging.error(f"slot_usage for undefined slot: {slotname}")
+                self.logger.error(f"slot_usage for undefined slot: {slotname}")
                 base_slot = None
             parent_slot = self.schema.slots.get(slot_usage.is_a)
             # Follow the ancestry of the class to get the most proximal parent

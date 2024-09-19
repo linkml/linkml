@@ -18,6 +18,8 @@ from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
 
+logger = logging.getLogger(__name__)
+
 
 @dataclass
 class ShaclGenerator(Generator):
@@ -244,7 +246,7 @@ class ShaclGenerator(Generator):
             if rt.annotations and self.include_annotations:
                 self._add_annotations(func, rt)
         else:
-            logging.error(f"No URI for type {rt.name}")
+            logger.error(f"No URI for type {rt.name}")
 
     def _and_equals_string(self, g: Graph, func: Callable, values: List) -> None:
         pv_node = BNode()

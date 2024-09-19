@@ -19,6 +19,8 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.utils import datautils
 from linkml.utils.datavalidator import DataValidator
 
+logger = logging.getLogger(__name__)
+
 
 class HashableSchemaDefinition(SchemaDefinition):
     def __hash__(self) -> int:
@@ -27,7 +29,7 @@ class HashableSchemaDefinition(SchemaDefinition):
 
 @lru_cache(maxsize=None)
 def _generate_jsonschema(schema, top_class, closed, include_range_class_descendants):
-    logging.debug("Generating JSON Schema")
+    logger.debug("Generating JSON Schema")
     not_closed = not closed
     return JsonSchemaGenerator(
         schema=schema,

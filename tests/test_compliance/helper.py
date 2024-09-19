@@ -54,6 +54,8 @@ from linkml.utils.sqlutils import SQLStore
 from linkml.validator import JsonschemaValidationPlugin, Validator
 from linkml.validator.plugins.shacl_validation_plugin import ShaclValidationPlugin
 
+logger = logging.getLogger(__name__)
+
 THIS_DIR = Path(__file__).parent
 OUTPUT_DIR = THIS_DIR / "output"
 
@@ -182,7 +184,7 @@ schema_name_to_metamodel_elements: Dict[SCHEMA_NAME, List[str]] = {}
 
 
 def _as_tsv(rows: List[Dict], path: Union[str, Path]) -> str:
-    logging.info(f"Writing report to {path}")
+    logger.info(f"Writing report to {path}")
     fn = f"{path}.tsv"
     if rows:
         fieldnames = []
@@ -203,7 +205,7 @@ def report():
 
     Note: some of these are subject to change
     """
-    logging.info(f"Generating reports for {len(all_test_results)} tests")
+    logger.info(f"Generating reports for {len(all_test_results)} tests")
     fset = FeatureSet(features=list(feature_dict.values()))
     suffix = "" if len(fset.features) > 5 else "_partial"
     summary_base_name = f"summary{suffix}"
@@ -281,7 +283,7 @@ def _generate_framework_output(
         if mappings is None:
             # this should only happen when executing individual pytest combos
             mappings = []
-            logging.warning(f"No mappings for {pair} - called out of order?")
+            logger.warning(f"No mappings for {pair} - called out of order?")
         gen_class = GENERATORS[framework]
         if isinstance(gen_class, tuple):
             gen_class, gen_args = gen_class
@@ -332,7 +334,7 @@ def _generate_framework_output(
                 else:
                     raise AssertionError
     else:
-        logging.debug(f"Reusing {len(cached_generator_output.items())}")
+        logger.debug(f"Reusing {len(cached_generator_output.items())}")
     return cached_generator_output[pair]
 
 
@@ -760,7 +762,7 @@ def check_data(
         ValidationBehavior.NOT_APPLICABLE,
         ValidationBehavior.FALSE_POSITIVE,
     ]:
-        logging.warning(f"Skipping test for {expected_behavior}")
+        logger.warning(f"Skipping test for {expected_behavior}")
     else:
         gen, output, output_path = _generate_framework_output(schema, framework)
         if isinstance(gen, (PydanticGenerator, PythonGenerator)):
@@ -769,7 +771,7 @@ def check_data(
             # coercion detection and output of repaired objects
             mod = compile_python(output)
             py_cls = getattr(mod, target_class)
-            logging.info(f"Validating {py_cls} against {object_to_validate}// {expected_behavior} {valid}")
+            logger.info(f"Validating {py_cls} against {object_to_validate}// {expected_behavior} {valid}")
             py_inst = None
             if valid:
                 py_inst = py_cls(**object_to_validate)
@@ -786,23 +788,23 @@ def check_data(
                                 coerced
                             ), f"coerced {py_inst} != {coerced}"
                         else:
-                            logging.warning(f"INCOMPLETE TEST: did not check coerced: {py_inst}")
+                            logger.warning(f"INCOMPLETE TEST: did not check coerced: {py_inst}")
                 else:
                     if isinstance(gen, PydanticGenerator):
                         with pytest.raises(pydantic.ValidationError):
                             py_inst = py_cls(**object_to_validate)
-                            logging.info(f"Unexpectedly instantiated {py_inst} from {object_to_validate}")
+                            logger.info(f"Unexpectedly instantiated {py_inst} from {object_to_validate}")
                     else:
                         with pytest.raises(Exception):
                             py_inst = py_cls(**object_to_validate)
-                            logging.info(f"Unexpectedly instantiated {py_inst}")
+                            logger.info(f"Unexpectedly instantiated {py_inst}")
             if py_inst is not None:
                 # assert roundtripped.items() == object_to_validate.items()
                 if valid and not exclude_rdf:
                     if isinstance(gen, PythonGenerator):
                         ttl_path = out_dir / f"{data_name}.ttl"
                         _convert_data_to_rdf(schema, object_to_validate, target_class, ttl_path)
-            logging.info(f"fwk: {framework}, cls: {target_class}, inst: {object_to_validate}, valid: {valid}")
+            logger.info(f"fwk: {framework}, cls: {target_class}, inst: {object_to_validate}, valid: {valid}")
 
         elif isinstance(gen, JsonSchemaGenerator):
             plugins = [JsonschemaValidationPlugin(closed=True, include_range_class_descendants=False)]
@@ -820,7 +822,7 @@ def check_data(
             g = rdflib.Graph()
             g.parse(data=json.dumps(json_object, indent=2, sort_keys=True, ensure_ascii=False), format="json-ld")
             if not valid and expected_behavior == ValidationBehavior.IMPLEMENTS:
-                logging.info(f"Skipping validation for {jsonld_path}")
+                logger.info(f"Skipping validation for {jsonld_path}")
         elif isinstance(gen, OwlSchemaGenerator):
             # TODO: make this a validator
             if not exclude_rdf:
@@ -869,7 +871,7 @@ def check_data(
                     py_obj = py_cls(**object_to_validate)
                     endpoint.dump(py_obj)
         else:
-            logging.warning(f"Unsupported generator {gen}")
+            logger.warning(f"Unsupported generator {gen}")
             expected_behavior = ValidationBehavior.UNTESTED
     if plugins:
         validator = Validator(
@@ -883,16 +885,16 @@ def check_data(
             errors = list(validator.iter_results(clean_null_terms(object_to_validate), target_class))
         except Exception as e:
             errors = [e]
-        logging.info(f"Expecting {valid}, Validating {object_to_validate} against {target_class}, errors: {errors}")
+        logger.info(f"Expecting {valid}, Validating {object_to_validate} against {target_class}, errors: {errors}")
         if valid:
             assert errors == [], f"Errors found in json schema validation: {errors}"
         else:
             if expected_behavior == ValidationBehavior.ACCEPTS:
-                logging.info("Does not flag exception for borderline case (e.g. matching an int to a float)")
+                logger.info("Does not flag exception for borderline case (e.g. matching an int to a float)")
             else:
                 assert errors != [], "Expected errors in json schema validation, but none found"
         if should_warn:
-            logging.warning("TODO: check for warnings")
+            logger.warning("TODO: check for warnings")
     feature.set_framework_behavior(framework, expected_behavior)
     if not valid:
         all_test_results.append(
@@ -924,7 +926,7 @@ def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_pa
     try:
         py_inst = py_cls(**instance)
     except Exception as e:
-        logging.info(f"Could not instantiate {py_cls} from {instance}; exception: {e}")
+        logger.info(f"Could not instantiate {py_cls} from {instance}; exception: {e}")
         return None
     schemaview = SchemaView(SchemaDefinition(**schema))
     g = rdflib_dumper.as_rdf_graph(
@@ -1013,10 +1015,10 @@ def robot_check_coherency(
         # print(f"Running robot: {' '.join(cmd)}")
         result = subprocess.run(cmd, check=True, capture_output=True, text=True)
         if result.stderr:
-            logging.warning(result.stderr)
+            logger.warning(result.stderr)
         return True
     except subprocess.CalledProcessError as e:
-        logging.info(f"Robot call failed, likely unsatisfiable: {e}")
+        logger.info(f"Robot call failed, likely unsatisfiable: {e}")
         return False
 
 
