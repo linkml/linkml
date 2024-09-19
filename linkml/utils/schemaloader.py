@@ -57,7 +57,7 @@ class SchemaLoader:
         :param source_file_date: modification of source file
         :param source_file_size: size of source file
         """
-        self.logger = logger if logger is not None else logging.getLogger(self.__class__.__name__)
+        self.logger = logger if logger is not None else logging.getLogger(f"{__name__}.{type(self).__name__}")
         if isinstance(data, SchemaDefinition):
             self.schema = data
         else:
