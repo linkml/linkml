@@ -181,7 +181,7 @@ class Generator(metaclass=abc.ABCMeta):
 
     def __post_init__(self) -> None:
         if not self.logger:
-            self.logger = logging.getLogger()
+            self.logger = logging.getLogger(f"{__name__}.{type(self).__name__}")
         if self.log_level is not None:
             self.logger.setLevel(self.log_level)
         if self.format is None:
