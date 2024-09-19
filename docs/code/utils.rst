@@ -25,14 +25,6 @@ linkml.utils.datavalidator module
    :undoc-members:
    :show-inheritance:
 
-linkml.utils.execute\_tutorial module
--------------------------------------
-
-.. automodule:: linkml.utils.execute_tutorial
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 linkml.utils.generator module
 -----------------------------
 
