@@ -17,6 +17,8 @@ from linkml_runtime.utils.schemaview import SchemaView, SchemaUsage, OrderedBy
 from linkml_runtime.utils.schemaops import roll_up, roll_down
 from tests.test_utils import INPUT_DIR
 
+logger = logging.getLogger(__name__)
+
 SCHEMA_NO_IMPORTS = Path(INPUT_DIR) / 'kitchen_sink_noimports.yaml'
 SCHEMA_WITH_IMPORTS = Path(INPUT_DIR) / 'kitchen_sink.yaml'
 SCHEMA_WITH_STRUCTURED_PATTERNS = Path(INPUT_DIR) / "pattern-example.yaml"
@@ -97,17 +99,17 @@ class SchemaViewTestCase(unittest.TestCase):
     def test_schemaview(self):
         # no import schema
         view = SchemaView(SCHEMA_NO_IMPORTS)
-        logging.debug(view.imports_closure())
+        logger.debug(view.imports_closure())
         self.assertEqual(len(view.imports_closure()), 1)
         all_cls = view.all_classes()
-        logging.debug(f'n_cls = {len(all_cls)}')
+        logger.debug(f'n_cls = {len(all_cls)}')
 
         self.assertEqual(list(view.annotation_dict(IS_CURRENT).values()), ['bar'])
-        logging.debug(view.annotation_dict(EMPLOYED_AT))
+        logger.debug(view.annotation_dict(EMPLOYED_AT))
         e = view.get_element(EMPLOYED_AT)
-        logging.debug(e.annotations)
+        logger.debug(e.annotations)
         e = view.get_element('has employment history')
-        logging.debug(e.annotations)
+        logger.debug(e.annotations)
 
         elements = view.get_elements_applicable_by_identifier("ORCID:1234")
         self.assertIn("Person", elements)
@@ -118,11 +120,11 @@ class SchemaViewTestCase(unittest.TestCase):
         elements = view.get_elements_applicable_by_identifier("TEST:1234")
         self.assertNotIn("anatomical entity", elements)
         self.assertEqual(list(view.annotation_dict(SlotDefinitionName(IS_CURRENT)).values()), ['bar'])
-        logging.debug(view.annotation_dict(SlotDefinitionName(EMPLOYED_AT)))
+        logger.debug(view.annotation_dict(SlotDefinitionName(EMPLOYED_AT)))
         element = view.get_element(SlotDefinitionName(EMPLOYED_AT))
-        logging.debug(element.annotations)
+        logger.debug(element.annotations)
         element = view.get_element(SlotDefinitionName('has employment history'))
-        logging.debug(element.annotations)
+        logger.debug(element.annotations)
 
         self.assertTrue(view.is_mixin('WithLocation'))
         self.assertFalse(view.is_mixin('BirthEvent'))
@@ -146,10 +148,10 @@ class SchemaViewTestCase(unittest.TestCase):
             view.slot_is_true_for_metadata_property('aliases', 'aliases')
 
         for tn, t in view.all_types().items():
-            logging.info(f'TN = {tn}')
+            logger.info(f'TN = {tn}')
             self.assertEqual('https://w3id.org/linkml/tests/kitchen_sink', t.from_schema)
         for sn, s in view.all_slots().items():
-            logging.info(f'SN = {sn} RANGE={s.range}')
+            logger.info(f'SN = {sn} RANGE={s.range}')
             self.assertEqual('https://w3id.org/linkml/tests/kitchen_sink', s.from_schema)
             # range should always be populated: See https://github.com/linkml/linkml/issues/733
             rng = view.induced_slot(sn).range
@@ -158,23 +160,23 @@ class SchemaViewTestCase(unittest.TestCase):
         for cn in all_cls.keys():
             c = view.get_class(cn)
             self.assertEqual('https://w3id.org/linkml/tests/kitchen_sink', c.from_schema)
-            logging.debug(f'{cn} PARENTS = {view.class_parents(cn)}')
-            logging.debug(f'{cn} ANCS = {view.class_ancestors(cn)}')
-            logging.debug(f'{cn} CHILDREN = {view.class_children(cn)}')
-            logging.debug(f'{cn} DESCS = {view.class_descendants(cn)}')
-            logging.debug(f'{cn} SCHEMA = {view.in_schema(cn)}')
-            logging.debug(f'  SLOTS = {view.class_slots(cn)}')
+            logger.debug(f'{cn} PARENTS = {view.class_parents(cn)}')
+            logger.debug(f'{cn} ANCS = {view.class_ancestors(cn)}')
+            logger.debug(f'{cn} CHILDREN = {view.class_children(cn)}')
+            logger.debug(f'{cn} DESCS = {view.class_descendants(cn)}')
+            logger.debug(f'{cn} SCHEMA = {view.in_schema(cn)}')
+            logger.debug(f'  SLOTS = {view.class_slots(cn)}')
             for sn in view.class_slots(cn):
                 slot = view.get_slot(sn)
                 self.assertEqual('https://w3id.org/linkml/tests/kitchen_sink', slot.from_schema)
-                logging.debug(f'  SLOT {sn} R: {slot.range} U: {view.get_uri(sn)} ANCS: {view.slot_ancestors(sn)}')
+                logger.debug(f'  SLOT {sn} R: {slot.range} U: {view.get_uri(sn)} ANCS: {view.slot_ancestors(sn)}')
                 induced_slot = view.induced_slot(sn, cn)
-                logging.debug(f'    INDUCED {sn}={induced_slot}')
+                logger.debug(f'    INDUCED {sn}={induced_slot}')
                 # range should always be populated: See https://github.com/linkml/linkml/issues/733
                 self.assertIsNotNone(induced_slot.range)
 
 
-        logging.debug(f'ALL = {view.all_elements().keys()}')
+        logger.debug(f'ALL = {view.all_elements().keys()}')
 
         # -- TEST ANCESTOR/DESCENDANTS FUNCTIONS --
 
@@ -202,7 +204,7 @@ class SchemaViewTestCase(unittest.TestCase):
 
         self.assertEqual(view.get_class(AGENT).class_uri, 'prov:Agent')
         self.assertEqual(view.get_uri(AGENT), 'prov:Agent')
-        logging.debug(view.get_class(COMPANY).class_uri)
+        logger.debug(view.get_class(COMPANY).class_uri)
 
         self.assertEqual(view.get_uri(COMPANY), 'ks:Company')
 
@@ -226,7 +228,7 @@ class SchemaViewTestCase(unittest.TestCase):
             self.assertEqual(view.induced_slot('name', c).owner, c, 'owner does not match')
         for c in ['Event', 'EmploymentEvent', 'MedicalEvent']:
             s = view.induced_slot('started at time', c)
-            logging.debug(f's={s.range} // c = {c}')
+            logger.debug(f's={s.range} // c = {c}')
             self.assertEqual(s.range, 'date')
             self.assertEqual(s.slot_uri, 'prov:startedAtTime')
             self.assertEqual(s.owner, c, 'owner does not match')
@@ -250,13 +252,13 @@ class SchemaViewTestCase(unittest.TestCase):
 
         a = view.get_class(ACTIVITY)
         self.assertCountEqual(a.exact_mappings, ['prov:Activity'])
-        logging.debug(view.get_mappings(ACTIVITY, expand=True))
+        logger.debug(view.get_mappings(ACTIVITY, expand=True))
         self.assertCountEqual(view.get_mappings(ACTIVITY)['exact'], ['prov:Activity'])
         self.assertCountEqual(view.get_mappings(ACTIVITY, expand=True)['exact'], ['http://www.w3.org/ns/prov#Activity'])
 
         u = view.usage_index()
         for k, v in u.items():
-            logging.debug(f' {k} = {v}')
+            logger.debug(f' {k} = {v}')
         self.assertIn(SchemaUsage(used_by='FamilialRelationship', slot=RELATED_TO,
                            metaslot='range', used='Person', inferred=False), u['Person'])
         self.assertListEqual(
@@ -298,18 +300,18 @@ class SchemaViewTestCase(unittest.TestCase):
 
         # test methods also work for attributes
         leaves = view.class_leaves()
-        logging.debug(f'LEAVES={leaves}')
+        logger.debug(f'LEAVES={leaves}')
         self.assertIn('MedicalEvent', leaves)
         roots = view.class_roots()
-        logging.debug(f'ROOTS={roots}')
+        logger.debug(f'ROOTS={roots}')
         self.assertIn('Dataset', roots)
         ds_slots = view.class_slots('Dataset')
-        logging.debug(ds_slots)
+        logger.debug(ds_slots)
         self.assertEqual(len(ds_slots), 3)
         self.assertCountEqual(['persons', 'companies', 'activities'], ds_slots)
         for sn in ds_slots:
             s = view.induced_slot(sn, 'Dataset')
-            logging.debug(s)
+            logger.debug(s)
 
     def test_all_classes_ordered_lexical(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
@@ -376,9 +378,9 @@ class SchemaViewTestCase(unittest.TestCase):
         element_name = 'Event'
         roll_up(view, element_name)
         for slot in view.class_induced_slots(element_name):
-            logging.debug(slot)
+            logger.debug(slot)
         induced_slot_names = [s.name for s in view.class_induced_slots(element_name)]
-        logging.debug(induced_slot_names)
+        logger.debug(induced_slot_names)
         self.assertCountEqual(['started at time', 'ended at time', IS_CURRENT, 'in location', EMPLOYED_AT, 'married to'],
                               induced_slot_names)
         # check to make sure rolled-up classes are deleted
@@ -387,9 +389,9 @@ class SchemaViewTestCase(unittest.TestCase):
 
         for element_name in view.all_classes():
             c = view.get_class(element_name)
-            logging.debug(f'{element_name}')
-            logging.debug(f'  {element_name} SLOTS(i) = {view.class_slots(element_name)}')
-            logging.debug(f'  {element_name} SLOTS(d) = {view.class_slots(element_name, direct=True)}')
+            logger.debug(f'{element_name}')
+            logger.debug(f'  {element_name} SLOTS(i) = {view.class_slots(element_name)}')
+            logger.debug(f'  {element_name} SLOTS(d) = {view.class_slots(element_name, direct=True)}')
             self.assertCountEqual(view.class_slots(element_name), view.class_slots(element_name, direct=True))
         self.assertNotIn('Thing', view.all_classes())
         self.assertNotIn('Person', view.all_classes())
@@ -444,10 +446,10 @@ class SchemaViewTestCase(unittest.TestCase):
         """
         view = SchemaView(SCHEMA_WITH_IMPORTS)
         self.assertIsNotNone(view.schema.source_file)
-        logging.debug(view.imports_closure())
+        logger.debug(view.imports_closure())
         self.assertCountEqual(['kitchen_sink', 'core', 'linkml:types'], view.imports_closure())
         for t in view.all_types().keys():
-            logging.debug(f'T={t} in={view.in_schema(t)}')
+            logger.debug(f'T={t} in={view.in_schema(t)}')
         self.assertEqual(view.in_schema(ClassDefinitionName('Person')), 'kitchen_sink')
         self.assertEqual(view.in_schema(SlotDefinitionName('id')), 'core')
         self.assertEqual(view.in_schema(SlotDefinitionName('name')), 'core')
@@ -508,11 +510,11 @@ class SchemaViewTestCase(unittest.TestCase):
 
         self.assertEqual(view.get_class('agent').class_uri, 'prov:Agent')
         self.assertEqual(view.get_uri(AGENT), 'prov:Agent')
-        logging.debug(view.get_class('Company').class_uri)
+        logger.debug(view.get_class('Company').class_uri)
 
         self.assertEqual(view.get_uri(COMPANY), 'ks:Company')
         self.assertEqual(view.get_uri(COMPANY, expand=True), 'https://w3id.org/linkml/tests/kitchen_sink/Company')
-        logging.debug(view.get_uri('TestClass'))
+        logger.debug(view.get_uri('TestClass'))
         self.assertEqual(view.get_uri('TestClass'), 'core:TestClass')
         self.assertEqual(view.get_uri('TestClass', expand=True), 'https://w3id.org/linkml/tests/core/TestClass')
 

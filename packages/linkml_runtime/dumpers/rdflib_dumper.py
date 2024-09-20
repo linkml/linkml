@@ -15,6 +15,8 @@ from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView, ElementName, PermissibleValue, PermissibleValueText
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
+logger = logging.getLogger(__name__)
+
 
 class RDFLibDumper(Dumper):
     """
@@ -44,7 +46,7 @@ class RDFLibDumper(Dumper):
         if isinstance(prefix_map, Converter):
             # TODO replace with `prefix_map = prefix_map.bimap` after making minimum requirement on python 3.8
             prefix_map = {record.prefix: record.uri_prefix for record in prefix_map.records}
-        logging.debug(f'PREFIXMAP={prefix_map}')
+        logger.debug(f'PREFIXMAP={prefix_map}')
         if prefix_map:
             for k, v in prefix_map.items():
                 if k == "@base":
@@ -80,7 +82,7 @@ class RDFLibDumper(Dumper):
         """
         namespaces = schemaview.namespaces()
         slot_name_map = schemaview.slot_name_mappings()
-        logging.debug(f'CONVERT: {element} // {type(element)} // {target_type}')
+        logger.debug(f'CONVERT: {element} // {type(element)} // {target_type}')
         if target_type in schemaview.all_enums():
             if isinstance(element, PermissibleValueText):
                 e = schemaview.get_enum(target_type)
@@ -105,7 +107,7 @@ class RDFLibDumper(Dumper):
                         namespaces["xsd"] = XSD
                     return Literal(element, datatype=namespaces.uri_for(dt_uri))
             else:
-                logging.warning(f'No datatype specified for : {t.name}, using plain Literal')
+                logger.warning(f'No datatype specified for : {t.name}, using plain Literal')
                 return Literal(element)
         element_vars = {k: v for k, v in vars(element).items() if not k.startswith('_')}
         if len(element_vars) == 0:
@@ -134,7 +136,7 @@ class RDFLibDumper(Dumper):
                 if k in slot_name_map:
                     k = slot_name_map[k].name
                 else:
-                    logging.error(f'Slot {k} not in name map')
+                    logger.error(f'Slot {k} not in name map')
                 slot = schemaview.induced_slot(k, cn)
                 if not slot.identifier:
                     slot_uri = URIRef(schemaview.get_uri(slot, expand=True))

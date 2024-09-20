@@ -11,6 +11,8 @@ from linkml_runtime.utils.schema_builder import ClassDefinition, SchemaBuilder, 
 
 from tests.test_utils import INPUT_DIR, OUTPUT_DIR
 
+logger = logging.getLogger(__name__)
+
 SCHEMA_NO_IMPORTS = os.path.join(INPUT_DIR, 'kitchen_sink_noimports.yaml')
 SCHEMA_WITH_IMPORTS = os.path.join(INPUT_DIR, 'kitchen_sink.yaml')
 CLEAN_SCHEMA = os.path.join(OUTPUT_DIR, 'kitchen_sink.clean.yaml')
@@ -27,7 +29,7 @@ class SchemaAsDictTestCase(unittest.TestCase):
         view = SchemaView(SCHEMA_NO_IMPORTS)
         all_slots = view.all_slots()
         self.assertIn('name', all_slots)
-        logging.debug(view.schema.id)
+        logger.debug(view.schema.id)
         ystr = schema_as_yaml_dump(view.schema)
         with open(CLEAN_SCHEMA, 'w') as stream:
             stream.write(ystr)

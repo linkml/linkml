@@ -6,6 +6,8 @@ from linkml_runtime.utils.schemaview import SchemaView, CLASS_NAME
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, Expression, \
     ClassExpression, ClassDefinitionName, ClassRule, AnonymousClassExpression, SlotExpression, SlotDefinitionName
 
+logger = logging.getLogger(__name__)
+
 
 class AtomicClassExpression:
     """
@@ -58,12 +60,12 @@ def get_range_as_disjunction(slot: SlotExpression) ->  Set[ClassDefinitionName]:
         if isinstance(slot.range_expression, ClassExpression):
             conjs.append(get_disjunction(slot.range_expression))
         else:
-            logging.warning(f'Expected range_expression for {slot.name} to be a class expression, not {type(slot.range_expression)}')
+            logger.warning(f'Expected range_expression for {slot.name} to be a class expression, not {type(slot.range_expression)}')
     if len(conjs) == 0:
         if slot.range:
             conjs.append({slot.range})
         else:
-            logging.warning(f'No range for {slot.name}')
+            logger.warning(f'No range for {slot.name}')
     if len(conjs) > 1:
         raise Exception(f'Cannot determine range disjunction for {slot}, got conjunctions: {conjs}')
     if len(conjs) == 0:

@@ -6,6 +6,7 @@ import pkgutil
 from pathlib import PurePath
 from typing import List, Type
 
+logger = logging.getLogger(__name__)
 
 
 def get_default_paths(file_type: str) -> List[PurePath]:
@@ -41,7 +42,7 @@ def get_default_paths(file_type: str) -> List[PurePath]:
         paths.append(rel_dir)
     # YAML files may be in the same directory as the python
     paths.append(PurePath('.'))
-    logging.debug(f"Paths to search: {paths}")
+    logger.debug(f"Paths to search: {paths}")
     return paths
 
 def get_packaged_file_as_str(package: str, file_type: str, rel_paths: List[PurePath]=[], encoding="utf-8") -> str:
@@ -65,7 +66,7 @@ def get_packaged_file_as_str(package: str, file_type: str, rel_paths: List[PureP
             if data:
                 break
         except FileNotFoundError:
-            logging.debug(f'candidate {path} not found')
+            logger.debug(f'candidate {path} not found')
     if not data:
         raise FileNotFoundError(f'package: {package} file: {file_type}')
     return data.decode(encoding)

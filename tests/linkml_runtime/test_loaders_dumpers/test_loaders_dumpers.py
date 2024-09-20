@@ -18,6 +18,9 @@ from tests.test_loaders_dumpers import INPUT_DIR, OUTPUT_DIR
 from tests.test_loaders_dumpers.models.personinfo import Container, Person, Address, Organization, OrganizationType
 from tests.test_loaders_dumpers.models.node_object import NodeObject, Triple
 
+logger = logging.getLogger(__name__)
+
+
 SCHEMA = os.path.join(INPUT_DIR, 'personinfo.yaml')
 DATA = os.path.join(INPUT_DIR, 'example_personinfo_data.yaml')
 OUT_TTL = os.path.join(OUTPUT_DIR, 'example_out.ttl')
@@ -173,7 +176,7 @@ class LoadersDumpersTestCase(unittest.TestCase):
             assert x.subject is None
             assert x.predicate is not None
             assert x.object is not None
-            logging.info(f'  x={x}')
+            logger.info(f'  x={x}')
         # ranges that are objects are contracted
         assert Triple(subject=None, predicate='rdfs:subClassOf', object='owl:Thing') in obj.statements
         assert Triple(subject=None, predicate='rdfs:subClassOf', object='NCBITaxon:1') in obj.statements
@@ -185,7 +188,7 @@ class LoadersDumpersTestCase(unittest.TestCase):
                                          cast_literals=False,
                                          allow_unprocessed_triples=False,
                                          prefix_map=taxon_prefix_map)
-            logging.error(f'Passed unexpectedly: there are known to be unreachable triples')
+            logger.error(f'Passed unexpectedly: there are known to be unreachable triples')
         # removing complex range, object has a range of string
         view.schema.slots['object'].exactly_one_of = []
         view.set_modified()
@@ -200,7 +203,7 @@ class LoadersDumpersTestCase(unittest.TestCase):
                                          cast_literals=False,
                                          allow_unprocessed_triples=True,
                                          prefix_map=taxon_prefix_map)
-            logging.error(f'Passed unexpectedly: rdf:object is known to have a mix of literals and nodes')
+            logger.error(f'Passed unexpectedly: rdf:object is known to have a mix of literals and nodes')
 
 
 if __name__ == '__main__':

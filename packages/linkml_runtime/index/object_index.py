@@ -16,6 +16,8 @@ from linkml_runtime import SchemaView
 from linkml_runtime.utils import eval_utils
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
+logger = logging.getLogger(__name__)
+
 
 class ObjectIndex:
     """
@@ -257,7 +259,7 @@ class ProxyObject:
                 module = inspect.getmodule(self._shadowed)
                 cls_dict = dict(inspect.getmembers(module, inspect.isclass))
                 if in_range not in cls_dict:
-                    logging.warning(f"Class {in_range} not found in {module}, classes: {cls_dict}")
+                    logger.warning(f"Class {in_range} not found in {module}, classes: {cls_dict}")
                     return obj
                 cls = cls_dict[in_range]
                 return cls(obj)
