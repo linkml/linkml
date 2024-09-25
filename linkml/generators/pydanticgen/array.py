@@ -157,7 +157,8 @@ class ArrayValidator:
             array.minimum_number_dimensions is not None or array.maximum_number_dimensions is not None
         ):
             raise ValidationError(
-                "Can only specify EITHER exact_number_dimensions OR minimum/maximum dimensions, " f"got: {array}"
+                "Can only specify EITHER exact_number_dimensions OR minimum/maximum dimensions, "
+                f"got: {array}"
             )
 
     @staticmethod
