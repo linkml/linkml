@@ -553,8 +553,7 @@ Since arrays are unlike other data types in that they usually require some speci
 and many formats don't have a single canonical array type, generators may accommodate multiple array
 representations.
 
-The basic representation supported by the pydantic generator is "List of lists" style array representation to be able to use
-arrays without any additional external dependencies beyond pydantic. 
+The basic representation supported by the pydantic generator is the "List of lists" style array representation. This can be used without any additional dependencies beyond pydantic.
 
 Pydanticgen now *also* supports most common array libraries from a single annotation using {mod}`numpydantic` - 
 a single array specification generates a single pydantic model, but the numpydantic {class}`numpydantic.NDArray` 
