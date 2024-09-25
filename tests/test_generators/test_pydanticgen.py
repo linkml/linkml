@@ -32,7 +32,7 @@ from linkml.generators.pydanticgen import (
     pydanticgen,
     template,
 )
-from linkml.generators.pydanticgen.array import AnyShapeArray, ArrayRepresentation
+from linkml.generators.pydanticgen.array import AnyShapeArray, ArrayRepresentation, ArrayValidator
 from linkml.generators.pydanticgen.template import (
     ConditionalImport,
     Import,
@@ -44,6 +44,7 @@ from linkml.generators.pydanticgen.template import (
     PydanticTemplateModel,
     PydanticValidator,
 )
+from linkml.utils.exceptions import ValidationError as ArrayValidationError
 from linkml.utils.schema_builder import SchemaBuilder
 
 from .conftest import MyInjectedClass
@@ -1457,6 +1458,12 @@ def array_complex(input_path) -> SchemaDefinition:
 
 
 @pytest.fixture(scope="module")
+def array_dtype(input_path) -> SchemaDefinition:
+    schema = str(Path(input_path("arrays")) / "dtype.yaml")
+    return load_schema_wrap(schema)
+
+
+@pytest.fixture(scope="module")
 def array_error_complex_dimensions(input_path) -> SchemaDefinition:
     schema = str(Path(input_path("arrays")) / "error_complex_dimensions.yaml")
     return load_schema_wrap(schema)
@@ -1466,6 +1473,27 @@ def array_error_complex_dimensions(input_path) -> SchemaDefinition:
 def array_error_complex_unbounded(input_path) -> SchemaDefinition:
     schema = str(Path(input_path("arrays")) / "error_complex_unbounded.yaml")
     return load_schema_wrap(schema)
+
+
+@pytest.fixture(scope="module")
+def array_validator_errors(input_path) -> ClassDefinition:
+    schema_file = str(Path(input_path("arrays")) / "validator_errors.yaml")
+    schema = load_schema_wrap(schema_file)
+    return schema.classes["ErrorRiddenClass"]
+
+
+@pytest.fixture(
+    scope="function",
+    params=[
+        pytest.param([ArrayRepresentation.LIST], id="list-of-lists"),
+        pytest.param([ArrayRepresentation.NUMPYDANTIC], marks=pytest.mark.pydanticgen_npd, id="numpydantic"),
+    ],
+)
+def array_representation(request) -> List[ArrayRepresentation]:
+    """
+    Parameterized fixture to test each array representation
+    """
+    return request.param
 
 
 @dataclass
@@ -1487,17 +1515,16 @@ class TestCase:
     [TestCase(type="pass", array=np.zeros((3, 4, 5, 6), dtype=dt)) for dt in (int, float, str)]
     + [TestCase(type="fail", array=a) for a in (4, 3.0, "three")],
 )
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_anyshape(case, representation, array_anyshape):
+def test_generate_array_anyshape(case, array_representation, array_anyshape):
     """
     Any array shape, any dtype!
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
-    if ArrayRepresentation.LIST in representation and isinstance(case.array, np.ndarray):
+    if ArrayRepresentation.LIST in array_representation and isinstance(case.array, np.ndarray):
         case.array = case.array.tolist()
+    if ArrayRepresentation.NUMPYDANTIC in array_representation and case.type == "fail":
+        pytest.skip("numpydantic coerces scalars rather than failing validation")
 
-    generated = PydanticGenerator(array_anyshape, array_representations=representation).serialize()
+    generated = PydanticGenerator(array_anyshape, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "AnyType")
     with case.expectation:
@@ -1512,21 +1539,88 @@ def test_generate_array_anyshape(case, representation, array_anyshape):
         TestCase(type="fail", array=np.zeros((2, 3, 4), dtype=str)),
     ],
 )
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_anyshape_typed(case, representation, array_anyshape):
+def test_generate_array_anyshape_typed(case, array_representation, array_anyshape):
     """
     Same as above, except dtype mismatches should cause a failure
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
-    if ArrayRepresentation.LIST in representation:
+    if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_anyshape, array_representations=representation).serialize()
+    generated = PydanticGenerator(array_anyshape, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "Typed")
     with case.expectation:
         cls(array=case.array)
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=float)),
+        TestCase(type="fail", array=np.zeros((2, 3, 4), dtype=str)),
+    ],
+)
+def test_generate_array_dtype_union(case, array_representation, array_dtype):
+    """
+    Array representations can validate union dtypes
+    """
+    if ArrayRepresentation.LIST in array_representation:
+        case.array = case.array.tolist()
+
+    imports = Imports(imports=[Import(module="numpy", alias="np")])
+
+    generated = PydanticGenerator(array_dtype, array_representations=array_representation, imports=imports).serialize()
+    mod = compile_python(generated)
+    cls = getattr(mod, "UnionDtype")
+    with case.expectation:
+        cls(array=case.array)
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=np.uint8)),
+        TestCase(type="fail", array=np.zeros((2, 3, 4), dtype=int)),
+    ],
+)
+def test_generate_array_dtype_numpy(case, array_representation, array_dtype):
+    """
+    Array representations can use numpy types
+    """
+    if ArrayRepresentation.LIST in array_representation:
+        case.array = list(case.array)
+
+    imports = Imports(imports=[Import(module="numpy", alias="np")])
+
+    generated = PydanticGenerator(array_dtype, array_representations=array_representation, imports=imports).serialize()
+    mod = compile_python(generated)
+    cls = getattr(mod, "NumpyDtype")
+    with case.expectation:
+        cls(array=case.array)
+
+
+def test_generate_array_dtype_class(array_representation, array_dtype):
+    """
+    Array representations can use classes as ranges
+    """
+
+    imports = Imports(imports=[Import(module="numpy", alias="np")])
+
+    generated = PydanticGenerator(array_dtype, array_representations=array_representation, imports=imports).serialize()
+    mod = compile_python(generated)
+    cls: Type[BaseModel] = getattr(mod, "ClassDtype")
+    target_cls: Type[BaseModel] = getattr(mod, "MyClass")
+
+    array = np.full(shape=(2, 3, 4), fill_value=target_cls())
+
+    if ArrayRepresentation.LIST in array_representation:
+        array = array.tolist()
+
+    # validates
+    instance = cls(array=array)
+    # and preserves object
+    assert isinstance(instance.array[0][0][0], target_cls)
 
 
 @pytest.mark.parametrize(
@@ -1540,17 +1634,14 @@ def test_generate_array_anyshape_typed(case, representation, array_anyshape):
         TestCase(type="fail", array=np.zeros((2,), dtype=str)),
     ],
 )
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_bounded_min(case, representation, array_bounded):
+def test_generate_array_bounded_min(case, array_representation, array_bounded):
     """
     Any integer array with greater than 2 dimensions.
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
-    if ArrayRepresentation.LIST in representation:
+    if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_bounded, array_representations=representation).serialize()
+    generated = PydanticGenerator(array_bounded, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "MinDimensions")
     with case.expectation:
@@ -1567,17 +1658,14 @@ def test_generate_array_bounded_min(case, representation, array_bounded):
         TestCase(type="fail", array=np.zeros((2, 6, 7, 2, 3, 6), dtype=str)),
     ],
 )
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_bounded_max(case, representation, array_bounded):
+def test_generate_array_bounded_max(case, array_representation, array_bounded):
     """
     Any integer array with less or equal dimensions than 5
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
-    if ArrayRepresentation.LIST in representation:
+    if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_bounded, array_representations=representation).serialize()
+    generated = PydanticGenerator(array_bounded, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "MaxDimensions")
     with case.expectation:
@@ -1598,17 +1686,14 @@ def test_generate_array_bounded_max(case, representation, array_bounded):
         TestCase(type="fail", array=np.zeros((2, 6, 7, 2, 3, 6), dtype=str)),
     ],
 )
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_bounded_range(case, representation, array_bounded):
+def test_generate_array_bounded_range(case, array_representation, array_bounded):
     """
     Any integer array equal to or between 2 and 5 dimensions
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
-    if ArrayRepresentation.LIST in representation:
+    if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_bounded, array_representations=representation).serialize()
+    generated = PydanticGenerator(array_bounded, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "RangeDimensions")
     with case.expectation:
@@ -1627,17 +1712,14 @@ def test_generate_array_bounded_range(case, representation, array_bounded):
         TestCase(type="fail", array=np.zeros((2, 3, 4, 5), dtype=str)),
     ],
 )
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_bounded_exact(case, representation, array_bounded):
+def test_generate_array_bounded_exact(case, array_representation, array_bounded):
     """
     Any integer array with exactly 3 dimensions
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
-    if ArrayRepresentation.LIST in representation:
+    if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_bounded, array_representations=representation).serialize()
+    generated = PydanticGenerator(array_bounded, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ExactDimensions")
     with case.expectation:
@@ -1656,17 +1738,14 @@ def test_generate_array_bounded_exact(case, representation, array_bounded):
         # FIXME: Add a float testcase back in here when https://github.com/linkml/linkml/issues/1955 is resolved
     ],
 )
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_parameterized_min(case, representation, array_parameterized):
+def test_generate_array_parameterized_min(case, array_representation, array_parameterized):
     """
     Any 4 dimensional integer array, the first dimension is equal to or greater than cardinality 2
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
-    if ArrayRepresentation.LIST in representation:
+    if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_parameterized, array_representations=representation).serialize()
+    generated = PydanticGenerator(array_parameterized, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ParameterizedArray")
     with case.expectation:
@@ -1682,17 +1761,14 @@ def test_generate_array_parameterized_min(case, representation, array_parameteri
         # this is the same field, so dtype failures only need to be tested in one case
     ],
 )
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_parameterized_max(case, representation, array_parameterized):
+def test_generate_array_parameterized_max(case, array_representation, array_parameterized):
     """
     Any 4 dimensional integer array, the second dimension is equal to or less than cardinality 5
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
-    if ArrayRepresentation.LIST in representation:
+    if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_parameterized, array_representations=representation).serialize()
+    generated = PydanticGenerator(array_parameterized, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ParameterizedArray")
     with case.expectation:
@@ -1709,17 +1785,14 @@ def test_generate_array_parameterized_max(case, representation, array_parameteri
         # this is the same field, so dtype failures only need to be tested in one case
     ],
 )
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_parameterized_range(case, representation, array_parameterized):
+def test_generate_array_parameterized_range(case, array_representation, array_parameterized):
     """
     Any 4 dimensional integer array, the third dimension has a cardinality between 2 and 5, inclusive
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
-    if ArrayRepresentation.LIST in representation:
+    if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_parameterized, array_representations=representation).serialize()
+    generated = PydanticGenerator(array_parameterized, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ParameterizedArray")
     with case.expectation:
@@ -1735,17 +1808,14 @@ def test_generate_array_parameterized_range(case, representation, array_paramete
         # this is the same field, so dtype failures only need to be tested in one case
     ],
 )
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_parameterized_exact(case, representation, array_parameterized):
+def test_generate_array_parameterized_exact(case, array_representation, array_parameterized):
     """
     Any 4 dimensional integer array, the fourch dimension has a cardinality of exactly 6
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
-    if ArrayRepresentation.LIST in representation:
+    if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_parameterized, array_representations=representation).serialize()
+    generated = PydanticGenerator(array_parameterized, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ParameterizedArray")
     with case.expectation:
@@ -1767,8 +1837,7 @@ def test_generate_array_parameterized_exact(case, representation, array_paramete
         TestCase(type="fail", array=np.zeros((5, 2, 4), dtype=int)),
     ],
 )
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_complex_any(case, representation, array_complex):
+def test_generate_array_complex_any(case, array_representation, array_complex):
     """
     An array with at least four dimensions,
     - the first of which has a maximum cardinality of 5, and
@@ -1776,12 +1845,10 @@ def test_generate_array_complex_any(case, representation, array_complex):
     - the third of which has a cardinality between 2 and 5, inclusive, and
     - the fourth of which has an exact cardinality of 6
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
-    if ArrayRepresentation.LIST in representation:
+    if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_complex, array_representations=representation).serialize()
+    generated = PydanticGenerator(array_complex, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ComplexAnyShapeArray")
     with case.expectation:
@@ -1804,8 +1871,7 @@ def test_generate_array_complex_any(case, representation, array_complex):
         TestCase(type="fail", array=np.zeros((5, 2, 4), dtype=int)),
     ],
 )
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_complex_max(case, representation, array_complex):
+def test_generate_array_complex_max(case, array_representation, array_complex):
     """
     An array with at most, or equal to 6 dimensions,
     - the first of which has a maximum cardinality of 5, and
@@ -1813,12 +1879,10 @@ def test_generate_array_complex_max(case, representation, array_complex):
     - the third of which has a cardinality between 2 and 5, inclusive, and
     - the fourth of which has an exact cardinality of 6
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
-    if ArrayRepresentation.LIST in representation:
+    if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_complex, array_representations=representation).serialize()
+    generated = PydanticGenerator(array_complex, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ComplexMaxShapeArray")
     with case.expectation:
@@ -1833,17 +1897,14 @@ def test_generate_array_complex_max(case, representation, array_complex):
         TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 7, 1, 1), dtype=int)),
     ],
 )
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_complex_min(case, representation, array_complex):
+def test_generate_array_complex_min(case, array_representation, array_complex):
     """
     An array with at least 5 dimensions (with the rest of the usual requirements for complex shape test)
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
-    if ArrayRepresentation.LIST in representation:
+    if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_complex, array_representations=representation).serialize()
+    generated = PydanticGenerator(array_complex, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ComplexMinShapeArray")
     with case.expectation:
@@ -1867,8 +1928,7 @@ def test_generate_array_complex_min(case, representation, array_complex):
         TestCase(type="fail", array=np.zeros((5, 2, 4, 6, 1), dtype=str)),
     ],
 )
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_complex_range(case, representation, array_complex):
+def test_generate_array_complex_range(case, array_representation, array_complex):
     """
     An array with between 5 and 7 dimensions, inclusive,
     - the first of which has a maximum cardinality of 5, and
@@ -1876,12 +1936,10 @@ def test_generate_array_complex_range(case, representation, array_complex):
     - the third of which has a cardinality between 2 and 5, inclusive, and
     - the fourth of which has an exact cardinality of 6
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
-    if ArrayRepresentation.LIST in representation:
+    if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_complex, array_representations=representation).serialize()
+    generated = PydanticGenerator(array_complex, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ComplexRangeShapeArray")
     with case.expectation:
@@ -1903,8 +1961,7 @@ def test_generate_array_complex_range(case, representation, array_complex):
         TestCase(type="fail", array=np.zeros((5, 2, 4, 6, 1), dtype=str)),
     ],
 )
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_complex_exact(case, representation, array_complex):
+def test_generate_array_complex_exact(case, array_representation, array_complex):
     """
     An array with exactly 6 dimensions,
     - the first of which has a maximum cardinality of 5, and
@@ -1912,93 +1969,118 @@ def test_generate_array_complex_exact(case, representation, array_complex):
     - the third of which has a cardinality between 2 and 5, inclusive, and
     - the fourth of which has an exact cardinality of 6
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
-    if ArrayRepresentation.LIST in representation:
+    if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_complex, array_representations=representation).serialize()
+    generated = PydanticGenerator(array_complex, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ComplexExactShapeArray")
     with case.expectation:
         cls(array=case.array)
 
 
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_bounded_implicit_exact(representation, array_bounded):
+def test_generate_array_bounded_implicit_exact(array_representation, array_bounded):
     """
     The representation of an bounded array with min and max dimensions that are equal should be the same as
     setting an exact dimensionality.
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
 
-    generated = PydanticGenerator(array_bounded, array_representations=representation, metadata_mode=None).render()
+    generated = PydanticGenerator(
+        array_bounded, array_representations=array_representation, metadata_mode=None
+    ).render()
     explicit = generated.classes["ExactDimensions"].attributes["array"]
     implicit = generated.classes["ImplicitExact"].attributes["array"]
     assert explicit.render() == implicit.render()
 
 
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_complex_implicit_exact(representation, array_complex):
+def test_generate_array_complex_implicit_exact(array_representation, array_complex):
     """
     The representation of an complex array with min and max dimensions that are equal should be the same as
     setting an exact dimensionality.
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
 
-    generated = PydanticGenerator(array_complex, array_representations=representation, metadata_mode=None).render()
+    generated = PydanticGenerator(
+        array_complex, array_representations=array_representation, metadata_mode=None
+    ).render()
     explicit = generated.classes["ComplexExactShapeArray"].attributes["array"]
     implicit = generated.classes["ComplexImplicitExactShapeArray"].attributes["array"]
     assert explicit.render() == implicit.render()
 
 
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_complex_noop_exact(representation, array_complex, array_parameterized):
+def test_generate_array_complex_noop_exact(array_representation, array_complex, array_parameterized):
     """
     When the exact number of dimensions is equal to the number of parameterized dimensions,
     the representation should be equivalent to if it hadn't been specified
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
 
     generated_complex = PydanticGenerator(
-        array_complex, array_representations=representation, metadata_mode=None
+        array_complex, array_representations=array_representation, metadata_mode=None
     ).render()
     generated_parameterized = PydanticGenerator(
-        array_parameterized, array_representations=representation, metadata_mode=None
+        array_parameterized, array_representations=array_representation, metadata_mode=None
     ).render()
     complex = generated_complex.classes["ComplexNoOpExactShapeArray"].attributes["array"]
     parameterized = generated_parameterized.classes["ParameterizedArray"].attributes["array"]
     assert complex.render() == parameterized.render()
 
 
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_error_complex_exact_shape(representation, array_error_complex_dimensions):
+def test_generate_array_error_complex_exact_shape(array_representation, array_error_complex_dimensions):
     """
     When we try and make a complex array where the exact number of dimensions are lower than the parameterized
     dimensions, we should throw an error
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
 
     with pytest.raises(ValueError, match=".*must be greater than the parameterized dimensions.*"):
-        _ = PydanticGenerator(array_error_complex_dimensions, array_representations=representation).serialize()
+        _ = PydanticGenerator(array_error_complex_dimensions, array_representations=array_representation).serialize()
 
 
-@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
-def test_generate_array_error_complex_unbounded_shape(representation, array_error_complex_unbounded):
+def test_generate_array_error_complex_unbounded_shape(array_representation, array_error_complex_unbounded):
     """
     When we specify a minimum number of dimensions without a max (or setting max to False) in a complex array,
     we should throw an error - min without a max is undefined behavior, to set unbounded we need the max to be
     explicitly false.
     """
-    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
-        return
 
     with pytest.raises(ValueError, match=".*Cannot specify a minimum_number_dimensions while maximum is None.*"):
-        _ = PydanticGenerator(array_error_complex_unbounded, array_representations=representation).serialize()
+        _ = PydanticGenerator(array_error_complex_unbounded, array_representations=array_representation).serialize()
+
+
+@pytest.mark.parametrize(
+    "method",
+    [
+        "array_exact_dimensions",
+        "array_consistent_n_dimensions",
+        "array_dimensions_ordinal",
+        "array_explicitly_unbounded",
+    ],
+)
+def test_array_validator(method, array_validator_errors):
+    """Array-level validator method testing for ArrayValidator"""
+    array_expr = array_validator_errors.attributes[method].array
+
+    # global validation should always error
+    with pytest.raises(ArrayValidationError):
+        ArrayValidator.validate(array_expr)
+
+    # should have a matching method, which should be the one that specifically raises
+    assert hasattr(ArrayValidator, method)
+
+    # it should be static, so we can just call it independently
+    with pytest.raises(ArrayValidationError):
+        getattr(ArrayValidator, method)(array_expr)
+
+
+@pytest.mark.parametrize("method", ["dimension_exact_cardinality", "dimension_ordinal"])
+def test_dimension_validator(method, array_validator_errors):
+    """Dimension-level validator method testing for ArrayValidator"""
+    dimension_array_expr = array_validator_errors.attributes["dimension_errors"].array
+
+    with pytest.raises(ArrayValidationError):
+        ArrayValidator.validate(dimension_array_expr)
+
+    dimension = [d for d in dimension_array_expr.dimensions if d.alias == method][0]
+    with pytest.raises(ArrayValidationError):
+        getattr(ArrayValidator, method)(dimension)
 
 
 # --------------------------------------------------

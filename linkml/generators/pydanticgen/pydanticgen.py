@@ -218,7 +218,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         )
 
     """
-    imports: Optional[List[Import]] = None
+    imports: Optional[Union[List[Import], Imports]] = None
     """
     Additional imports to inject into generated module.
 
@@ -938,8 +938,11 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         # imports
         imports = DEFAULT_IMPORTS
         if self.imports is not None:
-            for i in self.imports:
-                imports += i
+            if isinstance(self.imports, Imports):
+                imports += self.imports
+            else:
+                for i in self.imports:
+                    imports += i
         if self.split_mode == SplitMode.FULL:
             imports += self._get_imports()
 

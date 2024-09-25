@@ -125,6 +125,7 @@ watchdog = ">=0.9.0"
 pyshacl = { version = "^0.25.0", optional = true }
 black = { version=">=24.0.0", optional = true }
 typing-extensions = { version=">=4.4.0", python="<3.9" }
+numpydantic = { version=">=1.6.1", python = ">=3.9", optional = true}
 
 [tool.poetry.group.dev.dependencies]
 chardet = "*"
@@ -151,8 +152,9 @@ mock = "^5.1.0"
 
 [tool.poetry.extras]
 black = ["black"]
+numpydantic = ["numpydantic"]
 shacl = ["pyshacl"]
-tests = ["black", "pyshacl"]
+tests = ["black", "numpydantic", "pyshacl"]
 
 [tool.poetry.group.docs]
 optional = true
@@ -208,6 +210,7 @@ markers = [
   "no_asserts: tests that don't have meaningful asserts, but are only snapshot comparisons, or historically had print statements, or other non-erroring behavior",
   "strcmp: tests that compare stringified values rather than the values themselves",
   "pydanticgen_split: Split module generation in pydanticgen",
+  "pydanticgen_npd: tests for the numpydantic array generator",
   "pythongen: Tests for python generator",
   "pydanticgen: Tests for pydantic generator",
   "javagen: Tests for java generator",
