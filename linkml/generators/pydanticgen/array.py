@@ -1,7 +1,7 @@
 import sys
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterable, Optional, Type, TypeVar, Union, get_args
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterable, List, Optional, Type, TypeVar, Union, get_args
 
 from linkml_runtime.linkml_model import Element
 from linkml_runtime.linkml_model.meta import ArrayExpression, DimensionExpression
@@ -157,8 +157,7 @@ class ArrayValidator:
             array.minimum_number_dimensions is not None or array.maximum_number_dimensions is not None
         ):
             raise ValidationError(
-                "Can only specify EITHER exact_number_dimensions OR minimum/maximum dimensions, "
-                f"got: {array}"
+                f"Can only specify EITHER exact_number_dimensions OR minimum/maximum dimensions, got: {array}"
             )
 
     @staticmethod
@@ -215,8 +214,7 @@ class ArrayValidator:
             dimension.minimum_cardinality is not None or dimension.maximum_cardinality is not None
         ):
             raise ValidationError(
-                "Can only specify EITHER exact_cardinality OR minimum/maximum cardinality, " 
-                f"got: {dimension}"
+                f"Can only specify EITHER exact_cardinality OR minimum/maximum cardinality, got: {dimension}"
             )
 
     @staticmethod
@@ -509,7 +507,7 @@ class NumpydanticArray(ArrayRangeGenerator):
     )
     INJECTS = [f'NUMPYDANTIC_VERSION = "{NUMPYDANTIC_VERSION}"']
 
-    def make(self) -> SlotResult:
+    def make(self) -> RangeResult:
         result = super().make()
         result.imports = self.IMPORTS.model_copy()
         result.injected_classes = self.INJECTS.copy()
@@ -560,20 +558,20 @@ class NumpydanticArray(ArrayRangeGenerator):
         else:
             return shape
 
-    def any_shape(self, array: Optional[ArrayRepresentation] = None) -> SlotResult:
+    def any_shape(self, array: Optional[ArrayRepresentation] = None) -> RangeResult:
         """
         Any shaped array, either an unparameterized :class:`numpydantic.NDArray`
         if dtype is :class:`typing.Any` , or like ``NDArray[Any, {self.dtype}]``
         otherwise.
         """
         if self.dtype in ("Any", "AnyType"):
-            annotation = "NDArray"
+            range = "NDArray"
         else:
-            annotation = f"NDArray[Any, {self.dtype}]"
+            range = f"NDArray[Any, {self.dtype}]"
 
-        return SlotResult(annotation=annotation)
+        return RangeResult(range=range)
 
-    def bounded_dimensions(self, array: ArrayExpression) -> SlotResult:
+    def bounded_dimensions(self, array: ArrayExpression) -> RangeResult:
         """
         Number of dimensions specified without shape
         """
@@ -584,40 +582,40 @@ class NumpydanticArray(ArrayRangeGenerator):
         ):
             exact_dims = array.exact_number_dimensions or array.minimum_number_dimensions
 
-            return SlotResult(annotation=self.ndarray_annotation(["*"] * exact_dims, self.dtype))
+            return RangeResult(range=self.ndarray_annotation(["*"] * exact_dims, self.dtype))
         elif not array.maximum_number_dimensions and (
             array.minimum_number_dimensions is None or array.minimum_number_dimensions == 1
         ):
             return self.any_shape()
         elif array.maximum_number_dimensions:
-            # e.g., if min = 2, max = 3, annotation = Union[NDArray[Shape["*, *"], dtype], NDArray[Shape["*, *, *"], dtype]]
+            # e.g., if min = 2, max = 3, range = Union[NDArray[Shape["*, *"], dtype], NDArray[Shape["*, *, *"], dtype]]
             min_dims = array.minimum_number_dimensions if array.minimum_number_dimensions is not None else 1
-            annotations = [
+            ranges = [
                 self.ndarray_annotation(["*"] * i, self.dtype)
                 for i in range(min_dims, array.maximum_number_dimensions + 1)
             ]
-            return SlotResult(annotation="Union[" + ", ".join(annotations) + "]")
+            return RangeResult(range="Union[" + ", ".join(ranges) + "]")
         else:
             # min specified with no max
-            # e.g., if min = 3, annotation = NDArray[Shape[*, *, *, ...], dtype]
+            # e.g., if min = 3, range = NDArray[Shape[*, *, *, ...], dtype]
             shape_inner = ["*"] * array.minimum_number_dimensions
             shape_inner.append("...")
-            return SlotResult(annotation=self.ndarray_annotation(shape_inner, self.dtype))
+            return RangeResult(range=self.ndarray_annotation(shape_inner, self.dtype))
 
-    def parameterized_dimensions(self, array: ArrayExpression) -> SlotResult:
+    def parameterized_dimensions(self, array: ArrayExpression) -> RangeResult:
         """
         Arrays with constrained shapes or labels
         """
         dims = [self._parameterized_dimension(d) for d in array.dimensions]
-        annotation = self.ndarray_annotation(dims, self.dtype)
-        return SlotResult(annotation=annotation)
+        range = self.ndarray_annotation(dims, self.dtype)
+        return RangeResult(range=range)
 
-    def complex_dimensions(self, array: ArrayExpression) -> SlotResult:
+    def complex_dimensions(self, array: ArrayExpression) -> RangeResult:
         """
         Mixture of parameterized dimensions with a max or min (or both) shape for anonymous dimensions.
         """
         dims = [self._parameterized_dimension(d) for d in array.dimensions]
-        annotation = None
+        range = None
 
         if array.exact_number_dimensions or (
             array.minimum_number_dimensions
@@ -627,7 +625,7 @@ class NumpydanticArray(ArrayRangeGenerator):
             exact_dims = array.exact_number_dimensions or array.minimum_number_dimensions
             if exact_dims > len(array.dimensions):
                 dims.extend(["*"] * (exact_dims - len(dims)))
-                annotation = self.ndarray_annotation(dims, self.dtype)
+                range = self.ndarray_annotation(dims, self.dtype)
             elif exact_dims == len(array.dimensions):
                 # equivalent to labeled shape
                 return self.parameterized_dimensions(array)
@@ -643,7 +641,7 @@ class NumpydanticArray(ArrayRangeGenerator):
                 dims.extend(["*"] * (array.minimum_number_dimensions - len(dims)))
 
             dims.append("...")
-            annotation = self.ndarray_annotation(dims, self.dtype)
+            range = self.ndarray_annotation(dims, self.dtype)
 
         elif array.maximum_number_dimensions:
             # some range of anonymous dimensions
@@ -659,9 +657,9 @@ class NumpydanticArray(ArrayRangeGenerator):
                 this_dims.extend(["*"] * (i - len(dims)))
                 dim_union.append(self.ndarray_annotation(this_dims, self.dtype))
             dim_union = ", ".join(dim_union)
-            annotation = f"Union[{dim_union}]"
+            range = f"Union[{dim_union}]"
 
-        if annotation is None:
-            raise RuntimeError(f"Unhandled annotation case! {array}")
+        if range is None:
+            raise RuntimeError(f"Unhandled range case! {array}")
 
-        return SlotResult(annotation=annotation)
+        return RangeResult(range=range)

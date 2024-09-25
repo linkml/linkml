@@ -212,7 +212,6 @@ def pytest_collection_modifyitems(config, items: List[pytest.Item]):
             if item.get_closest_marker("pydantic_npd"):
                 item.add_marker(skip_npd)
 
-
     # the fixture that mocks black import failures should always come all the way last
     # see: https://github.com/linkml/linkml/pull/2209#issuecomment-2231548078
     # this causes really hard to diagnose errors, but we can't fail a test run if
