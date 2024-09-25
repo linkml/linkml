@@ -615,7 +615,7 @@ class NumpydanticArray(ArrayRangeGenerator):
         Mixture of parameterized dimensions with a max or min (or both) shape for anonymous dimensions.
         """
         dims = [self._parameterized_dimension(d) for d in array.dimensions]
-        range = None
+        res = None
 
         if array.exact_number_dimensions or (
             array.minimum_number_dimensions
@@ -625,7 +625,7 @@ class NumpydanticArray(ArrayRangeGenerator):
             exact_dims = array.exact_number_dimensions or array.minimum_number_dimensions
             if exact_dims > len(array.dimensions):
                 dims.extend(["*"] * (exact_dims - len(dims)))
-                range = self.ndarray_annotation(dims, self.dtype)
+                res = self.ndarray_annotation(dims, self.dtype)
             elif exact_dims == len(array.dimensions):
                 # equivalent to labeled shape
                 return self.parameterized_dimensions(array)
@@ -641,10 +641,10 @@ class NumpydanticArray(ArrayRangeGenerator):
                 dims.extend(["*"] * (array.minimum_number_dimensions - len(dims)))
 
             dims.append("...")
-            range = self.ndarray_annotation(dims, self.dtype)
+            res = self.ndarray_annotation(dims, self.dtype)
 
         elif array.maximum_number_dimensions:
-            # some range of anonymous dimensions
+            # some res of anonymous dimensions
 
             if array.minimum_number_dimensions:
                 min_dim = array.minimum_number_dimensions
@@ -657,9 +657,9 @@ class NumpydanticArray(ArrayRangeGenerator):
                 this_dims.extend(["*"] * (i - len(dims)))
                 dim_union.append(self.ndarray_annotation(this_dims, self.dtype))
             dim_union = ", ".join(dim_union)
-            range = f"Union[{dim_union}]"
+            res = f"Union[{dim_union}]"
 
-        if range is None:
+        if res is None:
             raise RuntimeError(f"Unhandled range case! {array}")
 
-        return RangeResult(range=range)
+        return RangeResult(range=res)
