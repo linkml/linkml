@@ -4301,4 +4301,4 @@ tests = ["black", "numpydantic", "pyshacl"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.1"
-content-hash = "62619ba49d5976230288728315fe2db701cfbae6cd96837e5b8c4b8cefec27d3"
+content-hash = "378d81a409785a72b67751f17b79b9009ac0fdbc949dcb7c0faa4756823cae72"

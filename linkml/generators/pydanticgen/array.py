@@ -45,17 +45,18 @@ class AnyShapeArrayType(Generic[_T]):
     def __get_pydantic_core_schema__(cls, source_type: Any, handler: "GetCoreSchemaHandler") -> "CoreSchema":
         # double-nested parameterized types here
         # source_type: List[Union[T,List[...]]]
-        item_type = Any if get_args(get_args(source_type)[0])[0] is _T else get_args(get_args(source_type)[0])[0]
+        item_type = (Any,) if get_args(get_args(source_type)[0])[0] is _T else get_args(get_args(source_type)[0])[:-1]
 
-        item_schema = handler.generate_schema(item_type)
-        if item_schema.get("type", "any") != "any":
+        if len(item_type) == 1:
+            item_schema = handler.generate_schema(item_type[0])
+        else:
+            item_schema = core_schema.union_schema([handler.generate_schema(i) for i in item_type])
+
+        if all([getattr(i, "__module__", "") == "builtins" and i is not Any for i in item_type]):
             item_schema["strict"] = True
 
-        if item_type is Any:
-            # Before python 3.11, `Any` type was a special object without a __name__
-            item_name = "Any"
-        else:
-            item_name = item_type.__name__
+        # Before python 3.11, `Any` type was a special object without a __name__
+        item_name = "_".join(["Any" if i is Any else i.__name__ for i in item_type])
 
         array_ref = f"any-shape-array-{item_name}"
 
@@ -497,7 +498,7 @@ class NumpydanticArray(ArrayRangeGenerator):
     """
 
     REPR = ArrayRepresentation.NUMPYDANTIC
-    NUMPYDANTIC_VERSION = "1.2.1"
+    MIN_NUMPYDANTIC_VERSION = "1.6.1"
     """
     Minimum numpydantic version needed to be installed in the environment using
     the generated models
@@ -505,7 +506,7 @@ class NumpydanticArray(ArrayRangeGenerator):
     IMPORTS = Imports() + Import(
         module="numpydantic", objects=[ObjectImport(name="NDArray"), ObjectImport(name="Shape")]
     )
-    INJECTS = [f'NUMPYDANTIC_VERSION = "{NUMPYDANTIC_VERSION}"']
+    INJECTS = [f'MIN_NUMPYDANTIC_VERSION = "{MIN_NUMPYDANTIC_VERSION}"']
 
     def make(self) -> RangeResult:
         result = super().make()

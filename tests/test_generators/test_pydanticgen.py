@@ -1458,6 +1458,12 @@ def array_complex(input_path) -> SchemaDefinition:
 
 
 @pytest.fixture(scope="module")
+def array_dtype(input_path) -> SchemaDefinition:
+    schema = str(Path(input_path("arrays")) / "dtype.yaml")
+    return load_schema_wrap(schema)
+
+
+@pytest.fixture(scope="module")
 def array_error_complex_dimensions(input_path) -> SchemaDefinition:
     schema = str(Path(input_path("arrays")) / "error_complex_dimensions.yaml")
     return load_schema_wrap(schema)
@@ -1545,6 +1551,76 @@ def test_generate_array_anyshape_typed(case, array_representation, array_anyshap
     cls = getattr(mod, "Typed")
     with case.expectation:
         cls(array=case.array)
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=float)),
+        TestCase(type="fail", array=np.zeros((2, 3, 4), dtype=str)),
+    ],
+)
+def test_generate_array_dtype_union(case, array_representation, array_dtype):
+    """
+    Array representations can validate union dtypes
+    """
+    if ArrayRepresentation.LIST in array_representation:
+        case.array = case.array.tolist()
+
+    imports = Imports(imports=[Import(module="numpy", alias="np")])
+
+    generated = PydanticGenerator(array_dtype, array_representations=array_representation, imports=imports).serialize()
+    mod = compile_python(generated)
+    cls = getattr(mod, "UnionDtype")
+    with case.expectation:
+        cls(array=case.array)
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=np.uint8)),
+        TestCase(type="fail", array=np.zeros((2, 3, 4), dtype=int)),
+    ],
+)
+def test_generate_array_dtype_numpy(case, array_representation, array_dtype):
+    """
+    Array representations can use numpy types
+    """
+    if ArrayRepresentation.LIST in array_representation:
+        case.array = list(case.array)
+
+    imports = Imports(imports=[Import(module="numpy", alias="np")])
+
+    generated = PydanticGenerator(array_dtype, array_representations=array_representation, imports=imports).serialize()
+    mod = compile_python(generated)
+    cls = getattr(mod, "NumpyDtype")
+    with case.expectation:
+        cls(array=case.array)
+
+
+def test_generate_array_dtype_class(array_representation, array_dtype):
+    """
+    Array representations can use classes as ranges
+    """
+
+    imports = Imports(imports=[Import(module="numpy", alias="np")])
+
+    generated = PydanticGenerator(array_dtype, array_representations=array_representation, imports=imports).serialize()
+    mod = compile_python(generated)
+    cls: Type[BaseModel] = getattr(mod, "ClassDtype")
+    target_cls: Type[BaseModel] = getattr(mod, "MyClass")
+
+    array = np.full(shape=(2, 3, 4), fill_value=target_cls())
+
+    if ArrayRepresentation.LIST in array_representation:
+        array = array.tolist()
+
+    # validates
+    instance = cls(array=array)
+    # and preserves object
+    assert isinstance(instance.array[0][0][0], target_cls)
 
 
 @pytest.mark.parametrize(
