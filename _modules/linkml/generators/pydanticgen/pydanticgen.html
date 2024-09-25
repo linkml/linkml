@@ -563,7 +563,7 @@
 <span class="sd">        )</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">imports</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Import</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">imports</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Import</span><span class="p">],</span> <span class="n">Imports</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Additional imports to inject into generated module.</span>
 
@@ -1283,8 +1283,11 @@
         <span class="c1"># imports</span>
         <span class="n">imports</span> <span class="o">=</span> <span class="n">DEFAULT_IMPORTS</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="p">:</span>
-                <span class="n">imports</span> <span class="o">+=</span> <span class="n">i</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="p">,</span> <span class="n">Imports</span><span class="p">):</span>
+                <span class="n">imports</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="p">:</span>
+                    <span class="n">imports</span> <span class="o">+=</span> <span class="n">i</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_mode</span> <span class="o">==</span> <span class="n">SplitMode</span><span class="o">.</span><span class="n">FULL</span><span class="p">:</span>
             <span class="n">imports</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_imports</span><span class="p">()</span>
 

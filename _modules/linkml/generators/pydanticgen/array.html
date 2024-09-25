@@ -346,7 +346,7 @@
 <span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">get_args</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">get_args</span>
 
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="n">Element</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">ArrayExpression</span><span class="p">,</span> <span class="n">DimensionExpression</span>
@@ -371,11 +371,12 @@
 
 <span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen.build</span> <span class="kn">import</span> <span class="n">RangeResult</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen.template</span> <span class="kn">import</span> <span class="n">ConditionalImport</span><span class="p">,</span> <span class="n">Import</span><span class="p">,</span> <span class="n">Imports</span><span class="p">,</span> <span class="n">ObjectImport</span>
+<span class="kn">from</span> <span class="nn">linkml.utils.exceptions</span> <span class="kn">import</span> <span class="n">ValidationError</span>
 
 
 <div class="viewcode-block" id="ArrayRepresentation"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRepresentation">[docs]</a><span class="k">class</span> <span class="nc">ArrayRepresentation</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">LIST</span> <span class="o">=</span> <span class="s2">&quot;list&quot;</span>
-    <span class="n">NPARRAY</span> <span class="o">=</span> <span class="s2">&quot;nparray&quot;</span>  <span class="c1"># numpy and nptyping must be installed to use this</span></div>
+    <span class="n">NUMPYDANTIC</span> <span class="o">=</span> <span class="s2">&quot;numpydantic&quot;</span>  <span class="c1"># numpydantic must be installed to use this</span></div>
 
 
 <span class="n">_BOUNDED_ARRAY_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;exact_number_dimensions&quot;</span><span class="p">,</span> <span class="s2">&quot;minimum_number_dimensions&quot;</span><span class="p">,</span> <span class="s2">&quot;maximum_number_dimensions&quot;</span><span class="p">)</span>
@@ -389,17 +390,18 @@
     <span class="k">def</span> <span class="nf">__get_pydantic_core_schema__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source_type</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="s2">&quot;GetCoreSchemaHandler&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;CoreSchema&quot;</span><span class="p">:</span>
         <span class="c1"># double-nested parameterized types here</span>
         <span class="c1"># source_type: List[Union[T,List[...]]]</span>
-        <span class="n">item_type</span> <span class="o">=</span> <span class="n">Any</span> <span class="k">if</span> <span class="n">get_args</span><span class="p">(</span><span class="n">get_args</span><span class="p">(</span><span class="n">source_type</span><span class="p">)[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="n">_T</span> <span class="k">else</span> <span class="n">get_args</span><span class="p">(</span><span class="n">get_args</span><span class="p">(</span><span class="n">source_type</span><span class="p">)[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">item_type</span> <span class="o">=</span> <span class="p">(</span><span class="n">Any</span><span class="p">,)</span> <span class="k">if</span> <span class="n">get_args</span><span class="p">(</span><span class="n">get_args</span><span class="p">(</span><span class="n">source_type</span><span class="p">)[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="n">_T</span> <span class="k">else</span> <span class="n">get_args</span><span class="p">(</span><span class="n">get_args</span><span class="p">(</span><span class="n">source_type</span><span class="p">)[</span><span class="mi">0</span><span class="p">])[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-        <span class="n">item_schema</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">generate_schema</span><span class="p">(</span><span class="n">item_type</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">item_schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;any&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;any&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">item_type</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">item_schema</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">generate_schema</span><span class="p">(</span><span class="n">item_type</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">item_schema</span> <span class="o">=</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">union_schema</span><span class="p">([</span><span class="n">handler</span><span class="o">.</span><span class="n">generate_schema</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">item_type</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="nb">getattr</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;__module__&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;builtins&quot;</span> <span class="ow">and</span> <span class="n">i</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Any</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">item_type</span><span class="p">]):</span>
             <span class="n">item_schema</span><span class="p">[</span><span class="s2">&quot;strict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="k">if</span> <span class="n">item_type</span> <span class="ow">is</span> <span class="n">Any</span><span class="p">:</span>
-            <span class="c1"># Before python 3.11, `Any` type was a special object without a __name__</span>
-            <span class="n">item_name</span> <span class="o">=</span> <span class="s2">&quot;Any&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">item_name</span> <span class="o">=</span> <span class="n">item_type</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="c1"># Before python 3.11, `Any` type was a special object without a __name__</span>
+        <span class="n">item_name</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;Any&quot;</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">is</span> <span class="n">Any</span> <span class="k">else</span> <span class="n">i</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">item_type</span><span class="p">])</span>
 
         <span class="n">array_ref</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;any-shape-array-</span><span class="si">{</span><span class="n">item_name</span><span class="si">}</span><span class="s2">&quot;</span>
 
@@ -454,6 +456,124 @@
 <span class="n">_ConListImports</span> <span class="o">=</span> <span class="n">Imports</span><span class="p">()</span> <span class="o">+</span> <span class="n">Import</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="s2">&quot;pydantic&quot;</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="p">[</span><span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;conlist&quot;</span><span class="p">)])</span>
 
 
+<div class="viewcode-block" id="ArrayValidator"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayValidator">[docs]</a><span class="k">class</span> <span class="nc">ArrayValidator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate the specification of a LinkML Array</span>
+
+<span class="sd">    .. todo::</span>
+
+<span class="sd">        It looks like :mod:`linkml.validator` is for validating instances against schema, rather</span>
+<span class="sd">        than validating the schema itself, so am not subclassing/writing as a plugin.</span>
+<span class="sd">        Unsure if there is a more general means of validating schema, but for now this is</span>
+<span class="sd">        an independent class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ArrayValidator.validate"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayValidator.validate">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate an array expression.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            :class:`.ValidationError` if invalid</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">array_exact_dimensions</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">array_consistent_n_dimensions</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">array_explicitly_unbounded</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">array_dimensions_ordinal</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">dimensions</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">dimension</span> <span class="ow">in</span> <span class="n">array</span><span class="o">.</span><span class="n">dimensions</span><span class="p">:</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">validate_dimension</span><span class="p">(</span><span class="n">dimension</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ArrayValidator.validate_dimension"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayValidator.validate_dimension">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">validate_dimension</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dimension</span><span class="p">:</span> <span class="n">DimensionExpression</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate a single array dimension</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            :class:`.ValidationError` if invalid</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">dimension_exact_cardinality</span><span class="p">(</span><span class="n">dimension</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">dimension_ordinal</span><span class="p">(</span><span class="n">dimension</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ArrayValidator.array_exact_dimensions"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayValidator.array_exact_dimensions">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">array_exact_dimensions</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Arrays can have exact_number_dimensions OR min/max_number_dimensions, but not both&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">exact_number_dimensions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Can only specify EITHER exact_number_dimensions OR minimum/maximum dimensions, got: </span><span class="si">{</span><span class="n">array</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ArrayValidator.array_consistent_n_dimensions"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayValidator.array_consistent_n_dimensions">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">array_consistent_n_dimensions</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Complex arrays with both exact/min/max_number_dimensions and parameterized dimensions</span>
+<span class="sd">        need to have the exact/min/max_number_dimensions greater than the number of parameterized dimensions!</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">array</span><span class="o">.</span><span class="n">dimensions</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">_BOUNDED_ARRAY_FIELDS</span><span class="p">:</span>
+            <span class="n">field</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">field</span> <span class="ow">and</span> <span class="n">field</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dimensions</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+                    <span class="s2">&quot;if exact/minimum/maximum_number_dimensions is provided, &quot;</span>
+                    <span class="s2">&quot;it must be greater than the parameterized dimensions. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;got</span><span class="se">\n</span><span class="s2">- </span><span class="si">{</span><span class="n">field_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="se">\n</span><span class="s2">- dimensions: </span><span class="si">{</span><span class="n">array</span><span class="o">.</span><span class="n">dimensions</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ArrayValidator.array_dimensions_ordinal"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayValidator.array_dimensions_ordinal">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">array_dimensions_ordinal</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        minimum_number_dimensions needs to be less than maximum_number_dimensions when both are set</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="o">&gt;</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+                    <span class="s2">&quot;minimum_number_dimensions must be lesser than maximum_number_dimensions when both are set. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;got minimum: </span><span class="si">{</span><span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span><span class="si">}</span><span class="s2">, maximum: </span><span class="si">{</span><span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ArrayValidator.array_explicitly_unbounded"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayValidator.array_explicitly_unbounded">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">array_explicitly_unbounded</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Complex arrays with a minimum_number_dimensions and parameterized dimensions</span>
+<span class="sd">        need to either use exact_number_dimensions to specify extra anonymous dimensions</span>
+<span class="sd">        or set maximum_number_dimensions to ``False`` to specify unbounded extra anonymous</span>
+<span class="sd">        dimensions to avoid ambiguity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">array</span><span class="o">.</span><span class="n">dimensions</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;Cannot specify a minimum_number_dimensions while maximum is None while using labeled dimensions - &quot;</span>
+                    <span class="s2">&quot;either use exact_number_dimensions &gt; len(dimensions) for extra parameterized dimensions or set &quot;</span>
+                    <span class="s2">&quot;maximum_number_dimensions explicitly to False for unbounded dimensions&quot;</span>
+                <span class="p">)</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ArrayValidator.dimension_exact_cardinality"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayValidator.dimension_exact_cardinality">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">dimension_exact_cardinality</span><span class="p">(</span><span class="n">dimension</span><span class="p">:</span> <span class="n">DimensionExpression</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dimensions can only have exact_cardinality OR min/max_cardinality, but not both&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">dimension</span><span class="o">.</span><span class="n">exact_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="n">dimension</span><span class="o">.</span><span class="n">minimum_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">dimension</span><span class="o">.</span><span class="n">maximum_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Can only specify EITHER exact_cardinality OR minimum/maximum cardinality, got: </span><span class="si">{</span><span class="n">dimension</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ArrayValidator.dimension_ordinal"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayValidator.dimension_ordinal">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">dimension_ordinal</span><span class="p">(</span><span class="n">dimension</span><span class="p">:</span> <span class="n">DimensionExpression</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;minimum_cardinality must be less than maximum_cardinality when both are set&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">dimension</span><span class="o">.</span><span class="n">minimum_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dimension</span><span class="o">.</span><span class="n">maximum_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dimension</span><span class="o">.</span><span class="n">minimum_cardinality</span> <span class="o">&gt;</span> <span class="n">dimension</span><span class="o">.</span><span class="n">maximum_cardinality</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+                    <span class="s2">&quot;minimum_cardinality must be lesser than maximum_cardinality when both are set. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;got minimum: </span><span class="si">{</span><span class="n">dimension</span><span class="o">.</span><span class="n">minimum_cardinality</span><span class="si">}</span><span class="s2">, maximum: </span><span class="si">{</span><span class="n">dimension</span><span class="o">.</span><span class="n">maximum_cardinality</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span></div></div>
+
+
 <div class="viewcode-block" id="ArrayRangeGenerator"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRangeGenerator">[docs]</a><span class="k">class</span> <span class="nc">ArrayRangeGenerator</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Metaclass for generating a given format of array range.</span>
@@ -487,16 +607,33 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span>
 
 <div class="viewcode-block" id="ArrayRangeGenerator.make"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRangeGenerator.make">[docs]</a>    <span class="k">def</span> <span class="nf">make</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the string form of the array representation&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the string form of the array representation, validating first</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="o">.</span><span class="n">dimensions</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_bounded_dimensions</span><span class="p">:</span>
-            <span class="c1"># any-shaped array</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">any_shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_any_shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="o">.</span><span class="n">dimensions</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_bounded_dimensions</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounded_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bounded_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="o">.</span><span class="n">dimensions</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_bounded_dimensions</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameterized_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameterized_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">complex_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_complex_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ArrayRangeGenerator.validate"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRangeGenerator.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ensure that the given ArrayExpression is valid using :class:`.ArrayValidator`</span>
+
+<span class="sd">        .. todo::</span>
+
+<span class="sd">            Integrate with more general schema validation that happens when a schema is loaded,</span>
+<span class="sd">            rather than when an array is generated</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            :class:`.ValidationError` if the schema is invalid</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ArrayValidator</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">has_bounded_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -511,33 +648,30 @@
                 <span class="k">return</span> <span class="n">subclass</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generator for array representation </span><span class="si">{</span><span class="nb">repr</span><span class="si">}</span><span class="s2"> not found!&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ArrayRangeGenerator.any_shape"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRangeGenerator.any_shape">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">any_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayRepresentation</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_any_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayRepresentation</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Any shaped array!&quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">pass</span>
 
-<div class="viewcode-block" id="ArrayRangeGenerator.bounded_dimensions"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRangeGenerator.bounded_dimensions">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">bounded_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_bounded_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Array shape specified numerically, without axis parameterization&quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">pass</span>
 
-<div class="viewcode-block" id="ArrayRangeGenerator.parameterized_dimensions"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRangeGenerator.parameterized_dimensions">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">parameterized_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_parameterized_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Array shape specified with ``dimensions`` without additional parameterized dimensions&quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">pass</span>
 
-<div class="viewcode-block" id="ArrayRangeGenerator.complex_dimensions"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRangeGenerator.complex_dimensions">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">complex_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_complex_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Array shape with both ``parameterized`` and ``bounded`` dimensions&quot;&quot;&quot;</span>
-        <span class="k">pass</span></div></div>
+        <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="ListOfListsArray"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ListOfListsArray">[docs]</a><span class="k">class</span> <span class="nc">ListOfListsArray</span><span class="p">(</span><span class="n">ArrayRangeGenerator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represent arrays as lists of lists!</span>
-
-<span class="sd">    TODO: Move all validation of values (eg. anywhere we raise a ValueError) to the ArrayExpression</span>
-<span class="sd">    dataclass and out of the generator class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">REPR</span> <span class="o">=</span> <span class="n">ArrayRepresentation</span><span class="o">.</span><span class="n">LIST</span>
@@ -549,9 +683,7 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_parameterized_dimension</span><span class="p">(</span><span class="n">dimension</span><span class="p">:</span> <span class="n">DimensionExpression</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
         <span class="c1"># TODO: Preserve label representation in some readable way! doing the MVP now of using conlist</span>
-        <span class="k">if</span> <span class="n">dimension</span><span class="o">.</span><span class="n">exact_cardinality</span> <span class="ow">and</span> <span class="p">(</span><span class="n">dimension</span><span class="o">.</span><span class="n">minimum_cardinality</span> <span class="ow">or</span> <span class="n">dimension</span><span class="o">.</span><span class="n">maximum_cardinality</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can only specify EITHER exact_cardinality OR minimum/maximum cardinality&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">dimension</span><span class="o">.</span><span class="n">exact_cardinality</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dimension</span><span class="o">.</span><span class="n">exact_cardinality</span><span class="p">:</span>
             <span class="n">dmin</span> <span class="o">=</span> <span class="n">dimension</span><span class="o">.</span><span class="n">exact_cardinality</span>
             <span class="n">dmax</span> <span class="o">=</span> <span class="n">dimension</span><span class="o">.</span><span class="n">exact_cardinality</span>
         <span class="k">elif</span> <span class="n">dimension</span><span class="o">.</span><span class="n">minimum_cardinality</span> <span class="ow">or</span> <span class="n">dimension</span><span class="o">.</span><span class="n">maximum_cardinality</span><span class="p">:</span>
@@ -573,7 +705,7 @@
 
         <span class="k">return</span> <span class="n">RangeResult</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="nb">range</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">_ConListImports</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ListOfListsArray.any_shape"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ListOfListsArray.any_shape">[docs]</a>    <span class="k">def</span> <span class="nf">any_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayExpression</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">with_inner_union</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_any_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayExpression</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">with_inner_union</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        An AnyShaped array (using :class:`.AnyShapeArray` )</span>
 
@@ -590,9 +722,9 @@
 
         <span class="k">if</span> <span class="n">with_inner_union</span><span class="p">:</span>
             <span class="nb">range</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Union[</span><span class="si">{</span><span class="nb">range</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">]&quot;</span>
-        <span class="k">return</span> <span class="n">RangeResult</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="nb">range</span><span class="p">,</span> <span class="n">injected_classes</span><span class="o">=</span><span class="n">_AnyShapeArrayInjects</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">_AnyShapeArrayImports</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">RangeResult</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="nb">range</span><span class="p">,</span> <span class="n">injected_classes</span><span class="o">=</span><span class="n">_AnyShapeArrayInjects</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">_AnyShapeArrayImports</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ListOfListsArray.bounded_dimensions"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ListOfListsArray.bounded_dimensions">[docs]</a>    <span class="k">def</span> <span class="nf">bounded_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_bounded_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A nested series of ``List[]`` ranges with :attr:`.dtype` at the center.</span>
 
@@ -608,23 +740,22 @@
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span> <span class="ow">and</span> <span class="p">(</span>
             <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="o">==</span> <span class="mi">1</span>
         <span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">any_shape</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_any_shape</span><span class="p">()</span>
         <span class="k">elif</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span><span class="p">:</span>
             <span class="c1"># e.g., if min = 2, max = 3, range = Union[List[List[dtype]], List[List[List[dtype]]]]</span>
             <span class="n">min_dims</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">1</span>
             <span class="n">ranges</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_list_of_lists</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">min_dims</span><span class="p">,</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
-            <span class="c1"># TODO: Format this nicely!</span>
             <span class="k">return</span> <span class="n">RangeResult</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="s2">&quot;Union[&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ranges</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># min specified with no max</span>
             <span class="c1"># e.g., if min = 3, range = List[List[AnyShapeArray[dtype]]]</span>
             <span class="k">return</span> <span class="n">RangeResult</span><span class="p">(</span>
-                <span class="nb">range</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_list_of_lists</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">any_shape</span><span class="p">()</span><span class="o">.</span><span class="n">range</span><span class="p">),</span>
+                <span class="nb">range</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_list_of_lists</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_any_shape</span><span class="p">()</span><span class="o">.</span><span class="n">range</span><span class="p">),</span>
                 <span class="n">injected_classes</span><span class="o">=</span><span class="n">_AnyShapeArrayInjects</span><span class="p">,</span>
                 <span class="n">imports</span><span class="o">=</span><span class="n">_AnyShapeArrayImports</span><span class="p">,</span>
-            <span class="p">)</span></div>
+            <span class="p">)</span>
 
-<div class="viewcode-block" id="ListOfListsArray.parameterized_dimensions"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ListOfListsArray.parameterized_dimensions">[docs]</a>    <span class="k">def</span> <span class="nf">parameterized_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_parameterized_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constrained shapes using :func:`pydantic.conlist`</span>
 
@@ -639,14 +770,15 @@
         <span class="k">for</span> <span class="n">dimension</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dimensions</span><span class="p">):</span>
             <span class="nb">range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameterized_dimension</span><span class="p">(</span><span class="n">dimension</span><span class="p">,</span> <span class="nb">range</span><span class="p">)</span><span class="o">.</span><span class="n">range</span>
 
-        <span class="k">return</span> <span class="n">RangeResult</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="nb">range</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">_ConListImports</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">RangeResult</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="nb">range</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">_ConListImports</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ListOfListsArray.complex_dimensions"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.ListOfListsArray.complex_dimensions">[docs]</a>    <span class="k">def</span> <span class="nf">complex_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_complex_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Mixture of parameterized dimensions with a max or min (or both) shape for anonymous dimensions.</span>
 
 <span class="sd">        A mixture of ``List`` , :class:`.conlist` , and :class:`.AnyShapeArray` .</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># first process any unlabeled dimensions which must be the innermost level of the range,</span>
         <span class="c1"># then wrap that with labeled dimensions</span>
         <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">exact_number_dimensions</span> <span class="ow">or</span> <span class="p">(</span>
@@ -659,39 +791,29 @@
                 <span class="n">res</span> <span class="o">=</span> <span class="n">RangeResult</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_list_of_lists</span><span class="p">(</span><span class="n">exact_dims</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dimensions</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
             <span class="k">elif</span> <span class="n">exact_dims</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dimensions</span><span class="p">):</span>
                 <span class="c1"># equivalent to labeled shape</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameterized_dimensions</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;if exact_number_dimensions is provided, it must be greater than the parameterized dimensions&quot;</span>
-                <span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameterized_dimensions</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+            <span class="c1"># else is invalid, see: ArrayValidator.array_consistent_n_dimensions</span>
 
         <span class="k">elif</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span><span class="p">:</span>
             <span class="c1"># unlimited n dimensions, so innermost is AnyShape with dtype</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">any_shape</span><span class="p">(</span><span class="n">with_inner_union</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_any_shape</span><span class="p">(</span><span class="n">with_inner_union</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="ow">and</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dimensions</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span><span class="p">:</span>
                 <span class="c1"># some minimum anonymous dimensions but unlimited max dimensions</span>
                 <span class="c1"># e.g., if min = 3, len(dim) = 2, then res.range = List[Union[AnyShapeArray[dtype], dtype]]</span>
                 <span class="c1"># res.range will be wrapped with the 2 labeled dimensions later</span>
                 <span class="n">res</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_of_lists</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dimensions</span><span class="p">),</span> <span class="n">res</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
 
-        <span class="k">elif</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="ow">and</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="p">(</span>
-                    <span class="s2">&quot;Cannot specify a minimum_number_dimensions while maximum is None while using labeled dimensions - &quot;</span>
-                    <span class="s2">&quot;either use exact_number_dimensions &gt; len(dimensions) for extra parameterized dimensions or set &quot;</span>
-                    <span class="s2">&quot;maximum_number_dimensions explicitly to False for unbounded dimensions&quot;</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span><span class="p">:</span>
             <span class="n">initial_min</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
             <span class="n">dmin</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dimensions</span><span class="p">),</span> <span class="n">initial_min</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dimensions</span><span class="p">)</span>
             <span class="n">dmax</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dimensions</span><span class="p">)</span>
 
-            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounded_dimensions</span><span class="p">(</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bounded_dimensions</span><span class="p">(</span>
                 <span class="n">ArrayExpression</span><span class="p">(</span><span class="n">minimum_number_dimensions</span><span class="o">=</span><span class="n">dmin</span><span class="p">,</span> <span class="n">maximum_number_dimensions</span><span class="o">=</span><span class="n">dmax</span><span class="p">)</span>
             <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">res</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unsupported array specification! this is almost certainly a bug!&quot;</span><span class="p">)</span>  <span class="c1"># pragma: no cover</span>
 
         <span class="c1"># Wrap inner dimension with labeled dimension</span>
@@ -708,19 +830,181 @@
         <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dimensions</span><span class="p">):</span>
             <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parameterized_dimension</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">range</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">res</span></div></div>
+        <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="NPTypingArray"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.NPTypingArray">[docs]</a><span class="k">class</span> <span class="nc">NPTypingArray</span><span class="p">(</span><span class="n">ArrayRangeGenerator</span><span class="p">):</span>
+<div class="viewcode-block" id="NumpydanticArray"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.NumpydanticArray">[docs]</a><span class="k">class</span> <span class="nc">NumpydanticArray</span><span class="p">(</span><span class="n">ArrayRangeGenerator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represent array range with nptyping, and serialization/loading with an ArrayProxy</span>
+<span class="sd">    Represent array range with :class:`numpydantic.NDArray` annotations,</span>
+<span class="sd">    allowing an abstract array specification to be used with many different array</span>
+<span class="sd">    libraries.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">REPR</span> <span class="o">=</span> <span class="n">ArrayRepresentation</span><span class="o">.</span><span class="n">NPARRAY</span>
+    <span class="n">REPR</span> <span class="o">=</span> <span class="n">ArrayRepresentation</span><span class="o">.</span><span class="n">NUMPYDANTIC</span>
+    <span class="n">MIN_NUMPYDANTIC_VERSION</span> <span class="o">=</span> <span class="s2">&quot;1.6.1&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Minimum numpydantic version needed to be installed in the environment using</span>
+<span class="sd">    the generated models</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">IMPORTS</span> <span class="o">=</span> <span class="n">Imports</span><span class="p">()</span> <span class="o">+</span> <span class="n">Import</span><span class="p">(</span>
+        <span class="n">module</span><span class="o">=</span><span class="s2">&quot;numpydantic&quot;</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="p">[</span><span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;NDArray&quot;</span><span class="p">),</span> <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Shape&quot;</span><span class="p">)]</span>
+    <span class="p">)</span>
+    <span class="n">INJECTS</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;MIN_NUMPYDANTIC_VERSION = &quot;</span><span class="si">{</span><span class="n">MIN_NUMPYDANTIC_VERSION</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;NPTyping array ranges are not implemented yet :(&quot;</span><span class="p">)</span></div>
+<div class="viewcode-block" id="NumpydanticArray.make"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.NumpydanticArray.make">[docs]</a>    <span class="k">def</span> <span class="nf">make</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">make</span><span class="p">()</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">imports</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">IMPORTS</span><span class="o">.</span><span class="n">model_copy</span><span class="p">()</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">injected_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">INJECTS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="NumpydanticArray.ndarray_annotation"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.array.NumpydanticArray.ndarray_annotation">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">ndarray_annotation</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make a stringified :class:`numpydantic.NDArray` annotation for a given shape</span>
+<span class="sd">        and dtype.</span>
+
+<span class="sd">        If either ``shape`` or ``dtype`` is ``None`` , use ``Any``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="s2">&quot;Any&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">shape_expression</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">shape</span><span class="p">])</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Shape[&quot;</span><span class="si">{</span><span class="n">shape_expression</span><span class="si">}</span><span class="s1">&quot;]&#39;</span>
+
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;Any&quot;</span><span class="p">,</span> <span class="s2">&quot;AnyType&quot;</span><span class="p">):</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="s2">&quot;Any&quot;</span>
+
+        <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;Any&quot;</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;Any&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;NDArray&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;NDArray[</span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">]&quot;</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_dimension_shape</span><span class="p">(</span><span class="n">dimension</span><span class="p">:</span> <span class="n">DimensionExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dimension</span><span class="o">.</span><span class="n">exact_cardinality</span><span class="p">:</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dimension</span><span class="o">.</span><span class="n">exact_cardinality</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">dimension</span><span class="o">.</span><span class="n">minimum_cardinality</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dimension</span><span class="o">.</span><span class="n">maximum_cardinality</span><span class="p">:</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dimension</span><span class="o">.</span><span class="n">minimum_cardinality</span><span class="si">}</span><span class="s2">-*&quot;</span>
+        <span class="k">elif</span> <span class="n">dimension</span><span class="o">.</span><span class="n">maximum_cardinality</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dimension</span><span class="o">.</span><span class="n">minimum_cardinality</span><span class="p">:</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;*-</span><span class="si">{</span><span class="n">dimension</span><span class="o">.</span><span class="n">maximum_cardinality</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="n">dimension</span><span class="o">.</span><span class="n">minimum_cardinality</span> <span class="ow">and</span> <span class="n">dimension</span><span class="o">.</span><span class="n">maximum_cardinality</span><span class="p">:</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dimension</span><span class="o">.</span><span class="n">minimum_cardinality</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">dimension</span><span class="o">.</span><span class="n">maximum_cardinality</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
+
+        <span class="k">return</span> <span class="n">shape</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_parameterized_dimension</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dimension</span><span class="p">:</span> <span class="n">DimensionExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_dimension_shape</span><span class="p">(</span><span class="n">dimension</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dimension</span><span class="o">.</span><span class="n">alias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dimension</span><span class="o">.</span><span class="n">alias</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">shape</span>
+
+    <span class="k">def</span> <span class="nf">_any_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayRepresentation</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Any shaped array, either an unparameterized :class:`numpydantic.NDArray`</span>
+<span class="sd">        if dtype is :class:`typing.Any` , or like ``NDArray[Any, {self.dtype}]``</span>
+<span class="sd">        otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;Any&quot;</span><span class="p">,</span> <span class="s2">&quot;AnyType&quot;</span><span class="p">):</span>
+            <span class="nb">range</span> <span class="o">=</span> <span class="s2">&quot;NDArray&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">range</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;NDArray[Any, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">]&quot;</span>
+
+        <span class="k">return</span> <span class="n">RangeResult</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="nb">range</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_bounded_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Number of dimensions specified without shape</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">exact_number_dimensions</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span>
+            <span class="ow">and</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span>
+            <span class="ow">and</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="o">==</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span>
+        <span class="p">):</span>
+            <span class="n">exact_dims</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">exact_number_dimensions</span> <span class="ow">or</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span>
+
+            <span class="k">return</span> <span class="n">RangeResult</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ndarray_annotation</span><span class="p">([</span><span class="s2">&quot;*&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">exact_dims</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_any_shape</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span><span class="p">:</span>
+            <span class="c1"># e.g., if min = 2, max = 3, range = Union[NDArray[Shape[&quot;*, *&quot;], dtype], NDArray[Shape[&quot;*, *, *&quot;], dtype]]</span>
+            <span class="n">min_dims</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">1</span>
+            <span class="n">ranges</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ndarray_annotation</span><span class="p">([</span><span class="s2">&quot;*&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">min_dims</span><span class="p">,</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">return</span> <span class="n">RangeResult</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="s2">&quot;Union[&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ranges</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># min specified with no max</span>
+            <span class="c1"># e.g., if min = 3, range = NDArray[Shape[*, *, *, ...], dtype]</span>
+            <span class="n">shape_inner</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span>
+            <span class="n">shape_inner</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">RangeResult</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ndarray_annotation</span><span class="p">(</span><span class="n">shape_inner</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_parameterized_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arrays with constrained shapes or labels</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_parameterized_dimension</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">array</span><span class="o">.</span><span class="n">dimensions</span><span class="p">]</span>
+        <span class="nb">range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndarray_annotation</span><span class="p">(</span><span class="n">dims</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">RangeResult</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="nb">range</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_complex_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">ArrayExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RangeResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Mixture of parameterized dimensions with a max or min (or both) shape for anonymous dimensions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_parameterized_dimension</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">array</span><span class="o">.</span><span class="n">dimensions</span><span class="p">]</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">exact_number_dimensions</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span>
+            <span class="ow">and</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span>
+            <span class="ow">and</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="o">==</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span>
+        <span class="p">):</span>
+            <span class="n">exact_dims</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">exact_number_dimensions</span> <span class="ow">or</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span>
+            <span class="k">if</span> <span class="n">exact_dims</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dimensions</span><span class="p">):</span>
+                <span class="n">dims</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;*&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">exact_dims</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">dims</span><span class="p">)))</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndarray_annotation</span><span class="p">(</span><span class="n">dims</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">exact_dims</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dimensions</span><span class="p">):</span>
+                <span class="c1"># equivalent to labeled shape</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameterized_dimensions</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+            <span class="c1"># else is invalid, see: ArrayValidator.array_consistent_n_dimensions(array)</span>
+
+        <span class="k">elif</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span><span class="p">:</span>
+            <span class="c1"># unlimited n dimensions</span>
+
+            <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span><span class="p">:</span>
+                <span class="c1"># some minimum anonymous dimensions but unlimited max dimensions</span>
+                <span class="n">dims</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;*&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">dims</span><span class="p">)))</span>
+
+            <span class="n">dims</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndarray_annotation</span><span class="p">(</span><span class="n">dims</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span><span class="p">:</span>
+            <span class="c1"># some res of anonymous dimensions</span>
+
+            <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span><span class="p">:</span>
+                <span class="n">min_dim</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">minimum_number_dimensions</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">min_dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dims</span><span class="p">)</span>
+
+            <span class="n">dim_union</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">min_dim</span><span class="p">,</span> <span class="n">array</span><span class="o">.</span><span class="n">maximum_number_dimensions</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">this_dims</span> <span class="o">=</span> <span class="n">dims</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">this_dims</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;*&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">dims</span><span class="p">)))</span>
+                <span class="n">dim_union</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndarray_annotation</span><span class="p">(</span><span class="n">this_dims</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+            <span class="n">dim_union</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dim_union</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Union[</span><span class="si">{</span><span class="n">dim_union</span><span class="si">}</span><span class="s2">]&quot;</span>
+
+        <span class="k">if</span> <span class="n">res</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unhandled range case! </span><span class="si">{</span><span class="n">array</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">RangeResult</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="n">res</span><span class="p">)</span></div>
 </pre></div>
         </article>
       </div>

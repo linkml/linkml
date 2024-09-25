@@ -75,25 +75,25 @@ COMPARISON = """
 :::
 ::::
 ::::{{tab-item}} numpydantic
-:::{{admonition}} Coming Soon
-Direct support for array libraries like numpy, hdf5, dask, zarr, and xarray with pydantic validation <3
+:::{{code-block}} python
+{pydantic_npd}
 ::: 
 ::::
 :::::
 """
 
-def render_module(path):
-    generator = PydanticGenerator(str(path), array_representations=['list'])
+def render_module(path, representation='list'):
+    generator = PydanticGenerator(str(path), array_representations=[representation])
     module = generator.render()
     return module
     
-def compile_module(path):
-    generator = PydanticGenerator(str(path), array_representations=['list'])
+def compile_module(path, representation='list'):
+    generator = PydanticGenerator(str(path), array_representations=[representation])
     module = generator.compile_module()
     return module
 
-def render_class(path, cls) -> str:
-    module = render_module(path)
+def render_class(path, cls, representation='list') -> str:
+    module = render_module(path, representation)
     cls = module.classes[cls]
     code = cls.render(black=True)
     return code
@@ -106,16 +106,19 @@ def render_comparison(path, cls, string=False) -> str:
     sch = YAMLLoader().load_as_dict(path)
     class_strs = []
     pydantic_strs = []
+    npd_strs = []
     
     for a_cls in cls:
         class_def = sch['classes'][a_cls]
         class_def = {a_cls: class_def}
         class_strs.append(YAMLDumper().dumps(class_def))
         pydantic_strs.append(render_class(path, a_cls))
+        npd_strs.append(render_class(path, a_cls, representation='numpydantic'))
         
     class_str = "\n".join(class_strs)
     pydantic_str = "\n".join(pydantic_strs)
-    md = COMPARISON.format(linkml=class_str, pydantic_lol=pydantic_str)
+    npd_str = "\n".join(npd_strs)
+    md = COMPARISON.format(linkml=class_str, pydantic_lol=pydantic_str, pydantic_npd=npd_str)
     if string:
         return md
     else:
@@ -170,6 +173,65 @@ try:
 except Exception as e:
     console.print(e)
 ```
+
+### Array Library Integration
+
+The most basic kind of array annotations that the pydantic generator can produce are "list of list" style arrays,
+but most practical uses of arrays require specialized array libraries. 
+
+The {class}`.PydanticGenerator` also supports generating array annotations with {mod}`numpydantic`, which allows
+you to use a single model with an extensible set of array libraries.
+
+To generate numpydantic-style array annotations:
+
+```python
+PydanticGenerator('my_schema.yaml', array_representations=['numpydantic'])
+```
+
+Which yields a model like this (and see the examples throughout the rest of this page)
+
+```python
+from pydantic import BaseModel
+from numpydantic import NDArray, Shape
+
+class MyModel(BaseModel):
+    array: NDArray[Shape["3 x, 4 y, * z"], int]
+```
+
+Then use it as you please:
+
+```python
+import numpy as np
+import dask.array as da
+import zarr
+
+# numpy
+model = MyModel(array=np.zeros((3, 4, 5), dtype=int))
+# dask
+model = MyModel(array=da.zeros((3, 4, 5), dtype=int))
+# hdf5 datasets
+model = MyModel(array=('data.h5', '/nested/dataset'))
+# zarr arrays
+model = MyModel(array=zarr.zeros((3,4,5), dtype=int))
+model = MyModel(array='data.zarr')
+model = MyModel(array=('data.zarr', '/nested/dataset'))
+# video files
+model = MyModel(array="data.mp4")
+```
+
+This makes it possible for your schema to be extremely *implementation general* - data formats and standards
+can support many array backends out of the box, reducing coupling between the abstract standard and its concrete implementation.
+More humble array users get powerful array modeling tools right from a yaml schema.
+
+```{tip}
+To use numpydantic arrays, you'll need to add it as a dependency in your project.
+
+Schema rendered with numpydantic arrays will include a module-level constant `NUMPYDANTIC_VERSION` which specifies the
+minimum version that it was designed for, but if you already depend on `linkml` in your project you can add the
+`numpydantic` extra (eg. `pip install linkml[numpydantic]`) which will give you a `numpydantic` dependency that matches
+the version supported by `linkml`.
+```
+
 
 ### Specification
 
@@ -284,8 +346,12 @@ class Typed(ConfiguredBaseModel):
 :::
 ::::
 ::::{tab-item} numpydantic
-:::{admonition} Coming Soon
-Direct support for array libraries like numpy, hdf5, dask, zarr, and xarray with pydantic validation <3
+:::{code-block} python
+class AnyType(ConfiguredBaseModel):
+    array: Optional[NDArray] = Field(None)
+
+class Typed(ConfiguredBaseModel):
+    array: Optional[NDArray[Any, int]] = Field(None)
 ::: 
 ::::
 :::::
@@ -475,10 +541,10 @@ render_comparison(sch, 'ComplexAnyShapeArray')
 At release, only pydanticgen supports arrays, but arrays will be implemented gradually for the rest of the generators.
 
 | generator                 | representation | anyshape | bounded | parameterized | complex |
-|---------------------------|----------------|----------|-----------|---------|-------|
-| [pydantic](pydanticgen)   | List of Lists  | Y        | Y         | Y       | Y     |
-| [pydantic](pydanticgen)   | Numpydantic    | X        | X         | X       | X     |
-| ... (the rest of em)      |                |          |           |         |       |
+|---------------------------|----------------|----------|---------|---------------|---------|
+| [pydantic](pydanticgen)   | List of Lists  | Y        | Y       | Y             | Y       |
+| [pydantic](pydanticgen)   | Numpydantic    | Y        | Y       | Y             | Y       |
+| ... (the rest of em)      |                |          |         |               |         |
 
 (array-representations)=
 ### Representations
@@ -487,16 +553,15 @@ Since arrays are unlike other data types in that they usually require some speci
 and many formats don't have a single canonical array type, generators may accommodate multiple array
 representations.
 
-The pydantic generator currently supports a "List of lists" style array representation to be able to use
-arrays without any additional external dependencies beyond pydantic. 
+The basic representation supported by the pydantic generator is the "List of lists" style array representation. This can be used without any additional dependencies beyond pydantic.
+
+Pydanticgen now *also* supports most common array libraries from a single annotation using {mod}`numpydantic` - 
+a single array specification generates a single pydantic model, but the numpydantic {class}`numpydantic.NDArray` 
+type abstracts the validation process for an extensible set of array libraries. Use whatever you want as an array,
+why stop at numpy arrays - currently it also supports hdf5, zarr, video files, and also allows custom array
+interfaces via subclassing. See the [numpydantic docs](https://numpydantic.readthedocs.io/en/latest/) for more.
 
 See each [generator](../generators/index.rst)'s documentation page for a summary of the array representations they support.
-
-```{admonition} Numpy And Friends
-We are in the process of implementing an additional pydantic array representation that can
-directly work with numpy-style arrays, including lazy loading and passthrough array routines for
-several major array libraries as a standalone package. See {mod}`numpydantic` 
-```
 
 ### Implementation Guidance
 
