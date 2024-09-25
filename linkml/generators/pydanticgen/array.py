@@ -268,13 +268,13 @@ class ArrayRangeGenerator(ABC):
         self.validate()
 
         if not self.array.dimensions and not self.has_bounded_dimensions:
-            return self.any_shape(self.array)
+            return self._any_shape(self.array)
         elif not self.array.dimensions and self.has_bounded_dimensions:
-            return self.bounded_dimensions(self.array)
+            return self._bounded_dimensions(self.array)
         elif self.array.dimensions and not self.has_bounded_dimensions:
-            return self.parameterized_dimensions(self.array)
+            return self._parameterized_dimensions(self.array)
         else:
-            return self.complex_dimensions(self.array)
+            return self._complex_dimensions(self.array)
 
     def validate(self):
         """
@@ -304,22 +304,22 @@ class ArrayRangeGenerator(ABC):
         raise ValueError(f"Generator for array representation {repr} not found!")
 
     @abstractmethod
-    def any_shape(self, array: Optional[ArrayRepresentation] = None) -> RangeResult:
+    def _any_shape(self, array: Optional[ArrayRepresentation] = None) -> RangeResult:
         """Any shaped array!"""
         pass
 
     @abstractmethod
-    def bounded_dimensions(self, array: ArrayExpression) -> RangeResult:
+    def _bounded_dimensions(self, array: ArrayExpression) -> RangeResult:
         """Array shape specified numerically, without axis parameterization"""
         pass
 
     @abstractmethod
-    def parameterized_dimensions(self, array: ArrayExpression) -> RangeResult:
+    def _parameterized_dimensions(self, array: ArrayExpression) -> RangeResult:
         """Array shape specified with ``dimensions`` without additional parameterized dimensions"""
         pass
 
     @abstractmethod
-    def complex_dimensions(self, array: ArrayExpression) -> RangeResult:
+    def _complex_dimensions(self, array: ArrayExpression) -> RangeResult:
         """Array shape with both ``parameterized`` and ``bounded`` dimensions"""
         pass
 
@@ -360,7 +360,7 @@ class ListOfListsArray(ArrayRangeGenerator):
 
         return RangeResult(range=range, imports=_ConListImports)
 
-    def any_shape(self, array: Optional[ArrayExpression] = None, with_inner_union: bool = False) -> RangeResult:
+    def _any_shape(self, array: Optional[ArrayExpression] = None, with_inner_union: bool = False) -> RangeResult:
         """
         An AnyShaped array (using :class:`.AnyShapeArray` )
 
@@ -379,7 +379,7 @@ class ListOfListsArray(ArrayRangeGenerator):
             range = f"Union[{range}, {self.dtype}]"
         return RangeResult(range=range, injected_classes=_AnyShapeArrayInjects, imports=_AnyShapeArrayImports)
 
-    def bounded_dimensions(self, array: ArrayExpression) -> RangeResult:
+    def _bounded_dimensions(self, array: ArrayExpression) -> RangeResult:
         """
         A nested series of ``List[]`` ranges with :attr:`.dtype` at the center.
 
@@ -395,7 +395,7 @@ class ListOfListsArray(ArrayRangeGenerator):
         elif not array.maximum_number_dimensions and (
             array.minimum_number_dimensions is None or array.minimum_number_dimensions == 1
         ):
-            return self.any_shape()
+            return self._any_shape()
         elif array.maximum_number_dimensions:
             # e.g., if min = 2, max = 3, range = Union[List[List[dtype]], List[List[List[dtype]]]]
             min_dims = array.minimum_number_dimensions if array.minimum_number_dimensions is not None else 1
@@ -405,12 +405,12 @@ class ListOfListsArray(ArrayRangeGenerator):
             # min specified with no max
             # e.g., if min = 3, range = List[List[AnyShapeArray[dtype]]]
             return RangeResult(
-                range=self._list_of_lists(array.minimum_number_dimensions - 1, self.any_shape().range),
+                range=self._list_of_lists(array.minimum_number_dimensions - 1, self._any_shape().range),
                 injected_classes=_AnyShapeArrayInjects,
                 imports=_AnyShapeArrayImports,
             )
 
-    def parameterized_dimensions(self, array: ArrayExpression) -> RangeResult:
+    def _parameterized_dimensions(self, array: ArrayExpression) -> RangeResult:
         """
         Constrained shapes using :func:`pydantic.conlist`
 
@@ -427,7 +427,7 @@ class ListOfListsArray(ArrayRangeGenerator):
 
         return RangeResult(range=range, imports=_ConListImports)
 
-    def complex_dimensions(self, array: ArrayExpression) -> RangeResult:
+    def _complex_dimensions(self, array: ArrayExpression) -> RangeResult:
         """
         Mixture of parameterized dimensions with a max or min (or both) shape for anonymous dimensions.
 
@@ -446,14 +446,12 @@ class ListOfListsArray(ArrayRangeGenerator):
                 res = RangeResult(range=self._list_of_lists(exact_dims - len(array.dimensions), self.dtype))
             elif exact_dims == len(array.dimensions):
                 # equivalent to labeled shape
-                return self.parameterized_dimensions(array)
-            else:
-                # invalid - raise exception
-                ArrayValidator.array_consistent_n_dimensions(array)
+                return self._parameterized_dimensions(array)
+            # else is invalid, see: ArrayValidator.array_consistent_n_dimensions
 
         elif array.maximum_number_dimensions is not None and not array.maximum_number_dimensions:
             # unlimited n dimensions, so innermost is AnyShape with dtype
-            res = self.any_shape(with_inner_union=True)
+            res = self._any_shape(with_inner_union=True)
 
             if array.minimum_number_dimensions:
                 # some minimum anonymous dimensions but unlimited max dimensions
@@ -466,7 +464,7 @@ class ListOfListsArray(ArrayRangeGenerator):
             dmin = max(len(array.dimensions), initial_min) - len(array.dimensions)
             dmax = array.maximum_number_dimensions - len(array.dimensions)
 
-            res = self.bounded_dimensions(
+            res = self._bounded_dimensions(
                 ArrayExpression(minimum_number_dimensions=dmin, maximum_number_dimensions=dmax)
             )
 
@@ -559,7 +557,7 @@ class NumpydanticArray(ArrayRangeGenerator):
         else:
             return shape
 
-    def any_shape(self, array: Optional[ArrayRepresentation] = None) -> RangeResult:
+    def _any_shape(self, array: Optional[ArrayRepresentation] = None) -> RangeResult:
         """
         Any shaped array, either an unparameterized :class:`numpydantic.NDArray`
         if dtype is :class:`typing.Any` , or like ``NDArray[Any, {self.dtype}]``
@@ -572,7 +570,7 @@ class NumpydanticArray(ArrayRangeGenerator):
 
         return RangeResult(range=range)
 
-    def bounded_dimensions(self, array: ArrayExpression) -> RangeResult:
+    def _bounded_dimensions(self, array: ArrayExpression) -> RangeResult:
         """
         Number of dimensions specified without shape
         """
@@ -587,7 +585,7 @@ class NumpydanticArray(ArrayRangeGenerator):
         elif not array.maximum_number_dimensions and (
             array.minimum_number_dimensions is None or array.minimum_number_dimensions == 1
         ):
-            return self.any_shape()
+            return self._any_shape()
         elif array.maximum_number_dimensions:
             # e.g., if min = 2, max = 3, range = Union[NDArray[Shape["*, *"], dtype], NDArray[Shape["*, *, *"], dtype]]
             min_dims = array.minimum_number_dimensions if array.minimum_number_dimensions is not None else 1
@@ -603,7 +601,7 @@ class NumpydanticArray(ArrayRangeGenerator):
             shape_inner.append("...")
             return RangeResult(range=self.ndarray_annotation(shape_inner, self.dtype))
 
-    def parameterized_dimensions(self, array: ArrayExpression) -> RangeResult:
+    def _parameterized_dimensions(self, array: ArrayExpression) -> RangeResult:
         """
         Arrays with constrained shapes or labels
         """
@@ -611,7 +609,7 @@ class NumpydanticArray(ArrayRangeGenerator):
         range = self.ndarray_annotation(dims, self.dtype)
         return RangeResult(range=range)
 
-    def complex_dimensions(self, array: ArrayExpression) -> RangeResult:
+    def _complex_dimensions(self, array: ArrayExpression) -> RangeResult:
         """
         Mixture of parameterized dimensions with a max or min (or both) shape for anonymous dimensions.
         """
@@ -629,10 +627,8 @@ class NumpydanticArray(ArrayRangeGenerator):
                 res = self.ndarray_annotation(dims, self.dtype)
             elif exact_dims == len(array.dimensions):
                 # equivalent to labeled shape
-                return self.parameterized_dimensions(array)
-            else:
-                # invalid - raise exception
-                ArrayValidator.array_consistent_n_dimensions(array)
+                return self._parameterized_dimensions(array)
+            # else is invalid, see: ArrayValidator.array_consistent_n_dimensions(array)
 
         elif array.maximum_number_dimensions is not None and not array.maximum_number_dimensions:
             # unlimited n dimensions
@@ -661,6 +657,6 @@ class NumpydanticArray(ArrayRangeGenerator):
             res = f"Union[{dim_union}]"
 
         if res is None:
-            raise RuntimeError(f"Unhandled range case! {array}")
+            raise ValueError(f"Unhandled range case! {array}")
 
         return RangeResult(range=res)
