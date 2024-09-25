@@ -209,7 +209,7 @@ def pytest_collection_modifyitems(config, items: List[pytest.Item]):
     if sys.version_info.minor < 9 or version("pydantic").startswith("1"):
         skip_npd = pytest.mark.skip(reason="Numpydantic is only supported in python>=3.9 and with pydantic>=2")
         for item in items:
-            if item.get_closest_marker("pydantic_npd"):
+            if item.get_closest_marker("pydanticgen_npd"):
                 item.add_marker(skip_npd)
 
     # the fixture that mocks black import failures should always come all the way last
