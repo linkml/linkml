@@ -31,7 +31,7 @@ from linkml.utils.exceptions import ValidationError
 
 class ArrayRepresentation(Enum):
     LIST = "list"
-    NUMPYDANTIC = "numpydantic"  # numpy and nptyping must be installed to use this
+    NUMPYDANTIC = "numpydantic"  # numpydantic must be installed to use this
 
 
 _BOUNDED_ARRAY_FIELDS = ("exact_number_dimensions", "minimum_number_dimensions", "maximum_number_dimensions")
@@ -214,7 +214,8 @@ class ArrayValidator:
             dimension.minimum_cardinality is not None or dimension.maximum_cardinality is not None
         ):
             raise ValidationError(
-                "Can only specify EITHER exact_cardinality OR minimum/maximum cardinality, " f"got: {dimension}"
+                "Can only specify EITHER exact_cardinality OR minimum/maximum cardinality, " 
+                f"got: {dimension}"
             )
 
     @staticmethod
@@ -588,7 +589,7 @@ class NumpydanticArray(ArrayRangeGenerator):
         ):
             return self.any_shape()
         elif array.maximum_number_dimensions:
-            # e.g., if min = 2, max = 3, annotation = Union[List[List[dtype]], List[List[List[dtype]]]]
+            # e.g., if min = 2, max = 3, annotation = Union[NDArray[Shape["*, *"], dtype], NDArray[Shape["*, *, *"], dtype]]
             min_dims = array.minimum_number_dimensions if array.minimum_number_dimensions is not None else 1
             annotations = [
                 self.ndarray_annotation(["*"] * i, self.dtype)
@@ -597,7 +598,7 @@ class NumpydanticArray(ArrayRangeGenerator):
             return SlotResult(annotation="Union[" + ", ".join(annotations) + "]")
         else:
             # min specified with no max
-            # e.g., if min = 3, annotation = List[List[AnyShapeArray[dtype]]]
+            # e.g., if min = 3, annotation = NDArray[Shape[*, *, *, ...], dtype]
             shape_inner = ["*"] * array.minimum_number_dimensions
             shape_inner.append("...")
             return SlotResult(annotation=self.ndarray_annotation(shape_inner, self.dtype))
