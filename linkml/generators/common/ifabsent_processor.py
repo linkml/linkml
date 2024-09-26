@@ -74,7 +74,7 @@ class IfAbsentProcessor(ABC):
     See `<https://w3id.org/linkml/ifabsent>`_.
     """
 
-    ifabsent_regex = re.compile("""(?:(?P<type>\w+)\()?[\"\']?(?P<default_value>[^\(\)\"\')]*)[\"\']?\)?""")
+    ifabsent_regex = re.compile(r"""(?:(?P<type>\w+)\()?[\"\']?(?P<default_value>[^\(\)\"\')]*)[\"\']?\)?""")
 
     def __init__(self, schema_view: SchemaView):
         self.schema_view = schema_view
@@ -226,6 +226,10 @@ class IfAbsentProcessor(ABC):
         for typ in TYPES:
             if range_ == typ.type_name:
                 return typ
+
+        # if we're not a type, return None to indicate that, e.g. if an enum's permissible_value
+        if range_ not in self.schema_view.all_types(imports=True):
+            return
 
         # then check explicit descendents of types
         # base types do not inherit from one another, so the last ancestor is always a base type
