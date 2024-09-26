@@ -455,9 +455,9 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
     def generate_slot(self, slot: SlotDefinition, cls: ClassDefinition) -> SlotResult:
         slot_args = {
-            k: slot._as_dict.get(k, None)
+            k: getattr(slot, k, None)
             for k in PydanticAttribute.model_fields.keys()
-            if slot._as_dict.get(k, None) is not None
+            if getattr(slot, k, None) is not None
         }
         slot_alias = slot.alias if slot.alias else slot.name
         slot_args["name"] = underscore(slot_alias)
