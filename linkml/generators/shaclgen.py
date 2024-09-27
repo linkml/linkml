@@ -5,13 +5,13 @@ from typing import Callable, List
 
 import click
 from jsonasobj2 import JsonObj, as_dict
-from linkml_runtime.linkml_model.meta import ElementName
+from linkml_runtime.linkml_model.meta import ClassDefinition, ElementName
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import TypedNode, extended_float, extended_int, extended_str
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
-from rdflib.namespace import RDF, RDFS, SH, XSD
+from rdflib.namespace import RDF, SH, XSD
 
 from linkml._version import __version__
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
@@ -74,9 +74,6 @@ class ShaclGenerator(Generator):
             shape_pv(RDF.type, SH.NodeShape)
             shape_pv(SH.targetClass, class_uri)  # TODO
 
-            if c.is_a:
-                shape_pv(RDFS.subClassOf, URIRef(sv.get_uri(c.is_a, expand=True)))
-
             if self.closed:
                 if c.mixin or c.abstract:
                     shape_pv(SH.closed, Literal(False))
@@ -88,9 +85,9 @@ class ShaclGenerator(Generator):
                 shape_pv(SH.name, Literal(c.title))
             if c.description is not None:
                 shape_pv(SH.description, Literal(c.description))
-            list_node = BNode()
-            Collection(g, list_node, [RDF.type])
-            shape_pv(SH.ignoredProperties, list_node)
+
+            shape_pv(SH.ignoredProperties, self._build_ignored_properties(g, c))
+
             if c.annotations and self.include_annotations:
                 self._add_annotations(shape_pv, c)
             order = 0
@@ -300,6 +297,31 @@ class ShaclGenerator(Generator):
             [Literal(v) for v in values],
         )
         func(SH["in"], pv_node)
+
+    def _build_ignored_properties(self, g: Graph, c: ClassDefinition) -> BNode:
+        def collect_child_properties(class_name: str, output: set) -> None:
+            for childName in self.schemaview.class_children(class_name, imports=True, mixins=False, is_a=True):
+                output.update(
+                    {
+                        URIRef(self.schemaview.get_uri(prop, expand=True))
+                        for prop in self.schemaview.class_slots(childName)
+                    }
+                )
+                collect_child_properties(childName, output)
+
+        child_properties = set()
+        collect_child_properties(c.name, child_properties)
+
+        class_slot_uris = {
+            URIRef(self.schemaview.get_uri(prop, expand=True)) for prop in self.schemaview.class_slots(c.name)
+        }
+        ignored_properties = child_properties.difference(class_slot_uris)
+
+        list_node = BNode()
+        ignored_properties.add(RDF.type)
+        Collection(g, list_node, list(ignored_properties))
+
+        return list_node
 
 
 def add_simple_data_type(func: Callable, r: ElementName) -> None:

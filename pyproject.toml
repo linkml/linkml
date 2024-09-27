@@ -149,6 +149,7 @@ numpy = [
 ]
 requests-cache = "^1.2.0"
 mock = "^5.1.0"
+testcontainers = "3.7.1"
 
 [tool.poetry.extras]
 black = ["black"]

@@ -2,7 +2,8 @@ from collections import Counter
 from typing import Any, List, Tuple
 
 import rdflib
-from rdflib import RDFS, SH, Literal, URIRef
+from rdflib import SH, Literal, URIRef
+from rdflib.collection import Collection
 
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shaclgen import ShaclGenerator
@@ -436,14 +437,51 @@ def test_custom_class_range_is_blank_node_or_iri(input_path):
     assert (persons_node, SH.nodeKind, SH.BlankNodeOrIRI) in g
 
 
-def test_is_a_becomes_a_rdfs_subclass_of(input_path):
-    shacl = ShaclGenerator(input_path("shaclgen_subclass_of.yaml"), mergeimports=True).serialize()
+def test_ignore_subclass_properties(input_path):
+    shacl = ShaclGenerator(input_path("shaclgen_subclass_ignored_properties.yaml"), mergeimports=True).serialize()
 
     g = rdflib.Graph()
     g.parse(data=shacl)
 
-    assert (
-        URIRef("https://w3id.org/linkml/examples/personinfo/Citizen"),
-        RDFS.subClassOf,
-        URIRef("https://w3id.org/linkml/examples/personinfo/Person"),
-    ) in g
+    count = 0
+    ignored_properties = {}
+    for triple in g.triples((None, SH.ignoredProperties, None)):
+        count += 1
+        (subject, predicate, object) = triple
+        ignored_properties[subject] = list(Collection(g, object))
+
+    assert count == 7
+    assert frozenset(ignored_properties[URIRef("https://w3id.org/linkml/examples/animals/Animal")]) == frozenset(
+        [
+            URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            URIRef("https://w3id.org/linkml/examples/animals/maxAltitude"),
+            URIRef("https://w3id.org/linkml/examples/animals/maxDepth"),
+            URIRef("https://w3id.org/linkml/examples/animals/mammaryGlandCount"),
+            URIRef("https://w3id.org/linkml/examples/animals/ocean"),
+            URIRef("https://w3id.org/linkml/examples/animals/name"),
+        ]
+    )
+    assert frozenset(ignored_properties[URIRef("https://w3id.org/linkml/examples/animals/CanFly")]) == frozenset(
+        [URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")]
+    )
+    assert frozenset(ignored_properties[URIRef("https://w3id.org/linkml/examples/animals/CanSwim")]) == frozenset(
+        [URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")]
+    )
+    assert frozenset(ignored_properties[URIRef("https://w3id.org/linkml/examples/animals/Mammal")]) == frozenset(
+        [
+            URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            URIRef("https://w3id.org/linkml/examples/animals/maxAltitude"),
+            URIRef("https://w3id.org/linkml/examples/animals/maxDepth"),
+            URIRef("https://w3id.org/linkml/examples/animals/ocean"),
+            URIRef("https://w3id.org/linkml/examples/animals/name"),
+        ]
+    )
+    assert frozenset(ignored_properties[URIRef("https://w3id.org/linkml/examples/animals/Whale")]) == frozenset(
+        [URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")]
+    )
+    assert frozenset(ignored_properties[URIRef("https://w3id.org/linkml/examples/animals/Dog")]) == frozenset(
+        [URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")]
+    )
+    assert frozenset(ignored_properties[URIRef("https://w3id.org/linkml/examples/animals/Bat")]) == frozenset(
+        [URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")]
+    )

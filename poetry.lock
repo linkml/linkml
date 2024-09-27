@@ -753,6 +753,20 @@ wrapt = ">=1.10,<2"
 dev = ["PyTest", "PyTest-Cov", "bump2version (<1)", "sphinx (<2)", "tox"]
 
 [[package]]
+name = "deprecation"
+version = "2.1.0"
+description = "A library to handle automated deprecations"
+optional = false
+python-versions = "*"
+files = [
+    {file = "deprecation-2.1.0-py2.py3-none-any.whl", hash = "sha256:a10811591210e1fb0e768a8c25517cabeabcba6f0bf96564f8ff45189f90b14a"},
+    {file = "deprecation-2.1.0.tar.gz", hash = "sha256:72b3bde64e5d778694b0cf68178aed03d15e15477116add3fb773e581f9518ff"},
+]
+
+[package.dependencies]
+packaging = "*"
+
+[[package]]
 name = "distlib"
 version = "0.3.8"
 description = "Distribution utilities"
@@ -762,6 +776,28 @@ files = [
     {file = "distlib-0.3.8-py2.py3-none-any.whl", hash = "sha256:034db59a0b96f8ca18035f36290806a9a6e6bd9d1ff91e45a7f172eb17e51784"},
     {file = "distlib-0.3.8.tar.gz", hash = "sha256:1530ea13e350031b6312d8580ddb6b27a104275a31106523b8f123787f494f64"},
 ]
+
+[[package]]
+name = "docker"
+version = "7.1.0"
+description = "A Python library for the Docker Engine API."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "docker-7.1.0-py3-none-any.whl", hash = "sha256:c96b93b7f0a746f9e77d325bcfb87422a3d8bd4f03136ae8a85b37f1898d5fc0"},
+    {file = "docker-7.1.0.tar.gz", hash = "sha256:ad8c70e6e3f8926cb8a92619b832b4ea5299e2831c14284663184e200546fa6c"},
+]
+
+[package.dependencies]
+pywin32 = {version = ">=304", markers = "sys_platform == \"win32\""}
+requests = ">=2.26.0"
+urllib3 = ">=1.26.0"
+
+[package.extras]
+dev = ["coverage (==7.2.7)", "pytest (==7.4.2)", "pytest-cov (==4.1.0)", "pytest-timeout (==2.1.0)", "ruff (==0.1.8)"]
+docs = ["myst-parser (==0.18.0)", "sphinx (==5.1.1)"]
+ssh = ["paramiko (>=2.4.3)"]
+websockets = ["websocket-client (>=1.3.0)"]
 
 [[package]]
 name = "docutils"
@@ -2891,7 +2927,6 @@ description = "A pure Python implementation of the trie data structure."
 optional = false
 python-versions = "*"
 files = [
-    {file = "PyTrie-0.4.0-py3-none-any.whl", hash = "sha256:f687c224ee8c66cda8e8628a903011b692635ffbb08d4b39c5f92b18eb78c950"},
     {file = "PyTrie-0.4.0.tar.gz", hash = "sha256:8f4488f402d3465993fb6b6efa09866849ed8cda7903b50647b7d0342b805379"},
 ]
 
@@ -3933,6 +3968,39 @@ files = [
 widechars = ["wcwidth"]
 
 [[package]]
+name = "testcontainers"
+version = "3.7.1"
+description = "Library provides lightweight, throwaway instances of common databases, Selenium web browsers, or anything else that can run in a Docker container"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "testcontainers-3.7.1-py2.py3-none-any.whl", hash = "sha256:7f48cef4bf0ccd78f1a4534d4b701a003a3bace851f24eae58a32f9e3f0aeba0"},
+]
+
+[package.dependencies]
+deprecation = "*"
+docker = ">=4.0.0"
+wrapt = "*"
+
+[package.extras]
+arangodb = ["python-arango"]
+azurite = ["azure-storage-blob"]
+clickhouse = ["clickhouse-driver"]
+docker-compose = ["docker-compose"]
+google-cloud-pubsub = ["google-cloud-pubsub (<2)"]
+kafka = ["kafka-python"]
+keycloak = ["python-keycloak"]
+mongo = ["pymongo"]
+mssqlserver = ["pymssql"]
+mysql = ["pymysql", "sqlalchemy"]
+neo4j = ["neo4j"]
+oracle = ["cx-Oracle", "sqlalchemy"]
+postgresql = ["psycopg2-binary", "sqlalchemy"]
+rabbitmq = ["pika"]
+redis = ["redis"]
+selenium = ["selenium"]
+
+[[package]]
 name = "tinycss2"
 version = "1.3.0"
 description = "A tiny CSS parser"
@@ -4301,4 +4369,4 @@ tests = ["black", "numpydantic", "pyshacl"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.1"
-content-hash = "378d81a409785a72b67751f17b79b9009ac0fdbc949dcb7c0faa4756823cae72"
+content-hash = "52daaf525a5c339c19023627c20663c1be72040570fa9f7f1e6f76e8820e51c1"
