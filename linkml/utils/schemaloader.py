@@ -29,6 +29,8 @@ from linkml.utils.mergeutils import merge_classes, merge_schemas, merge_slots, s
 from linkml.utils.rawloader import load_raw_schema
 from linkml.utils.schemasynopsis import SchemaSynopsis
 
+lgr = logging.getLogger(__name__)
+
 
 class SchemaLoader:
     def __init__(
@@ -57,7 +59,7 @@ class SchemaLoader:
         :param source_file_date: modification of source file
         :param source_file_size: size of source file
         """
-        self.logger = logger if logger is not None else logging.getLogger(f"{__name__}.{type(self).__name__}")
+        self.logger = logger if logger is not None else lgr
         if isinstance(data, SchemaDefinition):
             self.schema = data
         else:
