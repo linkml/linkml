@@ -16,7 +16,7 @@ class SchemaBuilder:
 
     Example:
 
-        >>> from linkml.utils.schema_builder import SchemaBuilder
+        >>> from linkml_runtime.utils.schema_builder import SchemaBuilder
         >>> sb = SchemaBuilder('test-schema')
         >>> sb.add_class('Person', slots=['name', 'age'])
         >>> sb.add_class('Organization', slots=['name', 'employees'])
