@@ -89,3 +89,11 @@ enums:
     assert enum["values"]["PLUS_SIGN"]["value"] == "+"
     assert enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]["value"] == "This & that, plus maybe a 🎩"
     assert enum["values"]["Ohio"]["value"] == "Ohio"
+
+
+def test_output_option(kitchen_sink_path, tmp_path):
+
+    tss = TypescriptGenerator(kitchen_sink_path, mergeimports=True)
+
+    tss.serialize(output=tmp_path / "kitchen_sink.ts")
+    assert (tmp_path / "kitchen_sink.ts").exists()
