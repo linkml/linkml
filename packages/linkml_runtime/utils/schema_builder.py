@@ -66,7 +66,6 @@ class SchemaBuilder:
 
         :param cls: name, dict object, or ClassDefinition object to add
         :param slots: slot of slot names or slot objects.
-            Note: If `use_attributes=True`, then this must be a list of SlotDefinitions
         :param slot_usage: slots keyed by slot name
         :param replace_if_present: if True, replace existing class if present
         :param kwargs: additional ClassDefinition properties
@@ -82,9 +81,7 @@ class SchemaBuilder:
         self.schema.classes[cls.name] = cls
         if use_attributes:
             if not isinstance(slots, list):
-                raise ValueError(
-                    "If `use_attributes=True`, then `slots` must be a list."
-                )
+                slots = [slots]
             for s in slots:
                 if isinstance(s, SlotDefinition):
                     cls.attributes[s.name] = s
