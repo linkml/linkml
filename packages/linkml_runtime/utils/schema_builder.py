@@ -65,7 +65,8 @@ class SchemaBuilder:
         Adds a class to the schema.
 
         :param cls: name, dict object, or ClassDefinition object to add
-        :param slots: slot of slot names or slot objects.
+        :param slots: list of slot names or slot objects. This must be a list of
+            `SlotDefinition` objects if `use_attributes=True`
         :param slot_usage: slots keyed by slot name (ignored if `use_attributes=True`)
         :param replace_if_present: if True, replace existing class if present
         :param use_attributes: Whether to specify the given slots as an inline
