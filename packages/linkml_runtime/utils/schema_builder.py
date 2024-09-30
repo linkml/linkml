@@ -68,8 +68,8 @@ class SchemaBuilder:
         :param slots: slot of slot names or slot objects.
         :param slot_usage: slots keyed by slot name (ignored if `use_attributes=True`)
         :param replace_if_present: if True, replace existing class if present
-        :param use_attributes: Whether to specify the given slots as an inline definition of
-            slots, attributes, in the class definition
+        :param use_attributes: Whether to specify the given slots as an inline
+            definition of slots, attributes, in the class definition
         :param kwargs: additional ClassDefinition properties
         :return: builder
         :raises ValueError: if class already exists and replace_if_present=False
