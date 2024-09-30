@@ -76,6 +76,11 @@ class SchemaBuilder:
         :return: builder
         :raises ValueError: if class already exists and replace_if_present=False
         """
+        if slots is None:
+            slots = []
+        if slot_usage is None:
+            slot_usage = {}
+
         if isinstance(cls, str):
             cls = ClassDefinition(cls, **kwargs)
         if isinstance(cls, dict):
@@ -84,25 +89,22 @@ class SchemaBuilder:
             raise ValueError(f"Class {cls.name} already exists")
         self.schema.classes[cls.name] = cls
         if use_attributes:
-            if slots is not None:
-                for s in slots:
-                    if isinstance(s, SlotDefinition):
-                        cls.attributes[s.name] = s
-                    else:
-                        raise ValueError(
-                            f"If use_attributes=True then slots must be SlotDefinitions"
-                        )
+            for s in slots:
+                if isinstance(s, SlotDefinition):
+                    cls.attributes[s.name] = s
+                else:
+                    raise ValueError(
+                        f"If use_attributes=True then slots must be SlotDefinitions"
+                    )
         else:
-            if slots is not None:
-                for s in slots:
-                    cls.slots.append(s.name if isinstance(s, SlotDefinition) else s)
-                    if isinstance(s, str) and s in self.schema.slots:
-                        # top-level slot already exists
-                        continue
-                    self.add_slot(s, replace_if_present=replace_if_present)
-            if slot_usage:
-                for k, v in slot_usage.items():
-                    cls.slot_usage[k] = v
+            for s in slots:
+                cls.slots.append(s.name if isinstance(s, SlotDefinition) else s)
+                if isinstance(s, str) and s in self.schema.slots:
+                    # top-level slot already exists
+                    continue
+                self.add_slot(s, replace_if_present=replace_if_present)
+            for k, v in slot_usage.items():
+                cls.slot_usage[k] = v
         return self
 
     def add_slot(
