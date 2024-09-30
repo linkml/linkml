@@ -80,8 +80,6 @@ class SchemaBuilder:
             raise ValueError(f"Class {cls.name} already exists")
         self.schema.classes[cls.name] = cls
         if use_attributes:
-            if not isinstance(slots, list):
-                slots = [slots]
             for s in slots:
                 if isinstance(s, SlotDefinition):
                     cls.attributes[s.name] = s
