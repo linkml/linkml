@@ -80,13 +80,14 @@ class SchemaBuilder:
             raise ValueError(f"Class {cls.name} already exists")
         self.schema.classes[cls.name] = cls
         if use_attributes:
-            for s in slots:
-                if isinstance(s, SlotDefinition):
-                    cls.attributes[s.name] = s
-                else:
-                    raise ValueError(
-                        f"If use_attributes=True then slots must be SlotDefinitions"
-                    )
+            if slots is not None:
+                for s in slots:
+                    if isinstance(s, SlotDefinition):
+                        cls.attributes[s.name] = s
+                    else:
+                        raise ValueError(
+                            f"If use_attributes=True then slots must be SlotDefinitions"
+                        )
         else:
             if slots is not None:
                 for s in slots:
