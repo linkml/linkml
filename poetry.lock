@@ -2186,13 +2186,13 @@ files = [
 
 [[package]]
 name = "numpydantic"
-version = "1.6.1"
+version = "1.6.3"
 description = "Type and shape validation and serialization for arbitrary array types in pydantic models"
 optional = true
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "numpydantic-1.6.1-py3-none-any.whl", hash = "sha256:448d6ecaa843f027c30bedda6c77c0990b1ae49d77b7dc4cb5e8b4bb10fba0cb"},
-    {file = "numpydantic-1.6.1.tar.gz", hash = "sha256:67850d65ee78e1a6b71a965684fb06b27993cf5a9a1fd26b3b1344d4b184da0f"},
+    {file = "numpydantic-1.6.3-py3-none-any.whl", hash = "sha256:a5efc21d34baed57405cd4a82d2f20756466c0562661fb4d2894f14b4f352dcd"},
+    {file = "numpydantic-1.6.3.tar.gz", hash = "sha256:bb35a00eec60eb772cb8168fc2eeff5c860d81e3838e98f73d52b2789c18df30"},
 ]
 
 [package.dependencies]
@@ -2523,13 +2523,13 @@ tests = ["pytest", "pytest-cov", "pytest-lazy-fixtures"]
 
 [[package]]
 name = "prompt-toolkit"
-version = "3.0.47"
+version = "3.0.48"
 description = "Library for building powerful interactive command lines in Python"
 optional = false
 python-versions = ">=3.7.0"
 files = [
-    {file = "prompt_toolkit-3.0.47-py3-none-any.whl", hash = "sha256:0d7bfa67001d5e39d02c224b663abc33687405033a8c422d0d675a5a13361d10"},
-    {file = "prompt_toolkit-3.0.47.tar.gz", hash = "sha256:1e1b29cb58080b1e69f207c893a1a7bf16d127a5c30c9d17a25a5d77792e5360"},
+    {file = "prompt_toolkit-3.0.48-py3-none-any.whl", hash = "sha256:f49a827f90062e411f1ce1f854f2aedb3c23353244f8108b89283587397ac10e"},
+    {file = "prompt_toolkit-3.0.48.tar.gz", hash = "sha256:d6623ab0477a80df74e646bdbc93621143f5caf104206aa29294d53de1a03d90"},
 ]
 
 [package.dependencies]
@@ -2927,6 +2927,7 @@ description = "A pure Python implementation of the trie data structure."
 optional = false
 python-versions = "*"
 files = [
+    {file = "PyTrie-0.4.0-py3-none-any.whl", hash = "sha256:f687c224ee8c66cda8e8628a903011b692635ffbb08d4b39c5f92b18eb78c950"},
     {file = "PyTrie-0.4.0.tar.gz", hash = "sha256:8f4488f402d3465993fb6b6efa09866849ed8cda7903b50647b7d0342b805379"},
 ]
 
@@ -4160,13 +4161,13 @@ zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
 name = "virtualenv"
-version = "20.26.5"
+version = "20.26.6"
 description = "Virtual Python Environment builder"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "virtualenv-20.26.5-py3-none-any.whl", hash = "sha256:4f3ac17b81fba3ce3bd6f4ead2749a72da5929c01774948e243db9ba41df4ff6"},
-    {file = "virtualenv-20.26.5.tar.gz", hash = "sha256:ce489cac131aa58f4b25e321d6d186171f78e6cb13fafbf32a840cee67733ff4"},
+    {file = "virtualenv-20.26.6-py3-none-any.whl", hash = "sha256:7345cc5b25405607a624d8418154577459c3e0277f5466dd79c49d5e492995f2"},
+    {file = "virtualenv-20.26.6.tar.gz", hash = "sha256:280aede09a2a5c317e409a00102e7077c6432c5a38f0ef938e643805a7ad2c48"},
 ]
 
 [package.dependencies]
