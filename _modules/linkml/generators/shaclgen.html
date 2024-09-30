@@ -363,6 +363,8 @@
 <span class="kn">from</span> <span class="nn">linkml.generators.shacl.shacl_ifabsent_processor</span> <span class="kn">import</span> <span class="n">ShaclIfAbsentProcessor</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
 
 <div class="viewcode-block" id="ShaclGenerator"><a class="viewcode-back" href="../../../generators/shacl.html#linkml.generators.shaclgen.ShaclGenerator">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">ShaclGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
@@ -586,7 +588,7 @@
             <span class="k">if</span> <span class="n">rt</span><span class="o">.</span><span class="n">annotations</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_annotations</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_add_annotations</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">rt</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No URI for type </span><span class="si">{</span><span class="n">rt</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No URI for type </span><span class="si">{</span><span class="n">rt</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_and_equals_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">pv_node</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>

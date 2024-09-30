@@ -374,6 +374,8 @@
 <span class="kn">from</span> <span class="nn">linkml.utils.rawloader</span> <span class="kn">import</span> <span class="n">load_raw_schema</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.schemasynopsis</span> <span class="kn">import</span> <span class="n">SchemaSynopsis</span>
 
+<span class="n">lgr</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
 
 <div class="viewcode-block" id="SchemaLoader"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.schemaloader.SchemaLoader">[docs]</a><span class="k">class</span> <span class="nc">SchemaLoader</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -402,7 +404,7 @@
 <span class="sd">        :param source_file_date: modification of source file</span>
 <span class="sd">        :param source_file_size: size of source file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="k">if</span> <span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="k">if</span> <span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">lgr</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="n">data</span>
         <span class="k">else</span><span class="p">:</span>
@@ -521,7 +523,7 @@
                     <span class="c1"># mangled names are overwritten if a schema with attributes is passed in</span>
                     <span class="c1"># TODO: handle this in a more graceful way</span>
                     <span class="c1">#  see https://github.com/linkml/linkml/issues/872</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s1">&#39;Class: &quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot; attribute &quot;</span><span class="si">{</span><span class="n">attribute</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot; - &#39;</span>
                         <span class="sa">f</span><span class="s2">&quot;mangled name: </span><span class="si">{</span><span class="n">mangled_slot_name</span><span class="si">}</span><span class="s2"> already exists&quot;</span><span class="p">,</span>
                     <span class="p">)</span>
@@ -1115,7 +1117,7 @@
             <span class="k">if</span> <span class="n">slotname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
                 <span class="n">base_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">slotname</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;slot_usage for undefined slot: </span><span class="si">{</span><span class="n">slotname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;slot_usage for undefined slot: </span><span class="si">{</span><span class="n">slotname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">base_slot</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">parent_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slot_usage</span><span class="o">.</span><span class="n">is_a</span><span class="p">)</span>
             <span class="c1"># Follow the ancestry of the class to get the most proximal parent</span>

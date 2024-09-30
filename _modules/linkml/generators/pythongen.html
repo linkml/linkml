@@ -377,6 +377,8 @@
 <span class="kn">from</span> <span class="nn">linkml.generators.python.python_ifabsent_processor</span> <span class="kn">import</span> <span class="n">PythonIfAbsentProcessor</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
 
 <div class="viewcode-block" id="PythonGenerator"><a class="viewcode-back" href="../../../generators/python.html#linkml.generators.pythongen.PythonGenerator">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">PythonGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
@@ -402,10 +404,10 @@
     <span class="n">dataclass_repr</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Whether generated dataclasses should also generate a default __repr__ method.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Default ``False`` so that the parent :class:`linkml_runtime.utils.yamlutils.YAMLRoot` &#39;s</span>
 <span class="sd">    ``__repr__`` method is inherited for model pretty printing.</span>
-<span class="sd">    </span>
+
 <span class="sd">    References:</span>
 <span class="sd">        - https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -420,7 +422,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_formats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span> <span class="o">==</span> <span class="s2">&quot;linkml&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">genmeta</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Generating metamodel without --genmeta is highly inadvisable!&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Generating metamodel without --genmeta is highly inadvisable!&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">source_file</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sourcefile</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sourcefile</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">source_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sourcefile</span><span class="p">)</span>
 
@@ -433,8 +435,8 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">compile_python</span><span class="p">(</span><span class="n">pycode</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">NameError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Code:</span><span class="se">\n</span><span class="si">{</span><span class="n">pycode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error compiling generated python code: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Code:</span><span class="se">\n</span><span class="si">{</span><span class="n">pycode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error compiling generated python code: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">e</span>
 
     <span class="k">def</span> <span class="nf">visit_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1289,11 +1291,11 @@
 
     <span class="k">def</span> <span class="nf">forward_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_range</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">owning_class</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine whether slot_range is a forward reference&quot;&quot;&quot;</span>
-        <span class="c1"># logging.info(f&quot;CHECKING: {slot_range} {owning_class}&quot;)</span>
+        <span class="c1"># logger.info(f&quot;CHECKING: {slot_range} {owning_class}&quot;)</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">slot_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">slot_range</span><span class="p">]</span><span class="o">.</span><span class="n">imported_from</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
             <span class="n">slot_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">[</span><span class="n">slot_range</span><span class="p">]</span><span class="o">.</span><span class="n">imported_from</span>
         <span class="p">):</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;FALSE: FORWARD: </span><span class="si">{</span><span class="n">slot_range</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">owning_class</span><span class="si">}</span><span class="s2"> // IMP=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">slot_range</span><span class="p">]</span><span class="o">.</span><span class="n">imported_from</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -1302,10 +1304,10 @@
         <span class="n">clist</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sort_classes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">())]</span>
         <span class="k">for</span> <span class="n">cname</span> <span class="ow">in</span> <span class="n">clist</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">cname</span> <span class="o">==</span> <span class="n">owning_class</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TRUE: OCCURS SAME: </span><span class="si">{</span><span class="n">cname</span><span class="si">}</span><span class="s2"> == </span><span class="si">{</span><span class="n">slot_range</span><span class="si">}</span><span class="s2"> owning: </span><span class="si">{</span><span class="n">owning_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TRUE: OCCURS SAME: </span><span class="si">{</span><span class="n">cname</span><span class="si">}</span><span class="s2"> == </span><span class="si">{</span><span class="n">slot_range</span><span class="si">}</span><span class="s2"> owning: </span><span class="si">{</span><span class="n">owning_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># Occurs on or after</span>
             <span class="k">elif</span> <span class="n">cname</span> <span class="o">==</span> <span class="n">slot_range</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FALSE: OCCURS BEFORE: </span><span class="si">{</span><span class="n">cname</span><span class="si">}</span><span class="s2"> == </span><span class="si">{</span><span class="n">slot_range</span><span class="si">}</span><span class="s2"> owning: </span><span class="si">{</span><span class="n">owning_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FALSE: OCCURS BEFORE: </span><span class="si">{</span><span class="n">cname</span><span class="si">}</span><span class="s2"> == </span><span class="si">{</span><span class="n">slot_range</span><span class="si">}</span><span class="s2"> owning: </span><span class="si">{</span><span class="n">owning_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Occurs before</span>
         <span class="k">return</span> <span class="kc">True</span>
 
@@ -1559,7 +1561,7 @@
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">validate</span><span class="p">:</span>
         <span class="n">mod</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">compile_module</span><span class="p">()</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Module </span><span class="si">{</span><span class="n">mod</span><span class="si">}</span><span class="s2"> compiled successfully&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Module </span><span class="si">{</span><span class="n">mod</span><span class="si">}</span><span class="s2"> compiled successfully&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">gen</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">emit_metadata</span><span class="o">=</span><span class="n">head</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">))</span>
 
 

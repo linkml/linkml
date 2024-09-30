@@ -361,6 +361,8 @@
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.schemaloader</span> <span class="kn">import</span> <span class="n">SchemaLoader</span>
 
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
 
 <span class="k">class</span> <span class="nc">SqlNamingPolicy</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">preserve</span> <span class="o">=</span> <span class="s2">&quot;preserve&quot;</span>
@@ -607,12 +609,12 @@
         <span class="k">elif</span> <span class="nb">range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Text</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown range: </span><span class="si">{</span><span class="nb">range</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown range: </span><span class="si">{</span><span class="nb">range</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">Text</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">range_base</span> <span class="ow">in</span> <span class="n">RANGEMAP</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">RANGEMAP</span><span class="p">[</span><span class="n">range_base</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UNKNOWN range base: </span><span class="si">{</span><span class="n">range_base</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UNKNOWN range base: </span><span class="si">{</span><span class="n">range_base</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">Text</span><span class="p">()</span>
 
     <span class="nd">@staticmethod</span>

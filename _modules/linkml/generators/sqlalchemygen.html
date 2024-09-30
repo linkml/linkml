@@ -366,6 +366,8 @@
 <span class="kn">from</span> <span class="nn">linkml.transformers.relmodel_transformer</span> <span class="kn">import</span> <span class="n">ForeignKeyPolicy</span><span class="p">,</span> <span class="n">RelationalModelTransformer</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
 
 <span class="k">class</span> <span class="nc">TemplateEnum</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">DECLARATIVE</span> <span class="o">=</span> <span class="s2">&quot;declarative&quot;</span>
@@ -429,7 +431,7 @@
         <span class="n">template_obj</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">template_str</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">model_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">model_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Package for dataclasses ==  </span><span class="si">{</span><span class="n">model_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Package for dataclasses ==  </span><span class="si">{</span><span class="n">model_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">backrefs</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">tr_result</span><span class="o">.</span><span class="n">mappings</span><span class="p">:</span>
             <span class="n">backrefs</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">source_class</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
@@ -458,7 +460,7 @@
             <span class="n">is_join_table</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="nb">any</span><span class="p">(</span><span class="n">tag</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;linkml:derived_from&quot;</span><span class="p">),</span>
             <span class="n">classes</span><span class="o">=</span><span class="n">rel_schema_classes_ordered</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;# Generated code:</span><span class="se">\n</span><span class="si">{</span><span class="n">code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;# Generated code:</span><span class="se">\n</span><span class="si">{</span><span class="n">code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">code</span>
 
 <div class="viewcode-block" id="SQLAlchemyGenerator.serialize"><a class="viewcode-back" href="../../../generators/sqlalchemy.html#linkml.generators.sqlalchemygen.SQLAlchemyGenerator.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -518,7 +520,7 @@
     <span class="k">def</span> <span class="nf">skip</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">is_skip</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="n">is_skip</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SKIPPING: </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SKIPPING: </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">is_skip</span>
 
     <span class="c1"># TODO: move this</span>

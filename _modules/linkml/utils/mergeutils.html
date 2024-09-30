@@ -363,6 +363,8 @@
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">extended_str</span>
 <span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">URIRef</span>
 
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
 
 <div class="viewcode-block" id="merge_schemas"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.mergeutils.merge_schemas">[docs]</a><span class="k">def</span> <span class="nf">merge_schemas</span><span class="p">(</span>
     <span class="n">target</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">,</span>
@@ -417,7 +419,7 @@
             <span class="c1"># We cannot resolve this to an absolute path, so we have to assume that</span>
             <span class="c1"># this prefix is already defined correctly in the target</span>
             <span class="k">if</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">namespaces</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                     <span class="s2">&quot;Adding an unadjusted relative prefix for </span><span class="si">%s</span><span class="s2"> from </span><span class="si">%s</span><span class="s2">, &quot;</span>
                     <span class="o">+</span> <span class="s2">&quot;as the prefix is not yet defined, even as we cannot adjust it relative to the final file. &quot;</span>
                     <span class="o">+</span> <span class="s2">&quot;If it cannot be resolved, add the prefix definition to the input schema!&quot;</span><span class="p">,</span>
@@ -430,7 +432,7 @@
                     <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">prefixes</span>
                     <span class="ow">and</span> <span class="n">target</span><span class="o">.</span><span class="n">prefixes</span><span class="p">[</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">]</span><span class="o">.</span><span class="n">prefix_reference</span> <span class="o">!=</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_reference</span>
                 <span class="p">):</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                         <span class="s2">&quot;Ignoring different relative prefix for </span><span class="si">%s</span><span class="s2"> from </span><span class="si">%s</span><span class="s2">, &quot;</span>
                         <span class="o">+</span> <span class="s2">&quot;as we cannot adjust it relative to the final file. &quot;</span>
                         <span class="o">+</span> <span class="s2">&quot;Assuming the first found location is correct: </span><span class="si">%s</span><span class="s2">!&quot;</span><span class="p">,</span>

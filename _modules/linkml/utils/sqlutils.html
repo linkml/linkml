@@ -385,6 +385,8 @@
     <span class="n">infer_root_class</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
 
 <div class="viewcode-block" id="SQLStore"><a class="viewcode-back" href="../../../developers/sqlstore.html#linkml.utils.sqlutils.SQLStore">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">SQLStore</span><span class="p">:</span>
@@ -721,7 +723,7 @@
 
         <span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="nb">input</span> <span class="ow">in</span> <span class="n">inputs</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="nb">input</span><span class="p">)]</span>
     <span class="k">for</span> <span class="nb">input</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading: </span><span class="si">{</span><span class="nb">input</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading: </span><span class="si">{</span><span class="nb">input</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">input_format</span> <span class="o">=</span> <span class="n">_get_format</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">input_format</span><span class="p">)</span>
         <span class="n">loader</span> <span class="o">=</span> <span class="n">get_loader</span><span class="p">(</span><span class="n">input_format</span><span class="p">)</span>
 

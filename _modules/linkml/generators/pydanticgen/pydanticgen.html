@@ -390,6 +390,9 @@
 <span class="kn">from</span> <span class="nn">linkml.utils</span> <span class="kn">import</span> <span class="n">deprecation_warning</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">shared_arguments</span>
 
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
 <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">PYDANTIC_VERSION</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
     <span class="n">deprecation_warning</span><span class="p">(</span><span class="s2">&quot;pydantic-v1&quot;</span><span class="p">)</span>
 
@@ -534,7 +537,7 @@
     <span class="n">template_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Override templates for each PydanticTemplateModel.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Directory with templates that override the default :attr:`.PydanticTemplateModel.template`</span>
 <span class="sd">    for each class. If a matching template is not found in the override directory,</span>
 <span class="sd">    the default templates will be used.</span>
@@ -710,8 +713,8 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">compile_python</span><span class="p">(</span><span class="n">pycode</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">NameError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Code:</span><span class="se">\n</span><span class="si">{</span><span class="n">pycode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error compiling generated python code: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Code:</span><span class="se">\n</span><span class="si">{</span><span class="n">pycode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error compiling generated python code: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">e</span></div>
 
     <span class="k">def</span> <span class="nf">_get_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]]]:</span>
@@ -1018,7 +1021,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># TODO: default ranges in schemagen</span>
             <span class="c1"># pyrange = &#39;str&#39;</span>
-            <span class="c1"># logging.error(f&#39;range: {s.range} is unknown&#39;)</span>
+            <span class="c1"># logger.error(f&#39;range: {s.range} is unknown&#39;)</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;range: </span><span class="si">{</span><span class="n">slot_range</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pyrange</span></div>
 
@@ -1508,9 +1511,9 @@
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Optional jinja2 template directory to use for class generation.</span>
 
-<span class="s2">Pass a directory containing templates with the same name as any of the default </span>
-<span class="s2">:class:`.PydanticTemplateModel` templates to override them. The given directory will be </span>
-<span class="s2">searched for matching templates, and use the default templates as a fallback </span>
+<span class="s2">Pass a directory containing templates with the same name as any of the default</span>
+<span class="s2">:class:`.PydanticTemplateModel` templates to override them. The given directory will be</span>
+<span class="s2">searched for matching templates, and use the default templates as a fallback</span>
 <span class="s2">if an override is not found</span>
 
 <span class="s2">Available templates to override:</span>
