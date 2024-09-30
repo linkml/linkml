@@ -20,6 +20,9 @@ from tests.test_loaders_dumpers.models.node_object import NodeObject, Triple
 from tests.test_loaders_dumpers.models.phenopackets import PhenotypicFeature, OntologyClass, Phenopacket, MetaData, \
     Resource
 
+logger = logging.getLogger(__name__)
+
+
 SCHEMA = os.path.join(INPUT_DIR, 'personinfo.yaml')
 DATA = os.path.join(INPUT_DIR, 'example_personinfo_data.yaml')
 DATA_TTL = os.path.join(INPUT_DIR, 'example_personinfo_data.ttl')
@@ -318,7 +321,7 @@ class RdfLibDumperTestCase(unittest.TestCase):
             assert x.subject is None
             assert x.predicate is not None
             assert x.object is not None
-            logging.info(f'  x={x}')
+            logger.info(f'  x={x}')
         # ranges that are objects are contracted
         assert Triple(subject=None, predicate='rdfs:subClassOf', object='owl:Thing') in obj.statements
         assert Triple(subject=None, predicate='rdfs:subClassOf', object='NCBITaxon:1') in obj.statements
@@ -330,7 +333,7 @@ class RdfLibDumperTestCase(unittest.TestCase):
                                          cast_literals=False,
                                          allow_unprocessed_triples=False,
                                          prefix_map=taxon_prefix_map)
-            logging.error(f'Passed unexpectedly: there are known to be unreachable triples')
+            logger.error(f'Passed unexpectedly: there are known to be unreachable triples')
         # removing complex range, object has a range of string
         view.schema.slots['object'].exactly_one_of = []
         view.set_modified()
@@ -345,7 +348,7 @@ class RdfLibDumperTestCase(unittest.TestCase):
                                          cast_literals=False,
                                          allow_unprocessed_triples=True,
                                          prefix_map=taxon_prefix_map)
-            logging.error(f'Passed unexpectedly: rdf:object is known to have a mix of literals and nodes')
+            logger.error(f'Passed unexpectedly: rdf:object is known to have a mix of literals and nodes')
 
     def test_phenopackets(self):
         view = SchemaView(str(Path(INPUT_DIR) / "phenopackets"/ "phenopackets.yaml"))

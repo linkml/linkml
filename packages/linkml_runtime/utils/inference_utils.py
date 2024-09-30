@@ -11,6 +11,9 @@ from linkml_runtime.utils.eval_utils import eval_expr
 from linkml_runtime.utils.walker_utils import traverse_object_tree
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
+logger = logging.getLogger(__name__)
+
+
 RESOLVE_FUNC = Callable[[str, Any], Any]
 
 def obj_as_dict_nonrecursive(obj: YAMLRoot, resolve_function: RESOLVE_FUNC = None) -> Dict[str, Any]:
@@ -73,7 +76,7 @@ def generate_slot_value(obj: YAMLRoot, slot_name: Union[str, SlotDefinitionName]
     mapped_slot = schemaview.slot_name_mappings()[slot_name]
     slot_name = mapped_slot.name
     slot = schemaview.induced_slot(slot_name, class_name)
-    logging.debug(f'   CONF={config}')
+    logger.debug(f'   CONF={config}')
     if config.use_string_serialization:
         if slot.string_serialization:
             if isinstance(obj, JsonObj):
@@ -106,7 +109,7 @@ def infer_slot_value(obj: YAMLRoot, slot_name: Union[str, SlotDefinitionName], s
     if v is not None and policy == Policy.KEEP:
         return v
     new_v = generate_slot_value(obj, slot_name, schemaview, class_name=class_name, config=config)
-    logging.debug(f'SETTING {slot_name} = {new_v} // current={v}, {policy}')
+    logger.debug(f'SETTING {slot_name} = {new_v} // current={v}, {policy}')
     if new_v:
         # check if new value is different; not str check is necessary as enums may not be converted
         if v is not None and new_v != v and str(new_v) != str(v):
@@ -138,7 +141,7 @@ def infer_all_slot_values(obj: YAMLRoot, schemaview: SchemaView,
     :return:
     """
     def infer(in_obj: YAMLRoot):
-        logging.debug(f'INFER={in_obj}')
+        logger.debug(f'INFER={in_obj}')
         if isinstance(in_obj, YAMLRoot) and not isinstance(in_obj, EnumDefinitionImpl) and not isinstance(in_obj, PermissibleValue):
             for k, v in vars(in_obj).items():
                 #print(f'  ISV={k} curr={v} policy={policy} in_obj={type(in_obj)}')

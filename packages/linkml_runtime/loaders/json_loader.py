@@ -8,6 +8,9 @@ from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.yamlutils import YAMLRoot
 from pydantic import BaseModel
 
+logger = logging.getLogger(__name__)
+
+
 class JSONLoader(Loader):
 
     def load_as_dict(self, 
@@ -31,6 +34,6 @@ class JSONLoader(Loader):
         if isinstance(data_as_dict, dict):
             typ = data_as_dict.pop('@type', None)
             if typ and typ != target_class.__name__:
-                logging.warning(f"Warning: input type mismatch. Expected: {target_class.__name__}, Actual: {typ}")
+                logger.warning(f"Warning: input type mismatch. Expected: {target_class.__name__}, Actual: {typ}")
 
         return self._construct_target_class(data_as_dict, target_class)

@@ -13,6 +13,9 @@ from linkml_runtime.dumpers import json_dumper, yaml_dumper
 import click
 import yaml
 
+logger = logging.getLogger(__name__)
+
+
 DEFAULT_DISPLAY_COLS = [
     'name',
     'is_a',
@@ -58,8 +61,8 @@ def list(schema, columns, element_type):
 
     """
     schema_view = SchemaView(schema)
-    logging.info(f'id={schema_view.schema.id}')
-    logging.info(f'name={schema_view.schema.name}')
+    logger.info(f'id={schema_view.schema.id}')
+    logger.info(f'name={schema_view.schema.name}')
     enames = schema_view.all_element()
     elements = [schema_view.get_element(ename) for ename in enames]
     if element_type is not None:
@@ -79,7 +82,7 @@ def islot(schema, columns, class_names):
     """
     schema_view = SchemaView(schema)
     for cn in class_names:
-        logging.info(f'Class: {cn}')
+        logger.info(f'Class: {cn}')
         islots = schema_view.class_induced_slots(cn)
         _show_elements(islots, columns=columns)
 
@@ -97,7 +100,7 @@ def ancs(schema, class_names, is_a, mixins):
     """
     schema_view = SchemaView(schema)
     for cn in class_names:
-        logging.info(f'Class: {cn}')
+        logger.info(f'Class: {cn}')
         ancs = schema_view.class_ancestors(cn, is_a=is_a, mixins=mixins)
         for a in ancs:
             print(f'{cn}\t{a}')
@@ -116,7 +119,7 @@ def descs(schema, class_names, is_a, mixins):
     """
     schema_view = SchemaView(schema)
     for cn in class_names:
-        logging.info(f'Class: {cn}')
+        logger.info(f'Class: {cn}')
         ds = schema_view.class_descendants(cn, is_a=is_a, mixins=mixins)
         for d in ds:
             print(f'{cn}\t{d}')
@@ -130,7 +133,7 @@ def delete(schema, class_names):
     """
     schema_view = SchemaView(schema)
     for cn in class_names:
-        logging.info(f'Class: {cn}')
+        logger.info(f'Class: {cn}')
         schema_view.delete_class(cn)
     print(yaml_dumper.dumps(schema_view.schema))
 

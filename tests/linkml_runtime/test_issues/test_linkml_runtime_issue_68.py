@@ -3,6 +3,9 @@ import unittest
 from unittest import TestCase
 from linkml_runtime.utils.schemaview import SchemaView
 
+logger = logging.getLogger(__name__)
+
+
 schema_str = """
 id: https://example.com/test-induced
 name: test-induced
@@ -91,12 +94,12 @@ class Issue68TestCase(TestCase):
 
         # test description for slot2
         # this behavior is expected see: https://github.com/linkml/linkml-runtime/issues/68
-        logging.info(f"s2_induced.description: {s2_induced.description}")
+        logger.info(f"s2_induced.description: {s2_induced.description}")
         assert s2_induced.description == "induced slot2"
 
         s2_induced_c2 = view.induced_slot('slot2', 'class2')
         assert s2_induced_c2.required
-        logging.info(f"s2_induced_c2.description: {s2_induced_c2.description}")
+        logger.info(f"s2_induced_c2.description: {s2_induced_c2.description}")
         assert s2_induced_c2.description == "induced slot2"
         assert s2_induced.range == 'class1'
 
@@ -109,13 +112,13 @@ class Issue68TestCase(TestCase):
         # mixins specified in order of priority
         s2_induced_c2_1a = view.induced_slot('slot2', 'class2_1a')
         assert not s2_induced_c2_1a.required
-        logging.info(f"s2_induced_c2_1a.description: {s2_induced_c2_1a.description}")
+        logger.info(f"s2_induced_c2_1a.description: {s2_induced_c2_1a.description}")
         assert s2_induced_c2_1a.description == "mixin slot2"
         assert s2_induced_c2_1a.range == 'mixin1a'
 
         s2_induced_c2_1b = view.induced_slot('slot2', 'class2_1b')
         assert not s2_induced_c2_1b.required
-        logging.info(f"s2_induced_c2_1a.description: {s2_induced_c2_1b.description}")
+        logger.info(f"s2_induced_c2_1a.description: {s2_induced_c2_1b.description}")
         assert s2_induced_c2_1b.description == "mixin slot2"
         assert s2_induced_c2_1b.range == 'mixin1b'
 
