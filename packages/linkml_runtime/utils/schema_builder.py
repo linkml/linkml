@@ -57,8 +57,8 @@ class SchemaBuilder:
         cls: Union[ClassDefinition, Dict, str],
         slots: List[Union[str, SlotDefinition]] = None,
         slot_usage: Dict[str, SlotDefinition] = None,
-        replace_if_present=False,
-        use_attributes=False,
+        replace_if_present: bool = False,
+        use_attributes: bool = False,
         **kwargs,
     ) -> "SchemaBuilder":
         """
