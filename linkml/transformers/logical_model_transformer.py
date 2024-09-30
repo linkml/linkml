@@ -360,13 +360,13 @@ class LogicalModelTransformer(ModelTransformer):
         target_schema = target_schemaview.schema
         for tn, typ in target_schema.types.items():
             ancs = sv.type_ancestors(tn, reflexive=False)
-            logging.debug(f"Unrolling type {tn}, merging {len(ancs)}")
+            logger.debug(f"Unrolling type {tn}, merging {len(ancs)}")
             if ancs:
                 for type_anc in ancs:
                     self._merge_type_ancestors(target=typ, source=sv.get_type(type_anc))
         for sn, slot in target_schema.slots.items():
             ancs = sv.slot_ancestors(sn, reflexive=False)
-            logging.debug(f"Unrolling slot {sn}, merging {len(ancs)}")
+            logger.debug(f"Unrolling slot {sn}, merging {len(ancs)}")
             if ancs:
                 for slot_anc in ancs:
                     self._merge_slot_ancestors(target=slot, source=target_schema.slots[slot_anc])
@@ -379,7 +379,7 @@ class LogicalModelTransformer(ModelTransformer):
                 depth_first=False,
             )
             ancs = list(reversed(ancs))
-            logging.debug(f"Unrolling class {cn}, merging {len(ancs)}")
+            logger.debug(f"Unrolling class {cn}, merging {len(ancs)}")
             self._roll_down(target_schema, cn, ancs)
         self.apply_defaults(target_schema)
         if simplify:

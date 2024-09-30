@@ -21,6 +21,8 @@ from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.transformers.relmodel_transformer import ForeignKeyPolicy, RelationalModelTransformer
 from linkml.utils.generator import Generator, shared_arguments
 
+logger = logging.getLogger(__name__)
+
 
 class TemplateEnum(Enum):
     DECLARATIVE = "declarative"
@@ -84,7 +86,7 @@ class SQLAlchemyGenerator(Generator):
         template_obj = Template(template_str)
         if model_path is None:
             model_path = self.schema.name
-        logging.info(f"Package for dataclasses ==  {model_path}")
+        logger.info(f"Package for dataclasses ==  {model_path}")
         backrefs = defaultdict(list)
         for m in tr_result.mappings:
             backrefs[m.source_class].append(m)
@@ -113,7 +115,7 @@ class SQLAlchemyGenerator(Generator):
             is_join_table=lambda c: any(tag for tag in c.annotations.keys() if tag == "linkml:derived_from"),
             classes=rel_schema_classes_ordered,
         )
-        logging.debug(f"# Generated code:\n{code}")
+        logger.debug(f"# Generated code:\n{code}")
         return code
 
     def serialize(self, **kwargs) -> str:
@@ -173,7 +175,7 @@ class SQLAlchemyGenerator(Generator):
     def skip(cls: ClassDefinition) -> bool:
         is_skip = len(cls.attributes) == 0
         if is_skip:
-            logging.error(f"SKIPPING: {cls.name}")
+            logger.error(f"SKIPPING: {cls.name}")
         return is_skip
 
     # TODO: move this

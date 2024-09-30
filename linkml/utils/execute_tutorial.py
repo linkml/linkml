@@ -10,6 +10,8 @@ import click
 
 from linkml._version import __version__
 
+logger = logging.getLogger(__name__)
+
 re_decl = re.compile(r"^(\S+):$")
 re_start_yaml = re.compile(r"^```(\w+)$")
 re_end_yaml = re.compile(r"^```$")
@@ -46,17 +48,17 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
     :return: errors
     """
     Path(directory).mkdir(parents=True, exist_ok=True)
-    logging.info(f"Executing in: {directory}")
+    logger.info(f"Executing in: {directory}")
     last_block = None
     errs = []
 
     def err(e):
         errs.append(e)
-        logging.error(e)
+        logger.error(e)
 
     for block in blocks:
         write_lines(block.prior_lines)
-        logging.info(f"# Block: {block.category} {block.title}")
+        logger.info(f"# Block: {block.category} {block.title}")
         if block.is_file_block():
             path = PurePath(directory, block.title)
             with open(path, "w", encoding="UTF-8") as stream:
@@ -73,44 +75,44 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
                 if len(outpath) > 1:
                     raise Exception(f"Maximum 1 token after > in {block.content}. Got: {outpath}")
                 outpath = str(Path(directory, *outpath))
-                logging.info(f"OUTPATH = {outpath}")
+                logger.info(f"OUTPATH = {outpath}")
             else:
                 outpath = None
-            logging.info(f"Executing: {cmd}")
+            logger.info(f"Executing: {cmd}")
             r = subprocess.run(cmd, cwd=directory, capture_output=True)
             block.output = r.stdout.decode("utf-8")
             if outpath:
                 with open(outpath, "w", encoding="UTF-8") as stream:
-                    logging.info(f"WRITING {len(block.output)} TO = {outpath}")
+                    logger.info(f"WRITING {len(block.output)} TO = {outpath}")
                     stream.write(block.output)
             block.error = r.stderr.decode("utf-8")
-            logging.info(f"OUT [sample] = {block.output[0:30]}")
+            logger.info(f"OUT [sample] = {block.output[0:30]}")
             if block.expected_fail:
                 if r.returncode == 0:
                     err(f"Command unexpectedly succeeded: {cmd}")
                 else:
-                    logging.info("Failed as expected")
+                    logger.info("Failed as expected")
                 if block.error:
-                    logging.info(f"ERR [sample] = ...{block.error[-200:]}")
+                    logger.info(f"ERR [sample] = ...{block.error[-200:]}")
             else:
                 if block.error:
-                    logging.info(f"ERR = {block.error}")
+                    logger.info(f"ERR = {block.error}")
                 if r.returncode != 0:
                     err(f"Command failed: {cmd}")
                 else:
-                    logging.info("Success!")
+                    logger.info("Success!")
         elif block.is_stdout():
             if "compare_rdf" in block.annotations:
-                logging.warning("SKIPPING RDF COMPARISON. TODO: https://github.com/linkml/linkml/issues/427")
+                logger.warning("SKIPPING RDF COMPARISON. TODO: https://github.com/linkml/linkml/issues/427")
             elif last_block.output:
                 if last_block.output.strip() != block.content.strip():
                     err(f"Mismatch: {str(last_block.output)} != {block.content}")
                 else:
-                    logging.info("Hurray! Contents match!")
+                    logger.info("Hurray! Contents match!")
             else:
-                logging.info("No comparison performed")
+                logger.info("No comparison performed")
         else:
-            logging.warning(f"Ignoring block: {block}")
+            logger.warning(f"Ignoring block: {block}")
         last_block = block
     return errs
 
@@ -201,20 +203,20 @@ def cli(inputs, directory):
     logging.basicConfig(level=logging.INFO)
     errs = []
     for input in inputs:
-        logging.info(f"INPUT={input}")
+        logger.info(f"INPUT={input}")
         blocks = parse_file_to_blocks(input)
         print(f"## {len(blocks)} Blocks")
         localdir = Path(input).stem
         subdir = PurePath(directory, localdir)
         input_errs = execute_blocks(str(subdir), blocks)
         if len(input_errs) > 0:
-            logging.error(f"TUTORIAL {input} FAILURES: {len(input_errs)}")
+            logger.error(f"TUTORIAL {input} FAILURES: {len(input_errs)}")
         errs += input_errs
-    logging.info(f"Errors = {len(errs)}")
+    logger.info(f"Errors = {len(errs)}")
     if len(errs) > 0:
-        logging.error(f"Encountered {len(errs)} Errors")
+        logger.error(f"Encountered {len(errs)} Errors")
         for err in errs:
-            logging.error(f"Error: {err}")
+            logger.error(f"Error: {err}")
         sys.exit(1)
 
 

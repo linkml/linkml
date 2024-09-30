@@ -24,6 +24,8 @@ from linkml._version import __version__
 from linkml.generators.pythongen import PythonGenerator
 from linkml.validator import Validator, _get_default_validator
 
+logger = logging.getLogger(__name__)
+
 
 @dataclass
 class SummaryDocument:
@@ -134,7 +136,7 @@ class ExampleRunner:
             input_examples = glob.glob(os.path.join(str(input_dir), f"*.{fmt}"))
             input_counter_examples = glob.glob(os.path.join(str(counter_example_dir), f"*.{fmt}"))
             if not input_counter_examples:
-                logging.warning(f"No counter examples found in {self.counter_example_input_directory}")
+                logger.warning(f"No counter examples found in {self.counter_example_input_directory}")
             self.process_examples_from_list(input_examples, fmt, False)
             self.process_examples_from_list(input_counter_examples, fmt, True)
 

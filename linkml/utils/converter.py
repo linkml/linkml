@@ -23,6 +23,8 @@ from linkml.utils.datautils import (
     infer_root_class,
 )
 
+logger = logging.getLogger(__name__)
+
 
 @click.command(name="convert")
 @click.option("--module", "-m", help="Path to python datamodel module")
@@ -119,7 +121,7 @@ def cli(
                 sv.set_modified()
     if target_class is None and target_class_from_path:
         target_class = os.path.basename(input).split("-")[0]
-        logging.info(f"inferred target class = {target_class} from {input}")
+        logger.info(f"inferred target class = {target_class} from {input}")
     if target_class is None:
         target_class = infer_root_class(sv)
     if target_class is None:

@@ -16,6 +16,8 @@ from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.generators.docgen import DocGenerator
 
+logger = logging.getLogger(__name__)
+
 
 def assert_mdfile_does_not_contain(*args, **kwargs) -> None:
     assert_mdfile_contains(*args, **kwargs, invert=True)
@@ -48,14 +50,14 @@ def assert_mdfile_contains(
                             todo = todo[1:]
                     if len(todo) > 0:
                         if not invert:
-                            logging.error(f"Did not find: {todo}")
+                            logger.error(f"Did not find: {todo}")
                         assert invert
                     else:
                         return
             if after is not None and after in line:
                 is_after = True
     if not found and not invert:
-        logging.error(f"Failed to find {text} in {filename}")
+        logger.error(f"Failed to find {text} in {filename}")
     if invert:
         assert not found
     else:

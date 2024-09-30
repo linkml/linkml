@@ -16,6 +16,8 @@ from linkml.transformers.relmodel_transformer import ForeignKeyPolicy, Relationa
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.schemaloader import SchemaLoader
 
+logger = logging.getLogger(__name__)
+
 
 class SqlNamingPolicy(Enum):
     preserve = "preserve"
@@ -262,12 +264,12 @@ class SQLTableGenerator(Generator):
         elif range is None:
             return Text()
         else:
-            logging.error(f"Unknown range: {range} for {slot.name} = {slot.range}")
+            logger.error(f"Unknown range: {range} for {slot.name} = {slot.range}")
             return Text()
         if range_base in RANGEMAP:
             return RANGEMAP[range_base]
         else:
-            logging.error(f"UNKNOWN range base: {range_base} for {slot.name} = {slot.range}")
+            logger.error(f"UNKNOWN range base: {range_base} for {slot.name} = {slot.range}")
             return Text()
 
     @staticmethod

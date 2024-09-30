@@ -24,6 +24,8 @@ from linkml._version import __version__
 from linkml.generators.common.type_designators import get_type_designator_value
 from linkml.utils.generator import Generator, shared_arguments
 
+logger = logging.getLogger(__name__)
+
 # Map from underlying python data type to json equivalent
 # Note: The underlying types are a union of any built-in python datatype + any type defined in
 #       linkml-runtime/utils/metamodelcore.py
@@ -222,14 +224,14 @@ class JsonSchemaGenerator(Generator):
 
     def __post_init__(self):
         if self.topClass:
-            logging.warning("topClass is deprecated - use top_class")
+            logger.warning("topClass is deprecated - use top_class")
             self.top_class = self.topClass
 
         super().__post_init__()
 
         if self.top_class:
             if self.schemaview.get_class(self.top_class) is None:
-                logging.warning(f"No class in schema named {self.top_class}")
+                logger.warning(f"No class in schema named {self.top_class}")
 
     def start_schema(self, inline: bool = False) -> JsonSchema:
         self.inline = inline

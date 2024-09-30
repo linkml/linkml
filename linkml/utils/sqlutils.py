@@ -40,6 +40,8 @@ from linkml.utils.datautils import (
     infer_root_class,
 )
 
+logger = logging.getLogger(__name__)
+
 
 @dataclass
 class SQLStore:
@@ -376,7 +378,7 @@ def dump(
 
         inputs = [item for input in inputs for item in glob.glob(input)]
     for input in inputs:
-        logging.info(f"Loading: {input}")
+        logger.info(f"Loading: {input}")
         input_format = _get_format(input, input_format)
         loader = get_loader(input_format)
 

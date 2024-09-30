@@ -14,6 +14,8 @@ from linkml_runtime.utils.schemaview import SchemaView
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
+logger = logging.getLogger(__name__)
+
 template = """
 {% for pfxn, pfx in schema.prefixes.items() -%}
 PREFIX {{pfxn}}: <{{pfx.prefix_reference}}>
@@ -150,7 +152,7 @@ class SparqlGenerator(Generator):
         extra = ""
         if named_graphs is not None:
             extra += f'FILTER( ?graph in ( {",".join(named_graphs)} ))'
-        logging.info(f"Named Graphs = {named_graphs} // extra={extra}")
+        logger.info(f"Named Graphs = {named_graphs} // extra={extra}")
         if limit is not None and isinstance(limit, int):
             limit = f"LIMIT {limit}"
         else:

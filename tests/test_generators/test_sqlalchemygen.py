@@ -11,6 +11,8 @@ from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.utils.schema_builder import SchemaBuilder
 
+logger = logging.getLogger(__name__)
+
 
 @pytest.fixture
 def schema(input_path):
@@ -286,9 +288,9 @@ def test_sqla_declarative_exec(schema):
     persons = q.all()
     for person in persons:
         assert isinstance(person, mod.NamedThing)
-        logging.info(f"Person={person}")
+        logger.info(f"Person={person}")
         for a in person.aliases:
-            logging.info(f"  ALIAS={a}")
+            logger.info(f"  ALIAS={a}")
         for e in person.has_medical_history:
             assert e.duration > 0
             assert isinstance(e, mod.Event)

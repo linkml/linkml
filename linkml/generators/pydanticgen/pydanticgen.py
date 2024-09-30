@@ -45,6 +45,9 @@ from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentPro
 from linkml.utils import deprecation_warning
 from linkml.utils.generator import shared_arguments
 
+logger = logging.getLogger(__name__)
+
+
 if int(PYDANTIC_VERSION[0]) == 1:
     deprecation_warning("pydantic-v1")
 
@@ -189,7 +192,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     template_dir: Optional[Union[str, Path]] = None
     """
     Override templates for each PydanticTemplateModel.
-    
+
     Directory with templates that override the default :attr:`.PydanticTemplateModel.template`
     for each class. If a matching template is not found in the override directory,
     the default templates will be used.
@@ -365,8 +368,8 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         try:
             return compile_python(pycode)
         except NameError as e:
-            logging.error(f"Code:\n{pycode}")
-            logging.error(f"Error compiling generated python code: {e}")
+            logger.error(f"Code:\n{pycode}")
+            logger.error(f"Error compiling generated python code: {e}")
             raise e
 
     def _get_classes(self, sv: SchemaView) -> Tuple[List[ClassDefinition], Optional[List[ClassDefinition]]]:
@@ -673,7 +676,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         else:
             # TODO: default ranges in schemagen
             # pyrange = 'str'
-            # logging.error(f'range: {s.range} is unknown')
+            # logger.error(f'range: {s.range} is unknown')
             raise Exception(f"range: {slot_range}")
         return pyrange
 
@@ -1163,9 +1166,9 @@ def _ensure_inits(paths: List[Path]):
     help="""
 Optional jinja2 template directory to use for class generation.
 
-Pass a directory containing templates with the same name as any of the default 
-:class:`.PydanticTemplateModel` templates to override them. The given directory will be 
-searched for matching templates, and use the default templates as a fallback 
+Pass a directory containing templates with the same name as any of the default
+:class:`.PydanticTemplateModel` templates to override them. The given directory will be
+searched for matching templates, and use the default templates as a fallback
 if an override is not found
 
 Available templates to override:

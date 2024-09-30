@@ -94,7 +94,7 @@ class SchemaFixer:
         tree_roots = [c for c in sv.all_classes().values() if c.tree_root]
         if len(tree_roots) > 0:
             if force:
-                logging.info("Forcing addition of containers")
+                logger.info("Forcing addition of containers")
             else:
                 raise ValueError(f"Schema already has containers: {tree_roots}")
         container = ClassDefinition(class_name, tree_root=True)
@@ -228,7 +228,7 @@ class SchemaFixer:
             # slots within that are redundant
             slot_usage_keys = list(cls.slot_usage.keys())
             for slot_usage_key in slot_usage_keys:
-                logging.debug(f"TESTING: {class_name}.{slot_usage_key}")
+                logger.debug(f"TESTING: {class_name}.{slot_usage_key}")
                 slot_usage_value = cls.slot_usage[slot_usage_key]
                 # perform a deletion test: what can be retrieved by inference
                 del cls.slot_usage[slot_usage_key]
@@ -236,7 +236,7 @@ class SchemaFixer:
                 try:
                     induced_slot = sv.induced_slot(slot_usage_key, class_name)
                 except ValueError:
-                    logging.warning(f"slot_usage with no slot: {slot_usage_key}")
+                    logger.warning(f"slot_usage with no slot: {slot_usage_key}")
                     continue
                 # restore value
                 cls.slot_usage[slot_usage_key] = slot_usage_value
@@ -258,7 +258,7 @@ class SchemaFixer:
                         continue
                     induced_v = getattr(induced_slot, metaslot_name, None)
                     if v is not None and v != [] and v != {} and v == induced_v:
-                        logging.info(f"REDUNDANT: {class_name}.{slot_usage_key}[{metaslot_name}] = {v}")
+                        logger.info(f"REDUNDANT: {class_name}.{slot_usage_key}[{metaslot_name}] = {v}")
                         to_delete.append(metaslot_name)
                 for metaslot_name in to_delete:
                     del slot_usage_value[metaslot_name]
@@ -302,7 +302,7 @@ class SchemaFixer:
                 if len(vals_strs) == 1:
                     harmonized_slot[k] = vals.pop()
                 elif len(vals_strs) > 1:
-                    logging.info(f"Variable values in {slot_name}.{k}: {vals_strs}")
+                    logger.info(f"Variable values in {slot_name}.{k}: {vals_strs}")
             new_slots[str(slot_name)] = harmonized_slot
         return new_slots
 

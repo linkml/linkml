@@ -11,6 +11,8 @@ from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
+logger = logging.getLogger(__name__)
+
 type_map = {
     "str": "string",
     "int": "int",
@@ -175,7 +177,7 @@ class GolangGenerator(Generator):
                 if t.base and t.base in type_map:
                     return type_map[t.base]
                 else:
-                    logging.warning(f"Unknown type.base: {t.name}")
+                    logger.warning(f"Unknown type.base: {t.name}")
             return "string"
 
     @staticmethod

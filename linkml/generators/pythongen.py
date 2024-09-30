@@ -32,6 +32,8 @@ from linkml._version import __version__
 from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
 
+logger = logging.getLogger(__name__)
+
 
 @dataclass
 class PythonGenerator(Generator):
@@ -57,10 +59,10 @@ class PythonGenerator(Generator):
     dataclass_repr: bool = False
     """
     Whether generated dataclasses should also generate a default __repr__ method.
-    
+
     Default ``False`` so that the parent :class:`linkml_runtime.utils.yamlutils.YAMLRoot` 's
     ``__repr__`` method is inherited for model pretty printing.
-    
+
     References:
         - https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass
     """
@@ -75,7 +77,7 @@ class PythonGenerator(Generator):
         if self.format is None:
             self.format = self.valid_formats[0]
         if self.schema.default_prefix == "linkml" and not self.genmeta:
-            logging.error("Generating metamodel without --genmeta is highly inadvisable!")
+            logger.error("Generating metamodel without --genmeta is highly inadvisable!")
         if not self.schema.source_file and isinstance(self.sourcefile, str) and "\n" not in self.sourcefile:
             self.schema.source_file = os.path.basename(self.sourcefile)
 
@@ -88,8 +90,8 @@ class PythonGenerator(Generator):
         try:
             return compile_python(pycode)
         except NameError as e:
-            logging.error(f"Code:\n{pycode}")
-            logging.error(f"Error compiling generated python code: {e}")
+            logger.error(f"Code:\n{pycode}")
+            logger.error(f"Error compiling generated python code: {e}")
             raise e
 
     def visit_schema(self, **kwargs) -> None:
@@ -944,11 +946,11 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
     def forward_reference(self, slot_range: str, owning_class: str) -> bool:
         """Determine whether slot_range is a forward reference"""
-        # logging.info(f"CHECKING: {slot_range} {owning_class}")
+        # logger.info(f"CHECKING: {slot_range} {owning_class}")
         if (slot_range in self.schema.classes and self.schema.classes[slot_range].imported_from) or (
             slot_range in self.schema.enums and self.schema.enums[slot_range].imported_from
         ):
-            logging.info(
+            logger.info(
                 f"FALSE: FORWARD: {slot_range} {owning_class} // IMP={self.schema.classes[slot_range].imported_from}"
             )
             return False
@@ -957,10 +959,10 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         clist = [x.name for x in self._sort_classes(self.schema.classes.values())]
         for cname in clist:
             if cname == owning_class:
-                logging.info(f"TRUE: OCCURS SAME: {cname} == {slot_range} owning: {owning_class}")
+                logger.info(f"TRUE: OCCURS SAME: {cname} == {slot_range} owning: {owning_class}")
                 return True  # Occurs on or after
             elif cname == slot_range:
-                logging.info(f"FALSE: OCCURS BEFORE: {cname} == {slot_range} owning: {owning_class}")
+                logger.info(f"FALSE: OCCURS BEFORE: {cname} == {slot_range} owning: {owning_class}")
                 return False  # Occurs before
         return True
 
@@ -1214,7 +1216,7 @@ def cli(
     )
     if validate:
         mod = gen.compile_module()
-        logging.info(f"Module {mod} compiled successfully")
+        logger.info(f"Module {mod} compiled successfully")
     print(gen.serialize(emit_metadata=head, **args))
 
 
