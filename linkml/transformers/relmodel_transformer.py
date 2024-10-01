@@ -12,10 +12,12 @@ from linkml_runtime.linkml_model import (
     SchemaDefinition,
     SlotDefinition,
 )
+from linkml_runtime.linkml_model.meta import UniqueKey
 from linkml_runtime.utils.schemaview import SchemaView, SlotDefinitionName
 from sqlalchemy import Enum
 
 logger = logging.getLogger(__name__)
+
 
 
 class RelationalAnnotations(Enum):
@@ -280,6 +282,17 @@ class RelationalModelTransformer:
                                 target_slot=backref_slot.name,
                             )
                         )
+                        backref_key_slots = [s for s in backref_class.attributes.values() if s.key]
+                        if backref_key_slots:
+                            if len(backref_key_slots) > 1:
+                                raise ValueError(f"Multiple keys for {c.name}: {backref_key_slots}")
+                            backref_key_slot = backref_key_slots[0]
+                            unique_key_name = f"{c.name}_{backref_key_slot.name}"
+                            backref_class.unique_keys[unique_key_name] = UniqueKey(
+                                unique_key_name=unique_key_name,
+                                unique_key_slots=[backref_slot.name, backref_key_slot.name]
+                            )
+
                     else:
                         # MANY-TO-MANY
                         # create new linking table
