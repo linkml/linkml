@@ -3,7 +3,7 @@ Session-global configuration (see docs/config/index.md for documentation)
 """
 
 from pathlib import Path
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Dict, Literal, Optional, Tuple, Type
 
 from platformdirs import PlatformDirs
 from pydantic import BaseModel, Field, TypeAdapter, field_validator, model_validator
@@ -127,12 +127,12 @@ class GlobalConfig(BaseSettings):
     @classmethod
     def settings_customise_sources(
         cls,
-        settings_cls: type[BaseSettings],
+        settings_cls: Type[BaseSettings],
         init_settings: PydanticBaseSettingsSource,
         env_settings: PydanticBaseSettingsSource,
         dotenv_settings: PydanticBaseSettingsSource,
         file_secret_settings: PydanticBaseSettingsSource,
-    ) -> tuple[PydanticBaseSettingsSource, ...]:
+    ) -> Tuple[PydanticBaseSettingsSource, ...]:
         """
         Read config settings from, in order of priority from high to low, where
         high priorities override lower priorities:
