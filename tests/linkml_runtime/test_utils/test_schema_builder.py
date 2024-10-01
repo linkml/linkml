@@ -7,6 +7,7 @@ from linkml_runtime.utils.schema_builder import SchemaBuilder
 from linkml_runtime.linkml_model import ClassDefinition, SlotDefinition
 
 
+# === Tests for `SchemaBuilder.add_class` ===
 @pytest.mark.parametrize("replace_if_present", [True, False])
 def test_add_existing_class(replace_if_present):
     """
@@ -144,3 +145,5 @@ def test_add_class_with_extra_kwargs(
         added_class = builder.schema.classes[class_name]
 
         assert added_class == expected_added_class
+
+# === Tests for `SchemaBuilder.add_class` end ===
