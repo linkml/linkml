@@ -1,4 +1,5 @@
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Any, Dict
+from dataclasses import fields
 
 import pytest
 
@@ -78,3 +79,68 @@ def test_add_class_with_slot_additions(
         # meta slot of the schema ===
         builder.add_class(cls, slots=slots, use_attributes=use_attributes)
         assert builder.schema.slots.keys() == slot_names
+
+
+@pytest.mark.parametrize(
+    ("cls", "extra_kwargs", "expected_added_class"),
+    [
+        ("Person", {}, ClassDefinition(name="Person")),
+        (2, {}, None),  # Invalid type for `cls`
+        ("Person", {"tree_root": True}, ClassDefinition(name="Person", tree_root=True)),
+        ("Person", {"ijk": True}, None),  # Invalid extra kwarg
+        (
+            {"name": "Person", "tree_root": False},
+            {"tree_root": True},
+            ClassDefinition(name="Person", tree_root=True),
+        ),
+        (
+            {"name": "Person", "tree_root": False},
+            {"ijk": True},  # Invalid extra kwarg
+            None,
+        ),
+        (
+            ClassDefinition(name="Person", tree_root=False),
+            {"tree_root": True},
+            ClassDefinition(name="Person", tree_root=True),
+        ),
+        (
+            ClassDefinition(name="Person", tree_root=False),
+            {"ijk": True},  # Invalid extra kwarg
+            ClassDefinition(name="Person", tree_root=True),
+        ),
+    ],
+)
+def test_add_class_with_extra_kwargs(
+    cls: Union[ClassDefinition, Dict, str],
+    extra_kwargs: Dict[str, Any],
+    expected_added_class: Optional[ClassDefinition],
+):
+    """
+    Test adding a class with extra kwargs
+    """
+    # The meta slots or fields of `ClassDefinition`
+    class_meta_slots = {f.name for f in fields(ClassDefinition)}
+
+    builder = SchemaBuilder()
+
+    if not isinstance(cls, (str, dict, ClassDefinition)):
+        with pytest.raises(TypeError, match="cls must be"):
+            builder.add_class(cls, **extra_kwargs)
+    elif extra_kwargs.keys() - class_meta_slots:
+        # Handle the case of extra kwargs include a key that is not a meta slot of
+        # `ClassDefinition`
+        with pytest.raises(ValueError):
+            builder.add_class(cls, **extra_kwargs)
+    else:
+        builder.add_class(cls, **extra_kwargs)
+
+        if isinstance(cls, str):
+            class_name = cls
+        elif isinstance(cls, dict):
+            class_name = cls["name"]
+        else:
+            class_name = cls.name
+
+        added_class = builder.schema.classes[class_name]
+
+        assert added_class == expected_added_class
