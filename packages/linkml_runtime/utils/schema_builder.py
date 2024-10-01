@@ -166,10 +166,12 @@ class SchemaBuilder:
         """
         Adds an enum to the schema
 
-        :param enum_def:
-        :param permissible_values:
-        :param replace_if_present:
-        :param kwargs:
+        :param enum_def: The enum to be added
+        :param permissible_values: The permissible values of the enum
+        :param replace_if_present: Whether to replace the enum if it already exists in
+            the schema by name
+        :param kwargs: Additional `EnumDefinition` properties to be set as part of the
+            enum to be added
         :return: builder
         :raises ValueError: if enum already exists and replace_if_present=False
         """
