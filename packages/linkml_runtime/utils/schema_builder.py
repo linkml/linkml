@@ -166,8 +166,9 @@ class SchemaBuilder:
         """
         Adds an enum to the schema
 
-        :param enum_def: The enum to be added
-        :param permissible_values: The permissible values of the enum
+        :param enum_def: The base specification of the enum to be added
+        :param permissible_values: Additional, or overriding, permissible values
+            of the enum to be added
         :param replace_if_present: Whether to replace the enum if it already exists in
             the schema by name
         :param kwargs: Additional `EnumDefinition` properties to be set as part of the
