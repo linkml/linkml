@@ -175,6 +175,9 @@ class SchemaBuilder:
         :return: builder
         :raises ValueError: if enum already exists and replace_if_present=False
         """
+        if permissible_values is None:
+            permissible_values = []
+
         if not isinstance(enum_def, EnumDefinition):
             enum_def = EnumDefinition(enum_def, **kwargs)
         if isinstance(enum_def, dict):
@@ -182,11 +185,12 @@ class SchemaBuilder:
         if enum_def.name in self.schema.enums and not replace_if_present:
             raise ValueError(f"Enum {enum_def.name} already exists")
         self.schema.enums[enum_def.name] = enum_def
-        if permissible_values is not None:
-            for pv in permissible_values:
-                if isinstance(pv, str):
-                    pv = PermissibleValue(text=pv)
-                    enum_def.permissible_values[pv.text] = pv
+
+        for pv in permissible_values:
+            if isinstance(pv, str):
+                pv = PermissibleValue(text=pv)
+                enum_def.permissible_values[pv.text] = pv
+
         return self
 
     def add_prefix(self, prefix: str, url: str, replace_if_present = False) -> "SchemaBuilder":
