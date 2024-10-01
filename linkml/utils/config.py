@@ -40,7 +40,7 @@ class _GlobalYamlConfigSource(YamlConfigSettingsSource):
         return config_file
 
     @property
-    def global_config(self) -> dict[str, Any]:
+    def global_config(self) -> Dict[str, Any]:
         """
         Contents of the global config file
         """
@@ -51,7 +51,7 @@ class _GlobalYamlConfigSource(YamlConfigSettingsSource):
                 self._global_config = {}
         return self._global_config
 
-    def __call__(self) -> dict[str, Any]:
+    def __call__(self) -> Dict[str, Any]:
         return (
             TypeAdapter(Dict[str, Any]).dump_python(self.global_config)
             if self.nested_model_default_partial_update
