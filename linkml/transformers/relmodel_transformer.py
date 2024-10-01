@@ -19,7 +19,6 @@ from sqlalchemy import Enum
 logger = logging.getLogger(__name__)
 
 
-
 class RelationalAnnotations(Enum):
     PRIMARY_KEY = "primary_key"
     FOREIGN_KEY = "foreign_key"
@@ -290,7 +289,7 @@ class RelationalModelTransformer:
                             unique_key_name = f"{c.name}_{backref_key_slot.name}"
                             backref_class.unique_keys[unique_key_name] = UniqueKey(
                                 unique_key_name=unique_key_name,
-                                unique_key_slots=[backref_slot.name, backref_key_slot.name]
+                                unique_key_slots=[backref_slot.name, backref_key_slot.name],
                             )
 
                     else:

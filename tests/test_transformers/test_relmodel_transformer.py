@@ -68,4 +68,3 @@ def test_nested_key():
     assert len(unique_keys) == 1
     unique_key = unique_keys[0]
     assert sorted(unique_key.unique_key_slots) == ["Student_id", "name"]
-
