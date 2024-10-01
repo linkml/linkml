@@ -189,7 +189,14 @@ class SchemaBuilder:
         for pv in permissible_values:
             if isinstance(pv, str):
                 pv = PermissibleValue(text=pv)
-                enum_def.permissible_values[pv.text] = pv
+            elif not isinstance(pv, PermissibleValue):
+                msg = (
+                    f"A permissible value must be a `str` or "
+                    f"a `PermissibleValue` object, not {type(pv)}"
+                )
+                raise TypeError(msg)
+
+            enum_def.permissible_values[pv.text] = pv
 
         return self
 
