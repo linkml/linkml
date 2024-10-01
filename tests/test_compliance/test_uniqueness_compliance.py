@@ -1,7 +1,9 @@
 import pytest
 
 from tests.test_compliance.helper import (
+    JSON_SCHEMA,
     OWL,
+    PYDANTIC,
     PYTHON_DATACLASSES,
     SQL_DDL_SQLITE,
     ValidationBehavior,
@@ -14,6 +16,7 @@ from tests.test_compliance.test_compliance import (
     CLASS_D,
     CORE_FRAMEWORKS,
     SLOT_ID,
+    SLOT_KEY,
     SLOT_S1,
     SLOT_S2,
     SLOT_S3,
@@ -406,3 +409,246 @@ def test_inlined_unique_keys(framework, schema_name, d_has_id, s1def, s2def, ddl
             expected_behavior=expected_behavior,
             description=f"Expected validity={is_valid}",
         )
+
+
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+@pytest.mark.parametrize(
+    "is_local,data_name,objs,is_valid",
+    [
+        (
+            True,
+            "t1",
+            [
+                {
+                    SLOT_ID: "ex:1",
+                    SLOT_S2: [
+                        {SLOT_KEY: "ex:1v1", SLOT_S3: "..."},
+                        {SLOT_KEY: "ex:1v2", SLOT_S3: "..."},
+                    ],
+                },
+                {
+                    SLOT_ID: "ex:2",
+                    SLOT_S2: [
+                        {SLOT_KEY: "ex:2v1", SLOT_S3: "..."},
+                        {SLOT_KEY: "ex:2v2", SLOT_S3: "..."},
+                    ],
+                },
+            ],
+            True,
+        ),
+        (
+            True,
+            "t2",
+            [
+                {
+                    SLOT_ID: "ex:1",
+                    SLOT_S2: [
+                        {SLOT_KEY: "ex:1v1", SLOT_S3: "..."},
+                        {SLOT_KEY: "ex:1v2", SLOT_S3: "..."},
+                    ],
+                },
+                {
+                    SLOT_ID: "ex:2",
+                    SLOT_S2: [
+                        {SLOT_KEY: "ex:2v1", SLOT_S3: "COPY_1"},
+                        {SLOT_KEY: "ex:2v1", SLOT_S3: "COPY_2"},
+                    ],
+                },
+            ],
+            False,
+        ),
+        (
+            True,
+            "t3_unique_per_container",
+            [
+                {
+                    SLOT_ID: "ex:1",
+                    SLOT_S2: [
+                        {SLOT_KEY: "ex:v1", SLOT_S3: "..."},
+                        {SLOT_KEY: "ex:v2", SLOT_S3: "..."},
+                    ],
+                },
+                {
+                    SLOT_ID: "ex:2",
+                    SLOT_S2: [
+                        {SLOT_KEY: "ex:v1", SLOT_S3: "COPY_1"},
+                        {SLOT_KEY: "ex:v2", SLOT_S3: "COPY_2"},
+                    ],
+                },
+            ],
+            True,
+        ),
+        (
+            False,
+            "t3_unique_per_container",
+            [
+                {
+                    SLOT_ID: "ex:1",
+                    SLOT_S2: [
+                        {SLOT_KEY: "ex:v1", SLOT_S3: "..."},
+                        {SLOT_KEY: "ex:v2", SLOT_S3: "..."},
+                    ],
+                },
+                {
+                    SLOT_ID: "ex:2",
+                    SLOT_S2: [
+                        {SLOT_KEY: "ex:v1", SLOT_S3: "COPY_1"},
+                        {SLOT_KEY: "ex:v2", SLOT_S3: "COPY_2"},
+                    ],
+                },
+            ],
+            False,
+        ),
+        (False, "t10", [{SLOT_ID: "ex:1", SLOT_S1: "..."}], True),
+    ],
+)
+def test_nested_key(framework, is_local, data_name, objs, is_valid):
+    """
+        Tests behavior of keys where the key is nested within another object.
+
+        Identifiers should be globally unique, but keys are only required to be unique within the object
+        that holds them.
+
+        For example, given a list of students where each student has a list of exam results; the following structure
+        is valid if `name` in the `Exam` class is a key:
+
+        ```yaml
+        students:
+          - id: S1
+            exam_results:
+              - name: MATH
+                score: 100
+              - name: ENG
+                score: 90
+          - id: S2
+            exam_results:
+              - name: MATH
+                score: 81
+              - name: ENG
+                score: 76
+        ```
+
+        This should NOT be valid if `name` is an identifier (because it is not globally unique; there is more
+        than one student with an exam named "MATH").
+
+        The intent is more obvious if the exam results are not inlined_as_list:
+
+        ```yaml
+        students:
+          - id: S1
+            exam_results:
+              MATH:
+                score: 100
+              ENG:
+                score: 90
+          - id: S2
+            exam_results:
+              MATH:
+                score: 81
+              ENG:
+                score: 76
+        ```
+
+        A schema for this might be something like:
+
+        ```yaml
+        classes:
+          Student:
+            attributes:
+              id:
+                identifier: true
+              full_name:
+              # other atts here
+              exam_results:
+                range: ExamResult
+                  inlined: true
+                  inlined_as_list: true
+          ExamResult:
+            attributes:
+              name:
+                key: true
+              score:
+                range: integer
+              additional_notes:
+        ```
+
+        Note that when a relational model is created it SHOULD create a unique key from the combination of the
+        key and the parent object's identifier:
+
+        ```yaml
+        CREATE TABLE "student" (
+            id TEXT NOT NULL,
+            full_name TEXT,
+            PRIMARY KEY (id)
+        );
+        CREATE TABLE "exam_result" (
+            "student_id" TEXT,
+            FOREIGN KEY("student_id") REFERENCES "student" (id),
+            name TEXT NOT NULL,
+            additional_notes TEXT,
+            PRIMARY KEY (student_id, name),
+        );
+        ```
+    ➜
+
+    """
+    classes = {
+        CLASS_CONTAINER: {
+            "attributes": {
+                "entities": {
+                    "range": CLASS_C,
+                    "multivalued": True,
+                    "inlined": True,
+                    "inlined_as_list": True,
+                },
+            },
+        },
+        CLASS_C: {
+            "attributes": {
+                SLOT_ID: {
+                    "range": "uriorcurie",
+                    "identifier": True,
+                },
+                SLOT_S1: {},
+                SLOT_S2: {
+                    "range": CLASS_D,
+                    "inlined": True,
+                    "inlined_as_list": True,
+                    "multivalued": True,
+                },
+            },
+        },
+        CLASS_D: {
+            "attributes": {
+                SLOT_KEY: {
+                    "range": "uriorcurie",
+                    "key": is_local,
+                    "identifier": not is_local,
+                },
+                SLOT_S3: {},
+            },
+        },
+    }
+    schema = validated_schema(
+        test_nested_key,
+        f"is_local{is_local}",
+        framework,
+        classes=classes,
+        core_elements=["key"],
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if not is_valid:
+        if framework in [PYDANTIC, JSON_SCHEMA]:
+            expected_behavior = ValidationBehavior.INCOMPLETE
+        if data_name == "t3_unique_per_container" and framework == PYTHON_DATACLASSES:
+            expected_behavior = ValidationBehavior.INCOMPLETE
+    check_data(
+        schema,
+        data_name,
+        framework,
+        {"entities": objs},
+        is_valid,
+        target_class=CLASS_CONTAINER,
+        expected_behavior=expected_behavior,
+        description=f"Expected validity={is_valid}",
+    )
