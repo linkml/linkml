@@ -245,6 +245,7 @@ select = [
   "E",  # pycodestyle errors
   "F",  # Pyflakes
   "I",  # isort
+  "FA102", # Subscripted types like dict[str, str]
 ]
 # Assume Python 3.8
 target-version = "py38"

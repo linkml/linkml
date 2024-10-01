@@ -69,7 +69,7 @@ def set_env(monkeypatch) -> Callable[[Dict[str, Any]], None]:
     matching a GlobalConfig.model_dump()
     """
 
-    def _set_env(config: dict[str, Any]) -> None:
+    def _set_env(config: Dict[str, Any]) -> None:
         for key, value in _flatten(config).items():
             key = "LINKML_" + key.upper()
             monkeypatch.setenv(key, str(value))
@@ -84,7 +84,7 @@ def set_dotenv(tmp_cwd) -> Callable[[Dict[str, Any]], Path]:
     """
     dotenv_path = tmp_cwd / ".env"
 
-    def _set_dotenv(config: dict[str, Any]) -> Path:
+    def _set_dotenv(config: Dict[str, Any]) -> Path:
         with open(dotenv_path, "w") as dfile:
             for key, value in _flatten(config).items():
                 key = "LINKML_" + key.upper()
@@ -101,7 +101,7 @@ def set_pyproject(tmp_cwd) -> Callable[[Dict[str, Any]], Path]:
     """
     toml_path = tmp_cwd / "pyproject.toml"
 
-    def _set_pyproject(config: dict[str, Any]) -> Path:
+    def _set_pyproject(config: Dict[str, Any]) -> Path:
         config = {"tool": {"linkml": {"config": config}}}
 
         with open(toml_path, "wb") as tfile:
@@ -119,7 +119,7 @@ def set_local_yaml(tmp_cwd) -> Callable[[Dict[str, Any]], Path]:
     """
     yaml_path = tmp_cwd / "linkml_config.yaml"
 
-    def _set_local_yaml(config: dict[str, Any]) -> Path:
+    def _set_local_yaml(config: Dict[str, Any]) -> Path:
         with open(yaml_path, "w") as yfile:
             yaml.safe_dump(config, yfile)
         return yaml_path
@@ -140,7 +140,7 @@ def set_global_yaml() -> Callable[[Dict[str, Any]], Path]:
         if restore_backup:
             global_config_path.rename(backup_path)
 
-        def _set_global_yaml(config: dict[str, Any]) -> Path:
+        def _set_global_yaml(config: Dict[str, Any]) -> Path:
             with open(global_config_path, "w") as gfile:
                 yaml.safe_dump(config, gfile)
             return global_config_path
