@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass, fields
 from typing import Dict, List, Union, Optional
 
 from linkml_runtime.linkml_model import (ClassDefinition, EnumDefinition,
@@ -71,8 +71,7 @@ class SchemaBuilder:
         :param replace_if_present: if True, replace existing class if present
         :param use_attributes: Whether to specify the given slots as an inline
             definition of slots, attributes, in the class definition
-        :param kwargs: additional ClassDefinition properties (ignored if `cls` is a
-            `ClassDefinition`)
+        :param kwargs: additional ClassDefinition properties
         :return: builder
         :raises ValueError: if class already exists and replace_if_present=False
         """
@@ -83,8 +82,21 @@ class SchemaBuilder:
 
         if isinstance(cls, str):
             cls = ClassDefinition(cls, **kwargs)
-        if isinstance(cls, dict):
+        elif isinstance(cls, dict):
             cls = ClassDefinition(**{**cls, **kwargs})
+        else:
+            # Ensure that `cls` is a `ClassDefinition` object
+            if not isinstance(cls, ClassDefinition):
+                msg = (
+                    f"cls must be a string, dict, or ClassDefinition, "
+                    f"not {type(cls)!r}"
+                )
+                raise TypeError(msg)
+
+            cls_as_dict = {f.name: getattr(cls, f.name) for f in fields(cls)}
+
+            cls = ClassDefinition(**{**cls_as_dict, **kwargs})
+
         if cls.name in self.schema.classes and not replace_if_present:
             raise ValueError(f"Class {cls.name} already exists")
         self.schema.classes[cls.name] = cls
