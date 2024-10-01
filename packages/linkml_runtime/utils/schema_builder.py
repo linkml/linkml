@@ -184,6 +184,8 @@ class SchemaBuilder:
             enum_def = EnumDefinition(**{**enum_def, **kwargs})
         if enum_def.name in self.schema.enums and not replace_if_present:
             raise ValueError(f"Enum {enum_def.name} already exists")
+
+        # Attach the enum definition to the schema
         self.schema.enums[enum_def.name] = enum_def
 
         for pv in permissible_values:
