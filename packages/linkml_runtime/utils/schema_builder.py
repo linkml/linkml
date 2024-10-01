@@ -178,10 +178,19 @@ class SchemaBuilder:
         if permissible_values is None:
             permissible_values = []
 
-        if not isinstance(enum_def, EnumDefinition):
+        if isinstance(enum_def, str):
             enum_def = EnumDefinition(enum_def, **kwargs)
-        if isinstance(enum_def, dict):
+        elif isinstance(enum_def, dict):
             enum_def = EnumDefinition(**{**enum_def, **kwargs})
+        else:
+            # Ensure that `enum_def` is a `EnumDefinition` object
+            if not isinstance(enum_def, EnumDefinition):
+                msg = (
+                    f"enum_def must be a `str`, `dict`, or `EnumDefinition`, "
+                    f"not {type(enum_def)!r}"
+                )
+                raise TypeError(msg)
+
         if enum_def.name in self.schema.enums and not replace_if_present:
             raise ValueError(f"Enum {enum_def.name} already exists")
 
