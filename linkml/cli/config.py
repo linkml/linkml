@@ -91,8 +91,11 @@ def set(key, value=None):
     """
     config = GlobalConfig()
     global_config_file = config.config_file
-    with open(global_config_file, "r") as f:
-        global_config = yaml.safe_load(f)
+    if global_config_file.exists():
+        with open(global_config_file, "r") as f:
+            global_config = yaml.safe_load(f)
+    else:
+        global_config = {}
 
     subkeys = key.split(".")
     if len(subkeys) == 1:

@@ -45,7 +45,10 @@ class _GlobalYamlConfigSource(YamlConfigSettingsSource):
         Contents of the global config file
         """
         if self._global_config is None:
-            self._global_config = self._read_files(self.global_config_path)
+            if self.global_config_path.exists():
+                self._global_config = self._read_files(self.global_config_path)
+            else:
+                self._global_config = {}
         return self._global_config
 
     def __call__(self) -> dict[str, Any]:

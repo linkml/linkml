@@ -7,6 +7,7 @@
     :nested: short
 ```
 
+{#linkml-config-get-cli}
 ## `linkml config get`
 
 ```{eval-rst} 
@@ -15,6 +16,7 @@
     :nested: short
 ```  
 
+{#linkml-config-set-cli}
 ## `linkml config set`
 
 ```{eval-rst} 
