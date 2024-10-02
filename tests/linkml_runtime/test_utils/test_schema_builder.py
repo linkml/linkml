@@ -4,7 +4,12 @@ from dataclasses import fields
 import pytest
 
 from linkml_runtime.utils.schema_builder import SchemaBuilder
-from linkml_runtime.linkml_model import ClassDefinition, SlotDefinition
+from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    SlotDefinition,
+    EnumDefinition,
+    PermissibleValue,
+)
 
 
 # === Tests for `SchemaBuilder.add_class` ===
@@ -146,4 +151,51 @@ def test_add_class_with_extra_kwargs(
 
         assert added_class == expected_added_class
 
+
 # === Tests for `SchemaBuilder.add_class` end ===
+
+
+# === Tests for `SchemaBuilder.add_enum` ===
+@pytest.mark.parametrize(
+    ("enum_def", "permissible_values", "expected_added_enum"),
+    [
+        (EnumDefinition(name="Color"), [], EnumDefinition(name="Color")),
+        # invalid permissible values
+        (EnumDefinition(name="Color"), ["RED", 3], EnumDefinition(name="Color")),
+        (
+            EnumDefinition(name="Color"),
+            ["RED", "BLUE"],
+            EnumDefinition(
+                name="Color",
+                permissible_values=[PermissibleValue("RED"), PermissibleValue("BLUE")],
+            ),
+        ),
+        (
+            EnumDefinition(name="Color", permissible_values=[PermissibleValue("RED")]),
+            [PermissibleValue("RED", description="A bright color"), "B"],
+            EnumDefinition(
+                name="Color",
+                permissible_values=[
+                    PermissibleValue("RED", description="A bright color"),
+                    PermissibleValue("B"),
+                ],
+            ),
+        ),
+    ],
+)
+def test_add_enum_with_extra_permissible_values(
+    enum_def: EnumDefinition,
+    permissible_values: List[Union[str, PermissibleValue]],
+    expected_added_enum: Optional[EnumDefinition],
+):
+    """
+    Test adding an enum with extra, overriding, permissible values
+    """
+    builder = SchemaBuilder()
+
+    if any(not isinstance(pv, (str, PermissibleValue)) for pv in permissible_values):
+        with pytest.raises(TypeError, match="permissible value must be"):
+            builder.add_enum(enum_def, permissible_values=permissible_values)
+    else:
+        builder.add_enum(enum_def, permissible_values=permissible_values)
+        assert builder.schema.enums[enum_def.name] == expected_added_enum
