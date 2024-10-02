@@ -199,3 +199,66 @@ def test_add_enum_with_extra_permissible_values(
     else:
         builder.add_enum(enum_def, permissible_values=permissible_values)
         assert builder.schema.enums[enum_def.name] == expected_added_enum
+
+
+# === Tests for `SchemaBuilder.add_enum` ===
+@pytest.mark.parametrize(
+    ("enum_def", "extra_kwargs", "expected_added_enum"),
+    [
+        ("Color", {}, EnumDefinition(name="Color")),
+        (42, {}, None),  # Invalid type for `enum_def`
+        (
+            "Color",
+            {"description": "What meets the eyes"},
+            EnumDefinition(name="Color", description="What meets the eyes"),
+        ),
+        (
+            {"name": "Color", "description": "It's obvious"},
+            {"description": "What meets the eyes"},
+            EnumDefinition(name="Color", description="What meets the eyes"),
+        ),
+        (
+            EnumDefinition("Color"),
+            {"description": "What meets the eyes"},
+            EnumDefinition(name="Color"),
+        ),
+        (
+            "Color",
+            {"description": "What meets the eyes", "ijk": True},  # Invalid extra kwarg
+            None,
+        ),
+    ],
+)
+def test_add_enum_with_extra_kwargs(
+    enum_def: Union[EnumDefinition, dict, str],
+    extra_kwargs: Dict[str, Any],
+    expected_added_enum: Optional[EnumDefinition],
+):
+    """
+    Test adding an enum with extra kwargs
+    """
+    enum_meta_slots = {f.name for f in fields(EnumDefinition)}
+
+    builder = SchemaBuilder()
+
+    if not isinstance(enum_def, (str, dict, EnumDefinition)):
+        with pytest.raises(TypeError, match="enum_def must be"):
+            builder.add_enum(enum_def, **extra_kwargs)
+    elif extra_kwargs.keys() - enum_meta_slots:
+        # Handle the case of extra kwargs include a key that is not a meta slot of
+        # `EnumDefinition`
+        with pytest.raises(ValueError):
+            builder.add_enum(enum_def, **extra_kwargs)
+    else:
+        builder.add_enum(enum_def, **extra_kwargs)
+
+        if isinstance(enum_def, str):
+            enum_name = enum_def
+        elif isinstance(enum_def, dict):
+            enum_name = enum_def["name"]
+        else:
+            enum_name = enum_def.name
+
+        added_enum = builder.schema.enums[enum_name]
+
+        assert added_enum == expected_added_enum
