@@ -143,6 +143,7 @@ rich = "^13.7.1"
 [tool.poetry.group.tests.dependencies]
 pytest = "^7.4.0"
 pytest-subtests = "^0.11.0"
+pytest-xdist = "^3.6.1"
 numpy = [
   { "version" = ">=1.24.3", "python" = "<3.12" },
   { "version" = ">=1.25.2", "python" = ">=3.12" }
