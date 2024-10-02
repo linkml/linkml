@@ -262,3 +262,5 @@ def test_add_enum_with_extra_kwargs(
         added_enum = builder.schema.enums[enum_name]
 
         assert added_enum == expected_added_enum
+
+# === Tests for `SchemaBuilder.add_enum` end ===
