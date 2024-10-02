@@ -1,5 +1,4 @@
 import os
-import unittest
 import logging
 from copy import copy
 from pathlib import Path

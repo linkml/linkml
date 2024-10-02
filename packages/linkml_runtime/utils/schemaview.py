@@ -136,28 +136,6 @@ def to_dict(obj):
     else:
         return obj
 
-
-def get_anonymous_class_definition(class_as_dict: ClassDefinition) -> AnonymousClassExpression:
-    """
-    Convert a ClassDefinition to an AnonymousClassExpression, typically for use in defining an Expression object
-    (e.g. SlotDefinition.range_expression). This method only fills out the fields that are present in the
-    AnonymousClassExpression class. #TODO: We should consider whether an Expression should share a common ancestor with
-    the Definition classes.
-
-    :param class_as_dict: The ClassDefinition to convert.
-    :return: An AnonymousClassExpression.
-    """
-    an_expr = AnonymousClassExpression()
-    print(class_as_dict)
-    valid_fields = {field.name for field in fields(an_expr)}
-    for k, v in class_as_dict.items():
-        if k in valid_fields:
-            setattr(an_expr, k, v)
-    for k, v in class_as_dict.items():
-        setattr(an_expr, k, v)
-    return an_expr
-
-
 @dataclass
 class SchemaView(object):
     """
