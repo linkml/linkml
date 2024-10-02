@@ -11,6 +11,7 @@ from rdflib import Namespace
 
 from linkml_runtime import MappingError, DataNotFoundError
 from linkml_runtime.dumpers import rdflib_dumper, yaml_dumper
+from linkml_runtime.linkml_model import Prefix
 from linkml_runtime.loaders import yaml_loader
 from linkml_runtime.loaders import rdflib_loader
 from linkml_runtime.utils.schemaview import SchemaView
@@ -163,13 +164,20 @@ class RdfLibDumperTestCase(unittest.TestCase):
         print(catsx)
         self.assertCountEqual([org1type1, org1type2], catsx)
 
-    def test_undeclared_prefix(self):
+    def test_undeclared_prefix_raises_error(self):
         view = SchemaView(SCHEMA)
         org1 = Organization('foo')  # not a CURIE or URI
         with self.assertRaises(Exception) as context:
             rdflib_dumper.as_rdf_graph(org1, schemaview=view)
         org1 = Organization('http://example.org/foo/o1')
         rdflib_dumper.as_rdf_graph(org1, schemaview=view)
+
+    def test_base_prefix(self):
+        view = SchemaView(SCHEMA)
+        view.schema.prefixes["_base"] = Prefix("_base", "http://example.org/")
+        org1 = Organization('foo')  # not a CURIE or URI
+        g = rdflib_dumper.as_rdf_graph(org1, schemaview=view)
+        assert (URIRef('http://example.org/foo'), RDF.type, SDO.Organization) in g
 
     def test_rdflib_loader(self):
         """
