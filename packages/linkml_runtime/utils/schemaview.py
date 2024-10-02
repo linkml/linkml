@@ -117,22 +117,6 @@ class SchemaUsage():
     inferred: bool = None
 
 
-def to_dict(obj):
-    """
-    Convert a LinkML element (such as ClassDefinition) to a dictionary.
-
-    :param obj: The LinkML class instance to convert.
-    :return: A dictionary representation of the class.
-    """
-    if is_dataclass(obj):
-        return asdict(obj)
-    elif isinstance(obj, list):
-        return [to_dict(item) for item in obj]
-    elif isinstance(obj, dict):
-        return {key: to_dict(value) for key, value in obj.items()}
-    else:
-        return obj
-
 @dataclass
 class SchemaView(object):
     """
