@@ -1332,6 +1332,7 @@ class SchemaView(object):
         :param slot_name: slot to be queries
         :param class_name: class used as context
         :param imports: include imports closure
+        :param mangle_name: if True, the slot name will be mangled to include the class name
         :return: dynamic slot constructed by inference
         """
         if class_name:
@@ -1375,6 +1376,7 @@ class SchemaView(object):
         }
         # iterate through all metaslots, and potentially populate metaslot value for induced slot
         for metaslot_name in self._metaslots_for_slot():
+
             # inheritance of slots; priority order
             #   slot-level assignment < ancestor slot_usage < self slot_usage
             v = getattr(induced_slot, metaslot_name, None)
@@ -1382,11 +1384,45 @@ class SchemaView(object):
                 propagated_from = []
             else:
                 propagated_from = self.class_ancestors(class_name, reflexive=True, mixins=True)
+
             for an in reversed(propagated_from):
                 induced_slot.owner = an
-                a = self.get_class(an, imports)
+                a = self.get_element(an, imports)
+                # slot usage of the slot in the ancestor class, last ancestor iterated through here is "self"
+                # so that self.slot_usage overrides ancestor slot_usage at the conclusion of the loop.
                 anc_slot_usage = a.slot_usage.get(slot_name, {})
+                # slot name in the ancestor class
+                # getattr(x, 'y') is equivalent to x.y. None here means raise an error if x.y is not found
                 v2 = getattr(anc_slot_usage, metaslot_name, None)
+                # v2 is the value of the metaslot in slot_usage in the ancestor class, which in the loop, means that
+                # the class itself is the last slot_usage to be considered and applied.
+                if metaslot_name in ["any_of", "exactly_one_of"]:
+                    if anc_slot_usage != {}:
+                        for ao in anc_slot_usage.any_of:
+                            if ao.range is not None:
+                                ao_range = self.get_element(ao.range)
+                                if ao_range:
+                                    print(ao_range)
+                                    acd = get_anonymous_class_definition(to_dict(ao_range))
+                                    if induced_slot.range_expression is None:
+                                        induced_slot.range_expression = AnonymousClassExpression()
+                                    if induced_slot.range_expression.any_of is None:
+                                        induced_slot.range_expression.any_of = []
+                                    # Check for duplicates before appending
+                                    if acd not in induced_slot.range_expression.any_of:
+                                        induced_slot.range_expression.any_of.append(acd)
+                        for eoo in anc_slot_usage.exactly_one_of:
+                            if eoo.range is not None:
+                                eoo_range = self.get_element(eoo.range)
+                                print(eoo_range)
+                                acd = get_anonymous_class_definition(as_dict(eoo_range))
+                                if induced_slot.range_expression is None:
+                                    induced_slot.range_expression = AnonymousClassExpression()
+                                if induced_slot.range_expression.exactly_one_of is None:
+                                    induced_slot.range_expression.exactly_one_of = []
+                                # Check for duplicates before appending
+                                if acd not in induced_slot.range_expression.exactly_one_of:
+                                    induced_slot.range_expression.exactly_one_of.append(acd)
                 if v is None:
                     v = v2
                 else:
@@ -1396,9 +1432,9 @@ class SchemaView(object):
                     else:
                         # can rewrite below as:
                         # 1. if v2:
-                        # 2. if v2 is not None and 
+                        # 2. if v2 is not None and
                         #    (
-                        #      (isinstance(v2, (dict, list)) and v2) or 
+                        #      (isinstance(v2, (dict, list)) and v2) or
                         #      (isinstance(v2, JsonObj) and as_dict(v2))
                         #    )
                         if not is_empty(v2):
@@ -1422,7 +1458,32 @@ class SchemaView(object):
             if induced_slot.name in c.slots or induced_slot.name in c.attributes:
                 if c.name not in induced_slot.domain_of:
                     induced_slot.domain_of.append(c.name)
+        if induced_slot.range is not None:
+            if induced_slot.range_expression is None:
+                induced_slot.range_expression = AnonymousClassExpression()
+                induced_slot.range_expression.any_of = []
+                induced_slot.range_expression.any_of.append(
+                    get_anonymous_class_definition(to_dict(self.get_element(induced_slot.range)))
+                )
+                return induced_slot
+            else:
+                any_of_ancestors = []
+                if induced_slot.range_expression.any_of is not None:
+                    for ao_range in induced_slot.range_expression.any_of:
+                        ao_range_class = self.get_class(ao_range.name)
+                        ao_anc = self.class_ancestors(ao_range_class.name)
+                        for a in ao_anc:
+                            if a not in any_of_ancestors:
+                                any_of_ancestors.append(a)
+                if induced_slot.range in any_of_ancestors:
+                    return induced_slot
+                else:
+                    induced_slot.range_expression.any_of.append(
+                        get_anonymous_class_definition(to_dict(self.get_element(induced_slot.range)))
+                    )
+                return induced_slot
         return induced_slot
+
 
     @lru_cache(None)
     def _metaslots_for_slot(self):
