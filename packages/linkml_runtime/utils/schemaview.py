@@ -8,7 +8,6 @@ from collections import defaultdict, deque
 from pathlib import Path
 from typing import Mapping, Optional, Tuple, TypeVar
 import warnings
-from pprint import pprint
 
 from linkml_runtime.utils.namespaces import Namespaces
 from deprecated.classic import deprecated
@@ -18,8 +17,6 @@ from linkml_runtime.utils.pattern import PatternResolver
 from linkml_runtime.linkml_model.meta import *
 from linkml_runtime.exceptions import OrderingError
 from enum import Enum
-from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, ClassDefinitionName
-from dataclasses import asdict, is_dataclass, fields
 
 logger = logging.getLogger(__name__)
 
