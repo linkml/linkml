@@ -190,7 +190,7 @@ classes:
     slots:
       - street
       - city
-      - alt
+      - altitude
 
   Concept:
     slots:
