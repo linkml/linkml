@@ -1,6 +1,8 @@
 import os
 from typing import Any, Iterator, Optional
 
+from jsonschema.exceptions import best_match
+
 from linkml.validator.plugins.validation_plugin import ValidationPlugin
 from linkml.validator.report import Severity, ValidationResult
 from linkml.validator.validation_context import ValidationContext
@@ -45,11 +47,12 @@ class JsonschemaValidationPlugin(ValidationPlugin):
         )
         for error in validator.iter_errors(instance):
             error_context = [ctx.message for ctx in error.context]
+            best_error = best_match([error])
             yield ValidationResult(
                 type="jsonschema validation",
                 severity=Severity.ERROR,
                 instance=instance,
                 instantiates=context.target_class,
-                message=f"{error.message} in /{'/'.join(str(p) for p in error.absolute_path)}",
+                message=f"{best_error.message} in /{'/'.join(str(p) for p in best_error.absolute_path)}",
                 context=error_context,
             )
