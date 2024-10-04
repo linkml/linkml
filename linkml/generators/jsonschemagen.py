@@ -328,6 +328,18 @@ class JsonSchemaGenerator(Generator):
                 if key not in self.top_level_schema:
                     self.top_level_schema[key] = value
 
+        if cls.any_of is not None and len(cls.any_of) > 0:
+            class_subschema["anyOf"] = [self.get_subschema_for_anonymous_class(c, False) for c in cls.any_of]
+
+        if cls.all_of is not None and len(cls.all_of) > 0:
+            class_subschema["allOf"] = [self.get_subschema_for_anonymous_class(c, False) for c in cls.all_of]
+
+        if cls.exactly_one_of is not None and len(cls.exactly_one_of) > 0:
+            class_subschema["oneOf"] = [
+                self.get_subschema_for_anonymous_class(c, False) for c in cls.exactly_one_of
+            ]
+
+
     def get_subschema_for_anonymous_class(
         self, cls: AnonymousClassExpression, properties_required: bool = False
     ) -> Union[None, JsonSchema]:
