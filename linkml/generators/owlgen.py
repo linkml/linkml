@@ -3,10 +3,11 @@
 import logging
 import os
 from collections import defaultdict
+from collections.abc import Mapping
 from copy import copy
 from dataclasses import dataclass, field
 from enum import Enum, unique
-from typing import Any, List, Mapping, Optional, Set, Tuple, Union
+from typing import Any, List, Optional, Set, Tuple, Union
 
 import click
 import rdflib

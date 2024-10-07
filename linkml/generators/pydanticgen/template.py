@@ -1,6 +1,7 @@
 import sys
+from collections.abc import Generator
 from importlib.util import find_spec
-from typing import Any, ClassVar, Dict, Generator, List, Literal, Optional, Tuple, Union, get_args
+from typing import Any, ClassVar, Dict, List, Literal, Optional, Tuple, Union, get_args
 
 from jinja2 import Environment, PackageLoader
 from pydantic import BaseModel, Field, field_validator

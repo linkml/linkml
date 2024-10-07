@@ -5,11 +5,12 @@ import json
 import logging
 import os
 import sys
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from io import StringIO
 from pathlib import Path
 from types import ModuleType
-from typing import Any, List, Mapping, Optional, TextIO, Union
+from typing import Any, List, Optional, TextIO, Union
 
 import click
 import yaml

@@ -2,11 +2,12 @@ import keyword
 import logging
 import os
 import re
+from collections.abc import Iterator
 from copy import copy
 from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType
-from typing import Callable, Dict, Iterator, List, Optional, Set, Tuple, Union
+from typing import Callable, Dict, List, Optional, Set, Tuple, Union
 
 import click
 from linkml_runtime import SchemaView

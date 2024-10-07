@@ -1,8 +1,9 @@
 import logging
 import sys
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass, field
-from functools import lru_cache
-from typing import Any, Iterable, List, Type, Union
+from functools import cache
+from typing import Any, List, Type, Union
 
 import click
 import jsonschema
@@ -28,7 +29,7 @@ class HashableSchemaDefinition(SchemaDefinition):
         return hash(self.id)
 
 
-@lru_cache(maxsize=None)
+@cache
 def _generate_jsonschema(schema, top_class, closed, include_range_class_descendants):
     deprecation_warning("validators")
     logger.debug("Generating JSON Schema")

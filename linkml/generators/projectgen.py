@@ -63,7 +63,7 @@ GEN_MAP = {
 }
 
 
-@lru_cache()
+@lru_cache
 def get_local_imports(schema_path: str, dir: str):
     logger.info(f"GETTING IMPORTS = {schema_path}")
     all_imports = [schema_path]

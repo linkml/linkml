@@ -1,9 +1,10 @@
 import inspect
+from collections.abc import Iterable
 from copy import deepcopy
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, Iterable, Union
+from typing import Any, Dict, Union
 
 import jsonschema
 import yaml

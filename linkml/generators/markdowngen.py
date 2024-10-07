@@ -267,10 +267,10 @@ class MarkdownGenerator(Generator):
 
             items.append(self.header(2, "Domain and Range"))
             items.append(
-                (
+                
                     f"{self.class_link(slot.domain)} &#8594;{self.predicate_cardinality(slot)} "
                     f"{self.class_type_link(slot.range)}"
-                )
+                
             )
 
             items.append(self.header(2, "Parents"))
