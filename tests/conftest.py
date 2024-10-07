@@ -63,7 +63,7 @@ class SnapshotFile(Snapshot):
         self.rdf_format: Optional[bool] = rdf_format
 
     def __repr__(self):
-        with open(self.path, "r", encoding="utf-8") as snapshot_file:
+        with open(self.path, encoding="utf-8") as snapshot_file:
             return snapshot_file.read()
 
     def generate_snapshot(self, source: object) -> bool:
@@ -81,11 +81,11 @@ class SnapshotFile(Snapshot):
         raise TypeError(f"cannot generate snapshot from {source}")
 
     def compare_to_snapshot(self, other: object) -> bool:
-        with open(self.path, "r", encoding="utf-8") as snapshot_file:
+        with open(self.path, encoding="utf-8") as snapshot_file:
             expected = snapshot_file.read()
 
         if isinstance(other, Path):
-            with open(other, "r", encoding="utf-8") as compare_file:
+            with open(other, encoding="utf-8") as compare_file:
                 actual = compare_file.read()
         elif isinstance(other, str):
             actual = other

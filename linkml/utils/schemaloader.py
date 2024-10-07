@@ -1,9 +1,10 @@
 import logging
 import os
 from collections import OrderedDict
+from collections.abc import Iterator, Mapping
 from copy import deepcopy
 from pathlib import Path
-from typing import Dict, Iterator, List, Mapping, Optional, Set, TextIO, Tuple, Union, cast
+from typing import Dict, List, Optional, Set, TextIO, Tuple, Union, cast
 from urllib.parse import urlparse
 
 from jsonasobj2 import values
