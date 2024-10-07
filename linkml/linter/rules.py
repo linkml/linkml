@@ -1,7 +1,8 @@
 import re
 from abc import ABC, abstractmethod
-from functools import lru_cache
-from typing import Callable, Iterable, List
+from collections.abc import Iterable
+from functools import cache
+from typing import Callable, List
 
 from linkml_runtime.linkml_model import ClassDefinition, ClassDefinitionName, Element, SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView
@@ -95,7 +96,7 @@ class PermissibleValuesFormatRule(LinterRule):
                     yield LinterProblem(f"{self.format_element(enum_def)} has permissible value '{value}'")
 
 
-@lru_cache(maxsize=None)
+@cache
 def _get_recommended_metamodel_slots() -> List[str]:
     meta_schema_view = SchemaView(LOCAL_METAMODEL_YAML_FILE)
     recommended_meta_slots = []

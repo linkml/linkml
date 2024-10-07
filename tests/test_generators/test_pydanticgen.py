@@ -2,13 +2,14 @@ import importlib
 import inspect
 import re
 import typing
+from collections.abc import Iterable
 from contextlib import nullcontext as does_not_raise
 from dataclasses import dataclass
 from importlib.metadata import version
 from importlib.util import find_spec
 from pathlib import Path
 from types import GeneratorType, ModuleType
-from typing import ClassVar, Dict, Iterable, List, Literal, Optional, Type, Union
+from typing import ClassVar, Dict, List, Literal, Optional, Type, Union
 
 import numpy as np
 import pytest
