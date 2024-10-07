@@ -245,6 +245,7 @@ select = [
   "E",  # pycodestyle errors
   "F",  # Pyflakes
   "I",  # isort
+  "UP", # pyupgrade
 ]
 # Assume Python 3.9
 target-version = "py39"
