@@ -1,7 +1,18 @@
-import sys
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterable, List, Optional, Type, TypeVar, Union, get_args
+from typing import (
+    TYPE_CHECKING,
+    Annotated,
+    Any,
+    ClassVar,
+    Generic,
+    List,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+    get_args,
+)
 
 from linkml_runtime.linkml_model import Element
 from linkml_runtime.linkml_model.meta import ArrayExpression, DimensionExpression
@@ -19,13 +30,8 @@ if TYPE_CHECKING:
     from pydantic import GetCoreSchemaHandler
     from pydantic_core import CoreSchema
 
-if sys.version_info.minor <= 8:
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-
 from linkml.generators.pydanticgen.build import RangeResult
-from linkml.generators.pydanticgen.template import ConditionalImport, Import, Imports, ObjectImport
+from linkml.generators.pydanticgen.template import Import, Imports, ObjectImport
 from linkml.utils.exceptions import ValidationError
 
 
@@ -83,18 +89,13 @@ _AnyShapeArrayImports = (
     + Import(
         module="typing",
         objects=[
+            ObjectImport(name="Annotated"),
             ObjectImport(name="Generic"),
             ObjectImport(name="Iterable"),
             ObjectImport(name="TypeVar"),
             ObjectImport(name="Union"),
             ObjectImport(name="get_args"),
         ],
-    )
-    + ConditionalImport(
-        condition="sys.version_info.minor > 8",
-        module="typing",
-        objects=[ObjectImport(name="Annotated")],
-        alternative=Import(module="typing_extensions", objects=[ObjectImport(name="Annotated")]),
     )
     + Import(module="pydantic", objects=[ObjectImport(name="GetCoreSchemaHandler")])
     + Import(module="pydantic_core", objects=[ObjectImport(name="CoreSchema"), ObjectImport(name="core_schema")])
