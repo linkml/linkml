@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from importlib.abc import MetaPathFinder
 from importlib.metadata import version
 from pathlib import Path
-from typing import Callable, List, Optional, Union
+from typing import Callable, Optional, Union
 
 import docker
 import pytest
@@ -198,7 +198,7 @@ def pytest_addoption(parser):
     parser.addoption("--with-biolink", action="store_true", help="Include tests marked as for the biolink model")
 
 
-def pytest_collection_modifyitems(config, items: List[pytest.Item]):
+def pytest_collection_modifyitems(config, items: list[pytest.Item]):
     if not config.getoption("--with-slow"):
         skip_slow = pytest.mark.skip(reason="need --with-slow option to run")
         for item in items:
@@ -297,7 +297,7 @@ class MockImportErrorFinder(MetaPathFinder):
     """
 
     def __init__(self, module: str, *args, **kwargs):
-        super(MockImportErrorFinder, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.module = module
 
     def find_spec(self, fullname, path, target):

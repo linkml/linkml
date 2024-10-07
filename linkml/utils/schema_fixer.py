@@ -3,7 +3,7 @@ import re
 from collections import defaultdict
 from copy import copy
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 import click
 import yaml
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 pattern = re.compile(r"(?<!^)(?=[A-Z])")
 
 
-def yaml_rewrite(obj: Any, replacements: Dict[str, Any], include_keys=True) -> Any:
+def yaml_rewrite(obj: Any, replacements: dict[str, Any], include_keys=True) -> Any:
     if isinstance(obj, YAMLRoot):
         obj2 = copy(obj)
         for k, v in vars(obj).items():
@@ -52,7 +52,7 @@ class SchemaFixer:
     Multiple methods for adding additional information to schemas
     """
 
-    history: List[str] = None
+    history: list[str] = None
 
     def add_titles(self, schema: SchemaDefinition):
         """
@@ -111,7 +111,7 @@ class SchemaFixer:
         must_have_identifier=False,
         slot_name_func: Callable = None,
         convert_camel_case=False,
-    ) -> List[SlotDefinition]:
+    ) -> list[SlotDefinition]:
         """
         Adds index slots to a container pointing at all top-level classes
 
@@ -272,7 +272,7 @@ class SchemaFixer:
                 del cls.slot_usage[k]
 
     @staticmethod
-    def implicit_slots(schema: SchemaDefinition) -> Dict[str, Dict]:
+    def implicit_slots(schema: SchemaDefinition) -> dict[str, dict]:
         """
         Find slots that are implicit in the schema from slot_usage
 
@@ -317,11 +317,11 @@ class SchemaFixer:
     @staticmethod
     def fix_element_names(
         schema: SchemaDefinition,
-        schema_dict: Dict[str, Any] = None,
-        rules: Dict[str, Callable] = None,
+        schema_dict: dict[str, Any] = None,
+        rules: dict[str, Callable] = None,
         imports=False,
         preserve_original_using: Optional[str] = None,
-    ) -> Union[YAMLRoot, Dict]:
+    ) -> Union[YAMLRoot, dict]:
         """
         Changes element names to conform to naming conventions.
 

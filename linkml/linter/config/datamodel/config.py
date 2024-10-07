@@ -17,11 +17,11 @@ from datetime import (
 from typing import (
     Any,
     ClassVar,
-    Dict,
-    List,
+
     Optional,
     Union
 )
+from typing import Any, ClassVar, Optional, Union
 
 from jsonasobj2 import (
     JsonObj,
@@ -84,7 +84,8 @@ class Config(YAMLRoot):
     This is the top-level representation of a LinkML linter configuration file. It allows defining a set of rules
     while also optionally extending a predefined set of rules.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG["Config"]
     class_class_curie: ClassVar[str] = "lintcfg:Config"
@@ -94,7 +95,7 @@ class Config(YAMLRoot):
     extends: Optional[Union[str, "ExtendableConfigs"]] = None
     rules: Optional[Union[dict, "Rules"]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.extends is not None and not isinstance(self.extends, ExtendableConfigs):
             self.extends = ExtendableConfigs(self.extends)
 
@@ -110,7 +111,7 @@ class Rules(YAMLRoot):
     Each attribute of this class represents a rule that can be enabled and possibly configured by a configuration
     file.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG["Rules"]
     class_class_curie: ClassVar[str] = "lintcfg:Rules"
@@ -126,7 +127,7 @@ class Rules(YAMLRoot):
     standard_naming: Optional[Union[dict, "StandardNamingConfig"]] = None
     canonical_prefixes: Optional[Union[dict, "CanonicalPrefixesConfig"]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.no_empty_title is not None and not isinstance(self.no_empty_title, NoEmptyTitleConfig):
             self.no_empty_title = NoEmptyTitleConfig(**as_dict(self.no_empty_title))
 
@@ -159,7 +160,8 @@ class RuleConfig(YAMLRoot):
     """
     This is the base class for linter rules. It contains configuration options that are  common to all rules.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG["RuleConfig"]
     class_class_curie: ClassVar[str] = "lintcfg:RuleConfig"
@@ -168,7 +170,7 @@ class RuleConfig(YAMLRoot):
 
     level: Union[str, "RuleLevel"] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.level):
             self.MissingRequiredField("level")
         if not isinstance(self.level, RuleLevel):
@@ -182,7 +184,8 @@ class PermissibleValuesFormatRuleConfig(RuleConfig):
     """
     Additional configuration options for the `permissible_values_format` rule
     """
-    _inherited_slots: ClassVar[List[str]] = []
+
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG["PermissibleValuesFormatRuleConfig"]
     class_class_curie: ClassVar[str] = "lintcfg:PermissibleValuesFormatRuleConfig"
@@ -192,7 +195,7 @@ class PermissibleValuesFormatRuleConfig(RuleConfig):
     level: Union[str, "RuleLevel"] = None
     format: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.format is not None and not isinstance(self.format, str):
             self.format = str(self.format)
 
@@ -204,7 +207,8 @@ class TreeRootClassRuleConfig(RuleConfig):
     """
     Additional configuration options for the `tree_root_class` rule
     """
-    _inherited_slots: ClassVar[List[str]] = []
+
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG["TreeRootClassRuleConfig"]
     class_class_curie: ClassVar[str] = "lintcfg:TreeRootClassRuleConfig"
@@ -215,7 +219,7 @@ class TreeRootClassRuleConfig(RuleConfig):
     root_class_name: Optional[str] = None
     validate_existing_class_name: Optional[Union[bool, Bool]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.root_class_name is not None and not isinstance(self.root_class_name, str):
             self.root_class_name = str(self.root_class_name)
 
@@ -230,7 +234,8 @@ class RecommendedRuleConfig(RuleConfig):
     """
     Additional configuration options for the `recommended` rule
     """
-    _inherited_slots: ClassVar[List[str]] = []
+
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG["RecommendedRuleConfig"]
     class_class_curie: ClassVar[str] = "lintcfg:RecommendedRuleConfig"
@@ -238,11 +243,11 @@ class RecommendedRuleConfig(RuleConfig):
     class_model_uri: ClassVar[URIRef] = LINTCFG.RecommendedRuleConfig
 
     level: Union[str, "RuleLevel"] = None
-    include: Optional[Union[str, List[str]]] = empty_list()
-    exclude: Optional[Union[str, List[str]]] = empty_list()
-    exclude_type: Optional[Union[Union[str, "MetamodelElementTypeEnum"], List[Union[str, "MetamodelElementTypeEnum"]]]] = empty_list()
+    include: Optional[Union[str, list[str]]] = empty_list()
+    exclude: Optional[Union[str, list[str]]] = empty_list()
+    exclude_type: Optional[Union[Union[str, "MetamodelElementTypeEnum"], list[Union[str, "MetamodelElementTypeEnum"]]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if not isinstance(self.include, list):
             self.include = [self.include] if self.include is not None else []
         self.include = [v if isinstance(v, str) else str(v) for v in self.include]
@@ -263,7 +268,8 @@ class StandardNamingConfig(RuleConfig):
     """
     Additional configuration options for the `standard_naming` rule
     """
-    _inherited_slots: ClassVar[List[str]] = []
+
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG["StandardNamingConfig"]
     class_class_curie: ClassVar[str] = "lintcfg:StandardNamingConfig"
@@ -272,11 +278,11 @@ class StandardNamingConfig(RuleConfig):
 
     level: Union[str, "RuleLevel"] = None
     permissible_values_upper_case: Optional[Union[bool, Bool]] = None
-    exclude_type: Optional[Union[Union[str, "MetamodelElementTypeEnum"], List[Union[str, "MetamodelElementTypeEnum"]]]] = empty_list()
+    exclude_type: Optional[Union[Union[str, "MetamodelElementTypeEnum"], list[Union[str, "MetamodelElementTypeEnum"]]]] = empty_list()
     class_pattern: Optional[str] = None
     slot_pattern: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.permissible_values_upper_case is not None and not isinstance(self.permissible_values_upper_case, Bool):
             self.permissible_values_upper_case = Bool(self.permissible_values_upper_case)
 
@@ -298,7 +304,8 @@ class CanonicalPrefixesConfig(RuleConfig):
     """
     Additional configuration options for the canonical_prefixes rule
     """
-    _inherited_slots: ClassVar[List[str]] = []
+
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG["CanonicalPrefixesConfig"]
     class_class_curie: ClassVar[str] = "lintcfg:CanonicalPrefixesConfig"
@@ -306,9 +313,9 @@ class CanonicalPrefixesConfig(RuleConfig):
     class_model_uri: ClassVar[URIRef] = LINTCFG.CanonicalPrefixesConfig
 
     level: Union[str, "RuleLevel"] = None
-    prefixmaps_contexts: Optional[Union[str, List[str]]] = empty_list()
+    prefixmaps_contexts: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if not isinstance(self.prefixmaps_contexts, list):
             self.prefixmaps_contexts = [self.prefixmaps_contexts] if self.prefixmaps_contexts is not None else []
         self.prefixmaps_contexts = [v if isinstance(v, str) else str(v) for v in self.prefixmaps_contexts]
@@ -321,7 +328,7 @@ class NoEmptyTitleConfig(RuleConfig):
     """
     Additional configuration options for the no_empty_title rule
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG["NoEmptyTitleConfig"]
     class_class_curie: ClassVar[str] = "lintcfg:NoEmptyTitleConfig"
@@ -329,9 +336,9 @@ class NoEmptyTitleConfig(RuleConfig):
     class_model_uri: ClassVar[URIRef] = LINTCFG.NoEmptyTitleConfig
 
     level: Union[str, "RuleLevel"] = None
-    exclude_type: Optional[Union[Union[str, "MetamodelElementTypeEnum"], List[Union[str, "MetamodelElementTypeEnum"]]]] = empty_list()
+    exclude_type: Optional[Union[Union[str, "MetamodelElementTypeEnum"], list[Union[str, "MetamodelElementTypeEnum"]]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if not isinstance(self.exclude_type, list):
             self.exclude_type = [self.exclude_type] if self.exclude_type is not None else []
         self.exclude_type = [v if isinstance(v, MetamodelElementTypeEnum) else MetamodelElementTypeEnum(v) for v in self.exclude_type]
@@ -439,19 +446,19 @@ slots.treeRootClassRuleConfig__validate_existing_class_name = Slot(uri=LINTCFG.v
                    model_uri=LINTCFG.treeRootClassRuleConfig__validate_existing_class_name, domain=None, range=Optional[Union[bool, Bool]])
 
 slots.recommendedRuleConfig__include = Slot(uri=LINTCFG.include, name="recommendedRuleConfig__include", curie=LINTCFG.curie('include'),
-                   model_uri=LINTCFG.recommendedRuleConfig__include, domain=None, range=Optional[Union[str, List[str]]])
+                   model_uri=LINTCFG.recommendedRuleConfig__include, domain=None, range=Optional[Union[str, list[str]]])
 
 slots.recommendedRuleConfig__exclude = Slot(uri=LINTCFG.exclude, name="recommendedRuleConfig__exclude", curie=LINTCFG.curie('exclude'),
-                   model_uri=LINTCFG.recommendedRuleConfig__exclude, domain=None, range=Optional[Union[str, List[str]]])
+                   model_uri=LINTCFG.recommendedRuleConfig__exclude, domain=None, range=Optional[Union[str, list[str]]])
 
 slots.recommendedRuleConfig__exclude_type = Slot(uri=LINTCFG.exclude_type, name="recommendedRuleConfig__exclude_type", curie=LINTCFG.curie('exclude_type'),
-                   model_uri=LINTCFG.recommendedRuleConfig__exclude_type, domain=None, range=Optional[Union[Union[str, "MetamodelElementTypeEnum"], List[Union[str, "MetamodelElementTypeEnum"]]]])
+                   model_uri=LINTCFG.recommendedRuleConfig__exclude_type, domain=None, range=Optional[Union[Union[str, "MetamodelElementTypeEnum"], list[Union[str, "MetamodelElementTypeEnum"]]]])
 
 slots.standardNamingConfig__permissible_values_upper_case = Slot(uri=LINTCFG.permissible_values_upper_case, name="standardNamingConfig__permissible_values_upper_case", curie=LINTCFG.curie('permissible_values_upper_case'),
                    model_uri=LINTCFG.standardNamingConfig__permissible_values_upper_case, domain=None, range=Optional[Union[bool, Bool]])
 
 slots.standardNamingConfig__exclude_type = Slot(uri=LINTCFG.exclude_type, name="standardNamingConfig__exclude_type", curie=LINTCFG.curie('exclude_type'),
-                   model_uri=LINTCFG.standardNamingConfig__exclude_type, domain=None, range=Optional[Union[Union[str, "MetamodelElementTypeEnum"], List[Union[str, "MetamodelElementTypeEnum"]]]])
+                   model_uri=LINTCFG.standardNamingConfig__exclude_type, domain=None, range=Optional[Union[Union[str, "MetamodelElementTypeEnum"], list[Union[str, "MetamodelElementTypeEnum"]]]])
 
 slots.standardNamingConfig__class_pattern = Slot(uri=LINTCFG.class_pattern, name="standardNamingConfig__class_pattern", curie=LINTCFG.curie('class_pattern'),
                    model_uri=LINTCFG.standardNamingConfig__class_pattern, domain=None, range=Optional[str])
@@ -460,7 +467,7 @@ slots.standardNamingConfig__slot_pattern = Slot(uri=LINTCFG.slot_pattern, name="
                    model_uri=LINTCFG.standardNamingConfig__slot_pattern, domain=None, range=Optional[str])
 
 slots.canonicalPrefixesConfig__prefixmaps_contexts = Slot(uri=LINTCFG.prefixmaps_contexts, name="canonicalPrefixesConfig__prefixmaps_contexts", curie=LINTCFG.curie('prefixmaps_contexts'),
-                   model_uri=LINTCFG.canonicalPrefixesConfig__prefixmaps_contexts, domain=None, range=Optional[Union[str, List[str]]])
+                   model_uri=LINTCFG.canonicalPrefixesConfig__prefixmaps_contexts, domain=None, range=Optional[Union[str, list[str]]])
 
 slots.noEmptyTitleConfig__exclude_type = Slot(uri=LINTCFG.exclude_type, name="noEmptyTitleConfig__exclude_type", curie=LINTCFG.curie('exclude_type'),
-                   model_uri=LINTCFG.noEmptyTitleConfig__exclude_type, domain=None, range=Optional[Union[Union[str, "MetamodelElementTypeEnum"], List[Union[str, "MetamodelElementTypeEnum"]]]])
+                   model_uri=LINTCFG.noEmptyTitleConfig__exclude_type, domain=None, range=Optional[Union[Union[str, "MetamodelElementTypeEnum"], list[Union[str, "MetamodelElementTypeEnum"]]]])
