@@ -1,7 +1,7 @@
 import dataclasses
 import logging
 from copy import deepcopy
-from typing import Dict, List, Optional, Union, cast
+from typing import Optional, Union, cast
 
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
@@ -125,8 +125,8 @@ def set_from_schema(schema: SchemaDefinition) -> None:
 
 
 def merge_dicts(
-    target: Dict[str, Element],
-    source: Dict[str, Element],
+    target: dict[str, Element],
+    source: dict[str, Element],
     imported_from: str,
     imported_from_uri: str,
     merge_imports: bool,
@@ -150,7 +150,7 @@ def merge_dicts(
 def merge_slots(
     target: Union[SlotDefinition, TypeDefinition],
     source: Union[SlotDefinition, TypeDefinition],
-    skip: List[Union[SlotDefinitionName, TypeDefinitionName]] = None,
+    skip: list[Union[SlotDefinitionName, TypeDefinitionName]] = None,
     inheriting: bool = True,
 ) -> None:
     """

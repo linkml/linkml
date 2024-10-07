@@ -1,7 +1,7 @@
 import logging
 import os
 from dataclasses import dataclass
-from typing import Callable, List
+from typing import Callable
 
 import click
 from jsonasobj2 import JsonObj, as_dict
@@ -258,7 +258,7 @@ class ShaclGenerator(Generator):
         else:
             logger.error(f"No URI for type {rt.name}")
 
-    def _and_equals_string(self, g: Graph, func: Callable, values: List) -> None:
+    def _and_equals_string(self, g: Graph, func: Callable, values: list) -> None:
         pv_node = BNode()
         Collection(
             g,
@@ -304,7 +304,7 @@ class ShaclGenerator(Generator):
         else:
             return None
 
-    def _and_equals_string(self, g: Graph, func: Callable, values: List) -> None:
+    def _and_equals_string(self, g: Graph, func: Callable, values: list) -> None:
         pv_node = BNode()
         Collection(
             g,

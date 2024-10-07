@@ -9,7 +9,7 @@ from importlib.metadata import version
 from importlib.util import find_spec
 from pathlib import Path
 from types import GeneratorType, ModuleType
-from typing import ClassVar, Dict, List, Literal, Optional, Type, Union
+from typing import ClassVar, Literal, Optional, Union
 
 import numpy as np
 import pytest
@@ -748,7 +748,7 @@ def test_pydantic_cardinality(value, required, minimium_cardinality, maximum_car
     field = cls.model_fields["cardinality_array"]
 
     assert field.is_required() == required
-    assert field.annotation == List[float] if required else Optional[List[float]]
+    assert field.annotation == list[float] if required else Optional[list[float]]
 
     # filter down the metadata to only min_length and max_length entries
     min_length = [entry.min_length for entry in field.metadata if getattr(entry, "min_length", None) is not None]
@@ -816,7 +816,7 @@ classes:
     code = gen.serialize()
 
     mod = compile_python(code)
-    assert mod.CardinalityArray.model_fields["minimum_cardinality_array"].annotation == List[float]
+    assert mod.CardinalityArray.model_fields["minimum_cardinality_array"].annotation == list[float]
     assert mod.CardinalityArray.model_fields["minimum_cardinality_array"].metadata[0].min_length == 1
     assert mod.CardinalityArray.model_fields["maximum_cardinality_array"].metadata[0].max_length == 10
     assert mod.CardinalityArray.model_fields["exact_cardinality_array"].metadata[0].min_length == 5
@@ -871,7 +871,7 @@ classes:
                     objects=[ObjectImport(name="Dict"), ObjectImport(name="List"), ObjectImport(name="Union")],
                 )
             ],
-            (("Dict", Dict), ("List", List), ("Union", Union)),
+            (("Dict", dict), ("List", list), ("Union", Union)),
         ),
         ([Import(module="typing")], (("typing", typing),)),
         (
@@ -1372,8 +1372,8 @@ def test_template_render():
 
     class TestTemplate(PydanticTemplateModel):
         template: ClassVar[str] = "test.jinja"
-        a_list: List[InnerTemplate] = [InnerTemplate(value=1), InnerTemplate(value=2)]
-        a_dict: Dict[str, InnerTemplate] = {"one": InnerTemplate(value="one"), "two": InnerTemplate(value="two")}
+        a_list: list[InnerTemplate] = [InnerTemplate(value=1), InnerTemplate(value=2)]
+        a_dict: dict[str, InnerTemplate] = {"one": InnerTemplate(value="one"), "two": InnerTemplate(value="two")}
         a_value: int = 1
         plain_model: PlainModel = PlainModel()
         recursive: Optional["TestTemplate"] = None
@@ -1560,7 +1560,7 @@ def array_validator_errors(input_path) -> ClassDefinition:
         pytest.param([ArrayRepresentation.NUMPYDANTIC], marks=pytest.mark.pydanticgen_npd, id="numpydantic"),
     ],
 )
-def array_representation(request) -> List[ArrayRepresentation]:
+def array_representation(request) -> list[ArrayRepresentation]:
     """
     Parameterized fixture to test each array representation
     """
@@ -1684,8 +1684,8 @@ def test_generate_array_dtype_class(array_representation, array_dtype):
 
     generated = PydanticGenerator(array_dtype, array_representations=array_representation, imports=imports).serialize()
     mod = compile_python(generated)
-    cls: Type[BaseModel] = getattr(mod, "ClassDtype")
-    target_cls: Type[BaseModel] = getattr(mod, "MyClass")
+    cls: type[BaseModel] = getattr(mod, "ClassDtype")
+    target_cls: type[BaseModel] = getattr(mod, "MyClass")
 
     array = np.full(shape=(2, 3, 4), fill_value=target_cls())
 
@@ -2242,7 +2242,7 @@ def test_template_noblack(array_complex, mock_black_import):
 # --------------------------------------------------
 
 
-def _test_meta(linkml_meta, definition: Definition, model: Type[PydanticTemplateModel], mode: str):
+def _test_meta(linkml_meta, definition: Definition, model: type[PydanticTemplateModel], mode: str):
     def_clean = remove_empty_items(definition)
     for k, v in def_clean.items():
         if mode == "auto":

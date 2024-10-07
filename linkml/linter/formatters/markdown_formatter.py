@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import IO, Any, List, Optional
+from typing import IO, Any, Optional
 
 from linkml.linter.config.datamodel.config import RuleLevel
 from linkml.linter.linter import LinterProblem
@@ -53,7 +53,7 @@ class MarkdownFormatter(Formatter):
                 self.write(f"### {name}")
                 self.write_schema_problems(problems)
 
-    def write_schema_problems(self, problems: List[LinterProblem]):
+    def write_schema_problems(self, problems: list[LinterProblem]):
         errors = [p for p in problems if str(p.level) == RuleLevel.error.text]
         warnings = [p for p in problems if str(p.level) == RuleLevel.warning.text]
         if errors:

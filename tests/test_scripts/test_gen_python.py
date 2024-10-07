@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 from click.testing import CliRunner
 from linkml_runtime.utils.compile_python import compile_python
@@ -13,7 +13,7 @@ from ..conftest import KITCHEN_SINK_PATH
 def gen_and_comp_python(
     schema: Path,
     snapshot: Snapshot,
-    addl_args: Optional[List[str]] = None,
+    addl_args: Optional[list[str]] = None,
     python_base: Optional[str] = None,
 ) -> None:
     """Generate yaml_file into python_file and compare it against master_file"""
