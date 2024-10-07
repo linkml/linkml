@@ -5,13 +5,7 @@ Models for intermediate build results
 """
 
 import dataclasses
-from typing import Any, TypeVar
-
-try:
-    from typing import Annotated
-except ImportError:
-    from typing_extensions import Annotated
-
+from typing import Annotated, Any, TypeVar
 
 from linkml_runtime.linkml_model import (
     ClassDefinition,
