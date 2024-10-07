@@ -267,10 +267,8 @@ class MarkdownGenerator(Generator):
 
             items.append(self.header(2, "Domain and Range"))
             items.append(
-                
-                    f"{self.class_link(slot.domain)} &#8594;{self.predicate_cardinality(slot)} "
-                    f"{self.class_type_link(slot.range)}"
-                
+                f"{self.class_link(slot.domain)} &#8594;{self.predicate_cardinality(slot)} "
+                f"{self.class_type_link(slot.range)}"
             )
 
             items.append(self.header(2, "Parents"))
@@ -457,7 +455,7 @@ class MarkdownGenerator(Generator):
         #       - related mappings
         #       - deprecated element has exact replacement
         #       - deprecated element has possible replacement
-        if type(obj) == EnumDefinition:
+        if type(obj) is EnumDefinition:
             items.insert(0, enum_list("Permissible Values", obj))
             items.insert(1, "\n")
 
