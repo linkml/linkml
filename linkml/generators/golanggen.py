@@ -1,7 +1,7 @@
 import logging
 import os
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Optional
 
 import click
 from jinja2 import Template
@@ -181,7 +181,7 @@ class GolangGenerator(Generator):
             return "string"
 
     @staticmethod
-    def parents(cls: ClassDefinition) -> List[ClassDefinitionName]:
+    def parents(cls: ClassDefinition) -> list[ClassDefinitionName]:
         if cls.is_a:
             parents = [cls.is_a]
         else:

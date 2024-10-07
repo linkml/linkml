@@ -8,7 +8,7 @@ import base64
 import os
 import zlib
 from dataclasses import dataclass
-from typing import Callable, List, Optional, Set, cast
+from typing import Callable, Optional, cast
 
 import click
 import requests
@@ -38,15 +38,15 @@ class PlantumlGenerator(Generator):
     valid_formats = ["puml", "plantuml", "png", "pdf", "jpg", "json", "svg"]
     visit_all_class_slots = False
 
-    referenced: Optional[Set[ClassDefinitionName]] = None  # List of classes that have to be emitted
-    generated: Optional[Set[ClassDefinitionName]] = None  # List of classes that have been emitted
-    class_generated: Optional[Set[ClassDefinitionName]] = None  # Class definitions that have been emitted
-    associations_generated: Optional[Set[ClassDefinitionName]] = None  # Classes with associations generated
-    focus_classes: Optional[Set[ClassDefinitionName]] = None  # Classes to be completely filled
-    gen_classes: Optional[Set[ClassDefinitionName]] = None  # Classes to be generated
+    referenced: Optional[set[ClassDefinitionName]] = None  # List of classes that have to be emitted
+    generated: Optional[set[ClassDefinitionName]] = None  # List of classes that have been emitted
+    class_generated: Optional[set[ClassDefinitionName]] = None  # Class definitions that have been emitted
+    associations_generated: Optional[set[ClassDefinitionName]] = None  # Classes with associations generated
+    focus_classes: Optional[set[ClassDefinitionName]] = None  # Classes to be completely filled
+    gen_classes: Optional[set[ClassDefinitionName]] = None  # Classes to be generated
     output_file_name: Optional[str] = None  # Location of output file if directory used
 
-    classes: Set[ClassDefinitionName] = None
+    classes: set[ClassDefinitionName] = None
     directory: Optional[str] = None
     kroki_server: Optional[str] = "https://kroki.io"
     tooltips_flag: bool = False
@@ -54,7 +54,7 @@ class PlantumlGenerator(Generator):
 
     def visit_schema(
         self,
-        classes: Set[ClassDefinitionName] = None,
+        classes: set[ClassDefinitionName] = None,
         directory: Optional[str] = None,
         **_,
     ) -> Optional[str]:
@@ -76,7 +76,7 @@ class PlantumlGenerator(Generator):
             self.gen_classes = self.synopsis.roots.classrefs
         self.referenced = self.gen_classes
         self.generated = set()
-        plantumlclassdef: List[str] = []
+        plantumlclassdef: list[str] = []
         while self.referenced.difference(self.generated):
             cn = sorted(list(self.referenced.difference(self.generated)), reverse=True)[0]
             self.generated.add(cn)
@@ -127,7 +127,7 @@ class PlantumlGenerator(Generator):
         @param cn:
         @return:
         """
-        slot_defs: List[str] = []
+        slot_defs: list[str] = []
         if cn not in self.class_generated and (not self.focus_classes or cn in self.focus_classes):
             cls = self.schema.classes[cn]
             for slot in self.filtered_cls_slots(cn, all_slots=True, filtr=lambda s: s.range not in self.schema.classes):
@@ -168,8 +168,8 @@ class PlantumlGenerator(Generator):
         @return: PLANTUML representation of the association
         """
 
-        classes: List[str] = []
-        assocs: List[str] = []
+        classes: list[str] = []
+        assocs: list[str] = []
         if cn not in self.associations_generated and (not self.focus_classes or cn in self.focus_classes):
             cls = self.schema.classes[cn]
 
@@ -271,7 +271,7 @@ class PlantumlGenerator(Generator):
                 if cn not in self.class_generated:
                     classes.append(self.add_class(cn))
                 assocs.append('"' + cls.is_a + '" ' + plantuml_is_a + ' "' + cn + '"')
-        entries: List[str] = []
+        entries: list[str] = []
         entries.extend(classes)
         entries.extend(assocs)
         return entries
@@ -294,7 +294,7 @@ class PlantumlGenerator(Generator):
         cn: ClassDefinitionName,
         all_slots: bool = True,
         filtr: Callable[[SlotDefinition], bool] = None,
-    ) -> List[SlotDefinition]:
+    ) -> list[SlotDefinition]:
         """Return the set of slots associated with the class that meet the filter criteria.  Slots will be returned
         in defining order, with class slots returned last
 

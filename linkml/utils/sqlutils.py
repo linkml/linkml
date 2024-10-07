@@ -5,7 +5,7 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType
-from typing import Any, List, Optional, Type, Union
+from typing import Any, Optional, Union
 
 import click
 import linkml_runtime.linkml_model.meta as metamodel
@@ -137,7 +137,7 @@ class SQLStore:
         self.native_module = gen.compile_module()
         return self.native_module
 
-    def load(self, target_class: Union[str, Type[YAMLRoot]] = None) -> YAMLRoot:
+    def load(self, target_class: Union[str, type[YAMLRoot]] = None) -> YAMLRoot:
         """
         Loads a LinkML object from the wrapped SQLite database
 
@@ -146,7 +146,7 @@ class SQLStore:
         """
         return self.load_all(target_class=target_class)[0]
 
-    def load_all(self, target_class: Union[str, Type[YAMLRoot]] = None) -> List[YAMLRoot]:
+    def load_all(self, target_class: Union[str, type[YAMLRoot]] = None) -> list[YAMLRoot]:
         if target_class is None:
             target_class_name = infer_root_class(self.schemaview)
             target_class = self.native_module.__dict__[target_class_name]
@@ -178,7 +178,7 @@ class SQLStore:
             session.add(nu_obj)
             session.commit()
 
-    def to_sqla_type(self, target_class: Type[YAMLRoot]) -> Any:
+    def to_sqla_type(self, target_class: type[YAMLRoot]) -> Any:
         for n, nu_typ in inspect.getmembers(self.module):
             if n == target_class.__name__:
                 return nu_typ
@@ -235,7 +235,7 @@ class SQLStore:
         else:
             return obj
 
-    def from_sqla(self, obj: Any) -> Optional[Union[YAMLRoot, List[YAMLRoot]]]:
+    def from_sqla(self, obj: Any) -> Optional[Union[YAMLRoot, list[YAMLRoot]]]:
         """
         Translate from SQLAlchemy declarative module to native LinkML
 
