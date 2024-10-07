@@ -3,7 +3,7 @@ import sys
 from collections.abc import Iterable
 from dataclasses import asdict, dataclass, field
 from functools import cache
-from typing import Any, List, Type, Union
+from typing import Any, Union
 
 import click
 import jsonschema
@@ -42,7 +42,7 @@ def _generate_jsonschema(schema, top_class, closed, include_range_class_descenda
 
 
 class JsonSchemaDataValidatorError(Exception):
-    def __init__(self, validation_messages: List[str]) -> None:
+    def __init__(self, validation_messages: list[str]) -> None:
         super().__init__("\n".join(validation_messages))
         self.validation_messages = validation_messages
 
@@ -68,7 +68,7 @@ class JsonSchemaDataValidator(DataValidator):
         # return self.validate_object(obj)
         pass
 
-    def validate_object(self, data: YAMLRoot, target_class: Type[YAMLRoot] = None, closed: bool = True) -> None:
+    def validate_object(self, data: YAMLRoot, target_class: type[YAMLRoot] = None, closed: bool = True) -> None:
         """
         validates instance data against a schema
 

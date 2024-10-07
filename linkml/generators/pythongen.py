@@ -7,7 +7,7 @@ from copy import copy
 from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType
-from typing import Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import Callable, Optional, Union
 
 import click
 from linkml_runtime import SchemaView
@@ -199,7 +199,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         list_ents = [f"from {k} import {', '.join(v)}" for k, v in self.gen_import_list().items()]
         return "\n".join(list_ents)
 
-    def gen_import_list(self) -> Dict[str, List[str]]:
+    def gen_import_list(self) -> dict[str, list[str]]:
         """
         Generate a list of types to import
 
@@ -209,7 +209,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         class ImportList:
             def __init__(self, schema_location: str):
                 self.schema_location = schema_location
-                self.v: Dict[str, Set[str]] = {}
+                self.v: dict[str, set[str]] = {}
 
             def add_element(self, e: Element) -> None:
                 if e.imported_from:
@@ -231,7 +231,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 else:
                     innerself.v.setdefault(". " + path, set()).add(name)
 
-            def values(self) -> Dict[str, List[str]]:
+            def values(self) -> dict[str, list[str]]:
                 return {k: sorted(self.v[k]) for k in sorted(self.v.keys())}
 
         def add_type_ref(typ: TypeDefinition) -> None:
@@ -545,7 +545,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         slot: SlotDefinition,
         cls: Optional[ClassDefinition],
         positional_allowed: bool,
-    ) -> Tuple[str, Optional[str]]:
+    ) -> tuple[str, Optional[str]]:
         """
         Return the range type including initializers, etc.
         Generate a class variable declaration for the supplied slot.  Note: the positional_allowed attribute works,
@@ -604,7 +604,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         else:
             return f"Optional[{range_type}]", "None"
 
-    def class_reference_type(self, slot: SlotDefinition, cls: Optional[ClassDefinition]) -> Tuple[str, str, str]:
+    def class_reference_type(self, slot: SlotDefinition, cls: Optional[ClassDefinition]) -> tuple[str, str, str]:
         """
         Return the type of slot referencing a class
 
@@ -626,7 +626,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         return str(self.gen_class_reference(rangelist)), prox_type, prox_type_name
 
     @staticmethod
-    def gen_class_reference(rangelist: List[str]) -> str:
+    def gen_class_reference(rangelist: list[str]) -> str:
         """
         Return a basic or a union type depending on the number of elements in range list
 
@@ -684,7 +684,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
     # sort classes such that if C is a child of P then C appears after P in the list
     @staticmethod
-    def _sort_classes(clist: List[ClassDefinition]) -> List[ClassDefinition]:
+    def _sort_classes(clist: list[ClassDefinition]) -> list[ClassDefinition]:
         clist = list(clist)
         slist = []  # sorted
         while len(clist) > 0:
@@ -732,7 +732,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         :param cls: class to generate constructor for
         :return: python constructor
         """
-        rlines: List[str] = []
+        rlines: list[str] = []
         designators = [x for x in self.domain_slots(cls) if x.designates_type]
         if len(designators) > 0:
             descendants = self.schemaview.class_descendants(cls.name)
@@ -787,7 +787,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
     def gen_postinit(self, cls: ClassDefinition, slot: SlotDefinition) -> Optional[str]:
         """Generate python post init rules for slot in class"""
-        rlines: List[str] = []
+        rlines: list[str] = []
 
         if slot.range in self.schema.classes:
             if self.is_class_unconstrained(self.schema.classes[slot.range]):
@@ -917,7 +917,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 if first_hit_only:
                     break
 
-    def primary_keys_for(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
+    def primary_keys_for(self, cls: ClassDefinition) -> list[SlotDefinitionName]:
         """Return the primary key for cls.
 
         Note: At the moment we return at most one entry.  At some point, keys will be expanded to support
@@ -967,7 +967,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 return False  # Occurs before
         return True
 
-    def python_uri_for(self, uriorcurie: Union[str, URIRef]) -> Tuple[str, Optional[str]]:
+    def python_uri_for(self, uriorcurie: Union[str, URIRef]) -> tuple[str, Optional[str]]:
         """Return the python form of uriorcurie
         :param uriorcurie:
         :return: URI and CURIE form
