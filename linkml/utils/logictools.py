@@ -1,7 +1,8 @@
 import operator
+from collections.abc import Collection
 from copy import deepcopy
 from itertools import product
-from typing import Any, Collection, List, Optional, Tuple, Type
+from typing import Any, List, Optional, Tuple, Type
 
 
 def member_of(item: Any, collection: Collection[Any]) -> bool:

@@ -9,10 +9,11 @@ import shutil
 import subprocess
 import tempfile
 from collections import defaultdict
+from collections.abc import Iterator
 from copy import copy, deepcopy
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Tuple, Type, Union
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type, Union
 
 import linkml_runtime
 import pydantic
@@ -300,7 +301,7 @@ def _generate_framework_output(
             for root, _dirs, files in os.walk(temp_dir.name):
                 for file in files:
                     path = os.path.join(root, file)
-                    with open(path, "r") as stream:
+                    with open(path) as stream:
                         output += stream.read()
         else:
             output = gen.serialize()
@@ -419,7 +420,7 @@ def _schema_out_path(schema: Dict, parent=False) -> Path:
 
 @lru_cache
 def _get_linkml_types() -> dict:
-    with open(linkml_runtime.SCHEMA_DIRECTORY / "types.yaml", "r") as tfile:
+    with open(linkml_runtime.SCHEMA_DIRECTORY / "types.yaml") as tfile:
         type_schema = yaml.safe_load(tfile)
     for typ in type_schema.get("types", {}).values():
         typ["from_schema"] = "https://w3id.org/linkml/types"
