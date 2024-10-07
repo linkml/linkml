@@ -20,10 +20,11 @@ import logging
 import os
 import re
 import sys
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import Callable, ClassVar, Dict, List, Mapping, Optional, Set, TextIO, Type, Union, cast
+from typing import Callable, ClassVar, Dict, List, Optional, Set, TextIO, Type, Union, cast
 
 import click
 from click import Argument, Command, Option

@@ -1,11 +1,12 @@
 import importlib.util
 import logging
 import os
+from collections.abc import Iterable, Iterator
 from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Dict, Iterable, Iterator, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import click
 from jinja2 import Environment, FileSystemLoader, Template
