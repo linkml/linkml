@@ -1,7 +1,7 @@
 import os
 import re
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional, Set, Union
+from typing import Any, Callable, Optional, Union
 
 import click
 from jsonasobj2 import JsonObj, values
@@ -44,20 +44,20 @@ class MarkdownGenerator(Generator):
     # ObjectVars
     directory: Optional[str] = None
     image_directory: Optional[str] = None
-    classes: Set[ClassDefinitionName] = None
+    classes: set[ClassDefinitionName] = None
     image_dir: bool = False
     index_file: str = "index.md"
     noimages: bool = False
     noyuml: bool = False
     no_types_dir: bool = False
     warn_on_exist: bool = False
-    gen_classes: Optional[Set[ClassDefinitionName]] = None
+    gen_classes: Optional[set[ClassDefinitionName]] = None
     gen_classes_neighborhood: Optional[References] = None
 
     def visit_schema(
         self,
         directory: str = None,
-        classes: Set[ClassDefinitionName] = None,
+        classes: set[ClassDefinitionName] = None,
         image_dir: bool = False,
         index_file: str = "index.md",
         noimages: bool = False,
@@ -374,7 +374,7 @@ class MarkdownGenerator(Generator):
 
         def prop_list(
             title: str,
-            entries: Union[List, Dict],
+            entries: Union[list, dict],
             formatter: Optional[Callable[[Element], str]] = None,
         ) -> Optional[str]:
             if formatter is None:

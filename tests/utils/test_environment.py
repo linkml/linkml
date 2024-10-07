@@ -9,7 +9,7 @@ from enum import Enum
 from importlib import import_module
 from io import StringIO
 from pathlib import Path
-from typing import Callable, List, Optional, Union
+from typing import Callable, Optional, Union
 
 from linkml_runtime.linkml_model import linkml_files
 from linkml_runtime.linkml_model.linkml_files import Format, Source
@@ -168,14 +168,14 @@ class TestEnvironment:
             with open(safety_file, "w") as f:
                 f.write("Generated for safety.  Directory will not be cleared if this file is not present")
 
-    def generate_directory(self, dirname: Union[str, List[str]], generator: Callable[[str], None]) -> None:
+    def generate_directory(self, dirname: Union[str, list[str]], generator: Callable[[str], None]) -> None:
         """
         Invoke the generator and compare the output in a temp directory to the output directory.  Report the results
         and then update the output directory
         :param dirname: relative directory name (e.g. gengolr/meta)
         :param generator: function to create the output. First argument is the target directory
         """
-        dirname = dirname if isinstance(dirname, List) else [dirname]
+        dirname = dirname if isinstance(dirname, list) else [dirname]
         temp_output_directory = self.make_temp_dir(*dirname)
         expected_output_directory = self.expected_path(*dirname)
         self.make_testing_directory(expected_output_directory)
@@ -193,7 +193,7 @@ class TestEnvironment:
 
     def generate_single_file(
         self,
-        filename: Union[str, List[str]],
+        filename: Union[str, list[str]],
         generator: Callable[[Optional[str]], Optional[str]],
         value_is_returned: bool = False,
         filtr: Callable[[str], str] = None,
@@ -213,7 +213,7 @@ class TestEnvironment:
         # If no filter, default to identity function
         if not filtr:
             filtr = _identity
-        filename = filename if isinstance(filename, List) else [filename]
+        filename = filename if isinstance(filename, list) else [filename]
         actual_file = self.root_temp_file_path(*filename) if use_testing_root else self.actual_path(*filename)
         expected_file = self.root_expected_path(*filename) if use_testing_root else self.expected_path(*filename)
 

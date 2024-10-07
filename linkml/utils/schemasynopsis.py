@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Dict, List, Set, Union
+from typing import Union
 
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
@@ -36,45 +36,45 @@ class SchemaSynopsis:
     schema: SchemaDefinition = field(repr=False, compare=False)
 
     # References by type -- set by add_ref
-    typerefs: Dict[TypeDefinitionName, References] = empty_dict()  # Type name to all references
-    slotrefs: Dict[SlotDefinitionName, References] = empty_dict()  # Slot name to all references
-    classrefs: Dict[ClassDefinitionName, References] = empty_dict()  # Class name to all references
-    subsetrefs: Dict[SubsetDefinitionName, References] = empty_dict()  # Subset name to references
-    enumrefs: Dict[EnumDefinitionName, References] = empty_dict()  # Enum name to references
+    typerefs: dict[TypeDefinitionName, References] = empty_dict()  # Type name to all references
+    slotrefs: dict[SlotDefinitionName, References] = empty_dict()  # Slot name to all references
+    classrefs: dict[ClassDefinitionName, References] = empty_dict()  # Class name to all references
+    subsetrefs: dict[SubsetDefinitionName, References] = empty_dict()  # Subset name to references
+    enumrefs: dict[EnumDefinitionName, References] = empty_dict()  # Enum name to references
 
     # Type specific
-    typebases: Dict[str, Set[TypeDefinitionName]] = empty_dict()  # Base referencing types (direct and indirect)
-    typeofs: Dict[TypeDefinitionName, TypeDefinitionName] = empty_dict()  # Type to specializations
+    typebases: dict[str, set[TypeDefinitionName]] = empty_dict()  # Base referencing types (direct and indirect)
+    typeofs: dict[TypeDefinitionName, TypeDefinitionName] = empty_dict()  # Type to specializations
 
     # Slot specific
-    slotclasses: Dict[SlotDefinitionName, Set[ClassDefinitionName]] = empty_dict()  # Slot to including classes
-    definingslots: Dict[SlotDefinitionName, Set[ClassDefinitionName]] = empty_dict()  # Slot to defining decls
-    slotusages: Dict[SlotDefinitionName, Set[ClassDefinitionName]] = empty_dict()  # Slot to overriding classes
-    owners: Dict[SlotDefinitionName, Set[ClassDefinitionName]] = empty_dict()  # Slot to owning classes (sb. 1)
-    inverses: Dict[str, Set[str]] = empty_dict()  # Slots declared as inverses of other slots
+    slotclasses: dict[SlotDefinitionName, set[ClassDefinitionName]] = empty_dict()  # Slot to including classes
+    definingslots: dict[SlotDefinitionName, set[ClassDefinitionName]] = empty_dict()  # Slot to defining decls
+    slotusages: dict[SlotDefinitionName, set[ClassDefinitionName]] = empty_dict()  # Slot to overriding classes
+    owners: dict[SlotDefinitionName, set[ClassDefinitionName]] = empty_dict()  # Slot to owning classes (sb. 1)
+    inverses: dict[str, set[str]] = empty_dict()  # Slots declared as inverses of other slots
 
     # Class specific
-    ownslots: Dict[ClassDefinitionName, Set[SlotDefinitionName]] = empty_dict()  # Slots directly owned by class
+    ownslots: dict[ClassDefinitionName, set[SlotDefinitionName]] = empty_dict()  # Slots directly owned by class
 
     # Enum specific
-    codesets: Dict[URIRef, Set[EnumDefinitionName]] = empty_dict()  # Code set URI to enumeration definition
+    codesets: dict[URIRef, set[EnumDefinitionName]] = empty_dict()  # Code set URI to enumeration definition
 
     # Class to slot domains == class.slots
 
     # Slot or Class (Definition) specific
     roots: References = empty_references()  # Definitions with no parents
-    isarefs: Dict[DefinitionName, References] = empty_dict()  # Definition to isa references
-    mixinrefs: Dict[DefinitionName, References] = empty_dict()  # Mixin to referencing classes or slots
+    isarefs: dict[DefinitionName, References] = empty_dict()  # Definition to isa references
+    mixinrefs: dict[DefinitionName, References] = empty_dict()  # Mixin to referencing classes or slots
     mixins: References = empty_references()  # Definitions declared as mixin
     abstracts: References = empty_references()  # Definitions declared as abstract
     applytos: References = empty_references()  # Definitions that include applytos
-    applytorefs: Dict[DefinitionName, References] = empty_dict()  # Definition to applyier
+    applytorefs: dict[DefinitionName, References] = empty_dict()  # Definition to applyier
 
     # Slot or Type specific
-    rangerefs: Dict[ElementName, Set[SlotDefinitionName]] = empty_dict()  # Type or class to range slot
+    rangerefs: dict[ElementName, set[SlotDefinitionName]] = empty_dict()  # Type or class to range slot
 
     # Element - any type
-    inschema: Dict[str, References] = empty_references()  # Schema name to elements
+    inschema: dict[str, References] = empty_references()  # Schema name to elements
 
     def __post_init__(self):
         for k, v in self.schema.slots.items():
@@ -237,8 +237,8 @@ class SchemaSynopsis:
     def _ancestor_is_owned(self, slot: SlotDefinition) -> bool:
         return bool(slot.is_a) and (slot.is_a in self.owners or self._ancestor_is_owned(self.schema.slots[slot.is_a]))
 
-    def errors(self) -> List[str]:
-        def format_undefineds(refs: Set[Union[str, TypedNode]]) -> List[str]:
+    def errors(self) -> list[str]:
+        def format_undefineds(refs: set[Union[str, TypedNode]]) -> list[str]:
             return [f"{TypedNode.yaml_loc(ref)}: {ref}" for ref in refs]
 
         rval = []
@@ -266,7 +266,7 @@ class SchemaSynopsis:
         return rval
 
     def summary(self) -> str:
-        def summarize_refs(refs: Dict[ElementName, References]) -> str:
+        def summarize_refs(refs: dict[ElementName, References]) -> str:
             clsrefs, slotrefs, typerefs, enumrefs = set(), set(), set(), set()
             if refs is not None:
                 for cr in refs.values():
@@ -279,7 +279,7 @@ class SchemaSynopsis:
                 f"{len(typerefs)} types, {len(enumrefs)} enums "
             )
 
-        def recurse_types(typ: TypeDefinitionName, indent: str = "\t\t\t") -> List[str]:
+        def recurse_types(typ: TypeDefinitionName, indent: str = "\t\t\t") -> list[str]:
             rval = [f"{indent}{typ}" + (":" if typ in self.typeofs else "")]
             if typ in sorted(self.typeofs):
                 for tr in sorted(self.typeofs[typ]):
@@ -332,7 +332,7 @@ class SchemaSynopsis:
 
         # Slots that are defined but do not (directly) occur in any class
         n_unreferenced_descendants: int = 0
-        unowned_slots: Set[SlotDefinitionName] = set()
+        unowned_slots: set[SlotDefinitionName] = set()
         for slotname, slot in sorted(self.schema.slots.items(), key=lambda e: e[0]):
             if slotname not in self.owners:
                 if slot.domain:
@@ -345,10 +345,10 @@ class SchemaSynopsis:
         if unowned_slots:
             rval += [f"\t* Unowned slots: {', '.join(sorted(unowned_slots))}"]
 
-        not_in_domain: Set[SlotDefinitionName] = set()
-        domain_mismatches: Set[SlotDefinitionName] = set()
-        unkdomains: Set[SlotDefinitionName] = set()
-        emptydomains: Set[SlotDefinitionName] = set()
+        not_in_domain: set[SlotDefinitionName] = set()
+        domain_mismatches: set[SlotDefinitionName] = set()
+        unkdomains: set[SlotDefinitionName] = set()
+        emptydomains: set[SlotDefinitionName] = set()
 
         for slot in self.schema.slots.values():
             if not slot.domain:
