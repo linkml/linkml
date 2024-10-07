@@ -8,7 +8,7 @@
 
 import dataclasses
 from dataclasses import dataclass
-from typing import Any, ClassVar, Dict, List, Optional, Union
+from typing import Any, ClassVar, Optional, Union
 
 from jsonasobj2 import as_dict
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
@@ -49,16 +49,16 @@ class Report(YAMLRoot):
     A report object
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = REPORTING.Report
     class_class_curie: ClassVar[str] = "reporting:Report"
     class_name: ClassVar[str] = "report"
     class_model_uri: ClassVar[URIRef] = REPORTING.Report
 
-    results: Optional[Union[Union[dict, "CheckResult"], List[Union[dict, "CheckResult"]]]] = empty_list()
+    results: Optional[Union[Union[dict, "CheckResult"], list[Union[dict, "CheckResult"]]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if not isinstance(self.results, list):
             self.results = [self.results] if self.results is not None else []
         self.results = [v if isinstance(v, CheckResult) else CheckResult(**as_dict(v)) for v in self.results]
@@ -72,7 +72,7 @@ class CheckResult(YAMLRoot):
     An individual check
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = REPORTING.CheckResult
     class_class_curie: ClassVar[str] = "reporting:CheckResult"
@@ -88,7 +88,7 @@ class CheckResult(YAMLRoot):
     source: Optional[Union[str, NodeIdentifier]] = None
     info: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.type is not None and not isinstance(self.type, URIorCURIE):
             self.type = URIorCURIE(self.type)
 
@@ -117,7 +117,7 @@ class CheckResult(YAMLRoot):
 
 
 class Problem(CheckResult):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = REPORTING.Problem
     class_class_curie: ClassVar[str] = "reporting:Problem"
@@ -130,7 +130,7 @@ class ProblemSlotUndeclared(Problem):
     A problem in which an undeclared slot is used
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = REPORTING.ProblemSlotUndeclared
     class_class_curie: ClassVar[str] = "reporting:ProblemSlotUndeclared"
@@ -143,7 +143,7 @@ class ProblemSlotInapplicable(Problem):
     A problem in which a slot is used in an instance of a class where the slot is not applicable for that class
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = REPORTING.ProblemSlotInapplicable
     class_class_curie: ClassVar[str] = "reporting:ProblemSlotInapplicable"
@@ -156,7 +156,7 @@ class ProblemSlotMissing(Problem):
     A problem in which an instance of a class has a required slot which is not filled in
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = REPORTING.ProblemSlotMissing
     class_class_curie: ClassVar[str] = "reporting:ProblemSlotMissing"
@@ -268,5 +268,5 @@ slots.report__results = Slot(
     curie=REPORTING.curie("results"),
     model_uri=REPORTING.report__results,
     domain=None,
-    range=Optional[Union[Union[dict, CheckResult], List[Union[dict, CheckResult]]]],
+    range=Optional[Union[Union[dict, CheckResult], list[Union[dict, CheckResult]]]],
 )

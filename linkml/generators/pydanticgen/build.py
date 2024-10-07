@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Optional, Type, TypeVar, Union
+from typing import Optional, TypeVar, Union
 
 from linkml.generators.common.build import (
     BuildResult,
@@ -24,8 +24,8 @@ class PydanticBuildResult(BuildResult):
     BuildResult parent class for pydantic generator
     """
 
-    imports: Optional[Union[List[Import], Imports]] = None
-    injected_classes: Optional[List[Union[str, Type]]] = None
+    imports: Optional[Union[list[Import], Imports]] = None
+    injected_classes: Optional[list[Union[str, type]]] = None
 
     def merge(self, other: T) -> T:
         """
@@ -92,7 +92,7 @@ class RangeResult(PydanticBuildResult, RangeResult_):
         Returns:
             :class:`.SlotResult`
         """
-        res = super(RangeResult, self).merge(other)
+        res = super().merge(other)
         # Replace with other's annotation
         res.range = other.range
         if other.field_extras is not None:

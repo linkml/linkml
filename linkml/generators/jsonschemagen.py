@@ -3,7 +3,7 @@ import logging
 import os
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Optional, Union
 
 import click
 from linkml_runtime.linkml_model.meta import (
@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 # Note: The underlying types are a union of any built-in python datatype + any type defined in
 #       linkml-runtime/utils/metamodelcore.py
 # Note the keys are all lower case
-json_schema_types: Dict[str, Tuple[str, Optional[str]]] = {
+json_schema_types: dict[str, tuple[str, Optional[str]]] = {
     "int": ("integer", None),
     "integer": ("integer", None),
     "bool": ("boolean", None),
@@ -69,7 +69,7 @@ class JsonSchema(dict):
             identifier_name = self._lax_forward_refs.pop(canonical_name)
             self.add_lax_def(canonical_name, identifier_name)
 
-    def add_lax_def(self, names: Union[str, List[str]], identifier_name: str) -> None:
+    def add_lax_def(self, names: Union[str, list[str]], identifier_name: str) -> None:
         # JSON-Schema does not have inheritance,
         # so we duplicate slots from inherited parents and mixins
         # Maps e.g. Person --> Person__identifier_optional
@@ -147,7 +147,7 @@ class JsonSchema(dict):
         return json.dumps(self, **kwargs)
 
     @classmethod
-    def ref_for(cls, class_name: Union[str, List[str]], identifier_optional: bool = False, required: bool = True):
+    def ref_for(cls, class_name: Union[str, list[str]], identifier_optional: bool = False, required: bool = True):
         def _ref(class_name):
             def_name = camelcase(class_name)
             def_suffix = cls.OPTIONAL_IDENTIFIER_SUFFIX if identifier_optional else ""
@@ -459,7 +459,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
     def get_type_info_for_slot_subschema(
         self, slot: Union[SlotDefinition, AnonymousSlotExpression]
-    ) -> Tuple[str, str, Union[str, List[str]]]:
+    ) -> tuple[str, str, Union[str, list[str]]]:
         # JSON Schema type (https://json-schema.org/understanding-json-schema/reference/type.html)
         typ = None
         # Reference to a JSON schema entity (https://json-schema.org/understanding-json-schema/structuring.html#ref)

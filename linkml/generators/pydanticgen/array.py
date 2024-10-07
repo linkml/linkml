@@ -4,8 +4,6 @@ from collections.abc import Iterable
 from enum import Enum
 from typing import (
     ClassVar,
-    Iterable,
-    List,
     Optional,
     Type,
     TypeVar,
@@ -255,7 +253,7 @@ class ArrayRangeGenerator(ABC):
         return any([getattr(self.array, arr_field, None) is not None for arr_field in _BOUNDED_ARRAY_FIELDS])
 
     @classmethod
-    def get_generator(cls, repr: ArrayRepresentation) -> Type["ArrayRangeGenerator"]:
+    def get_generator(cls, repr: ArrayRepresentation) -> type["ArrayRangeGenerator"]:
         """Get the generator class for a given array representation"""
         for subclass in cls.__subclasses__():
             if repr in (subclass.REPR, subclass.REPR.value):
@@ -472,7 +470,7 @@ class NumpydanticArray(ArrayRangeGenerator):
         return result
 
     @staticmethod
-    def ndarray_annotation(shape: Optional[List[Union[int, str]]] = None, dtype: Optional[str] = None) -> str:
+    def ndarray_annotation(shape: Optional[list[Union[int, str]]] = None, dtype: Optional[str] = None) -> str:
         """
         Make a stringified :class:`numpydantic.NDArray` annotation for a given shape
         and dtype.
