@@ -26,9 +26,6 @@ jobs:
           python-version: "3.12"
           cache: 'poetry'
 
-      #----------------------------------------------
-      # install dependencies if cache does not exist
-      #----------------------------------------------
       - name: Install dependencies
         run: poetry install --no-interaction --with docs -E black
 
