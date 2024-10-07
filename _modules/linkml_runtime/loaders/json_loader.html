@@ -353,6 +353,9 @@
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="JSONLoader"><a class="viewcode-back" href="../../../developers/loaders-and-dumpers.html#linkml_runtime.loaders.JSONLoader">[docs]</a><span class="k">class</span> <span class="nc">JSONLoader</span><span class="p">(</span><span class="n">Loader</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">load_as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
@@ -376,7 +379,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_as_dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">typ</span> <span class="o">=</span> <span class="n">data_as_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;@type&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">typ</span> <span class="ow">and</span> <span class="n">typ</span> <span class="o">!=</span> <span class="n">target_class</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: input type mismatch. Expected: </span><span class="si">{</span><span class="n">target_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, Actual: </span><span class="si">{</span><span class="n">typ</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: input type mismatch. Expected: </span><span class="si">{</span><span class="n">target_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, Actual: </span><span class="si">{</span><span class="n">typ</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_construct_target_class</span><span class="p">(</span><span class="n">data_as_dict</span><span class="p">,</span> <span class="n">target_class</span><span class="p">)</span></div></div>
 </pre></div>
