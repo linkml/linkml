@@ -1223,10 +1223,8 @@ def cli(
     """Generate pydantic classes to represent a LinkML model"""
     if template_file is not None:
         raise DeprecationWarning(
-            
-                "Passing a single template_file is deprecated. Pass a directory of template files instead. "
-                "See help string for --template-dir"
-            
+            "Passing a single template_file is deprecated. Pass a directory of template files instead. "
+            "See help string for --template-dir"
         )
 
     if template_dir is not None:
