@@ -143,9 +143,9 @@ def test_initialized_enums(pythongen_module, schemaview):
     assert p.status == mod.VitalStatus(mod.VitalStatus.ALIVE)
     assert p.status != mod.VitalStatus.ALIVE
     tc.assertCountEqual(p.roles, [mod.Role(mod.Role.INVESTIGATOR), mod.Role(mod.Role.ANALYST)])
-    assert type(p.status) == mod.VitalStatus
-    assert type(p.status) != PermissibleValue
-    assert type(p.roles[0]) == mod.Role
+    assert type(p.status) is mod.VitalStatus
+    assert type(p.status) is not PermissibleValue
+    assert type(p.roles[0]) is mod.Role
     g = rdflib_dumper.as_rdf_graph(p, schemaview=schemaview)
     [subj] = list(g.subjects(RDF.type, EXAMPLE.Person))
     assert list(g.objects(subj, EXAMPLE.status)) == [EXAMPLE.Alive]
@@ -182,9 +182,9 @@ def test_assigned_enum(pythongen_module):
     # self.assertEqual(p_roundtrip, p)
     assert p.status == mod.VitalStatus.ALIVE
     tc.assertCountEqual(p.roles, [mod.Role.INVESTIGATOR, mod.Role.ANALYST])
-    assert type(p.status) == PermissibleValue
-    assert type(p.status) != mod.VitalStatus
-    assert type(p.roles[0]) == PermissibleValue
+    assert type(p.status) is PermissibleValue
+    assert type(p.status) is not mod.VitalStatus
+    assert type(p.roles[0]) is PermissibleValue
 
 
 def test_assigned_wrapped_enums(pythongen_module, schemaview):
@@ -234,9 +234,9 @@ def test_assigned_wrapped_enums(pythongen_module, schemaview):
     assert p.status == mod.VitalStatus(mod.VitalStatus.ALIVE)
     assert p.status != mod.VitalStatus.ALIVE
     tc.assertCountEqual(p.roles, [mod.Role(mod.Role.INVESTIGATOR), mod.Role(mod.Role.ANALYST)])
-    assert type(p.status) == mod.VitalStatus
-    assert type(p.status) != PermissibleValue
-    assert type(p.roles[0]) == mod.Role
+    assert type(p.status) is mod.VitalStatus
+    assert type(p.status) is not PermissibleValue
+    assert type(p.roles[0]) is mod.Role
     g = rdflib_dumper.as_rdf_graph(p, schemaview=schemaview)
     [subj] = list(g.subjects(RDF.type, EXAMPLE.Person))
     assert list(g.objects(subj, EXAMPLE.status)) == [EXAMPLE.Alive]
