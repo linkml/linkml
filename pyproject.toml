@@ -97,7 +97,7 @@ gen-mermaid-class-diagram = "linkml.generators.mermaidclassdiagramgen:cli"
 linkml-schema-fixer = "linkml.utils.schema_fixer:main"
 
 [tool.poetry.dependencies]
-python = "^3.8.1"
+python = "^3.9.0"
 antlr4-python3-runtime = "<4.10,==4.*,>=4.9.0"
 click = ">=7.0"
 graphviz = ">=0.10.1"
@@ -187,7 +187,7 @@ quiet-level = 3
 
 [tool.black]
 line-length = 120
-target-version = ["py38", "py39", "py310", "py311"]
+target-version = ["py39", "py310", "py311", "py312", "py313"]
 force-exclude = '''
 /(
   # default exclude
@@ -246,8 +246,8 @@ select = [
   "F",  # Pyflakes
   "I",  # isort
 ]
-# Assume Python 3.8
-target-version = "py38"
+# Assume Python 3.9
+target-version = "py39"
 
 [tool.ruff.per-file-ignores]
 # These templates can have long lines
