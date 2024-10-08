@@ -9,7 +9,7 @@
 import dataclasses
 import re
 from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
+from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
 from datetime import date, datetime, time
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
@@ -210,7 +210,7 @@ class ObjectRange1Id(NamedThingId):
 
 @dataclass(repr=False)
 class NamedThing(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://example.com/test14/NamedThing")
     class_class_curie: ClassVar[str] = None
@@ -222,7 +222,7 @@ class NamedThing(YAMLRoot):
     subject: Union[str, NamedThingId] = None
     object: Union[str, NamedThingId] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, NamedThingId):
@@ -248,7 +248,7 @@ class NamedThing(YAMLRoot):
 
 @dataclass(repr=False)
 class MixinOwner(NamedThing):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://example.com/test14/MixinOwner")
     class_class_curie: ClassVar[str] = None
@@ -261,7 +261,7 @@ class MixinOwner(NamedThing):
     subject: Union[str, SubjectRange1Id] = None
     sex_qualifier: Optional[Union[str, NamedThingId]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, MixinOwnerId):
@@ -280,7 +280,7 @@ class MixinOwner(NamedThing):
 
 @dataclass(repr=False)
 class SubjectRange1(NamedThing):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://example.com/test14/SubjectRange1")
     class_class_curie: ClassVar[str] = None
@@ -292,7 +292,7 @@ class SubjectRange1(NamedThing):
     subject: Union[str, NamedThingId] = None
     object: Union[str, NamedThingId] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, SubjectRange1Id):
@@ -303,7 +303,7 @@ class SubjectRange1(NamedThing):
 
 @dataclass(repr=False)
 class ObjectRange1(NamedThing):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://example.com/test14/ObjectRange1")
     class_class_curie: ClassVar[str] = None
@@ -315,7 +315,7 @@ class ObjectRange1(NamedThing):
     subject: Union[str, NamedThingId] = None
     object: Union[str, NamedThingId] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, ObjectRange1Id):
@@ -326,7 +326,7 @@ class ObjectRange1(NamedThing):
 
 @dataclass(repr=False)
 class MixinClass(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://example.com/test14/MixinClass")
     class_class_curie: ClassVar[str] = None
@@ -336,7 +336,7 @@ class MixinClass(YAMLRoot):
     object: Union[str, ObjectRange1Id] = None
     sex_qualifier: Optional[Union[str, NamedThingId]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.object):
             self.MissingRequiredField("object")
         if not isinstance(self.object, ObjectRange1Id):

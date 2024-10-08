@@ -9,7 +9,7 @@
 import dataclasses
 import re
 from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
+from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
 from datetime import date, datetime, time
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
@@ -44,7 +44,7 @@ DEFAULT_ = TCCM
 
 @dataclass(repr=False)
 class IterableResolvedValueSet(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["IterableResolvedValueSet"]
     class_class_curie: ClassVar[str] = "tccm:IterableResolvedValueSet"
@@ -53,7 +53,7 @@ class IterableResolvedValueSet(YAMLRoot):
 
     complete: Union[str, "CompleteDirectory"] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.complete):
             self.MissingRequiredField("complete")
         if not isinstance(self.complete, CompleteDirectory):
@@ -64,7 +64,7 @@ class IterableResolvedValueSet(YAMLRoot):
 
 @dataclass(repr=False)
 class Directory(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["directories_and_lists/Directory"]
     class_class_curie: ClassVar[str] = "tccm:directories_and_lists/Directory"
@@ -73,7 +73,7 @@ class Directory(YAMLRoot):
 
     complete: Union[str, "CompleteDirectory"] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.complete):
             self.MissingRequiredField("complete")
         if not isinstance(self.complete, CompleteDirectory):

@@ -9,7 +9,7 @@
 import dataclasses
 import re
 from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
+from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
 from datetime import date, datetime, time
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
@@ -46,7 +46,7 @@ class MyClass(YAMLRoot):
     """
     Annotations as tag value pairs. Note that altLabel is defined in the default namespace, not in the SKOS namespace
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EX["MyClass"]
     class_class_curie: ClassVar[str] = "ex:MyClass"
@@ -59,7 +59,7 @@ class MyClass2(YAMLRoot):
     -> This form of annotations is a tag/value format, which allows annotations to be annotated. Note, however, that
     the annotation source is NOT a CURIE, rather just a string.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EX["MyClass2"]
     class_class_curie: ClassVar[str] = "ex:MyClass2"

@@ -9,7 +9,7 @@
 import dataclasses
 import re
 from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
+from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
 from datetime import date, datetime, time
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
@@ -46,9 +46,9 @@ class SampleId(extended_str):
 @dataclass(repr=False)
 class Sample(YAMLRoot):
     id: Union[str, SampleId] = None
-    position: Union[Union[str, "UnusualEnumPatterns"], List[Union[str, "UnusualEnumPatterns"]]] = None
+    position: Union[Union[str, "UnusualEnumPatterns"], list[Union[str, "UnusualEnumPatterns"]]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, SampleId):
