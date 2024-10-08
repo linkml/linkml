@@ -2,7 +2,7 @@ import importlib
 import inspect
 import re
 import typing
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from contextlib import nullcontext as does_not_raise
 from dataclasses import dataclass
 from importlib.metadata import version
@@ -198,9 +198,9 @@ slots:
         """
     gen = PydanticGenerator(schema_str, package=PACKAGE)
     code = gen.serialize()
-    assert "inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default=None" in code
-    assert "inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default=None" in code
-    assert "not_inlined_things: Optional[List[str]] = Field(default=None" in code
+    assert "inlined_things: Optional[dict[str, Union[A, B]]] = Field(default=None" in code
+    assert "inlined_as_list_things: Optional[list[Union[A, B]]] = Field(default=None" in code
+    assert "not_inlined_things: Optional[list[str]] = Field(default=None" in code
 
 
 @pytest.mark.parametrize(
@@ -213,7 +213,7 @@ slots:
             False,
             False,
             True,
-            "Optional[List[str]]",
+            "Optional[list[str]]",
             "primitives are never inlined",
         ),
         # attempting to inline a type
@@ -224,7 +224,7 @@ slots:
             True,
             True,
             True,
-            "Optional[List[str]]",
+            "Optional[list[str]]",
             "primitives are never inlined, even if requested",
         ),
         # block 2: referenced element is a class
@@ -234,7 +234,7 @@ slots:
             False,
             False,
             False,
-            "Optional[List[B]]",
+            "Optional[list[B]]",
             "references to classes without identifiers ALWAYS inlined as list",
         ),
         (
@@ -243,7 +243,7 @@ slots:
             True,
             False,
             False,
-            "Optional[List[B]]",
+            "Optional[list[B]]",
             "references to classes without identifiers ALWAYS inlined as list",
         ),
         (
@@ -252,7 +252,7 @@ slots:
             True,
             True,
             False,
-            "Optional[List[B]]",
+            "Optional[list[B]]",
             "references to classes without identifiers ALWAYS inlined as list",
         ),
         (
@@ -261,7 +261,7 @@ slots:
             True,
             False,
             True,
-            "Optional[Dict[str, Union[str, B]]]",
+            "Optional[dict[str, Union[str, B]]]",
             "references to class with identifier inlined ONLY ON REQUEST, with dict as default",
         ),
         # TODO: fix the next two
@@ -271,20 +271,20 @@ slots:
             True,
             True,
             True,
-            "Optional[List[B]]",
+            "Optional[list[B]]",
             "references to class with identifier inlined as list ONLY ON REQUEST",
         ),
-        ("B", True, False, False, True, "Optional[List[str]]", ""),
+        ("B", True, False, False, True, "Optional[list[str]]", ""),
     ],
 )
 def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_identifier, expected, notes):
     # Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
     expected_default_factories = {
-        "Optional[List[str]]": "Field(default=None",
-        "Optional[List[B]]": "Field(default=None",
-        "Optional[Dict[str, B]]": "Field(default=None",
-        "Optional[Dict[str, str]]": "Field(default=None",
-        "Optional[Dict[str, Union[str, B]]]": "Field(default=None",
+        "Optional[list[str]]": "Field(default=None",
+        "Optional[list[B]]": "Field(default=None",
+        "Optional[dict[str, B]]": "Field(default=None",
+        "Optional[dict[str, str]]": "Field(default=None",
+        "Optional[dict[str, Union[str, B]]]": "Field(default=None",
     }
 
     sb = SchemaBuilder("test")
@@ -867,11 +867,11 @@ classes:
         (
             [
                 Import(
-                    module="typing",
-                    objects=[ObjectImport(name="Dict"), ObjectImport(name="List"), ObjectImport(name="Union")],
+                    module="collections.abc",
+                    objects=[ObjectImport(name="Iterable"), ObjectImport(name="Sequence")],
                 )
             ],
-            (("Dict", dict), ("List", list), ("Union", Union)),
+            (("Iterable", Iterable), ("Sequence", Sequence)),
         ),
         ([Import(module="typing")], (("typing", typing),)),
         (
@@ -954,7 +954,7 @@ def test_inject_field(kitchen_sink_path, tmp_path, input_path, inject, name, typ
 def sample_class() -> PydanticClass:
     # no pattern makes no validators
     attr_1 = PydanticAttribute(name="attr_1", range="Union[str,int]", required=True)
-    attr_2 = PydanticAttribute(name="attr_2", range="List[float]")
+    attr_2 = PydanticAttribute(name="attr_2", range="list[float]")
     cls = PydanticClass(name="Sample", attributes={"attr_1": attr_1, "attr_2": attr_2})
     return cls
 
@@ -966,7 +966,7 @@ def test_attribute_field():
     attr = PydanticAttribute(name="attr")
     assert attr.model_dump()["field"] == "None"
 
-    predefined = "List[Union[str,int]]"
+    predefined = "list[Union[str,int]]"
     attr = PydanticAttribute(name="attr", predefined=predefined)
     assert attr.model_dump()["field"] == predefined
 
@@ -1352,7 +1352,7 @@ range: {{ range }}""",
 attr: attr_1
 range: Union[str,int]
 attr: attr_2
-range: List[float]"""
+range: list[float]"""
     )
 
 
@@ -2190,7 +2190,7 @@ def test_template_black(array_complex):
                 min_length=2,
                 max_length=5,
                 item_type=conlist(
-                    min_length=6, max_length=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]]
+                    min_length=6, max_length=6, item_type=Union[list[int], list[list[int]], list[list[list[int]]]]
                 ),
             ),
         ),
@@ -2229,7 +2229,7 @@ def test_template_noblack(array_complex, mock_black_import):
 
     assert (
         array_repr
-        == "array: Optional[conlist(max_length=5, item_type=conlist(min_length=2, item_type=conlist(min_length=2, max_length=5, item_type=conlist(min_length=6, max_length=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]]))))] = Field(default=None)"  # noqa: E501
+        == "array: Optional[conlist(max_length=5, item_type=conlist(min_length=2, item_type=conlist(min_length=2, max_length=5, item_type=conlist(min_length=6, max_length=6, item_type=Union[list[int], list[list[int]], list[list[list[int]]]]))))] = Field(default=None)"  # noqa: E501
     )
 
     # trying to render with black when we don't have it should raise a ValueError
