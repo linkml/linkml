@@ -249,7 +249,7 @@ class JsonSchemaGenerator(Generator):
         )
 
     def handle_class(self, cls: ClassDefinition) -> None:
-        if cls.mixin or cls.abstract:
+        if cls.abstract:
             return
 
         subschema_type = "object"
