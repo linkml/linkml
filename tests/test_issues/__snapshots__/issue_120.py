@@ -9,7 +9,7 @@
 import dataclasses
 import re
 from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
+from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
 from datetime import date, datetime, time
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
@@ -51,7 +51,7 @@ class String(str):
 
 @dataclass(repr=False)
 class Student(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = SAMP["Student"]
     class_class_curie: ClassVar[str] = "samp:Student"
@@ -61,7 +61,7 @@ class Student(YAMLRoot):
     name: Optional[str] = None
     courses: Optional[Union[dict, "Course"]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.name is not None and not isinstance(self.name, str):
             self.name = str(self.name)
 
@@ -73,7 +73,7 @@ class Student(YAMLRoot):
 
 @dataclass(repr=False)
 class Course(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = SAMP["Course"]
     class_class_curie: ClassVar[str] = "samp:Course"
@@ -82,7 +82,7 @@ class Course(YAMLRoot):
 
     name: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.name is not None and not isinstance(self.name, str):
             self.name = str(self.name)
 
