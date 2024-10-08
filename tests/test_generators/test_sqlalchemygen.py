@@ -13,6 +13,8 @@ from linkml.utils.schema_builder import SchemaBuilder
 
 logger = logging.getLogger(__name__)
 
+pytestmark = pytest.mark.sqlalchemygen
+
 
 @pytest.fixture
 def schema(input_path):
