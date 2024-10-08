@@ -1,9 +1,48 @@
 # metamodel_version: 1.7.0
+enum CordialnessEnum
+  {
+    heartfelt
+    hateful
+    indifferent
+  }
+
+enum DiagnosisType
+  {
+    TODO
+  }
+
+enum EmploymentEventType
+  {
+    HIRE
+    FIRE
+    PROMOTION
+    TRANSFER
+  }
+
+enum FamilialRelationshipType
+  {
+    SIBLING_OF
+    PARENT_OF
+    CHILD_OF
+  }
+
+enum LifeStatusEnum
+  {
+    LIVING
+    DEAD
+    UNKNOWN
+  }
+
+enum other codes
+  {
+    a b
+  }
+
 type Activity
   {
     id: String!
-    startedAtTime: Date
-    endedAtTime: Date
+    startedAtTime: String
+    endedAtTime: String
     wasInformedBy: Activity
     wasAssociatedWith: Agent
     used: String
@@ -14,7 +53,7 @@ type Address
   {
     street: String
     city: String
-    altitude: Decimal
+    altitude: Float
   }
 
 type Agent
@@ -50,8 +89,8 @@ type AnyOfSimpleType
 
 type BirthEvent
   {
-    startedAtTime: Date
-    endedAtTime: Date
+    startedAtTime: String
+    endedAtTime: String
     isCurrent: Boolean
     metadata: AnyObject
     inLocation: Place
@@ -101,8 +140,8 @@ type DiagnosisConcept
 
 type EmploymentEvent
   {
-    startedAtTime: Date
-    endedAtTime: Date
+    startedAtTime: String
+    endedAtTime: String
     isCurrent: Boolean
     metadata: AnyObject
     employedAt: Company
@@ -121,8 +160,8 @@ type EqualsStringIn
 
 type Event
   {
-    startedAtTime: Date
-    endedAtTime: Date
+    startedAtTime: String
+    endedAtTime: String
     isCurrent: Boolean
     metadata: AnyObject
   }
@@ -134,8 +173,8 @@ type FakeClass
 
 type FamilialRelationship
   {
-    startedAtTime: Date
-    endedAtTime: Date
+    startedAtTime: String
+    endedAtTime: String
     cordialness: String
     type: FamilialRelationshipType!
     relatedTo: Person!
@@ -153,8 +192,8 @@ interface HasAliases
 
 type MarriageEvent implements WithLocation
   {
-    startedAtTime: Date
-    endedAtTime: Date
+    startedAtTime: String
+    endedAtTime: String
     isCurrent: Boolean
     metadata: AnyObject
     marriedTo: Person
@@ -163,8 +202,8 @@ type MarriageEvent implements WithLocation
 
 type MedicalEvent
   {
-    startedAtTime: Date
-    endedAtTime: Date
+    startedAtTime: String
+    endedAtTime: String
     isCurrent: Boolean
     metadata: AnyObject
     inLocation: Place
@@ -186,11 +225,11 @@ type Person implements HasAliases
     hasEmploymentHistory: [EmploymentEvent]
     hasFamilialRelationships: [FamilialRelationship]
     hasMedicalHistory: [MedicalEvent]
-    ageInYears: Integer
+    ageInYears: Int
     addresses: [Address]
     hasBirthEvent: BirthEvent
     speciesName: String
-    stomachCount: Integer
+    stomachCount: Int
     isLiving: LifeStatusEnum
     aliases: [String]
   }
@@ -211,8 +250,8 @@ type ProcedureConcept
 
 type Relationship
   {
-    startedAtTime: Date
-    endedAtTime: Date
+    startedAtTime: String
+    endedAtTime: String
     relatedTo: String
     type: String
     cordialness: CordialnessEnum
