@@ -1,0 +1,9 @@
+{% if pyo3 %}
+#[pymodule]
+fn {{ name }}(_py: Python, m: &PyModule) -> PyResult<()> {
+    {% for s in struct_names %}
+    m.add_class::<{{ s }}>()?;
+    {% endfor %}
+    OK(())
+}
+{% endif %}
