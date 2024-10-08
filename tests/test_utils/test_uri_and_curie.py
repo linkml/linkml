@@ -1,5 +1,6 @@
 from pathlib import PurePath
 
+import pytest
 from jsonasobj2 import loads
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.yamlutils import as_rdf
@@ -10,6 +11,9 @@ from linkml.generators.pythongen import PythonGenerator
 from tests.utils.compare_jsonld_context import CompareJsonldContext
 
 
+@pytest.mark.jsonldgen
+@pytest.mark.jsonldcontextgen
+@pytest.mark.pythongen
 def test_uri_and_curie(input_path, snapshot, snapshot_path):
     """Compile a model of URI's and Curies and then test the various types"""
     model_name = "uriandcurie"

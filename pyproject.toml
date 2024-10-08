@@ -222,11 +222,14 @@ markers = [
   "jsonschemagen: Tests for Json Schema generator",
   "shaclgen: Tests for shacl generator",
   "shexgen: Tests for shex generator",
+  "jsonldgen: Test for JSON-LD generator",
   "jsonldcontextgen: Test for JSON-LD context generator",
   "rdfgen: Tests for the RDFGenerator",
+  "sqlalchemygen: Tests for SQL Alchemy generator",
   "sqlddlgen: Tests for SQL DDL generator",
   "sqlddlpostgresgen: Tests for SQL DDL postgres generator",
   "owlgen: Tests for OWL generator",
+  "yamlgen: Tests for the YAML generator"
 ]
 
 [tool.ruff]
