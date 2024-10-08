@@ -1,5 +1,5 @@
 import json
-from typing import TextIO, Type, Union
+from typing import TextIO, Union
 
 import jsonschema
 from linkml_runtime.dumpers import json_dumper
@@ -20,7 +20,7 @@ def _as_dict(inst):
 def validate_object(
     data: YAMLRoot,
     schema: Union[str, TextIO, SchemaDefinition],
-    target_class: Type[YAMLRoot] = None,
+    target_class: type[YAMLRoot] = None,
     closed: bool = True,
 ):
     """

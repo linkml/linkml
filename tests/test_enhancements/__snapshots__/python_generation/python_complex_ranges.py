@@ -9,7 +9,7 @@
 import dataclasses
 import re
 from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
+from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
 from datetime import date, datetime, time
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
@@ -69,7 +69,7 @@ class OneElementClass(YAMLRoot):
     """
     A class with a single non-key integer as a value
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["OneElementClass"]
     class_class_curie: ClassVar[str] = "complex_ranges:OneElementClass"
@@ -78,7 +78,7 @@ class OneElementClass(YAMLRoot):
 
     value: Optional[int] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.value is not None and not isinstance(self.value, int):
             self.value = int(self.value)
 
@@ -90,7 +90,7 @@ class TwoElementClass(YAMLRoot):
     """
     A class with a two non-key strings as a values
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["TwoElementClass"]
     class_class_curie: ClassVar[str] = "complex_ranges:TwoElementClass"
@@ -100,7 +100,7 @@ class TwoElementClass(YAMLRoot):
     value1: Optional[str] = None
     value2: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.value1 is not None and not isinstance(self.value1, str):
             self.value1 = str(self.value1)
 
@@ -115,7 +115,7 @@ class ThreeElementClass(YAMLRoot):
     """
     A class with three non-key doubles as values
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["ThreeElementClass"]
     class_class_curie: ClassVar[str] = "complex_ranges:ThreeElementClass"
@@ -126,7 +126,7 @@ class ThreeElementClass(YAMLRoot):
     value2: Optional[float] = None
     value3: Optional[float] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.value1 is not None and not isinstance(self.value1, float):
             self.value1 = float(self.value1)
 
@@ -144,7 +144,7 @@ class KeyedOneElementClass(YAMLRoot):
     """
     A keyed class with one element
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["KeyedOneElementClass"]
     class_class_curie: ClassVar[str] = "complex_ranges:KeyedOneElementClass"
@@ -153,7 +153,7 @@ class KeyedOneElementClass(YAMLRoot):
 
     name: Union[str, KeyedOneElementClassName] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.name):
             self.MissingRequiredField("name")
         if not isinstance(self.name, KeyedOneElementClassName):
@@ -167,7 +167,7 @@ class KeyedTwoElementClass(YAMLRoot):
     """
     A keyed class with an additional integer
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["KeyedTwoElementClass"]
     class_class_curie: ClassVar[str] = "complex_ranges:KeyedTwoElementClass"
@@ -177,7 +177,7 @@ class KeyedTwoElementClass(YAMLRoot):
     name: Union[str, KeyedTwoElementClassName] = None
     value: Optional[int] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.name):
             self.MissingRequiredField("name")
         if not isinstance(self.name, KeyedTwoElementClassName):
@@ -194,7 +194,7 @@ class KeyedThreeElementClass(YAMLRoot):
     """
     A keyed class with an additional integer and date
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["KeyedThreeElementClass"]
     class_class_curie: ClassVar[str] = "complex_ranges:KeyedThreeElementClass"
@@ -205,7 +205,7 @@ class KeyedThreeElementClass(YAMLRoot):
     value: Optional[int] = None
     modifier: Optional[Union[str, XSDDate]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.name):
             self.MissingRequiredField("name")
         if not isinstance(self.name, KeyedThreeElementClassName):
@@ -225,7 +225,7 @@ class IdentifiedOneElementClass(YAMLRoot):
     """
     A identified class with one element
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["IdentifiedOneElementClass"]
     class_class_curie: ClassVar[str] = "complex_ranges:IdentifiedOneElementClass"
@@ -234,7 +234,7 @@ class IdentifiedOneElementClass(YAMLRoot):
 
     name: Union[str, IdentifiedOneElementClassName] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.name):
             self.MissingRequiredField("name")
         if not isinstance(self.name, IdentifiedOneElementClassName):
@@ -248,7 +248,7 @@ class IdentifiedTwoElementClass(YAMLRoot):
     """
     A identified class with an additional integer
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["IdentifiedTwoElementClass"]
     class_class_curie: ClassVar[str] = "complex_ranges:IdentifiedTwoElementClass"
@@ -258,7 +258,7 @@ class IdentifiedTwoElementClass(YAMLRoot):
     name: Union[str, IdentifiedTwoElementClassName] = None
     value: Optional[int] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.name):
             self.MissingRequiredField("name")
         if not isinstance(self.name, IdentifiedTwoElementClassName):
@@ -275,7 +275,7 @@ class IdentifiedThreeElementClass(YAMLRoot):
     """
     A identified class with an additional integer and date
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["IdentifiedThreeElementClass"]
     class_class_curie: ClassVar[str] = "complex_ranges:IdentifiedThreeElementClass"
@@ -286,7 +286,7 @@ class IdentifiedThreeElementClass(YAMLRoot):
     value: Optional[int] = None
     modifier: Optional[Union[str, XSDDate]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.name):
             self.MissingRequiredField("name")
         if not isinstance(self.name, IdentifiedThreeElementClassName):

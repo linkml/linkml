@@ -9,7 +9,7 @@
 import dataclasses
 import re
 from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
+from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
 from datetime import date, datetime, time
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
@@ -43,7 +43,7 @@ DEFAULT_ = CurieNamespace('', 'http://example.org/')
 
 @dataclass(repr=False)
 class C(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("http://example.org/C")
     class_class_curie: ClassVar[str] = None
@@ -55,7 +55,7 @@ class C(YAMLRoot):
     as_str: Optional[str] = None
     as_str2: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.s is not None and not isinstance(self.s, str):
             self.s = str(self.s)
 

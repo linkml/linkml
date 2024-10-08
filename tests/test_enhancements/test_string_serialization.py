@@ -5,6 +5,7 @@ import pytest
 from linkml.generators.pythongen import PythonGenerator
 
 
+@pytest.mark.pythongen
 @pytest.mark.no_asserts
 def test_simple_example(input_path, snapshot):
     generated = PythonGenerator(

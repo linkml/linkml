@@ -9,7 +9,7 @@
 import dataclasses
 import re
 from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
+from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
 from datetime import date, datetime, time
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
@@ -49,16 +49,16 @@ class Annotatable(YAMLRoot):
     """
     mixin for classes that support annotations
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINKML["Annotatable"]
     class_class_curie: ClassVar[str] = "linkml:Annotatable"
     class_name: ClassVar[str] = "annotatable"
     class_model_uri: ClassVar[URIRef] = LINKML.Annotatable
 
-    annotations: Optional[Union[Dict[Union[str, AnnotationTag], Union[dict, "Annotation"]], List[Union[dict, "Annotation"]]]] = empty_dict()
+    annotations: Optional[Union[dict[Union[str, AnnotationTag], Union[dict, "Annotation"]], list[Union[dict, "Annotation"]]]] = empty_dict()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=True)
 
         super().__post_init__(**kwargs)
@@ -69,7 +69,7 @@ class Annotation(Extension):
     """
     a tag/value pair with the semantics of OWL Annotation
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINKML["Annotation"]
     class_class_curie: ClassVar[str] = "linkml:Annotation"
@@ -78,9 +78,9 @@ class Annotation(Extension):
 
     tag: Union[str, AnnotationTag] = None
     value: Union[dict, AnyValue] = None
-    annotations: Optional[Union[Dict[Union[str, AnnotationTag], Union[dict, "Annotation"]], List[Union[dict, "Annotation"]]]] = empty_dict()
+    annotations: Optional[Union[dict[Union[str, AnnotationTag], Union[dict, "Annotation"]], list[Union[dict, "Annotation"]]]] = empty_dict()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.tag):
             self.MissingRequiredField("tag")
         if not isinstance(self.tag, AnnotationTag):
@@ -99,4 +99,4 @@ class slots:
     pass
 
 slots.annotations = Slot(uri=LINKML.annotations, name="annotations", curie=LINKML.curie('annotations'),
-                   model_uri=LINKML.annotations, domain=None, range=Optional[Union[Dict[Union[str, AnnotationTag], Union[dict, "Annotation"]], List[Union[dict, "Annotation"]]]])
+                   model_uri=LINKML.annotations, domain=None, range=Optional[Union[dict[Union[str, AnnotationTag], Union[dict, "Annotation"]], list[Union[dict, "Annotation"]]]])

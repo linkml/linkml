@@ -8,7 +8,6 @@ import logging
 import os
 from collections import Counter
 from copy import copy
-from typing import List
 
 import yaml
 from linkml_runtime.utils.introspection import package_schemaview
@@ -27,7 +26,7 @@ def assert_mdfile_contains(
     filename,
     text,
     after: str = None,
-    followed_by: List[str] = None,
+    followed_by: list[str] = None,
     invert=False,
 ) -> None:
     found = False

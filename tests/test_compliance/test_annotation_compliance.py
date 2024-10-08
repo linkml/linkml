@@ -5,7 +5,7 @@ there is no instance data to test.
 """
 
 from copy import copy
-from typing import Any, Dict, Optional, Union
+from typing import Any, Optional, Union
 
 import pytest
 import rdflib
@@ -43,8 +43,8 @@ EX = rdflib.Namespace("http://example.org/")
 def test_annotation(
     framework: str,
     name: str,
-    slot_annotations: Optional[Dict[str, Any]],
-    class_annotations: Optional[Dict[str, Any]],
+    slot_annotations: Optional[dict[str, Any]],
+    class_annotations: Optional[dict[str, Any]],
     expand: Optional[Union[bool, str]],
     is_valid: bool,
 ):

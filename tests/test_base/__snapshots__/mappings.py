@@ -9,7 +9,7 @@
 import dataclasses
 import re
 from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
+from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
 from datetime import date, datetime, time
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
@@ -57,22 +57,22 @@ class slots:
     pass
 
 slots.mappings = Slot(uri=SKOS.mappingRelation, name="mappings", curie=SKOS.curie('mappingRelation'),
-                   model_uri=LINKML.mappings, domain=None, range=Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]])
+                   model_uri=LINKML.mappings, domain=None, range=Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]])
 
 slots.exact_mappings = Slot(uri=SKOS.exactMatch, name="exact mappings", curie=SKOS.curie('exactMatch'),
-                   model_uri=LINKML.exact_mappings, domain=None, range=Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]])
+                   model_uri=LINKML.exact_mappings, domain=None, range=Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]])
 
 slots.close_mappings = Slot(uri=SKOS.closeMatch, name="close mappings", curie=SKOS.curie('closeMatch'),
-                   model_uri=LINKML.close_mappings, domain=None, range=Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]])
+                   model_uri=LINKML.close_mappings, domain=None, range=Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]])
 
 slots.related_mappings = Slot(uri=SKOS.relatedMatch, name="related mappings", curie=SKOS.curie('relatedMatch'),
-                   model_uri=LINKML.related_mappings, domain=None, range=Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]])
+                   model_uri=LINKML.related_mappings, domain=None, range=Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]])
 
 slots.narrow_mappings = Slot(uri=SKOS.narrowMatch, name="narrow mappings", curie=SKOS.curie('narrowMatch'),
-                   model_uri=LINKML.narrow_mappings, domain=None, range=Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]])
+                   model_uri=LINKML.narrow_mappings, domain=None, range=Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]])
 
 slots.broad_mappings = Slot(uri=SKOS.broadMatch, name="broad mappings", curie=SKOS.curie('broadMatch'),
-                   model_uri=LINKML.broad_mappings, domain=None, range=Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]])
+                   model_uri=LINKML.broad_mappings, domain=None, range=Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]])
 
 slots.deprecated_element_has_exact_replacement = Slot(uri=LINKML.deprecated_element_has_exact_replacement, name="deprecated element has exact replacement", curie=LINKML.curie('deprecated_element_has_exact_replacement'),
                    model_uri=LINKML.deprecated_element_has_exact_replacement, domain=None, range=Optional[Union[str, URIorCURIE]], mappings = [IAO["0100001"]])
