@@ -82,9 +82,7 @@ DEFAULT_IMPORTS = (
         objects=[
             ObjectImport(name="Any"),
             ObjectImport(name="ClassVar"),
-            ObjectImport(name="List"),
             ObjectImport(name="Literal"),
-            ObjectImport(name="Dict"),
             ObjectImport(name="Optional"),
             ObjectImport(name="Union"),
         ],
@@ -515,7 +513,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             else:
                 collection_key = None
             if slot.inlined is False or collection_key is None or slot.inlined_as_list is True:
-                result.attribute.range = f"List[{result.attribute.range}]"
+                result.attribute.range = f"list[{result.attribute.range}]"
             else:
                 simple_dict_value = None
                 if len(slot_ranges) == 1:
@@ -525,9 +523,9 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                     # so we specify either that identifier or the range itself
                     if simple_dict_value != result.attribute.range:
                         simple_dict_value = f"Union[{simple_dict_value}, {result.attribute.range}]"
-                    result.attribute.range = f"Dict[str, {simple_dict_value}]"
+                    result.attribute.range = f"dict[str, {simple_dict_value}]"
                 else:
-                    result.attribute.range = f"Dict[{collection_key}, {result.attribute.range}]"
+                    result.attribute.range = f"dict[{collection_key}, {result.attribute.range}]"
         if not (slot.required or slot.identifier or slot.key) and not slot.designates_type:
             result.attribute.range = f"Optional[{result.attribute.range}]"
         return result
