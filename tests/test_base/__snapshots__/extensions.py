@@ -9,7 +9,7 @@
 import dataclasses
 import re
 from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
+from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
 from datetime import date, datetime, time
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
@@ -50,7 +50,7 @@ class Extension(YAMLRoot):
     """
     a tag/value pair used to add non-model information to an entry
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINKML["Extension"]
     class_class_curie: ClassVar[str] = "linkml:Extension"
@@ -59,9 +59,9 @@ class Extension(YAMLRoot):
 
     tag: Union[str, ExtensionTag] = None
     value: Union[dict, AnyValue] = None
-    extensions: Optional[Union[Dict[Union[str, ExtensionTag], Union[dict, "Extension"]], List[Union[dict, "Extension"]]]] = empty_dict()
+    extensions: Optional[Union[dict[Union[str, ExtensionTag], Union[dict, "Extension"]], list[Union[dict, "Extension"]]]] = empty_dict()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.tag):
             self.MissingRequiredField("tag")
         if not isinstance(self.tag, ExtensionTag):
@@ -77,16 +77,16 @@ class Extensible(YAMLRoot):
     """
     mixin for classes that support extension
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINKML["Extensible"]
     class_class_curie: ClassVar[str] = "linkml:Extensible"
     class_name: ClassVar[str] = "extensible"
     class_model_uri: ClassVar[URIRef] = LINKML.Extensible
 
-    extensions: Optional[Union[Dict[Union[str, ExtensionTag], Union[dict, Extension]], List[Union[dict, Extension]]]] = empty_dict()
+    extensions: Optional[Union[dict[Union[str, ExtensionTag], Union[dict, Extension]], list[Union[dict, Extension]]]] = empty_dict()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=True)
 
         super().__post_init__(**kwargs)
@@ -100,7 +100,7 @@ class slots:
     pass
 
 slots.extensions = Slot(uri=LINKML.extensions, name="extensions", curie=LINKML.curie('extensions'),
-                   model_uri=LINKML.extensions, domain=None, range=Optional[Union[Dict[Union[str, ExtensionTag], Union[dict, Extension]], List[Union[dict, Extension]]]])
+                   model_uri=LINKML.extensions, domain=None, range=Optional[Union[dict[Union[str, ExtensionTag], Union[dict, Extension]], list[Union[dict, Extension]]]])
 
 slots.extension_tag = Slot(uri=LINKML.tag, name="extension_tag", curie=LINKML.curie('tag'),
                    model_uri=LINKML.extension_tag, domain=Extension, range=Union[str, ExtensionTag])

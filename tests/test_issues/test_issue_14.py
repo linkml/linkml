@@ -1,8 +1,10 @@
+import pytest
 from linkml_runtime.utils.compile_python import compile_python
 
 from linkml.generators.pythongen import PythonGenerator
 
 
+@pytest.mark.pythongen
 def test_inheritance(input_path, snapshot, snapshot_path):
     output = PythonGenerator(input_path("issue_14.yaml")).serialize()
     assert output == snapshot("issue_14.py")

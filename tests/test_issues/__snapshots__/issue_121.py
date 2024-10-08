@@ -9,7 +9,7 @@
 import dataclasses
 import re
 from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
+from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
 from datetime import date, datetime, time
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
@@ -43,7 +43,7 @@ DEFAULT_ = CurieNamespace('', 'https://microbiomedata/schema/')
 
 @dataclass(repr=False)
 class Biosample(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://microbiomedata/schema/Biosample")
     class_class_curie: ClassVar[str] = None
@@ -52,7 +52,7 @@ class Biosample(YAMLRoot):
 
     depth: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.depth is not None and not isinstance(self.depth, str):
             self.depth = str(self.depth)
 
@@ -60,7 +60,7 @@ class Biosample(YAMLRoot):
 
 
 class ImportedClass(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://microbiomedata/schema/mixs/ImportedClass")
     class_class_curie: ClassVar[str] = None
