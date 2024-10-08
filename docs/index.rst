@@ -68,6 +68,7 @@ for you:
    cli/index
    developers/index
    code/index
+   config/index
 
 
 

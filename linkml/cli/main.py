@@ -7,6 +7,7 @@ Gathers all the other linkml click entrypoints and puts them under ``linkml`` :)
 import click
 
 from linkml._version import __version__
+from linkml.cli.config import config
 from linkml.generators.csvgen import cli as gen_csv
 from linkml.generators.docgen import cli as gen_doc
 from linkml.generators.dotgen import cli as gen_graphviz
@@ -89,6 +90,7 @@ linkml.add_command(linkml_sqldb, name="sqldb")
 linkml.add_command(linkml_schema_fixer, name="fix")
 linkml.add_command(linkml_run_examples, name="examples")
 linkml.add_command(linkml_validate, name="validate")
+linkml.add_command(config, name="config")
 
 # Generators
 generate.add_command(gen_jsonld_context, name="jsonld-context")
