@@ -290,7 +290,7 @@ class ListOfListsArray(ArrayRangeGenerator):
 
     @staticmethod
     def _list_of_lists(dimensions: int, dtype: str) -> str:
-        return ("List[" * dimensions) + dtype + ("]" * dimensions)
+        return ("list[" * dimensions) + dtype + ("]" * dimensions)
 
     @staticmethod
     def _parameterized_dimension(dimension: DimensionExpression, dtype: str) -> RangeResult:
@@ -303,7 +303,7 @@ class ListOfListsArray(ArrayRangeGenerator):
             dmax = dimension.maximum_cardinality
         else:
             # TODO: handle labels for labeled but unshaped arrays
-            return RangeResult(range="List[" + dtype + "]")
+            return RangeResult(range="list[" + dtype + "]")
 
         items = []
         if dmin is not None:
@@ -338,7 +338,7 @@ class ListOfListsArray(ArrayRangeGenerator):
 
     def _bounded_dimensions(self, array: ArrayExpression) -> RangeResult:
         """
-        A nested series of ``List[]`` ranges with :attr:`.dtype` at the center.
+        A nested series of ``list[]`` ranges with :attr:`.dtype` at the center.
 
         When an array expression allows for a range of dimensions, each set of ``List`` s is joined by a ``Union`` .
         """
@@ -354,13 +354,13 @@ class ListOfListsArray(ArrayRangeGenerator):
         ):
             return self._any_shape()
         elif array.maximum_number_dimensions:
-            # e.g., if min = 2, max = 3, range = Union[List[List[dtype]], List[List[List[dtype]]]]
+            # e.g., if min = 2, max = 3, range = Union[list[list[dtype]], list[list[list[dtype]]]]
             min_dims = array.minimum_number_dimensions if array.minimum_number_dimensions is not None else 1
             ranges = [self._list_of_lists(i, self.dtype) for i in range(min_dims, array.maximum_number_dimensions + 1)]
             return RangeResult(range="Union[" + ", ".join(ranges) + "]")
         else:
             # min specified with no max
-            # e.g., if min = 3, range = List[List[AnyShapeArray[dtype]]]
+            # e.g., if min = 3, range = list[list[AnyShapeArray[dtype]]]
             return RangeResult(
                 range=self._list_of_lists(array.minimum_number_dimensions - 1, self._any_shape().range),
                 injected_classes=_AnyShapeArrayInjects,
@@ -412,7 +412,7 @@ class ListOfListsArray(ArrayRangeGenerator):
 
             if array.minimum_number_dimensions:
                 # some minimum anonymous dimensions but unlimited max dimensions
-                # e.g., if min = 3, len(dim) = 2, then res.range = List[Union[AnyShapeArray[dtype], dtype]]
+                # e.g., if min = 3, len(dim) = 2, then res.range = list[Union[AnyShapeArray[dtype], dtype]]
                 # res.range will be wrapped with the 2 labeled dimensions later
                 res.range = self._list_of_lists(array.minimum_number_dimensions - len(array.dimensions), res.range)
 
@@ -430,13 +430,13 @@ class ListOfListsArray(ArrayRangeGenerator):
 
         # Wrap inner dimension with labeled dimension
         # e.g., if dimensions = [{min_card: 3}, {min_card: 2}]
-        # and res.range = List[Union[AnyShapeArray[dtype], dtype]]
+        # and res.range = list[Union[AnyShapeArray[dtype], dtype]]
         # (min 3 dims, no max dims)
         # then the final range = conlist(
         #     min_length=3,
         #     item_type=conlist(
         #         min_length=2,
-        #         item_type=List[Union[AnyShapeArray[dtype], dtype]]
+        #         item_type=list[Union[AnyShapeArray[dtype], dtype]]
         #     )
         # )
         for dim in reversed(array.dimensions):
