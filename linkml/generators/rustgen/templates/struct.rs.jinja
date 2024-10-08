@@ -1,0 +1,8 @@
+{% if pyo3 %}
+#[pyclass]
+{% endif %}
+struct {{ name }} {
+{% for property in properties %}
+    {{ property }}{% if not loop.last %},{% endif %}
+{% endfor %}
+}
