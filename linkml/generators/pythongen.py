@@ -516,7 +516,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             if slot.inherited:
                 inherited_slots.append(slot.alias if slot.alias else slotname)
         inherited_slots_str = ", ".join([f'"{underscore(s)}"' for s in inherited_slots])
-        return f"\n\t_inherited_slots: ClassVar[List[str]] = [{inherited_slots_str}]\n"
+        return f"\n\t_inherited_slots: ClassVar[list[str]] = [{inherited_slots_str}]\n"
 
     def gen_class_meta(self, cls: ClassDefinition) -> str:
         if not self.gen_classvars:
@@ -664,33 +664,33 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             if num_elements == 1:
                 if slot.required:
                     return (
-                        f"Union[List[{base_key}], Dict[{base_key}, {range_type}]]",
+                        f"Union[list[{base_key}], dict[{base_key}, {range_type}]]",
                         dflt,
                     )
                 else:
                     return (
-                        f"Optional[Union[List[{base_key}], Dict[{base_key}, {range_type}]]]",
+                        f"Optional[Union[list[{base_key}], dict[{base_key}, {range_type}]]]",
                         dflt,
                     )
             else:
                 if slot.required:
                     return (
-                        f"Union[Dict[{base_key}, {range_type}], List[{range_type}]]",
+                        f"Union[dict[{base_key}, {range_type}], list[{range_type}]]",
                         dflt,
                     )
                 else:
                     return (
-                        f"Optional[Union[Dict[{base_key}, {range_type}], List[{range_type}]]]",
+                        f"Optional[Union[dict[{base_key}, {range_type}], list[{range_type}]]]",
                         dflt,
                     )
 
         # All other cases
         if slot.multivalued:
             if slot.required:
-                return f"Union[{range_type}, List[{range_type}]]", (None if positional_allowed else "None")
+                return f"Union[{range_type}, list[{range_type}]]", (None if positional_allowed else "None")
             else:
                 return (
-                    f"Optional[Union[{range_type}, List[{range_type}]]]",
+                    f"Optional[Union[{range_type}, list[{range_type}]]]",
                     "empty_list()",
                 )
         elif slot.required:
@@ -767,7 +767,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         return (
             (
                 f"""
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         {post_inits_line}
         super().__post_init__(**kwargs)
         {post_inits_post_super_line}"""
