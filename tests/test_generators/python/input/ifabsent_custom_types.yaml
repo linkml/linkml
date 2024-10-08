@@ -1,0 +1,261 @@
+id: ifabsent-custom-types
+name: ifabsent-custom-types
+description: |
+  Test schema for IfAbsentProcessor that tests for support for custom types
+  by matching them to a base type
+imports:
+  - linkml:types
+prefixes:
+  ex: https://example.org/
+default_prefix: ex
+
+types:
+  # inheritance
+  inh_string:
+    typeof: string
+  inh_integer:
+    typeof: integer
+  inh_boolean:
+    typeof: boolean
+  inh_float:
+    typeof: float
+  inh_double:
+    typeof: double
+  inh_decimal:
+    typeof: decimal
+  inh_time:
+    typeof: time
+  inh_date:
+    typeof: date
+  inh_datetime:
+    typeof: datetime
+  inh_date_or_datetime:
+    typeof: date_or_datetime
+  inh_uriorcurie:
+    typeof: uriorcurie
+  inh_curie:
+    typeof: curie
+  inh_uri:
+    typeof: uri
+  inh_ncname:
+    typeof: ncname
+  inh_objectidentifier:
+    typeof: objectidentifier
+  inh_nodeidentifier:
+    typeof: nodeidentifier
+  inh_jsonpointer:
+    typeof: jsonpointer
+  inh_jsonpath:
+    typeof: jsonpath
+  inh_sparqlpath:
+    typeof: sparqlpath
+
+  # base
+  base_string:
+    base: str
+  base_integer:
+    base: int
+  base_boolean:
+    base: Bool
+  base_float:
+    base: float
+  base_double:
+    base: float
+  base_decimal:
+    base: Decimal
+  base_time:
+    base: XSDTime
+  base_date:
+    base: XSDDate
+  base_datetime:
+    base: XSDDateTime
+  base_date_or_datetime:
+    base: str
+  base_uriorcurie:
+    base: URIorCURIE
+  base_curie:
+    base: Curie
+  base_uri:
+    base: URI
+  base_ncname:
+    base: NCName
+  base_objectidentifier:
+    base: ElementIdentifier
+  base_nodeidentifier:
+    base: NodeIdentifier
+  base_jsonpointer:
+    base: str
+  base_jsonpath:
+    base: str
+  base_sparqlpath:
+    base: str
+
+classes:
+  Inheritance:
+    attributes:
+      string:
+        range: inh_string
+        ifabsent: string(a)
+        annotations:
+          value: '"a"'
+      integer:
+        range: inh_integer
+        ifabsent: int(1)
+        annotations:
+          value: '1'
+      boolean:
+        range: inh_boolean
+        ifabsent: true
+        annotations:
+          value: 'True'
+      float:
+        range: inh_float
+        ifabsent: float(0.5)
+        annotations:
+          value: '0.5'
+      double:
+        range: inh_double
+        ifabsent: double(0.7)
+        annotations:
+          value: '0.7'
+      decimal:
+        range: inh_decimal
+        ifabsent: decimal(18.9)
+        annotations:
+          value: '18.9'
+      time:
+        range: inh_time
+        ifabsent: time(08:13:04)
+        annotations:
+          value: "time(8, 13, 4)"
+      date:
+        range: inh_date
+        ifabsent: date(2024-06-26)
+        annotations:
+          value: "date(2024, 6, 26)"
+      datetime:
+        range: inh_datetime
+        ifabsent: datetime(2024-04-12T11:45:34)
+        annotations:
+          value: "datetime(2024, 4, 12, 11, 45, 34)"
+      date_or_datetime:
+        range: inh_date_or_datetime
+        ifabsent: datetime(2024-02-09T18:25:44Z)
+        annotations:
+          value: "datetime(2024, 2, 9, 18, 25, 44)"
+      uriorcurie:
+        range: inh_uriorcurie
+        ifabsent: "uri(https://example.org/class/123)"
+        annotations:
+          value: 'EX["class/123"]'
+      curie:
+        range: inh_curie
+        description: don't know how to test this
+      uri:
+        range: inh_uri
+        ifabsent: "uri(https://example.org/class/123)"
+        annotations:
+          value: 'EX["class/123"]'
+      ncname:
+        range: inh_ncname
+        description: don't know how to test this
+      objectidentifier:
+        range: inh_objectidentifier
+        description: don't know how to test this
+      nodeidentifier:
+        range: inh_nodeidentifier
+        description: don't know how to test this
+      jsonpointer:
+        range: inh_jsonpointer
+        description: don't know how to test this
+      jsonpath:
+        range: inh_jsonpath
+        description: don't know how to test this
+      sparqlpath:
+        range: inh_sparqlpath
+        description: don't know how to test this
+
+  Base:
+    attributes:
+      string:
+        range: base_string
+        ifabsent: string(a)
+        annotations:
+          value: '"a"'
+      integer:
+        range: base_integer
+        ifabsent: int(1)
+        annotations:
+          value: '1'
+      boolean:
+        range: base_boolean
+        ifabsent: true
+        annotations:
+          value: 'True'
+      float:
+        range: base_float
+        ifabsent: float(0.5)
+        annotations:
+          value: '0.5'
+      double:
+        range: base_double
+        ifabsent: double(0.7)
+        annotations:
+          value: '0.7'
+      decimal:
+        range: base_decimal
+        ifabsent: decimal(18.9)
+        annotations:
+          value: '18.9'
+      time:
+        range: base_time
+        ifabsent: time(08:13:04)
+        annotations:
+          value: "time(8, 13, 4)"
+      date:
+        range: base_date
+        ifabsent: date(2024-06-26)
+        annotations:
+          value: "date(2024, 6, 26)"
+      datetime:
+        range: base_datetime
+        ifabsent: datetime(2024-04-12T11:45:34)
+        annotations:
+          value: "datetime(2024, 4, 12, 11, 45, 34)"
+      date_or_datetime:
+        range: base_date_or_datetime
+        ifabsent: datetime(2024-02-09T18:25:44Z)
+        description: date_or_datetime has a base of string, so it's known to be processed incorrectly
+        annotations:
+          value: '"2024-02-09T18:25:44Z"'
+      uriorcurie:
+        range: base_uriorcurie
+        ifabsent: "uri(https://example.org/class/123)"
+        annotations:
+          value: 'EX["class/123"]'
+      curie:
+        range: base_curie
+        description: don't know how to test this
+      uri:
+        range: base_uri
+        ifabsent: "uri(https://example.org/class/123)"
+        annotations:
+          value: 'EX["class/123"]'
+      ncname:
+        range: base_ncname
+        description: don't know how to test this
+      objectidentifier:
+        range: base_objectidentifier
+        description: don't know how to test this
+      nodeidentifier:
+        range: base_nodeidentifier
+        description: don't know how to test this
+      jsonpointer:
+        range: base_jsonpointer
+        description: don't know how to test this
+      jsonpath:
+        range: base_jsonpath
+        description: don't know how to test this
+      sparqlpath:
+        range: base_sparqlpath
+        description: don't know how to test this
