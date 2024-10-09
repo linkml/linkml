@@ -650,6 +650,15 @@
             "title": "FamilialRelationshipType",
             "type": "string"
         },
+        "KitchenStatus": {
+            "description": "",
+            "enum": [
+                "DIRTY",
+                "CLEAN"
+            ],
+            "title": "KitchenStatus",
+            "type": "string"
+        },
         "LifeStatusEnum": {
             "description": "",
             "enum": [
