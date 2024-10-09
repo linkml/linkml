@@ -4,7 +4,14 @@ Models for intermediate build results
 (see PydanticGenerator for example implementation and use)
 """
 
-from typing import Annotated, TypeVar
+from abc import abstractmethod
+from typing import TypeVar
+
+try:
+    from typing import Annotated
+except ImportError:
+    from typing_extensions import Annotated
+
 
 from linkml_runtime.linkml_model import (
     ClassDefinition,
@@ -19,7 +26,6 @@ from pydantic_core import core_schema
 
 T = TypeVar("T", bound="BuildResult", covariant=True)
 Tsv = TypeVar("Tsv", bound=Definition, covariant=True)
-
 
 SkipValidation = Annotated[Tsv, GetPydanticSchema(lambda tp, handler: core_schema.any_schema())]
 
