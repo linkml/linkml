@@ -218,7 +218,8 @@ ignore-words-list = [
   # and changes are propagated to linkml
   "GENERARE",
   "re-used",
-  "doesnt"
+  "doesnt",
+  "crate"
 ]
 quiet-level = 3
 
