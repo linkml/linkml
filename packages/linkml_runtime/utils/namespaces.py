@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Tuple, Optional, Union
+from typing import Any, Optional, Union
 
 from prefixcommons import curie_util
 from rdflib import Namespace, URIRef, Graph, BNode
@@ -149,7 +149,7 @@ class Namespaces(CaseInsensitiveDict):
 
         if pythonform:
             default_ok = False
-        match: Tuple[str, Optional[Namespace]] = ('', None)     # match string / prefix
+        match: tuple[str, Optional[Namespace]] = ('', None)     # match string / prefix
         uri_string = str(uri)
 
         # Find the longest match for the URI, self.items() is a list of (prefix/namespace, uri base prefix) tuples
@@ -190,7 +190,7 @@ class Namespaces(CaseInsensitiveDict):
     def prefix_for(self, uri_or_curie: Any, case_shift: bool = True) -> Optional[str]:
         return self.prefix_suffix(uri_or_curie, case_shift)[0]
 
-    def prefix_suffix(self, uri_or_curie: Any, case_shift: bool = True) -> Tuple[Optional[str], Optional[str]]:
+    def prefix_suffix(self, uri_or_curie: Any, case_shift: bool = True) -> tuple[Optional[str], Optional[str]]:
         uri_or_curie = str(uri_or_curie)
         if '://' in uri_or_curie:
             uri_or_curie = self.curie_for(uri_or_curie)

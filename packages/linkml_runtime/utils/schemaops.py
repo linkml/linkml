@@ -1,9 +1,8 @@
-from typing import List, Union
+from typing import Union
 
 from linkml_runtime.utils.schemaview import SchemaView, CLASS_NAME
-from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition
 
-CLASS_NAME_OR_LIST = Union[CLASS_NAME, List[CLASS_NAME]]
+CLASS_NAME_OR_LIST = Union[CLASS_NAME, list[CLASS_NAME]]
 
 def roll_up(sv: SchemaView, classes: CLASS_NAME_OR_LIST = None, mixins=True, is_a=True, delete=True) -> None:
     """
@@ -38,7 +37,7 @@ def roll_up(sv: SchemaView, classes: CLASS_NAME_OR_LIST = None, mixins=True, is_
         sv.delete_class(d)
     sv.set_modified()
 
-def roll_down(sv: SchemaView, classes: List[CLASS_NAME] = None, mixins=True, is_a=True, delete=True) -> None:
+def roll_down(sv: SchemaView, classes: list[CLASS_NAME] = None, mixins=True, is_a=True, delete=True) -> None:
     """
     rolls down to a set of descendant classes
 

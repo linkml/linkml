@@ -7,18 +7,13 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
-import sys
-import re
-from typing import Optional, List, Union, Dict, ClassVar, Any
+from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
 
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
+from linkml_runtime.utils.metamodelcore import empty_list, empty_dict
+from linkml_runtime.utils.yamlutils import YAMLRoot
 from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from rdflib import Namespace, URIRef
+from rdflib import URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.metamodelcore import URI, URIorCURIE
 
@@ -53,7 +48,7 @@ class ConceptReference(YAMLRoot):
     """
     A minimal description of a class, individual, term or similar construct
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = SKOS.Concept
     class_class_curie: ClassVar[str] = "skos:Concept"
@@ -65,10 +60,10 @@ class ConceptReference(YAMLRoot):
     defined_in: Union[str, ConceptSystemNamespace] = None
     designation: Optional[str] = None
     definition: Optional[str] = None
-    reference: Optional[Union[Union[str, URI], List[Union[str, URI]]]] = empty_list()
-    narrower_than: Optional[Union[Union[str, ConceptReferenceUri], List[Union[str, ConceptReferenceUri]]]] = empty_list()
+    reference: Optional[Union[Union[str, URI], list[Union[str, URI]]]] = empty_list()
+    narrower_than: Optional[Union[Union[str, ConceptReferenceUri], list[Union[str, ConceptReferenceUri]]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.uri is None:
             raise ValueError("uri must be supplied")
         if not isinstance(self.uri, ConceptReferenceUri):
@@ -110,7 +105,7 @@ class ConceptSystem(YAMLRoot):
     """
     A terminological resource (ontology, classification scheme, concept system, etc.)
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = SKOS.ConceptScheme
     class_class_curie: ClassVar[str] = "skos:ConceptScheme"
@@ -120,11 +115,11 @@ class ConceptSystem(YAMLRoot):
     namespace: Union[str, ConceptSystemNamespace] = None
     prefix: str = None
     description: Optional[str] = None
-    reference: Optional[Union[Union[str, URI], List[Union[str, URI]]]] = empty_list()
-    root_concept: Optional[Union[Union[str, ConceptReferenceUri], List[Union[str, ConceptReferenceUri]]]] = empty_list()
-    contents: Optional[Union[Dict[Union[str, ConceptReferenceUri], Union[dict, ConceptReference]], List[Union[dict, ConceptReference]]]] = empty_dict()
+    reference: Optional[Union[Union[str, URI], list[Union[str, URI]]]] = empty_list()
+    root_concept: Optional[Union[Union[str, ConceptReferenceUri], list[Union[str, ConceptReferenceUri]]]] = empty_list()
+    contents: Optional[Union[dict[Union[str, ConceptReferenceUri], Union[dict, ConceptReference]], list[Union[dict, ConceptReference]]]] = empty_dict()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.namespace is None:
             raise ValueError("namespace must be supplied")
         if not isinstance(self.namespace, ConceptSystemNamespace):
@@ -164,16 +159,16 @@ class Package(YAMLRoot):
     """
     A collection of ConceptSystems
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TERMCI.Package
     class_class_curie: ClassVar[str] = "termci:Package"
     class_name: ClassVar[str] = "Package"
     class_model_uri: ClassVar[URIRef] = TERMCI.Package
 
-    system: Optional[Union[Dict[Union[str, ConceptSystemNamespace], Union[dict, ConceptSystem]], List[Union[dict, ConceptSystem]]]] = empty_dict()
+    system: Optional[Union[dict[Union[str, ConceptSystemNamespace], Union[dict, ConceptSystem]], list[Union[dict, ConceptSystem]]]] = empty_dict()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.system is None:
             self.system = []
         if not isinstance(self.system, (list, dict)):

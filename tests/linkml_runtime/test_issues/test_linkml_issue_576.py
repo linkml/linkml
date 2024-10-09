@@ -2,9 +2,8 @@ import unittest
 from unittest import TestCase
 
 import rdflib
-from rdflib import RDF
 
-from linkml_runtime.dumpers import rdflib_dumper, yaml_dumper
+from linkml_runtime.dumpers import rdflib_dumper
 from linkml_runtime.loaders import yaml_loader, rdflib_loader
 from linkml_runtime.utils.schemaview import SchemaView
 

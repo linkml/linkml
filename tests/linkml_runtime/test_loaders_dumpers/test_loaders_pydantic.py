@@ -1,6 +1,6 @@
 import unittest
 
-from linkml_runtime.loaders import yaml_loader, json_loader, rdf_loader
+from linkml_runtime.loaders import yaml_loader, json_loader
 from tests.test_loaders_dumpers.environment import env
 from tests.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
 from tests.test_loaders_dumpers.models.books_normalized_pydantic import BookSeries

@@ -1,6 +1,5 @@
 import unittest
 
-import yaml
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, ElementName
 
 import linkml_runtime.utils.yamlutils as yutils

@@ -7,20 +7,16 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
-import re
-from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
+from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
 
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
+from linkml_runtime.utils.metamodelcore import empty_list
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
 from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from rdflib import Namespace, URIRef
+from rdflib import URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from .types import Datetime, Integer, String, Uri, Uriorcurie
 from linkml_runtime.utils.metamodelcore import URI, URIorCURIE, XSDDateTime
 
 metamodel_version = "1.7.0"
@@ -73,7 +69,7 @@ class Information(YAMLRoot):
     """
     Grouping for datasets and data files
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = DATASETS["Information"]
     class_class_curie: ClassVar[str] = "datasets:Information"
@@ -91,16 +87,16 @@ class Information(YAMLRoot):
     version: Optional[str] = None
     language: Optional[str] = None
     publisher: Optional[Union[str, URIorCURIE]] = None
-    keywords: Optional[Union[str, List[str]]] = empty_list()
+    keywords: Optional[Union[str, list[str]]] = empty_list()
     issued: Optional[Union[str, XSDDateTime]] = None
     created_by: Optional[Union[str, URIorCURIE]] = None
     created_on: Optional[Union[str, XSDDateTime]] = None
     compression: Optional[str] = None
     was_derived_from: Optional[str] = None
     page: Optional[str] = None
-    test_roles: Optional[Union[Union[str, "TestRole"], List[Union[str, "TestRole"]]]] = empty_list()
+    test_roles: Optional[Union[Union[str, "TestRole"], list[Union[str, "TestRole"]]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, InformationId):
@@ -170,7 +166,7 @@ class DataPackage(Information):
     """
     A collection of data resources
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = VOID["Dataset"]
     class_class_curie: ClassVar[str] = "void:Dataset"
@@ -178,9 +174,9 @@ class DataPackage(Information):
     class_model_uri: ClassVar[URIRef] = DATASETS.DataPackage
 
     id: Union[str, DataPackageId] = None
-    resources: Optional[Union[Union[str, DataResourceId], List[Union[str, DataResourceId]]]] = empty_list()
+    resources: Optional[Union[Union[str, DataResourceId], list[Union[str, DataResourceId]]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, DataPackageId):
@@ -198,7 +194,7 @@ class DataResource(Information):
     """
     An individual file or table
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = DCAT["Distribution"]
     class_class_curie: ClassVar[str] = "dcat:Distribution"
@@ -218,7 +214,7 @@ class DataResource(Information):
     sha256: Optional[str] = None
     dialect: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, DataResourceId):
@@ -265,7 +261,7 @@ class FormatDialect(YAMLRoot):
     """
     Additional format information for a file
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = DATASETS["FormatDialect"]
     class_class_curie: ClassVar[str] = "datasets:FormatDialect"
@@ -278,7 +274,7 @@ class FormatDialect(YAMLRoot):
     header: Optional[str] = None
     quote_char: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.comment_prefix is not None and not isinstance(self.comment_prefix, str):
             self.comment_prefix = str(self.comment_prefix)
 
@@ -493,16 +489,16 @@ slots.profile = Slot(uri=DATASETS.profile, name="profile", curie=DATASETS.curie(
                    model_uri=DATASETS.profile, domain=None, range=Optional[Union[str, URIorCURIE]])
 
 slots.keywords = Slot(uri=DCAT.keyword, name="keywords", curie=DCAT.curie('keyword'),
-                   model_uri=DATASETS.keywords, domain=None, range=Optional[Union[str, List[str]]])
+                   model_uri=DATASETS.keywords, domain=None, range=Optional[Union[str, list[str]]])
 
 slots.themes = Slot(uri=DCAT.theme, name="themes", curie=DCAT.curie('theme'),
-                   model_uri=DATASETS.themes, domain=None, range=Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]])
+                   model_uri=DATASETS.themes, domain=None, range=Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]])
 
 slots.resources = Slot(uri=DCAT.distribution, name="resources", curie=DCAT.curie('distribution'),
-                   model_uri=DATASETS.resources, domain=None, range=Optional[Union[Union[str, DataResourceId], List[Union[str, DataResourceId]]]])
+                   model_uri=DATASETS.resources, domain=None, range=Optional[Union[Union[str, DataResourceId], list[Union[str, DataResourceId]]]])
 
 slots.test_roles = Slot(uri=DATASETS.test_roles, name="test_roles", curie=DATASETS.curie('test_roles'),
-                   model_uri=DATASETS.test_roles, domain=None, range=Optional[Union[Union[str, "TestRole"], List[Union[str, "TestRole"]]]])
+                   model_uri=DATASETS.test_roles, domain=None, range=Optional[Union[Union[str, "TestRole"], list[Union[str, "TestRole"]]]])
 
 slots.created_by = Slot(uri=PAV.createdBy, name="created_by", curie=PAV.curie('createdBy'),
                    model_uri=DATASETS.created_by, domain=None, range=Optional[Union[str, URIorCURIE]])

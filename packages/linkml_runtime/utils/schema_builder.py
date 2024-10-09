@@ -1,11 +1,11 @@
 from dataclasses import dataclass, fields
-from typing import Dict, List, Union, Optional
+from typing import Union, Optional
 
 from linkml_runtime.linkml_model import (ClassDefinition, EnumDefinition,
                                          PermissibleValue, Prefix,
                                          SchemaDefinition, SlotDefinition,
                                          TypeDefinition)
-from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schema_as_dict import schema_as_dict
 
 
@@ -54,9 +54,9 @@ class SchemaBuilder:
 
     def add_class(
         self,
-        cls: Union[ClassDefinition, Dict, str],
-        slots: List[Union[str, SlotDefinition]] = None,
-        slot_usage: Dict[str, SlotDefinition] = None,
+        cls: Union[ClassDefinition, dict, str],
+        slots: list[Union[str, SlotDefinition]] = None,
+        slot_usage: dict[str, SlotDefinition] = None,
         replace_if_present: bool = False,
         use_attributes: bool = False,
         **kwargs,
@@ -120,7 +120,7 @@ class SchemaBuilder:
         return self
 
     def add_slot(
-        self, slot: Union[SlotDefinition, Dict, str], class_name: str = None, replace_if_present=False, **kwargs
+        self, slot: Union[SlotDefinition, dict, str], class_name: str = None, replace_if_present=False, **kwargs
     ) -> "SchemaBuilder":
         """
         Adds the slot to the schema.
@@ -159,7 +159,7 @@ class SchemaBuilder:
     def add_enum(
         self,
         enum_def: Union[EnumDefinition, dict, str],
-        permissible_values: List[Union[str, PermissibleValue]] = None,
+        permissible_values: list[Union[str, PermissibleValue]] = None,
         replace_if_present=False,
         **kwargs,
     ) -> "SchemaBuilder":
@@ -234,7 +234,7 @@ class SchemaBuilder:
 
     def add_type(
             self,
-            type: Union[TypeDefinition, Dict, str],
+            type: Union[TypeDefinition, dict, str],
             typeof: str = None,
             uri: str = None,
             replace_if_present=False,
@@ -264,7 +264,7 @@ class SchemaBuilder:
             setattr(type, k, v)
         return self
 
-    def as_dict(self) -> Dict:
+    def as_dict(self) -> dict:
         """
         Returns the schema as a dictionary.
 

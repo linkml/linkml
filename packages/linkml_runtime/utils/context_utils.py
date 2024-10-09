@@ -1,13 +1,13 @@
 import json
 import os
 from io import TextIOWrapper
-from typing import Optional, Union, List, Any, Dict, Callable
+from typing import Optional, Union, Any, Callable
 
 import yaml
 from jsonasobj2 import JsonObj, loads
 
 CONTEXT_TYPE = Union[str, dict, JsonObj]
-CONTEXTS_PARAM_TYPE = Optional[Union[CONTEXT_TYPE, List[CONTEXT_TYPE]]]
+CONTEXTS_PARAM_TYPE = Optional[Union[CONTEXT_TYPE, list[CONTEXT_TYPE]]]
 
 
 def merge_contexts(contexts: CONTEXTS_PARAM_TYPE = None, base: Optional[Any] = None) -> JsonObj:
@@ -50,7 +50,7 @@ def merge_contexts(contexts: CONTEXTS_PARAM_TYPE = None, base: Optional[Any] = N
         JsonObj(**{"@context": context_list[0] if len(context_list) == 1 else context_list})
 
 
-def map_import(importmap: Dict[str, str], namespaces: Callable[[None], "Namespaces"], imp: Any) -> str:
+def map_import(importmap: dict[str, str], namespaces: Callable[[None], "Namespaces"], imp: Any) -> str:
     """
     lookup an import in an importmap.
 
@@ -77,8 +77,8 @@ def map_import(importmap: Dict[str, str], namespaces: Callable[[None], "Namespac
     return importmap.get(sname, sname)  # It may also use URI or other forms
 
 
-def parse_import_map(map_: Optional[Union[str, Dict[str, str], TextIOWrapper]],
-                     base: Optional[str] = None) -> Dict[str, str]:
+def parse_import_map(map_: Optional[Union[str, dict[str, str], TextIOWrapper]],
+                     base: Optional[str] = None) -> dict[str, str]:
     """
     Process the import map
     :param map_: A map location, the JSON for a map, YAML for a map or an existing dictionary

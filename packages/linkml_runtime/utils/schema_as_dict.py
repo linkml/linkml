@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional
+from typing import Any, Optional
 
 import yaml
 
@@ -49,7 +49,7 @@ def _remove_names(obj: Any, parent: Optional[str]) -> Any:
         return obj
 
 
-def schema_as_dict(schema: SchemaDefinition) -> Dict:
+def schema_as_dict(schema: SchemaDefinition) -> dict:
     """
     Translates a SchemaDefinition object into a python dictionary, removing redundant elements
 

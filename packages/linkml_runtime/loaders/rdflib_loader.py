@@ -2,12 +2,12 @@ import logging
 import urllib
 from copy import copy
 from dataclasses import dataclass
-from typing import Optional, Any, Dict, Type, Union, TextIO, List, Tuple, Set
+from typing import Optional, Any, Union, TextIO
 
 from curies import Converter
 from hbreader import FileInfo
 from rdflib import Graph, URIRef
-from rdflib.term import Node, BNode, Literal
+from rdflib.term import BNode, Literal
 from rdflib.namespace import RDF
 
 from linkml_runtime import MappingError, DataNotFoundError
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 VALID_SUBJECT = Union[URIRef, BNode]
-ANYDICT = Dict[str, Any]
+ANYDICT = dict[str, Any]
 
 @dataclass
 class Pointer:
@@ -37,12 +37,12 @@ class RDFLibLoader(Loader):
     def from_rdf_graph(
         self, graph: Graph,
         schemaview: SchemaView,
-        target_class: Type[Union[BaseModel, YAMLRoot]],
-        prefix_map: Union[Dict[str, str], Converter, None] = None,
+        target_class: type[Union[BaseModel, YAMLRoot]],
+        prefix_map: Union[dict[str, str], Converter, None] = None,
         cast_literals: bool = True,
         allow_unprocessed_triples: bool = True,
         ignore_unmapped_predicates: bool = False,
-    ) -> List[Union[BaseModel, YAMLRoot]]:
+    ) -> list[Union[BaseModel, YAMLRoot]]:
         """
         Loads objects from graph into lists of the python target_class structure,
         recursively walking RDF graph from instances of target_class.
@@ -75,20 +75,20 @@ class RDFLibLoader(Loader):
                 graph.namespace_manager.bind(k, URIRef(v))
         # Step 1: Create stub root dict-objects
         target_class_uriref: URIRef = target_class.class_class_uri
-        root_dicts: List[ANYDICT] = []
-        root_subjects: List[VALID_SUBJECT] = list(graph.subjects(RDF.type, target_class_uriref))
+        root_dicts: list[ANYDICT] = []
+        root_subjects: list[VALID_SUBJECT] = list(graph.subjects(RDF.type, target_class_uriref))
         logger.debug(f'ROOTS = {root_subjects}')
         # Step 2: walk RDF graph starting from root subjects, constructing dict tree
-        node_tuples_to_visit: List[Tuple[VALID_SUBJECT, ClassDefinitionName]]  ## nodes and their type still to visit
+        node_tuples_to_visit: list[tuple[VALID_SUBJECT, ClassDefinitionName]]  ## nodes and their type still to visit
         node_tuples_to_visit = [(subject, target_class.class_name) for subject in root_subjects]
-        uri_to_slot: Dict[str, SlotDefinition]  ## lookup table for RDF predicates -> slots
+        uri_to_slot: dict[str, SlotDefinition]  ## lookup table for RDF predicates -> slots
         uri_to_slot = {URIRef(schemaview.get_uri(s, expand=True)): s for s in schemaview.all_slots().values()}
-        processed: Set[VALID_SUBJECT] = set()  ## track nodes already visited, or already scheduled
+        processed: set[VALID_SUBJECT] = set()  ## track nodes already visited, or already scheduled
         for n, _ in node_tuples_to_visit:
             processed.add(n)
-        obj_map: Dict[VALID_SUBJECT, ANYDICT] = {}  ## map from an RDF node to its dict representation
+        obj_map: dict[VALID_SUBJECT, ANYDICT] = {}  ## map from an RDF node to its dict representation
         unmapped_predicates = set()
-        processed_triples: Set[Tuple] = set()
+        processed_triples: set[tuple] = set()
         while len(node_tuples_to_visit) > 0:
             subject, subject_class = node_tuples_to_visit.pop()
             processed.add(subject)
@@ -195,7 +195,7 @@ class RDFLibLoader(Loader):
                 return v2
             else:
                 return v
-        objs_to_visit: List[ANYDICT] = copy(root_dicts)
+        objs_to_visit: list[ANYDICT] = copy(root_dicts)
         while len(objs_to_visit) > 0:
             obj = objs_to_visit.pop()
             logger.debug(f'Replacing pointers for  {obj}')
@@ -238,9 +238,9 @@ class RDFLibLoader(Loader):
     def load(
         self,
         source: Union[str, TextIO, Graph],
-        target_class: Type[Union[BaseModel, YAMLRoot]], *,
+        target_class: type[Union[BaseModel, YAMLRoot]], *,
         schemaview: SchemaView = None,
-        prefix_map: Union[Dict[str, str], Converter, None] = None,
+        prefix_map: Union[dict[str, str], Converter, None] = None,
         fmt: Optional[str] = 'turtle',
         metadata: Optional[FileInfo] = None,
         **kwargs,
@@ -276,7 +276,7 @@ class RDFLibLoader(Loader):
     def loads(self, source: str, **kwargs) -> Union[BaseModel, YAMLRoot]:
         return self.load(source, **kwargs)
 
-    def load_any(self, source: str, **kwargs) -> Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]:
+    def load_any(self, source: str, **kwargs) -> Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]:
         return self.load(source, **kwargs)
 
 

@@ -1,6 +1,6 @@
 import json
 from decimal import Decimal
-from typing import Dict, Union
+from typing import Union
 from pydantic import BaseModel
 
 from deprecated.classic import deprecated
@@ -67,7 +67,7 @@ class JSONDumper(Dumper):
 
     @staticmethod
     @deprecated("Use `utils/formatutils/remove_empty_items` instead")
-    def remove_empty_items(obj: Dict) -> Dict:
+    def remove_empty_items(obj: dict) -> dict:
         """
         Remove empty items from obj
         :param obj:

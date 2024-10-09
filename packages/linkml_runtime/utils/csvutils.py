@@ -1,8 +1,7 @@
 import logging
-from json_flattener import KeyConfig, GlobalConfig, Serializer
+from json_flattener import KeyConfig, Serializer
 from json_flattener.flattener import CONFIGMAP
-from linkml_runtime.linkml_model.meta import SlotDefinitionName, SchemaDefinition, \
-    SlotDefinition, ClassDefinition, ClassDefinitionName
+from linkml_runtime.linkml_model.meta import SlotDefinitionName, ClassDefinitionName
 from linkml_runtime.utils.schemaview import SchemaView
 
 logger = logging.getLogger(__name__)

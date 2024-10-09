@@ -7,22 +7,19 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
-import sys
-import re
-from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
+from jsonasobj2 import as_dict
+from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
-from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
 
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
+from linkml_runtime.utils.metamodelcore import empty_list
+from linkml_runtime.utils.yamlutils import YAMLRoot
 from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from rdflib import Namespace, URIRef
+from rdflib import URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.linkml_model.types import Boolean, Decimal, String
+from linkml_runtime.linkml_model.types import Decimal
 from linkml_runtime.utils.metamodelcore import Bool, Decimal
 
 metamodel_version = "1.7.0"
@@ -48,7 +45,7 @@ DEFAULT_ = EX
 
 @dataclass
 class Term(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EX.Term
     class_class_curie: ClassVar[str] = "ex:Term"
@@ -57,9 +54,9 @@ class Term(YAMLRoot):
 
     id: Optional[str] = None
     name: Optional[str] = None
-    synonyms: Optional[Union[str, List[str]]] = empty_list()
+    synonyms: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.id is not None and not isinstance(self.id, str):
             self.id = str(self.id)
 
@@ -75,7 +72,7 @@ class Term(YAMLRoot):
 
 @dataclass
 class Person(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EX.Person
     class_class_curie: ClassVar[str] = "ex:Person"
@@ -97,7 +94,7 @@ class Person(YAMLRoot):
     derived_expression_from_spaces: Optional[str] = None
     summary: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.id is not None and not isinstance(self.id, str):
             self.id = str(self.id)
 
@@ -145,7 +142,7 @@ class Person(YAMLRoot):
 
 @dataclass
 class Evil(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EX.Evil
     class_class_curie: ClassVar[str] = "ex:Evil"
@@ -154,7 +151,7 @@ class Evil(YAMLRoot):
 
     prohibited: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.prohibited is not None and not isinstance(self.prohibited, str):
             self.prohibited = str(self.prohibited)
 
@@ -163,7 +160,7 @@ class Evil(YAMLRoot):
 
 @dataclass
 class Relationship(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EX.Relationship
     class_class_curie: ClassVar[str] = "ex:Relationship"
@@ -176,7 +173,7 @@ class Relationship(YAMLRoot):
     description: Optional[str] = None
     description2: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.person1 is not None and not isinstance(self.person1, Person):
             self.person1 = Person(**as_dict(self.person1))
 
@@ -197,7 +194,7 @@ class Relationship(YAMLRoot):
 
 @dataclass
 class Address(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EX.Address
     class_class_curie: ClassVar[str] = "ex:Address"
@@ -207,7 +204,7 @@ class Address(YAMLRoot):
     street: Optional[str] = None
     city: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.street is not None and not isinstance(self.street, str):
             self.street = str(self.street)
 
@@ -219,16 +216,16 @@ class Address(YAMLRoot):
 
 @dataclass
 class Container(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EX.Container
     class_class_curie: ClassVar[str] = "ex:Container"
     class_name: ClassVar[str] = "Container"
     class_model_uri: ClassVar[URIRef] = EX.Container
 
-    persons: Optional[Union[Union[dict, Person], List[Union[dict, Person]]]] = empty_list()
+    persons: Optional[Union[Union[dict, Person], list[Union[dict, Person]]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if not isinstance(self.persons, list):
             self.persons = [self.persons] if self.persons is not None else []
         self.persons = [v if isinstance(v, Person) else Person(**as_dict(v)) for v in self.persons]
@@ -258,7 +255,7 @@ slots.name = Slot(uri=EX.name, name="name", curie=EX.curie('name'),
                    model_uri=EX.name, domain=None, range=Optional[str])
 
 slots.synonyms = Slot(uri=EX.synonyms, name="synonyms", curie=EX.curie('synonyms'),
-                   model_uri=EX.synonyms, domain=None, range=Optional[Union[str, List[str]]])
+                   model_uri=EX.synonyms, domain=None, range=Optional[Union[str, list[str]]])
 
 slots.full_name = Slot(uri=EX.full_name, name="full_name", curie=EX.curie('full_name'),
                    model_uri=EX.full_name, domain=None, range=Optional[str])
@@ -327,7 +324,7 @@ slots.relationship__description2 = Slot(uri=EX.description2, name="relationship_
                    model_uri=EX.relationship__description2, domain=None, range=Optional[str])
 
 slots.container__persons = Slot(uri=EX.persons, name="container__persons", curie=EX.curie('persons'),
-                   model_uri=EX.container__persons, domain=None, range=Optional[Union[Union[dict, Person], List[Union[dict, Person]]]])
+                   model_uri=EX.container__persons, domain=None, range=Optional[Union[Union[dict, Person], list[Union[dict, Person]]]])
 
 slots.Person_description = Slot(uri=EX.description, name="Person_description", curie=EX.curie('description'),
                    model_uri=EX.Person_description, domain=Person, range=Optional[str])

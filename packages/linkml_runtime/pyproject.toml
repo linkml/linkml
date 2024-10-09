@@ -47,7 +47,7 @@ comparefiles = "linkml_runtime.utils.comparefiles:cli"
 linkml-normalize = "linkml_runtime.processing.referencevalidator:cli"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 click = "*"
 deprecated = "*"
 hbreader = "*"
@@ -61,6 +61,14 @@ requests = "*"
 prefixmaps = ">=0.1.4"
 curies = ">=0.5.4"
 pydantic = ">=1.10.2, <3.0.0"
+
+[tool.ruff]
+line-length = 120
+select = [
+    "F401",
+    "UP"
+]
+target-version = "py39"
 
 [tool.poetry.dev-dependencies]
 coverage = "^6.2"

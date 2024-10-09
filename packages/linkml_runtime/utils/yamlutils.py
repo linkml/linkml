@@ -1,6 +1,6 @@
 from copy import copy
 from json import JSONDecoder
-from typing import Union, Any, List, Optional, Type, Callable, Dict
+from typing import Union, Any, Optional, Callable
 from pprint import pformat
 import textwrap
 import re
@@ -8,12 +8,11 @@ import re
 import yaml
 from deprecated.classic import deprecated
 from jsonasobj2 import JsonObj, as_json, as_dict, JsonObjTypes, items
-import jsonasobj2
 from rdflib import Graph, URIRef
 from yaml.constructor import ConstructorError
 
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE, merge_contexts
-from linkml_runtime.utils.formatutils import is_empty, remove_empty_items, is_list, is_dict, items
+from linkml_runtime.utils.formatutils import is_empty, items
 
 YAMLObjTypes = Union[JsonObjTypes, "YAMLRoot"]
 
@@ -44,9 +43,9 @@ class YAMLRoot(JsonObj):
         """
         super().__init__(*args, **kwargs)
 
-    def __post_init__(self, *args: List[str],  **kwargs):
+    def __post_init__(self, *args: list[str],  **kwargs):
         if args or kwargs:
-            messages: List[str] = []
+            messages: list[str] = []
             for v in args:
                 v = repr(v)[:40].replace('\n', '\\n')
                 messages.append(f"Unknown positional argument: {v}")
@@ -101,13 +100,13 @@ class YAMLRoot(JsonObj):
         # TODO: Deprecate this function and migrate the python generator over to the stand alone is_empty
         return is_empty(v)
 
-    def _normalize_inlined_as_list(self, slot_name: str, slot_type: Type, key_name: str, keyed: bool) -> None:
+    def _normalize_inlined_as_list(self, slot_name: str, slot_type: type, key_name: str, keyed: bool) -> None:
         self._normalize_inlined(slot_name, slot_type, key_name, keyed, True)
 
-    def _normalize_inlined_as_dict(self, slot_name: str, slot_type: Type, key_name: str, keyed: bool) -> None:
+    def _normalize_inlined_as_dict(self, slot_name: str, slot_type: type, key_name: str, keyed: bool) -> None:
         self._normalize_inlined(slot_name, slot_type, key_name, keyed, False)
 
-    def _normalize_inlined(self, slot_name: str, slot_type: Type, key_name: str, keyed: bool, is_list: bool) \
+    def _normalize_inlined(self, slot_name: str, slot_type: type, key_name: str, keyed: bool, is_list: bool) \
             -> None:
         """
          __post_init__ function for a list of inlined keyed or identified classes.
@@ -149,7 +148,7 @@ class YAMLRoot(JsonObj):
                 loc_str = ''
             return loc_str + str(s)
 
-        def form_1(entries: Dict[Any, Optional[Union[dict, JsonObj]]]) -> None:
+        def form_1(entries: dict[Any, Optional[Union[dict, JsonObj]]]) -> None:
             """ A dictionary of key:dict entries where key is the identifier and dict is an instance of slot_type """
             for key, raw_obj in items(entries):
                 if raw_obj is None:
@@ -217,7 +216,7 @@ class YAMLRoot(JsonObj):
                         raise ValueError(f"Unrecognized entry: {loc(k)}: {str(v)}")
         self[slot_name] = cooked_slot
 
-    def _normalize_inlined_slot(self, slot_name: str, slot_type: Type, key_name: Optional[str],
+    def _normalize_inlined_slot(self, slot_name: str, slot_type: type, key_name: Optional[str],
                                 inlined_as_list: Optional[bool], keyed: bool) -> None:
         """
         A deprecated entry point to slot normalization. Used for models generated prior to the linkml-runtime split.
@@ -252,7 +251,7 @@ class YAMLRoot(JsonObj):
             self._normalize_inlined_as_dict(slot_name, slot_type, key_name, keyed)
 
     @classmethod
-    def _class_for(cls, attribute: str, uri_or_curie: Union[str, URIRef]) -> Optional[Type["YAMLRoot"]]:
+    def _class_for(cls, attribute: str, uri_or_curie: Union[str, URIRef]) -> Optional[type["YAMLRoot"]]:
         """ Locate self or descendant class that has attribute == uri_or_curie """
         if getattr(cls, attribute, None) == uri_or_curie:
             return cls
@@ -263,14 +262,14 @@ class YAMLRoot(JsonObj):
         return None
 
     @classmethod
-    def _class_for_uri(cls: Type["YAMLRoot"], uri: str, use_model_uri: bool = False) -> Optional[Type["YAMLRoot"]]:
+    def _class_for_uri(cls: type["YAMLRoot"], uri: str, use_model_uri: bool = False) -> Optional[type["YAMLRoot"]]:
         """
         Return the self or descendant of self having with a matching class uri
         """
         return cls._class_for('class_model_uri' if use_model_uri else 'class_class_uri', URIRef(uri))
 
     @classmethod
-    def _class_for_curie(cls: Type["YAMLRoot"], curie: str) -> Optional[Type["YAMLRoot"]]:
+    def _class_for_curie(cls: type["YAMLRoot"], curie: str) -> Optional[type["YAMLRoot"]]:
         return cls._class_for('class_class_curie', curie)
 
     # ==================
@@ -341,7 +340,7 @@ def root_representer(dumper: yaml.Dumper, data: YAMLRoot):
     return dumper.represent_data(rval)
 
 
-def from_yaml(data: str, cls: Type[YAMLRoot]) -> YAMLRoot:
+def from_yaml(data: str, cls: type[YAMLRoot]) -> YAMLRoot:
     return cls(**yaml.load(data, DupCheckYamlLoader))
 
 
@@ -455,7 +454,7 @@ class DupCheckYamlLoader(SafeLoader):
 
         """
         if not isinstance(node, yaml.MappingNode):
-            raise ConstructorError(None, None, "expected a mapping node, but found %s" % node.id, node.start_mark)
+            raise ConstructorError(None, None, f"expected a mapping node, but found {node.id}", node.start_mark)
         mapping = {}
         for key_node, value_node in node.value:
             key = loader.construct_object(key_node, deep=deep)
@@ -469,7 +468,7 @@ class DupCheckYamlLoader(SafeLoader):
     def seq_constructor(loader, node, deep=False):
         if not isinstance(node, yaml.SequenceNode):
             raise ConstructorError(None, None,
-                                   "expected a sequence node, but found %s" % node.id,
+                                   f"expected a sequence node, but found {node.id}",
                                    node.start_mark)
         for child in node.value:
             if not child.value:

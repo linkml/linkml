@@ -1,10 +1,6 @@
 from __future__ import annotations
-from datetime import datetime, date
 from enum import Enum
-from typing import List, Dict, Optional, Any, Union
-from typing_extensions import Literal
 from pydantic import BaseModel as BaseModel, Field
-from linkml_runtime.linkml_model import Decimal
 
 metamodel_version = "None"
 version = "None"
@@ -35,66 +31,66 @@ class GenreEnum(str, Enum):
 
 class CreativeWork(ConfiguredBaseModel):
     
-    id: Optional[str] = Field(None)
-    name: Optional[str] = Field(None)
-    genres: Optional[List[GenreEnum]] = Field(default_factory=list)
-    creator: Optional[Author] = Field(None)
-    summary: Optional[str] = Field(None)
-    reviews: Optional[List[Review]] = Field(default_factory=list)
+    id: str | None = Field(None)
+    name: str | None = Field(None)
+    genres: list[GenreEnum] | None = Field(default_factory=list)
+    creator: Author | None = Field(None)
+    summary: str | None = Field(None)
+    reviews: list[Review] | None = Field(default_factory=list)
     
 
 
 class Book(CreativeWork):
     
-    price: Optional[float] = Field(None)
-    inStock: Optional[str] = Field(None)
-    id: Optional[str] = Field(None)
-    name: Optional[str] = Field(None)
-    genres: Optional[List[GenreEnum]] = Field(default_factory=list)
-    creator: Optional[Author] = Field(None)
-    summary: Optional[str] = Field(None)
-    reviews: Optional[List[Review]] = Field(default_factory=list)
+    price: float | None = Field(None)
+    inStock: str | None = Field(None)
+    id: str | None = Field(None)
+    name: str | None = Field(None)
+    genres: list[GenreEnum] | None = Field(default_factory=list)
+    creator: Author | None = Field(None)
+    summary: str | None = Field(None)
+    reviews: list[Review] | None = Field(default_factory=list)
     
 
 
 class BookSeries(CreativeWork):
     
-    books: Optional[List[Book]] = Field(default_factory=list)
-    genres: Optional[List[GenreEnum]] = Field(default_factory=list)
-    price: Optional[float] = Field(None)
-    id: Optional[str] = Field(None)
-    name: Optional[str] = Field(None)
-    creator: Optional[Author] = Field(None)
-    summary: Optional[str] = Field(None)
-    reviews: Optional[List[Review]] = Field(default_factory=list)
+    books: list[Book] | None = Field(default_factory=list)
+    genres: list[GenreEnum] | None = Field(default_factory=list)
+    price: float | None = Field(None)
+    id: str | None = Field(None)
+    name: str | None = Field(None)
+    creator: Author | None = Field(None)
+    summary: str | None = Field(None)
+    reviews: list[Review] | None = Field(default_factory=list)
     
 
 
 class Author(ConfiguredBaseModel):
     
-    name: Optional[str] = Field(None)
-    genres: Optional[List[GenreEnum]] = Field(default_factory=list)
-    from_country: Optional[str] = Field(None)
+    name: str | None = Field(None)
+    genres: list[GenreEnum] | None = Field(default_factory=list)
+    from_country: str | None = Field(None)
     
 
 
 class Shop(ConfiguredBaseModel):
     
-    all_book_series: Optional[List[BookSeries]] = Field(default_factory=list)
+    all_book_series: list[BookSeries] | None = Field(default_factory=list)
     
 
 
 class Country(ConfiguredBaseModel):
     
-    name: Optional[str] = Field(None)
+    name: str | None = Field(None)
     
 
 
 class Review(ConfiguredBaseModel):
     
-    creator: Optional[Author] = Field(None)
-    rating: Optional[int] = Field(None)
-    review_text: Optional[str] = Field(None)
+    creator: Author | None = Field(None)
+    rating: int | None = Field(None)
+    review_text: str | None = Field(None)
     
 
 

@@ -1,7 +1,7 @@
 import json
 import logging
 from pathlib import Path
-from typing import Union, TextIO, Optional, Type, List
+from typing import Union, TextIO, Optional
 
 from hbreader import FileInfo
 
@@ -18,18 +18,18 @@ class JSONLoader(Loader):
                      source: Union[str, dict, TextIO],
                      *, 
                      base_dir: Optional[str] = None,
-                     metadata: Optional[FileInfo] = None) -> Union[dict, List[dict]]:
+                     metadata: Optional[FileInfo] = None) -> Union[dict, list[dict]]:
         data = self._read_source(source, base_dir=base_dir, metadata=metadata, accept_header="application/ld+json, application/json, text/json")
         data_as_dict = json.loads(data) if isinstance(data, str) else data
         return self.json_clean(data_as_dict)
 
     def load_any(self, 
                  source: Union[str, dict, TextIO, Path],
-                 target_class: Type[Union[BaseModel, YAMLRoot]], 
+                 target_class: type[Union[BaseModel, YAMLRoot]],
                  *, 
                  base_dir: Optional[str] = None,
                  metadata: Optional[FileInfo] = None, 
-                 **_) -> Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]:
+                 **_) -> Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]:
         """
         Load the JSON in source into the python target_class structure
 

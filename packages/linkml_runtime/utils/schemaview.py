@@ -7,7 +7,8 @@ from functools import lru_cache
 from copy import copy, deepcopy
 from collections import defaultdict, deque
 from pathlib import Path, PurePath
-from typing import Mapping, Optional, Tuple, TypeVar
+from typing import Optional, TypeVar
+from collections.abc import Mapping
 import warnings
 
 from linkml_runtime.utils.namespaces import Namespaces
@@ -41,8 +42,8 @@ ElementType = TypeVar("ElementType", bound=Element)
 ElementNameType = TypeVar("ElementNameType", bound=Union[ElementName, str])
 DefinitionType = TypeVar("DefinitionType", bound=Definition)
 DefinitionNameType = TypeVar("DefinitionNameType", bound=Union[DefinitionName, str])
-ElementDict = Dict[ElementNameType, ElementType]
-DefDict = Dict[DefinitionNameType, DefinitionType]
+ElementDict = dict[ElementNameType, ElementType]
+DefDict = dict[DefinitionNameType, DefinitionType]
 
 
 class OrderedBy(Enum):
@@ -108,7 +109,7 @@ def is_absolute_path(path: str) -> bool:
 
 
 @dataclass
-class SchemaUsage():
+class SchemaUsage:
     """
     A usage of an element of a schema
     """
@@ -120,7 +121,7 @@ class SchemaUsage():
 
 
 @dataclass
-class SchemaView(object):
+class SchemaView:
     """
     A SchemaView provides a virtual schema layered on top of a schema plus its import closure
 
@@ -140,7 +141,7 @@ class SchemaView(object):
     """
 
     schema: SchemaDefinition = None
-    schema_map: Dict[SchemaDefinitionName, SchemaDefinition] = None
+    schema_map: dict[SchemaDefinitionName, SchemaDefinition] = None
     importmap: Optional[Mapping[str, str]] = None
     """Optional mapping between schema names and local paths/URLs"""
     modifications: int = 0
@@ -152,7 +153,7 @@ class SchemaView(object):
 
 
     def __init__(self, schema: Union[str, Path, SchemaDefinition],
-                 importmap: Optional[Dict[str, str]] = None, merge_imports: bool = False, base_dir: str = None):
+                 importmap: Optional[dict[str, str]] = None, merge_imports: bool = False, base_dir: str = None):
         if isinstance(schema, Path):
             schema = str(schema)
         if isinstance(schema, str):
@@ -342,7 +343,7 @@ class SchemaView(object):
 
     @deprecated("Use `all_classes` instead")
     @lru_cache(None)
-    def all_class(self, imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
+    def all_class(self, imports=True) -> dict[ClassDefinitionName, ClassDefinition]:
         """
         :param imports: include imports closure
         :return: all classes in schema view
@@ -427,7 +428,7 @@ class SchemaView(object):
         return {s.name: s for s in slist}
 
     @lru_cache(None)
-    def all_classes(self, ordered_by=OrderedBy.PRESERVE, imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
+    def all_classes(self, ordered_by=OrderedBy.PRESERVE, imports=True) -> dict[ClassDefinitionName, ClassDefinition]:
         """
         :param ordered_by: an enumerated parameter that returns all the classes in the order specified.
         :param imports: include imports closure
@@ -439,7 +440,7 @@ class SchemaView(object):
 
     @deprecated("Use `all_slots` instead")
     @lru_cache(None)
-    def all_slot(self, **kwargs) -> Dict[SlotDefinitionName, SlotDefinition]:
+    def all_slot(self, **kwargs) -> dict[SlotDefinitionName, SlotDefinition]:
         """
         :param imports: include imports closure
         :return: all slots in schema view
@@ -447,7 +448,7 @@ class SchemaView(object):
         return self.all_slots(**kwargs)
 
     @lru_cache(None)
-    def all_slots(self, ordered_by=OrderedBy.PRESERVE, imports=True, attributes=True) -> Dict[
+    def all_slots(self, ordered_by=OrderedBy.PRESERVE, imports=True, attributes=True) -> dict[
         SlotDefinitionName, SlotDefinition]:
         """
         :param ordered_by: an enumerated parameter that returns all the slots in the order specified.
@@ -468,7 +469,7 @@ class SchemaView(object):
 
     @deprecated("Use `all_enums` instead")
     @lru_cache(None)
-    def all_enum(self, imports=True) -> Dict[EnumDefinitionName, EnumDefinition]:
+    def all_enum(self, imports=True) -> dict[EnumDefinitionName, EnumDefinition]:
         """
         :param imports: include imports closure
         :return: all enums in schema view
@@ -476,7 +477,7 @@ class SchemaView(object):
         return self._get_dict(ENUMS, imports)
 
     @lru_cache(None)
-    def all_enums(self, imports=True) -> Dict[EnumDefinitionName, EnumDefinition]:
+    def all_enums(self, imports=True) -> dict[EnumDefinitionName, EnumDefinition]:
         """
         :param imports: include imports closure
         :return: all enums in schema view
@@ -485,7 +486,7 @@ class SchemaView(object):
 
     @deprecated("Use `all_types` instead")
     @lru_cache(None)
-    def all_type(self, imports=True) -> Dict[TypeDefinitionName, TypeDefinition]:
+    def all_type(self, imports=True) -> dict[TypeDefinitionName, TypeDefinition]:
         """
         :param imports: include imports closure
         :return: all types in schema view
@@ -493,7 +494,7 @@ class SchemaView(object):
         return self._get_dict(TYPES, imports)
 
     @lru_cache(None)
-    def all_types(self, imports=True) -> Dict[TypeDefinitionName, TypeDefinition]:
+    def all_types(self, imports=True) -> dict[TypeDefinitionName, TypeDefinition]:
         """
         :param imports: include imports closure
         :return: all types in schema view
@@ -501,7 +502,7 @@ class SchemaView(object):
         return self._get_dict(TYPES, imports)
 
     @deprecated("Use `all_subsets` instead")
-    def all_subset(self, imports=True) -> Dict[SubsetDefinitionName, SubsetDefinition]:
+    def all_subset(self, imports=True) -> dict[SubsetDefinitionName, SubsetDefinition]:
         """
         :param imports: include imports closure
         :return: all subsets in schema view
@@ -509,7 +510,7 @@ class SchemaView(object):
         return self._get_dict(SUBSETS, imports)
 
     @lru_cache(None)
-    def all_subsets(self, imports=True) -> Dict[SubsetDefinitionName, SubsetDefinition]:
+    def all_subsets(self, imports=True) -> dict[SubsetDefinitionName, SubsetDefinition]:
         """
         :param imports: include imports closure
         :return: all subsets in schema view
@@ -518,7 +519,7 @@ class SchemaView(object):
 
     @deprecated("Use `all_elements` instead")
     @lru_cache(None)
-    def all_element(self, imports=True) -> Dict[ElementName, Element]:
+    def all_element(self, imports=True) -> dict[ElementName, Element]:
         """
         :param imports: include imports closure
         :return: all elements in schema view
@@ -532,7 +533,7 @@ class SchemaView(object):
         return {**all_classes, **all_slots, **all_enums, **all_types, **all_subsets}
 
     @lru_cache(None)
-    def all_elements(self, imports=True) -> Dict[ElementName, Element]:
+    def all_elements(self, imports=True) -> dict[ElementName, Element]:
         """
         :param imports: include imports closure
         :return: all elements in schema view
@@ -545,7 +546,7 @@ class SchemaView(object):
         # {**a,**b} syntax merges dictionary a and b into a single dictionary, removing duplicates.
         return {**all_classes, **all_slots, **all_enums, **all_types, **all_subsets}
 
-    def _get_dict(self, slot_name: str, imports=True) -> Dict:
+    def _get_dict(self, slot_name: str, imports=True) -> dict:
         schemas = self.all_schema(imports)
         d = {}
         # pdb.set_trace()
@@ -559,7 +560,7 @@ class SchemaView(object):
         return d
 
     @lru_cache(None)
-    def slot_name_mappings(self) -> Dict[str, SlotDefinition]:
+    def slot_name_mappings(self) -> dict[str, SlotDefinition]:
         """
         Mapping between processed safe slot names (following naming conventions)  and slots.
 
@@ -573,7 +574,7 @@ class SchemaView(object):
         return m
 
     @lru_cache(None)
-    def class_name_mappings(self) -> Dict[str, ClassDefinition]:
+    def class_name_mappings(self) -> dict[str, ClassDefinition]:
         """
         Mapping between processed safe class names (following naming conventions) and classes.
 
@@ -598,7 +599,7 @@ class SchemaView(object):
         return ix[element_name]
 
     @lru_cache(None)
-    def element_by_schema_map(self) -> Dict[ElementName, SchemaDefinitionName]:
+    def element_by_schema_map(self) -> dict[ElementName, SchemaDefinitionName]:
         ix = {}
         schemas = self.all_schema(True)
         for schema in schemas:
@@ -1174,7 +1175,7 @@ class SchemaView(object):
         return element_aliases
 
     @lru_cache(None)
-    def get_mappings(self, element_name: ElementName = None, imports=True, expand=False) -> Dict[
+    def get_mappings(self, element_name: ElementName = None, imports=True, expand=False) -> dict[
         MAPPING_TYPE, List[URIorCURIE]]:
         """
         Get all mappings for a given element
@@ -1246,7 +1247,7 @@ class SchemaView(object):
                 model_elements.append(element.name)
         return model_elements
 
-    def get_mapping_index(self, imports=True, expand=False) -> Dict[URIorCURIE, List[Tuple[MAPPING_TYPE, Element]]]:
+    def get_mapping_index(self, imports=True, expand=False) -> dict[URIorCURIE, List[tuple[MAPPING_TYPE, Element]]]:
         """
         Returns an index of all elements keyed by the mapping value.
         The index values are tuples of mapping type and element
@@ -1282,7 +1283,7 @@ class SchemaView(object):
         return False
 
     @lru_cache(None)
-    def annotation_dict(self, element_name: ElementName, imports=True) -> Dict[URIorCURIE, Any]:
+    def annotation_dict(self, element_name: ElementName, imports=True) -> dict[URIorCURIE, Any]:
         """
         Return a dictionary where keys are annotation tags and values are annotation values for any given element.
 
@@ -1687,7 +1688,7 @@ class SchemaView(object):
                 return "percent_encoded" in anns
 
     @lru_cache(None)
-    def usage_index(self) -> Dict[ElementName, List[SchemaUsage]]:
+    def usage_index(self) -> dict[ElementName, List[SchemaUsage]]:
         """
         Fetch an index that shows the ways in which each element is used
 

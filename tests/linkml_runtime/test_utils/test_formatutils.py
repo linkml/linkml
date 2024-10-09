@@ -1,6 +1,6 @@
 import json
 import unittest
-from typing import List, Tuple, Any
+from typing import Any
 
 from jsonasobj2 import JsonObj, as_json
 
@@ -10,7 +10,7 @@ from linkml_runtime.utils.formatutils import camelcase, underscore, lcamelcase, 
 empty_things = [None, dict(), list(), JsonObj(), JsonObj({}), JsonObj([])]
 non_empty_things = [0, False, "", {'k': None}, {0:0}, [None], JsonObj(k=None), JsonObj(**{'k': None}), JsonObj([None])]
 
-things_removed: List[Tuple[Any, Any]] = \
+things_removed: list[tuple[Any, Any]] = \
     [(None, None),
      (dict(), {}),
      (list(), []),
