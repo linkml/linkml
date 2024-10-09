@@ -50,6 +50,7 @@ __all__ = [
     "ContextGenerator",
     "JSONLDGenerator",
     "JsonSchemaGenerator",
+    "RustGenerator",
     "ShaclGenerator",
     "ShExGenerator",
     "SQLAlchemyGenerator",

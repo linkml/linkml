@@ -264,6 +264,7 @@ markers = [
   "jsonldgen: Test for JSON-LD generator",
   "jsonldcontextgen: Test for JSON-LD context generator",
   "rdfgen: Tests for the RDFGenerator",
+  "rustgen: Tests for the RustGenerator",
   "sqlalchemygen: Tests for SQL Alchemy generator",
   "sqlddlgen: Tests for SQL DDL generator",
   "sqlddlpostgresgen: Tests for SQL DDL postgres generator",

@@ -1,0 +1,1 @@
+use {{ module }}{% if objects %}::{{ "{" }}{% for obj in objects %}{{ obj.name }}{% if not loop.last %},{% endif %}{% endfor %}{{ "}" }}{% endif %};
