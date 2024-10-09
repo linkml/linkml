@@ -13,7 +13,7 @@ from linkml_runtime.linkml_model.meta import (
     TypeDefinition,
 )
 
-from linkml.generators.common.build import ClassResult, RangeResult, SchemaResult, SlotResult, TypeResult
+from linkml.generators.common.build import ClassResult, EnumResult, RangeResult, SchemaResult, SlotResult, TypeResult
 from linkml.generators.common.template import TemplateModel
 
 TSchema = TypeVar("TSchema", bound=SchemaResult)
@@ -21,7 +21,7 @@ TClass = TypeVar("TClass", bound=ClassResult)
 TSlot = TypeVar("TSlot", bound=SlotResult)
 TRange = TypeVar("TRange", bound=RangeResult)
 TType = TypeVar("TType", bound=TypeResult)
-TEnum = TypeVar("TEnum", bound=EnumDefinition)
+TEnum = TypeVar("TEnum", bound=EnumResult)
 TTemplate = TypeVar("TTemplate", bound=TemplateModel)
 
 

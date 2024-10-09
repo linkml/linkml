@@ -220,6 +220,7 @@ markers = [
   "shexgen: Tests for shex generator",
   "jsonldcontextgen: Test for JSON-LD context generator",
   "rdfgen: Tests for the RDFGenerator",
+  "rustgen: Tests for the RustGenerator",
   "sqlddlgen: Tests for SQL DDL generator",
   "sqlddlpostgresgen: Tests for SQL DDL postgres generator",
   "owlgen: Tests for OWL generator"

@@ -1,9 +1,27 @@
+#![allow(non_camel_case_types)]
+{{ imports }}
+
+{% for type_alias in type_aliases %}
+{{ type_alias }}
+{% endfor %}
+
+{% for enum in enums %}
+{{ enum }}
+{% endfor %}
+
+{% for struct in structs %}
+{{ struct }}
+{% endfor %}
+
+
+
 {% if pyo3 %}
 #[pymodule]
-fn {{ name }}(_py: Python, m: &PyModule) -> PyResult<()> {
+#[pyo3(name="{{ name }}")]
+fn {{ name }}(m: &Bound<'_, PyModule>) -> PyResult<()> {
     {% for s in struct_names %}
     m.add_class::<{{ s }}>()?;
     {% endfor %}
-    OK(())
+    Ok(())
 }
 {% endif %}
