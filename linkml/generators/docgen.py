@@ -752,38 +752,44 @@ class DocGenerator(Generator):
         for e in elts:
             yield e
 
-    def all_class_objects(self) -> Iterator[ClassDefinition]:
+    def all_class_objects(self, imports=None) -> Iterator[ClassDefinition]:
         """
         all class objects in schema
 
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_classes(imports=self.mergeimports).values()
+        if imports is None:
+            imports = self.mergeimports
+        elts = self.schemaview.all_classes(imports=imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
 
-    def all_slot_objects(self) -> Iterator[SlotDefinition]:
+    def all_slot_objects(self, imports=None) -> Iterator[SlotDefinition]:
         """
         all slot objects in schema
 
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_slots(imports=self.mergeimports).values()
+        if imports is None:
+            imports = self.mergeimports
+        elts = self.schemaview.all_slots(imports=imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
 
-    def all_type_objects(self) -> Iterator[TypeDefinition]:
+    def all_type_objects(self, imports=None) -> Iterator[TypeDefinition]:
         """
         all type objects in schema
 
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_types(imports=self.mergeimports).values()
+        if imports is None:
+            imports = self.mergeimports
+        elts = self.schemaview.all_types(imports=imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -791,26 +797,30 @@ class DocGenerator(Generator):
     def all_type_object_names(self) -> List[TypeDefinitionName]:
         return [t.name for t in list(self.all_type_objects())]
 
-    def all_enum_objects(self) -> Iterator[EnumDefinition]:
+    def all_enum_objects(self, imports=None) -> Iterator[EnumDefinition]:
         """
         all enum objects in schema
 
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_enums(imports=self.mergeimports).values()
+        if imports is None:
+            imports = self.mergeimports
+        elts = self.schemaview.all_enums(imports=imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
 
-    def all_subset_objects(self) -> Iterator[SubsetDefinition]:
+    def all_subset_objects(self, imports=None) -> Iterator[SubsetDefinition]:
         """
         all enum objects in schema
 
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_subsets(imports=self.mergeimports).values()
+        if imports is None:
+            imports = self.mergeimports
+        elts = self.schemaview.all_subsets(imports=imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
