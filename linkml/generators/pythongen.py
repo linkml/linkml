@@ -127,6 +127,17 @@ class PythonGenerator(Generator):
             if type_prefix:
                 self.emit_prefixes.add(type_prefix)
 
+    def _import_field(self):
+        enum_pvs = []
+        for enum_name, enum_def in self.schema.enums.items():
+            for pv in enum_def.permissible_values:
+                enum_pvs.append(f"{enum_name}({pv})")
+        for _, class_def in self.schema.classes.items():
+            for slot in class_def.slots:
+                if self.schema.slots[slot].ifabsent in enum_pvs:
+                    return True
+        return False
+
     def gen_schema(self) -> str:
         all_imports = Imports()
         # generic imports
@@ -241,6 +252,9 @@ class PythonGenerator(Generator):
                 ],
             )
         )
+
+        if self._import_field():
+            all_imports = all_imports + Import(module="dataclasses", objects=[ObjectImport(name="field")])
 
         split_description = ""
         if self.schema.description:
@@ -935,7 +949,13 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                     or slot.range in self.schema.types
                     or slot.range in self.schema.enums
                 ):
-                    rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}(self.{aliased_slot_name})")
+                    enum_forward_ref = self.ifabsent_processor.enum_forward_references
+                    if cls.name in enum_forward_ref.keys() and slot.range in enum_forward_ref[cls.name].keys():
+                        rlines.append(
+                            f"\tself.{aliased_slot_name} = {base_type_name}.{enum_forward_ref[cls.name][slot.name]}"
+                        )
+                    else:
+                        rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}(self.{aliased_slot_name})")
                 else:
                     rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}(**as_dict(self.{aliased_slot_name}))")
         elif slot.inlined:
