@@ -403,8 +403,10 @@ enums:
             schema_view.all_slots()[SlotDefinitionName("presence")],
             schema_view.all_classes()[ClassDefinitionName("Student")],
         )
-        == "PresenceEnum.Missing"
+        == "field(default=None)"
     )
+
+    assert processor.enum_forward_references["Student"]["presence"] == "PresenceEnum.Missing"
 
     with pytest.raises(ValueError) as e:
         processor.process_slot(
