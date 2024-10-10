@@ -760,8 +760,9 @@ class DocGenerator(Generator):
         :return: iterator
         """
         if imports is None:
-            imports = self.mergeimports
-        elts = self.schemaview.all_classes(imports=imports).values()
+            elts = self.schemaview.all_classes().values()
+        else:
+            elts = self.schemaview.all_classes(imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -774,8 +775,9 @@ class DocGenerator(Generator):
         :return: iterator
         """
         if imports is None:
-            imports = self.mergeimports
-        elts = self.schemaview.all_slots(imports=imports).values()
+            elts = self.schemaview.all_slots().values()
+        else:
+            elts = self.schemaview.all_slots(imports=imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -788,8 +790,9 @@ class DocGenerator(Generator):
         :return: iterator
         """
         if imports is None:
-            imports = self.mergeimports
-        elts = self.schemaview.all_types(imports=imports).values()
+            elts = self.schemaview.all_types().values()
+        else:
+            elts = self.schemaview.all_types(imports=imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -805,8 +808,9 @@ class DocGenerator(Generator):
         :return: iterator
         """
         if imports is None:
-            imports = self.mergeimports
-        elts = self.schemaview.all_enums(imports=imports).values()
+            elts = self.schemaview.all_enums().values()
+        else:
+            elts = self.schemaview.all_enums(imports=imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -819,8 +823,9 @@ class DocGenerator(Generator):
         :return: iterator
         """
         if imports is None:
-            imports = self.mergeimports
-        elts = self.schemaview.all_subsets(imports=imports).values()
+            elts = self.schemaview.all_subsets().values()
+        else:
+            elts = self.schemaview.all_subsets(imports=imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
