@@ -68,6 +68,10 @@ def test_multiline_stuff(input_path):
     )
 
 
+def test_ifabsent_stuff(input_path):
+    make_python(input_path("kitchen_sink_ifabsent.yaml"))
+
+
 def test_head():
     """Validate the head/nohead parameter"""
     yaml = """id: "https://w3id.org/biolink/metamodel"
