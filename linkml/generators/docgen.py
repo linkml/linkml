@@ -164,6 +164,7 @@ class DocGenerator(Generator):
     use_slot_uris: bool = False
     use_class_uris: bool = False
     hierarchical_class_view: bool = False
+    render_imports: bool = False
 
     def __post_init__(self):
         dialect = self.dialect
@@ -752,47 +753,38 @@ class DocGenerator(Generator):
         for e in elts:
             yield e
 
-    def all_class_objects(self, imports=None) -> Iterator[ClassDefinition]:
+    def all_class_objects(self) -> Iterator[ClassDefinition]:
         """
         all class objects in schema
 
         Ensures rank is non-null
         :return: iterator
         """
-        if imports is None:
-            elts = self.schemaview.all_classes().values()
-        else:
-            elts = self.schemaview.all_classes(imports).values()
+        elts = self.schemaview.all_classes(imports=self.render_imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
 
-    def all_slot_objects(self, imports=None) -> Iterator[SlotDefinition]:
+    def all_slot_objects(self) -> Iterator[SlotDefinition]:
         """
         all slot objects in schema
 
         Ensures rank is non-null
         :return: iterator
         """
-        if imports is None:
-            elts = self.schemaview.all_slots().values()
-        else:
-            elts = self.schemaview.all_slots(imports=imports).values()
+        elts = self.schemaview.all_slots(imports=self.render_imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
 
-    def all_type_objects(self, imports=None) -> Iterator[TypeDefinition]:
+    def all_type_objects(self) -> Iterator[TypeDefinition]:
         """
         all type objects in schema
 
         Ensures rank is non-null
         :return: iterator
         """
-        if imports is None:
-            elts = self.schemaview.all_types().values()
-        else:
-            elts = self.schemaview.all_types(imports=imports).values()
+        elts = self.schemaview.all_types(imports=self.render_imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -800,32 +792,26 @@ class DocGenerator(Generator):
     def all_type_object_names(self) -> List[TypeDefinitionName]:
         return [t.name for t in list(self.all_type_objects())]
 
-    def all_enum_objects(self, imports=None) -> Iterator[EnumDefinition]:
+    def all_enum_objects(self) -> Iterator[EnumDefinition]:
         """
         all enum objects in schema
 
         Ensures rank is non-null
         :return: iterator
         """
-        if imports is None:
-            elts = self.schemaview.all_enums().values()
-        else:
-            elts = self.schemaview.all_enums(imports=imports).values()
+        elts = self.schemaview.all_enums(imports=self.render_imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
 
-    def all_subset_objects(self, imports=None) -> Iterator[SubsetDefinition]:
+    def all_subset_objects(self) -> Iterator[SubsetDefinition]:
         """
         all enum objects in schema
 
         Ensures rank is non-null
         :return: iterator
         """
-        if imports is None:
-            elts = self.schemaview.all_subsets().values()
-        else:
-            elts = self.schemaview.all_subsets(imports=imports).values()
+        elts = self.schemaview.all_subsets(imports=self.render_imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -849,7 +835,7 @@ class DocGenerator(Generator):
         :return: tuples (depth: int, cls: ClassDefinitionName)
         """
         sv = self.schemaview
-        roots = sv.class_roots(mixins=False, imports=self.mergeimports)
+        roots = sv.class_roots(mixins=False, imports=self.render_imports)
 
         # by default the classes are sorted alphabetically
         roots = sorted(roots, key=str.casefold, reverse=True)
@@ -863,7 +849,7 @@ class DocGenerator(Generator):
             depth, class_name = stack.pop()
             yield depth, class_name
             children = sorted(
-                sv.class_children(class_name=class_name, mixins=False, imports=self.mergeimports),
+                sv.class_children(class_name=class_name, mixins=False, imports=self.render_imports),
                 key=str.casefold,
                 reverse=True,
             )
@@ -1024,6 +1010,12 @@ class DocGenerator(Generator):
     help="Render class table on index page in a hierarchically indented view",
 )
 @click.option(
+    "--render-imports/--no-render-imports",
+    default=False,
+    show_default=True,
+    help="Render also the documentation of elements from imported schemas",
+)
+@click.option(
     "--example-directory",
     help="Folder in which example files are found. These are used to make inline examples",
 )
@@ -1052,6 +1044,7 @@ def cli(
     use_class_uris,
     hierarchical_class_view,
     subfolder_type_separation,
+    render_imports,
     **args,
 ):
     """Generate documentation folder from a LinkML YAML schema
@@ -1083,6 +1076,7 @@ def cli(
         hierarchical_class_view=hierarchical_class_view,
         index_name=index_name,
         subfolder_type_separation=subfolder_type_separation,
+        render_imports=render_imports,
         **args,
     )
     print(gen.serialize())
