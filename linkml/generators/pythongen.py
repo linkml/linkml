@@ -29,6 +29,7 @@ from rdflib import URIRef
 
 import linkml
 from linkml._version import __version__
+from linkml.generators.pydanticgen.template import Import, Imports, ObjectImport
 from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
 
@@ -127,13 +128,120 @@ class PythonGenerator(Generator):
                 self.emit_prefixes.add(type_prefix)
 
     def gen_schema(self) -> str:
-        # The metamodel uses Enumerations to define itself, so don't import if we are generating the metamodel
-        enumimports = (
-            ""
-            if self.genmeta
-            else "from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions\n"
+        all_imports = Imports()
+        # generic imports
+        all_imports = (
+            all_imports
+            + Import(module="dataclasses")
+            + Import(module="re")
+            + Import(
+                module="jsonasobj2",
+                objects=[
+                    ObjectImport(name="JsonObj"),
+                    ObjectImport(name="as_dict"),
+                ],
+            )
+            + Import(
+                module="typing",
+                objects=[
+                    ObjectImport(name="Optional"),
+                    ObjectImport(name="List"),
+                    ObjectImport(name="Union"),
+                    ObjectImport(name="Dict"),
+                    ObjectImport(name="ClassVar"),
+                    ObjectImport(name="Any"),
+                ],
+            )
+            + Import(
+                module="dataclasses",
+                objects=[
+                    ObjectImport(name="dataclass"),
+                ],
+            )
+            + Import(
+                module="datetime",
+                objects=[
+                    ObjectImport(name="date"),
+                    ObjectImport(name="datetime"),
+                    ObjectImport(name="time"),
+                ],
+            )
         )
-        handlerimport = "from linkml_runtime.utils.enumerations import EnumDefinitionImpl"
+
+        # The metamodel uses Enumerations to define itself, so don't import if we are generating the metamodel
+        if not self.genmeta:
+            all_imports = all_imports + Import(
+                module="linkml_runtime.linkml_model.meta",
+                objects=[
+                    ObjectImport(name="EnumDefinition"),
+                    ObjectImport(name="PermissibleValue"),
+                    ObjectImport(name="PvFormulaOptions"),
+                ],
+            )
+        # linkml imports
+        all_imports = (
+            all_imports
+            + Import(
+                module="linkml_runtime.utils.slot",
+                objects=[
+                    ObjectImport(name="Slot"),
+                ],
+            )
+            + Import(
+                module="linkml_runtime.utils.metamodelcore",
+                objects=[
+                    ObjectImport(name="empty_list"),
+                    ObjectImport(name="empty_dict"),
+                    ObjectImport(name="bnode"),
+                ],
+            )
+            + Import(
+                module="linkml_runtime.utils.yamlutils",
+                objects=[
+                    ObjectImport(name="YAMLRoot"),
+                    ObjectImport(name="extended_str"),
+                    ObjectImport(name="extended_float"),
+                    ObjectImport(name="extended_int"),
+                ],
+            )
+            + Import(
+                module="linkml_runtime.utils.dataclass_extensions_376",
+                objects=[
+                    ObjectImport(name="dataclasses_init_fn_with_kwargs"),
+                ],
+            )
+            + Import(
+                module="linkml_runtime.utils.formatutils",
+                objects=[
+                    ObjectImport(name="camelcase"),
+                    ObjectImport(name="underscore"),
+                    ObjectImport(name="sfx"),
+                ],
+            )
+        )
+
+        # handler import
+        all_imports = all_imports + Import(
+            module="linkml_runtime.utils.enumerations", objects=[ObjectImport(name="EnumDefinitionImpl")]
+        )
+        # other imports
+        all_imports = (
+            all_imports
+            + Import(
+                module="rdflib",
+                objects=[
+                    ObjectImport(name="Namespace"),
+                    ObjectImport(name="URIRef"),
+                ],
+            )
+            + Import(
+                module="linkml_runtime.utils.curienamespace",
+                objects=[
+                    ObjectImport(name="CurieNamespace"),
+                ],
+            )
+        )
+
         split_description = ""
         if self.schema.description:
             split_description = "\n#   ".join(d for d in self.schema.description.split("\n") if d is not None)
@@ -151,21 +259,7 @@ class PythonGenerator(Generator):
 # description: {split_description}
 # license: {be(self.schema.license)}
 
-import dataclasses
-import re
-from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
-from dataclasses import dataclass
-from datetime import date, datetime, time
-{enumimports}
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
-{handlerimport}
-from rdflib import Namespace, URIRef
-from linkml_runtime.utils.curienamespace import CurieNamespace
+{all_imports.render()}
 {self.gen_imports()}
 
 metamodel_version = "{self.schema.metamodel_version}"
