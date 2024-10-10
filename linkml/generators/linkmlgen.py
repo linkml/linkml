@@ -82,7 +82,19 @@ class LinkmlGenerator(Generator):
     "--materialize/--no-materialize",
     default=True,
     show_default=True,
-    help="Materialize induced slots as attributes, and structured patterns as patterns",
+    help="Materialize both, induced slots as attributes and structured patterns as patterns",
+)
+@click.option(
+    "--materialize-attributes/--no-materialize-attributes",
+    default=True,
+    show_default=True,
+    help="Materialize induced slots as attributes",
+)
+@click.option(
+    "--materialize-patterns/--no-materialize-patterns",
+    default=True,
+    show_default=True,
+    help="Materialize structured patterns as patterns",
 )
 @click.option(
     "-o",
@@ -95,13 +107,19 @@ class LinkmlGenerator(Generator):
 def cli(
     yamlfile,
     materialize: bool,
+    materialize_attributes: bool,
+    materialize_patterns: bool,
     output: FILE_TYPE = None,
     **kwargs,
 ):
+    if materialize is not None:
+        materialize_attributes = materialize
+        materialize_patterns = materialize
+
     gen = LinkmlGenerator(
         yamlfile,
-        materialize_attributes=materialize,
-        materialize_patterns=materialize,
+        materialize_attributes=materialize_attributes,
+        materialize_patterns=materialize_patterns,
         **kwargs,
     )
     print(gen.serialize(output=output))
