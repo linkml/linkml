@@ -10,6 +10,8 @@ from linkml.generators.common.ifabsent_processor import IfAbsentProcessor
 class PythonIfAbsentProcessor(IfAbsentProcessor):
     UNIMPLEMENTED_DEFAULT_VALUES = ["class_curie", "class_uri", "slot_uri", "slot_curie", "default_range", "default_ns"]
 
+    enum_forward_references = {}
+
     def map_custom_default_values(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition) -> (bool, str):
         if default_value in self.UNIMPLEMENTED_DEFAULT_VALUES:
             return True, None
@@ -68,10 +70,22 @@ class PythonIfAbsentProcessor(IfAbsentProcessor):
     def map_uri_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
         return self._uri_for(default_value)
 
+    def enum_forward_reference(self, cls_name: str, slot_name: str):
+        if (
+            cls_name in self.enum_forward_references.keys()
+            and slot_name in self.enum_forward_references[cls_name].keys()
+        ):
+            return self.enum_forward_references[cls_name][slot_name]
+        else:
+            return None
+
     def map_enum_default_value(
         self, enum_name: EnumDefinitionName, permissible_value_name: str, slot: SlotDefinition, cls: ClassDefinition
     ):
-        return f"{enum_name}.{permissible_value_name}"
+        if cls.name not in self.enum_forward_references.keys():
+            self.enum_forward_references[cls.name] = {}
+        self.enum_forward_references[cls.name][slot.name] = f"{enum_name}.{permissible_value_name}"
+        return "field(default=None)"
 
     def map_nc_name_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
         raise NotImplementedError()
