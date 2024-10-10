@@ -84,6 +84,10 @@ subsets:
     aliases:
     - B
     rank: 1
+  subset X:
+    name: subset X
+    definition_uri: https://w3id.org/linkml/tests/core/SubsetX
+    from_schema: https://w3id.org/linkml/tests/core
 types:
   string:
     name: string
@@ -444,6 +448,15 @@ enums:
       indifferent:
         text: indifferent
         description: not overly friendly nor obnoxiously spiteful
+  KitchenStatus:
+    name: KitchenStatus
+    definition_uri: https://w3id.org/linkml/tests/core/KitchenStatus
+    from_schema: https://w3id.org/linkml/tests/core
+    permissible_values:
+      DIRTY:
+        text: DIRTY
+      CLEAN:
+        text: CLEAN
 slots:
   employed at:
     name: employed at

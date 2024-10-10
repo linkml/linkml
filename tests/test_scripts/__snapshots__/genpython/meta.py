@@ -1013,6 +1013,15 @@ class CordialnessEnum(EnumDefinitionImpl):
         name="CordialnessEnum",
     )
 
+class KitchenStatus(EnumDefinitionImpl):
+
+    DIRTY = PermissibleValue(text="DIRTY")
+    CLEAN = PermissibleValue(text="CLEAN")
+
+    _defn = EnumDefinition(
+        name="KitchenStatus",
+    )
+
 # Slots
 class slots:
     pass

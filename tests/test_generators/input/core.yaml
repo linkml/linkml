@@ -16,6 +16,9 @@ prefixes:
 default_prefix: core
 license: https://creativecommons.org/publicdomain/zero/1.0/
 
+subsets:
+  subset X:
+
 types:
   phone number type:
     pattern: ^[\\+\\d+ +][\\d\\- ]+$
@@ -103,3 +106,9 @@ slots:
     range: agent
     multivalued: true
     inlined_as_list: true
+
+enums:
+  KitchenStatus:
+    permissible_values:
+      DIRTY:
+      CLEAN: 

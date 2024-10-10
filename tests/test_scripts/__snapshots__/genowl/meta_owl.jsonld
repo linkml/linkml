@@ -6529,6 +6529,54 @@
             "@id": "https://w3id.org/linkml/tests/kitchen_sink/slot_with_space_1"
           }
         ]
+      },
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus#DIRTY",
+        "@type": [
+          "http://www.w3.org/2002/07/owl#Class"
+        ],
+        "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+          {
+            "@id": "https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus"
+          }
+        ]
+      },
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus#CLEAN",
+        "@type": [
+          "http://www.w3.org/2002/07/owl#Class"
+        ],
+        "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+          {
+            "@id": "https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus"
+          }
+        ]
+      },
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus",
+        "@type": [
+          "http://www.w3.org/2002/07/owl#Class"
+        ],
+        "http://www.w3.org/2002/07/owl#unionOf": [
+          {
+            "@list": [
+              {
+                "@id": "https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus#DIRTY"
+              },
+              {
+                "@id": "https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus#CLEAN"
+              }
+            ]
+          }
+        ],
+        "https://w3id.org/linkml/permissible_values": [
+          {
+            "@id": "https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus#DIRTY"
+          },
+          {
+            "@id": "https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus#CLEAN"
+          }
+        ]
       }
     ],
     "@id": "https://w3id.org/linkml/tests/kitchen_sink.owl.ttl"

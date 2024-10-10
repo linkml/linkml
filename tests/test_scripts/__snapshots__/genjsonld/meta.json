@@ -102,6 +102,11 @@
         "B"
       ],
       "rank": 1
+    },
+    {
+      "name": "subset_X",
+      "definition_uri": "https://w3id.org/linkml/tests/core/SubsetX",
+      "from_schema": "https://w3id.org/linkml/tests/core"
     }
   ],
   "types": [
@@ -515,6 +520,19 @@
         {
           "text": "indifferent",
           "description": "not overly friendly nor obnoxiously spiteful"
+        }
+      ]
+    },
+    {
+      "name": "KitchenStatus",
+      "definition_uri": "https://w3id.org/linkml/tests/core/KitchenStatus",
+      "from_schema": "https://w3id.org/linkml/tests/core",
+      "permissible_values": [
+        {
+          "text": "DIRTY"
+        },
+        {
+          "text": "CLEAN"
         }
       ]
     }

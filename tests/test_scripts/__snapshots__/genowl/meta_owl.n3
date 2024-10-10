@@ -511,6 +511,19 @@ ks:FamilialRelationship a owl:Class ;
     rdfs:label "SIBLING_OF" ;
     rdfs:subClassOf ks:FamilialRelationshipType .
 
+ks:KitchenStatus a owl:Class ;
+    owl:unionOf ( <https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus#DIRTY> <https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus#CLEAN> ) ;
+    linkml:permissible_values <https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus#CLEAN>,
+        <https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus#DIRTY> .
+
+<https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus#CLEAN> a owl:Class ;
+    rdfs:label "CLEAN" ;
+    rdfs:subClassOf ks:KitchenStatus .
+
+<https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus#DIRTY> a owl:Class ;
+    rdfs:label "DIRTY" ;
+    rdfs:subClassOf ks:KitchenStatus .
+
 <https://w3id.org/linkml/tests/kitchen_sink/LifeStatusEnum#DEAD> a owl:Class ;
     rdfs:label "DEAD" ;
     rdfs:subClassOf ks:LifeStatusEnum .

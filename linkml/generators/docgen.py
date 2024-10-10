@@ -164,6 +164,7 @@ class DocGenerator(Generator):
     use_slot_uris: bool = False
     use_class_uris: bool = False
     hierarchical_class_view: bool = False
+    render_imports: bool = False
 
     def __post_init__(self):
         dialect = self.dialect
@@ -759,7 +760,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_classes(imports=self.mergeimports).values()
+        elts = self.schemaview.all_classes(imports=self.render_imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -771,7 +772,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_slots(imports=self.mergeimports).values()
+        elts = self.schemaview.all_slots(imports=self.render_imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -783,7 +784,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_types(imports=self.mergeimports).values()
+        elts = self.schemaview.all_types(imports=self.render_imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -798,7 +799,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_enums(imports=self.mergeimports).values()
+        elts = self.schemaview.all_enums(imports=self.render_imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -810,7 +811,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_subsets(imports=self.mergeimports).values()
+        elts = self.schemaview.all_subsets(imports=self.render_imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -834,7 +835,7 @@ class DocGenerator(Generator):
         :return: tuples (depth: int, cls: ClassDefinitionName)
         """
         sv = self.schemaview
-        roots = sv.class_roots(mixins=False, imports=self.mergeimports)
+        roots = sv.class_roots(mixins=False, imports=self.render_imports)
 
         # by default the classes are sorted alphabetically
         roots = sorted(roots, key=str.casefold, reverse=True)
@@ -848,7 +849,7 @@ class DocGenerator(Generator):
             depth, class_name = stack.pop()
             yield depth, class_name
             children = sorted(
-                sv.class_children(class_name=class_name, mixins=False, imports=self.mergeimports),
+                sv.class_children(class_name=class_name, mixins=False, imports=self.render_imports),
                 key=str.casefold,
                 reverse=True,
             )
@@ -1009,6 +1010,12 @@ class DocGenerator(Generator):
     help="Render class table on index page in a hierarchically indented view",
 )
 @click.option(
+    "--render-imports/--no-render-imports",
+    default=False,
+    show_default=True,
+    help="Render also the documentation of elements from imported schemas",
+)
+@click.option(
     "--example-directory",
     help="Folder in which example files are found. These are used to make inline examples",
 )
@@ -1037,6 +1044,7 @@ def cli(
     use_class_uris,
     hierarchical_class_view,
     subfolder_type_separation,
+    render_imports,
     **args,
 ):
     """Generate documentation folder from a LinkML YAML schema
@@ -1068,6 +1076,7 @@ def cli(
         hierarchical_class_view=hierarchical_class_view,
         index_name=index_name,
         subfolder_type_separation=subfolder_type_separation,
+        render_imports=render_imports,
         **args,
     )
     print(gen.serialize())
