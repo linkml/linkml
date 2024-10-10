@@ -66,3 +66,50 @@ def test_no_mergeimports(tmp_path):
     )
 
 
+def test_no_render_imports(tmp_path):
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "-d",
+            tmp_path,
+            "--no-mergeimports",
+            "--no-render-imports",
+            KITCHEN_SINK_PATH,
+        ],
+    )
+    assert result.exit_code == 0
+
+    index_path = os.path.join(tmp_path, "index.md")
+    assert (
+        re.search(
+            r"\s*\|\s*\[Agent\]\(Agent\.md\)\s*\|\s*",
+            open(index_path).read(),
+        )
+        is None
+    )
+
+
+def test_render_imports(tmp_path):
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "-d",
+            tmp_path,
+            "--no-mergeimports",
+            "--render-imports",
+            KITCHEN_SINK_PATH,
+        ],
+    )
+    assert result.exit_code == 0
+
+    index_path = os.path.join(tmp_path, "index.md")
+
+    assert (
+        re.search(
+            r"\s*\|\s*\[Agent\]\(Agent\.md\)\s*\|\s*",
+            open(index_path).read(),
+        )
+        is not None
+    )
