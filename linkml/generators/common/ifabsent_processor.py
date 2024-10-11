@@ -1,7 +1,7 @@
 import abc
 import re
 from abc import ABC
-from typing import Any, Optional
+from typing import Any, Optional, Tuple, Union
 
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import (
@@ -48,7 +48,6 @@ class IfAbsentProcessor(ABC):
         if slot.ifabsent:
             ifabsent_match = self.ifabsent_regex.search(slot.ifabsent)
             ifabsent_default_value = ifabsent_match.group("default_value")
-
             return self._map_to_default_value(slot, ifabsent_default_value, cls)
 
         return None
@@ -174,7 +173,9 @@ class IfAbsentProcessor(ABC):
         raise ValueError(f"The ifabsent value `{slot.ifabsent}` of the `{slot.name}` slot could not be processed")
 
     @abc.abstractmethod
-    def map_custom_default_values(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition) -> (bool, str):
+    def map_custom_default_values(
+        self, default_value: str, slot: SlotDefinition, cls: ClassDefinition
+    ) -> Tuple[bool, Union[str, None]]:
         """
         Maps custom default values that aren't generic behaviours.
 
