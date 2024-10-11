@@ -127,17 +127,6 @@ class PythonGenerator(Generator):
             if type_prefix:
                 self.emit_prefixes.add(type_prefix)
 
-    def _import_field(self):
-        enum_pvs = []
-        for enum_name, enum_def in self.schema.enums.items():
-            for pv in enum_def.permissible_values:
-                enum_pvs.append(f"{enum_name}({pv})")
-        for _, class_def in self.schema.classes.items():
-            for slot in class_def.slots:
-                if self.schema.slots[slot].ifabsent in enum_pvs:
-                    return True
-        return False
-
     def gen_schema(self) -> str:
         all_imports = Imports()
         # generic imports
@@ -252,9 +241,6 @@ class PythonGenerator(Generator):
                 ],
             )
         )
-
-        if self._import_field():
-            all_imports = all_imports + Import(module="dataclasses", objects=[ObjectImport(name="field")])
 
         split_description = ""
         if self.schema.description:
@@ -917,16 +903,10 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         # Generate the type co-ercion for the various types.
         # NOTE: if you set this to true, we will cast all types.   This may be what we really want
         if not slot.multivalued:
-            iap = self.ifabsent_processor
             if slot.designates_type:
                 pass
             elif slot.required:
                 rlines.append(f"if not isinstance(self.{aliased_slot_name}, {base_type_name}):")
-            elif slot.range in self.schema.enums and iap.enum_forward_reference(cls.name, slot.name):
-                rlines.append(
-                    f"if self.{aliased_slot_name} is not field(default=None) and "
-                    f"not isinstance(self.{aliased_slot_name}, {base_type_name}):"
-                )
             else:
                 rlines.append(
                     f"if self.{aliased_slot_name} is not None and "
@@ -950,20 +930,21 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             ):
                 rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}()")
             else:
-                if (self.class_identifier(slot.range) and not slot.inlined) or slot.range in self.schema.types:
-                    rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}(self.{aliased_slot_name})")
-                elif (self.class_identifier(slot.range) and not slot.inlined) or slot.range in self.schema.enums:
+                if slot.range in self.schema.enums and slot.ifabsent:
                     # `ifabsent` for an enumeration cannot be assigned to
                     # the dataclass field default, because it would be a
-                    # mutable. `python_ifabsent_processor.py` can only set
-                    # `field(default=None)` and mark the field's default to
-                    # be set in __post_init__ and store the default in
-                    # self.ifabsent_processor.enum_forward_references
-                    # here the right default value is set
-                    if iap.enum_forward_reference(cls.name, slot.name):
-                        rlines.append(f"\tself.{aliased_slot_name} = {iap.enum_forward_reference(cls.name, slot.name)}")
-                    else:
-                        rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}(self.{aliased_slot_name})")
+                    # mutable. `python_ifabsent_processor.py` can specify
+                    # the default as string and here that string gets
+                    # converted into an object attribute invocation
+                    rlines.append(f"\tenum_name, pv_name = self.{aliased_slot_name}.split('.')")
+                    rlines.append("\tenum_cls = globals().get(enum_name)")
+                    rlines.append(f"\tself.{aliased_slot_name} = getattr(enum_cls, pv_name)")
+                elif (
+                    (self.class_identifier(slot.range) and not slot.inlined)
+                    or slot.range in self.schema.types
+                    or slot.range in self.schema.enums
+                ):
+                    rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}(self.{aliased_slot_name})")
                 else:
                     rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}(**as_dict(self.{aliased_slot_name}))")
         elif slot.inlined:
