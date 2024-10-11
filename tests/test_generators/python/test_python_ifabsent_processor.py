@@ -374,6 +374,44 @@ def test_uri_default_value():
     )
 
 
+# If this function does not get fixture scoped to the module the
+# PythonIfAbsentProcessor instance suddenly has some attributes
+# coming from tests using the kitchen-sink example! Invalidating that
+# way the results of the test.
+@pytest.fixture(scope="module")
+def test_enum_no_default_value():
+    schema = (
+        base_schema
+        + """
+      - name: presence
+        range: PresenceEnum
+      - name: invalidPresence
+        range: PresenceEnum
+
+enums:
+  PresenceEnum:
+    permissible_values:
+      Present:
+        description: It's there.
+      Missing:
+        description: It's not there.
+    """
+    )
+    schema_view = SchemaView(schema)
+
+    processor = PythonIfAbsentProcessor(schema_view)
+
+    assert (
+        processor.process_slot(
+            schema_view.all_slots()[SlotDefinitionName("presence")],
+            schema_view.all_classes()[ClassDefinitionName("Student")],
+        )
+        is None
+    )
+
+    assert processor.enum_forward_references == {}
+
+
 def test_enum_default_value():
     schema = (
         base_schema
