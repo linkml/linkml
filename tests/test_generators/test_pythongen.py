@@ -69,7 +69,8 @@ def test_multiline_stuff(input_path):
 
 
 def test_ifabsent_stuff(input_path):
-    make_python(input_path("kitchen_sink_ifabsent.yaml"))
+    ksm = make_python(input_path("kitchen_sink_ifabsent.yaml"))
+    assert ksm.IfAbsent().ifabsent_not_literal is ksm.CordialnessEnum.heartfelt
 
 
 def test_head():
