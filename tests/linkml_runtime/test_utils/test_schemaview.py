@@ -42,24 +42,25 @@ def view():
     return SchemaView(SCHEMA_WITH_IMPORTS)
 
 
-def test_children_method():
-        view = SchemaView(SCHEMA_NO_IMPORTS)
-        children = view.get_children("Person")
-        assert children == ['Adult']
+def test_children_method(schema_view_no_imports):
+    view = schema_view_no_imports
+    children = view.get_children("Person")
+    assert children == ['Adult']
 
-def test_all_aliases():
-        """
-        This tests the aliases slot (not: alias)
-        :return:
-        """
-        view = SchemaView(SCHEMA_NO_IMPORTS)
-        aliases = view.all_aliases()
-        assert "identifier" in aliases["id"]
-        assert "A" in aliases["subset A"]
-        assert "B" in aliases["subset B"]
-        assert "dad" in aliases["Adult"]
 
-def test_alias_slot():
+def test_all_aliases(vischema_view_no_imports):
+    """
+    This tests the aliases slot (not: alias)
+    :return:
+    """
+    view = schema_view_no_imports
+    aliases = view.all_aliases()
+    assert "identifier" in aliases["id"]
+    assert "A" in aliases["subset A"]
+    assert "B" in aliases["subset B"]
+    assert "dad" in aliases["Adult"]
+
+def test_alias_slot(schema_view_no_imports):
     """
     Tests the alias slot.
 
@@ -67,9 +68,7 @@ def test_alias_slot():
     name field if not present.
 
     """
-
-    view = SchemaView(SCHEMA_NO_IMPORTS)
-
+    view = schema_view_no_imports
     for c in view.all_classes().values():
         for s in view.class_induced_slots(c.name):
             assert s.alias is not None  # Assert that alias is not None
@@ -79,8 +78,8 @@ def test_alias_slot():
     assert postal_code_slot.alias == 'zip'  # Assert alias is 'zip'
 
 
-def test_schemaview_enums():
-    view = SchemaView(SCHEMA_NO_IMPORTS)
+def test_schemaview_enums(schema_view_no_imports):
+    view = schema_view_no_imports
 
     # Test for ValueError when passing incorrect parameters
     with pytest.raises(ValueError):
@@ -322,9 +321,9 @@ def test_schemaview(schema_view_no_imports):
         s = view.induced_slot(sn, 'Dataset')
         logger.debug(s)
 
-def test_rollup_rolldown():
+def test_rollup_rolldown(schema_view_no_imports):
     # no import schema
-    view = SchemaView(SCHEMA_NO_IMPORTS)
+    view = schema_view_no_imports
     element_name = 'Event'
     roll_up(view, element_name)
     for slot in view.class_induced_slots(element_name):
@@ -374,17 +373,15 @@ def test_caching():
     assert len(['Y', 'Z', 'W']) == len(view.all_classes())
 
 
-def test_import_map():
+def test_import_map(view):
     """
     Path to import file should be configurable
     """
     for im in [{"core": "/no/such/file"}, {"linkml:": "/no/such/file"}]:
         with pytest.raises(FileNotFoundError):
-            view = SchemaView(SCHEMA_WITH_IMPORTS, importmap=im)
             view.all_classes()
 
     for im in [None, {}, {"core": "core"}]:
-        view = SchemaView(SCHEMA_WITH_IMPORTS, importmap=im)
         view.all_classes()
         assert view.imports_closure().sort() == ['kitchen_sink', 'core', 'linkml:types'].sort()  # Assert imports closure
         assert ACTIVITY in view.all_classes()  # Assert ACTIVITY is in all classes
@@ -483,9 +480,8 @@ def test_imports(view):
     assert height.unit.ucum_code == "m"
 
 
-def test_imports_from_schemaview():
+def test_imports_from_schemaview(view):
     """view should by default dynamically include imports chain"""
-    view = SchemaView(SCHEMA_WITH_IMPORTS)
     view2 = SchemaView(view.schema)
     assert len(view.all_classes()) == len(view2.all_classes())
     assert len(view.all_classes(imports=False)) == len(view2.all_classes(imports=False))
@@ -575,11 +571,10 @@ def test_direct_remote_imports_additional():
     class_count = len(view.all_classes())
     assert class_count > 0
 
-def test_merge_imports():
+def test_merge_imports(view):
     """
     ensure merging and merging imports closure works
     """
-    view = SchemaView(SCHEMA_WITH_IMPORTS)
     all_c = copy(view.all_classes())
     all_c_noi = copy(view.all_classes(imports=False))
     assert len(all_c_noi) < len(all_c)
@@ -793,8 +788,7 @@ def test_metamodel_in_schemaview():
             assert exp_slot_uri is not None
 
 
-def test_get_classes_by_slot():
-    sv = SchemaView(SCHEMA_WITH_IMPORTS)
+def test_get_classes_by_slot(view):
     slot = sv.get_slot(AGE_IN_YEARS)
     actual_result = sv.get_classes_by_slot(slot)
     expected_result = ["Person"]
@@ -833,6 +827,7 @@ def test_materialize_patterns_attribute():
 
 
 def test_mergeimports():
+    # note the change here to include an extra param not in the fixture
     sv = SchemaView(SCHEMA_WITH_IMPORTS, merge_imports=False)
     classes_list = list(sv.schema.classes.keys())
     assert "activity" not in classes_list
