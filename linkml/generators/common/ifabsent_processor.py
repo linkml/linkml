@@ -41,6 +41,11 @@ class IfAbsentProcessor(ABC):
 
     ifabsent_regex = re.compile("""(?:(?P<type>\w+)\()?[\"\']?(?P<default_value>[^\(\)\"\')]*)[\"\']?\)?""")
 
+    URI_SPECIAL_CASES = ("class_uri", "slot_uri")
+    CURIE_SPECIAL_CASES = ("class_curie", "slot_curie")
+    DEFAULT_RANGE_SPECIAL_CASE = "default_range"
+    UNIMPLEMENTED_DEFAULT_VALUES = ("default_ns",)
+
     def __init__(self, schema_view: SchemaView):
         self.schema_view = schema_view
 
@@ -59,6 +64,9 @@ class IfAbsentProcessor(ABC):
         mapped, custom_default_value = self.map_custom_default_values(ifabsent_default_value, slot, cls)
         if mapped:
             return custom_default_value
+
+        if ifabsent_default_value == self.DEFAULT_RANGE_SPECIAL_CASE:
+            return self._map_default_range_special_case(ifabsent_default_value, slot, cls)
 
         if slot.range == String.type_name:
             return self.map_string_default_value(ifabsent_default_value, slot, cls)
@@ -285,3 +293,27 @@ class IfAbsentProcessor(ABC):
     def _strval(self, txt: str) -> str:
         txt = str(txt).replace('"', '\\"')
         return f'"{txt}"'
+
+    def _map_uri_special_case(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition) -> str:
+        if default_value == "class_uri":
+            return f'"{self.schema_view.get_uri(cls, expand=True)}"'
+        elif default_value == "slot_uri":
+            return f'"{self.schema_view.get_uri(slot, expand=True)}"'
+        else:
+            raise ValueError(
+                f"Default value must be one of the URI special cases: {self.URI_SPECIAL_CASES}. Got: {default_value}"
+            )
+
+    def _map_curie_special_case(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition) -> str:
+        if default_value == "class_curie":
+            return f'"{self.schema_view.get_uri(cls, expand=False)}"'
+        elif default_value == "slot_curie":
+            return f'"{self.schema_view.get_uri(slot, expand=False)}"'
+        else:
+            raise ValueError(
+                f"Default value must be one of the curie special cases: {self.CURIE_SPECIAL_CASES}. "
+                f"Got: {default_value}"
+            )
+
+    def _map_default_range_special_case(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition) -> str:
+        return f'"{self.schema_view.schema.default_range}"'

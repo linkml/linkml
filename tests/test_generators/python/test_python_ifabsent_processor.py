@@ -444,10 +444,10 @@ def test_bnode_default_value():
 @pytest.mark.parametrize(
     "ifabsent,expected",
     [
-        ["class_uri", "https://example.org/Student"],
-        ["slot_uri", "https://example.org/default_urilike"],
-        ["class_curie", "ex:Student"],
-        ["slot_curie", "ex:default_urilike"],
+        ["class_uri", '"https://example.org/Student"'],
+        ["slot_uri", '"https://example.org/default_urilike"'],
+        ["class_curie", '"ex:Student"'],
+        ["slot_curie", '"ex:default_urilike"'],
     ],
 )
 def test_uriorcurie_default_value(ifabsent, expected, range):
@@ -484,4 +484,4 @@ def test_default_range_default_value():
     slot = cls.attributes["default_range_slot"]
     processor = PythonIfAbsentProcessor(sv)
     result = processor.process_slot(slot, cls)
-    assert result == "float"
+    assert result == '"float"'

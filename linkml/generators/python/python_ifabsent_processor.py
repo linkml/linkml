@@ -11,18 +11,11 @@ from linkml.generators.common.ifabsent_processor import IfAbsentProcessor
 
 class PythonIfAbsentProcessor(IfAbsentProcessor):
 
-    URI_SPECIAL_CASES = ("class_uri", "slot_uri")
-    CURIE_SPECIAL_CASES = ("class_curie", "slot_curie")
-    OTHER_SPECIAL_CASES = ("default_range",)
-    UNIMPLEMENTED_DEFAULT_VALUES = ("default_ns",)
-
     def map_custom_default_values(
         self, default_value: str, slot: SlotDefinition, cls: ClassDefinition
     ) -> Tuple[bool, Union[str, None]]:
         if default_value in self.UNIMPLEMENTED_DEFAULT_VALUES:
             return True, None
-        elif default_value in self.OTHER_SPECIAL_CASES:
-            return True, self._map_other_special_case(default_value, slot, cls)
         elif default_value == "bnode":
             return True, "bnode()"
         else:
@@ -112,33 +105,3 @@ class PythonIfAbsentProcessor(IfAbsentProcessor):
 
     def map_sparql_path_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
         raise NotImplementedError()
-
-    def _map_uri_special_case(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition) -> str:
-        if default_value == "class_uri":
-            return self.schema_view.get_uri(cls, expand=True)
-        elif default_value == "slot_uri":
-            return self.schema_view.get_uri(slot, expand=True)
-        else:
-            raise ValueError(
-                f"Default value must be one of the URI special cases: {self.URI_SPECIAL_CASES}. Got: {default_value}"
-            )
-
-    def _map_curie_special_case(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition) -> str:
-        if default_value == "class_curie":
-            return self.schema_view.get_uri(cls, expand=False)
-        elif default_value == "slot_curie":
-            return self.schema_view.get_uri(slot, expand=False)
-        else:
-            raise ValueError(
-                f"Default value must be one of the curie special cases: {self.CURIE_SPECIAL_CASES}. "
-                f"Got: {default_value}"
-            )
-
-    def _map_other_special_case(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition) -> str:
-        if default_value == "default_range":
-            return self.schema_view.schema.default_range
-        else:
-            raise ValueError(
-                f"Default value must be one of the other special cases: {self.OTHER_SPECIAL_CASES}. "
-                f"Got: {default_value}"
-            )
