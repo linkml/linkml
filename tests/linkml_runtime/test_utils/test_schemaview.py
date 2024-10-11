@@ -48,7 +48,7 @@ def test_children_method(schema_view_no_imports):
     assert children == ['Adult']
 
 
-def test_all_aliases(vischema_view_no_imports):
+def test_all_aliases(schema_view_no_imports):
     """
     This tests the aliases slot (not: alias)
     :return:
@@ -373,15 +373,17 @@ def test_caching():
     assert len(['Y', 'Z', 'W']) == len(view.all_classes())
 
 
-def test_import_map(view):
+def test_import_map():
     """
     Path to import file should be configurable
     """
     for im in [{"core": "/no/such/file"}, {"linkml:": "/no/such/file"}]:
+        view = SchemaView(SCHEMA_WITH_IMPORTS, importmap=im)
         with pytest.raises(FileNotFoundError):
             view.all_classes()
 
     for im in [None, {}, {"core": "core"}]:
+        view = SchemaView(SCHEMA_WITH_IMPORTS, importmap=im)
         view.all_classes()
         assert view.imports_closure().sort() == ['kitchen_sink', 'core', 'linkml:types'].sort()  # Assert imports closure
         assert ACTIVITY in view.all_classes()  # Assert ACTIVITY is in all classes
@@ -789,12 +791,12 @@ def test_metamodel_in_schemaview():
 
 
 def test_get_classes_by_slot(view):
-    slot = sv.get_slot(AGE_IN_YEARS)
-    actual_result = sv.get_classes_by_slot(slot)
+    slot = view.get_slot(AGE_IN_YEARS)
+    actual_result = view.get_classes_by_slot(slot)
     expected_result = ["Person"]
     assert sorted(actual_result) == sorted(expected_result)
 
-    actual_result = sv.get_classes_by_slot(slot, include_induced=True)
+    actual_result = view.get_classes_by_slot(slot, include_induced=True)
     expected_result = ["Person", "Adult"]
     assert sorted(actual_result) == sorted(expected_result)
 
