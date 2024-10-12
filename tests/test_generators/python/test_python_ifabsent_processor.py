@@ -434,7 +434,7 @@ enums:
             schema_view.all_slots()[SlotDefinitionName("presence")],
             schema_view.all_classes()[ClassDefinitionName("Student")],
         )
-        == "'PresenceEnum.Missing'"
+        == "'Missing'"
     )
 
     with pytest.raises(ValueError) as e:

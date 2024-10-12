@@ -936,9 +936,8 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                     # mutable. `python_ifabsent_processor.py` can specify
                     # the default as string and here that string gets
                     # converted into an object attribute invocation
-                    rlines.append(f"\tenum_name, pv_name = self.{aliased_slot_name}.split('.')")
-                    rlines.append("\tenum_cls = globals().get(enum_name)")
-                    rlines.append(f"\tself.{aliased_slot_name} = getattr(enum_cls, pv_name)")
+                    # TODO: fix according https://github.com/linkml/linkml/pull/2329#discussion_r1797534588
+                    rlines.append(f"\tself.{aliased_slot_name} = getattr({slot.range}, self.{aliased_slot_name})")
                 elif (
                     (self.class_identifier(slot.range) and not slot.inlined)
                     or slot.range in self.schema.types
