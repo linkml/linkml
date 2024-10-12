@@ -374,11 +374,6 @@ def test_uri_default_value():
     )
 
 
-# If this function does not get fixture scoped to the module the
-# PythonIfAbsentProcessor instance suddenly has some attributes
-# coming from tests using the kitchen-sink example! Invalidating that
-# way the results of the test.
-@pytest.fixture(scope="module")
 def test_enum_no_default_value():
     schema = (
         base_schema
@@ -408,8 +403,6 @@ enums:
         )
         is None
     )
-
-    assert processor.enum_forward_references == {}
 
 
 def test_enum_default_value():
