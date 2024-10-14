@@ -10,7 +10,8 @@ update_model:
 	cp -pr $(MODEL_DIR)/* linkml_runtime/linkml_model
 
 test:
-	poetry run python -m unittest discover
+	poetry run pytest
+
 
 # temporary measure until linkml-model is synced
 linkml_runtime/processing/validation_datamodel.py: linkml_runtime/processing/validation_datamodel.yaml

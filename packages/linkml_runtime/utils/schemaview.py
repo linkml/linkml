@@ -36,9 +36,9 @@ TYPE_NAME = Union[TypeDefinitionName, str]
 ENUM_NAME = Union[EnumDefinitionName, str]
 
 ElementType = TypeVar("ElementType", bound=Element)
-ElementNameType = TypeVar("ElementNameType", bound=Union[ElementName,str])
+ElementNameType = TypeVar("ElementNameType", bound=Union[ElementName, str])
 DefinitionType = TypeVar("DefinitionType", bound=Definition)
-DefinitionNameType = TypeVar("DefinitionNameType", bound=Union[DefinitionName,str])
+DefinitionNameType = TypeVar("DefinitionNameType", bound=Union[DefinitionName, str])
 ElementDict = Dict[ElementNameType, ElementType]
 DefDict = Dict[DefinitionNameType, DefinitionType]
 
@@ -51,7 +51,6 @@ class OrderedBy(Enum):
     """
     Order according to inheritance such that if C is a child of P then C appears after P
     """
-
 
 
 def _closure(f, x, reflexive=True, depth_first=True, **kwargs):
@@ -84,7 +83,7 @@ def load_schema_wrap(path: str, **kwargs):
     schema: SchemaDefinition
     schema = yaml_loader.load(path, target_class=SchemaDefinition, **kwargs)
     if "\n" not in path:
-    # if "\n" not in path and "://" not in path:
+        # if "\n" not in path and "://" not in path:
         # only set path if the input is not a yaml string or URL.
         # Setting the source path is necessary for relative imports;
         # while initializing a schema with a yaml string is possible, there
@@ -229,7 +228,8 @@ class SchemaView(object):
         return schema
 
     @lru_cache(None)
-    def imports_closure(self, imports: bool = True, traverse: Optional[bool] = None, inject_metadata=True) -> List[SchemaDefinitionName]:
+    def imports_closure(self, imports: bool = True, traverse: Optional[bool] = None, inject_metadata=True) -> List[
+        SchemaDefinitionName]:
         """
         Return all imports
 
@@ -314,7 +314,7 @@ class SchemaView(object):
             visited.add(sn)
 
         # filter duplicates, keeping first entry
-        closure = list({k:None for k in closure}.keys())
+        closure = list({k: None for k in closure}.keys())
 
         if inject_metadata:
             for s in self.schema_map.values():
@@ -419,7 +419,6 @@ class SchemaView(object):
                 raise OrderingError(f"could not find suitable element in {clist} that does not ref {slist}")
 
         return {s.name: s for s in slist}
-
 
     @lru_cache(None)
     def all_classes(self, ordered_by=OrderedBy.PRESERVE, imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
@@ -865,14 +864,13 @@ class SchemaView(object):
 
     @lru_cache(None)
     def permissible_value_descendants(self, permissible_value_text: str,
-                                    enum_name: ENUM_NAME,
-                                    reflexive=True,
-                                    depth_first=True) -> List[str]:
+                                      enum_name: ENUM_NAME,
+                                      reflexive=True,
+                                      depth_first=True) -> List[str]:
         """
         Closure of permissible_value_children method
         :enum
         """
-
 
         return _closure(lambda x: self.permissible_value_children(x, enum_name),
                         permissible_value_text,
@@ -1396,9 +1394,9 @@ class SchemaView(object):
                     else:
                         # can rewrite below as:
                         # 1. if v2:
-                        # 2. if v2 is not None and 
+                        # 2. if v2 is not None and
                         #    (
-                        #      (isinstance(v2, (dict, list)) and v2) or 
+                        #      (isinstance(v2, (dict, list)) and v2) or
                         #      (isinstance(v2, JsonObj) and as_dict(v2))
                         #    )
                         if not is_empty(v2):
@@ -1548,7 +1546,7 @@ class SchemaView(object):
                 return True
             elif slot.inlined_as_list:
                 return True
-            
+
             id_slot = self.get_identifier_slot(range, imports=imports)
             if id_slot is None:
                 # must be inlined as has no identifier
@@ -1592,7 +1590,7 @@ class SchemaView(object):
         """
         Returns all applicable ranges for a slot
 
-        Typically any given slot has exactly one range, and one metamodel element type,
+        Typically, any given slot has exactly one range, and one metamodel element type,
         but a proposed feature in LinkML 1.2 is range expressions, where ranges can be defined as unions
 
         :param slot:
@@ -1604,9 +1602,9 @@ class SchemaView(object):
             if x.range:
                 range_union_of.append(x.range)
         return range_union_of
-        
+
     def get_classes_by_slot(
-        self, slot: SlotDefinition, include_induced: bool = False
+            self, slot: SlotDefinition, include_induced: bool = False
     ) -> List[ClassDefinitionName]:
         """Get all classes that use a given slot, either as a direct or induced slot.
 
