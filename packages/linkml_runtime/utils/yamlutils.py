@@ -1,3 +1,4 @@
+import pdb
 from copy import copy
 from json import JSONDecoder
 from typing import Union, Any, Optional, Callable
@@ -35,13 +36,6 @@ class YAMLRoot(JsonObj):
     """
     The root object for all python YAML representations
     """
-    def __init__(self, *args, **kwargs):
-        """
-        Override dataclass initializer
-        @param args:
-        @param kwargs:
-        """
-        super().__init__(*args, **kwargs)
 
     def __post_init__(self, *args: list[str],  **kwargs):
         if args or kwargs:
