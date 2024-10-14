@@ -11,15 +11,11 @@ from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
 
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from rdflib import URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from .issue_368_imports import ParentClass, SampleEnum
 
 metamodel_version = "1.7.0"
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')

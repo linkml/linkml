@@ -15,7 +15,6 @@ from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.metamodelcore import empty_list
 from linkml_runtime.utils.yamlutils import YAMLRoot
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
@@ -23,9 +22,6 @@ from linkml_runtime.linkml_model.types import Decimal
 from linkml_runtime.utils.metamodelcore import Bool, Decimal
 
 metamodel_version = "1.7.0"
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 EX = CurieNamespace('ex', 'https://w3id.org/linkml/examples/inference/')

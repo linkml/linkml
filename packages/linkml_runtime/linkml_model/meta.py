@@ -38,7 +38,6 @@ from dataclasses import dataclass
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.metamodelcore import empty_list, empty_dict
 from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.formatutils import sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import URIRef
@@ -50,9 +49,6 @@ from linkml_runtime.utils.metamodelcore import Bool, NCName, URI, URIorCURIE, XS
 
 metamodel_version = "1.7.0"
 version = None
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 IAO = CurieNamespace('IAO', 'http://purl.obolibrary.org/obo/IAO_')

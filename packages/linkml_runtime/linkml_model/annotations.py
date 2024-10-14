@@ -13,16 +13,12 @@ from dataclasses import dataclass
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.metamodelcore import empty_dict
 from linkml_runtime.utils.yamlutils import YAMLRoot
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from rdflib import URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from .extensions import AnyValue, Extension, ExtensionTag
 
 metamodel_version = "1.7.0"
 version = "2.0.0"
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
