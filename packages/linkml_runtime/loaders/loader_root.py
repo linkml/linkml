@@ -128,12 +128,12 @@ class Loader(ABC):
                if issubclass(target_class, YAMLRoot):
                    return [target_class(**as_dict(x)) for x in data_as_dict]
                elif issubclass(target_class, BaseModel):
-                   return [target_class.parse_obj(as_dict(x)) for x in data_as_dict]
+                   return [target_class.model_validate(as_dict(x)) for x in data_as_dict]
                else:
                    raise ValueError(f'Cannot load list of {target_class}')
             elif isinstance(data_as_dict, dict):
                 if issubclass(target_class, BaseModel):
-                    return target_class.parse_obj(data_as_dict)
+                    return target_class.model_validate(data_as_dict)
                 else:
                     return target_class(**data_as_dict)
             elif isinstance(data_as_dict, JsonObj):
