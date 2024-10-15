@@ -152,7 +152,6 @@ class PythonGenerator(Generator):
 # description: {split_description}
 # license: {be(self.schema.license)}
 
-import dataclasses
 import re
 from jsonasobj2 import JsonObj, as_dict
 from typing import Optional, Union, ClassVar, Any
