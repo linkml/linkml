@@ -64,10 +64,10 @@ class PythonIfAbsentProcessor(IfAbsentProcessor):
     def map_uri_or_curie_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
         if default_value in self.URI_SPECIAL_CASES:
             return self._map_uri_special_case(default_value, slot, cls)
-        if default_value in self.CURIE_SPECIAL_CASES:
+        elif default_value in self.CURIE_SPECIAL_CASES:
             return self._map_curie_special_case(default_value, slot, cls)
-
-        return self._uri_for(default_value)
+        else:
+            return self._uri_for(default_value)
 
     def map_curie_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
         if default_value in self.CURIE_SPECIAL_CASES:
