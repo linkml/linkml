@@ -8,6 +8,8 @@ from testcontainers.core.waiting_utils import wait_for_logs
 
 from linkml.generators.plantumlgen import PlantumlGenerator
 
+pytestmark = [pytest.mark.plantumlgen, pytest.mark.docker]
+
 MARKDOWN_HEADER = """@startuml
 skinparam nodesep 10
 hide circle
