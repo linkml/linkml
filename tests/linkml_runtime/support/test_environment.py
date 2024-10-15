@@ -35,6 +35,8 @@ class MismatchAction(Enum):
 class TestEnvironment:
     import_map_warning_emitted: bool = False
 
+    __test__ = False
+
     """ Testing environment """
     def __init__(self, filedir: str) -> None:
         self.cwd = os.path.dirname(filedir)                     # base directory for indir, outdir and tempdir
