@@ -17,7 +17,6 @@ from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, P
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
 from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
@@ -26,9 +25,6 @@ from . issue_260a import C260a, String
 
 metamodel_version = "1.7.0"
 version = None
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 DEFAULT_ = CurieNamespace('', 'http://example.org/tests/issue_260b/')
