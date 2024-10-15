@@ -17,7 +17,6 @@ from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, P
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
 from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
@@ -27,9 +26,6 @@ from linkml_runtime.utils.metamodelcore import Bool, URIorCURIE, XSDDate, XSDTim
 
 metamodel_version = "1.7.0"
 version = "0.0.1"
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 AGRKB = CurieNamespace('AGRKB', 'https://www.alliancegenome.org/')
@@ -278,6 +274,7 @@ PROV = CurieNamespace('prov', 'http://www.w3.org/ns/prov#')
 QUD = CurieNamespace('qud', 'http://qudt.org/1.1/schema/qudt#')
 RDF = CurieNamespace('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
 RDFS = CurieNamespace('rdfs', 'http://www.w3.org/2000/01/rdf-schema#')
+REGULATES = CurieNamespace('regulates', 'http://example.org/UNKNOWN/regulates/')
 SCHEMA = CurieNamespace('schema', 'http://schema.org/')
 SKOS = CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#')
 WGS = CurieNamespace('wgs', 'http://www.w3.org/2003/01/geo/wgs84_pos')
@@ -304,8 +301,8 @@ class GeneSequence(String):
 
 class IriType(Uriorcurie):
     """ An IRI """
-    type_class_uri = XSD["anyURI"]
-    type_class_curie = "xsd:anyURI"
+    type_class_uri = XSD["string"]
+    type_class_curie = "xsd:string"
     type_name = "iri type"
     type_model_uri = DIST.IriType
 
@@ -320,8 +317,8 @@ class LabelType(String):
 
 class PredicateType(Uriorcurie):
     """ A CURIE from the biolink related_to hierarchy. For example, biolink:related_to, biolink:causes, biolink:treats. """
-    type_class_uri = XSD["anyURI"]
-    type_class_curie = "xsd:anyURI"
+    type_class_uri = XSD["string"]
+    type_class_curie = "xsd:string"
     type_name = "predicate type"
     type_model_uri = DIST.PredicateType
 
@@ -1121,6 +1118,14 @@ class NamedThingAssociatedWithLikelihoodOfNamedThingAssociationId(AssociationId)
 
 
 class ChemicalGeneInteractionAssociationId(AssociationId):
+    pass
+
+
+class GeneRegulatesGeneAssociationId(AssociationId):
+    pass
+
+
+class ProcessRegulatesProcessAssociationId(AssociationId):
     pass
 
 
@@ -7337,8 +7342,8 @@ class Association(Entity):
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     negated: Optional[Union[bool, Bool]] = None
     qualifier: Optional[str] = None
     qualifiers: Optional[Union[Union[str, OntologyClassId], list[Union[str, OntologyClassId]]]] = empty_list()
@@ -7364,6 +7369,7 @@ class Association(Entity):
     retrieval_source_ids: Optional[Union[Union[str, RetrievalSourceId], list[Union[str, RetrievalSourceId]]]] = empty_list()
     p_value: Optional[float] = None
     adjusted_p_value: Optional[float] = None
+    has_supporting_studies: Optional[Union[Union[str, StudyId], list[Union[str, StudyId]]]] = empty_list()
     type: Optional[Union[str, list[str]]] = empty_list()
     category: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
 
@@ -7484,6 +7490,10 @@ class Association(Entity):
         if self.adjusted_p_value is not None and not isinstance(self.adjusted_p_value, float):
             self.adjusted_p_value = float(self.adjusted_p_value)
 
+        if not isinstance(self.has_supporting_studies, list):
+            self.has_supporting_studies = [self.has_supporting_studies] if self.has_supporting_studies is not None else []
+        self.has_supporting_studies = [v if isinstance(v, StudyId) else StudyId(v) for v in self.has_supporting_studies]
+
         if not isinstance(self.type, list):
             self.type = [self.type] if self.type is not None else []
         self.type = [v if isinstance(v, str) else str(v) for v in self.type]
@@ -7533,11 +7543,11 @@ class ChemicalEntityAssessesNamedThingAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.ChemicalEntityAssessesNamedThingAssociation
 
     id: Union[str, ChemicalEntityAssessesNamedThingAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, ChemicalEntityId] = None
     object: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -7579,11 +7589,11 @@ class ContributorAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.ContributorAssociation
 
     id: Union[str, ContributorAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, InformationContentEntityId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, AgentId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     qualifiers: Optional[Union[Union[str, OntologyClassId], list[Union[str, OntologyClassId]]]] = empty_list()
 
     def __post_init__(self, *_: str, **kwargs: Any):
@@ -7630,11 +7640,11 @@ class GenotypeToGenotypePartAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.GenotypeToGenotypePartAssociation
 
     id: Union[str, GenotypeToGenotypePartAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     predicate: Union[str, PredicateType] = None
     subject: Union[str, GenotypeId] = None
     object: Union[str, GenotypeId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -7677,11 +7687,11 @@ class GenotypeToGeneAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.GenotypeToGeneAssociation
 
     id: Union[str, GenotypeToGeneAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     predicate: Union[str, PredicateType] = None
     subject: Union[str, GenotypeId] = None
     object: Union[str, GeneId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -7723,11 +7733,11 @@ class GenotypeToVariantAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.GenotypeToVariantAssociation
 
     id: Union[str, GenotypeToVariantAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     predicate: Union[str, PredicateType] = None
     subject: Union[str, GenotypeId] = None
     object: Union[str, SequenceVariantId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -7771,10 +7781,10 @@ class GeneToGeneAssociation(Association):
 
     id: Union[str, GeneToGeneAssociationId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     object: Union[dict, GeneOrGeneProduct] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.subject):
@@ -7807,11 +7817,11 @@ class GeneToGeneHomologyAssociation(GeneToGeneAssociation):
     class_model_uri: ClassVar[URIRef] = DIST.GeneToGeneHomologyAssociation
 
     id: Union[str, GeneToGeneHomologyAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     predicate: Union[str, PredicateType] = None
     object: Union[dict, GeneOrGeneProduct] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -7855,11 +7865,11 @@ class GeneToGeneFamilyAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.GeneToGeneFamilyAssociation
 
     id: Union[str, GeneToGeneFamilyAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, GeneId] = None
     object: Union[str, GeneFamilyId] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -7935,11 +7945,11 @@ class GeneToGeneCoexpressionAssociation(GeneToGeneAssociation):
     class_model_uri: ClassVar[URIRef] = DIST.GeneToGeneCoexpressionAssociation
 
     id: Union[str, GeneToGeneCoexpressionAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     object: Union[dict, GeneOrGeneProduct] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     quantifier_qualifier: Optional[Union[str, OntologyClassId]] = None
     expression_site: Optional[Union[str, AnatomicalEntityId]] = None
     stage_qualifier: Optional[Union[str, LifeStageId]] = None
@@ -7988,11 +7998,11 @@ class PairwiseGeneToGeneInteraction(GeneToGeneAssociation):
     class_model_uri: ClassVar[URIRef] = DIST.PairwiseGeneToGeneInteraction
 
     id: Union[str, PairwiseGeneToGeneInteractionId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     object: Union[dict, GeneOrGeneProduct] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -8024,11 +8034,11 @@ class PairwiseMolecularInteraction(PairwiseGeneToGeneInteraction):
     class_model_uri: ClassVar[URIRef] = DIST.PairwiseMolecularInteraction
 
     id: Union[str, PairwiseMolecularInteractionId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, MolecularEntityId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, MolecularEntityId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     interacting_molecules_category: Optional[Union[str, OntologyClassId]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
@@ -8112,9 +8122,9 @@ class CellLineToDiseaseOrPhenotypicFeatureAssociation(Association):
     id: Union[str, CellLineToDiseaseOrPhenotypicFeatureAssociationId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, DiseaseOrPhenotypicFeatureId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -8307,11 +8317,11 @@ class ChemicalToChemicalAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.ChemicalToChemicalAssociation
 
     id: Union[str, ChemicalToChemicalAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, ChemicalEntityId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -8350,11 +8360,11 @@ class ReactionToParticipantAssociation(ChemicalToChemicalAssociation):
     class_model_uri: ClassVar[URIRef] = DIST.ReactionToParticipantAssociation
 
     id: Union[str, ReactionToParticipantAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, ChemicalEntityId] = None
     subject: Union[str, MolecularEntityId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     stoichiometry: Optional[int] = None
     reaction_direction: Optional[Union[str, "ReactionDirectionEnum"]] = None
     reaction_side: Optional[Union[str, "ReactionSideEnum"]] = None
@@ -8395,11 +8405,11 @@ class ReactionToCatalystAssociation(ReactionToParticipantAssociation):
     class_model_uri: ClassVar[URIRef] = DIST.ReactionToCatalystAssociation
 
     id: Union[str, ReactionToCatalystAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     predicate: Union[str, PredicateType] = None
     subject: Union[str, MolecularEntityId] = None
     object: Union[dict, GeneOrGeneProduct] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -8433,11 +8443,11 @@ class ChemicalToChemicalDerivationAssociation(ChemicalToChemicalAssociation):
     class_model_uri: ClassVar[URIRef] = DIST.ChemicalToChemicalDerivationAssociation
 
     id: Union[str, ChemicalToChemicalDerivationAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, ChemicalEntityId] = None
     object: Union[str, ChemicalEntityId] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     catalyst_qualifier: Optional[Union[Union[dict, MacromolecularMachineMixin], list[Union[dict, MacromolecularMachineMixin]]]] = empty_list()
 
     def __post_init__(self, *_: str, **kwargs: Any):
@@ -8487,9 +8497,9 @@ class ChemicalToDiseaseOrPhenotypicFeatureAssociation(Association):
     id: Union[str, ChemicalToDiseaseOrPhenotypicFeatureAssociationId] = None
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     object: Union[str, DiseaseOrPhenotypicFeatureId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -8534,9 +8544,9 @@ class ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation(Associati
     id: Union[str, ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociationId] = None
     subject: Union[str, NamedThingId] = None
     object: Union[str, NamedThingId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     FDA_adverse_event_level: Optional[Union[str, "FDAIDAAdverseEventEnum"]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
@@ -8585,9 +8595,9 @@ class ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation(C
     id: Union[str, ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociationId] = None
     subject: Union[str, NamedThingId] = None
     object: Union[str, NamedThingId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -8630,10 +8640,10 @@ class GeneToPathwayAssociation(Association):
 
     id: Union[str, GeneToPathwayAssociationId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     object: Union[str, PathwayId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -8675,11 +8685,11 @@ class MolecularActivityToPathwayAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.MolecularActivityToPathwayAssociation
 
     id: Union[str, MolecularActivityToPathwayAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, MolecularActivityId] = None
     object: Union[str, PathwayId] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -8722,10 +8732,10 @@ class ChemicalToPathwayAssociation(Association):
 
     id: Union[str, ChemicalToPathwayAssociationId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, ChemicalEntityId] = None
     object: Union[str, PathwayId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -8764,11 +8774,11 @@ class NamedThingAssociatedWithLikelihoodOfNamedThingAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.NamedThingAssociatedWithLikelihoodOfNamedThingAssociation
 
     id: Union[str, NamedThingAssociatedWithLikelihoodOfNamedThingAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     subject_aspect_qualifier: Optional[str] = None
     subject_context_qualifier: Optional[Union[str, OntologyClassId]] = None
     object_aspect_qualifier: Optional[str] = None
@@ -8832,11 +8842,11 @@ class ChemicalGeneInteractionAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.ChemicalGeneInteractionAssociation
 
     id: Union[str, ChemicalGeneInteractionAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, ChemicalEntityId] = None
     object: Union[dict, GeneOrGeneProduct] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     subject_form_or_variant_qualifier: Optional[Union[str, "ChemicalOrGeneOrGeneProductFormOrVariantEnum"]] = None
     subject_part_qualifier: Optional[Union[str, "GeneOrGeneProductOrChemicalPartQualifierEnum"]] = None
     subject_derivative_qualifier: Optional[Union[str, "ChemicalEntityDerivativeEnum"]] = None
@@ -8898,6 +8908,120 @@ class ChemicalGeneInteractionAssociation(Association):
 
 
 @dataclass(repr=False)
+class GeneRegulatesGeneAssociation(Association):
+    """
+    Describes a regulatory relationship between two genes or gene products.
+    """
+    _inherited_slots: ClassVar[list[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneRegulatesGeneAssociation"]
+    class_class_curie: ClassVar[str] = "biolink:GeneRegulatesGeneAssociation"
+    class_name: ClassVar[str] = "gene regulates gene association"
+    class_model_uri: ClassVar[URIRef] = DIST.GeneRegulatesGeneAssociation
+
+    id: Union[str, GeneRegulatesGeneAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
+    object_aspect_qualifier: Union[str, "GeneOrGeneProductOrChemicalEntityAspectEnum"] = None
+    object_direction_qualifier: Union[str, "DirectionQualifierEnum"] = None
+    qualified_predicate: str = None
+    subject: Union[dict, GeneOrGeneProduct] = None
+    predicate: Union[str, PredicateType] = None
+    object: Union[dict, GeneOrGeneProduct] = None
+    species_context_qualifier: Optional[Union[str, OrganismTaxonId]] = None
+
+    def __post_init__(self, *_: str, **kwargs: Any):
+        if self._is_empty(self.id):
+            self.MissingRequiredField("id")
+        if not isinstance(self.id, GeneRegulatesGeneAssociationId):
+            self.id = GeneRegulatesGeneAssociationId(self.id)
+
+        if self._is_empty(self.object_aspect_qualifier):
+            self.MissingRequiredField("object_aspect_qualifier")
+        if not isinstance(self.object_aspect_qualifier, GeneOrGeneProductOrChemicalEntityAspectEnum):
+            self.object_aspect_qualifier = GeneOrGeneProductOrChemicalEntityAspectEnum(self.object_aspect_qualifier)
+
+        if self._is_empty(self.object_direction_qualifier):
+            self.MissingRequiredField("object_direction_qualifier")
+        if not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
+            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
+
+        if self._is_empty(self.qualified_predicate):
+            self.MissingRequiredField("qualified_predicate")
+        if not isinstance(self.qualified_predicate, str):
+            self.qualified_predicate = str(self.qualified_predicate)
+
+        if self._is_empty(self.subject):
+            self.MissingRequiredField("subject")
+        if not isinstance(self.subject, GeneOrGeneProduct):
+            self.subject = GeneOrGeneProduct(**as_dict(self.subject))
+
+        if self._is_empty(self.predicate):
+            self.MissingRequiredField("predicate")
+        if not isinstance(self.predicate, PredicateType):
+            self.predicate = PredicateType(self.predicate)
+
+        if self._is_empty(self.object):
+            self.MissingRequiredField("object")
+        if not isinstance(self.object, GeneOrGeneProduct):
+            self.object = GeneOrGeneProduct(**as_dict(self.object))
+
+        if self.species_context_qualifier is not None and not isinstance(self.species_context_qualifier, OrganismTaxonId):
+            self.species_context_qualifier = OrganismTaxonId(self.species_context_qualifier)
+
+        super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+
+@dataclass(repr=False)
+class ProcessRegulatesProcessAssociation(Association):
+    """
+    Describes a regulatory relationship between two genes or gene products.
+    """
+    _inherited_slots: ClassVar[list[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ProcessRegulatesProcessAssociation"]
+    class_class_curie: ClassVar[str] = "biolink:ProcessRegulatesProcessAssociation"
+    class_name: ClassVar[str] = "process regulates process association"
+    class_model_uri: ClassVar[URIRef] = DIST.ProcessRegulatesProcessAssociation
+
+    id: Union[str, ProcessRegulatesProcessAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
+    subject: Union[str, BiologicalProcessId] = None
+    predicate: Union[str, PredicateType] = None
+    object: Union[str, BiologicalProcessId] = None
+
+    def __post_init__(self, *_: str, **kwargs: Any):
+        if self._is_empty(self.id):
+            self.MissingRequiredField("id")
+        if not isinstance(self.id, ProcessRegulatesProcessAssociationId):
+            self.id = ProcessRegulatesProcessAssociationId(self.id)
+
+        if self._is_empty(self.subject):
+            self.MissingRequiredField("subject")
+        if not isinstance(self.subject, BiologicalProcessId):
+            self.subject = BiologicalProcessId(self.subject)
+
+        if self._is_empty(self.predicate):
+            self.MissingRequiredField("predicate")
+        if not isinstance(self.predicate, PredicateType):
+            self.predicate = PredicateType(self.predicate)
+
+        if self._is_empty(self.object):
+            self.MissingRequiredField("object")
+        if not isinstance(self.object, BiologicalProcessId):
+            self.object = BiologicalProcessId(self.object)
+
+        super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+
+@dataclass(repr=False)
 class ChemicalAffectsGeneAssociation(Association):
     """
     Describes an effect that a chemical has on a gene or gene product (e.g. an impact of on its abundance,
@@ -8911,11 +9035,11 @@ class ChemicalAffectsGeneAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.ChemicalAffectsGeneAssociation
 
     id: Union[str, ChemicalAffectsGeneAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, ChemicalEntityId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[dict, GeneOrGeneProduct] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     subject_form_or_variant_qualifier: Optional[Union[str, "ChemicalOrGeneOrGeneProductFormOrVariantEnum"]] = None
     subject_part_qualifier: Optional[Union[str, "GeneOrGeneProductOrChemicalPartQualifierEnum"]] = None
     subject_derivative_qualifier: Optional[Union[str, "ChemicalEntityDerivativeEnum"]] = None
@@ -9018,11 +9142,11 @@ class GeneAffectsChemicalAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.GeneAffectsChemicalAssociation
 
     id: Union[str, GeneAffectsChemicalAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, ChemicalEntityId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     subject_form_or_variant_qualifier: Optional[Union[str, "ChemicalOrGeneOrGeneProductFormOrVariantEnum"]] = None
     subject_part_qualifier: Optional[Union[str, "GeneOrGeneProductOrChemicalPartQualifierEnum"]] = None
     subject_derivative_qualifier: Optional[str] = None
@@ -9130,9 +9254,9 @@ class DrugToGeneAssociation(Association):
     id: Union[str, DrugToGeneAssociationId] = None
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     object: Union[dict, GeneOrGeneProduct] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -9209,11 +9333,11 @@ class MaterialSampleDerivationAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.MaterialSampleDerivationAssociation
 
     id: Union[str, MaterialSampleDerivationAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, MaterialSampleId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -9258,8 +9382,8 @@ class MaterialSampleToDiseaseOrPhenotypicFeatureAssociation(Association):
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -9371,8 +9495,8 @@ class DiseaseToExposureEventAssociation(Association):
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -9452,8 +9576,8 @@ class ExposureEventToOutcomeAssociation(Association):
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     population_context_qualifier: Optional[Union[str, PopulationOfIndividualOrganismsId]] = None
     temporal_context_qualifier: Optional[Union[str, TimeType]] = None
 
@@ -9622,6 +9746,7 @@ class EntityToPhenotypicFeatureAssociationMixin(EntityToFeatureOrDiseaseQualifie
     predicate: Union[str, PredicateType] = None
     object: Union[str, PhenotypicFeatureId] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
+    disease_context_qualifier: Optional[Union[str, DiseaseId]] = None
     has_count: Optional[int] = None
     has_total: Optional[int] = None
     has_quotient: Optional[float] = None
@@ -9645,6 +9770,9 @@ class EntityToPhenotypicFeatureAssociationMixin(EntityToFeatureOrDiseaseQualifie
 
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
+
+        if self.disease_context_qualifier is not None and not isinstance(self.disease_context_qualifier, DiseaseId):
+            self.disease_context_qualifier = DiseaseId(self.disease_context_qualifier)
 
         if self.has_count is not None and not isinstance(self.has_count, int):
             self.has_count = int(self.has_count)
@@ -9720,8 +9848,8 @@ class PhenotypicFeatureToPhenotypicFeatureAssociation(Association):
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
     subject_aspect_qualifier: Optional[str] = None
     subject_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
@@ -9729,6 +9857,7 @@ class PhenotypicFeatureToPhenotypicFeatureAssociation(Association):
     object_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
     qualified_predicate: Optional[str] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
+    disease_context_qualifier: Optional[Union[str, DiseaseId]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -9772,6 +9901,9 @@ class PhenotypicFeatureToPhenotypicFeatureAssociation(Association):
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
+        if self.disease_context_qualifier is not None and not isinstance(self.disease_context_qualifier, DiseaseId):
+            self.disease_context_qualifier = DiseaseId(self.disease_context_qualifier)
+
         super().__post_init__(**kwargs)
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
@@ -9796,11 +9928,11 @@ class InformationContentEntityToNamedThingAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.InformationContentEntityToNamedThingAssociation
 
     id: Union[str, InformationContentEntityToNamedThingAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, NamedThingId] = None
     object: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -9902,9 +10034,9 @@ class DiseaseOrPhenotypicFeatureToLocationAssociation(Association):
     id: Union[str, DiseaseOrPhenotypicFeatureToLocationAssociationId] = None
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     object: Union[str, AnatomicalEntityId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -9947,10 +10079,10 @@ class DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation(Association):
 
     id: Union[str, DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociationId] = None
     subject: Union[str, NamedThingId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, GeneticInheritanceId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -10058,10 +10190,10 @@ class GenotypeToPhenotypicFeatureAssociation(Association):
 
     id: Union[str, GenotypeToPhenotypicFeatureAssociationId] = None
     object: Union[str, NamedThingId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     predicate: Union[str, PredicateType] = None
     subject: Union[str, GenotypeId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
     subject_aspect_qualifier: Optional[str] = None
     subject_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
@@ -10069,6 +10201,7 @@ class GenotypeToPhenotypicFeatureAssociation(Association):
     object_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
     qualified_predicate: Optional[str] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
+    disease_context_qualifier: Optional[Union[str, DiseaseId]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -10112,6 +10245,9 @@ class GenotypeToPhenotypicFeatureAssociation(Association):
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
+        if self.disease_context_qualifier is not None and not isinstance(self.disease_context_qualifier, DiseaseId):
+            self.disease_context_qualifier = DiseaseId(self.disease_context_qualifier)
+
         super().__post_init__(**kwargs)
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
@@ -10134,9 +10270,9 @@ class ExposureEventToPhenotypicFeatureAssociation(Association):
     id: Union[str, ExposureEventToPhenotypicFeatureAssociationId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, ExposureEventId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
     subject_aspect_qualifier: Optional[str] = None
     subject_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
@@ -10144,6 +10280,7 @@ class ExposureEventToPhenotypicFeatureAssociation(Association):
     object_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
     qualified_predicate: Optional[str] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
+    disease_context_qualifier: Optional[Union[str, DiseaseId]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -10187,6 +10324,9 @@ class ExposureEventToPhenotypicFeatureAssociation(Association):
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
+        if self.disease_context_qualifier is not None and not isinstance(self.disease_context_qualifier, DiseaseId):
+            self.disease_context_qualifier = DiseaseId(self.disease_context_qualifier)
+
         super().__post_init__(**kwargs)
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
@@ -10208,10 +10348,10 @@ class DiseaseToPhenotypicFeatureAssociation(Association):
 
     id: Union[str, DiseaseToPhenotypicFeatureAssociationId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, DiseaseId] = None
     object: Union[str, PhenotypicFeatureId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     onset_qualifier: Optional[Union[str, OnsetId]] = None
     has_count: Optional[int] = None
     has_total: Optional[int] = None
@@ -10224,6 +10364,7 @@ class DiseaseToPhenotypicFeatureAssociation(Association):
     object_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
     qualified_predicate: Optional[str] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
+    disease_context_qualifier: Optional[Union[str, DiseaseId]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -10282,6 +10423,9 @@ class DiseaseToPhenotypicFeatureAssociation(Association):
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
+        if self.disease_context_qualifier is not None and not isinstance(self.disease_context_qualifier, DiseaseId):
+            self.disease_context_qualifier = DiseaseId(self.disease_context_qualifier)
+
         super().__post_init__(**kwargs)
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
@@ -10305,8 +10449,8 @@ class CaseToPhenotypicFeatureAssociation(Association):
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
     subject_aspect_qualifier: Optional[str] = None
     subject_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
@@ -10314,6 +10458,7 @@ class CaseToPhenotypicFeatureAssociation(Association):
     object_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
     qualified_predicate: Optional[str] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
+    disease_context_qualifier: Optional[Union[str, DiseaseId]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -10357,6 +10502,9 @@ class CaseToPhenotypicFeatureAssociation(Association):
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
+        if self.disease_context_qualifier is not None and not isinstance(self.disease_context_qualifier, DiseaseId):
+            self.disease_context_qualifier = DiseaseId(self.disease_context_qualifier)
+
         super().__post_init__(**kwargs)
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
@@ -10378,10 +10526,10 @@ class BehaviorToBehavioralFeatureAssociation(Association):
 
     id: Union[str, BehaviorToBehavioralFeatureAssociationId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, BehaviorId] = None
     object: Union[str, BehavioralFeatureId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
     subject_aspect_qualifier: Optional[str] = None
     subject_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
@@ -10389,6 +10537,7 @@ class BehaviorToBehavioralFeatureAssociation(Association):
     object_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
     qualified_predicate: Optional[str] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
+    disease_context_qualifier: Optional[Union[str, DiseaseId]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -10431,6 +10580,9 @@ class BehaviorToBehavioralFeatureAssociation(Association):
 
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
+
+        if self.disease_context_qualifier is not None and not isinstance(self.disease_context_qualifier, DiseaseId):
+            self.disease_context_qualifier = DiseaseId(self.disease_context_qualifier)
 
         super().__post_init__(**kwargs)
         if not isinstance(self.category, list):
@@ -10512,11 +10664,11 @@ class GeneToDiseaseOrPhenotypicFeatureAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.GeneToDiseaseOrPhenotypicFeatureAssociation
 
     id: Union[str, GeneToDiseaseOrPhenotypicFeatureAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     object: Union[str, DiseaseOrPhenotypicFeatureId] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     subject_aspect_qualifier: Optional[Union[str, "GeneOrGeneProductOrChemicalEntityAspectEnum"]] = None
     object_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
@@ -10524,6 +10676,7 @@ class GeneToDiseaseOrPhenotypicFeatureAssociation(Association):
     object_aspect_qualifier: Optional[str] = None
     qualified_predicate: Optional[str] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
+    disease_context_qualifier: Optional[Union[str, DiseaseId]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -10567,6 +10720,9 @@ class GeneToDiseaseOrPhenotypicFeatureAssociation(Association):
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
+        if self.disease_context_qualifier is not None and not isinstance(self.disease_context_qualifier, DiseaseId):
+            self.disease_context_qualifier = DiseaseId(self.disease_context_qualifier)
+
         super().__post_init__(**kwargs)
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
@@ -10583,16 +10739,17 @@ class GeneToPhenotypicFeatureAssociation(GeneToDiseaseOrPhenotypicFeatureAssocia
     class_model_uri: ClassVar[URIRef] = DIST.GeneToPhenotypicFeatureAssociation
 
     id: Union[str, GeneToPhenotypicFeatureAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     predicate: Union[str, PredicateType] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     object: Union[str, PhenotypicFeatureId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
     subject_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
     object_aspect_qualifier: Optional[str] = None
     qualified_predicate: Optional[str] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
+    disease_context_qualifier: Optional[Union[str, DiseaseId]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -10625,6 +10782,9 @@ class GeneToPhenotypicFeatureAssociation(GeneToDiseaseOrPhenotypicFeatureAssocia
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
+        if self.disease_context_qualifier is not None and not isinstance(self.disease_context_qualifier, DiseaseId):
+            self.disease_context_qualifier = DiseaseId(self.disease_context_qualifier)
+
         super().__post_init__(**kwargs)
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
@@ -10641,11 +10801,11 @@ class GeneToDiseaseAssociation(GeneToDiseaseOrPhenotypicFeatureAssociation):
     class_model_uri: ClassVar[URIRef] = DIST.GeneToDiseaseAssociation
 
     id: Union[str, GeneToDiseaseAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     predicate: Union[str, PredicateType] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     object: Union[str, DiseaseId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
     subject_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
     object_aspect_qualifier: Optional[str] = None
@@ -10695,11 +10855,11 @@ class CausalGeneToDiseaseAssociation(GeneToDiseaseAssociation):
     class_model_uri: ClassVar[URIRef] = DIST.CausalGeneToDiseaseAssociation
 
     id: Union[str, CausalGeneToDiseaseAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     predicate: Union[str, PredicateType] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     object: Union[str, DiseaseId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
     subject_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
     object_aspect_qualifier: Optional[str] = None
@@ -10749,11 +10909,11 @@ class CorrelatedGeneToDiseaseAssociation(GeneToDiseaseAssociation):
     class_model_uri: ClassVar[URIRef] = DIST.CorrelatedGeneToDiseaseAssociation
 
     id: Union[str, CorrelatedGeneToDiseaseAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     predicate: Union[str, PredicateType] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     object: Union[str, DiseaseId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
     subject_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
     object_aspect_qualifier: Optional[str] = None
@@ -10803,11 +10963,11 @@ class DruggableGeneToDiseaseAssociation(GeneToDiseaseAssociation):
     class_model_uri: ClassVar[URIRef] = DIST.DruggableGeneToDiseaseAssociation
 
     id: Union[str, DruggableGeneToDiseaseAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     object: Union[str, DiseaseId] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
     subject_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
     object_aspect_qualifier: Optional[str] = None
@@ -10864,9 +11024,9 @@ class PhenotypicFeatureToDiseaseAssociation(Association):
     id: Union[str, PhenotypicFeatureToDiseaseAssociationId] = None
     subject: Union[str, NamedThingId] = None
     object: Union[str, NamedThingId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
     subject_aspect_qualifier: Optional[str] = None
     subject_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
@@ -10938,10 +11098,10 @@ class VariantToGeneAssociation(Association):
 
     id: Union[str, VariantToGeneAssociationId] = None
     subject: Union[str, NamedThingId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     object: Union[str, GeneId] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -10984,10 +11144,10 @@ class VariantToGeneExpressionAssociation(VariantToGeneAssociation):
 
     id: Union[str, VariantToGeneExpressionAssociationId] = None
     subject: Union[str, NamedThingId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     object: Union[str, GeneId] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     quantifier_qualifier: Optional[Union[str, OntologyClassId]] = None
     expression_site: Optional[Union[str, AnatomicalEntityId]] = None
     stage_qualifier: Optional[Union[str, LifeStageId]] = None
@@ -11036,10 +11196,10 @@ class VariantToPopulationAssociation(Association):
 
     id: Union[str, VariantToPopulationAssociationId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, SequenceVariantId] = None
     object: Union[str, PopulationOfIndividualOrganismsId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     has_quotient: Optional[float] = None
     has_count: Optional[int] = None
     has_total: Optional[int] = None
@@ -11101,11 +11261,11 @@ class PopulationToPopulationAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.PopulationToPopulationAssociation
 
     id: Union[str, PopulationToPopulationAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, PopulationOfIndividualOrganismsId] = None
     object: Union[str, PopulationOfIndividualOrganismsId] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -11146,9 +11306,9 @@ class VariantToPhenotypicFeatureAssociation(Association):
     id: Union[str, VariantToPhenotypicFeatureAssociationId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, SequenceVariantId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
     subject_aspect_qualifier: Optional[str] = None
     subject_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
@@ -11156,6 +11316,7 @@ class VariantToPhenotypicFeatureAssociation(Association):
     object_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
     qualified_predicate: Optional[str] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
+    disease_context_qualifier: Optional[Union[str, DiseaseId]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -11199,6 +11360,9 @@ class VariantToPhenotypicFeatureAssociation(Association):
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
+        if self.disease_context_qualifier is not None and not isinstance(self.disease_context_qualifier, DiseaseId):
+            self.disease_context_qualifier = DiseaseId(self.disease_context_qualifier)
+
         super().__post_init__(**kwargs)
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
@@ -11215,11 +11379,11 @@ class VariantToDiseaseAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.VariantToDiseaseAssociation
 
     id: Union[str, VariantToDiseaseAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
     subject_aspect_qualifier: Optional[str] = None
     subject_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
@@ -11282,11 +11446,11 @@ class GenotypeToDiseaseAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.GenotypeToDiseaseAssociation
 
     id: Union[str, GenotypeToDiseaseAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
     subject_aspect_qualifier: Optional[str] = None
     subject_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
@@ -11386,11 +11550,11 @@ class GeneAsAModelOfDiseaseAssociation(GeneToDiseaseAssociation):
     class_model_uri: ClassVar[URIRef] = DIST.GeneAsAModelOfDiseaseAssociation
 
     id: Union[str, GeneAsAModelOfDiseaseAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, DiseaseId] = None
     subject: Union[dict, GeneOrGeneProduct] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
     subject_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
     object_aspect_qualifier: Optional[str] = None
@@ -11435,11 +11599,11 @@ class VariantAsAModelOfDiseaseAssociation(VariantToDiseaseAssociation):
     class_model_uri: ClassVar[URIRef] = DIST.VariantAsAModelOfDiseaseAssociation
 
     id: Union[str, VariantAsAModelOfDiseaseAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
     subject: Union[str, SequenceVariantId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
     subject_aspect_qualifier: Optional[str] = None
     subject_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
@@ -11492,11 +11656,11 @@ class GenotypeAsAModelOfDiseaseAssociation(GenotypeToDiseaseAssociation):
     class_model_uri: ClassVar[URIRef] = DIST.GenotypeAsAModelOfDiseaseAssociation
 
     id: Union[str, GenotypeAsAModelOfDiseaseAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
     subject: Union[str, GenotypeId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
     subject_aspect_qualifier: Optional[str] = None
     subject_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
@@ -11551,9 +11715,9 @@ class CellLineAsAModelOfDiseaseAssociation(CellLineToDiseaseOrPhenotypicFeatureA
     id: Union[str, CellLineAsAModelOfDiseaseAssociationId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, CellLineId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
     subject_aspect_qualifier: Optional[str] = None
     subject_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
@@ -11618,9 +11782,9 @@ class OrganismalEntityAsAModelOfDiseaseAssociation(Association):
     id: Union[str, OrganismalEntityAsAModelOfDiseaseAssociationId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, OrganismalEntityId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
     subject_aspect_qualifier: Optional[str] = None
     subject_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
@@ -11684,10 +11848,10 @@ class OrganismToOrganismAssociation(Association):
 
     id: Union[str, OrganismToOrganismAssociationId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, IndividualOrganismId] = None
     object: Union[str, IndividualOrganismId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -11722,10 +11886,10 @@ class TaxonToTaxonAssociation(Association):
 
     id: Union[str, TaxonToTaxonAssociationId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, OrganismTaxonId] = None
     object: Union[str, OrganismTaxonId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -11759,11 +11923,11 @@ class GeneHasVariantThatContributesToDiseaseAssociation(GeneToDiseaseAssociation
     class_model_uri: ClassVar[URIRef] = DIST.GeneHasVariantThatContributesToDiseaseAssociation
 
     id: Union[str, GeneHasVariantThatContributesToDiseaseAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     object: Union[str, DiseaseId] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     subject_form_or_variant_qualifier: Optional[str] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
@@ -11809,11 +11973,11 @@ class GeneToExpressionSiteAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.GeneToExpressionSiteAssociation
 
     id: Union[str, GeneToExpressionSiteAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     object: Union[str, AnatomicalEntityId] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     stage_qualifier: Optional[Union[str, LifeStageId]] = None
     quantifier_qualifier: Optional[Union[str, OntologyClassId]] = None
 
@@ -11865,10 +12029,10 @@ class SequenceVariantModulatesTreatmentAssociation(Association):
 
     id: Union[str, SequenceVariantModulatesTreatmentAssociationId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, SequenceVariantId] = None
     object: Union[str, TreatmentId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.subject):
@@ -11902,10 +12066,10 @@ class FunctionalAssociation(Association):
 
     id: Union[str, FunctionalAssociationId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[dict, MacromolecularMachineMixin] = None
     object: Union[str, OntologyClassId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -11980,10 +12144,10 @@ class MacromolecularMachineToMolecularActivityAssociation(FunctionalAssociation)
 
     id: Union[str, MacromolecularMachineToMolecularActivityAssociationId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[dict, MacromolecularMachineMixin] = None
     object: Union[str, MolecularActivityId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -12023,10 +12187,10 @@ class MacromolecularMachineToBiologicalProcessAssociation(FunctionalAssociation)
 
     id: Union[str, MacromolecularMachineToBiologicalProcessAssociationId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[dict, MacromolecularMachineMixin] = None
     object: Union[str, BiologicalProcessId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -12066,10 +12230,10 @@ class MacromolecularMachineToCellularComponentAssociation(FunctionalAssociation)
 
     id: Union[str, MacromolecularMachineToCellularComponentAssociationId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[dict, MacromolecularMachineMixin] = None
     object: Union[str, CellularComponentId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -12108,10 +12272,10 @@ class MolecularActivityToChemicalEntityAssociation(Association):
 
     id: Union[str, MolecularActivityToChemicalEntityAssociationId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, MolecularActivityId] = None
     object: Union[str, ChemicalEntityId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -12150,10 +12314,10 @@ class MolecularActivityToMolecularActivityAssociation(Association):
 
     id: Union[str, MolecularActivityToMolecularActivityAssociationId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, MolecularActivityId] = None
     object: Union[str, MolecularActivityId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -12188,10 +12352,10 @@ class GeneToGoTermAssociation(FunctionalAssociation):
 
     id: Union[str, GeneToGoTermAssociationId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, GeneId] = None
     object: Union[str, OntologyClassId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -12228,10 +12392,10 @@ class EntityToDiseaseAssociation(Association):
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     clinical_approval_status: Optional[Union[str, "ClinicalApprovalStatusEnum"]] = None
-    max_research_phase: Optional[Union[str, "MaxResearchPhaseEnum"]] = None
+    max_research_phase: Optional[Union[str, "ResearchPhaseEnum"]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -12242,8 +12406,8 @@ class EntityToDiseaseAssociation(Association):
         if self.clinical_approval_status is not None and not isinstance(self.clinical_approval_status, ClinicalApprovalStatusEnum):
             self.clinical_approval_status = ClinicalApprovalStatusEnum(self.clinical_approval_status)
 
-        if self.max_research_phase is not None and not isinstance(self.max_research_phase, MaxResearchPhaseEnum):
-            self.max_research_phase = MaxResearchPhaseEnum(self.max_research_phase)
+        if self.max_research_phase is not None and not isinstance(self.max_research_phase, ResearchPhaseEnum):
+            self.max_research_phase = ResearchPhaseEnum(self.max_research_phase)
 
         super().__post_init__(**kwargs)
         if not isinstance(self.category, list):
@@ -12264,10 +12428,10 @@ class EntityToPhenotypicFeatureAssociation(Association):
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     clinical_approval_status: Optional[Union[str, "ClinicalApprovalStatusEnum"]] = None
-    max_research_phase: Optional[Union[str, "MaxResearchPhaseEnum"]] = None
+    max_research_phase: Optional[Union[str, "ResearchPhaseEnum"]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -12278,8 +12442,8 @@ class EntityToPhenotypicFeatureAssociation(Association):
         if self.clinical_approval_status is not None and not isinstance(self.clinical_approval_status, ClinicalApprovalStatusEnum):
             self.clinical_approval_status = ClinicalApprovalStatusEnum(self.clinical_approval_status)
 
-        if self.max_research_phase is not None and not isinstance(self.max_research_phase, MaxResearchPhaseEnum):
-            self.max_research_phase = MaxResearchPhaseEnum(self.max_research_phase)
+        if self.max_research_phase is not None and not isinstance(self.max_research_phase, ResearchPhaseEnum):
+            self.max_research_phase = ResearchPhaseEnum(self.max_research_phase)
 
         super().__post_init__(**kwargs)
         if not isinstance(self.category, list):
@@ -12303,8 +12467,8 @@ class SequenceAssociation(Association):
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -12332,11 +12496,11 @@ class GenomicSequenceLocalization(SequenceAssociation):
     class_model_uri: ClassVar[URIRef] = DIST.GenomicSequenceLocalization
 
     id: Union[str, GenomicSequenceLocalizationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, NucleicAcidEntityId] = None
     object: Union[str, NucleicAcidEntityId] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     start_interbase_coordinate: Optional[int] = None
     end_interbase_coordinate: Optional[int] = None
     genome_build: Optional[Union[str, "StrandEnum"]] = None
@@ -12399,10 +12563,10 @@ class SequenceFeatureRelationship(Association):
 
     id: Union[str, SequenceFeatureRelationshipId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, NucleicAcidEntityId] = None
     object: Union[str, NucleicAcidEntityId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -12440,10 +12604,10 @@ class TranscriptToGeneRelationship(SequenceFeatureRelationship):
 
     id: Union[str, TranscriptToGeneRelationshipId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, TranscriptId] = None
     object: Union[str, GeneId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -12480,11 +12644,11 @@ class GeneToGeneProductRelationship(SequenceFeatureRelationship):
     class_model_uri: ClassVar[URIRef] = DIST.GeneToGeneProductRelationship
 
     id: Union[str, GeneToGeneProductRelationshipId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, GeneId] = None
     object: Union[dict, GeneProductMixin] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -12527,10 +12691,10 @@ class ExonToTranscriptRelationship(SequenceFeatureRelationship):
 
     id: Union[str, ExonToTranscriptRelationshipId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, ExonId] = None
     object: Union[str, TranscriptId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -12567,11 +12731,11 @@ class ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation
 
     id: Union[str, ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     predicate: Union[str, PredicateType] = None
     subject: Union[dict, ChemicalEntityOrGeneOrGeneProduct] = None
     object: Union[dict, GeneOrGeneProduct] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     object_direction_qualifier: Optional[Union[str, "DirectionQualifierEnum"]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
@@ -12615,10 +12779,10 @@ class AnatomicalEntityToAnatomicalEntityAssociation(Association):
 
     id: Union[str, AnatomicalEntityToAnatomicalEntityAssociationId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, AnatomicalEntityId] = None
     object: Union[str, AnatomicalEntityId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.subject):
@@ -12652,11 +12816,11 @@ class AnatomicalEntityToAnatomicalEntityPartOfAssociation(AnatomicalEntityToAnat
     class_model_uri: ClassVar[URIRef] = DIST.AnatomicalEntityToAnatomicalEntityPartOfAssociation
 
     id: Union[str, AnatomicalEntityToAnatomicalEntityPartOfAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, AnatomicalEntityId] = None
     object: Union[str, AnatomicalEntityId] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -12700,11 +12864,11 @@ class AnatomicalEntityToAnatomicalEntityOntogenicAssociation(AnatomicalEntityToA
     class_model_uri: ClassVar[URIRef] = DIST.AnatomicalEntityToAnatomicalEntityOntogenicAssociation
 
     id: Union[str, AnatomicalEntityToAnatomicalEntityOntogenicAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, AnatomicalEntityId] = None
     object: Union[str, AnatomicalEntityId] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -12782,10 +12946,10 @@ class OrganismTaxonToOrganismTaxonAssociation(Association):
 
     id: Union[str, OrganismTaxonToOrganismTaxonAssociationId] = None
     predicate: Union[str, PredicateType] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, OrganismTaxonId] = None
     object: Union[str, OrganismTaxonId] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.predicate):
@@ -12822,11 +12986,11 @@ class OrganismTaxonToOrganismTaxonSpecialization(OrganismTaxonToOrganismTaxonAss
     class_model_uri: ClassVar[URIRef] = DIST.OrganismTaxonToOrganismTaxonSpecialization
 
     id: Union[str, OrganismTaxonToOrganismTaxonSpecializationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, OrganismTaxonId] = None
     object: Union[str, OrganismTaxonId] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -12870,11 +13034,11 @@ class OrganismTaxonToOrganismTaxonInteraction(OrganismTaxonToOrganismTaxonAssoci
     class_model_uri: ClassVar[URIRef] = DIST.OrganismTaxonToOrganismTaxonInteraction
 
     id: Union[str, OrganismTaxonToOrganismTaxonInteractionId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, OrganismTaxonId] = None
     object: Union[str, OrganismTaxonId] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
     associated_environmental_context: Optional[str] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
@@ -12917,11 +13081,11 @@ class OrganismTaxonToEnvironmentAssociation(Association):
     class_model_uri: ClassVar[URIRef] = DIST.OrganismTaxonToEnvironmentAssociation
 
     id: Union[str, OrganismTaxonToEnvironmentAssociationId] = None
+    knowledge_level: Union[str, "KnowledgeLevelEnum"] = None
+    agent_type: Union[str, "AgentTypeEnum"] = None
     subject: Union[str, OrganismTaxonId] = None
     object: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
-    knowledge_level: Union[str, "KnowledgeLevelEnum"] = KnowledgeLevelEnum.not_provided
-    agent_type: Union[str, "AgentTypeEnum"] = AgentTypeEnum.not_provided
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.subject):
@@ -13009,7 +13173,7 @@ class ClinicalApprovalStatusEnum(EnumDefinitionImpl):
         name="ClinicalApprovalStatusEnum",
     )
 
-class MaxResearchPhaseEnum(EnumDefinitionImpl):
+class ResearchPhaseEnum(EnumDefinitionImpl):
 
     pre_clinical_research_phase = PermissibleValue(
         text="pre_clinical_research_phase",
@@ -13032,7 +13196,7 @@ class MaxResearchPhaseEnum(EnumDefinitionImpl):
     not_provided = PermissibleValue(text="not_provided")
 
     _defn = EnumDefinition(
-        name="MaxResearchPhaseEnum",
+        name="ResearchPhaseEnum",
     )
 
 class DirectionQualifierEnum(EnumDefinitionImpl):
@@ -13840,6 +14004,9 @@ slots.anatomical_context_qualifier = Slot(uri=BIOLINK.anatomical_context_qualifi
 
 slots.species_context_qualifier = Slot(uri=BIOLINK.species_context_qualifier, name="species context qualifier", curie=BIOLINK.curie('species_context_qualifier'),
                    model_uri=DIST.species_context_qualifier, domain=Association, range=Optional[Union[str, OrganismTaxonId]])
+
+slots.disease_context_qualifier = Slot(uri=BIOLINK.disease_context_qualifier, name="disease context qualifier", curie=BIOLINK.curie('disease_context_qualifier'),
+                   model_uri=DIST.disease_context_qualifier, domain=Association, range=Optional[Union[str, DiseaseId]])
 
 slots.qualifiers = Slot(uri=BIOLINK.qualifiers, name="qualifiers", curie=BIOLINK.curie('qualifiers'),
                    model_uri=DIST.qualifiers, domain=Association, range=Optional[Union[Union[str, OntologyClassId], list[Union[str, OntologyClassId]]]])
@@ -14673,7 +14840,7 @@ slots.negated = Slot(uri=BIOLINK.negated, name="negated", curie=BIOLINK.curie('n
                    model_uri=DIST.negated, domain=Association, range=Optional[Union[bool, Bool]])
 
 slots.has_confidence_level = Slot(uri=BIOLINK.has_confidence_level, name="has confidence level", curie=BIOLINK.curie('has_confidence_level'),
-                   model_uri=DIST.has_confidence_level, domain=Association, range=Optional[Union[str, ConfidenceLevelId]])
+                   model_uri=DIST.has_confidence_level, domain=Association, range=Optional[str])
 
 slots.has_evidence = Slot(uri=BIOLINK.has_evidence, name="has evidence", curie=BIOLINK.curie('has_evidence'),
                    model_uri=DIST.has_evidence, domain=Association, range=Optional[Union[Union[str, EvidenceTypeId], list[Union[str, EvidenceTypeId]]]])
@@ -14829,7 +14996,10 @@ slots.clinical_approval_status = Slot(uri=BIOLINK.clinical_approval_status, name
                    model_uri=DIST.clinical_approval_status, domain=Association, range=Optional[Union[str, "ClinicalApprovalStatusEnum"]])
 
 slots.max_research_phase = Slot(uri=BIOLINK.max_research_phase, name="max research phase", curie=BIOLINK.curie('max_research_phase'),
-                   model_uri=DIST.max_research_phase, domain=Association, range=Optional[Union[str, "MaxResearchPhaseEnum"]])
+                   model_uri=DIST.max_research_phase, domain=Association, range=Optional[Union[str, "ResearchPhaseEnum"]])
+
+slots.has_supporting_studies = Slot(uri=BIOLINK.has_supporting_studies, name="has supporting studies", curie=BIOLINK.curie('has_supporting_studies'),
+                   model_uri=DIST.has_supporting_studies, domain=Association, range=Optional[Union[Union[str, StudyId], list[Union[str, StudyId]]]])
 
 slots.supporting_study_metadata = Slot(uri=BIOLINK.supporting_study_metadata, name="supporting study metadata", curie=BIOLINK.curie('supporting_study_metadata'),
                    model_uri=DIST.supporting_study_metadata, domain=Association, range=Optional[str])
@@ -15163,6 +15333,33 @@ slots.chemical_gene_interaction_association_object_context_qualifier = Slot(uri=
 
 slots.chemical_gene_interaction_association_anatomical_context_qualifier = Slot(uri=BIOLINK.anatomical_context_qualifier, name="chemical gene interaction association_anatomical context qualifier", curie=BIOLINK.curie('anatomical_context_qualifier'),
                    model_uri=DIST.chemical_gene_interaction_association_anatomical_context_qualifier, domain=ChemicalGeneInteractionAssociation, range=Optional[Union[str, AnatomicalEntityId]])
+
+slots.gene_regulates_gene_association_subject = Slot(uri=RDF.subject, name="gene regulates gene association_subject", curie=RDF.curie('subject'),
+                   model_uri=DIST.gene_regulates_gene_association_subject, domain=GeneRegulatesGeneAssociation, range=Union[dict, GeneOrGeneProduct])
+
+slots.gene_regulates_gene_association_predicate = Slot(uri=RDF.predicate, name="gene regulates gene association_predicate", curie=RDF.curie('predicate'),
+                   model_uri=DIST.gene_regulates_gene_association_predicate, domain=GeneRegulatesGeneAssociation, range=Union[str, PredicateType])
+
+slots.gene_regulates_gene_association_object = Slot(uri=RDF.object, name="gene regulates gene association_object", curie=RDF.curie('object'),
+                   model_uri=DIST.gene_regulates_gene_association_object, domain=GeneRegulatesGeneAssociation, range=Union[dict, GeneOrGeneProduct])
+
+slots.gene_regulates_gene_association_object_aspect_qualifier = Slot(uri=BIOLINK.object_aspect_qualifier, name="gene regulates gene association_object aspect qualifier", curie=BIOLINK.curie('object_aspect_qualifier'),
+                   model_uri=DIST.gene_regulates_gene_association_object_aspect_qualifier, domain=GeneRegulatesGeneAssociation, range=Union[str, "GeneOrGeneProductOrChemicalEntityAspectEnum"])
+
+slots.gene_regulates_gene_association_object_direction_qualifier = Slot(uri=BIOLINK.object_direction_qualifier, name="gene regulates gene association_object direction qualifier", curie=BIOLINK.curie('object_direction_qualifier'),
+                   model_uri=DIST.gene_regulates_gene_association_object_direction_qualifier, domain=GeneRegulatesGeneAssociation, range=Union[str, "DirectionQualifierEnum"])
+
+slots.gene_regulates_gene_association_qualified_predicate = Slot(uri=BIOLINK.qualified_predicate, name="gene regulates gene association_qualified predicate", curie=BIOLINK.curie('qualified_predicate'),
+                   model_uri=DIST.gene_regulates_gene_association_qualified_predicate, domain=GeneRegulatesGeneAssociation, range=str)
+
+slots.process_regulates_process_association_subject = Slot(uri=RDF.subject, name="process regulates process association_subject", curie=RDF.curie('subject'),
+                   model_uri=DIST.process_regulates_process_association_subject, domain=ProcessRegulatesProcessAssociation, range=Union[str, BiologicalProcessId])
+
+slots.process_regulates_process_association_predicate = Slot(uri=RDF.predicate, name="process regulates process association_predicate", curie=RDF.curie('predicate'),
+                   model_uri=DIST.process_regulates_process_association_predicate, domain=ProcessRegulatesProcessAssociation, range=Union[str, PredicateType])
+
+slots.process_regulates_process_association_object = Slot(uri=RDF.object, name="process regulates process association_object", curie=RDF.curie('object'),
+                   model_uri=DIST.process_regulates_process_association_object, domain=ProcessRegulatesProcessAssociation, range=Union[str, BiologicalProcessId])
 
 slots.chemical_affects_gene_association_subject = Slot(uri=RDF.subject, name="chemical affects gene association_subject", curie=RDF.curie('subject'),
                    model_uri=DIST.chemical_affects_gene_association_subject, domain=ChemicalAffectsGeneAssociation, range=Union[str, ChemicalEntityId])
