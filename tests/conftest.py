@@ -7,6 +7,7 @@ from importlib.metadata import version
 from pathlib import Path
 from typing import Callable, List, Optional, Union
 
+import docker
 import pytest
 import requests_cache
 from _pytest.assertion.util import _diff_text
@@ -212,6 +213,13 @@ def pytest_collection_modifyitems(config, items: List[pytest.Item]):
             if item.get_closest_marker("pydanticgen_npd"):
                 item.add_marker(skip_npd)
 
+    # skip docker tests when docker server not present on the system
+    if not _docker_server_running():
+        skip_docker = pytest.mark.skip(reason="Docker server not running on host machine")
+        for item in items:
+            if item.get_closest_marker("docker"):
+                item.add_marker(skip_docker)
+
     # the fixture that mocks black import failures should always come all the way last
     # see: https://github.com/linkml/linkml/pull/2209#issuecomment-2231548078
     # this causes really hard to diagnose errors, but we can't fail a test run if
@@ -300,3 +308,16 @@ def mock_black_import():
 
     sys.modules.update(removed)
     sys.meta_path.remove(meta_finder)
+
+
+# --------------------------------------------------
+# Helper functions ~onl¥~
+# --------------------------------------------------
+
+
+def _docker_server_running() -> bool:
+    try:
+        _ = docker.from_env()
+        return True
+    except docker.errors.DockerException:
+        return False
