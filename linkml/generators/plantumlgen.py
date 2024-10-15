@@ -50,6 +50,7 @@ class PlantumlGenerator(Generator):
     directory: Optional[str] = None
     kroki_server: Optional[str] = "https://kroki.io"
     tooltips_flag: bool = False
+    dry_run: bool = False
 
     def visit_schema(
         self,
@@ -94,6 +95,8 @@ class PlantumlGenerator(Generator):
         b64_diagram = base64.urlsafe_b64encode(zlib.compress(plantuml_code.encode(), 9))
 
         plantuml_url = self.kroki_server + "/plantuml/svg/" + b64_diagram.decode()
+        if self.dry_run:
+            return plantuml_url
         if directory:
             file_suffix = ".svg" if self.format == "puml" or self.format == "puml" else "." + self.format
             self.output_file_name = os.path.join(
@@ -348,6 +351,13 @@ class PlantumlGenerator(Generator):
     "-k",
     help="URL of the Kroki server to use for diagram drawing",
     default="https://kroki.io",
+)
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help="Print out Kroki URL calls instead of sending the real requests",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
