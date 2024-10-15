@@ -77,6 +77,7 @@ def kroki_url(request):
         ("FamilialRelationship", FAMILIALRELATIONSHIP2PERSON),
     ],
 )
+@pytest.mark.network
 def test_serialize_selected(input_class, expected, kitchen_sink_path, kroki_url):
     """Test serialization of select plantUML class diagrams from schema."""
     generator = PlantumlGenerator(
@@ -96,6 +97,7 @@ def test_serialize_selected(input_class, expected, kitchen_sink_path, kroki_url)
         assert 'class "MarriageEvent"' not in plantuml, f"MarriageEvent not reachable from {input_class}"
 
 
+@pytest.mark.network
 def test_serialize(kitchen_sink_path, kroki_url):
     """Test serialization of complete plantUML class diagram from schema."""
     generator = PlantumlGenerator(
@@ -116,6 +118,7 @@ def test_serialize(kitchen_sink_path, kroki_url):
     assert 'class "MarriageEvent"' in plantuml
 
 
+@pytest.mark.network
 def test_generate_svg(tmp_path, kitchen_sink_path, kroki_url):
     """Test the correctness of SVG rendering of plantUML diagram."""
     generator = PlantumlGenerator(
