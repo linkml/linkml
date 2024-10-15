@@ -49,14 +49,12 @@ class PlantumlGenerator(Generator):
     classes: Set[ClassDefinitionName] = None
     directory: Optional[str] = None
     kroki_server: Optional[str] = "https://kroki.io"
-    load_image: bool = True
     tooltips_flag: bool = False
 
     def visit_schema(
         self,
         classes: Set[ClassDefinitionName] = None,
         directory: Optional[str] = None,
-        load_image: bool = True,
         **_,
     ) -> Optional[str]:
         if directory:
@@ -102,14 +100,13 @@ class PlantumlGenerator(Generator):
                 directory,
                 camelcase(sorted(classes)[0] if classes else self.schema.name) + file_suffix,
             )
-            if load_image:
-                resp = requests.get(plantuml_url, stream=True, timeout=REQUESTS_TIMEOUT)
-                if resp.ok:
-                    with open(self.output_file_name, "wb") as f:
-                        for chunk in resp.iter_content(chunk_size=2048):
-                            f.write(chunk)
-                else:
-                    self.logger.error(f"{resp.reason} accessing {plantuml_url}")
+            resp = requests.get(plantuml_url, stream=True, timeout=REQUESTS_TIMEOUT)
+            if resp.ok:
+                with open(self.output_file_name, "wb") as f:
+                    for chunk in resp.iter_content(chunk_size=2048):
+                        f.write(chunk)
+            else:
+                self.logger.error(f"{resp.reason} accessing {plantuml_url}")
         else:
             out = (
                 "@startuml\n"
