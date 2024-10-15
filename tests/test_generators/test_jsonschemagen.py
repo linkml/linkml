@@ -1,13 +1,14 @@
 import json
 import logging
 from pathlib import Path
-from typing import Dict, List, Optional, Union
+from typing import Dict, Iterable, List, Optional, Union
 
 import jsonschema
 import pytest
 import yaml
+from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper
-from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition, SlotDefinition
 from linkml_runtime.loaders import yaml_loader
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
@@ -327,6 +328,77 @@ def test_slot_not_required_nullability(input_path, not_closed):
             assert "null" in prop["type"], f"{key} does not allow null"
         elif "anyOf" in prop:
             assert {"type": "null"} in prop["anyOf"], f"{key} does not allow null"
+
+
+def test_lifecycle_classes(kitchen_sink_path):
+    """We can modify the generation process by subclassing lifecycle hooks"""
+
+    class TestJsonSchemaGen(JsonSchemaGenerator):
+        def before_generate_classes(self, cls: Iterable[ClassDefinition], sv: SchemaView) -> Iterable[ClassDefinition]:
+            cls = [c for c in cls]
+
+            # delete a class and make sure we don't get it in the output
+            assert cls[0].name == "activity"
+            del cls[0]
+            return cls
+
+        def before_generate_class(self, cls: ClassDefinition, sv: SchemaView) -> ClassDefinition:
+            # change all the descriptions, idk
+            cls.description = "TEST MODIFYING CLASSES"
+            return cls
+
+        def after_generate_class(self, cls, sv: SchemaView):
+            # make additionalProperties True
+            cls.schema_["additionalProperties"] = True
+            return cls
+
+    generator = TestJsonSchemaGen(kitchen_sink_path, mergeimports=True, top_class="Dataset", not_closed=False)
+    schema = json.loads(generator.serialize())
+    assert "Activity" not in schema["$defs"]
+    for cls in schema["$defs"].values():
+        if "enum" in cls:
+            continue
+        assert cls["additionalProperties"]
+        assert cls["description"] == "TEST MODIFYING CLASSES"
+
+
+def test_lifecycle_slots(kitchen_sink_path):
+    """We can modify the generation process by subclassing lifecycle hooks"""
+
+    class TestJsonSchemaGen(JsonSchemaGenerator):
+        def before_generate_class_slots(
+            self, slot: Iterable[SlotDefinition], cls, sv: SchemaView
+        ) -> Iterable[SlotDefinition]:
+            # make a new slot that's the number of slots for some reason
+            slot = [s for s in slot]
+            slot.append(SlotDefinition(name="number_of_slots", range="integer", ifabsent=f"integer({len(slot)})"))
+            return slot
+
+        def before_generate_class_slot(self, slot: SlotDefinition, cls, sv: SchemaView) -> SlotDefinition:
+            slot.description = "TEST MODIFYING SLOTS"
+            return slot
+
+        def after_generate_class_slot(self, slot, cls, sv: SchemaView):
+            # make em all required
+            if "type" not in slot.schema_:
+                slot.schema_["type"] = ["faketype"]
+            elif isinstance(slot.schema_["type"], list):
+                slot.schema_["type"].append("faketype")
+            else:
+                slot.schema_["type"] = [slot.schema_["type"], "faketype"]
+
+            return slot
+
+    generator = TestJsonSchemaGen(kitchen_sink_path, mergeimports=True, top_class="Dataset", not_closed=False)
+    schema = json.loads(generator.serialize())
+
+    for cls in schema["$defs"].values():
+        if "enum" in cls:
+            continue
+        assert "number_of_slots" in cls["properties"]
+        for prop in cls["properties"].values():
+            assert prop["description"] == "TEST MODIFYING SLOTS"
+            assert "faketype" in prop["type"]
 
 
 # **********************************************************
