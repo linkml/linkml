@@ -6,7 +6,6 @@
 # description: A datamodel for reports on data
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
 from dataclasses import dataclass
 from typing import Any, ClassVar, Optional, Union
 
