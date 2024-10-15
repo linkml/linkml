@@ -71,7 +71,7 @@ class PythonIfAbsentProcessor(IfAbsentProcessor):
     def map_enum_default_value(
         self, enum_name: EnumDefinitionName, permissible_value_name: str, slot: SlotDefinition, cls: ClassDefinition
     ):
-        return f"{enum_name}.{permissible_value_name}"
+        return f"'{permissible_value_name}'"
 
     def map_nc_name_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
         raise NotImplementedError()
