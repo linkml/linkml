@@ -6,14 +6,12 @@
 # description:
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
 import re
 from dataclasses import dataclass
-from typing import Any, ClassVar, Dict, List, Optional, Union
+from typing import Any, ClassVar, Optional, Union
 
 from jsonasobj2 import as_dict
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.metamodelcore import empty_dict, empty_list
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
@@ -21,9 +19,6 @@ from rdflib import URIRef
 
 metamodel_version = "1.7.0"
 version = None
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 DCTERMS = CurieNamespace("dcterms", "http://purl.org/dc/terms/")
@@ -63,7 +58,7 @@ class MetatranscriptomeActivityId(WorkflowExecutionActivityId):
 
 @dataclass
 class NamedThing(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = NMDC.NamedThing
     class_class_curie: ClassVar[str] = "nmdc:NamedThing"
@@ -73,9 +68,9 @@ class NamedThing(YAMLRoot):
     id: Union[str, NamedThingId] = None
     name: Optional[str] = None
     description: Optional[str] = None
-    alternative_identifiers: Optional[Union[str, List[str]]] = empty_list()
+    alternative_identifiers: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, NamedThingId):
@@ -98,7 +93,7 @@ class NamedThing(YAMLRoot):
 
 @dataclass
 class ConcreteThing(NamedThing):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = NMDC.ConcreteThing
     class_class_curie: ClassVar[str] = "nmdc:ConcreteThing"
@@ -107,7 +102,7 @@ class ConcreteThing(NamedThing):
 
     id: Union[str, ConcreteThingId] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, ConcreteThingId):
@@ -118,7 +113,7 @@ class ConcreteThing(NamedThing):
 
 @dataclass
 class Agent(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = NMDC.Agent
     class_class_curie: ClassVar[str] = "nmdc:Agent"
@@ -128,7 +123,7 @@ class Agent(YAMLRoot):
     acted_on_behalf_of: Optional[Union[dict, "Agent"]] = None
     was_informed_by: Optional[Union[str, ActivityId]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.acted_on_behalf_of is not None and not isinstance(self.acted_on_behalf_of, Agent):
             self.acted_on_behalf_of = Agent(**as_dict(self.acted_on_behalf_of))
 
@@ -140,7 +135,7 @@ class Agent(YAMLRoot):
 
 @dataclass
 class Activity(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = NMDC.Activity
     class_class_curie: ClassVar[str] = "nmdc:Activity"
@@ -153,7 +148,7 @@ class Activity(YAMLRoot):
     was_associated_with: Optional[Union[dict, Agent]] = None
     used: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, ActivityId):
@@ -176,7 +171,7 @@ class Activity(YAMLRoot):
 
 @dataclass
 class WorkflowExecutionActivity(Activity):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = NMDC.WorkflowExecutionActivity
     class_class_curie: ClassVar[str] = "nmdc:WorkflowExecutionActivity"
@@ -185,15 +180,15 @@ class WorkflowExecutionActivity(Activity):
 
     id: Union[str, WorkflowExecutionActivityId] = None
     execution_resource: str = None
-    has_input: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
-    has_output: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
+    has_input: Union[Union[str, NamedThingId], list[Union[str, NamedThingId]]] = None
+    has_output: Union[Union[str, NamedThingId], list[Union[str, NamedThingId]]] = None
     was_informed_by: Union[str, ActivityId] = None
     raw_type: Optional[str] = None
-    part_of: Optional[Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]]] = empty_list()
+    part_of: Optional[Union[Union[str, NamedThingId], list[Union[str, NamedThingId]]]] = empty_list()
     type: Optional[str] = None
     was_associated_with: Optional[Union[str, WorkflowExecutionActivityId]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, WorkflowExecutionActivityId):
@@ -241,7 +236,7 @@ class WorkflowExecutionActivity(Activity):
 
 @dataclass
 class MetatranscriptomeAssembly(WorkflowExecutionActivity):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = NMDC.MetatranscriptomeAssembly
     class_class_curie: ClassVar[str] = "nmdc:MetatranscriptomeAssembly"
@@ -250,12 +245,12 @@ class MetatranscriptomeAssembly(WorkflowExecutionActivity):
 
     id: Union[str, MetatranscriptomeAssemblyId] = None
     execution_resource: str = None
-    has_input: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
-    has_output: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
+    has_input: Union[Union[str, NamedThingId], list[Union[str, NamedThingId]]] = None
+    has_output: Union[Union[str, NamedThingId], list[Union[str, NamedThingId]]] = None
     was_informed_by: Union[str, ActivityId] = None
     insdc_assembly_identifiers: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, MetatranscriptomeAssemblyId):
@@ -269,7 +264,7 @@ class MetatranscriptomeAssembly(WorkflowExecutionActivity):
 
 @dataclass
 class MetatranscriptomeActivity(WorkflowExecutionActivity):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = NMDC.MetatranscriptomeActivity
     class_class_curie: ClassVar[str] = "nmdc:MetatranscriptomeActivity"
@@ -278,12 +273,12 @@ class MetatranscriptomeActivity(WorkflowExecutionActivity):
 
     id: Union[str, MetatranscriptomeActivityId] = None
     execution_resource: str = None
-    has_input: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
-    has_output: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
+    has_input: Union[Union[str, NamedThingId], list[Union[str, NamedThingId]]] = None
+    has_output: Union[Union[str, NamedThingId], list[Union[str, NamedThingId]]] = None
     was_informed_by: Union[str, ActivityId] = None
     raw_type: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, MetatranscriptomeActivityId):
@@ -297,7 +292,7 @@ class MetatranscriptomeActivity(WorkflowExecutionActivity):
 
 @dataclass
 class Database(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = NMDC.Database
     class_class_curie: ClassVar[str] = "nmdc:Database"
@@ -306,24 +301,24 @@ class Database(YAMLRoot):
 
     activity_set: Optional[
         Union[
-            Dict[Union[str, WorkflowExecutionActivityId], Union[dict, WorkflowExecutionActivity]],
-            List[Union[dict, WorkflowExecutionActivity]],
+            dict[Union[str, WorkflowExecutionActivityId], Union[dict, WorkflowExecutionActivity]],
+            list[Union[dict, WorkflowExecutionActivity]],
         ]
     ] = empty_dict()
     metatranscriptome_activity_set: Optional[
         Union[
-            Dict[Union[str, MetatranscriptomeActivityId], Union[dict, MetatranscriptomeActivity]],
-            List[Union[dict, MetatranscriptomeActivity]],
+            dict[Union[str, MetatranscriptomeActivityId], Union[dict, MetatranscriptomeActivity]],
+            list[Union[dict, MetatranscriptomeActivity]],
         ]
     ] = empty_dict()
     concrete_thing_set: Optional[
         Union[
-            Dict[Union[str, ConcreteThingId], Union[dict, ConcreteThing]],
-            List[Union[dict, ConcreteThing]],
+            dict[Union[str, ConcreteThingId], Union[dict, ConcreteThing]],
+            list[Union[dict, ConcreteThing]],
         ]
     ] = empty_dict()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         self._normalize_inlined_as_list(
             slot_name="activity_set", slot_type=WorkflowExecutionActivity, key_name="id", keyed=True
         )
@@ -358,8 +353,8 @@ slots.concrete_thing_set = Slot(
     domain=Database,
     range=Optional[
         Union[
-            Dict[Union[str, ConcreteThingId], Union[dict, ConcreteThing]],
-            List[Union[dict, ConcreteThing]],
+            dict[Union[str, ConcreteThingId], Union[dict, ConcreteThing]],
+            list[Union[dict, ConcreteThing]],
         ]
     ],
 )
@@ -415,7 +410,7 @@ slots.object_set = Slot(
     curie=NMDC.curie("object_set"),
     model_uri=NMDC.object_set,
     domain=Database,
-    range=Optional[Union[str, List[str]]],
+    range=Optional[Union[str, list[str]]],
 )
 
 slots.activity_set = Slot(
@@ -426,8 +421,8 @@ slots.activity_set = Slot(
     domain=Database,
     range=Optional[
         Union[
-            Dict[Union[str, WorkflowExecutionActivityId], Union[dict, WorkflowExecutionActivity]],
-            List[Union[dict, WorkflowExecutionActivity]],
+            dict[Union[str, WorkflowExecutionActivityId], Union[dict, WorkflowExecutionActivity]],
+            list[Union[dict, WorkflowExecutionActivity]],
         ]
     ],
 )
@@ -440,8 +435,8 @@ slots.metatranscriptome_activity_set = Slot(
     domain=Database,
     range=Optional[
         Union[
-            Dict[Union[str, MetatranscriptomeActivityId], Union[dict, MetatranscriptomeActivity]],
-            List[Union[dict, MetatranscriptomeActivity]],
+            dict[Union[str, MetatranscriptomeActivityId], Union[dict, MetatranscriptomeActivity]],
+            list[Union[dict, MetatranscriptomeActivity]],
         ]
     ],
 )
@@ -472,7 +467,7 @@ slots.has_input = Slot(
     curie=NMDC.curie("has_input"),
     model_uri=NMDC.has_input,
     domain=NamedThing,
-    range=Optional[Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]]],
+    range=Optional[Union[Union[str, NamedThingId], list[Union[str, NamedThingId]]]],
 )
 
 slots.has_output = Slot(
@@ -481,7 +476,7 @@ slots.has_output = Slot(
     curie=NMDC.curie("has_output"),
     model_uri=NMDC.has_output,
     domain=NamedThing,
-    range=Optional[Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]]],
+    range=Optional[Union[Union[str, NamedThingId], list[Union[str, NamedThingId]]]],
 )
 
 slots.part_of = Slot(
@@ -490,7 +485,7 @@ slots.part_of = Slot(
     curie=DCTERMS.curie("isPartOf"),
     model_uri=NMDC.part_of,
     domain=NamedThing,
-    range=Optional[Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]]],
+    range=Optional[Union[Union[str, NamedThingId], list[Union[str, NamedThingId]]]],
 )
 
 slots.type = Slot(
@@ -527,7 +522,7 @@ slots.alternative_identifiers = Slot(
     curie=NMDC.curie("alternative_identifiers"),
     model_uri=NMDC.alternative_identifiers,
     domain=None,
-    range=Optional[Union[str, List[str]]],
+    range=Optional[Union[str, list[str]]],
 )
 
 slots.attribute = Slot(
@@ -581,7 +576,7 @@ slots.WorkflowExecutionActivity_has_input = Slot(
     curie=NMDC.curie("has_input"),
     model_uri=NMDC.WorkflowExecutionActivity_has_input,
     domain=WorkflowExecutionActivity,
-    range=Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]],
+    range=Union[Union[str, NamedThingId], list[Union[str, NamedThingId]]],
 )
 
 slots.WorkflowExecutionActivity_has_output = Slot(
@@ -590,7 +585,7 @@ slots.WorkflowExecutionActivity_has_output = Slot(
     curie=NMDC.curie("has_output"),
     model_uri=NMDC.WorkflowExecutionActivity_has_output,
     domain=WorkflowExecutionActivity,
-    range=Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]],
+    range=Union[Union[str, NamedThingId], list[Union[str, NamedThingId]]],
 )
 
 slots.WorkflowExecutionActivity_was_informed_by = Slot(

@@ -1,7 +1,7 @@
 import json
 import logging
 from pathlib import Path
-from typing import Dict, List, Optional, Union
+from typing import Optional, Union
 
 import jsonschema
 import pytest
@@ -99,7 +99,7 @@ def test_compliance_cases(kitchen_sink_path, input_path, subtests):
     generator.not_closed = True
     kitchen_sink_json_schema_not_closed = json.loads(generator.serialize())
 
-    with open(input_path("kitchen_sink_compliance_inst_01.yaml"), "r") as io:
+    with open(input_path("kitchen_sink_compliance_inst_01.yaml")) as io:
         cases = yaml.load(io, Loader=yaml.loader.SafeLoader)
 
     for case in cases:
@@ -344,7 +344,7 @@ def test_slot_not_required_nullability(input_path, not_closed):
 # **********************************************************
 
 
-def external_file_test(subtests, file: Union[str, Path], generator_args: Optional[Dict] = None) -> None:
+def external_file_test(subtests, file: Union[str, Path], generator_args: Optional[dict] = None) -> None:
     if generator_args is None:
         generator_args = {"not_closed": False, "include_null": False}
 
@@ -363,9 +363,9 @@ def external_file_test(subtests, file: Union[str, Path], generator_args: Optiona
 def assert_schema_validates(
     subtests,
     schema: Union[str, SchemaDefinition],
-    expected_json_schema_subset: Optional[Dict] = None,
-    data_cases: Optional[List] = None,
-    generator_args: Optional[Dict] = None,
+    expected_json_schema_subset: Optional[dict] = None,
+    data_cases: Optional[list] = None,
+    generator_args: Optional[dict] = None,
 ):
     if generator_args is None:
         generator_args = {}
