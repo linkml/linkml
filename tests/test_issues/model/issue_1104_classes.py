@@ -6,7 +6,6 @@
 # description:
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
 import re
 from dataclasses import dataclass
 from typing import Any, ClassVar, Optional, Union
