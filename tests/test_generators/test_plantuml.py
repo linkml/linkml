@@ -44,6 +44,14 @@ DATASET2PERSON = """
 "Dataset" *--> "0..*" "Person" : "persons"
 """
 
+PERSON_URL = "https://kroki.io/plantuml/svg/eNp9VE1rwzAMvfdXiBzLMrZrD4Nu69hhHWM7lhK0RG0EsR0st1BK__ucj2ZJWycnR3p6T3oyTgsUgeiLrBgdwWp1nENZ_9xBwXvWWzAWMsLstF7DcQL-O26YiuwEnMEMxNkKBIOMRkWhHG4pYZ0cCK14DGtHW7IXICkpZZJkjEicUZjmSWp22gWZWJJ2jhl88IZ-HLqdLPROXfZVMApJT231cH8_XU9Ok7Qx6Zmtyxd70q426tNoakz5h8yzzJJIML-kjFMsxkneULFvpvimAh0bLTmXQfBClYU5KM83TvpiVIn6EMy_ovPjh-uXaC373Y2rvKPMGx-vId0lm8bxE0Te3MdoaOoMohwFfqsQUB27UTWNej77EmzOXjIAHpreiqgmCDn7e2QPodrbu2g5Nm0SbC8bbONqUy0LdfFeM7d1a7rKtbOAp6i1KQNnfFm35b7FPXBKFarb9aC_Hqx5AapJLtYeoFUV6tzDOR7Hw_vggTt_-AOKp2gk"
+
+DATASET2PERSON_URL = "https://kroki.io/plantuml/svg/eNp9kLEKwjAQhvc-xZGxWNHVQRB1VcFRHM7klEhzKUksFvHdjSlWFOuWn_s-7vLLEr0HgTLoWodGwG53Q6icrYklFSdichg0n-CF3Pd7uGXZPZOtuiHnLSdxBlUKAygjGh3rQBGqb2WBAT2F5Kws0_d8bhVtGx_I_EFMhdz0zmfcrA9nku2S5RVNVRLYI1xYWvbBoWZSkOjOfR-WF8UUxGg4zMXnORMQMkbwKXvR57wLnXRBUz_f_ScteL7_0a_OI9w2_hsdi48iIm0ooIqceAA8u58V"
+
+PERSON2MEDICALEVENT_URL = "https://kroki.io/plantuml/svg/eNqNUctuwjAQvOcrVj61qEHtlUMl1HLs445otNgLbOWsI9tBRVH-vRYhkQj04Zt3ZjyeWW0xBFDv3mkytacnJ5qqqGC5bF6dULtaQZNlbaZPRIuafkRfyLBGu9iTjJ-AdJoNkzUthIg-kikwFpFLuuFbmIHBSABnPBLzDxaHQtfeJ8uOsnbOEkpiDf96ZtyKCxz-jEc-ODnCc6iOlzuwvGfZgvNgCM1Yci1sQkddTPL8EdT9dPqgrrU9A1X1Q_Wr9jJK0pp-eKE9s-12l_gsYJ3GyClrNoQefCZqvMqk2WGAshvCjkN0_pC0J_wjz0eSvp65HN7Wn6S7ihZfWFaWwG2gFu0kRI8sZODI7sv7BsIk1Pk="
+
+FAMILIALRELATIONSHIP2PERSON_URL = "https://kroki.io/plantuml/svg/eNp9kMEKwjAMhu99itCTihO9ehC8eBQRb6IS1qiB2o42CDL27nZT1Ikzt-b7_h-a3GKMoNdkUdi7eOZCw3ZbLr2jareDUqlK5Q9pRSF61-A5FM1jCJav7E7gAxhC8x1Z4IUto_3TD2nKI5M1FeQ-mGQ7StkpRAl1NbQUuRWU2K_iTY3adhQMQuaAchC-UI_7KWtQvj1ypsOqVMcnsmwGeqLfZ5mCDrVBBsRr9doPGnM8Gg1010FS9IwRjk8I4YPGVNW291nWUXQHmaCZ4w=="
+
 
 @pytest.fixture(scope="module")
 def kroki_url(request):
@@ -64,6 +72,27 @@ def kroki_url(request):
             "Either fix the docker invocation, the _docker_server_running function, "
             "or find a more reliable way to test PlantUML!"
         )
+
+
+@pytest.mark.parametrize(
+    "input_class,expected",
+    [
+        # check that expected plantUML class diagram blocks are present
+        # when diagrams are generated for different classes
+        ("Person", PERSON_URL),
+        ("Dataset", DATASET2PERSON_URL),
+        ("MedicalEvent", PERSON2MEDICALEVENT_URL),
+        ("FamilialRelationship", FAMILIALRELATIONSHIP2PERSON_URL),
+    ],
+)
+def test_create_request(input_class, expected, kitchen_sink_path):
+    """Test serialization of select plantUML class diagrams from schema."""
+    generator = PlantumlGenerator(
+        kitchen_sink_path,
+        dry_run=True,
+    )
+    plantuml = generator.serialize(classes=[input_class])
+    assert plantuml == expected
 
 
 @pytest.mark.parametrize(
