@@ -112,9 +112,6 @@ def eval_(node, bindings=None, distribute=True):
             return node.value
     elif isinstance(node, ast.Constant):
         return node.value
-    elif isinstance(node, ast.NameConstant):
-        # can be removed when python 3.7 is no longer supported
-        return node.value
     elif isinstance(node, ast.Name):
         return bindings.get(node.id)
     elif isinstance(node, ast.Subscript):
