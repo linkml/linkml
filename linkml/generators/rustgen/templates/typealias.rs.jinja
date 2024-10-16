@@ -1,0 +1,9 @@
+{% if attributes or description %}
+#[
+{%- if description -%}doc = r" {{ description | escape }}", {%- endif -%}
+{%- for key, val in attributes.items() -%}
+{{ key }} = "{{ val }}"{% if not loop.last %}, {% endif %}
+{%- endfor -%}
+]
+{%- endif -%}
+type {{ name }} = {{ type_ }};
