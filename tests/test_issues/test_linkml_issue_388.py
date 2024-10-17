@@ -10,6 +10,7 @@ from linkml.generators.yamlgen import YAMLGenerator
 
 @pytest.mark.owlgen
 @pytest.mark.jsonschemagen
+@pytest.mark.network
 def test_attribute_behavior(input_path, snapshot, snapshot_path):
     """
     Tests: https://github.com/linkml/linkml/issues/388
