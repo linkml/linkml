@@ -114,6 +114,7 @@ def test_undefined_subset(input_path):
         SchemaLoader(fn).resolve()
 
 
+@pytest.mark.network
 def test_importmap(input_path, snapshot):
     """Test the importmap parameter"""
     fn = input_path("import_test_1.yaml")
