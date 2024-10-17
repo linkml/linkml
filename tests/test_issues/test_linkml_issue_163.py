@@ -15,6 +15,7 @@ RDF_FORMAT = "ttl"
 # Tests: https://github.com/linkml/linkml/issues/163
 
 
+@pytest.mark.network
 def test_roundtrip(input_path, tmp_path):
     name = "linkml_issue_163"
     inpath = input_path(f"{name}.yaml")
