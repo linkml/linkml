@@ -4,7 +4,7 @@ import sys
 from abc import ABC
 from typing import Any, Optional, Type, Union
 
-if sys.version_info.minor < 10:
+if sys.version_info < (3, 10):
     from typing_extensions import TypeAlias
 else:
     from typing import TypeAlias
