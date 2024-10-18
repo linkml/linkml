@@ -374,6 +374,7 @@
 
 <span class="kn">import</span> <span class="nn">linkml</span>
 <span class="kn">from</span> <span class="nn">linkml._version</span> <span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen.template</span> <span class="kn">import</span> <span class="n">Import</span><span class="p">,</span> <span class="n">Imports</span><span class="p">,</span> <span class="n">ObjectImport</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.python.python_ifabsent_processor</span> <span class="kn">import</span> <span class="n">PythonIfAbsentProcessor</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 
@@ -472,13 +473,120 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">emit_prefixes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">type_prefix</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">gen_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="c1"># The metamodel uses Enumerations to define itself, so don&#39;t import if we are generating the metamodel</span>
-        <span class="n">enumimports</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;&quot;</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">genmeta</span>
-            <span class="k">else</span> <span class="s2">&quot;from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">all_imports</span> <span class="o">=</span> <span class="n">Imports</span><span class="p">()</span>
+        <span class="c1"># generic imports</span>
+        <span class="n">all_imports</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">all_imports</span>
+            <span class="o">+</span> <span class="n">Import</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="s2">&quot;dataclasses&quot;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">Import</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="s2">&quot;re&quot;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">Import</span><span class="p">(</span>
+                <span class="n">module</span><span class="o">=</span><span class="s2">&quot;jsonasobj2&quot;</span><span class="p">,</span>
+                <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;JsonObj&quot;</span><span class="p">),</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;as_dict&quot;</span><span class="p">),</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="n">Import</span><span class="p">(</span>
+                <span class="n">module</span><span class="o">=</span><span class="s2">&quot;typing&quot;</span><span class="p">,</span>
+                <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Optional&quot;</span><span class="p">),</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;List&quot;</span><span class="p">),</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Union&quot;</span><span class="p">),</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Dict&quot;</span><span class="p">),</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ClassVar&quot;</span><span class="p">),</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Any&quot;</span><span class="p">),</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="n">Import</span><span class="p">(</span>
+                <span class="n">module</span><span class="o">=</span><span class="s2">&quot;dataclasses&quot;</span><span class="p">,</span>
+                <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;dataclass&quot;</span><span class="p">),</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="n">Import</span><span class="p">(</span>
+                <span class="n">module</span><span class="o">=</span><span class="s2">&quot;datetime&quot;</span><span class="p">,</span>
+                <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;date&quot;</span><span class="p">),</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;datetime&quot;</span><span class="p">),</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">),</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
         <span class="p">)</span>
-        <span class="n">handlerimport</span> <span class="o">=</span> <span class="s2">&quot;from linkml_runtime.utils.enumerations import EnumDefinitionImpl&quot;</span>
+
+        <span class="c1"># The metamodel uses Enumerations to define itself, so don&#39;t import if we are generating the metamodel</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">genmeta</span><span class="p">:</span>
+            <span class="n">all_imports</span> <span class="o">=</span> <span class="n">all_imports</span> <span class="o">+</span> <span class="n">Import</span><span class="p">(</span>
+                <span class="n">module</span><span class="o">=</span><span class="s2">&quot;linkml_runtime.linkml_model.meta&quot;</span><span class="p">,</span>
+                <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;EnumDefinition&quot;</span><span class="p">),</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;PermissibleValue&quot;</span><span class="p">),</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;PvFormulaOptions&quot;</span><span class="p">),</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+        <span class="c1"># linkml imports</span>
+        <span class="n">all_imports</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">all_imports</span>
+            <span class="o">+</span> <span class="n">Import</span><span class="p">(</span>
+                <span class="n">module</span><span class="o">=</span><span class="s2">&quot;linkml_runtime.utils.slot&quot;</span><span class="p">,</span>
+                <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Slot&quot;</span><span class="p">),</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="n">Import</span><span class="p">(</span>
+                <span class="n">module</span><span class="o">=</span><span class="s2">&quot;linkml_runtime.utils.metamodelcore&quot;</span><span class="p">,</span>
+                <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;empty_list&quot;</span><span class="p">),</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;empty_dict&quot;</span><span class="p">),</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;bnode&quot;</span><span class="p">),</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="n">Import</span><span class="p">(</span>
+                <span class="n">module</span><span class="o">=</span><span class="s2">&quot;linkml_runtime.utils.yamlutils&quot;</span><span class="p">,</span>
+                <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;YAMLRoot&quot;</span><span class="p">),</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;extended_str&quot;</span><span class="p">),</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;extended_float&quot;</span><span class="p">),</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;extended_int&quot;</span><span class="p">),</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="n">Import</span><span class="p">(</span>
+                <span class="n">module</span><span class="o">=</span><span class="s2">&quot;linkml_runtime.utils.dataclass_extensions_376&quot;</span><span class="p">,</span>
+                <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;dataclasses_init_fn_with_kwargs&quot;</span><span class="p">),</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="n">Import</span><span class="p">(</span>
+                <span class="n">module</span><span class="o">=</span><span class="s2">&quot;linkml_runtime.utils.formatutils&quot;</span><span class="p">,</span>
+                <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;camelcase&quot;</span><span class="p">),</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;underscore&quot;</span><span class="p">),</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sfx&quot;</span><span class="p">),</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># handler import</span>
+        <span class="n">all_imports</span> <span class="o">=</span> <span class="n">all_imports</span> <span class="o">+</span> <span class="n">Import</span><span class="p">(</span>
+            <span class="n">module</span><span class="o">=</span><span class="s2">&quot;linkml_runtime.utils.enumerations&quot;</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="p">[</span><span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;EnumDefinitionImpl&quot;</span><span class="p">)]</span>
+        <span class="p">)</span>
+        <span class="c1"># other imports</span>
+        <span class="n">all_imports</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">all_imports</span>
+            <span class="o">+</span> <span class="n">Import</span><span class="p">(</span>
+                <span class="n">module</span><span class="o">=</span><span class="s2">&quot;rdflib&quot;</span><span class="p">,</span>
+                <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Namespace&quot;</span><span class="p">),</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;URIRef&quot;</span><span class="p">),</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="n">Import</span><span class="p">(</span>
+                <span class="n">module</span><span class="o">=</span><span class="s2">&quot;linkml_runtime.utils.curienamespace&quot;</span><span class="p">,</span>
+                <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;CurieNamespace&quot;</span><span class="p">),</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
         <span class="n">split_description</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
             <span class="n">split_description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">#   &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
@@ -496,21 +604,7 @@
 <span class="s2"># description: </span><span class="si">{</span><span class="n">split_description</span><span class="si">}</span>
 <span class="s2"># license: </span><span class="si">{</span><span class="n">be</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">license</span><span class="p">)</span><span class="si">}</span>
 
-<span class="s2">import dataclasses</span>
-<span class="s2">import re</span>
-<span class="s2">from jsonasobj2 import JsonObj, as_dict</span>
-<span class="s2">from typing import Optional, List, Union, Dict, ClassVar, Any</span>
-<span class="s2">from dataclasses import dataclass</span>
-<span class="s2">from datetime import date, datetime, time</span>
-<span class="si">{</span><span class="n">enumimports</span><span class="si">}</span>
-<span class="s2">from linkml_runtime.utils.slot import Slot</span>
-<span class="s2">from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode</span>
-<span class="s2">from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int</span>
-<span class="s2">from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs</span>
-<span class="s2">from linkml_runtime.utils.formatutils import camelcase, underscore, sfx</span>
-<span class="si">{</span><span class="n">handlerimport</span><span class="si">}</span>
-<span class="s2">from rdflib import Namespace, URIRef</span>
-<span class="s2">from linkml_runtime.utils.curienamespace import CurieNamespace</span>
+<span class="si">{</span><span class="n">all_imports</span><span class="o">.</span><span class="n">render</span><span class="p">()</span><span class="si">}</span>
 <span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_imports</span><span class="p">()</span><span class="si">}</span>
 
 <span class="s2">metamodel_version = &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -1181,7 +1275,15 @@
             <span class="p">):</span>
                 <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">self.</span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">base_type_name</span><span class="si">}</span><span class="s2">()&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="p">(</span>
+                <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">ifabsent</span><span class="p">:</span>
+                    <span class="c1"># `ifabsent` for an enumeration cannot be assigned to</span>
+                    <span class="c1"># the dataclass field default, because it would be a</span>
+                    <span class="c1"># mutable. `python_ifabsent_processor.py` can specify</span>
+                    <span class="c1"># the default as string and here that string gets</span>
+                    <span class="c1"># converted into an object attribute invocation</span>
+                    <span class="c1"># TODO: fix according https://github.com/linkml/linkml/pull/2329#discussion_r1797534588</span>
+                    <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">self.</span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s2"> = getattr(</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">, self.</span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="p">(</span>
                     <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_identifier</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span><span class="p">)</span>
                     <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span>
                     <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span>

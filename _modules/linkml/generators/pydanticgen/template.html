@@ -1020,7 +1020,18 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span></div>
 
 
-<span class="n">_some_stdlib_module_names</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;copy&quot;</span><span class="p">,</span> <span class="s2">&quot;datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;decimal&quot;</span><span class="p">,</span> <span class="s2">&quot;enum&quot;</span><span class="p">,</span> <span class="s2">&quot;inspect&quot;</span><span class="p">,</span> <span class="s2">&quot;os&quot;</span><span class="p">,</span> <span class="s2">&quot;re&quot;</span><span class="p">,</span> <span class="s2">&quot;sys&quot;</span><span class="p">,</span> <span class="s2">&quot;typing&quot;</span><span class="p">}</span>
+<span class="n">_some_stdlib_module_names</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;copy&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;datetime&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;decimal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;enum&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;inspect&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;os&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;re&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sys&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;typing&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dataclasses&quot;</span><span class="p">,</span>
+<span class="p">}</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">sys.stdlib_module_names is only present in 3.10 and later</span>
 <span class="sd">so we make a cheap copy of the stdlib modules that we commonly use here,</span>
