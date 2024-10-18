@@ -348,11 +348,10 @@ def test_process_uri_or_curie_ifabsent_attribute():
 
     processor = ShaclIfAbsentProcessor(schema_view)
 
-    with pytest.raises(NotImplementedError):
-        processor.process_slot(
-            schema_view.all_slots()[SlotDefinitionName("unimplementedUriOrCurie")],
-            schema_view.all_classes()[ClassDefinitionName("Student")],
-        )
+    assert processor.process_slot(
+        schema_view.all_slots()[SlotDefinitionName("unimplementedUriOrCurie")],
+        schema_view.all_classes()[ClassDefinitionName("Student")],
+    ) == Literal("https://example.org", datatype=ShaclDataType.URI.uri_ref)
 
 
 def test_process_nc_name_ifabsent_attribute():
