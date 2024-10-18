@@ -5,7 +5,6 @@ Models for intermediate build results
 """
 
 import dataclasses
-from abc import abstractmethod
 from typing import Any, TypeVar
 
 try:
@@ -57,11 +56,11 @@ class BuildResult(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    @abstractmethod
     def merge(self, other: T) -> T:
         """
         Build results should have some means of merging results of a like kind
         """
+        raise NotImplementedError("This build result doesn't know how to merge!")
 
 
 class SchemaResult(BuildResult):

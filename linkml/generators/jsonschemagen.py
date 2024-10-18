@@ -21,6 +21,8 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
 
 from linkml._version import __version__
+from linkml.generators.common import build
+from linkml.generators.common.lifecycle import LifecycleMixin
 from linkml.generators.common.type_designators import get_type_designator_value
 from linkml.utils.generator import Generator, shared_arguments
 
@@ -177,8 +179,32 @@ class JsonSchema(dict):
         return JsonSchema(schema)
 
 
+class SchemaResult(build.SchemaResult):
+    """Top-level result of building a json schema"""
+
+    schema_: JsonSchema
+
+
+class EnumResult(build.EnumResult):
+    """A single built enum"""
+
+    schema_: JsonSchema
+
+
+class ClassResult(build.ClassResult):
+    """A single built class"""
+
+    schema_: JsonSchema
+
+
+class SlotResult(build.SlotResult):
+    """A slot within the context of a class"""
+
+    schema_: JsonSchema
+
+
 @dataclass
-class JsonSchemaGenerator(Generator):
+class JsonSchemaGenerator(Generator, LifecycleMixin):
     """
     Generates JSONSchema documents from a LinkML SchemaDefinition
 
@@ -187,6 +213,21 @@ class JsonSchemaGenerator(Generator):
     - Composition not yet implemented
     - Enumerations treated as strings
     - Foreign key references are treated as semantics-free strings
+
+    This generator implements the following :class:`.LifecycleMixin` methods:
+
+    * :meth:`.LifecycleMixin.before_generate_schema`
+    * :meth:`.LifecycleMixin.after_generate_schema`
+    * :meth:`.LifecycleMixin.before_generate_classes`
+    * :meth:`.LifecycleMixin.before_generate_enums`
+    * :meth:`.LifecycleMixin.before_generate_class_slots`
+    * :meth:`.LifecycleMixin.before_generate_class`
+    * :meth:`.LifecycleMixin.after_generate_class`
+    * :meth:`.LifecycleMixin.before_generate_class_slot`
+    * :meth:`.LifecycleMixin.after_generate_class_slot`
+    * :meth:`.LifecycleMixin.before_generate_enum`
+    * :meth:`.LifecycleMixin.after_generate_enum`
+
     """
 
     # ClassVars
@@ -233,7 +274,7 @@ class JsonSchemaGenerator(Generator):
             if self.schemaview.get_class(self.top_class) is None:
                 logger.warning(f"No class in schema named {self.top_class}")
 
-    def start_schema(self, inline: bool = False) -> JsonSchema:
+    def start_schema(self, inline: bool = False):
         self.inline = inline
 
         self.top_level_schema = JsonSchema(
@@ -249,6 +290,8 @@ class JsonSchemaGenerator(Generator):
         )
 
     def handle_class(self, cls: ClassDefinition) -> None:
+        cls = self.before_generate_class(cls, self.schemaview)
+
         if cls.mixin or cls.abstract:
             return
 
@@ -268,7 +311,10 @@ class JsonSchemaGenerator(Generator):
         if self.title_from == "title" and cls.title:
             class_subschema["title"] = cls.title
 
-        for slot_definition in self.schemaview.class_induced_slots(cls.name):
+        class_slots = self.before_generate_class_slots(
+            self.schemaview.class_induced_slots(cls.name), cls, self.schemaview
+        )
+        for slot_definition in class_slots:
             self.handle_class_slot(subschema=class_subschema, cls=cls, slot=slot_definition)
 
         rule_subschemas = []
@@ -317,6 +363,10 @@ class JsonSchemaGenerator(Generator):
             if "allOf" not in class_subschema:
                 class_subschema["allOf"] = []
             class_subschema["allOf"].extend(rule_subschemas)
+
+        class_subschema = self.after_generate_class(
+            ClassResult.model_construct(schema_=class_subschema, source=cls), self.schemaview
+        ).schema_
 
         self.top_level_schema.add_def(cls.name, class_subschema)
 
@@ -375,6 +425,7 @@ class JsonSchemaGenerator(Generator):
     def handle_enum(self, enum: EnumDefinition) -> None:
         # TODO: this only works with explicitly permitted values. It will need to be extended to
         # support other pv_formula
+        enum = self.before_generate_enum(enum, self.schemaview)
 
         def extract_permissible_text(pv):
             if isinstance(pv, str):
@@ -398,6 +449,10 @@ class JsonSchemaGenerator(Generator):
 
         if permissible_values_texts:
             enum_schema["enum"] = permissible_values_texts
+
+        enum_schema = self.after_generate_enum(
+            EnumResult.model_construct(schema_=enum_schema, source=enum), self.schemaview
+        ).schema_
         self.top_level_schema.add_def(enum.name, enum_schema)
 
     def get_type_info_for_slot_subschema(
@@ -596,6 +651,7 @@ class JsonSchemaGenerator(Generator):
         return prop
 
     def handle_class_slot(self, subschema: JsonSchema, cls: ClassDefinition, slot: SlotDefinition) -> None:
+        slot = self.before_generate_class_slot(slot, cls, self.schemaview)
         class_id_slot = self.schemaview.get_identifier_slot(cls.name, use_key=True)
         value_required = (
             slot.required or slot == class_id_slot or slot.value_presence == PresenceEnum(PresenceEnum.PRESENT)
@@ -604,6 +660,9 @@ class JsonSchemaGenerator(Generator):
 
         aliased_slot_name = self.aliased_slot_name(slot)
         prop = self.get_subschema_for_slot(slot, include_null=self.include_null)
+        prop = self.after_generate_class_slot(
+            SlotResult.model_construct(schema_=prop, source=slot), cls, self.schemaview
+        ).schema_
         subschema.add_property(
             aliased_slot_name, prop, value_required=value_required, value_disallowed=value_disallowed
         )
@@ -613,13 +672,20 @@ class JsonSchemaGenerator(Generator):
             prop["enum"] = [type_value]
 
     def generate(self) -> JsonSchema:
+        self.schema = self.before_generate_schema(self.schema, self.schemaview)
         self.start_schema()
-        for enum_definition in self.schemaview.all_enums().values():
+
+        all_enums = self.before_generate_enums(self.schemaview.all_enums().values(), self.schemaview)
+        for enum_definition in all_enums:
             self.handle_enum(enum_definition)
 
-        for class_definition in self.schemaview.all_classes().values():
+        all_classes = self.before_generate_classes(self.schemaview.all_classes().values(), self.schemaview)
+        for class_definition in all_classes:
             self.handle_class(class_definition)
 
+        self.top_level_schema = self.after_generate_schema(
+            SchemaResult.model_construct(schema_=self.top_level_schema, source=self.schema), self.schemaview
+        ).schema_
         return self.top_level_schema
 
     def serialize(self, **kwargs) -> str:
