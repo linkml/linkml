@@ -374,6 +374,37 @@ def test_uri_default_value():
     )
 
 
+def test_enum_no_default_value():
+    schema = (
+        base_schema
+        + """
+      - name: presence
+        range: PresenceEnum
+      - name: invalidPresence
+        range: PresenceEnum
+
+enums:
+  PresenceEnum:
+    permissible_values:
+      Present:
+        description: It's there.
+      Missing:
+        description: It's not there.
+    """
+    )
+    schema_view = SchemaView(schema)
+
+    processor = PythonIfAbsentProcessor(schema_view)
+
+    assert (
+        processor.process_slot(
+            schema_view.all_slots()[SlotDefinitionName("presence")],
+            schema_view.all_classes()[ClassDefinitionName("Student")],
+        )
+        is None
+    )
+
+
 def test_enum_default_value():
     schema = (
         base_schema
@@ -403,7 +434,7 @@ enums:
             schema_view.all_slots()[SlotDefinitionName("presence")],
             schema_view.all_classes()[ClassDefinitionName("Student")],
         )
-        == "PresenceEnum.Missing"
+        == "'Missing'"
     )
 
     with pytest.raises(ValueError) as e:
