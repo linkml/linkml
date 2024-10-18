@@ -437,3 +437,21 @@ def test_bnode_default_value():
         )
         == "bnode()"
     )
+
+
+@pytest.mark.parametrize("cls_name", ["Inheritance", "Base"])
+def test_custom_types(cls_name, input_path):
+    """
+    Custom types should have their defaults correctly resolved against
+    their ancestors or bases
+    """
+    schema = input_path("ifabsent_custom_types.yaml")
+    sv = SchemaView(schema)
+
+    cls = sv.induced_class(cls_name)
+    processor = PythonIfAbsentProcessor(sv)
+    for attr_name, attr in cls.attributes.items():
+        default = processor.process_slot(attr, cls)
+        if "value" not in attr.annotations:
+            continue
+        assert default == attr.annotations["value"].value
