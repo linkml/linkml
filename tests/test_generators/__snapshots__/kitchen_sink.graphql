@@ -280,4 +280,3 @@ interface WithLocation
     inLocation: Place
   }
 
-
