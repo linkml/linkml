@@ -1,3 +1,4 @@
+import pytest
 from rdflib import Graph, URIRef
 from rdflib.namespace import OWL, RDF
 
@@ -37,6 +38,7 @@ def test_aliases(input_path, snapshot):
     assert output == snapshot("issue_163c.owl")
 
 
+@pytest.mark.network
 def test_issue_genrdf_exact_mappings(input_path, snapshot):
     """Make sure that exact_mappings curies are correctly converted in rdfgen"""
     output = RDFGenerator(input_path("issue_163d.yaml")).serialize()
