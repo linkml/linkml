@@ -9,6 +9,7 @@ from linkml.generators.common.build import EnumResult as EnumResult_
 from linkml.generators.common.build import (
     SlotResult as SlotResult_,
 )
+from linkml.generators.common.build import TypeResult as TypeResult_
 from linkml.generators.rustgen.template import (
     Imports,
     RustCargo,
@@ -31,6 +32,14 @@ class RustBuildResult(BuildResult):
     def merge(self, other: "RustBuildResult") -> "RustBuildResult":
         self.imports += other.imports
         return self
+
+
+class TypeResult(RustBuildResult, TypeResult_):
+    """
+    A linkml type as a type alias
+    """
+
+    type_: RustTypeAlias
 
 
 class ClassResult(RustBuildResult, ClassResult_):

@@ -1,1 +1,7 @@
-{{ name }}: {% if multivalued %}Vec<{{ type_ }}>{% else %}{{ type_ }}{% endif %}
+{{ name }}: {% if multivalued and class_range and pyo3 -%}
+    Vec<Py<{{ type_ }}>>
+{%- elif multivalued -%}
+    Vec<{{ type_ }}>
+{%- else -%}
+    {{ type_ }}
+{%- endif -%}

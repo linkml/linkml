@@ -22,6 +22,7 @@ from linkml.generators.rustgen.build import (
     EnumResult,
     FileResult,
     SlotResult,
+    TypeResult,
 )
 from linkml.generators.rustgen.template import (
     Import,
@@ -66,7 +67,7 @@ Mapping from python types to rust types.
 
 """
 
-PROTECTED_NAMES = ("type",)
+PROTECTED_NAMES = ("type", "typeof", "abstract")
 
 RUST_IMPORTS = {
     "dec": Import(module="rust_decimal", version="1.36", objects=[ObjectImport(name="dec")]),
@@ -78,7 +79,7 @@ RUST_IMPORTS["Py<PyDate>"] = RUST_IMPORTS["PyDate"]
 DEFAULT_IMPORTS = Imports(imports=[Import(module="pyo3::prelude::*", version="0.23.0")])
 
 
-def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, field: bool = False) -> str:
+def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView) -> str:
     """
     Get the rust type from a given linkml type
     """
@@ -86,18 +87,19 @@ def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, field: bo
 
     if isinstance(t, TypeDefinition):
         rsrange = t.base
+        if rsrange is not None and rsrange not in PYTHON_TO_RUST:
+            # A type like URIorCURIE which is an alias for a rust type
+            rsrange = get_name(t)
 
-        if rsrange is None and t.typeof is not None:
-            rsrange = get_rust_type(sv.get_type(t.typeof), sv, field)
+        elif rsrange is None and t.typeof is not None:
+            # A type with no base type,
+            rsrange = get_rust_type(sv.get_type(t.typeof), sv)
 
     elif isinstance(t, str):
         if tdef := sv.all_types().get(t, None):
             rsrange = get_rust_type(tdef, sv)
         elif t in sv.all_classes():
-            if field:
-                rsrange = f"Py<{get_name(sv.get_class(t))}>"
-            else:
-                rsrange = get_name(sv.get_class(t))
+            rsrange = get_name(sv.get_class(t))
 
     # FIXME: Raise here once we have implemented all base types
     if rsrange is None:
@@ -116,12 +118,12 @@ def protect_name(v: str) -> str:
     return v
 
 
-def get_name(e: Union[ClassDefinition, SlotDefinition, EnumDefinition, PermissibleValue]) -> str:
+def get_name(e: Union[ClassDefinition, SlotDefinition, EnumDefinition, PermissibleValue, TypeDefinition]) -> str:
     if isinstance(e, (ClassDefinition, EnumDefinition)):
         name = camelcase(e.name)
     elif isinstance(e, PermissibleValue):
         name = camelcase(e.text)
-    elif isinstance(e, SlotDefinition):
+    elif isinstance(e, (SlotDefinition, TypeDefinition)):
         name = underscore(e.name)
     else:
         raise ValueError("Can only get the name from a slot or class!")
@@ -143,7 +145,8 @@ class RustGenerator(Generator, LifecycleMixin):
 
     pyo3: bool = True
     """Generate pyO3 bindings for the rust defs"""
-    mode: RUST_MODES = True
+    pyo3_version: str = ">=0.21.1"
+    mode: RUST_MODES = "crate"
     """Generate a cargo.toml file"""
     output: Optional[Path] = None
     """
@@ -161,12 +164,24 @@ class RustGenerator(Generator, LifecycleMixin):
         self.schemaview: SchemaView = SchemaView(self.schema)
         super().__post_init__()
 
+    def generate_type(self, type_: TypeDefinition) -> TypeResult:
+        type_ = self.before_generate_type(type_, self.schemaview)
+        res = TypeResult(
+            source=type_,
+            type_=RustTypeAlias(name=get_name(type_), type_=get_rust_type(type_.base, self.schemaview), pyo3=self.pyo3),
+            imports=self.get_imports(type_),
+        )
+        slot = self.after_generate_type(res, self.schemaview)
+        return slot
+
     def generate_enum(self, enum: EnumDefinition) -> EnumResult:
         # TODO: this
         enum = self.before_generate_enum(enum, self.schemaview)
         res = EnumResult(
             source=enum,
-            enum=RustEnum(name=get_name(enum), items=[get_name(i) for i in enum.permissible_values.values()]),
+            enum=RustEnum(
+                name=get_name(enum), items=[get_name(i) for i in enum.permissible_values.values()], pyo3=self.pyo3
+            ),
         )
         res = self.after_generate_enum(res, self.schemaview)
         return res
@@ -178,7 +193,13 @@ class RustGenerator(Generator, LifecycleMixin):
         slot = self.before_generate_slot(slot, self.schemaview)
         slot = SlotResult(
             source=slot,
-            slot=RustTypeAlias(name=get_name(slot), type_=get_rust_type(slot.range, self.schemaview)),
+            slot=RustTypeAlias(
+                name=get_name(slot),
+                type_=get_rust_type(slot.range, self.schemaview),
+                multivalued=slot.multivalued,
+                pyo3=self.pyo3,
+                class_range=slot.range in self.schemaview.all_classes(),
+            ),
             imports=self.get_imports(slot),
         )
         slot = self.after_generate_slot(slot, self.schemaview)
@@ -198,7 +219,9 @@ class RustGenerator(Generator, LifecycleMixin):
 
         res = ClassResult(
             source=cls,
-            cls=RustStruct(name=get_name(cls), properties=[a.attribute for a in attributes], unsendable=unsendable),
+            cls=RustStruct(
+                name=get_name(cls), properties=[a.attribute for a in attributes], unsendable=unsendable, pyo3=self.pyo3
+            ),
         )
         # merge imports
         for attr in attributes:
@@ -216,8 +239,11 @@ class RustGenerator(Generator, LifecycleMixin):
             source=attr,
             attribute=RustProperty(
                 name=get_name(attr),
-                type_=get_rust_type(attr.range, self.schemaview, field=True),
+                type_=get_rust_type(attr.range, self.schemaview),
                 required=bool(attr.required),
+                multivalued=attr.multivalued,
+                class_range=attr.range in self.schemaview.all_classes(),
+                pyo3=self.pyo3,
             ),
             imports=self.get_imports(attr),
         )
@@ -229,7 +255,13 @@ class RustGenerator(Generator, LifecycleMixin):
         Generate a Cargo.toml file
         """
         version = self.schemaview.schema.version if self.schemaview.schema.version is not None else "0.0.0"
-        return RustCargo(name=self.schemaview.schema.name, version=version, imports=imports)
+        return RustCargo(
+            name=self.schemaview.schema.name,
+            version=version,
+            imports=imports,
+            pyo3_version=self.pyo3_version,
+            pyo3=self.pyo3,
+        )
 
     def generate_pyproject(self) -> RustPyProject:
         """
@@ -238,8 +270,14 @@ class RustGenerator(Generator, LifecycleMixin):
         version = self.schemaview.schema.version if self.schemaview.schema.version is not None else "0.0.0"
         return RustPyProject(name=self.schemaview.schema.name, version=version)
 
-    def get_imports(self, slot: SlotDefinition) -> Imports:
-        type_ = get_rust_type(slot.range, self.schemaview)
+    def get_imports(self, element: Union[SlotDefinition, TypeDefinition]) -> Imports:
+        if isinstance(element, SlotDefinition):
+            type_ = get_rust_type(element.range, self.schemaview)
+        elif isinstance(element, TypeDefinition):
+            type_ = get_rust_type(element.base, self.schemaview)
+        else:
+            raise TypeError("Must be a slot or type definition")
+
         if type_ in RUST_IMPORTS:
             return Imports(imports=[RUST_IMPORTS[type_]])
         else:
@@ -262,6 +300,11 @@ class RustGenerator(Generator, LifecycleMixin):
             mode = self.mode
 
         sv = self.schemaview
+
+        types = list(sv.all_types(imports=True).values())
+        types = self.before_generate_types(types, sv)
+        types = [self.generate_type(t) for t in types]
+        types = self.after_generate_types(types, sv)
 
         enums = list(sv.all_enums(imports=True).values())
         enums = self.before_generate_enums(enums, sv)
@@ -287,9 +330,11 @@ class RustGenerator(Generator, LifecycleMixin):
         file = RustFile(
             name=sv.schema.name,
             imports=imports,
-            type_aliases=[t.slot for t in slots],
+            slots=[t.slot for t in slots],
+            types=[t.type_ for t in types],
             enums=[e.enum for e in enums],
             structs=[c.cls for c in classes],
+            pyo3=self.pyo3,
         )
 
         if mode == "crate":
@@ -367,11 +412,13 @@ class RustGenerator(Generator, LifecycleMixin):
             assert output.suffix == ".rs", "Output must be a rust file in file mode"
             if not force and output.exists():
                 raise FileExistsError(f"{output} already exists and force is False! pass force=True to overwrite")
+            output.parent.mkdir(exist_ok=True, parents=True)
         elif mode == "crate":
             if not force and len([d for d in output.iterdir()]) != 0:
                 raise FileExistsError(
                     f"{output} already exists, is not empty,  and force is False! pass force=True to overwrite"
                 )
+            output.mkdir(exist_ok=True, parents=True)
         else:
             raise ValueError(f"Invalid generation mode: {mode}")
 
