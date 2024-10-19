@@ -48,6 +48,8 @@ class RustProperty(RustTemplateModel):
     name: str
     type_: str
     required: bool
+    multivalued: Optional[bool] = False
+    class_range: bool = False
 
 
 class RustStruct(RustTemplateModel):
@@ -91,6 +93,8 @@ class RustTypeAlias(RustTemplateModel):
     name: str
     type_: str
     description: Optional[str] = None
+    multivalued: Optional[bool] = False
+    class_range: bool = False
 
     @field_validator("attributes", mode="before")
     @classmethod
@@ -107,9 +111,10 @@ class RustFile(RustTemplateModel):
 
     name: str
     imports: Imports = Imports()
+    types: list[RustTypeAlias] = Field(default_factory=list)
     structs: list[RustStruct] = Field(default_factory=list)
     enums: list[RustEnum] = Field(default_factory=list)
-    type_aliases: list[RustTypeAlias] = Field(default_factory=list)
+    slots: list[RustTypeAlias] = Field(default_factory=list)
 
     @computed_field
     def struct_names(self) -> list[str]:

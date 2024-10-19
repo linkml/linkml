@@ -30,6 +30,7 @@ from linkml.generators.protogen import cli as gen_proto
 from linkml.generators.pydanticgen import cli as gen_pydantic
 from linkml.generators.pythongen import cli as gen_python
 from linkml.generators.rdfgen import cli as gen_rdf
+from linkml.generators.rustgen.cli import cli as gen_rust
 from linkml.generators.shaclgen import cli as gen_shacl
 from linkml.generators.shexgen import cli as gen_shex
 from linkml.generators.sparqlgen import cli as gen_sparql
@@ -110,6 +111,7 @@ generate.add_command(gen_proto, name="proto")
 generate.add_command(gen_python, name="python")
 generate.add_command(gen_pydantic, name="pydantic")
 generate.add_command(gen_rdf, name="rdf")
+generate.add_command(gen_rust, name="rust")
 generate.add_command(gen_shex, name="shex")
 generate.add_command(gen_shacl, name="shacl")
 generate.add_command(gen_sparql, name="sparql")
