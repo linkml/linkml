@@ -1,3 +1,3 @@
-from linkml.generators.rustgen.rustgen import RustGenerator
+from linkml.generators.rustgen.rustgen import RUST_MODES, RustGenerator
 
-__all__ = ["RustGenerator"]
+__all__ = ["RUST_MODES", "RustGenerator"]

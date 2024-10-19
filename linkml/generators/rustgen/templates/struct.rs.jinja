@@ -1,18 +1,15 @@
 {% if pyo3 %}
-{#    {% if unsendable %}#}
 #[pyclass(unsendable)]
 #[derive(Clone)]
-{#    {% else %}#}
-{##[pyclass(unsendable)]#}
-{#    {% endif %}#}
 {% endif %}
 struct {{ name }} {
 {% for property in properties %}
-    #[pyo3(get, set)]
+    {% if pyo3 %}#[pyo3(get, set)]{% endif %}
     {{ property }}{% if not loop.last %},{{ '\n' }}{% else %}{{ '\n' }}{% endif %}
 {% endfor %}
 }
 
+{% if pyo3 %}
 #[pymethods]
 impl {{ name }} {
     #[new]
@@ -20,4 +17,5 @@ impl {{ name }} {
         {{ name }}{ {% for p in property_names %}{{ p }}{% if not loop.last %},{% endif %}{% endfor %} }
     }
 }
+{% endif %}
 

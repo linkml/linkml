@@ -1,18 +1,29 @@
 #![allow(non_camel_case_types)]
 {{ imports }}
 
-{% for type_alias in type_aliases %}
-{{ type_alias }}
+// Types
+
+{% for type in types %}
+{{ type }}
 {% endfor %}
+
+// Slots
+
+{% for slot in slots %}
+{{ slot }}
+{% endfor %}
+
+// Enums
 
 {% for enum in enums %}
 {{ enum }}
 {% endfor %}
 
+// Classes
+
 {% for struct in structs %}
 {{ struct }}
 {% endfor %}
-
 
 
 {% if pyo3 %}
