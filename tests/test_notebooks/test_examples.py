@@ -6,6 +6,8 @@ from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
 
+import pytest
+
 from tests.test_notebooks import output_directory
 
 
@@ -33,6 +35,7 @@ class NotebookTests(unittest.TestCase):
     def test_inheritance(self):
         self.eval_test("inheritance.txt", "tests.test_notebooks.input.inheritance")
 
+    @pytest.mark.network
     def test_distributed_models(self):
         self.eval_test("distributedmodels.txt", "tests.test_notebooks.input.distributedmodels")
 

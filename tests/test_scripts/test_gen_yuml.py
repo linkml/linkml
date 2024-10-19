@@ -50,6 +50,7 @@ def test_invalid_classname():
 
 
 @pytest.mark.parametrize("format", YumlGenerator.valid_formats)
+@pytest.mark.network
 def test_formats(format, tmp_path, snapshot):
     runner = CliRunner()
     result = runner.invoke(cli, ["-f", format, "-c", "Person", "-d", str(tmp_path), KITCHEN_SINK_PATH])
@@ -57,6 +58,7 @@ def test_formats(format, tmp_path, snapshot):
     assert tmp_path == snapshot(f"genyuml/meta_{format}")
 
 
+@pytest.mark.network
 def test_specified_diagram_name(tmp_path, snapshot):
     runner = CliRunner()
     result = runner.invoke(cli, ["--diagram-name", "specified_name", "-d", str(tmp_path), KITCHEN_SINK_PATH])
