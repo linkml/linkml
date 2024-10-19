@@ -1,0 +1,21 @@
+{% if pyo3 %}
+#[pyclass(unsendable)]
+#[derive(Clone)]
+{% endif %}
+struct {{ name }} {
+{% for property in properties %}
+    {% if pyo3 %}#[pyo3(get, set)]{% endif %}
+    {{ property }}{% if not loop.last %},{{ '\n' }}{% else %}{{ '\n' }}{% endif %}
+{% endfor %}
+}
+
+{% if pyo3 %}
+#[pymethods]
+impl {{ name }} {
+    #[new]
+    pub fn new({% for property in properties %}{{ property }}{% if not loop.last %},{% endif %}{% endfor %}) -> Self {
+        {{ name }}{ {% for p in property_names %}{{ p }}{% if not loop.last %},{% endif %}{% endfor %} }
+    }
+}
+{% endif %}
+
