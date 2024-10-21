@@ -170,6 +170,9 @@ class OwlSchemaGenerator(Generator):
         default_factory=lambda: package_schemaview("linkml_runtime.linkml_model.meta")
     )
 
+    enum_iri_separator: str = "#"
+    """Separator for enum IRI. Can be overridden for example if your namespace IRI already contains a #"""
+
     def as_graph(self) -> Graph:
         """
         Generate an rdflib Graph from the LinkML schema.
@@ -1254,7 +1257,7 @@ class OwlSchemaGenerator(Generator):
         if pv.meaning:
             return URIRef(self.schemaview.expand_curie(pv.meaning))
         else:
-            return URIRef(enum_uri + "#" + pv.text.replace(" ", "+"))
+            return URIRef(enum_uri + self.enum_iri_separator + pv.text.replace(" ", "+"))
 
     def slot_owl_type(self, slot: SlotDefinition) -> URIRef:
         sv = self.schemaview
@@ -1352,6 +1355,13 @@ class OwlSchemaGenerator(Generator):
     default=str(OWL.Class),
     show_default=True,
     help="Default OWL type for permissible values",
+)
+@click.option(
+    "--enum-iri-separator",
+    default="#",
+    is_flag=False,
+    show_default=True,
+    help="IRI separator for enums.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, metadata_profile: str, **kwargs):

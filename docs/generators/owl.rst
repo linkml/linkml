@@ -74,6 +74,7 @@ Enums and PermissibleValues are treated as *classes* by default. An enum has a *
 an OWL ``UnionOf`` construct.
 
 * Use ``--default-permissible-value-type`` to change the default type
+* Use ``--enum-iri-separator`` to change the separator character in the enum IRI which is ``#`` by default
 
 You can make an enum represent individuals by adding an ``implements`` slot assignment:
 
