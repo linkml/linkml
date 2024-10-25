@@ -7,3 +7,24 @@ persons:
     first_name: first2
     last_name: last2
     age_in_months: 240
+relationships:
+  - person1:
+      id: P1
+      first_name: first1
+      last_name: last1
+      age_in_years: 10
+    type: friendship
+    person2:
+      id: P2
+      first_name: first2
+      last_name: last2
+      age_in_months: 240
+  - person1:
+      id: P1
+      first_name: first1
+      last_name: last1
+      age_in_years: 10
+    person2:
+      id: P3
+      first_name: first3
+      last_name: last3
