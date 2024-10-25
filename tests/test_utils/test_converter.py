@@ -85,10 +85,72 @@ def test_convert(input_path, cli_runner, tmp_path):
         assert p2["full_name"] == "first2 last2"
 
 
+@pytest.mark.xfail(reason="Bug 2382: ifabsent for enums does not work")
+def test_infer_and_convert2(input_path, cli_runner, tmp_path):
+    """
+    Tests using the --infer option to add missing values, and also roundtripping
+    through yaml->json->yaml->rdf->json
+    """
+    schema = input_path("schema_with_inference2.yaml")
+    data_in = input_path("data_example2.yaml")
+    json_out = tmp_path / "data_example2.out.json"
+    yaml_out = tmp_path / "data_example2.out.yaml"
+    rdf_out = tmp_path / "data_example2.out.ttl"
+    result = cli_runner.invoke(cli, ["--infer", "-s", schema, data_in, "-o", json_out])
+    print(f"infer to JSON: {result.output}")
+    assert result.exit_code == 0
+    result = cli_runner.invoke(cli, ["-s", schema, json_out, "-t", "yaml", "-o", yaml_out])
+    print(f"from JSON to YAML: {result.output}")
+    assert result.exit_code == 0
+    result = cli_runner.invoke(cli, ["-s", schema, yaml_out, "-t", "rdf", "-o", rdf_out])
+    print(f"from YAML to RDF: {result.output}")
+    assert result.exit_code == 0
+    result = cli_runner.invoke(cli, ["-s", schema, rdf_out, "-t", "json", "-o", json_out])
+    print(f"from RDF to JSON: {result.output}")
+    assert result.exit_code == 0
+    with open(json_out) as file:
+        obj = json.load(file)
+        persons = obj["persons"]
+        p1 = persons["P:1"]
+        p2 = persons["P:2"]
+        assert p1["is_juvenile"]
+        assert "is_juvenile" not in p2
+        assert p1["age_in_years"] == 10
+        assert p1["age_in_months"] == 120
+        assert p1["age_category"] == "juvenile"
+        assert p1["full_name"] == "first1 last1"
+        assert p2["age_in_years"] == 20
+        assert p2["age_in_months"] == 240
+        assert p2["age_category"] == "adult"
+        assert p2["full_name"] == "first2 last2"
+        relationships = obj["relationships"]
+        r1 = relationships[0]
+        r2 = relationships[1]
+        assert r1["type"] == "friendships"
+        assert r2["type"] == "acquaintance"
+
+
 def test_prefix_file(input_path, cli_runner, tmp_path):
     schema = input_path("schema_with_inference.yaml")
     data_in = input_path("data_example.yaml")
     rdf_out = tmp_path / "data_example.out.ttl"
+    prefix_file = input_path("data_example_prefix_map.yaml")
+    result = cli_runner.invoke(
+        cli, ["-s", schema, data_in, "-t", "rdf", "-o", rdf_out, "--prefix-file", prefix_file], catch_exceptions=True
+    )
+    assert result.exit_code == 0
+    rdf_graph = Graph()
+    rdf_graph.parse(rdf_out, format="turtle")
+    namespaces = {str(prefix): str(namespace) for prefix, namespace in rdf_graph.namespaces()}
+    assert "P" in namespaces
+    assert namespaces["P"] == "http://www.example.com/personinfo/"
+
+
+@pytest.mark.xfail(reason="Bug 2382: ifabsent for enums does not work")
+def test_prefix_file2(input_path, cli_runner, tmp_path):
+    schema = input_path("schema_with_inference2.yaml")
+    data_in = input_path("data_example2.yaml")
+    rdf_out = tmp_path / "data_example2.out.ttl"
     prefix_file = input_path("data_example_prefix_map.yaml")
     result = cli_runner.invoke(
         cli, ["-s", schema, data_in, "-t", "rdf", "-o", rdf_out, "--prefix-file", prefix_file], catch_exceptions=True
