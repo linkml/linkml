@@ -1,0 +1,17 @@
+[package]
+name = "{{ name }}"
+version = "{{ version }}"
+edition = "{{ edition }}"
+
+[lib]
+name = "{{ name }}"
+crate-type = ["cdylib"]
+
+[dependencies]
+{% for i in imports %}
+{{ i.module }} = "{{ i.version }}"
+{% endfor %}
+
+[dependencies.pyo3]
+version = "{{ pyo3_version }}"
+# features = ["abi3-py39"]

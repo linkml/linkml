@@ -1,0 +1,15 @@
+{% if attributes or description %}
+#[
+{%- if description -%}doc = r" {{ description | escape }}", {%- endif -%}
+{%- for key, val in attributes.items() -%}
+{{ key }} = "{{ val }}"{% if not loop.last %}, {% endif %}
+{%- endfor -%}
+]
+{%- endif -%}
+type {{ name }} = {% if multivalued and class_range and pyo3 -%}
+    Vec<Py<{{ type_ }}>>
+{%- elif multivalued -%}
+    Vec<{{ type_ }}>
+{%- else -%}
+    {{ type_ }}
+{%- endif -%};
