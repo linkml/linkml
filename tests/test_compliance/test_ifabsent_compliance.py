@@ -66,7 +66,8 @@ FUZZ_STR = "a b_c!@#$%^&*_+{}|:<>?[]()'\""
             [PYTHON_DATACLASSES, PYDANTIC, SHACL],
         ),
         ("fuzz_str", "string", f"string({FUZZ_STR})", "has_value", None, FUZZ_STR, True, True, []),
-        # ("enum", ENUM_E, f"(EnumName({PV_1})", "has_value", None, PV_1, True, True),    ],
+        # ("enum", ENUM_E, f"(EnumName({PV_1})", "has_value", None, PV_1, True, True),
+    ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_ifabsent(

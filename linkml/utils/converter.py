@@ -11,10 +11,10 @@ from linkml_runtime.utils.inference_utils import infer_all_slot_values
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import remove_empty_items
 
+from linkml import validator
 from linkml._version import __version__
 from linkml.generators.pythongen import PythonGenerator
 from linkml.utils import datautils
-from linkml import validator
 from linkml.utils.datautils import (
     _get_context,
     _get_format,
@@ -158,7 +158,7 @@ def cli(
         if schema is None:
             raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
         # FIXME: What do we do with validation results?
-        result = validator.validate(remove_empty_items(obj), schema=schema, target_class=target_class)
+        _ = validator.validate(remove_empty_items(obj), schema=schema, target_class=target_class)
 
     output_format = _get_format(output, output_format, default="json")
     if output_format == "json-ld":
