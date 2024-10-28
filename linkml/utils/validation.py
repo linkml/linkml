@@ -32,7 +32,7 @@ def validate_object(
     :param closed:
     :return:
     """
-    deprecation_warning('validators')
+    deprecation_warning("validators")
     if target_class is None:
         target_class = type(data)
     inst_dict = _as_dict(data)

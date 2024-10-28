@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 def sparqljson2dict(row: dict):
-    deprecation_warning('validators')
+    deprecation_warning("validators")
     return {k: v["value"] for k, v in row.items()}
 
 
@@ -39,13 +39,13 @@ class SparqlDataValidator(DataValidator):
     queries: dict = None
 
     def validate_file(self, input: str, format: str = "turtle", **kwargs):
-        deprecation_warning('validators')
+        deprecation_warning("validators")
         g = Graph()
         g.parse(input, format=format)
         return self.validate_graph(g, **kwargs)
 
     def validate_graph(self, g: Graph, **kwargs):
-        deprecation_warning('validators')
+        deprecation_warning("validators")
         if self.queries is None:
             self.queries = SparqlGenerator(self.schema, **kwargs).queries
         invalid = []
@@ -65,7 +65,7 @@ class SparqlDataValidator(DataValidator):
         return invalid
 
     def validate_endpoint(self, url: str, **kwargs):
-        deprecation_warning('validators')
+        deprecation_warning("validators")
         if self.queries is None:
             self.queries = SparqlGenerator(self.schema, **kwargs).queries
         invalid = []
@@ -86,7 +86,7 @@ class SparqlDataValidator(DataValidator):
         return report
 
     def load_schema(self, schema: Union[str, SchemaDefinition]):
-        deprecation_warning('validators')
+        deprecation_warning("validators")
         self.schemaview = SchemaView(schema)
         self.schema = self.schemaview.schema
         # self.schema = YAMLGenerator(schema).schema
@@ -130,7 +130,7 @@ def cli(
 
         linkml-sparql-validate -U http://sparql.hegroup.org/sparql -s tests/test_validation/input/omo.yaml
     """
-    deprecation_warning('validators')
+    deprecation_warning("validators")
     validator = SparqlDataValidator(schema)
     if endpoint_url is not None:
         results = validator.validate_endpoint(endpoint_url, limit=limit, named_graphs=named_graph)
