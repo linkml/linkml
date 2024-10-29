@@ -14,13 +14,15 @@ from _pytest.assertion.util import _diff_text
 from linkml_runtime.linkml_model.meta import SchemaDefinition
 
 import tests
-from tests.utils.compare_rdf import compare_rdf
+from tests.utils.compare_rdf import compare_rdf, hash_graph
 from tests.utils.dirutils import are_dir_trees_equal
 
 KITCHEN_SINK_PATH = str(Path(__file__).parent / "test_generators" / "input" / "kitchen_sink.yaml")
 
 # avoid an error from nbconvert -> jupyter_core. remove this after jupyter_core v6
 os.environ["JUPYTER_PLATFORM_DIRS"] = "1"
+
+RDF_SUFFIXES = (".ttl", ".owl", ".n3")
 
 
 def normalize_line_endings(string: str):
@@ -70,6 +72,11 @@ class SnapshotFile(Snapshot):
             return True
         # if we got a string, use that as the content for the snapshot file
         if isinstance(source, str):
+            if self.path.suffix in RDF_SUFFIXES:
+                source_hash = hash_graph(source, fmt=self.rdf_format if self.rdf_format else "turtle")
+                with open(self.path.with_name(self.path.name + "_HASH"), "w") as hashfile:
+                    hashfile.write(source_hash)
+
             with open(self.path, "w", encoding="utf-8") as dest_file:
                 dest_file.write(source)
             return True
@@ -81,6 +88,12 @@ class SnapshotFile(Snapshot):
         with open(self.path, "r", encoding="utf-8") as snapshot_file:
             expected = snapshot_file.read()
 
+        if (hash_path := self.path.with_name(self.path.name + "_HASH")).exists():
+            with open(hash_path, "r") as hashfile:
+                graph_hash = hashfile.read()
+        else:
+            graph_hash = None
+
         if isinstance(other, Path):
             with open(other, "r", encoding="utf-8") as compare_file:
                 actual = compare_file.read()
@@ -90,8 +103,10 @@ class SnapshotFile(Snapshot):
             __tracebackhide__ = True
             raise TypeError(f"cannot compare snapshot to {other}")
 
-        if self.rdf_format or self.path.suffix in (".ttl", ".owl", ".n3"):
-            self.eq_state = compare_rdf(expected, actual, fmt=self.rdf_format if self.rdf_format else "turtle")
+        if self.rdf_format or self.path.suffix in RDF_SUFFIXES:
+            self.eq_state = compare_rdf(
+                expected, actual, fmt=self.rdf_format if self.rdf_format else "turtle", hash=graph_hash
+            )
             return self.eq_state is None
         else:
             is_eq = normalize_line_endings(actual) == expected

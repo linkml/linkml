@@ -42,10 +42,26 @@ def print_triples(g: Graph) -> None:
     print(g_text)
 
 
+def _rem_metadata(g: Graph) -> IsomorphicGraph:
+    # Remove list declarations from target
+    for s in g.subjects(RDF.type, RDF.List):
+        g.remove((s, RDF.type, RDF.List))
+    for t in g:
+        if t[1] in (
+            LINKML.generation_date,
+            LINKML.source_file_date,
+            LINKML.source_file_size,
+            TYPE.generation_date,
+            TYPE.source_file_date,
+            TYPE.source_file_size,
+        ):
+            g.remove(t)
+    g_iso = to_isomorphic(g)
+    return g_iso
+
+
 def compare_rdf(
-    expected: Union[Graph, str],
-    actual: Union[Graph, str],
-    fmt: Optional[str] = "turtle",
+    expected: Union[Graph, str], actual: Union[Graph, str], fmt: Optional[str] = "turtle", hash: Optional[str] = None
 ) -> Optional[str]:
     """
     Compare expected to actual, returning a string if there is a difference
@@ -55,32 +71,22 @@ def compare_rdf(
     :return: None if they match else summary of difference
     """
 
-    def rem_metadata(g: Graph) -> IsomorphicGraph:
-        # Remove list declarations from target
-        for s in g.subjects(RDF.type, RDF.List):
-            g.remove((s, RDF.type, RDF.List))
-        for t in g:
-            if t[1] in (
-                LINKML.generation_date,
-                LINKML.source_file_date,
-                LINKML.source_file_size,
-                TYPE.generation_date,
-                TYPE.source_file_date,
-                TYPE.source_file_size,
-            ):
-                g.remove(t)
-        g_iso = to_isomorphic(g)
-        return g_iso
-
     # Bypass compare if settings have turned it off
     if SKIP_RDF_COMPARE:
         print(f"tests/utils/compare_rdf.py: {SKIP_RDF_COMPARE_REASON}")
         return None
 
+    if hash:
+        # If we have a hash and it matches, just check that.
+        # otherwise proceed to get the full graph diff.
+        actual_hash = hash_graph(actual, fmt)
+        if actual_hash == hash:
+            return None
+
     expected_graph = to_graph(expected, fmt)
-    expected_isomorphic = rem_metadata(expected_graph)
+    expected_isomorphic = _rem_metadata(expected_graph)
     actual_graph = to_graph(actual, fmt)
-    actual_isomorphic = rem_metadata(actual_graph)
+    actual_isomorphic = _rem_metadata(actual_graph)
 
     # Graph compare takes a Looong time
     in_both, in_old, in_new = graph_diff(expected_isomorphic, actual_isomorphic)
@@ -99,3 +105,9 @@ def compare_rdf(
                 print_triples(in_new)
         return txt.getvalue()
     return None
+
+
+def hash_graph(g: Union[Graph, str], fmt: Optional[str] = "turtle") -> str:
+    g = to_graph(g, fmt)
+    g = _rem_metadata(g)
+    return str(g.internal_hash())
