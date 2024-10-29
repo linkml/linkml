@@ -1841,7 +1841,9 @@ def test_min_max(framework, min_val, max_val, equals_number: Optional[int], valu
                     "equals_number": equals_number,
                     "_mappings": {
                         PYDANTIC: (
-                            f"{SLOT_S1}: int = Field(default=..., ge={min_val}, le={max_val}" if not equals_number else ""
+                            f"{SLOT_S1}: int = Field(default=..., ge={min_val}, le={max_val}"
+                            if not equals_number
+                            else ""
                         )
                     },
                 },
