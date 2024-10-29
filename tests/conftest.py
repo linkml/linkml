@@ -191,6 +191,7 @@ def pytest_addoption(parser):
         "--with-output", action="store_true", help="dump output in compliance test for richer debugging information"
     )
     parser.addoption("--without-cache", action="store_true", help="Don't use a sqlite cache for network requests")
+    parser.addoption("--with-biolink", action="store_true", help="Include tests marked as for the biolink model")
 
 
 def pytest_collection_modifyitems(config, items: List[pytest.Item]):
@@ -198,6 +199,12 @@ def pytest_collection_modifyitems(config, items: List[pytest.Item]):
         skip_slow = pytest.mark.skip(reason="need --with-slow option to run")
         for item in items:
             if item.get_closest_marker("slow"):
+                item.add_marker(skip_slow)
+
+    if not config.getoption("--with-biolink"):
+        skip_slow = pytest.mark.skip(reason="need --with-biolink option to run")
+        for item in items:
+            if item.get_closest_marker("biolink"):
                 item.add_marker(skip_slow)
 
     # make sure deprecation test happens at the end
