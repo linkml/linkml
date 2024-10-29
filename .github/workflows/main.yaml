@@ -101,7 +101,7 @@ jobs:
       #----------------------------------------------
       - name: Generate coverage results
         run: |
-          poetry run coverage run -m pytest --with-slow
+          poetry run coverage run -m pytest
           poetry run coverage xml
           poetry run coverage report -m
         shell: bash
@@ -118,11 +118,16 @@ jobs:
           file: coverage.xml
           fail_ci_if_error: true
 
-  test_biolink:
-    name: Test Biolink
+  test_slow:
+    name: Slow Tests
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+        python-version: [ "3.8", "3.12" ]
     needs:
       - quality-checks
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     defaults:
       run:
         shell: bash
@@ -135,13 +140,13 @@ jobs:
         uses: actions/setup-python@v5
         id: setup-python
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
           cache: 'poetry'
       - name: Install dependencies
         run: poetry install --no-interaction --all-extras
       - name: Generate coverage results
         run: |
-          poetry run coverage run -m pytest --with-slow --with-biolink -m biolink
+          poetry run coverage run -m pytest --with-slow --with-biolink -m slow -m biolink
           poetry run coverage xml
           poetry run coverage report -m
         shell: bash
@@ -149,7 +154,7 @@ jobs:
         if: github.repository == 'linkml/linkml'
         uses: codecov/codecov-action@v4
         with:
-          name: codecov-results-biolink-ubuntu-latest-3.12
+          name: codecov-results-slow-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
           file: coverage.xml
           fail_ci_if_error: true
