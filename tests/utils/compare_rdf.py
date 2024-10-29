@@ -81,7 +81,8 @@ def compare_rdf(
         # otherwise proceed to get the full graph diff.
         actual_hash = hash_graph(actual, fmt)
         assert actual_hash == hash
-            # return None
+    else:
+        raise RuntimeError("We should have hashes")
 
     expected_graph = to_graph(expected, fmt)
     expected_isomorphic = _rem_metadata(expected_graph)
