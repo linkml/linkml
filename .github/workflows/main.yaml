@@ -146,7 +146,7 @@ jobs:
         run: poetry install --no-interaction --all-extras
       - name: Generate coverage results
         run: |
-          poetry run coverage run -m pytest --with-slow --with-biolink -m slow -m biolink
+          poetry run coverage run -m pytest --with-slow --with-biolink -m slow
           poetry run coverage xml
           poetry run coverage report -m
         shell: bash
