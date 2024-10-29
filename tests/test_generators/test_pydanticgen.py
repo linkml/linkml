@@ -197,9 +197,9 @@ slots:
         """
     gen = PydanticGenerator(schema_str, package=PACKAGE)
     code = gen.serialize()
-    assert "inlined_things: Optional[Dict[str, Union[A, B]]] = Field(None" in code
-    assert "inlined_as_list_things: Optional[List[Union[A, B]]] = Field(None" in code
-    assert "not_inlined_things: Optional[List[str]] = Field(None" in code
+    assert "inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default=None" in code
+    assert "inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default=None" in code
+    assert "not_inlined_things: Optional[List[str]] = Field(default=None" in code
 
 
 @pytest.mark.parametrize(
@@ -279,11 +279,11 @@ slots:
 def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_identifier, expected, notes):
     # Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
     expected_default_factories = {
-        "Optional[List[str]]": "Field(None",
-        "Optional[List[B]]": "Field(None",
-        "Optional[Dict[str, B]]": "Field(None",
-        "Optional[Dict[str, str]]": "Field(None",
-        "Optional[Dict[str, Union[str, B]]]": "Field(None",
+        "Optional[List[str]]": "Field(default=None",
+        "Optional[List[B]]": "Field(default=None",
+        "Optional[Dict[str, B]]": "Field(default=None",
+        "Optional[Dict[str, str]]": "Field(default=None",
+        "Optional[Dict[str, Union[str, B]]]": "Field(default=None",
     }
 
     sb = SchemaBuilder("test")
@@ -351,12 +351,12 @@ classes:
 
     gen = PydanticGenerator(schema_str)
     code = gen.serialize()
-    assert "attr1: Optional[int] = Field(10" in code
-    assert 'attr2: Optional[str] = Field("hello world"' in code
-    assert "attr3: Optional[bool] = Field(True" in code
-    assert "attr4: Optional[float] = Field(1.0" in code
-    assert "attr5: Optional[date] = Field(date(2020, 1, 1)" in code
-    assert "attr6: Optional[datetime ] = Field(datetime(2020, 1, 1, 0, 0, 0)" in code
+    assert "attr1: Optional[int] = Field(default=10" in code
+    assert 'attr2: Optional[str] = Field(default="hello world"' in code
+    assert "attr3: Optional[bool] = Field(default=True" in code
+    assert "attr4: Optional[float] = Field(default=1.0" in code
+    assert "attr5: Optional[date] = Field(default=date(2020, 1, 1)" in code
+    assert "attr6: Optional[datetime ] = Field(default=datetime(2020, 1, 1, 0, 0, 0)" in code
 
 
 def test_equals_string():
@@ -922,7 +922,7 @@ def test_inject_classes(kitchen_sink_path, tmp_path, input_path, inject, expecte
     "inject,name,type,default,description",
     (
         (
-            'object_id: Optional[str] = Field(None, description="Unique UUID for each object")',
+            'object_id: Optional[str] = Field(default=None, description="Unique UUID for each object")',
             "object_id",
             Optional[str],
             None,
@@ -963,15 +963,15 @@ def test_attribute_field():
     PydanticAttribute field should be able to autocompute ``field``
     """
     attr = PydanticAttribute(name="attr")
-    assert attr.model_dump()["field"] == "None"
+    assert attr.model_dump()["field"] == "default=None"
 
     predefined = "List[Union[str,int]]"
     attr = PydanticAttribute(name="attr", predefined=predefined)
-    assert attr.model_dump()["field"] == predefined
+    assert attr.model_dump()["field"] == f"default={predefined}"
 
     for item in ("required", "identifier", "key"):
         attr = PydanticAttribute(name="attr", **{item: True})
-        assert attr.model_dump()["field"] == "..."
+        assert attr.model_dump()["field"] == "default=..."
 
 
 def test_class_validators():
@@ -2117,7 +2117,7 @@ def test_template_black(array_complex):
             ),
         ),
     )
-] = Field(None)
+] = Field(default=None)
 """
     )
 
@@ -2151,7 +2151,7 @@ def test_template_noblack(array_complex, mock_black_import):
 
     assert (
         array_repr
-        == "array: Optional[conlist(max_length=5, item_type=conlist(min_length=2, item_type=conlist(min_length=2, max_length=5, item_type=conlist(min_length=6, max_length=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]]))))] = Field(None)"  # noqa: E501
+        == "array: Optional[conlist(max_length=5, item_type=conlist(min_length=2, item_type=conlist(min_length=2, max_length=5, item_type=conlist(min_length=6, max_length=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]]))))] = Field(default=None)"  # noqa: E501
     )
 
     # trying to render with black when we don't have it should raise a ValueError
