@@ -202,10 +202,10 @@ def pytest_collection_modifyitems(config, items: List[pytest.Item]):
                 item.add_marker(skip_slow)
 
     if not config.getoption("--with-biolink"):
-        skip_slow = pytest.mark.skip(reason="need --with-biolink option to run")
+        skip_biolink = pytest.mark.skip(reason="need --with-biolink option to run")
         for item in items:
             if item.get_closest_marker("biolink"):
-                item.add_marker(skip_slow)
+                item.add_marker(skip_biolink)
 
     # make sure deprecation test happens at the end
     test_deps = [i for i in items if i.name == "test_removed_are_removed"]
