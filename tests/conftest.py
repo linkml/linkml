@@ -173,7 +173,7 @@ def input_path(request) -> Callable[[str], Path]:
 @pytest.fixture(scope="function")
 def temp_dir(request) -> Path:
     base = Path(request.path.parent) / "temp"
-    test_dir = base / request.request.node.name
+    test_dir = base / request.node.name
     test_dir.mkdir(exist_ok=True, parents=True)
     yield test_dir
     if not request.config.getoption("with_output"):
