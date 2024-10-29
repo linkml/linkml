@@ -1,7 +1,7 @@
 import os
+import re
 import shutil
 import sys
-import re
 from abc import ABC, abstractmethod
 from importlib.abc import MetaPathFinder
 from importlib.metadata import version
@@ -23,7 +23,7 @@ KITCHEN_SINK_PATH = str(Path(__file__).parent / "test_generators" / "input" / "k
 # avoid an error from nbconvert -> jupyter_core. remove this after jupyter_core v6
 os.environ["JUPYTER_PLATFORM_DIRS"] = "1"
 
-UNSAFE_PATHS = re.compile(r'[^\w_.-]')
+UNSAFE_PATHS = re.compile(r"[^\w_.-]")
 
 
 def normalize_line_endings(string: str):
@@ -176,7 +176,7 @@ def input_path(request) -> Callable[[str], Path]:
 @pytest.fixture(scope="function")
 def temp_dir(request) -> Path:
     base = Path(request.path.parent) / "temp"
-    test_dir = base / UNSAFE_PATHS.sub('_', request.node.name)
+    test_dir = base / UNSAFE_PATHS.sub("_", request.node.name)
     test_dir.mkdir(exist_ok=True, parents=True)
     yield test_dir
     if not request.config.getoption("with_output"):
