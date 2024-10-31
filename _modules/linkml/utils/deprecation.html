@@ -567,6 +567,16 @@
         <span class="n">recommendation</span><span class="o">=</span><span class="s2">&quot;Update dependent packages to use pydantic&gt;=2&quot;</span><span class="p">,</span>
         <span class="n">issue</span><span class="o">=</span><span class="mi">1925</span><span class="p">,</span>
     <span class="p">),</span>
+    <span class="n">Deprecation</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;validators&quot;</span><span class="p">,</span>
+        <span class="n">deprecated_in</span><span class="o">=</span><span class="n">SemVer</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="s2">&quot;1.8.6&quot;</span><span class="p">),</span>
+        <span class="n">removed_in</span><span class="o">=</span><span class="n">SemVer</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="s2">&quot;1.9.0&quot;</span><span class="p">),</span>
+        <span class="n">message</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;linkml.validators and linkml.utils.validation are the older versions &quot;</span>
+            <span class="s2">&quot;of linkml.validator and have unmaintained, duplicated functionality&quot;</span>
+        <span class="p">),</span>
+        <span class="n">recommendation</span><span class="o">=</span><span class="s2">&quot;Update to use linkml.validator&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
 <span class="p">)</span>  <span class="c1"># type: tuple[Deprecation, ...]</span>
 
 <span class="n">EMITTED</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># type: set[str]</span>
