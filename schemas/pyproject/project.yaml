@@ -1,0 +1,69 @@
+id: https://w3id.org/linkml/pyproject/project
+name: linkml-pyproject-project
+description: | 
+  LinkML representation of the PEP 621 `project` table in `pyproject.toml` files
+  https://peps.python.org/pep-0621/
+  
+  TODO: dress this up all metadata fancy like
+imports:
+  - linkml:types
+default_range: string
+
+enums:
+  DescriptionContentType:
+    permissible_values:
+      "text/plain":
+      "text/x-rst":
+      "text/markdown":
+
+classes:
+  Project:
+    slots:
+      - name
+      - version
+      - authors
+      - classifiers
+      - dependencies
+      - description
+      - dynamic
+      - entry-points
+      - gui-scripts
+      - keywords
+      - license
+      - maintainers
+      - optional-dependencies
+      - readme
+      - requires-python
+      - scripts
+      - urls
+      - version
+
+  ReadmeFile:
+    slots:
+      - file
+      - text
+      - content-type
+
+
+
+
+slots:
+  name:
+    range: string
+    required: true
+  version:
+    range: string
+    pattern: '^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?$'
+  description:
+    range: string
+  readme:
+    any_of:
+      - range: string
+      - range: ReadmeFile
+
+  file:
+    range: string
+  text:
+    range: string
+  content-type:
+    range: DescriptionContentType

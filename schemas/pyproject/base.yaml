@@ -1,0 +1,6 @@
+id: linkml-pyproject-base
+name: linkml-pyproject-base
+description: | 
+  Common definitions to linkml pyproject schemas
+imports:
+  - linkml:types

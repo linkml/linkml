@@ -1,0 +1,23 @@
+id: https://w3id.org/linkml/pyproject/schema
+name: linkml-pyproject-schema
+description: | 
+  Specification of a schema within a project incorporating linkml
+imports:
+  - linkml:types
+
+classes:
+  Schema:
+    slots:
+      - schema_name
+      - schema_path
+
+slots:
+  schema_:
+    alias: "schema"
+    range: Schema
+    multivalued: true
+    inlined: true
+    inlined_as_list: false
+  schema_name:
+    key: true
+  schema_path:

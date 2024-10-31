@@ -1,0 +1,11 @@
+id: https://w3id.org/linkml/common
+name: linkml-common
+description: | 
+  Common definitions that are too generic to need specialization,
+  but used too often to be redefined in every schema
+imports:
+  - linkml:types
+
+slots:
+  name:
+    range: string

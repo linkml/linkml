@@ -1,0 +1,51 @@
+id: https://w3id.org/linkml/pyproject/generator
+name: linkml-pyproject-generator
+description: | 
+  Configuration of generators defined within this module.
+  Must be a subclass of `linkml.Generator`
+imports:
+  - linkml:types
+  - ../common
+  - ../python
+default_range: string
+
+classes:
+  Generator:
+    description: Parameterization of a generator within this package
+    slots:
+      - name
+      - python_class_id
+      - param_schema
+      - parent
+    slot_usage:
+      name:
+        description: |
+          The short-name of this generator to use with the `linkml generate` cli command
+          and any references within the [linkml.tool] table in `pyproject.toml` et al.
+
+
+  GeneratorParams:
+    description: metaclass for all generator param specifications
+    extra:
+      allow: true
+
+slots:
+  param_schema:
+    range: string
+    description: |
+      Optional path (relative to the directory containing the config file)
+      to generate a schema containing a GeneratorParams definition
+      of the parameters of the generator
+  parent:
+    range: string
+    description: |
+      Name of any parent generator that we inherit from - eg. a static declaration
+      that this generator inherits from `PydanticGenerator` would be `pydanticgen`
+
+  generator:
+    range: Generator
+    description: |
+      Declaration of generators within the `linkml.tool.generator` table.
+    multivalued: true
+    inlined: true
+    inlined_as_list: false

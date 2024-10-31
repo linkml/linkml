@@ -1,0 +1,27 @@
+id: https://w3id.org/linkml/pyproject/tool
+name: linkml-pyproject-tool
+description: | 
+  Top-level schema for the `[tool.linkml]` table in a `pyproject.toml` file
+  or `linkml.yaml` project configuration file
+imports:
+  - linkml:types
+  - ./schema
+  - ./build
+  - ./generator
+default_range: string
+
+
+classes:
+  LinkmlConfig:
+    slots:
+      - schema_
+      - generate
+      - generator
+      - build
+      - config_file
+
+
+
+
+slots:
+    config_file:

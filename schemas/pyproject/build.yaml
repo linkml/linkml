@@ -1,10 +1,11 @@
-id: linkml-build-schema
-name: linkml-build-schema
+id: https://w3id.org/linkml/pyproject/build
+name: linkml-pyproject-build
 description: | 
   schema for the tables in pyproject.toml under "tool.linkml" that
   are used by the build commands
 imports:
   - linkml:types
+  - ./schema
 default_range: string
 
 enums:
@@ -19,17 +20,6 @@ enums:
 
 
 classes:
-  LinkmlConfig:
-    slots:
-      - schema_
-      - generate
-      - build
-      - config_file
-
-  Schema:
-    slots:
-      - schema_name
-      - schema_path
 
   SchemaBuildConfig:
     slots:
@@ -86,21 +76,28 @@ classes:
 slots:
   anonymous_config:
     range: AnonymousGeneratorConfig
-  enable:
-    range: boolean
-  schema_:
-    alias: "schema"
-    range: Schema
+  build:
+    range: SchemaBuildConfig
     multivalued: true
     inlined: true
     inlined_as_list: false
-  schema_name:
-    key: true
-  schema_path:
-  output:
+  enable:
+    range: boolean
+  generate:
+    range: Generate
+  generator_config:
+    range: AnonymousGeneratorConfig
+  generator_configs:
+    range: GeneratorConfig
+    multivalued: true
+    inlined: true
+    inlined_as_list: false
   generator_name:
     identifier: true
     required: false
+  global_:
+    alias: "global"
+    range: AnonymousGeneratorConfig
   hook_type:
     ifabsent: string(module)
     range: HookTypes
@@ -109,7 +106,7 @@ slots:
     inlined_as_list: false
   hook_value:
     range: string
-
+  output:
   pre_build:
     any_of:
       - range: string
@@ -118,23 +115,8 @@ slots:
     any_of:
       - range: string
       - range: BuildHook
-  build:
-    range: SchemaBuildConfig
-    multivalued: true
-    inlined: true
-    inlined_as_list: false
-  global_:
-    alias: "global"
-    range: AnonymousGeneratorConfig
-  generate:
-    range: Generate
 
-  generator_configs:
-    range: GeneratorConfig
-    multivalued: true
-    inlined: true
-    inlined_as_list: false
 
-  generator_config:
-    range: AnonymousGeneratorConfig
-  config_file:
+
+
+

@@ -1,0 +1,20 @@
+id: https://w3id.org/linkml/python
+name: linkml-python
+description: | 
+  Schema describing language features of Python
+  WIP. Placeholder and values are added as needed, not intended for public reference use
+imports:
+  - linkml:types
+
+
+slots:
+  python_object_id:
+    description: |
+      A fully qualified reference to a python object's name by module.submodule:object
+    range: string
+
+  python_class_id:
+    is_a: python_object
+    description: |
+      object_id but for classes
+  
