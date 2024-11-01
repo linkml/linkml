@@ -112,9 +112,10 @@ def cli(
     output: FILE_TYPE = None,
     **kwargs,
 ):
-    if materialize is not None:
-        materialize_attributes = materialize
-        materialize_patterns = materialize
+    # You can use the `--materialize` / `--no-materialize` for control
+    # over both attribute and pattern materialization.
+    materialize_attributes = bool(materialize)
+    materialize_patterns = bool(materialize)
 
     gen = LinkmlGenerator(
         yamlfile,
