@@ -1,10 +1,8 @@
 import yaml
-
 from click.testing import CliRunner
 from linkml_runtime import SchemaView
-from linkml.generators.linkmlgen import cli
 
-from linkml.generators.linkmlgen import LinkmlGenerator
+from linkml.generators.linkmlgen import LinkmlGenerator, cli
 
 
 def test_generate(kitchen_sink_path):
