@@ -366,6 +366,8 @@
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">be</span><span class="p">,</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
 
 <span class="kn">from</span> <span class="nn">linkml._version</span> <span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.common</span> <span class="kn">import</span> <span class="n">build</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.common.lifecycle</span> <span class="kn">import</span> <span class="n">LifecycleMixin</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.common.type_designators</span> <span class="kn">import</span> <span class="n">get_type_designator_value</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 
@@ -522,8 +524,32 @@
         <span class="k">return</span> <span class="n">JsonSchema</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
 
 
+<span class="k">class</span> <span class="nc">SchemaResult</span><span class="p">(</span><span class="n">build</span><span class="o">.</span><span class="n">SchemaResult</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Top-level result of building a json schema&quot;&quot;&quot;</span>
+
+    <span class="n">schema_</span><span class="p">:</span> <span class="n">JsonSchema</span>
+
+
+<span class="k">class</span> <span class="nc">EnumResult</span><span class="p">(</span><span class="n">build</span><span class="o">.</span><span class="n">EnumResult</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A single built enum&quot;&quot;&quot;</span>
+
+    <span class="n">schema_</span><span class="p">:</span> <span class="n">JsonSchema</span>
+
+
+<span class="k">class</span> <span class="nc">ClassResult</span><span class="p">(</span><span class="n">build</span><span class="o">.</span><span class="n">ClassResult</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A single built class&quot;&quot;&quot;</span>
+
+    <span class="n">schema_</span><span class="p">:</span> <span class="n">JsonSchema</span>
+
+
+<span class="k">class</span> <span class="nc">SlotResult</span><span class="p">(</span><span class="n">build</span><span class="o">.</span><span class="n">SlotResult</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A slot within the context of a class&quot;&quot;&quot;</span>
+
+    <span class="n">schema_</span><span class="p">:</span> <span class="n">JsonSchema</span>
+
+
 <div class="viewcode-block" id="JsonSchemaGenerator"><a class="viewcode-back" href="../../../generators/json-schema.html#linkml.generators.jsonschemagen.JsonSchemaGenerator">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">JsonSchemaGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">JsonSchemaGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">,</span> <span class="n">LifecycleMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates JSONSchema documents from a LinkML SchemaDefinition</span>
 
@@ -532,6 +558,21 @@
 <span class="sd">    - Composition not yet implemented</span>
 <span class="sd">    - Enumerations treated as strings</span>
 <span class="sd">    - Foreign key references are treated as semantics-free strings</span>
+
+<span class="sd">    This generator implements the following :class:`.LifecycleMixin` methods:</span>
+
+<span class="sd">    * :meth:`.LifecycleMixin.before_generate_schema`</span>
+<span class="sd">    * :meth:`.LifecycleMixin.after_generate_schema`</span>
+<span class="sd">    * :meth:`.LifecycleMixin.before_generate_classes`</span>
+<span class="sd">    * :meth:`.LifecycleMixin.before_generate_enums`</span>
+<span class="sd">    * :meth:`.LifecycleMixin.before_generate_class_slots`</span>
+<span class="sd">    * :meth:`.LifecycleMixin.before_generate_class`</span>
+<span class="sd">    * :meth:`.LifecycleMixin.after_generate_class`</span>
+<span class="sd">    * :meth:`.LifecycleMixin.before_generate_class_slot`</span>
+<span class="sd">    * :meth:`.LifecycleMixin.after_generate_class_slot`</span>
+<span class="sd">    * :meth:`.LifecycleMixin.before_generate_enum`</span>
+<span class="sd">    * :meth:`.LifecycleMixin.after_generate_enum`</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># ClassVars</span>
@@ -578,7 +619,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top_class</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No class in schema named </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">top_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">start_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inline</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonSchema</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">start_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inline</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inline</span> <span class="o">=</span> <span class="n">inline</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">top_level_schema</span> <span class="o">=</span> <span class="n">JsonSchema</span><span class="p">(</span>
@@ -594,6 +635,8 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">handle_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_generate_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixin</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span><span class="p">:</span>
             <span class="k">return</span>
 
@@ -613,7 +656,10 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">title_from</span> <span class="o">==</span> <span class="s2">&quot;title&quot;</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">title</span><span class="p">:</span>
             <span class="n">class_subschema</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">title</span>
 
-        <span class="k">for</span> <span class="n">slot_definition</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+        <span class="n">class_slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_generate_class_slots</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="bp">cls</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">slot_definition</span> <span class="ow">in</span> <span class="n">class_slots</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">handle_class_slot</span><span class="p">(</span><span class="n">subschema</span><span class="o">=</span><span class="n">class_subschema</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span> <span class="n">slot</span><span class="o">=</span><span class="n">slot_definition</span><span class="p">)</span>
 
         <span class="n">rule_subschemas</span> <span class="o">=</span> <span class="p">[]</span>
@@ -662,6 +708,10 @@
             <span class="k">if</span> <span class="s2">&quot;allOf&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">class_subschema</span><span class="p">:</span>
                 <span class="n">class_subschema</span><span class="p">[</span><span class="s2">&quot;allOf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">class_subschema</span><span class="p">[</span><span class="s2">&quot;allOf&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">rule_subschemas</span><span class="p">)</span>
+
+        <span class="n">class_subschema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">after_generate_class</span><span class="p">(</span>
+            <span class="n">ClassResult</span><span class="o">.</span><span class="n">model_construct</span><span class="p">(</span><span class="n">schema_</span><span class="o">=</span><span class="n">class_subschema</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="bp">cls</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">schema_</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">top_level_schema</span><span class="o">.</span><span class="n">add_def</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">class_subschema</span><span class="p">)</span>
 
@@ -720,6 +770,7 @@
     <span class="k">def</span> <span class="nf">handle_enum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum</span><span class="p">:</span> <span class="n">EnumDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># TODO: this only works with explicitly permitted values. It will need to be extended to</span>
         <span class="c1"># support other pv_formula</span>
+        <span class="n">enum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_generate_enum</span><span class="p">(</span><span class="n">enum</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">extract_permissible_text</span><span class="p">(</span><span class="n">pv</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -743,6 +794,10 @@
 
         <span class="k">if</span> <span class="n">permissible_values_texts</span><span class="p">:</span>
             <span class="n">enum_schema</span><span class="p">[</span><span class="s2">&quot;enum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">permissible_values_texts</span>
+
+        <span class="n">enum_schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">after_generate_enum</span><span class="p">(</span>
+            <span class="n">EnumResult</span><span class="o">.</span><span class="n">model_construct</span><span class="p">(</span><span class="n">schema_</span><span class="o">=</span><span class="n">enum_schema</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">enum</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">schema_</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">top_level_schema</span><span class="o">.</span><span class="n">add_def</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">enum_schema</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">get_type_info_for_slot_subschema</span><span class="p">(</span>
@@ -941,6 +996,7 @@
         <span class="k">return</span> <span class="n">prop</span>
 
     <span class="k">def</span> <span class="nf">handle_class_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subschema</span><span class="p">:</span> <span class="n">JsonSchema</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_generate_class_slot</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
         <span class="n">class_id_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">use_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">value_required</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">slot</span><span class="o">.</span><span class="n">required</span> <span class="ow">or</span> <span class="n">slot</span> <span class="o">==</span> <span class="n">class_id_slot</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">value_presence</span> <span class="o">==</span> <span class="n">PresenceEnum</span><span class="p">(</span><span class="n">PresenceEnum</span><span class="o">.</span><span class="n">PRESENT</span><span class="p">)</span>
@@ -949,6 +1005,9 @@
 
         <span class="n">aliased_slot_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
         <span class="n">prop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_slot</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">include_null</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">include_null</span><span class="p">)</span>
+        <span class="n">prop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">after_generate_class_slot</span><span class="p">(</span>
+            <span class="n">SlotResult</span><span class="o">.</span><span class="n">model_construct</span><span class="p">(</span><span class="n">schema_</span><span class="o">=</span><span class="n">prop</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">slot</span><span class="p">),</span> <span class="bp">cls</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">schema_</span>
         <span class="n">subschema</span><span class="o">.</span><span class="n">add_property</span><span class="p">(</span>
             <span class="n">aliased_slot_name</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">value_required</span><span class="o">=</span><span class="n">value_required</span><span class="p">,</span> <span class="n">value_disallowed</span><span class="o">=</span><span class="n">value_disallowed</span>
         <span class="p">)</span>
@@ -958,13 +1017,20 @@
             <span class="n">prop</span><span class="p">[</span><span class="s2">&quot;enum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">type_value</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonSchema</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_generate_schema</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_schema</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">enum_definition</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_enums</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+
+        <span class="n">all_enums</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_generate_enums</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_enums</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">enum_definition</span> <span class="ow">in</span> <span class="n">all_enums</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">handle_enum</span><span class="p">(</span><span class="n">enum_definition</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">class_definition</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">all_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_generate_classes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">class_definition</span> <span class="ow">in</span> <span class="n">all_classes</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">handle_class</span><span class="p">(</span><span class="n">class_definition</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">top_level_schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">after_generate_schema</span><span class="p">(</span>
+            <span class="n">SchemaResult</span><span class="o">.</span><span class="n">model_construct</span><span class="p">(</span><span class="n">schema_</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">top_level_schema</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">schema_</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_level_schema</span>
 
 <div class="viewcode-block" id="JsonSchemaGenerator.serialize"><a class="viewcode-back" href="../../../generators/json-schema.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>

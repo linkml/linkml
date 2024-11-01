@@ -350,7 +350,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">dataclasses</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span>
 
 <span class="k">try</span><span class="p">:</span>
@@ -402,11 +401,11 @@
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BuildResult.merge"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.BuildResult.merge">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<div class="viewcode-block" id="BuildResult.merge"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.BuildResult.merge">[docs]</a>    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build results should have some means of merging results of a like kind</span>
-<span class="sd">        &quot;&quot;&quot;</span></div></div>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This build result doesn&#39;t know how to merge!&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="SchemaResult"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.SchemaResult">[docs]</a><span class="k">class</span> <span class="nc">SchemaResult</span><span class="p">(</span><span class="n">BuildResult</span><span class="p">):</span>

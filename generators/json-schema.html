@@ -923,6 +923,20 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 <li><p>Enumerations treated as strings</p></li>
 <li><p>Foreign key references are treated as semantics-free strings</p></li>
 </ul>
+<p>This generator implements the following <a class="reference internal" href="common/lifecycle.html#linkml.generators.common.lifecycle.LifecycleMixin" title="linkml.generators.common.lifecycle.LifecycleMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">LifecycleMixin</span></code></a> methods:</p>
+<ul class="simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">LifecycleMixin.before_generate_schema()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">LifecycleMixin.after_generate_schema()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">LifecycleMixin.before_generate_classes()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">LifecycleMixin.before_generate_enums()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">LifecycleMixin.before_generate_class_slots()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">LifecycleMixin.before_generate_class()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">LifecycleMixin.after_generate_class()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">LifecycleMixin.before_generate_class_slot()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">LifecycleMixin.after_generate_class_slot()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">LifecycleMixin.before_generate_enum()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">LifecycleMixin.after_generate_enum()</span></code></p></li>
+</ul>
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.jsonschemagen.JsonSchemaGenerator.serialize">
 <span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/jsonschemagen.html#JsonSchemaGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.serialize" title="Permalink to this definition">#</a></dt>
