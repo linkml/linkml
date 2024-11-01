@@ -143,6 +143,7 @@ rich = "^13.7.1"
 [tool.poetry.group.tests.dependencies]
 pytest = "^7.4.0"
 pytest-subtests = "^0.11.0"
+pytest-xdist = "^3.6.1"
 numpy = [
   { "version" = ">=1.24.3", "python" = "<3.12" },
   { "version" = ">=1.25.2", "python" = ">=3.12" }
@@ -210,6 +211,8 @@ markers = [
   "slow: mark test as slow to run",
   "no_asserts: tests that don't have meaningful asserts, but are only snapshot comparisons, or historically had print statements, or other non-erroring behavior",
   "strcmp: tests that compare stringified values rather than the values themselves",
+  "docker: tests that require a running docker server",
+  "plantumlgen: Tests for the plantuml generator",
   "pydanticgen_split: Split module generation in pydanticgen",
   "pydanticgen_npd: tests for the numpydantic array generator",
   "pythongen: Tests for python generator",
@@ -222,7 +225,7 @@ markers = [
   "rdfgen: Tests for the RDFGenerator",
   "sqlddlgen: Tests for SQL DDL generator",
   "sqlddlpostgresgen: Tests for SQL DDL postgres generator",
-  "owlgen: Tests for OWL generator"
+  "owlgen: Tests for OWL generator",
 ]
 
 [tool.ruff]

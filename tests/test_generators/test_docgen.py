@@ -742,3 +742,49 @@ def test_uml_diagram_classr(kitchen_sink_path, tmp_path):
         "# Class: Person",
         followed_by=["```puml", "@startuml", 'class "Person" [[{A person, living or dead}]] {', "@enduml"],
     )
+
+
+def test_derived_schema_view(kitchen_sink_path, tmp_path):
+    """Test to check if class table view on index page follows hierarchical view"""
+    test_sets = {
+        "class": "activity",
+        "slot": "used",
+        "type": "phone number type",
+        "subset": "subset X",
+        "enum": "KitchenStatus",
+    }
+
+    gen = DocGenerator(
+        kitchen_sink_path,
+        mergeimports=False,
+        hierarchical_class_view=True,
+    )
+
+    # iterators cannot see elements from derived schema when no import
+    for k, v in test_sets.items():
+        gen_iter = getattr(gen, f"all_{k}_objects")
+        assert v not in [x.name for x in list(gen_iter())]
+
+    gen = DocGenerator(
+        kitchen_sink_path,
+        mergeimports=False,
+        render_imports=False,
+        hierarchical_class_view=True,
+    )
+
+    # iterators cannot see elements from derived schema when no import
+    for k, v in test_sets.items():
+        gen_iter = getattr(gen, f"all_{k}_objects")
+        assert v not in [x.name for x in list(gen_iter())]
+
+    gen = DocGenerator(
+        kitchen_sink_path,
+        mergeimports=False,
+        render_imports=True,
+        hierarchical_class_view=True,
+    )
+
+    # iterators can see elements from derived schema when import
+    for k, v in test_sets.items():
+        gen_iter = getattr(gen, f"all_{k}_objects")
+        assert v in [x.name for x in list(gen_iter())]

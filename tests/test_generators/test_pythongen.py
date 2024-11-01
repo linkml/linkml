@@ -68,6 +68,13 @@ def test_multiline_stuff(input_path):
     )
 
 
+def test_enum_permissiblevalue_ifabsent(input_path):
+    # this would fail if generated python code is not compilable
+    ksm = make_python(input_path("kitchen_sink_ifabsent.yaml"))
+    # ensure that the right permissible value is taken if other value absent
+    assert ksm.IfAbsent().ifabsent_not_literal is ksm.CordialnessEnum.heartfelt
+
+
 def test_head():
     """Validate the head/nohead parameter"""
     yaml = """id: "https://w3id.org/biolink/metamodel"

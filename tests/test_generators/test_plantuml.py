@@ -8,6 +8,8 @@ from testcontainers.core.waiting_utils import wait_for_logs
 
 from linkml.generators.plantumlgen import PlantumlGenerator
 
+pytestmark = [pytest.mark.plantumlgen, pytest.mark.docker]
+
 MARKDOWN_HEADER = """@startuml
 skinparam nodesep 10
 hide circle
@@ -57,9 +59,11 @@ def kroki_url(request):
 
         return f"http://{kroki_container.get_container_host_ip()}:{kroki_container.get_exposed_port(8000)}"
     except ImageNotFound:
-        print("Kroki container cannot be started, falling back to the Kroki official servers")
-
-    return "https://kroki.io/"
+        pytest.skip(
+            "PlantUML Kroki Container image could not be started, but docker tests were not skipped! "
+            "Either fix the docker invocation, the _docker_server_running function, "
+            "or find a more reliable way to test PlantUML!"
+        )
 
 
 @pytest.mark.parametrize(

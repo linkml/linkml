@@ -286,4 +286,3 @@ interface WithLocation
     inLocation: Place
   }
 
-
