@@ -428,7 +428,7 @@ that can take on any a set of enums from VitalStatus OR a missing value with the
 </div>
 <p>Note that the range of <code class="docutils literal notranslate"><span class="pre">vital_status</span></code> is declared as <code class="docutils literal notranslate"><span class="pre">Any</span></code>, which is further constrained by the <code class="docutils literal notranslate"><span class="pre">any_of</span></code> expression.</p>
 <p>Currently, it is important to always have a range declaration (even if it is <code class="docutils literal notranslate"><span class="pre">Any</span></code>), because LinkML constraint semantics are
-monotonic (i.e. new constraints can be specified but additional ones cannot be overridden - see <a class="reference internal" href="slots.html"><span class="std std-doc">slots</span></a> for more on this).
+monotonic (i.e. new constraints can be specified but existing ones cannot be overridden - see <a class="reference internal" href="slots.html"><span class="std std-doc">slots</span></a> for more on this).
 If this range declaration were not explicitly stated, then the <code class="docutils literal notranslate"><span class="pre">default_range</span></code> of string would be applied.</p>
 <p>In future, LinkML may allow limited forms of non-monotonicity around default ranges, see:</p>
 <p>https://github.com/linkml/linkml/issues/1483</p>
