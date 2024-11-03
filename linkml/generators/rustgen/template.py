@@ -24,14 +24,20 @@ class RustTemplateModel(TemplateModel):
     """
     Whether pyO3 annotations should be added to generated items :)
     """
+    serde: bool = False
+    """
+    Whether serde serialization/deserialization annotations should be added.
+    """
     attributes: dict[str, str] = Field(default_factory=dict)
 
 
 class Import(Import_, RustTemplateModel):
     template: ClassVar[str] = "import.rs.jinja"
 
-    version: str
+    version: Optional[str] = None
     """Version specifier to use in Cargo.toml"""
+    features: Optional[list[str]] = None
+    """Features to require in Cargo.toml"""
 
 
 class Imports(Imports_, RustTemplateModel):
@@ -50,6 +56,8 @@ class RustProperty(RustTemplateModel):
     required: bool
     multivalued: Optional[bool] = False
     class_range: bool = False
+    recursive: bool = False
+    inlined: bool = False
 
 
 class RustStruct(RustTemplateModel):

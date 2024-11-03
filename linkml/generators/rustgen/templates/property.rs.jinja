@@ -1,7 +1,11 @@
-{{ name }}: {% if multivalued and class_range and pyo3 -%}
+pub {{ name }}: {% if multivalued and class_range and pyo3 -%}
     Vec<Py<{{ type_ }}>>
-{%- elif multivalued -%}
+{%- elif multivalued and not inlined -%}
     Vec<{{ type_ }}>
+{%- elif multivalued and inlined -%}
+    HashMap<String, {{ type_ }}>
+{%- elif recursive -%}
+    Box<{{ type_ }}>
 {%- else -%}
     {{ type_ }}
 {%- endif -%}

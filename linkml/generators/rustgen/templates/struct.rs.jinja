@@ -2,7 +2,11 @@
 #[pyclass(unsendable)]
 #[derive(Clone)]
 {% endif %}
-struct {{ name }} {
+{% if serde %}
+#[derive(Serialize, Deserialize)]
+{% endif %}
+#[derive(Debug)]
+pub struct {{ name }} {
 {% for property in properties %}
     {% if pyo3 %}#[pyo3(get, set)]{% endif %}
     {{ property }}{% if not loop.last %},{{ '\n' }}{% else %}{{ '\n' }}{% endif %}
