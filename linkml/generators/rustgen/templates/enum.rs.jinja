@@ -1,4 +1,7 @@
-enum {{ name }} {
+{% if serde %}
+#[derive(Serialize, Deserialize)]
+{% endif %}
+pub enum {{ name }} {
 {% for i in items %}
     {{ i }},
 {% endfor %}
