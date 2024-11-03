@@ -9,7 +9,13 @@ crate-type = ["cdylib"]
 
 [dependencies]
 {% for i in imports %}
+    {% if i.version %}
+        {% if i.features %}
+{{ i.module }} = { version = "{{ i.version }}", features = [{% for feature in i.features %}"{{ feature }}",{% endfor %}] }
+        {% else %}
 {{ i.module }} = "{{ i.version }}"
+        {% endif %}
+    {% endif %}
 {% endfor %}
 
 [dependencies.pyo3]
