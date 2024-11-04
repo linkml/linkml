@@ -44,7 +44,7 @@ from linkml.generators.pydanticgen.template import (
     PydanticTemplateModel,
     PydanticValidator,
 )
-from linkml.utils.exceptions import ValidationError as ArrayValidationError
+from linkml.utils.exceptions import SchemaValidationError as ArrayValidationError
 from linkml.utils.schema_builder import SchemaBuilder
 
 from .conftest import MyInjectedClass
