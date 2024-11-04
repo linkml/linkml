@@ -68,7 +68,7 @@ def validate(
     :param raise_: If ``True``, raise a :class:`~linkml.utils.exceptions.ValidationError` rather than returning.
     :raises ValueError: If a valid ``SchemaDefinition`` cannot be constructed
         from the ``schema`` parameter.
-    :raises :class:`~linkml.utils.exceptions.ValidationError`: If requested to raise and validation errors are found.
+    :raises ValidationError: If requested to raise and validation errors are found.
     :return: A validation report
     :rtype: ValidationReport
     """

@@ -49,8 +49,8 @@ class Validator:
         :param target_class: Name of the class within the schema to validate
             against. If ``None``, the class will be inferred from the schema by
             looked for a class with ``tree_root: true``. Defaults to ``None``.
-        :param raise_: bool
-            If ``True``, raise a :class:`linkml.utils.exceptions.ValidationError` rather than returning a report
+        :param raise_: If ``True``, raise a :class:`linkml.utils.exceptions.ValidationError`
+            rather than returning a report
         :return: A validation report
         :rtype: ValidationReport
         """
