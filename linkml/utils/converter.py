@@ -157,8 +157,7 @@ def cli(
     if validate:
         if schema is None:
             raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
-        # FIXME: What do we do with validation results?
-        _ = validator.validate(remove_empty_items(obj), schema=schema, target_class=target_class)
+        validator.validate(remove_empty_items(obj), schema=schema, target_class=target_class, raise_=True)
 
     output_format = _get_format(output, output_format, default="json")
     if output_format == "json-ld":

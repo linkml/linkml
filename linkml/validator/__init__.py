@@ -46,6 +46,7 @@ def validate(
     target_class: Optional[str] = None,
     *,
     strict: bool = False,
+    raise_: bool = False,
 ) -> ValidationReport:
     """Validate a data instance against a schema
 
@@ -64,13 +65,15 @@ def validate(
     :param strict: If ``True``, validation will stop after the first validation
         error is found, Otherwise all validation problems will be reported.
         Defaults to ``False``.
+    :param raise_: If ``True``, raise a :class:`~linkml.utils.exceptions.ValidationError` rather than returning.
     :raises ValueError: If a valid ``SchemaDefinition`` cannot be constructed
         from the ``schema`` parameter.
+    :raises :class:`~linkml.utils.exceptions.ValidationError`: If requested to raise and validation errors are found.
     :return: A validation report
     :rtype: ValidationReport
     """
     validator = _get_default_validator(schema, strict=strict)
-    return validator.validate(instance, target_class)
+    return validator.validate(instance, target_class, raise_=raise_)
 
 
 def validate_file(

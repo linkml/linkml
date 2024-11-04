@@ -3,6 +3,7 @@ from typing import Iterable
 import pytest
 from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition
 
+from linkml.utils.exceptions import ValidationError
 from linkml.validator import Validator
 from linkml.validator.loaders import Loader
 from linkml.validator.plugins import ValidationPlugin
@@ -59,11 +60,16 @@ def test_validate_valid_instance():
     assert len(report.results) == 0
 
 
-def test_validate_invalid_instance():
+@pytest.mark.parametrize("do_raise", [True, False])
+def test_validate_invalid_instance(do_raise):
     plugins = [AcceptNothingValidationPlugin(10)]
     validator = Validator(SCHEMA, plugins)
-    report = validator.validate({"foo": "bar"})
-    assert len(report.results) == 10
+    if do_raise:
+        with pytest.raises(ValidationError, match=r"Error\(s\) validating data.*"):
+            validator.validate({"foo": "bar"}, raise_=do_raise)
+    else:
+        report = validator.validate({"foo": "bar"}, raise_=do_raise)
+        assert len(report.results) == 10
 
 
 def test_validate_multiple_plugins():
