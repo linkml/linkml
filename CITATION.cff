@@ -30,6 +30,8 @@ authors:
   - family-names: Solbrig
     given-names: Harold
     affiliation: "independent"
+  - family-names: "All GitHub Contributors"
+    given-names: "https://github.com/linkml/linkml/graphs/contributors"
   - family-names: Haendel
     given-names: Melissa
     orcid: https://orcid.org/0000-0001-9114-8737
