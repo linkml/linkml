@@ -195,13 +195,11 @@ class PydanticAttribute(PydanticTemplateModel):
     def field(self) -> str:
         """Computed value to use inside of the generated Field"""
         if self.predefined:
-            value = self.predefined
+            return self.predefined
         elif self.required or self.identifier or self.key:
-            value = "..."
+            return "..."
         else:
-            value = "None"
-
-        return f"default={value}"
+            return "None"
 
 
 class PydanticValidator(PydanticAttribute):

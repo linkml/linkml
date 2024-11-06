@@ -963,15 +963,15 @@ def test_attribute_field():
     PydanticAttribute field should be able to autocompute ``field``
     """
     attr = PydanticAttribute(name="attr")
-    assert attr.model_dump()["field"] == "default=None"
+    assert attr.model_dump()["field"] == "None"
 
     predefined = "List[Union[str,int]]"
     attr = PydanticAttribute(name="attr", predefined=predefined)
-    assert attr.model_dump()["field"] == f"default={predefined}"
+    assert attr.model_dump()["field"] == f"{predefined}"
 
     for item in ("required", "identifier", "key"):
         attr = PydanticAttribute(name="attr", **{item: True})
-        assert attr.model_dump()["field"] == "default=..."
+        assert attr.model_dump()["field"] == "..."
 
 
 def test_class_validators():
