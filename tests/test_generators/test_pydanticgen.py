@@ -967,7 +967,7 @@ def test_attribute_field():
 
     predefined = "List[Union[str,int]]"
     attr = PydanticAttribute(name="attr", predefined=predefined)
-    assert attr.model_dump()["field"] == f"{predefined}"
+    assert attr.model_dump()["field"] == predefined
 
     for item in ("required", "identifier", "key"):
         attr = PydanticAttribute(name="attr", **{item: True})
