@@ -110,7 +110,7 @@ def test_array(framework, description, ndim, object, is_valid):
                         "exact_number_dimensions": ndim,
                     },
                     "_mappings": {
-                        PYDANTIC: f"s1: Optional[{expected_range[ndim]}] = Field(None",
+                        PYDANTIC: f"s1: Optional[{expected_range[ndim]}] = Field(default=None",
                     },
                 },
             },
