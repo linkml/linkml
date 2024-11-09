@@ -47,26 +47,26 @@ class RDFLibDumper(Dumper):
             # TODO replace with `prefix_map = prefix_map.bimap` after making minimum requirement on python 3.8
             prefix_map = {record.prefix: record.uri_prefix for record in prefix_map.records}
         logger.debug(f'PREFIXMAP={prefix_map}')
+        namespaces = schemaview.namespaces()
         if prefix_map:
             for k, v in prefix_map.items():
                 if k == "@base":
-                    schemaview.namespaces()._base = v
+                    namespaces._base = v
                 else:
-                    schemaview.namespaces()[k] = v
+                    namespaces[k] = v
                     g.namespace_manager.bind(k, URIRef(v))
-            for prefix in schemaview.namespaces():
-                g.bind(prefix, URIRef(schemaview.namespaces()[prefix]))
-        else:
-            for prefix in schemaview.namespaces():
-                g.bind(prefix, URIRef(schemaview.namespaces()[prefix]))
+
+        for prefix in namespaces:
+            g.bind(prefix, URIRef(namespaces[prefix]))
         # user can pass in base in prefixmap using '_base'. This gets set
         # in namespaces as a plain dict assignment - explicitly call the setter
         # to set the underlying "@base"
-        if "_base" in schemaview.namespaces():
-            schemaview.namespaces()._base = schemaview.namespaces()["_base"]
-            g.base = schemaview.namespaces()._base
-        if schemaview.namespaces()._base:
-            g.base = schemaview.namespaces()._base
+        if "_base" in namespaces:
+            namespaces._base = namespaces["_base"]
+
+        if namespaces._base:
+            g.base = namespaces._base
+
         self.inject_triples(element, schemaview, g)
         return g
 
