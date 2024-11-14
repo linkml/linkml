@@ -273,11 +273,17 @@ class Generator(metaclass=abc.ABCMeta):
             self.namespaces = Namespaces()
             if isinstance(self.schema.prefixes, dict):
                 for key, value in self.schema.prefixes.items():
-                    self.namespaces[key] = value
+                    if hasattr(value, "prefix_reference"):
+                        self.namespaces[key] = value.prefix_reference
+                    else:
+                        self.namespaces[key] = value
             elif isinstance(self.schema.prefixes, JsonObj):
                 prefixes = vars(self.schema.prefixes)
                 for key, value in prefixes.items():
-                    self.namespaces[key] = value
+                    if hasattr(value, "prefix_reference"):
+                        self.namespaces[key] = value.prefix_reference
+                    else:
+                        self.namespaces[key] = value
             else:
                 for prefix in self.schema.prefixes.values():
                     self.namespaces[prefix.prefix_prefix] = prefix.prefix_reference
