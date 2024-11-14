@@ -1,16 +1,19 @@
 import json
 import logging
 import os
+import re
 from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import click
+import linkml_runtime.utils.uri_validator as uri_validator
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
     AnonymousSlotExpression,
     ClassDefinition,
     ClassDefinitionName,
+    Element,
     EnumDefinition,
     PermissibleValue,
     PermissibleValueText,
@@ -53,8 +56,11 @@ class JsonSchema(dict):
         super().__init__(*args, **kwargs)
         self._lax_forward_refs = {}
 
-    def add_def(self, name: str, subschema: "JsonSchema") -> None:
-        canonical_name = camelcase(name)
+    def add_def(self, name: str, subschema: "JsonSchema", is_curie=False) -> None:
+        if is_curie:
+            canonical_name = name
+        else:
+            canonical_name = camelcase(name)
 
         if "$defs" not in self:
             self["$defs"] = {}
@@ -263,12 +269,16 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     include_null: bool = True
     """Whether to include a "null" type in optional slots"""
 
+    use_curies: bool = False
+
     def __post_init__(self):
         if self.topClass:
             logger.warning("topClass is deprecated - use top_class")
             self.top_class = self.topClass
 
         super().__post_init__()
+        if self.namespaces is None:
+            raise TypeError("Schema text must be supplied to context generator.  Preparsed schema will not work")
 
         if self.top_class:
             if self.schemaview.get_class(self.top_class) is None:
@@ -288,6 +298,30 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 "additionalProperties": self.not_closed,
             }
         )
+
+    def _curie(self, element: Element):
+        uri = self.schemaview.get_uri(element)
+        schema = self.schemaview.schema
+        if uri:
+            # try to get CURIE using known prefixes
+            curie = self.namespaces.curie_for(uri)
+            if curie:
+                return curie
+
+            # handle not automatic CURIE conversion
+            if uri_validator.validate_curie(uri):
+                if re.match("https?://.*", uri):
+                    logger.warning(
+                        f"The URI or CURIE of '{element.name}' ('{uri}') looks like a URL, but no prefix is "
+                        + "known and there is no way to disambiguate it. So no CURIE can be created out of it."
+                    )
+                return uri
+            elif uri_validator.validate_uri(uri):
+                raise Exception(f"'{uri}' cannot be converted to a CURIE, corresponding prefix not defined")
+            else:
+                raise Exception(f"'{uri}' does not seem to neither a valid URI nor a valid CURIE")
+        else:
+            return schema.prefixes[schema.default_prefix].prefix_prefix + ":" + element.name
 
     def handle_class(self, cls: ClassDefinition) -> None:
         cls = self.before_generate_class(cls, self.schemaview)
@@ -368,7 +402,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             ClassResult.model_construct(schema_=class_subschema, source=cls), self.schemaview
         ).schema_
 
-        self.top_level_schema.add_def(cls.name, class_subschema)
+        if self.use_curies:
+            self.top_level_schema.add_def(self._curie(cls), class_subschema, True)
+        else:
+            self.top_level_schema.add_def(cls.name, class_subschema)
 
         if (self.top_class is not None and camelcase(self.top_class) == camelcase(cls.name)) or (
             self.top_class is None and cls.tree_root
@@ -388,6 +425,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         subschema = JsonSchema()
         for slot in cls.slot_conditions.values():
+            if self.use_curies and slot.slot_uri:
+                prop_name = slot.slot_uri
+            else:
+                prop_name = self.aliased_slot_name(slot)
             prop = self.get_subschema_for_slot(slot, omit_type=True, include_null=False)
             value_required = False
             value_disallowed = False
@@ -400,9 +441,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 value_required = slot.required
             else:
                 value_required = properties_required
-            subschema.add_property(
-                self.aliased_slot_name(slot), prop, value_required=value_required, value_disallowed=value_disallowed
-            )
+            subschema.add_property(prop_name, prop, value_required=value_required, value_disallowed=value_disallowed)
 
         if cls.any_of is not None and len(cls.any_of) > 0:
             subschema["anyOf"] = [self.get_subschema_for_anonymous_class(c, properties_required) for c in cls.any_of]
@@ -658,14 +697,15 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         )
         value_disallowed = slot.value_presence == PresenceEnum(PresenceEnum.ABSENT)
 
-        aliased_slot_name = self.aliased_slot_name(slot)
+        if self.use_curies:
+            prop_name = self._curie(slot)
+        else:
+            prop_name = self.aliased_slot_name(slot)
         prop = self.get_subschema_for_slot(slot, include_null=self.include_null)
         prop = self.after_generate_class_slot(
             SlotResult.model_construct(schema_=prop, source=slot), cls, self.schemaview
         ).schema_
-        subschema.add_property(
-            aliased_slot_name, prop, value_required=value_required, value_disallowed=value_disallowed
-        )
+        subschema.add_property(prop_name, prop, value_required=value_required, value_disallowed=value_disallowed)
 
         if slot.designates_type:
             type_value = get_type_designator_value(self.schemaview, slot, cls)
@@ -763,6 +803,14 @@ Top level class; slots of this class will become top level properties in the jso
     show_default=True,
     help="""
 Set additionalProperties=False if closed otherwise true if not closed at the global level
+""",
+)
+@click.option(
+    "--use-curies/--not-use-curies",
+    default=False,
+    show_default=True,
+    help="""
+Instead of using the element names, use the corresponding CURIEs, based on the corresponding class_uri/slot_uri
 """,
 )
 @click.option(
