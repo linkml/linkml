@@ -492,8 +492,7 @@ def test_use_uris(caplog, input_path, use_curies):
         for log_record in caplog.records:
             if (
                 log_record.levelname == "WARNING"
-                and re.match(".*https://saref.etsi.org/saref4auto/RendezvousLocation.*", caplog.records[0].message)
-                is not None
+                and re.match(".*https://saref.etsi.org/saref4auto/RendezvousLocation.*", log_record.message) is not None
             ):
                 expected_warning = True
         assert expected_warning
