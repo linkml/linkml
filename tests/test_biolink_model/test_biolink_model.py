@@ -1,4 +1,3 @@
-import sys
 from pathlib import Path
 
 import pytest
@@ -33,10 +32,7 @@ BIOLINK_NS = Namespace("https://w3id.org/biolink/vocab/")
             {},
             {},
             marks=[
-                pytest.mark.skipif(
-                    sys.version_info < (3, 9),
-                    reason="prefix expansion issue. see: https://github.com/RDFLib/rdflib/issues/2606.",
-                ),
+                pytest.mark.skip,  # too slow
                 pytest.mark.rdfgen,
             ],
         ),
