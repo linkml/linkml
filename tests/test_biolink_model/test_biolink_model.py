@@ -32,7 +32,9 @@ BIOLINK_NS = Namespace("https://w3id.org/biolink/vocab/")
             {},
             {},
             marks=[
-                pytest.mark.skip,  # too slow
+                pytest.mark.skip(
+                    reason="rdflib 7.1.1 introduced a change where graph_diff is too slow for this test to be practical"
+                ),
                 pytest.mark.rdfgen,
             ],
         ),
