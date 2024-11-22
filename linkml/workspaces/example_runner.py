@@ -244,11 +244,50 @@ class ExampleRunner:
                     raise ValueError(f"Cannot find unique class for URI {target_class}; got: {target_classes}")
                 target_class = target_classes[0]
             new_dict_obj = {}
+            range_class_id_slot = self.schemaview.get_identifier_slot(target_class, use_key=True)
+            range_simple_dict_value_slot = None
+            if range_class_id_slot is not None:
+                non_id_slots = [
+                    s for s in self.schemaview.class_induced_slots(target_class) if s.name != range_class_id_slot.name
+                ]
+
+                # Some lists of objects can be serialized as SimpleDicts.
+                # A SimpleDict is serialized as simple key-value pairs where the value is atomic.
+                # The key must be declared as a key, and the value must satisfy one of the following conditions:
+                # 1. The value slot is the only other slot in the object other than the key
+                # 2. The value slot is explicitly annotated as a simple_dict_value
+                # 3. The value slot is the only non-key that is required
+                # See also: https://github.com/linkml/linkml/issues/1250
+                if len(non_id_slots) == 1:
+                    range_simple_dict_value_slot = non_id_slots[0]
+                elif len(non_id_slots) > 1:
+                    candidate_non_id_slots = []
+                    for non_id_slot in non_id_slots:
+                        if isinstance(non_id_slot.annotations, dict):
+                            is_simple_dict_value = non_id_slot.annotations.get("simple_dict_value", False)
+                        else:
+                            is_simple_dict_value = getattr(non_id_slot.annotations, "simple_dict_value", False)
+                        if is_simple_dict_value:
+                            candidate_non_id_slots.append(non_id_slot)
+                    if len(candidate_non_id_slots) == 1:
+                        range_simple_dict_value_slot = candidate_non_id_slots[0]
+                    else:
+                        candidate_non_id_slots = []
+                        for non_id_slot in non_id_slots:
+                            if non_id_slot.required:
+                                candidate_non_id_slots.append(non_id_slot)
+                        if len(candidate_non_id_slots) == 1:
+                            range_simple_dict_value_slot = candidate_non_id_slots[0]
+
             for k, v in dict_obj.items():
-                if v is not None:
-                    islot = sv.induced_slot(k, target_class)
-                    v2 = self._load_from_dict(v, target_class=islot.range)
-                    new_dict_obj[k] = v2
+                if range_simple_dict_value_slot is not None:
+                    new_dict_obj[range_class_id_slot.name] = k
+                    new_dict_obj[range_simple_dict_value_slot.name] = v
+                else:
+                    if v is not None:
+                        islot = sv.induced_slot(k, target_class)
+                        v2 = self._load_from_dict(v, target_class=islot.range)
+                        new_dict_obj[k] = v2
             py_target_class = getattr(self.python_module, camelcase(target_class))
             return py_target_class(**new_dict_obj)
         elif isinstance(dict_obj, list):
