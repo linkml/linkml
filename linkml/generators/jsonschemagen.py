@@ -25,6 +25,7 @@ from linkml.generators.common import build
 from linkml.generators.common.lifecycle import LifecycleMixin
 from linkml.generators.common.type_designators import get_type_designator_value
 from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.helpers import get_range_associated_slots
 
 logger = logging.getLogger(__name__)
 
@@ -545,7 +546,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                         range_id_slot,
                         range_simple_dict_value_slot,
                         range_required_slots,
-                    ) = self._get_range_associated_slots(slot)
+                    ) = get_range_associated_slots(self.schemaview, slot.range)
                     # if the range class has an ID and the slot is not inlined as a list, then we need to consider
                     # various inlined as dict formats
                     if range_id_slot is not None and not slot.inlined_as_list:
@@ -690,53 +691,6 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
     def serialize(self, **kwargs) -> str:
         return self.generate().to_json(sort_keys=True, indent=self.indent if self.indent > 0 else None)
-
-    def _get_range_associated_slots(
-        self, slot: SlotDefinition
-    ) -> Tuple[Union[SlotDefinition, None], Union[SlotDefinition, None], Union[List[SlotDefinition], None]]:
-        range_class = self.schemaview.get_class(slot.range)
-        if range_class is None:
-            return None, None, None
-
-        range_class_id_slot = self.schemaview.get_identifier_slot(range_class.name, use_key=True)
-        if range_class_id_slot is None:
-            return None, None, None
-
-        non_id_slots = [
-            s for s in self.schemaview.class_induced_slots(range_class.name) if s.name != range_class_id_slot.name
-        ]
-        non_id_required_slots = [s for s in non_id_slots if s.required]
-
-        # Some lists of objects can be serialized as SimpleDicts.
-        # A SimpleDict is serialized as simple key-value pairs where the value is atomic.
-        # The key must be declared as a key, and the value must satisfy one of the following conditions:
-        # 1. The value slot is the only other slot in the object other than the key
-        # 2. The value slot is explicitly annotated as a simple_dict_value
-        # 3. The value slot is the only non-key that is required
-        # See also: https://github.com/linkml/linkml/issues/1250
-        range_simple_dict_value_slot = None
-        if len(non_id_slots) == 1:
-            range_simple_dict_value_slot = non_id_slots[0]
-        elif len(non_id_slots) > 1:
-            candidate_non_id_slots = []
-            for non_id_slot in non_id_slots:
-                if isinstance(non_id_slot.annotations, dict):
-                    is_simple_dict_value = non_id_slot.annotations.get("simple_dict_value", False)
-                else:
-                    is_simple_dict_value = getattr(non_id_slot.annotations, "simple_dict_value", False)
-                if is_simple_dict_value:
-                    candidate_non_id_slots.append(non_id_slot)
-            if len(candidate_non_id_slots) == 1:
-                range_simple_dict_value_slot = candidate_non_id_slots[0]
-            else:
-                candidate_non_id_slots = []
-                for non_id_slot in non_id_slots:
-                    if non_id_slot.required:
-                        candidate_non_id_slots.append(non_id_slot)
-                if len(candidate_non_id_slots) == 1:
-                    range_simple_dict_value_slot = candidate_non_id_slots[0]
-
-        return range_class_id_slot, range_simple_dict_value_slot, non_id_required_slots
 
 
 @shared_arguments(JsonSchemaGenerator)
