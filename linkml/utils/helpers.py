@@ -1,4 +1,5 @@
 import re
+from functools import lru_cache
 from typing import List, Tuple, Union
 
 from linkml_runtime import SchemaView
@@ -24,6 +25,7 @@ def convert_to_snake_case(str):
     return "".join(str.lower())
 
 
+@lru_cache(None)
 def get_range_associated_slots(
     schemaview: SchemaView, range_class: ClassDefinition
 ) -> Tuple[Union[SlotDefinition, None], Union[SlotDefinition, None], Union[List[SlotDefinition], None]]:
@@ -69,3 +71,11 @@ def get_range_associated_slots(
                 range_simple_dict_value_slot = candidate_non_id_slots[0]
 
     return range_class_id_slot, range_simple_dict_value_slot, non_id_required_slots
+
+
+def is_simple_dict(schemaview: SchemaView, slot: SlotDefinition) -> bool:
+    if not slot.multivalued or not slot.inlined or slot.inlined_as_list:
+        return False
+    else:
+        _, range_simple_dict_value_slot, _ = get_range_associated_slots(schemaview, slot.range)
+        return range_simple_dict_value_slot is not None
