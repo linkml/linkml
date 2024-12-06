@@ -344,6 +344,15 @@
         <article role="main">
           <h1>Source code for linkml.utils.helpers</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">linkml_runtime</span> <span class="kn">import</span> <span class="n">SchemaView</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ClassDefinition</span><span class="p">,</span>
+    <span class="n">ElementName</span><span class="p">,</span>
+    <span class="n">SlotDefinition</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="remove_duplicates"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.helpers.remove_duplicates">[docs]</a><span class="k">def</span> <span class="nf">remove_duplicates</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
@@ -359,6 +368,62 @@
 <div class="viewcode-block" id="convert_to_snake_case"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.helpers.convert_to_snake_case">[docs]</a><span class="k">def</span> <span class="nf">convert_to_snake_case</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
     <span class="nb">str</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(?&lt;=[a-z])(?=[A-Z])|[^a-zA-Z]&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="get_range_associated_slots"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.helpers.get_range_associated_slots">[docs]</a><span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_range_associated_slots</span><span class="p">(</span>
+    <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">range_class</span><span class="p">:</span> <span class="n">ClassDefinition</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">range_class</span><span class="p">,</span> <span class="n">ElementName</span><span class="p">):</span>
+        <span class="n">range_class</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">range_class</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">range_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="n">range_class_id_slot</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">range_class</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">use_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">range_class_id_slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="n">non_id_slots</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">range_class</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">range_class_id_slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+    <span class="n">non_id_required_slots</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">non_id_slots</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">required</span><span class="p">]</span>
+
+    <span class="c1"># Some lists of objects can be serialized as SimpleDicts.</span>
+    <span class="c1"># A SimpleDict is serialized as simple key-value pairs where the value is atomic.</span>
+    <span class="c1"># The key must be declared as a key, and the value must satisfy one of the following conditions:</span>
+    <span class="c1"># 1. The value slot is the only other slot in the object other than the key</span>
+    <span class="c1"># 2. The value slot is explicitly annotated as a simple_dict_value</span>
+    <span class="c1"># 3. The value slot is the only non-key that is required</span>
+    <span class="c1"># See also: https://github.com/linkml/linkml/issues/1250</span>
+    <span class="n">range_simple_dict_value_slot</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">non_id_slots</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">range_simple_dict_value_slot</span> <span class="o">=</span> <span class="n">non_id_slots</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">non_id_slots</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">candidate_non_id_slots</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">non_id_slot</span> <span class="ow">in</span> <span class="n">non_id_slots</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">non_id_slot</span><span class="o">.</span><span class="n">annotations</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">is_simple_dict_value</span> <span class="o">=</span> <span class="n">non_id_slot</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;simple_dict_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">is_simple_dict_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">non_id_slot</span><span class="o">.</span><span class="n">annotations</span><span class="p">,</span> <span class="s2">&quot;simple_dict_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_simple_dict_value</span><span class="p">:</span>
+                <span class="n">candidate_non_id_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">non_id_slot</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate_non_id_slots</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">range_simple_dict_value_slot</span> <span class="o">=</span> <span class="n">candidate_non_id_slots</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">candidate_non_id_slots</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">non_id_slot</span> <span class="ow">in</span> <span class="n">non_id_slots</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">non_id_slot</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+                    <span class="n">candidate_non_id_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">non_id_slot</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate_non_id_slots</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">range_simple_dict_value_slot</span> <span class="o">=</span> <span class="n">candidate_non_id_slots</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">range_class_id_slot</span><span class="p">,</span> <span class="n">range_simple_dict_value_slot</span><span class="p">,</span> <span class="n">non_id_required_slots</span></div>
+
+
+<div class="viewcode-block" id="is_simple_dict"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.helpers.is_simple_dict">[docs]</a><span class="k">def</span> <span class="nf">is_simple_dict</span><span class="p">(</span><span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">range_simple_dict_value_slot</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_range_associated_slots</span><span class="p">(</span><span class="n">schemaview</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">range_simple_dict_value_slot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
 </pre></div>
         </article>
       </div>
