@@ -66,7 +66,7 @@ core:Activity CLOSED {
 <Address> CLOSED {
     (  $<Address_tes> (  <street> @linkml:String ? ;
           <city> @linkml:String ? ;
-          <altitude> @linkml:Decimal ?
+          <alt> @linkml:Decimal ?
        ) ;
        rdf:type [ <Address> ] ?
     )

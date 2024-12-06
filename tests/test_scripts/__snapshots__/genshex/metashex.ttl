@@ -100,7 +100,7 @@
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/altitude> ;
+                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/alt> ;
                 shex:valueExpr <https://w3id.org/linkml/Decimal> ] ) .
 
 <https://w3id.org/linkml/tests/kitchen_sink/AnyObject_tes> a shex:TripleConstraint ;

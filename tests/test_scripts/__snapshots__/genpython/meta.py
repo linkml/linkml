@@ -419,7 +419,7 @@ class Address(YAMLRoot):
 
     street: Optional[str] = None
     city: Optional[str] = None
-    altitude: Optional[Decimal] = None
+    alt: Optional[Decimal] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.street is not None and not isinstance(self.street, str):
@@ -428,8 +428,8 @@ class Address(YAMLRoot):
         if self.city is not None and not isinstance(self.city, str):
             self.city = str(self.city)
 
-        if self.altitude is not None and not isinstance(self.altitude, Decimal):
-            self.altitude = Decimal(self.altitude)
+        if self.alt is not None and not isinstance(self.alt, Decimal):
+            self.alt = Decimal(self.alt)
 
         super().__post_init__(**kwargs)
 
@@ -1099,7 +1099,7 @@ slots.life_status = Slot(uri=KS.life_status, name="life_status", curie=KS.curie(
 slots.cordialness = Slot(uri=KS.cordialness, name="cordialness", curie=KS.curie('cordialness'),
                    model_uri=KS.cordialness, domain=None, range=Optional[str])
 
-slots.altitude = Slot(uri=KS.altitude, name="altitude", curie=KS.curie('altitude'),
+slots.altitude = Slot(uri=KS.alt, name="altitude", curie=KS.curie('alt'),
                    model_uri=KS.altitude, domain=None, range=Optional[Decimal])
 
 slots.id = Slot(uri=CORE.id, name="id", curie=CORE.curie('id'),

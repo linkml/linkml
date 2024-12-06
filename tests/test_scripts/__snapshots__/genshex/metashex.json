@@ -208,7 +208,7 @@
                      },
                      {
                         "type": "TripleConstraint",
-                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/altitude",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/alt",
                         "valueExpr": "https://w3id.org/linkml/Decimal",
                         "min": 0,
                         "max": 1
