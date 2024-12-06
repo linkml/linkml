@@ -485,3 +485,25 @@ def test_ignore_subclass_properties(input_path):
     assert frozenset(ignored_properties[URIRef("https://w3id.org/linkml/examples/animals/Bat")]) == frozenset(
         [URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")]
     )
+
+
+def test_slot_with_annotations_and_any_of(input_path):
+    shacl = ShaclGenerator(
+        input_path("shaclgen_boolean_constraints.yaml"), mergeimports=True, include_annotations=True
+    ).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+    print(shacl)
+
+    class_properties = g.objects(
+        URIRef("https://w3id.org/linkml/examples/boolean_constraints/AnyOfSimpleType"), SH.property
+    )
+    attribute_node = next(class_properties, None)
+    assert attribute_node
+
+    assert (
+        attribute_node,
+        rdflib.term.Literal("resting", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#string")),
+        rdflib.term.Literal("supine", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#string")),
+    ) in g
