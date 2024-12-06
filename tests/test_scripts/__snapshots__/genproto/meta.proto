@@ -16,7 +16,7 @@ message Address
  {
   string street = 0
   string city = 0
-  decimal altitude = 0
+  decimal alt = 0
  }
 // a provence-generating agent
 message Agent
