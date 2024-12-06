@@ -116,10 +116,20 @@ class ShaclGenerator(Generator):
                 order += 1
                 prop_pv_literal(SH.name, s.title)
                 prop_pv_literal(SH.description, s.description)
-                if not s.multivalued:
-                    prop_pv_literal(SH.maxCount, 1)
-                if s.required:
+                # minCount
+                if s.minimum_cardinality:
+                    prop_pv_literal(SH.minCount, s.minimum_cardinality)
+                elif s.exact_cardinality:
+                    prop_pv_literal(SH.minCount, s.exact_cardinality)
+                elif s.required:
                     prop_pv_literal(SH.minCount, 1)
+                # maxCount
+                if s.maximum_cardinality:
+                    prop_pv_literal(SH.maxCount, s.maximum_cardinality)
+                elif s.exact_cardinality:
+                    prop_pv_literal(SH.maxCount, s.exact_cardinality)
+                elif not s.multivalued:
+                    prop_pv_literal(SH.maxCount, 1)
                 prop_pv_literal(SH.minInclusive, s.minimum_value)
                 prop_pv_literal(SH.maxInclusive, s.maximum_value)
 
