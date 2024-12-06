@@ -444,7 +444,6 @@ def test_slot_with_annotations_and_any_of(input_path):
 
     g = rdflib.Graph()
     g.parse(data=shacl)
-    print(shacl)
 
     class_properties = g.objects(
         URIRef("https://w3id.org/linkml/examples/boolean_constraints/AnyOfSimpleType"), SH.property
