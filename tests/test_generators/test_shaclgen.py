@@ -485,3 +485,63 @@ def test_ignore_subclass_properties(input_path):
     assert frozenset(ignored_properties[URIRef("https://w3id.org/linkml/examples/animals/Bat")]) == frozenset(
         [URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")]
     )
+
+
+def test_multivalued_slot_min_cardinality(input_path):
+    shacl = ShaclGenerator(input_path("shaclgen_cardinality.yaml"), mergeimports=True).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    variable_class_properties = g.objects(
+        URIRef("https://w3id.org/linkml/examples/cardinality/VariableClass"), SH.property
+    )
+    variable_size_list_node = next(variable_class_properties, None)
+    assert variable_size_list_node
+
+    assert (
+        variable_size_list_node,
+        SH.minCount,
+        rdflib.term.Literal("2", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer")),
+    ) in g
+
+
+def test_multivalued_slot_max_cardinality(input_path):
+    shacl = ShaclGenerator(input_path("shaclgen_cardinality.yaml"), mergeimports=True).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    variable_class_properties = g.objects(
+        URIRef("https://w3id.org/linkml/examples/cardinality/VariableClass"), SH.property
+    )
+    variable_size_list_node = next(variable_class_properties, None)
+    assert variable_size_list_node
+
+    assert (
+        variable_size_list_node,
+        SH.maxCount,
+        rdflib.term.Literal("5", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer")),
+    ) in g
+
+
+def test_multivalued_slot_exact_cardinality(input_path):
+    shacl = ShaclGenerator(input_path("shaclgen_cardinality.yaml"), mergeimports=True).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    exact_class_properties = g.objects(URIRef("https://w3id.org/linkml/examples/cardinality/ExactClass"), SH.property)
+    exact_size_list_node = next(exact_class_properties, None)
+    assert exact_size_list_node
+
+    assert (
+        exact_size_list_node,
+        SH.minCount,
+        rdflib.term.Literal("3", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer")),
+    ) in g
+    assert (
+        exact_size_list_node,
+        SH.maxCount,
+        rdflib.term.Literal("3", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer")),
+    ) in g
