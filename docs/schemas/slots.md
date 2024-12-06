@@ -47,6 +47,8 @@ The range must be one of:
  * An [EnumDefinition](https://w3id.org/linkml/EnumDefinition), when the value of the slot is a token that represents a vocabulary element
  * A boolean combination of the above
 
+To use a URI or CURIE as a range, create a class with class_uri set to the URI or CURIE and use that class as the range.
+
 Examples:
 
 ```yaml

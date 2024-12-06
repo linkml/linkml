@@ -190,6 +190,7 @@ def pytest_addoption(parser):
         help="Generate new files into __snapshot__ directories instead of checking against existing files",
     )
     parser.addoption("--with-slow", action="store_true", help="include tests marked slow")
+    parser.addoption("--with-network", action="store_true", help="include tests marked network")
     parser.addoption(
         "--with-output", action="store_true", help="dump output in compliance test for richer debugging information"
     )
@@ -209,6 +210,12 @@ def pytest_collection_modifyitems(config, items: List[pytest.Item]):
         for item in items:
             if item.get_closest_marker("biolink"):
                 item.add_marker(skip_biolink)
+                
+    if not config.getoption("--with-network"):
+        skip_network = pytest.mark.skip(reason="need --with-network option to run")
+        for item in items:
+            if item.get_closest_marker("network"):
+                item.add_marker(skip_network)
 
     # make sure deprecation test happens at the end
     test_deps = [i for i in items if i.name == "test_removed_are_removed"]

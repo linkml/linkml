@@ -48,7 +48,7 @@ class Validator:
         :param instance: The instance to validate
         :param target_class: Name of the class within the schema to validate
             against. If ``None``, the class will be inferred from the schema by
-            looked for a class with ``tree_root: true``. Defaults to ``None``.
+            looking for a class with ``tree_root: true``. Defaults to ``None``.
         :return: A validation report
         :rtype: ValidationReport
         """
@@ -61,7 +61,7 @@ class Validator:
             which provides the instances to validate
         :param target_class: Name of the class within the schema to validate
             against. If ``None``, the class will be inferred from the schema by
-            looked for a class with ``tree_root: true``. Defaults to ``None``.
+            looking for a class with ``tree_root: true``. Defaults to ``None``.
         :return: A validation report
         :rtype: ValidationReport
         """
@@ -73,7 +73,7 @@ class Validator:
         :param instance: The instance to validate
         :param target_class: Name of the class within the schema to validate
             against. If ``None``, the class will be inferred from the schema by
-            looked for a class with ``tree_root: true``. Defaults to ``None``.
+            looking for a class with ``tree_root: true``. Defaults to ``None``.
         :return: Iterator over validation results
         :rtype: Iterator[ValidationResult]
         """
@@ -89,7 +89,7 @@ class Validator:
             which provides the instances to validate
         :param target_class: Name of the class within the schema to validate
             against. If ``None``, the class will be inferred from the schema by
-            looked for a class with ``tree_root: true``. Defaults to ``None``.
+            looking for a class with ``tree_root: true``. Defaults to ``None``.
         :return: Iterator over validation results
         :rtype: Iterator[ValidationResult]
         """
