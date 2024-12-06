@@ -432,6 +432,7 @@ slots:
   cordialness:
   altitude:
     range: decimal
+    alias: alt
 
 enums:
   FamilialRelationshipType:
