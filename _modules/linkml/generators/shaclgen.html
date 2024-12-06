@@ -461,10 +461,20 @@
                 <span class="n">order</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
                 <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">multivalued</span><span class="p">:</span>
-                    <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">maxCount</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+                <span class="c1"># minCount</span>
+                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">minimum_cardinality</span><span class="p">:</span>
+                    <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">minCount</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">minimum_cardinality</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">s</span><span class="o">.</span><span class="n">exact_cardinality</span><span class="p">:</span>
+                    <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">minCount</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">exact_cardinality</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">s</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
                     <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">minCount</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="c1"># maxCount</span>
+                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">maximum_cardinality</span><span class="p">:</span>
+                    <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">maxCount</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">maximum_cardinality</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">s</span><span class="o">.</span><span class="n">exact_cardinality</span><span class="p">:</span>
+                    <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">maxCount</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">exact_cardinality</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">multivalued</span><span class="p">:</span>
+                    <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">maxCount</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">minInclusive</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">minimum_value</span><span class="p">)</span>
                 <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">maxInclusive</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">maximum_value</span><span class="p">)</span>
 
