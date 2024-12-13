@@ -1,15 +1,17 @@
 """
 Tests generation of mermaidfrom LinkML schemas
 """
+
 import pytest
-from linkml.generators.erdiagramgen import ERDiagramGenerator, cli
 from click.testing import CliRunner
 
-from tests.test_generators.conftest import kitchen_sink_path
+from linkml.generators.erdiagramgen import ERDiagramGenerator, cli
+
 
 @pytest.fixture
 def runner():
     return CliRunner()
+
 
 def remove_whitespace(string: str):
     return string.replace(" ", "")
@@ -141,7 +143,7 @@ def test_max_hops(kitchen_sink_path):
 
 def test_format_option_markdown(runner, kitchen_sink_path):
     """Test the --format option with 'markdown'."""
-    result = runner.invoke(cli, [kitchen_sink_path, '--format', 'markdown'])
+    result = runner.invoke(cli, [kitchen_sink_path, "--format", "markdown"])
     print(result.output)
     assert result.output.startswith("```mermaid")
     assert result.output.endswith("```\n\n")
@@ -149,7 +151,7 @@ def test_format_option_markdown(runner, kitchen_sink_path):
 
 def test_format_option_no_markdown(runner, kitchen_sink_path):
     """Test the --format option with 'markdown'."""
-    result = runner.invoke(cli, [kitchen_sink_path, '--format', 'mermaid'])
+    result = runner.invoke(cli, [kitchen_sink_path, "--format", "mermaid"])
     print(result.output)
     assert not result.output.startswith("```mermaid")
     assert result.output.endswith("\n\n")
