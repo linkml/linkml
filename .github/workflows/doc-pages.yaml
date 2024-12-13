@@ -1,22 +1,14 @@
-name: Build and test documentation
-
+name: Sphinx Documentation
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [main]
 
 jobs:
-  test_docs:
+  build-docs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # note: this action will fail on python 3.8 - Could not import extension myst_nb (exception:
-        # No module named 'myst_nb')
-        python-version: ["3.12"]
+        python-version: [ "3.12" ]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -42,14 +34,20 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: 'poetry'
 
-      #----------------------------------------------
-      # install dependencies
-      #----------------------------------------------
-      - name: Install dependencies
-        run: poetry install --no-interaction --with docs -E black
+      - name: install
+        run: poetry install --with docs --all-extras
 
-      - name: Build docs
-        working-directory: docs
-        env:
-          SPHINXOPTS: "-W --keep-going"
-        run: poetry run make html
+      - name: Build documentation.
+        run: |
+          mkdir gh-pages
+          touch gh-pages/.nojekyll
+          cd docs/
+          poetry run sphinx-build -b html . _build
+          cp -r _build/* ../gh-pages/
+      - name: Deploy documentation.
+        if: ${{ github.event_name == 'push' }}
+        uses: JamesIves/github-pages-deploy-action@v4.4.1
+        with:
+          branch: gh-pages
+          force: true
+          folder: gh-pages
