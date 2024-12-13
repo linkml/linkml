@@ -155,7 +155,6 @@ classes:
       - in_location
 
   Container:
-    tree_root: true
     slots:
       - persons
       - organizations
