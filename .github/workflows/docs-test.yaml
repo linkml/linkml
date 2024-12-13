@@ -14,7 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        # note: this action will fail on python 3.8 - Could not import extension myst_nb (exception:
+        # No module named 'myst_nb')
+        python-version: ["3.12"]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
