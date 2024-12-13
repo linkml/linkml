@@ -150,7 +150,7 @@ def test_format_option_markdown(runner, kitchen_sink_path):
 
 
 def test_format_option_no_markdown(runner, kitchen_sink_path):
-    """Test the --format option with 'markdown'."""
+    """Test the --format option with 'mermaid'."""
     result = runner.invoke(cli, [kitchen_sink_path, "--format", "mermaid"])
     print(result.output)
     assert not result.output.startswith("```mermaid")
