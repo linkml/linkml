@@ -6,11 +6,13 @@ Test example runner using a simulated setup.
  - input/counter_examples
 """
 
-import pytest
+
 from linkml_runtime import SchemaView
 from prefixmaps.io.parser import load_multi_context
-from click.testing import CliRunner
 from linkml.workspaces.example_runner import ExampleRunner, cli
+import pytest
+from click.testing import CliRunner
+
 
 @pytest.fixture
 def runner():

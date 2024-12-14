@@ -1,0 +1,7 @@
+id: person1
+name: person_name
+pet:
+  name: "Whiskers"
+  breed: "Siamese"
+  nip: "Loves catnip"
+  id: catid

@@ -1,0 +1,5 @@
+id: person1
+name: person_name
+pet:
+  - name: dog_name
+    id: dog_id

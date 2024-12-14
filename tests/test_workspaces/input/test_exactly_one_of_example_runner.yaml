@@ -1,0 +1,22 @@
+id: https://example.org/issue
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  TopClass:
+    attributes:
+      attr1:
+        exactly_one_of:
+          - range: Class1
+          - range: Class2
+  Class1:
+    attributes:
+      attr2:
+        range: string
+  Class2:
+    attributes:
+      attr2:
+        range: string
+      attr3:
+        required: true
