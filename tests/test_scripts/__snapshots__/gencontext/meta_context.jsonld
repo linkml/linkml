@@ -50,9 +50,9 @@
          "@type": "@id",
          "@id": "core:agent_set"
       },
-      "altitude": {
+      "alt": {
          "@type": "xsd:decimal",
-         "@id": "altitude"
+         "@id": "alt"
       },
       "attribute2": {
          "@type": "@id",

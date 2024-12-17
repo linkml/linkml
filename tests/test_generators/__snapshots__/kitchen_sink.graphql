@@ -59,7 +59,7 @@ type Address
   {
     street: String
     city: String
-    altitude: Decimal
+    alt: Decimal
   }
 
 type Agent
