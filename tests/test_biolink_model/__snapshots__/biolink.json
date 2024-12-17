@@ -29685,7 +29685,7 @@
         "@id": "actively_involved_in"
       },
       "actively_involves": {
-        "@type": "@id",
+        "@type": "biolink:Occurrent",
         "@id": "actively_involves"
       },
       "acts_upstream_of": {
@@ -29720,7 +29720,7 @@
         "@id": "adjusted_p_value"
       },
       "adverse_event_of": {
-        "@type": "@id",
+        "@type": "biolink:ChemicalOrDrugOrTreatment",
         "@id": "adverse_event_of"
       },
       "affected_by": {
@@ -29732,7 +29732,7 @@
         "@id": "affects"
       },
       "affects_response_to": {
-        "@type": "@id",
+        "@type": "biolink:ChemicalEntityOrGeneOrGeneProduct",
         "@id": "affects_response_to"
       },
       "affects_risk_for": {
@@ -29857,15 +29857,15 @@
         "@id": "broad_synonym"
       },
       "can_be_carried_out_by": {
-        "@type": "@id",
+        "@type": "biolink:Occurrent",
         "@id": "can_be_carried_out_by"
       },
       "capable_of": {
-        "@type": "@id",
+        "@type": "biolink:Occurrent",
         "@id": "capable_of"
       },
       "catalyst_qualifier": {
-        "@type": "@id",
+        "@type": "biolink:MacromolecularMachineMixin",
         "@id": "catalyst_qualifier"
       },
       "catalyzes": {
@@ -29914,7 +29914,7 @@
         "@id": "coexists_with"
       },
       "coexpressed_with": {
-        "@type": "@id",
+        "@type": "biolink:GeneOrGeneProduct",
         "@id": "coexpressed_with"
       },
       "colocalizes_with": {
@@ -29950,7 +29950,7 @@
         "@id": "consumed_by"
       },
       "consumes": {
-        "@type": "@id",
+        "@type": "biolink:Occurrent",
         "@id": "consumes"
       },
       "contains_process": {
@@ -30003,7 +30003,7 @@
         "@id": "decreases_amount_or_activity_of"
       },
       "decreases_response_to": {
-        "@type": "@id",
+        "@type": "biolink:ChemicalEntityOrGeneOrGeneProduct",
         "@id": "decreases_response_to"
       },
       "derivative_qualifier": {
@@ -30110,7 +30110,7 @@
         "@id": "expressed_in"
       },
       "expresses": {
-        "@type": "@id",
+        "@type": "biolink:GeneOrGeneProduct",
         "@id": "expresses"
       },
       "expression_site": {
@@ -30179,7 +30179,7 @@
         "@id": "genome_build"
       },
       "has_active_component": {
-        "@type": "@id",
+        "@type": "biolink:GeneOrGeneProduct",
         "@id": "has_active_component"
       },
       "has_active_ingredient": {
@@ -30206,7 +30206,7 @@
         "@id": "has_biological_sequence"
       },
       "has_biomarker": {
-        "@type": "@id",
+        "@type": "biolink:ChemicalEntityOrGeneOrGeneProduct",
         "@id": "has_biomarker"
       },
       "has_catalyst": {
@@ -30293,7 +30293,7 @@
         "@id": "has_gene_or_gene_product"
       },
       "has_gene_product": {
-        "@type": "@id",
+        "@type": "biolink:GeneProductMixin",
         "@id": "has_gene_product"
       },
       "has_increased_amount": {
@@ -30301,7 +30301,7 @@
         "@id": "has_increased_amount"
       },
       "has_input": {
-        "@type": "@id",
+        "@type": "biolink:Occurrent",
         "@id": "has_input"
       },
       "has_manifestation": {
@@ -30333,11 +30333,11 @@
         "@id": "has_nearby_variant"
       },
       "has_negative_upstream_actor": {
-        "@type": "@id",
+        "@type": "biolink:GeneOrGeneProduct",
         "@id": "has_negative_upstream_actor"
       },
       "has_negative_upstream_or_within_actor": {
-        "@type": "@id",
+        "@type": "biolink:GeneOrGeneProduct",
         "@id": "has_negative_upstream_or_within_actor"
       },
       "has_non_coding_variant": {
@@ -30361,7 +30361,7 @@
         "@id": "has_nutrient"
       },
       "has_output": {
-        "@type": "@id",
+        "@type": "biolink:Occurrent",
         "@id": "has_output"
       },
       "has_part": {
@@ -30369,7 +30369,7 @@
         "@id": "has_part"
       },
       "has_participant": {
-        "@type": "@id",
+        "@type": "biolink:Occurrent",
         "@id": "has_participant"
       },
       "has_percentage": {
@@ -30385,11 +30385,11 @@
         "@id": "has_plasma_membrane_part"
       },
       "has_positive_upstream_actor": {
-        "@type": "@id",
+        "@type": "biolink:GeneOrGeneProduct",
         "@id": "has_positive_upstream_actor"
       },
       "has_positive_upstream_or_within_actor": {
-        "@type": "@id",
+        "@type": "biolink:GeneOrGeneProduct",
         "@id": "has_positive_upstream_or_within_actor"
       },
       "has_predisposing_factor": {
@@ -30413,7 +30413,7 @@
         "@id": "has_qualitative_value"
       },
       "has_quantitative_value": {
-        "@type": "@id",
+        "@type": "biolink:QuantityValue",
         "@id": "has_quantitative_value"
       },
       "has_quotient": {
@@ -30447,7 +30447,7 @@
         "@id": "has_stressor"
       },
       "has_substrate": {
-        "@type": "@id",
+        "@type": "biolink:ChemicalEntityOrGeneOrGeneProduct",
         "@id": "has_substrate"
       },
       "has_supporting_study_result": {
@@ -30478,11 +30478,11 @@
         "@id": "has_unit"
       },
       "has_upstream_actor": {
-        "@type": "@id",
+        "@type": "biolink:GeneOrGeneProduct",
         "@id": "has_upstream_actor"
       },
       "has_upstream_or_within_actor": {
-        "@type": "@id",
+        "@type": "biolink:GeneOrGeneProduct",
         "@id": "has_upstream_or_within_actor"
       },
       "has_variant_part": {
@@ -30501,11 +30501,11 @@
         "@id": "homologous_to"
       },
       "in_cell_population_with": {
-        "@type": "@id",
+        "@type": "biolink:GeneOrGeneProduct",
         "@id": "in_cell_population_with"
       },
       "in_complex_with": {
-        "@type": "@id",
+        "@type": "biolink:GeneOrGeneProduct",
         "@id": "in_complex_with"
       },
       "in_linkage_disequilibrium_with": {
@@ -30513,7 +30513,7 @@
         "@id": "in_linkage_disequilibrium_with"
       },
       "in_pathway_with": {
-        "@type": "@id",
+        "@type": "biolink:GeneOrGeneProduct",
         "@id": "in_pathway_with"
       },
       "in_taxon": {
@@ -30533,7 +30533,7 @@
         "@id": "increases_amount_or_activity_of"
       },
       "increases_response_to": {
-        "@type": "@id",
+        "@type": "biolink:ChemicalEntityOrGeneOrGeneProduct",
         "@id": "increases_response_to"
       },
       "indirectly_physically_interacts_with": {
@@ -30572,7 +30572,7 @@
         "@id": "is_assessed_by"
       },
       "is_diagnosed_by": {
-        "@type": "@id",
+        "@type": "biolink:ChemicalOrDrugOrTreatment",
         "@id": "is_diagnosed_by"
       },
       "is_exacerbated_by": {
@@ -30584,7 +30584,7 @@
         "@id": "is_excipient_of"
       },
       "is_frameshift_variant_of": {
-        "@type": "@id",
+        "@type": "biolink:GenomicEntity",
         "@id": "is_frameshift_variant_of"
       },
       "is_input_of": {
@@ -30600,7 +30600,7 @@
         "@id": "is_metabolite_of"
       },
       "is_missense_variant_of": {
-        "@type": "@id",
+        "@type": "biolink:GenomicEntity",
         "@id": "is_missense_variant_of"
       },
       "is_molecular_consequence_of": {
@@ -30608,15 +30608,15 @@
         "@id": "is_molecular_consequence_of"
       },
       "is_nearby_variant_of": {
-        "@type": "@id",
+        "@type": "biolink:GenomicEntity",
         "@id": "is_nearby_variant_of"
       },
       "is_non_coding_variant_of": {
-        "@type": "@id",
+        "@type": "biolink:GenomicEntity",
         "@id": "is_non_coding_variant_of"
       },
       "is_nonsense_variant_of": {
-        "@type": "@id",
+        "@type": "biolink:GenomicEntity",
         "@id": "is_nonsense_variant_of"
       },
       "is_output_of": {
@@ -30624,15 +30624,15 @@
         "@id": "is_output_of"
       },
       "is_sequence_variant_of": {
-        "@type": "@id",
+        "@type": "biolink:GenomicEntity",
         "@id": "is_sequence_variant_of"
       },
       "is_side_effect_of": {
-        "@type": "@id",
+        "@type": "biolink:ChemicalOrDrugOrTreatment",
         "@id": "is_side_effect_of"
       },
       "is_splice_site_variant_of": {
-        "@type": "@id",
+        "@type": "biolink:GenomicEntity",
         "@id": "is_splice_site_variant_of"
       },
       "is_substrate_of": {
@@ -30644,7 +30644,7 @@
         "@id": "is_supplement"
       },
       "is_synonymous_variant_of": {
-        "@type": "@id",
+        "@type": "biolink:GenomicEntity",
         "@id": "is_synonymous_variant_of"
       },
       "is_toxic": {
@@ -30913,11 +30913,11 @@
         "@id": "positively_correlated_with"
       },
       "preceded_by": {
-        "@type": "@id",
+        "@type": "biolink:Occurrent",
         "@id": "preceded_by"
       },
       "precedes": {
-        "@type": "@id",
+        "@type": "biolink:Occurrent",
         "@id": "precedes"
       },
       "predicate": {
@@ -30925,7 +30925,7 @@
         "@id": "rdf:predicate"
       },
       "predicate_mappings": {
-        "@type": "@id",
+        "@type": "biolink:PredicateMapping",
         "@id": "predicate_mappings"
       },
       "predisposes": {
@@ -31007,11 +31007,11 @@
         "@id": "reaction_side"
       },
       "regulated_by": {
-        "@type": "@id",
+        "@type": "biolink:PhysicalEssenceOrOccurrent",
         "@id": "regulated_by"
       },
       "regulates": {
-        "@type": "@id",
+        "@type": "biolink:PhysicalEssenceOrOccurrent",
         "@id": "regulates"
       },
       "related_condition": {
@@ -31054,15 +31054,15 @@
         "@id": "resistance_associated_with"
       },
       "response_affected_by": {
-        "@type": "@id",
+        "@type": "biolink:ChemicalEntityOrGeneOrGeneProduct",
         "@id": "response_affected_by"
       },
       "response_decreased_by": {
-        "@type": "@id",
+        "@type": "biolink:ChemicalEntityOrGeneOrGeneProduct",
         "@id": "response_decreased_by"
       },
       "response_increased_by": {
-        "@type": "@id",
+        "@type": "biolink:ChemicalEntityOrGeneOrGeneProduct",
         "@id": "response_increased_by"
       },
       "retrieved_on": {
@@ -31252,7 +31252,7 @@
         "@id": "target_for"
       },
       "taxon_of": {
-        "@type": "@id",
+        "@type": "biolink:ThingWithTaxon",
         "@id": "taxon_of"
       },
       "temporal_context_qualifier": {
@@ -31264,7 +31264,7 @@
         "@id": "temporal_interval_qualifier"
       },
       "temporally_related_to": {
-        "@type": "@id",
+        "@type": "biolink:Occurrent",
         "@id": "temporally_related_to"
       },
       "timepoint": {
@@ -31292,7 +31292,7 @@
         "@id": "translation_of"
       },
       "treated_by": {
-        "@type": "@id",
+        "@type": "biolink:ChemicalOrDrugOrTreatment",
         "@id": "treated_by"
       },
       "treats": {

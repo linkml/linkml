@@ -12,11 +12,11 @@
          "@id": "tag"
       },
       "value": {
-         "@type": "@id",
+         "@type": "linkml:Any",
          "@id": "value"
       },
       "extensions": {
-         "@type": "@id",
+         "@type": "linkml:Extension",
          "@id": "extensions"
       },
       "@base": "https://w3id.org/linkml/",
