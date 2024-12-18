@@ -98,7 +98,7 @@ More on enums:
 
 ## How do I constrain the value of a slot based on an entry in a different slot?
 
-You may want to make the entries in one slot contingent on another. If, for example, you are developing a schema for a toy store that sells wooden horses and frogs. The horses are available in red and green, but the frogs are available in blue and pink.
+You may want to make the entries in one slot contingent on a different slot. If, for example, you are developing a schema for a toy store that sells wooden horses and frogs. The horses are available in red and green, but the frogs are available in blue and pink.
 
 You can use a [rules block](https://linkml.io/linkml/schemas/advanced.html#rules) to constrain the permissible values for a particular slot dependent on the entry in another slot. 
 
