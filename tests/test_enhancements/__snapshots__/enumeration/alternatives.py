@@ -114,7 +114,7 @@ class AllEnums(YAMLRoot):
             self.code_1 = [self.code_1] if self.code_1 is not None else []
         self.code_1 = [v if isinstance(v, OpenEnum) else OpenEnum(v) for v in self.code_1]
 
-        if self.code_7 is not None and not isinstance(self.code_7, ConstrainedEvidence):
+        if self.code_7 is not None and self.code_7 not in ConstrainedEvidence:
             self.code_7 = ConstrainedEvidence(self.code_7)
 
         super().__post_init__(**kwargs)
