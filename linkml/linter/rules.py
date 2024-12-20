@@ -177,12 +177,6 @@ def _get_recommended_metamodel_slots() -> List[str]:
     return recommended_meta_slots
 
 
-@lru_cache(maxsize=None)
-def _get_meta_view() -> SchemaView:
-    meta_schema_view = SchemaView(LOCAL_METAMODEL_YAML_FILE)
-    return meta_schema_view
-
-
 class RecommendedRule(LinterRule):
     id = "recommended"
 
