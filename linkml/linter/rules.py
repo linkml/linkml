@@ -66,6 +66,13 @@ class NoEmptyTitleRule(LinterRule):
                 yield problem
 
 
+class NoUnusualFrequencyMetaslotsRule(LinterRule):
+    id = "no_unusual_frequency_metaslots"
+
+    def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
+        yield LinterProblem(message="Unusual frequency metaslots check not implemented yet")
+
+
 class NoXsdIntTypeRule(LinterRule):
     id = "no_xsd_int_type"
 
