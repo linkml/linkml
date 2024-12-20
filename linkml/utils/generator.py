@@ -24,9 +24,10 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 from typing import Callable, ClassVar, Dict, List, Mapping, Optional, Set, TextIO, Type, Union, cast
-
+from jsonasobj2 import JsonObj
 import click
 from click import Argument, Command, Option
+from jsonasobj2 import JsonObj
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
@@ -265,8 +266,16 @@ class Generator(metaclass=abc.ABCMeta):
     def _init_namespaces(self):
         if self.namespaces is None:
             self.namespaces = Namespaces()
-            for prefix in self.schema.prefixes.values():
-                self.namespaces[prefix.prefix_prefix] = prefix.prefix_reference
+            if isinstance(self.schema.prefixes, dict):
+                for key, value in self.schema.prefixes.items():
+                    self.namespaces[key] = value
+            elif isinstance(self.schema.prefixes, JsonObj):
+                prefixes = vars(self.schema.prefixes)
+                for key, value in prefixes.items():
+                    self.namespaces[key] = value
+            else:
+                for prefix in self.schema.prefixes.values():
+                    self.namespaces[prefix.prefix_prefix] = prefix.prefix_reference
 
     def serialize(self, **kwargs) -> str:
         """
