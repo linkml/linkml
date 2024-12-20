@@ -117,6 +117,7 @@ def test_existing_tree_root_class_name_mismatch_fix(schema_view):
 
     assert len(problems) == 0
 
+
 def test_existing_tree_root_class_name_mismatch(schema_view):
     config = TreeRootClassRuleConfig(
         level=RuleLevel.error.text,
