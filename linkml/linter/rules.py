@@ -138,7 +138,7 @@ class NoUnusualFrequencyMetaslotsRule(LinterRule):
             fraction = v / used_metaslot_count
             if fraction != 0.0 and fraction != 1.0 and (fraction < 0.25 or fraction > 0.75):
                 yield LinterProblem(
-                    message=f"Metaslot '{k}' has unusual frequency {fraction:.2f}"
+                    message=f"Metaslot '{k}' is used in slot definitions with unusual frequency {fraction:.2f}"
                 )
 
 

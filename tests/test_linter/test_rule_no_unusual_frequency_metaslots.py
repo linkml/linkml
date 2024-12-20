@@ -47,6 +47,6 @@ class TestRuleNoUnusualFrequencyMetaslots(unittest.TestCase):
         messages = [p.message for p in problems]
 
         self.assertEqual(messages, [
-            "Metaslot 'minimum_cardinality' has unusual frequency 0.20",
-            "Metaslot 'maximum_cardinality' has unusual frequency 0.80"
+            "Metaslot 'minimum_cardinality' is used in slot definitions with unusual frequency 0.20",
+            "Metaslot 'maximum_cardinality' is used in slot definitions with unusual frequency 0.80"
         ])
