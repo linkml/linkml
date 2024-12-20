@@ -220,13 +220,13 @@ class TreeRootClassRule(LinterRule):
                 yield LinterProblem("Schema does not have class with `tree_root: true`")
 
     def add_index_slots(
-            self,
-            schema_view: SchemaView,
-            container_name: ClassDefinitionName,
-            inlined_as_list=False,
-            must_have_identifier=False,
-            slot_name_func: Callable = None,
-            convert_camel_case=False,
+        self,
+        schema_view: SchemaView,
+        container_name: ClassDefinitionName,
+        inlined_as_list=False,
+        must_have_identifier=False,
+        slot_name_func: Callable = None,
+        convert_camel_case=False,
     ) -> List[SlotDefinition]:
         """
         Adds index slots to a container pointing at all top-level classes
