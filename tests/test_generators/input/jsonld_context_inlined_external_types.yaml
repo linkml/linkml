@@ -1,0 +1,39 @@
+id: https://example.org/external_type
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/external_type#
+  cred: https://www.w3.org/2018/credentials#
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+default_range: string
+
+slots:
+  id:
+    identifier: true
+    range: string
+
+  digestSRI:
+    title: "Digest SRI"
+    description: "Subresource Integrity hash ensuring it has won't be modified."
+    range: SriString
+    slot_uri: cred:digestSRI
+    required: true
+
+  credential:
+    title: "Credential"
+    description: "Some credential"
+    range: VerifiableCredential
+    inlined: true
+    required: true
+
+classes:
+  SriString:
+    class_uri: cred:sriString
+
+  VerifiableCredential:
+    class_uri: cred:VerifiableCredential
+    slots:
+      - id
