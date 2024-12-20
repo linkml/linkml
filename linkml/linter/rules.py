@@ -1,7 +1,8 @@
 import re
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from functools import lru_cache
-from typing import Callable, Iterable, List
+from typing import Callable, Iterable, List, Any
 
 from linkml_runtime.linkml_model import ClassDefinition, ClassDefinitionName, Element, SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView
@@ -17,6 +18,37 @@ from .config.datamodel.config import (
     TreeRootClassRuleConfig,
 )
 from .linter import LinterProblem
+
+
+def is_used(value: Any) -> bool:
+    """
+    Determine if a metaslot value is considered 'used'.
+    This function can handle:
+    - None
+    - Empty strings/lists/dicts
+    - Complex objects (by recursively checking their attributes)
+    """
+    if value is None:
+        return False
+
+    # Check common empty scenarios
+    if isinstance(value, str) and not value.strip():
+        return False
+    if isinstance(value, (list, dict)) and len(value) == 0:
+        return False
+
+    # If it's a complex object (e.g., a LinkML model class), recursively inspect its attributes.
+    if hasattr(value, '__dict__'):
+        # Consider 'used' if any of its non-private attributes is used.
+        for k, v in value.__dict__.items():
+            if k.startswith('_'):
+                continue
+            if is_used(v):
+                return True
+        return False
+
+    # For other data types, if they're not None or empty, consider them used.
+    return True
 
 
 class LinterRule(ABC):
@@ -67,10 +99,47 @@ class NoEmptyTitleRule(LinterRule):
 
 
 class NoUnusualFrequencyMetaslotsRule(LinterRule):
+    # todo what kind of config might this require?
+    #   which elements to check
+    #     default to all elements?
+    #       just skip elements that are of a type the user didn't request?
+    #       or add separate blocks of all_classes, all_slots, etc.?
+    #       but there isn't any type-parameterized getter is there?
+    #   minimum and maximum non-0/non-1 metaslot frequencies
+
     id = "no_unusual_frequency_metaslots"
 
     def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
-        yield LinterProblem(message="Unusual frequency metaslots check not implemented yet")
+
+        # todo do this for classes and enums to if requested by the user
+        #   would we ever want to check all elements, all definitions?
+        #   the schema definition, the types, or the subset?
+        #   or discover new elements via
+        #     meta_schema_view = SchemaView(LOCAL_METAMODEL_YAML_FILE)
+        #     elements_proper = meta_schema_view.class_descendants("element")
+        #   for that, would need a dict of dicts
+
+        all_slots = schema_view.all_slots()
+
+        metaslot_usage = defaultdict(int)
+
+        for slot_name, slot_def in all_slots.items():
+            for attr_name, attr_val in slot_def.__dict__.items():
+                # Skip private/internal attributes (by convention, they start with '_')
+                if attr_name.startswith('_'):
+                    continue
+
+                if is_used(attr_val):
+                    metaslot_usage[attr_name] += 1
+
+        used_metaslot_count = len(all_slots)
+
+        for k, v in metaslot_usage.items():
+            fraction = v / used_metaslot_count
+            if fraction != 0.0 and fraction != 1.0 and (fraction < 0.25 or fraction > 0.75):
+                yield LinterProblem(
+                    message=f"Metaslot '{k}' has unusual frequency {fraction:.2f}"
+                )
 
 
 class NoXsdIntTypeRule(LinterRule):
@@ -106,6 +175,12 @@ def _get_recommended_metamodel_slots() -> List[str]:
             if slot.recommended:
                 recommended_meta_slots.append(f"{class_name}__{slot.name}")
     return recommended_meta_slots
+
+
+@lru_cache(maxsize=None)
+def _get_meta_view() -> SchemaView:
+    meta_schema_view = SchemaView(LOCAL_METAMODEL_YAML_FILE)
+    return meta_schema_view
 
 
 class RecommendedRule(LinterRule):
@@ -151,13 +226,13 @@ class TreeRootClassRule(LinterRule):
                 yield LinterProblem("Schema does not have class with `tree_root: true`")
 
     def add_index_slots(
-        self,
-        schema_view: SchemaView,
-        container_name: ClassDefinitionName,
-        inlined_as_list=False,
-        must_have_identifier=False,
-        slot_name_func: Callable = None,
-        convert_camel_case=False,
+            self,
+            schema_view: SchemaView,
+            container_name: ClassDefinitionName,
+            inlined_as_list=False,
+            must_have_identifier=False,
+            slot_name_func: Callable = None,
+            convert_camel_case=False,
     ) -> List[SlotDefinition]:
         """
         Adds index slots to a container pointing at all top-level classes
