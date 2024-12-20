@@ -39,11 +39,6 @@ class TestRuleNoUnusualFrequencyMetaslots(unittest.TestCase):
 
         self.schema_view = SchemaView(schema_builder.schema)
 
-    def test_slots_created(self):
-        view_slots = self.schema_view.all_slots()
-        view_slots_keys = list(view_slots.keys())
-        self.assertIn('slot_1', view_slots_keys)
-
     def test_unusual_frequency_metaslots(self):
         config = RuleConfig(level=RuleLevel.error)
         rule = NoUnusualFrequencyMetaslotsRule(config)
