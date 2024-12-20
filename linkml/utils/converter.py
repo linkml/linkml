@@ -1,8 +1,10 @@
 import logging
 import os
+import pathlib
 import sys
 
 import click
+import yaml
 from linkml_runtime.linkml_model import Prefix
 from linkml_runtime.utils import inference_utils
 from linkml_runtime.utils.compile_python import compile_python
@@ -55,6 +57,7 @@ logger = logging.getLogger(__name__)
 @click.option("--index-slot", "-S", help="top level slot. Required for CSV dumping/loading")
 @click.option("--schema", "-s", help="Path to schema specified as LinkML yaml")
 @click.option("--prefix", "-P", multiple=True, help="Prefixmap base=URI pairs")
+@click.option("--prefix-file", help="Path to yaml file containing base=URI pairs")
 @click.option(
     "--validate/--no-validate",
     default=True,
@@ -79,6 +82,7 @@ def cli(
     input_format=None,
     output_format=None,
     prefix=None,
+    prefix_file=None,
     target_class_from_path=None,
     schema=None,
     validate=None,
@@ -99,6 +103,8 @@ def cli(
 
     For more information, see https://linkml.io/linkml/data/index.html
     """
+    if prefix and prefix_file is not None:
+        raise Exception("Either set prefix OR prefix_file, not both.")
     if prefix is None:
         prefix = []
     if module is None:
@@ -113,6 +119,17 @@ def cli(
         for p in prefix:
             base, uri = p.split("=")
             prefix_map[base] = uri
+    if prefix_file is not None:
+        prefix_path = pathlib.Path(prefix_file).resolve()
+        if not prefix_path.exists():
+            raise Exception(f"Path {prefix_file} to prefix map does not exists.")
+        with open(prefix_path, "r") as prefix_stream:
+            raw_prefix_map = yaml.safe_load(prefix_stream)
+        prefix_file_map = raw_prefix_map.get("prefixes", None)
+        if prefix_file_map is None:
+            raise Exception("Provided prefix file does not contain the prefixes key.")
+        prefix_map = prefix_file_map
+
     if schema is not None:
         sv = SchemaView(schema)
         if prefix_map:
