@@ -130,7 +130,9 @@ class TreeRootClassRule(LinterRule):
 
     def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
         tree_roots = [c for c in schema_view.all_classes(imports=False).values() if c.tree_root]
-        if len(tree_roots) > 0:
+        if len(tree_roots) > 1:
+            yield LinterProblem("Schema has more than one tree root class")
+        elif len(tree_roots) == 1:
             if self.config.validate_existing_class_name:
                 for tree_root in tree_roots:
                     if str(tree_root.name) != self.config.root_class_name:
