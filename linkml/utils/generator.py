@@ -24,7 +24,7 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 from typing import Callable, ClassVar, Dict, List, Mapping, Optional, Set, TextIO, Type, Union, cast
-from jsonasobj2 import JsonObj
+
 import click
 from click import Argument, Command, Option
 from jsonasobj2 import JsonObj
