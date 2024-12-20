@@ -1,6 +1,6 @@
 import pytest
 from linkml_runtime import SchemaView
-from linkml_runtime.linkml_model import SlotDefinition, ClassDefinition
+from linkml_runtime.linkml_model import ClassDefinition, SlotDefinition
 
 from linkml.linter.config.datamodel.config import RuleLevel, TreeRootClassRuleConfig
 from linkml.linter.rules import TreeRootClassRule
@@ -11,6 +11,7 @@ MY_ENUM = "MyEnum"
 FULL_NAME = "full_name"
 DESC = "description"
 CONTAINER = "ContainerClass"
+
 
 @pytest.fixture
 def schema_view():
@@ -55,6 +56,7 @@ def test_single_tree_root_with_valid_name():
     problems = list(rule.check(schema_view))
     assert len(problems) == 3
 
+
 def test_no_tree_root_class(schema_view):
     config = TreeRootClassRuleConfig(
         level=RuleLevel.error.text,
@@ -67,6 +69,7 @@ def test_no_tree_root_class(schema_view):
 
     assert len(problems) == 1
     assert problems[0].message == "Schema does not have class with `tree_root: true`"
+
 
 def test_fix_no_tree_root_class(schema_view):
     config = TreeRootClassRuleConfig(
@@ -88,6 +91,7 @@ def test_fix_no_tree_root_class(schema_view):
     problems = list(rule.check(schema_view))
     assert len(problems) == 0
 
+
 def test_existing_tree_root_class_name_matches(schema_view):
     config = TreeRootClassRuleConfig(
         level=RuleLevel.error.text,
@@ -100,7 +104,8 @@ def test_existing_tree_root_class_name_matches(schema_view):
 
     assert len(problems) == 0
 
-def test_existing_tree_root_class_name_mismatch(schema_view):
+
+def test_existing_tree_root_class_name_mismatch_fix(schema_view):
     config = TreeRootClassRuleConfig(
         level=RuleLevel.error.text,
         root_class_name=CONTAINER,
@@ -111,3 +116,14 @@ def test_existing_tree_root_class_name_mismatch(schema_view):
     problems = list(rule.check(schema_view, fix=True))
 
     assert len(problems) == 0
+
+def test_existing_tree_root_class_name_mismatch(schema_view):
+    config = TreeRootClassRuleConfig(
+        level=RuleLevel.error.text,
+        root_class_name=MY_CLASS,
+        validate_existing_class_name=True,
+    )
+
+    rule = TreeRootClassRule(config)
+    problems = list(rule.check(schema_view, fix=False))
+    assert len(problems) == 1
