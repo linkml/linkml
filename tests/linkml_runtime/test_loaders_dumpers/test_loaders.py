@@ -33,6 +33,10 @@ class LoadersUnitTest(LoaderDumperTestCase):
         assert isinstance(data, Package)
         assert "system" in data
 
+    def test_json_loader(self):
+        """ Load obo_sample.json, emit obo_sample_json.yaml and check the results """
+        self.loader_test('obo_sample.json', Package, json_loader)
+
     def test_json_load_to_dict(self):
         data = json_loader.load_as_dict('obo_sample.json', base_dir=self.env.indir)
         assert isinstance(data, dict)
