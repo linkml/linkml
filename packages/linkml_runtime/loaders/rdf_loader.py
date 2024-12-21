@@ -86,11 +86,6 @@ class RDFLoader(Loader):
             source = json.loads(jsonld_str)
             fmt = 'json-ld'
 
-        # see https://github.com/linkml/linkml/issues/2458, this works around a limitation in hbreader
-        print(f"source: {source}")
-        if isinstance(source, Path):
-            source = str(source.resolve())
-
         # While we may want to allow full SSL verification at some point, the general philosophy is that content forgery
         # is not going to be a serious problem.
         # TODO: Make the SSL option a settable parameter in the package itself
