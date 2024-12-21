@@ -425,6 +425,52 @@ text.</p>
 <p>More on enums:</p>
 <iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQyQsRIBjSxhaDie5ASDAOTfJO9JqFjYmdoBHgCVVKMHzKo0AyL04lGNqWdgbCnyV8a-syk1U81tRXg/embed?start=false&loop=false&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
 </section>
+<section id="how-do-i-constrain-the-value-of-a-slot-based-on-an-entry-in-a-different-slot">
+<h2>How do I constrain the value of a slot based on an entry in a different slot?<a class="headerlink" href="#how-do-i-constrain-the-value-of-a-slot-based-on-an-entry-in-a-different-slot" title="Permalink to this heading">#</a></h2>
+<p>You may want to make the entries in one slot contingent on a different slot. If, for example, you are developing a schema for a toy store that sells wooden horses and frogs. The horses are available in red and green, but the frogs are available in blue and pink.</p>
+<p>You can use a <a class="reference external" href="https://linkml.io/linkml/schemas/advanced.html#rules">rules block</a> to constrain the permissible values for a particular slot dependent on the entry in another slot.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Toys</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">species</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SpeciesRng</span>
+<span class="w">      </span><span class="nt">colour</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">preconditions</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">slot_conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">species</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">equals_string</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">horse</span>
+<span class="w">        </span><span class="nt">postconditions</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">slot_conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">colour</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">any_of</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RedGreen</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">preconditions</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">slot_conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">species</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">equals_string</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frog</span>
+<span class="w">        </span><span class="nt">postconditions</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">slot_conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">colour</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">any_of</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BluePink</span>
+
+<span class="nt">enums</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">SpeciesRng</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span><span class="w"> </span>
+<span class="w">      </span><span class="nt">horse</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">frog</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">BluePink</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">blue</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">pink</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">RedGreen</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">red</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">green</span><span class="p">:</span>
+</pre></div>
+</div>
+</section>
 <section id="how-do-i-constrain-the-value-of-a-slot-using-an-ontology-or-vocabulary">
 <h2>How do I constrain the value of a slot using an ontology or vocabulary?<a class="headerlink" href="#how-do-i-constrain-the-value-of-a-slot-using-an-ontology-or-vocabulary" title="Permalink to this heading">#</a></h2>
 <p>There are a variety of ways of tackling this in LinkML.</p>
@@ -959,6 +1005,7 @@ will need to answer:</p>
 <li><a class="reference internal" href="#what-are-induced-slots">What are induced slots?</a></li>
 <li><a class="reference internal" href="#why-would-i-need-to-define-my-own-types">Why would I need to define my own types?</a></li>
 <li><a class="reference internal" href="#why-would-i-want-to-use-enums-over-strings">Why would I want to use enums over strings?</a></li>
+<li><a class="reference internal" href="#how-do-i-constrain-the-value-of-a-slot-based-on-an-entry-in-a-different-slot">How do I constrain the value of a slot based on an entry in a different slot?</a></li>
 <li><a class="reference internal" href="#how-do-i-constrain-the-value-of-a-slot-using-an-ontology-or-vocabulary">How do I constrain the value of a slot using an ontology or vocabulary?</a><ul>
 <li><a class="reference internal" href="#how-do-i-constrain-a-slot-to-a-fixed-set-of-ontology-terms">How do I constrain a slot to a fixed set of ontology terms?</a></li>
 <li><a class="reference internal" href="#how-do-i-constrain-a-slot-to-a-branch-of-an-ontology-or-a-whole-ontology">How do I constrain a slot to a branch of an ontology or a whole ontology?</a></li>
