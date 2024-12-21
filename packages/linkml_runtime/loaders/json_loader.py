@@ -1,7 +1,7 @@
 import json
 import logging
-from pathlib import Path, PosixPath
-from typing import Union, TextIO, Optional, Dict, Type, List
+from pathlib import Path
+from typing import Union, TextIO, Optional, Type, List
 
 from hbreader import FileInfo
 
