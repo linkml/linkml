@@ -25,13 +25,11 @@ def test_default_merged_context():
     messages = [p.message for p in problems]
     assert (
         "Schema maps prefix 'UPHENO' to namespace 'http://example.com/wrong/upheno_' "
-        "instead of namespace 'http://purl.obolibrary.org/obo/UPHENO_'"
-        in messages
+        "instead of namespace 'http://purl.obolibrary.org/obo/UPHENO_'" in messages
     )
     assert (
         "Schema maps prefix 'WRONG' to namespace 'http://identifiers.org/orcid/' "
-        "instead of using prefix 'ORCID'"
-        in messages
+        "instead of using prefix 'ORCID'" in messages
     )
 
 
@@ -55,11 +53,9 @@ def test_custom_context():
     messages = [p.message for p in problems]
     assert (
         "Schema maps prefix 'UPHENO' to namespace 'http://example.com/wrong/upheno_' "
-        "instead of namespace 'http://purl.obolibrary.org/obo/UPHENO_'"
-        in messages
+        "instead of namespace 'http://purl.obolibrary.org/obo/UPHENO_'" in messages
     )
     assert (
         "Schema maps prefix 'WRONG' to namespace 'http://identifiers.org/orcid/' "
-        "instead of using prefix 'ORCID'"
-        in messages
+        "instead of using prefix 'ORCID'" in messages
     )

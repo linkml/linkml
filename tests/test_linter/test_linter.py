@@ -105,10 +105,7 @@ rules:
 
     # the level is changed by the custom rules
     assert str(linter.config.rules.canonical_prefixes.level) == RuleLevel.error.text
-    assert (
-        linter.config.rules.canonical_prefixes.prefixmaps_contexts
-        == ["obo", "prefixcc"]
-    )
+    assert linter.config.rules.canonical_prefixes.prefixmaps_contexts == ["obo", "prefixcc"]
 
     assert str(linter.config.rules.tree_root_class.level) == RuleLevel.disabled.text
 
@@ -131,10 +128,7 @@ rules:
 
     # this rule is in the recommended set, the level is changed by the custom rules
     assert str(linter.config.rules.canonical_prefixes.level) == RuleLevel.error.text
-    assert (
-        linter.config.rules.canonical_prefixes.prefixmaps_contexts
-        == ["obo", "prefixcc"]
-    )
+    assert linter.config.rules.canonical_prefixes.prefixmaps_contexts == ["obo", "prefixcc"]
 
     # this should come directly from the recommended set with no customization
     assert str(linter.config.rules.no_xsd_int_type.level) == RuleLevel.error.text

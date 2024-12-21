@@ -8,6 +8,7 @@ from linkml.linter.formatters import (
 )
 from linkml.linter.linter import LinterProblem
 
+
 def populate_report(formatter):
     formatter.start_report()
 
@@ -67,6 +68,7 @@ b.yaml
 """
     assert output.getvalue().strip() == expected.strip()
 
+
 def test_terminal_formatter_verbose():
     output = io.StringIO()
     formatter = TerminalFormatter(file=output, verbose=True)
@@ -85,6 +87,7 @@ b.yaml
 ✖ Found 3 problems in 2 schemas
 """
     assert output.getvalue().strip() == expected.strip()
+
 
 def test_markdown_formatter():
     output = io.StringIO()
@@ -117,6 +120,7 @@ def test_markdown_formatter():
 """
     assert output.getvalue().strip() == expected.strip()
 
+
 def test_json_formatter():
     output = io.StringIO()
     formatter = JsonFormatter(file=output)
@@ -148,6 +152,7 @@ def test_json_formatter():
 ]
 """
     assert output.getvalue().strip() == expected.strip()
+
 
 def test_tsv_formatter():
     output = io.StringIO()

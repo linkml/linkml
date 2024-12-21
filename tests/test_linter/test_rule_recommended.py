@@ -22,18 +22,9 @@ def test_missing_descriptions():
     assert len(problems) == 3
 
     messages = [p.message for p in problems]
-    assert (
-        "Class 'MyClass' does not have recommended slot 'description'"
-        in messages
-    )
-    assert (
-        "Slot 'my_slot' does not have recommended slot 'description'"
-        in messages
-    )
-    assert (
-        "Enum 'MyEnum' does not have recommended slot 'description'"
-        in messages
-    )
+    assert "Class 'MyClass' does not have recommended slot 'description'" in messages
+    assert "Slot 'my_slot' does not have recommended slot 'description'" in messages
+    assert "Enum 'MyEnum' does not have recommended slot 'description'" in messages
 
 
 def test_present_descriptions():
@@ -64,10 +55,7 @@ def test_include():
     assert len(problems) == 1
 
     messages = [p.message for p in problems]
-    assert (
-        "Slot 'my_slot' does not have recommended slot 'description'"
-        in messages
-    )
+    assert "Slot 'my_slot' does not have recommended slot 'description'" in messages
 
 
 def test_exclude():
@@ -84,11 +72,5 @@ def test_exclude():
     assert len(problems) == 2
 
     messages = [p.message for p in problems]
-    assert (
-        "Class 'MyClass' does not have recommended slot 'description'"
-        in messages
-    )
-    assert (
-        "Enum 'MyEnum' does not have recommended slot 'description'"
-        in messages
-    )
+    assert "Class 'MyClass' does not have recommended slot 'description'" in messages
+    assert "Enum 'MyEnum' does not have recommended slot 'description'" in messages

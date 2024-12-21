@@ -43,18 +43,9 @@ def test_standard_naming_lower_pv(schema_view):
     assert "Slot has name 'BadSlot'" in messages
     assert "Slot has name 'worse slot'" in messages
     assert "Permissible value of Enum 'GoodEnumWithBadPV' has name 'Bad_PV'" in messages
-    assert (
-        "Permissible value of Enum 'GoodEnumUpperPV' has name 'GOOD_UPPER_PV'"
-        in messages
-    )
-    assert (
-        "Permissible value of Enum 'GoodEnumUpperPV' has name 'GREAT_UPPER_PV'"
-        in messages
-    )
-    assert (
-        "Permissible value of Enum 'GoodEnumBadUpperPV' has name 'GOOD_UPPER_PV'"
-        in messages
-    )
+    assert "Permissible value of Enum 'GoodEnumUpperPV' has name 'GOOD_UPPER_PV'" in messages
+    assert "Permissible value of Enum 'GoodEnumUpperPV' has name 'GREAT_UPPER_PV'" in messages
+    assert "Permissible value of Enum 'GoodEnumBadUpperPV' has name 'GOOD_UPPER_PV'" in messages
     assert "Enum has name 'bad_enum'" in messages
 
 
@@ -73,10 +64,7 @@ def test_standard_naming_upper_pv(schema_view):
     assert "Slot has name 'worse slot'" in messages
     assert "Permissible value of Enum 'GoodEnum' has name 'good_lower_pv'" in messages
     assert "Permissible value of Enum 'GoodEnum' has name 'great_lower_pv'" in messages
-    assert (
-        "Permissible value of Enum 'GoodEnumWithBadPV' has name 'good_lower_pv'"
-        in messages
-    )
+    assert "Permissible value of Enum 'GoodEnumWithBadPV' has name 'good_lower_pv'" in messages
     assert "Permissible value of Enum 'GoodEnumWithBadPV' has name 'Bad_PV'" in messages
     assert "Permissible value of Enum 'GoodEnumBadUpperPV' has name 'bad_pv'" in messages
     assert "Enum has name 'bad_enum'" in messages
@@ -98,18 +86,9 @@ def test_standard_naming_slot_pattern(schema_view):
     # BadSlot no longer bad
     assert "Slot has name 'worse slot'" in messages
     assert "Permissible value of Enum 'GoodEnumWithBadPV' has name 'Bad_PV'" in messages
-    assert (
-        "Permissible value of Enum 'GoodEnumUpperPV' has name 'GOOD_UPPER_PV'"
-        in messages
-    )
-    assert (
-        "Permissible value of Enum 'GoodEnumUpperPV' has name 'GREAT_UPPER_PV'"
-        in messages
-    )
-    assert (
-        "Permissible value of Enum 'GoodEnumBadUpperPV' has name 'GOOD_UPPER_PV'"
-        in messages
-    )
+    assert "Permissible value of Enum 'GoodEnumUpperPV' has name 'GOOD_UPPER_PV'" in messages
+    assert "Permissible value of Enum 'GoodEnumUpperPV' has name 'GREAT_UPPER_PV'" in messages
+    assert "Permissible value of Enum 'GoodEnumBadUpperPV' has name 'GOOD_UPPER_PV'" in messages
     assert "Enum has name 'bad_enum'" in messages
 
 
@@ -129,16 +108,7 @@ def test_standard_naming_class_pattern(schema_view):
     assert "Slot has name 'BadSlot'" in messages
     assert "Slot has name 'worse slot'" in messages
     assert "Permissible value of Enum 'GoodEnumWithBadPV' has name 'Bad_PV'" in messages
-    assert (
-        "Permissible value of Enum 'GoodEnumUpperPV' has name 'GOOD_UPPER_PV'"
-        in messages
-    )
-    assert (
-        "Permissible value of Enum 'GoodEnumUpperPV' has name 'GREAT_UPPER_PV'"
-        in messages
-    )
-    assert (
-        "Permissible value of Enum 'GoodEnumBadUpperPV' has name 'GOOD_UPPER_PV'"
-        in messages
-    )
+    assert "Permissible value of Enum 'GoodEnumUpperPV' has name 'GOOD_UPPER_PV'" in messages
+    assert "Permissible value of Enum 'GoodEnumUpperPV' has name 'GREAT_UPPER_PV'" in messages
+    assert "Permissible value of Enum 'GoodEnumBadUpperPV' has name 'GOOD_UPPER_PV'" in messages
     assert "Enum has name 'bad_enum'" in messages
