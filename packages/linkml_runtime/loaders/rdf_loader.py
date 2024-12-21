@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Union, TextIO, Optional, Type, List
 
 from hbreader import FileInfo
@@ -20,7 +21,7 @@ class RDFLoader(Loader):
         return self.load(*args, **kwargs)
 
 
-    def load(self, source: Union[str, TextIO, Graph], target_class: Type[Union[BaseModel, YAMLRoot]], *, base_dir: Optional[str] = None,
+    def load(self, source: Union[str, TextIO, Graph, Path], target_class: Type[Union[BaseModel, YAMLRoot]], *, base_dir: Optional[str] = None,
              contexts: CONTEXTS_PARAM_TYPE = None, fmt: Optional[str] = 'turtle',
              metadata: Optional[FileInfo] = None) -> Union[BaseModel, YAMLRoot]:
         """
@@ -84,6 +85,11 @@ class RDFLoader(Loader):
             jsonld_str = source.serialize(format='json-ld', indent=4)
             source = json.loads(jsonld_str)
             fmt = 'json-ld'
+
+        # see https://github.com/linkml/linkml/issues/2458, this works around a limitation in hbreader
+        print(f"source: {source}")
+        if isinstance(source, Path):
+            source = str(source.resolve())
 
         # While we may want to allow full SSL verification at some point, the general philosophy is that content forgery
         # is not going to be a serious problem.

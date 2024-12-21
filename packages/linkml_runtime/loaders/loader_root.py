@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from pathlib import Path, PosixPath
 from typing import TextIO, Union, Optional, Callable, Dict, Type, Any, List
 from logging import getLogger
 
@@ -83,7 +84,7 @@ class Loader(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def load_any(self, source: Union[str, dict, TextIO], target_class: Type[Union[BaseModel, YAMLRoot]], *, base_dir: Optional[str] = None,
+    def load_any(self, source: Union[str, dict, TextIO, PosixPath], target_class: Type[Union[BaseModel, YAMLRoot]], *, base_dir: Optional[str] = None,
              metadata: Optional[FileInfo] = None, **_) -> Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]:
         """
         Load source as an instance of target_class, or list of instances of target_class
