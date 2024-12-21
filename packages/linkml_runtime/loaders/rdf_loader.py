@@ -21,7 +21,7 @@ class RDFLoader(Loader):
         return self.load(*args, **kwargs)
 
 
-    def load(self, source: Union[str, TextIO, Graph, Path], target_class: Type[Union[BaseModel, YAMLRoot]], *, base_dir: Optional[str] = None,
+    def load(self, source: Union[str, TextIO, Graph], target_class: Type[Union[BaseModel, YAMLRoot]], *, base_dir: Optional[str] = None,
              contexts: CONTEXTS_PARAM_TYPE = None, fmt: Optional[str] = 'turtle',
              metadata: Optional[FileInfo] = None) -> Union[BaseModel, YAMLRoot]:
         """
