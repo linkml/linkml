@@ -203,6 +203,9 @@ class DocGenerator(Generator):
             "diagram_type": self.diagram_type.value if self.diagram_type else None,
             "include_top_level_diagram": self.include_top_level_diagram,
         }
+        self.logger.debug("Validating ranges")
+        for slot in sv.all_slots():
+            self.inject_slot_info(slot)
         self.logger.debug("Processing Index")
         template = self._get_template("index")
         out_str = template.render(gen=self, schema=sv.schema, schemaview=sv, **template_vars)
