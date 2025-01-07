@@ -1,43 +1,9 @@
-import pytest
 from pathlib import Path
 
-from jinja2.filters import do_map
+import pytest
+from click.testing import CliRunner
 from linkml_runtime.utils.schemaview import SchemaView
-from linkml.generators.dbmlgen import DBMLGenerator
-
-
-
-@pytest.fixture
-def example_schema() -> SchemaView:
-    """
-    Create a temporary LinkML schema YAML file for testing.
-    """
-    schema_content = """
-    id: example_schema
-    name: ExampleSchema
-    classes:
-      Person:
-        attributes:
-          id:
-            identifier: true
-            range: string
-          name:
-            required: true
-            range: string
-          address:
-            range: Address
-      Address:
-        attributes:
-          id:
-            identifier: true
-            range: string
-          city:
-            range: string
-          country:
-            range: string
-    """
-    sv = SchemaView(schema_content)
-    return sv
+from linkml.generators.dbmlgen import DBMLGenerator, cli
 
 
 def test_linkml_to_dbml_generator(input_path, tmp_path):
@@ -52,5 +18,16 @@ def test_linkml_to_dbml_generator(input_path, tmp_path):
 
     # Generate DBML
     dbml_output = generator.serialize()
-
     assert dbml_output.startswith("// DBML generated from LinkML schema\n")
+    assert "Table Organization" in dbml_output
+    assert "Table Employee" in dbml_output
+    assert """Table Organization {
+id varchar [not null, primary key]""" in dbml_output
+    assert "Ref: Organization.has_boss > Manager.id" in dbml_output
+
+def test_cli_generate_dbml_to_stdout(input_path):
+    """
+    Test the CLI to generate DBML and print to stdout.
+    """
+    runner = CliRunner()
+    result = runner.invoke(cli, ["--schema", str(input_path("organization.yaml"))])

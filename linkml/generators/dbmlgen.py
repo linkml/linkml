@@ -2,7 +2,7 @@ import logging
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.utils.formatutils import camelcase, underscore
-
+import click
 
 def _map_range_to_dbml_type(range_name: str) -> str:
     """
@@ -128,3 +128,39 @@ class DBMLGenerator(Generator):
         return "\n".join(relationships)
 
 
+# CLI Definition
+@click.command()
+@click.option(
+    "--schema",
+    "-s",
+    required=True,
+    type=click.Path(exists=True, dir_okay=False, file_okay=True),
+    help="Path to the LinkML schema YAML file",
+)
+@click.option(
+    "--output",
+    "-o",
+    required=False,
+    type=click.Path(dir_okay=False, writable=True),
+    help="Path to save the generated DBML file. If not specified, DBML will be printed to stdout.",
+)
+def cli(schema, output):
+    """
+    CLI for LinkML to DBML generator.
+    """
+    generator = DBMLGenerator(schema)
+
+    # Generate the DBML
+    dbml_output = generator.serialize()
+
+    # Save to file or print to stdout
+    if output:
+        with open(output, "w", encoding="utf-8") as f:
+            f.write(dbml_output)
+        click.echo(f"DBML has been saved to {output}")
+    else:
+        click.echo(dbml_output)
+
+
+if __name__ == "__main__":
+    cli()
