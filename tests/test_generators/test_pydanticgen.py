@@ -1414,7 +1414,7 @@ None"""
 
 def test_arrays_anyshape():
     """
-    Test anyshape class itself
+    AnyShapeArray should validate any list with the specified dtype
     """
 
     class MyModel(BaseModel):
@@ -1426,6 +1426,62 @@ def test_arrays_anyshape():
     with pytest.raises(ValidationError):
         arr = np.random.random((2, 5, 3))
         _ = MyModel(array=arr.tolist())
+
+
+@pytest.mark.parametrize("dtype", [int, float, str])
+def test_arrays_anyshape_anytype(dtype):
+    """
+    Without specifying a type, we should validate against any dtype
+    """
+
+    class MyModel(BaseModel):
+        array: AnyShapeArray
+
+    arr = np.ones((2, 4, 5, 3, 2), dtype=dtype)
+    _ = MyModel(array=arr.tolist())
+
+
+def test_arrays_anyshape_union():
+    """
+    Anyshape arrays can validate a type union
+    """
+
+    class MyModel(BaseModel):
+        array: AnyShapeArray[Union[int, float]]
+
+    arr = np.ones((2, 4, 5, 3, 2), dtype=int)
+    _ = MyModel(array=arr.tolist())
+
+    arr = np.random.random((2, 5, 3))
+    _ = MyModel(array=arr.tolist())
+
+    with pytest.raises(ValidationError):
+        arr = np.ones((2, 4, 5, 3, 2), dtype=str)
+        _ = MyModel(array=arr.tolist())
+
+
+@pytest.mark.parametrize(
+    "dtype,expected",
+    ((None, [{}]), (int, [{"type": "integer"}]), (Union[int, float], [{"type": "integer"}, {"type": "number"}])),
+)
+def test_arrays_anyshape_json_schema(dtype, expected):
+    if dtype is None:
+
+        class MyModel(BaseModel):
+            array: AnyShapeArray
+
+    else:
+
+        class MyModel(BaseModel):
+            array: AnyShapeArray[dtype]
+
+    schema = MyModel.model_json_schema()
+    array_ref = schema["properties"]["array"]["items"]["$ref"].split("/")[-1]
+    assert "any-shape-array" in array_ref
+    assert "anyOf" in schema["$defs"][array_ref]
+    anyOf = schema["$defs"][array_ref]["anyOf"]
+    assert anyOf[0] == {"items": {"$ref": f"#/$defs/{array_ref}"}, "type": "array"}
+    assert anyOf[1:] == expected
 
 
 # --------------------------------------------------
