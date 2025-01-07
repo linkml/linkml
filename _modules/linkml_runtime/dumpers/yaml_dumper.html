@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
         <title>linkml_runtime.dumpers.yaml_dumper - linkml documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
@@ -343,17 +343,17 @@
         </div>
         <article role="main">
           <h1>Source code for linkml_runtime.dumpers.yaml_dumper</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">yaml</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 
-<span class="kn">from</span> <span class="nn">linkml_runtime.dumpers.dumper_root</span> <span class="kn">import</span> <span class="n">Dumper</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">remove_empty_items</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.dumpers.dumper_root</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dumper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">remove_empty_items</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.yamlutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">YAMLRoot</span>
 
-<div class="viewcode-block" id="YAMLDumper"><a class="viewcode-back" href="../../../developers/loaders-and-dumpers.html#linkml_runtime.dumpers.YAMLDumper">[docs]</a><span class="k">class</span> <span class="nc">YAMLDumper</span><span class="p">(</span><span class="n">Dumper</span><span class="p">):</span>
+<div class="viewcode-block" id="YAMLDumper"><a class="viewcode-back" href="../../../developers/loaders-and-dumpers.html#linkml_runtime.dumpers.YAMLDumper">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">YAMLDumper</span><span class="p">(</span><span class="n">Dumper</span><span class="p">):</span>
 
-<div class="viewcode-block" id="YAMLDumper.dumps"><a class="viewcode-back" href="../../../developers/loaders-and-dumpers.html#linkml_runtime.dumpers.YAMLDumper.dumps">[docs]</a>    <span class="k">def</span> <span class="nf">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">YAMLRoot</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="YAMLDumper.dumps"><a class="viewcode-back" href="../../../developers/loaders-and-dumpers.html#linkml_runtime.dumpers.YAMLDumper.dumps">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">YAMLRoot</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Return element formatted as a YAML string &quot;&quot;&quot;</span>
         <span class="c1"># Internal note: remove_empty_items will also convert Decimals to int/float;</span>
         <span class="c1"># this is necessary until https://github.com/yaml/pyyaml/pull/372 is merged</span>

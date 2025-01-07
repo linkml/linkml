@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
         <title>Porting LinkML tools to other programming languages - linkml documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
@@ -397,7 +397,7 @@ tooling in the host language.</p>
 that works directly from LinkML yaml files. All modern languages have
 support for YAML.</p>
 <p>For example, in python, to access all attributes of a class:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_identifier_slot_name</span><span class="p">(</span><span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_identifier_slot_name</span><span class="p">(</span><span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">a_name</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">schema</span><span class="p">[</span><span class="s2">&quot;classes&quot;</span><span class="p">][</span><span class="n">class_name</span><span class="p">][</span><span class="s2">&quot;attributes&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="s2">&quot;identifier&quot;</span><span class="p">]:</span>
           <span class="k">return</span> <span class="n">a_name</span>
@@ -471,59 +471,59 @@ sure to use the newer style SchemaView generators.</p>
 the dataclasses framework, which is part of the Python core. These
 classes are not standalone however. Let’s examine the header of
 generated classes:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">jsonasobj2</span> <span class="kn">import</span> <span class="n">JsonObj</span><span class="p">,</span> <span class="n">as_dict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Any</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">time</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">EnumDefinition</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">,</span> <span class="n">PvFormulaOptions</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jsonasobj2</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonObj</span><span class="p">,</span> <span class="n">as_dict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnumDefinition</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">,</span> <span class="n">PvFormulaOptions</span>
 
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.slot</span> <span class="kn">import</span> <span class="n">Slot</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.metamodelcore</span> <span class="kn">import</span> <span class="n">empty_list</span><span class="p">,</span> <span class="n">empty_dict</span><span class="p">,</span> <span class="n">bnode</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">extended_str</span><span class="p">,</span> <span class="n">extended_float</span><span class="p">,</span> <span class="n">extended_int</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.dataclass_extensions_376</span> <span class="kn">import</span> <span class="n">dataclasses_init_fn_with_kwargs</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span><span class="p">,</span> <span class="n">sfx</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.enumerations</span> <span class="kn">import</span> <span class="n">EnumDefinitionImpl</span>
-<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">URIRef</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.curienamespace</span> <span class="kn">import</span> <span class="n">CurieNamespace</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.types</span> <span class="kn">import</span> <span class="n">Boolean</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">Uriorcurie</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.metamodelcore</span> <span class="kn">import</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">URIorCURIE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.slot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Slot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.metamodelcore</span><span class="w"> </span><span class="kn">import</span> <span class="n">empty_list</span><span class="p">,</span> <span class="n">empty_dict</span><span class="p">,</span> <span class="n">bnode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.yamlutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">extended_str</span><span class="p">,</span> <span class="n">extended_float</span><span class="p">,</span> <span class="n">extended_int</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.dataclass_extensions_376</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclasses_init_fn_with_kwargs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span><span class="p">,</span> <span class="n">sfx</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.enumerations</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnumDefinitionImpl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rdflib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">URIRef</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.curienamespace</span><span class="w"> </span><span class="kn">import</span> <span class="n">CurieNamespace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Boolean</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">Uriorcurie</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.metamodelcore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">URIorCURIE</span>
 </pre></div>
 </div>
 <p>Many of these are part of Python:</p>
 <p>The standard typing library is used for type hints:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Any</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Any</span>
 </pre></div>
 </div>
 <p>the standard python dataclasses library is used:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
 <span class="o">...</span>
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">NamedThing</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Person</span><span class="p">(</span><span class="n">NamedThing</span><span class="p">):</span>
    <span class="o">...</span>
 </pre></div>
 </div>
 <p>Others are dependencies on either the linkml-runtime itself or on external libraries</p>
 <p>All classes inherit from YAMLRoot which itself inherits from JsonObj in jsonasonj2:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">extended_str</span><span class="p">,</span> <span class="n">extended_float</span><span class="p">,</span> <span class="n">extended_int</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.yamlutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">extended_str</span><span class="p">,</span> <span class="n">extended_float</span><span class="p">,</span> <span class="n">extended_int</span>
 <span class="o">...</span>
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">NamedThing</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NamedThing</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
    <span class="o">...</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">as_dict</span></code> method from jsonasobj2 provides convenient methods for normalizing inputs to initialization routines:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jsonasobj2</span> <span class="kn">import</span> <span class="n">JsonObj</span><span class="p">,</span> <span class="n">as_dict</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jsonasobj2</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonObj</span><span class="p">,</span> <span class="n">as_dict</span>
 <span class="o">...</span>
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">MedicalEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MedicalEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="o">...</span>
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="o">...</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">diagnosis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diagnosis</span><span class="p">,</span> <span class="n">DiagnosisConcept</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">diagnosis</span> <span class="o">=</span> <span class="n">DiagnosisConcept</span><span class="p">(</span><span class="o">**</span><span class="n">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diagnosis</span><span class="p">))</span>
@@ -531,11 +531,11 @@ generated classes:</p>
 </pre></div>
 </div>
 <p>rdflib.URIRef is used to allow for introspection to retrieve the URI of any LinkML class at runtime:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">URIRef</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">rdflib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">URIRef</span>
 <span class="o">...</span>
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">NamedThing</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Person</span><span class="p">(</span><span class="n">NamedThing</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A person (alive, dead, undead, or fictional).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -548,12 +548,12 @@ generated classes:</p>
 </pre></div>
 </div>
 <p>Additionally, if parts of the metamodel are imported - such as for <code class="docutils literal notranslate"><span class="pre">linkml:types</span></code> this generates a corresponding python import:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.types</span> <span class="kn">import</span> <span class="n">Boolean</span><span class="p">,</span> <span class="n">Date</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.metamodelcore</span> <span class="kn">import</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">XSDDate</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Boolean</span><span class="p">,</span> <span class="n">Date</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.metamodelcore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">XSDDate</span>
 <span class="o">...</span>
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Event</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="n">started_at_time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">XSDDate</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
@@ -561,17 +561,17 @@ generated classes:</p>
 <p>if your schema is modular and imports other schemas, the relevant import
 statements are added</p>
 <p>the python generator will also generate subclasses of builtin Python strings - these are useful for non-inlined references to type the reference slot:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">extended_str</span><span class="p">,</span> <span class="n">extended_float</span><span class="p">,</span> <span class="n">extended_int</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.yamlutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">extended_str</span><span class="p">,</span> <span class="n">extended_float</span><span class="p">,</span> <span class="n">extended_int</span>
 
-<span class="k">class</span> <span class="nc">NamedThingId</span><span class="p">(</span><span class="n">extended_str</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NamedThingId</span><span class="p">(</span><span class="n">extended_str</span><span class="p">):</span>
     <span class="k">pass</span>
 
-<span class="k">class</span> <span class="nc">PersonId</span><span class="p">(</span><span class="n">NamedThingId</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PersonId</span><span class="p">(</span><span class="n">NamedThingId</span><span class="p">):</span>
     <span class="k">pass</span>
 
 <span class="o">...</span>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">FamilialRelationship</span><span class="p">(</span><span class="n">Relationship</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FamilialRelationship</span><span class="p">(</span><span class="n">Relationship</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="nb">type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;FamilialRelationshipType&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">related_to</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PersonId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -624,8 +624,8 @@ or validators that work with existing structures.</p>
 <p>Depending on the approach you took in Step 1, this may also include an approach to instantiate this target language datamodel from YAML or JSON.</p>
 <p>(this will vary tremendously with the target language - for example, for java we are relying on Jackson annotations)</p>
 <p>If you have that, then you should have the ability to do the equivalent of:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml_runtime.loaders</span> <span class="kn">import</span> <span class="n">yaml_loader</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">SchemaDefinition</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.loaders</span><span class="w"> </span><span class="kn">import</span> <span class="n">yaml_loader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaDefinition</span>
 
 <span class="n">schema</span> <span class="o">=</span> <span class="n">yaml_loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;my-schema.yaml&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">SchemaDefinition</span><span class="p">)</span>
 <span class="c1"># now do things with the schema</span>

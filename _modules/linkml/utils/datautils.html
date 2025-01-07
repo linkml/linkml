@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
         <title>linkml.utils.datautils - linkml documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
@@ -343,17 +343,17 @@
         </div>
         <article role="main">
           <h1>Source code for linkml.utils.datautils</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">linkml_runtime.dumpers</span> <span class="kn">import</span> <span class="n">CSVDumper</span><span class="p">,</span> <span class="n">JSONDumper</span><span class="p">,</span> <span class="n">RDFLibDumper</span><span class="p">,</span> <span class="n">TSVDumper</span><span class="p">,</span> <span class="n">YAMLDumper</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">SlotDefinitionName</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.loaders</span> <span class="kn">import</span> <span class="n">CSVLoader</span><span class="p">,</span> <span class="n">JSONLoader</span><span class="p">,</span> <span class="n">RDFLibLoader</span><span class="p">,</span> <span class="n">TSVLoader</span><span class="p">,</span> <span class="n">YAMLLoader</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.loaders.loader_root</span> <span class="kn">import</span> <span class="n">Loader</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.schemaview</span> <span class="kn">import</span> <span class="n">SchemaView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.dumpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">CSVDumper</span><span class="p">,</span> <span class="n">JSONDumper</span><span class="p">,</span> <span class="n">RDFLibDumper</span><span class="p">,</span> <span class="n">TSVDumper</span><span class="p">,</span> <span class="n">YAMLDumper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">SlotDefinitionName</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.loaders</span><span class="w"> </span><span class="kn">import</span> <span class="n">CSVLoader</span><span class="p">,</span> <span class="n">JSONLoader</span><span class="p">,</span> <span class="n">RDFLibLoader</span><span class="p">,</span> <span class="n">TSVLoader</span><span class="p">,</span> <span class="n">YAMLLoader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.loaders.loader_root</span><span class="w"> </span><span class="kn">import</span> <span class="n">Loader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.schemaview</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
 
-<span class="kn">from</span> <span class="nn">linkml.generators.jsonldcontextgen</span> <span class="kn">import</span> <span class="n">ContextGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.jsonldcontextgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContextGenerator</span>
 
 <span class="n">dumpers_loaders</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;yml&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">YAMLDumper</span><span class="p">,</span> <span class="n">YAMLLoader</span><span class="p">),</span>
@@ -372,7 +372,7 @@
 <span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">_get_format</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">specified_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_format</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">specified_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">specified_format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -391,27 +391,27 @@
     <span class="k">return</span> <span class="n">specified_format</span>
 
 
-<span class="k">def</span> <span class="nf">_is_xsv</span><span class="p">(</span><span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_xsv</span><span class="p">(</span><span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;csv&quot;</span> <span class="ow">or</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;tsv&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">_is_rdf_format</span><span class="p">(</span><span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_rdf_format</span><span class="p">(</span><span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;rdf&quot;</span> <span class="ow">or</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;ttl&quot;</span> <span class="ow">or</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;turtle&quot;</span> <span class="ow">or</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;json-ld&quot;</span>
 
 
-<div class="viewcode-block" id="get_loader"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.datautils.get_loader">[docs]</a><span class="k">def</span> <span class="nf">get_loader</span><span class="p">(</span><span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Loader</span><span class="p">:</span>
+<div class="viewcode-block" id="get_loader"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.datautils.get_loader">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_loader</span><span class="p">(</span><span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Loader</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">dumpers_loaders</span><span class="p">[</span><span class="n">fmt</span><span class="p">][</span><span class="mi">1</span><span class="p">]()</span></div>
 
 
-<div class="viewcode-block" id="get_dumper"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.datautils.get_dumper">[docs]</a><span class="k">def</span> <span class="nf">get_dumper</span><span class="p">(</span><span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Loader</span><span class="p">:</span>
+<div class="viewcode-block" id="get_dumper"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.datautils.get_dumper">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_dumper</span><span class="p">(</span><span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Loader</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">dumpers_loaders</span><span class="p">[</span><span class="n">fmt</span><span class="p">][</span><span class="mi">0</span><span class="p">]()</span></div>
 
 
-<span class="k">def</span> <span class="nf">_get_context</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_context</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">ContextGenerator</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="infer_root_class"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.datautils.infer_root_class">[docs]</a><span class="k">def</span> <span class="nf">infer_root_class</span><span class="p">(</span><span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]:</span>
+<div class="viewcode-block" id="infer_root_class"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.datautils.infer_root_class">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">infer_root_class</span><span class="p">(</span><span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Infer the class that should be at the root of the object tree</span>
 
@@ -447,7 +447,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="infer_index_slot"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.datautils.infer_index_slot">[docs]</a><span class="k">def</span> <span class="nf">infer_index_slot</span><span class="p">(</span><span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">root_class</span><span class="p">:</span> <span class="n">ClassDefinitionName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]:</span>
+<div class="viewcode-block" id="infer_index_slot"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.datautils.infer_index_slot">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">infer_index_slot</span><span class="p">(</span><span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">root_class</span><span class="p">:</span> <span class="n">ClassDefinitionName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]:</span>
     <span class="n">index_slots</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_slots</span><span class="p">(</span><span class="n">root_class</span><span class="p">):</span>
         <span class="n">slot</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">sn</span><span class="p">,</span> <span class="n">root_class</span><span class="p">)</span>

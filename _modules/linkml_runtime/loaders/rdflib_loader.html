@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
         <title>linkml_runtime.loaders.rdflib_loader - linkml documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
@@ -343,25 +343,25 @@
         </div>
         <article role="main">
           <h1>Source code for linkml_runtime.loaders.rdflib_loader</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">urllib</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Set</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">urllib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Set</span>
 
-<span class="kn">from</span> <span class="nn">curies</span> <span class="kn">import</span> <span class="n">Converter</span>
-<span class="kn">from</span> <span class="nn">hbreader</span> <span class="kn">import</span> <span class="n">FileInfo</span>
-<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">URIRef</span>
-<span class="kn">from</span> <span class="nn">rdflib.term</span> <span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">BNode</span><span class="p">,</span> <span class="n">Literal</span>
-<span class="kn">from</span> <span class="nn">rdflib.namespace</span> <span class="kn">import</span> <span class="n">RDF</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">curies</span><span class="w"> </span><span class="kn">import</span> <span class="n">Converter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hbreader</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileInfo</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rdflib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">URIRef</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rdflib.term</span><span class="w"> </span><span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">BNode</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rdflib.namespace</span><span class="w"> </span><span class="kn">import</span> <span class="n">RDF</span>
 
-<span class="kn">from</span> <span class="nn">linkml_runtime</span> <span class="kn">import</span> <span class="n">MappingError</span><span class="p">,</span> <span class="n">DataNotFoundError</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">TypeDefinition</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">,</span> <span class="n">ClassDefinition</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.loaders.loader_root</span> <span class="kn">import</span> <span class="n">Loader</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">underscore</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.schemaview</span> <span class="kn">import</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">SlotDefinition</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">MappingError</span><span class="p">,</span> <span class="n">DataNotFoundError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">TypeDefinition</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">,</span> <span class="n">ClassDefinition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.loaders.loader_root</span><span class="w"> </span><span class="kn">import</span> <span class="n">Loader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">underscore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.schemaview</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">SlotDefinition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.yamlutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">YAMLRoot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -370,16 +370,16 @@
 <span class="n">ANYDICT</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Pointer</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Pointer</span><span class="p">:</span>
     <span class="n">obj</span><span class="p">:</span> <span class="nb">str</span>
 
-<div class="viewcode-block" id="RDFLibLoader"><a class="viewcode-back" href="../../../developers/loaders-and-dumpers.html#linkml_runtime.loaders.RDFLibLoader">[docs]</a><span class="k">class</span> <span class="nc">RDFLibLoader</span><span class="p">(</span><span class="n">Loader</span><span class="p">):</span>
+<div class="viewcode-block" id="RDFLibLoader"><a class="viewcode-back" href="../../../developers/loaders-and-dumpers.html#linkml_runtime.loaders.RDFLibLoader">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RDFLibLoader</span><span class="p">(</span><span class="n">Loader</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Loads objects from rdflib Graphs into the python target_class structure</span>
 
 <span class="sd">    Note: this is a more complete replacement for rdf_loader</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">from_rdf_graph</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_rdf_graph</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span>
         <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span>
         <span class="n">target_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">YAMLRoot</span><span class="p">]],</span>
@@ -532,7 +532,7 @@
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  Unprocessed: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unprocessed triples: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">unprocessed_triples</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="c1"># Step 2: replace inline pointers with object dicts</span>
-        <span class="k">def</span> <span class="nf">repl</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">repl</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Pointer</span><span class="p">):</span>
                 <span class="n">v2</span> <span class="o">=</span> <span class="n">obj_map</span><span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">obj</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">v2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -560,7 +560,7 @@
         <span class="c1"># Final step: translate dicts into instances of target_class</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">target_class</span><span class="p">(</span><span class="o">**</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">root_dicts</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">_get_id_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">VALID_SUBJECT</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">cn</span><span class="p">:</span> <span class="n">ClassDefinitionName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ANYDICT</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_id_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">VALID_SUBJECT</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">cn</span><span class="p">:</span> <span class="n">ClassDefinitionName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ANYDICT</span><span class="p">:</span>
         <span class="n">id_slot</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">BNode</span><span class="p">):</span>
             <span class="n">id_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uri_to_id</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">id_slot</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">)</span>
@@ -573,14 +573,14 @@
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unexpected blank node </span><span class="si">{</span><span class="n">node</span><span class="si">}</span><span class="s1">, type </span><span class="si">{</span><span class="n">cn</span><span class="si">}</span><span class="s1"> expects </span><span class="si">{</span><span class="n">id_slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> identifier&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">{}</span>
 
-    <span class="k">def</span> <span class="nf">_uri_to_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">VALID_SUBJECT</span><span class="p">,</span> <span class="n">id_slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_uri_to_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">VALID_SUBJECT</span><span class="p">,</span> <span class="n">id_slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">is_slot_percent_encoded</span><span class="p">(</span><span class="n">id_slot</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">unquote</span><span class="p">(</span><span class="n">node</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">schemaview</span><span class="o">.</span><span class="n">namespaces</span><span class="p">()</span><span class="o">.</span><span class="n">_base</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">namespaces</span><span class="p">()</span><span class="o">.</span><span class="n">curie_for</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="RDFLibLoader.load"><a class="viewcode-back" href="../../../developers/loaders-and-dumpers.html#linkml_runtime.loaders.RDFLibLoader.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
+<div class="viewcode-block" id="RDFLibLoader.load"><a class="viewcode-back" href="../../../developers/loaders-and-dumpers.html#linkml_runtime.loaders.RDFLibLoader.load">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">source</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Graph</span><span class="p">],</span>
         <span class="n">target_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">YAMLRoot</span><span class="p">]],</span> <span class="o">*</span><span class="p">,</span>
@@ -618,10 +618,10 @@
             <span class="k">raise</span> <span class="n">DataNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span><span class="si">}</span><span class="s1"> of type </span><span class="si">{</span><span class="n">target_class</span><span class="si">}</span><span class="s1"> from source, expected exactly 1&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="RDFLibLoader.loads"><a class="viewcode-back" href="../../../developers/loaders-and-dumpers.html#linkml_runtime.loaders.RDFLibLoader.loads">[docs]</a>    <span class="k">def</span> <span class="nf">loads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">YAMLRoot</span><span class="p">]:</span>
+<div class="viewcode-block" id="RDFLibLoader.loads"><a class="viewcode-back" href="../../../developers/loaders-and-dumpers.html#linkml_runtime.loaders.RDFLibLoader.loads">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">loads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">YAMLRoot</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RDFLibLoader.load_any"><a class="viewcode-back" href="../../../developers/loaders-and-dumpers.html#linkml_runtime.loaders.RDFLibLoader.load_any">[docs]</a>    <span class="k">def</span> <span class="nf">load_any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">]]:</span>
+<div class="viewcode-block" id="RDFLibLoader.load_any"><a class="viewcode-back" href="../../../developers/loaders-and-dumpers.html#linkml_runtime.loaders.RDFLibLoader.load_any">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">load_any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">]]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 
 

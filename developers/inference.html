@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
         <title>Inferring Missing Values - linkml documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
@@ -369,8 +369,8 @@ specifies how to calculate the value of a slot, as demonstrated here:</p>
 </pre></div>
 </div>
 <p>The following code will populate missing values:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml_runtime.utils.inference_utils</span> <span class="kn">import</span> <span class="n">infer_all_slot_values</span>
-<span class="kn">from</span> <span class="nn">.personinfo</span> <span class="n">infer</span> <span class="n">Person</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.inference_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">infer_all_slot_values</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.personinfo</span> <span class="n">infer</span> <span class="n">Person</span>
 
 <span class="n">p</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="n">age_in_years</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
 <span class="n">infer_all_slot_values</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">schemaview</span><span class="o">=</span><span class="n">sv</span><span class="p">)</span>
@@ -396,8 +396,8 @@ can be used:</p>
 </pre></div>
 </div>
 <p>The following code will populate the full address:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml_runtime.utils.inference_utils</span> <span class="kn">import</span> <span class="n">infer_all_slot_values</span>
-<span class="kn">from</span> <span class="nn">.personinfo</span> <span class="n">infer</span> <span class="n">Address</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.inference_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">infer_all_slot_values</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.personinfo</span> <span class="n">infer</span> <span class="n">Address</span>
 
 <span class="n">a</span> <span class="o">=</span> <span class="n">Address</span><span class="p">(</span><span class="n">street</span><span class="o">=</span><span class="s2">&quot;1 Oak street&quot;</span><span class="p">,</span> <span class="n">city</span><span class="o">=</span><span class="s2">&quot;Oaktown&quot;</span><span class="p">)</span>
 <span class="n">infer_all_slot_values</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">schemaview</span><span class="o">=</span><span class="n">sv</span><span class="p">)</span>

@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
         <title>linkml.generators.common.build - linkml documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/plot_directive.css" />
@@ -349,47 +349,47 @@
 <span class="sd">(see PydanticGenerator for example implementation and use)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">dataclasses</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
 
 
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ClassDefinition</span><span class="p">,</span>
     <span class="n">EnumDefinition</span><span class="p">,</span>
     <span class="n">SchemaDefinition</span><span class="p">,</span>
     <span class="n">SlotDefinition</span><span class="p">,</span>
     <span class="n">TypeDefinition</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">GetCoreSchemaHandler</span>
-<span class="kn">from</span> <span class="nn">pydantic_core</span> <span class="kn">import</span> <span class="n">core_schema</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">GetCoreSchemaHandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_core</span><span class="w"> </span><span class="kn">import</span> <span class="n">core_schema</span>
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;BuildResult&quot;</span><span class="p">,</span> <span class="n">covariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="SkipValidation"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.SkipValidation">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">()</span>
-<span class="k">class</span> <span class="nc">SkipValidation</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SkipValidation</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A version of :class:`pydantic.SkipValidation` that actually skips generating the</span>
 <span class="sd">    schema for the field entirely - useful for including types that don&#39;t need to be validated</span>
 <span class="sd">    like the metamodel dataclasses</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__class_getitem__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__class_getitem__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">item</span><span class="p">,</span> <span class="n">SkipValidation</span><span class="p">()]</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">__get_pydantic_core_schema__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="n">GetCoreSchemaHandler</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">CoreSchema</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__get_pydantic_core_schema__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="n">GetCoreSchemaHandler</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">CoreSchema</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">any_schema</span><span class="p">()</span>
 
     <span class="fm">__hash__</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__hash__</span></div>
 
 
-<div class="viewcode-block" id="BuildResult"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.BuildResult">[docs]</a><span class="k">class</span> <span class="nc">BuildResult</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildResult"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.BuildResult">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BuildResult</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The result of any build phase for any linkML object</span>
 
@@ -401,19 +401,19 @@
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BuildResult.merge"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.BuildResult.merge">[docs]</a>    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<div class="viewcode-block" id="BuildResult.merge"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.BuildResult.merge">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build results should have some means of merging results of a like kind</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This build result doesn&#39;t know how to merge!&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="SchemaResult"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.SchemaResult">[docs]</a><span class="k">class</span> <span class="nc">SchemaResult</span><span class="p">(</span><span class="n">BuildResult</span><span class="p">):</span>
+<div class="viewcode-block" id="SchemaResult"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.SchemaResult">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SchemaResult</span><span class="p">(</span><span class="n">BuildResult</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract results container for built schemas&quot;&quot;&quot;</span>
 
     <span class="n">source</span><span class="p">:</span> <span class="n">SkipValidation</span><span class="p">[</span><span class="n">SchemaDefinition</span><span class="p">]</span>
 
-<div class="viewcode-block" id="SchemaResult.merge"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.SchemaResult.merge">[docs]</a>    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<div class="viewcode-block" id="SchemaResult.merge"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.SchemaResult.merge">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        SchemaResults are special and don&#39;t need a merge method, since generating</span>
 <span class="sd">        multiple schemas at once is not common or expected behavior for a generator.</span>
@@ -421,31 +421,31 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;SchemaResult doesn&#39;t need a merge method, and none has been defined&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="ClassResult"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.ClassResult">[docs]</a><span class="k">class</span> <span class="nc">ClassResult</span><span class="p">(</span><span class="n">BuildResult</span><span class="p">):</span>
+<div class="viewcode-block" id="ClassResult"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.ClassResult">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ClassResult</span><span class="p">(</span><span class="n">BuildResult</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract results container for built classes&quot;&quot;&quot;</span>
 
     <span class="n">source</span><span class="p">:</span> <span class="n">SkipValidation</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="SlotResult"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.SlotResult">[docs]</a><span class="k">class</span> <span class="nc">SlotResult</span><span class="p">(</span><span class="n">BuildResult</span><span class="p">):</span>
+<div class="viewcode-block" id="SlotResult"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.SlotResult">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SlotResult</span><span class="p">(</span><span class="n">BuildResult</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract results container for built slots&quot;&quot;&quot;</span>
 
     <span class="n">source</span><span class="p">:</span> <span class="n">SkipValidation</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="TypeResult"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.TypeResult">[docs]</a><span class="k">class</span> <span class="nc">TypeResult</span><span class="p">(</span><span class="n">BuildResult</span><span class="p">):</span>
+<div class="viewcode-block" id="TypeResult"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.TypeResult">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TypeResult</span><span class="p">(</span><span class="n">BuildResult</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract results container for built types&quot;&quot;&quot;</span>
 
     <span class="n">source</span><span class="p">:</span> <span class="n">SkipValidation</span><span class="p">[</span><span class="n">TypeDefinition</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="EnumResult"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.EnumResult">[docs]</a><span class="k">class</span> <span class="nc">EnumResult</span><span class="p">(</span><span class="n">BuildResult</span><span class="p">):</span>
+<div class="viewcode-block" id="EnumResult"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.EnumResult">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EnumResult</span><span class="p">(</span><span class="n">BuildResult</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract results container for built enums&quot;&quot;&quot;</span>
 
     <span class="n">source</span><span class="p">:</span> <span class="n">SkipValidation</span><span class="p">[</span><span class="n">EnumDefinition</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="RangeResult"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.RangeResult">[docs]</a><span class="k">class</span> <span class="nc">RangeResult</span><span class="p">(</span><span class="n">BuildResult</span><span class="p">):</span>
+<div class="viewcode-block" id="RangeResult"><a class="viewcode-back" href="../../../../generators/common/build.html#linkml.generators.common.build.RangeResult">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RangeResult</span><span class="p">(</span><span class="n">BuildResult</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract results container for just the range part of a slot&quot;&quot;&quot;</span></div>
 </pre></div>
         </article>

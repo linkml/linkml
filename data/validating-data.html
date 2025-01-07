@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
         <title>Data Validation - linkml documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
@@ -368,7 +368,7 @@ of massive databases.</p>
 <section id="validation-in-python-code">
 <h3>Validation in Python code<a class="headerlink" href="#validation-in-python-code" title="Permalink to this heading">#</a></h3>
 <p>If you are writing your own Python code to perform validation the simplest approach is to use the <a class="reference internal" href="../code/validator.html#linkml.validator.validate" title="linkml.validator.validate"><code class="xref py py-func docutils literal notranslate"><span class="pre">linkml.validator.validate()</span></code></a> function. For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml.validator</span> <span class="kn">import</span> <span class="n">validate</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">linkml.validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate</span>
 
 <span class="n">instance</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;ORCID:1234&quot;</span><span class="p">,</span>
@@ -394,7 +394,7 @@ ORCID:5678,Lois Lane,33,555-555-1234
 </pre></div>
 </div>
 <p>Each row can be validated with:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml.validator</span> <span class="kn">import</span> <span class="n">validate_file</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">linkml.validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_file</span>
 
 <span class="n">report</span> <span class="o">=</span> <span class="n">validate_file</span><span class="p">(</span><span class="s2">&quot;people.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;personinfo.yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;Person&quot;</span><span class="p">)</span>
 </pre></div>
@@ -402,8 +402,8 @@ ORCID:5678,Lois Lane,33,555-555-1234
 <p>Under the hood, both of these functions use a strategy of generating a JSON Schema artifact from the LinkML schema and validating instances using a JSON Schema validator.</p>
 <p>While many LinkML constructs can be expressed in JSON Schema (which makes it a good default validation strategy), there are some features of LinkML not supported by JSON Schema. For more fine-grained control over the validation strategy use the <a class="reference internal" href="../code/validator.html#linkml.validator.Validator" title="linkml.validator.Validator"><code class="xref py py-class docutils literal notranslate"><span class="pre">linkml.validator.Validator</span></code></a> class. Using this class it is possible to mix JSON Schema validation with other strategies or forego it altogether.</p>
 <p>The key idea behind the <a class="reference internal" href="../code/validator.html#linkml.validator.Validator" title="linkml.validator.Validator"><code class="xref py py-class docutils literal notranslate"><span class="pre">linkml.validator.Validator</span></code></a> is that it does not do any validation itself. Instead, it simply orchestrates validation according to a set of validation plugins. In this example, the basic JSON Schema validation will happen (disallowing additional properties because of the <code class="docutils literal notranslate"><span class="pre">closed</span></code> option) as well as a validation that checks that recommended slots are populated:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml.validator</span> <span class="kn">import</span> <span class="n">Validator</span>
-<span class="kn">from</span> <span class="nn">linkml.validator.plugins</span> <span class="kn">import</span> <span class="n">JsonschemaValidationPlugin</span><span class="p">,</span> <span class="n">RecommendedSlotsPlugin</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">linkml.validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Validator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.validator.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonschemaValidationPlugin</span><span class="p">,</span> <span class="n">RecommendedSlotsPlugin</span>
 
 <span class="n">validator</span> <span class="o">=</span> <span class="n">Validator</span><span class="p">(</span>
     <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;personinfo.yaml&quot;</span><span class="p">,</span>
@@ -416,8 +416,8 @@ ORCID:5678,Lois Lane,33,555-555-1234
 </pre></div>
 </div>
 <p>This example only uses a validation strategy based on generating <a class="reference external" href="https://docs.pydantic.dev/latest/">Pydantic</a> models from the LinkML schema instead:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml.validator</span> <span class="kn">import</span> <span class="n">Validator</span>
-<span class="kn">from</span> <span class="nn">linkml.validator.plugins</span> <span class="kn">import</span> <span class="n">PydanticValidationPlugin</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">linkml.validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Validator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.validator.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">PydanticValidationPlugin</span>
 
 <span class="n">validator</span> <span class="o">=</span> <span class="n">Validator</span><span class="p">(</span>
     <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;personinfo.yaml&quot;</span><span class="p">,</span>
@@ -621,8 +621,8 @@ specify the full dotted name (e.g.
 $<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;{&quot;id&quot;:&quot;ORCID:1234&quot;,&quot;full_name&quot;:&quot;Clark Kent&quot;,&quot;age&quot;:32,&quot;phone&quot;:&quot;555-555-5555&quot;}&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>person.json
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">personinfo</span> <span class="kn">import</span> <span class="n">Person</span>
-<span class="kn">import</span> <span class="nn">json</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">personinfo</span><span class="w"> </span><span class="kn">import</span> <span class="n">Person</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;person.json&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">person_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>

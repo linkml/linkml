@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
         <title>linkml_runtime.utils.inference_utils - linkml documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
@@ -343,25 +343,25 @@
         </div>
         <article role="main">
           <h1>Source code for linkml_runtime.utils.inference_utils</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">field</span><span class="p">,</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Callable</span>
-<span class="kn">from</span> <span class="nn">jsonasobj2</span> <span class="kn">import</span> <span class="n">JsonObj</span><span class="p">,</span> <span class="n">items</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">field</span><span class="p">,</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jsonasobj2</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonObj</span><span class="p">,</span> <span class="n">items</span>
 
-<span class="kn">from</span> <span class="nn">linkml_runtime</span> <span class="kn">import</span> <span class="n">SchemaView</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">,</span> <span class="n">ClassDefinitionName</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.enumerations</span> <span class="kn">import</span> <span class="n">EnumDefinitionImpl</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.eval_utils</span> <span class="kn">import</span> <span class="n">eval_expr</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.walker_utils</span> <span class="kn">import</span> <span class="n">traverse_object_tree</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">,</span> <span class="n">ClassDefinitionName</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.enumerations</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnumDefinitionImpl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.eval_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">eval_expr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.walker_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">traverse_object_tree</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.yamlutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">YAMLRoot</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <span class="n">RESOLVE_FUNC</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span>
 
-<span class="k">def</span> <span class="nf">obj_as_dict_nonrecursive</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">resolve_function</span><span class="p">:</span> <span class="n">RESOLVE_FUNC</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">obj_as_dict_nonrecursive</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">resolve_function</span><span class="p">:</span> <span class="n">RESOLVE_FUNC</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Translates an object into a dict, for the purposes of input into formatted strings</span>
 
@@ -375,7 +375,7 @@
         <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
 <div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../../developers/inference.html#linkml_runtime.utils.inference_utils.Config">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Controls which inferences are performed</span>
 
@@ -389,7 +389,7 @@
     <span class="n">resolve_function</span><span class="p">:</span> <span class="n">RESOLVE_FUNC</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="Policy"><a class="viewcode-back" href="../../../developers/inference.html#linkml_runtime.utils.inference_utils.Policy">[docs]</a><span class="k">class</span> <span class="nc">Policy</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<div class="viewcode-block" id="Policy"><a class="viewcode-back" href="../../../developers/inference.html#linkml_runtime.utils.inference_utils.Policy">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Policy</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Policy for when inferred values differ from already set values</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -398,7 +398,7 @@
     <span class="n">KEEP</span> <span class="o">=</span> <span class="s2">&quot;keep&quot;</span></div>
 
 
-<span class="k">def</span> <span class="nf">generate_slot_value</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinitionName</span><span class="p">],</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_slot_value</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinitionName</span><span class="p">],</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span>
                         <span class="n">class_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                         <span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">())</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -437,7 +437,7 @@
     <span class="k">return</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="infer_slot_value"><a class="viewcode-back" href="../../../developers/inference.html#linkml_runtime.utils.inference_utils.infer_slot_value">[docs]</a><span class="k">def</span> <span class="nf">infer_slot_value</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinitionName</span><span class="p">],</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span>
+<div class="viewcode-block" id="infer_slot_value"><a class="viewcode-back" href="../../../developers/inference.html#linkml_runtime.utils.inference_utils.infer_slot_value">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">infer_slot_value</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinitionName</span><span class="p">],</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span>
                      <span class="n">class_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                      <span class="n">policy</span><span class="p">:</span> <span class="n">Policy</span> <span class="o">=</span> <span class="n">Policy</span><span class="o">.</span><span class="n">STRICT</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">()):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -469,7 +469,7 @@
             <span class="n">obj</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="infer_all_slot_values"><a class="viewcode-back" href="../../../developers/inference.html#linkml_runtime.utils.inference_utils.infer_all_slot_values">[docs]</a><span class="k">def</span> <span class="nf">infer_all_slot_values</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span>
+<div class="viewcode-block" id="infer_all_slot_values"><a class="viewcode-back" href="../../../developers/inference.html#linkml_runtime.utils.inference_utils.infer_all_slot_values">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">infer_all_slot_values</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span>
                           <span class="n">class_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                           <span class="n">policy</span><span class="p">:</span> <span class="n">Policy</span> <span class="o">=</span> <span class="n">Policy</span><span class="o">.</span><span class="n">STRICT</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">()):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -485,7 +485,7 @@
 <span class="sd">    :param config:</span>
 <span class="sd">    :return:</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">infer</span><span class="p">(</span><span class="n">in_obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">infer</span><span class="p">(</span><span class="n">in_obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;INFER=</span><span class="si">{</span><span class="n">in_obj</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">in_obj</span><span class="p">,</span> <span class="n">YAMLRoot</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">in_obj</span><span class="p">,</span> <span class="n">EnumDefinitionImpl</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">in_obj</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">in_obj</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>

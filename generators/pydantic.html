@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
         <title>Pydantic - linkml documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
@@ -378,7 +378,7 @@ with optional support for user-supplied jinja2 templates to generate alternate c
 <p>(some details omitted for brevity, including slot definitions and
 parent classes)</p>
 <p>The generate python looks like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">NamedThing</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Person</span><span class="p">(</span><span class="n">NamedThing</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A person (alive, dead, undead, or fictional).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -706,7 +706,7 @@ the generated modules and their highest common directory.</p>
 <span class="sig-name descname"><span class="pre">imports</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#linkml.generators.pydanticgen.template.Import" title="linkml.generators.pydanticgen.template.Import"><span class="pre">Import</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#linkml.generators.pydanticgen.template.Imports" title="linkml.generators.pydanticgen.template.Imports"><span class="pre">Imports</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.pydanticgen.PydanticGenerator.imports" title="Permalink to this definition">#</a></dt>
 <dd><p>Additional imports to inject into generated module.</p>
 <p>Examples:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen.template</span> <span class="kn">import</span> <span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.pydanticgen.template</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ConditionalImport</span><span class="p">,</span>
     <span class="n">ObjectImport</span><span class="p">,</span>
     <span class="n">Import</span><span class="p">,</span>
@@ -733,16 +733,16 @@ the generated modules and their highest common directory.</p>
 </pre></div>
 </div>
 <p>becomes:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Path</span><span class="p">,</span>
     <span class="n">PurePath</span> <span class="k">as</span> <span class="n">RenamedPurePath</span>
 <span class="p">)</span>
 <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Literal</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -946,8 +946,8 @@ pydantic code as well as what parts of the linkml metamodel are supported.</p>
 </pre></div>
 </div>
 <p>renders to:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">BaseModel</span><span class="p">,</span>
     <span class="n">Field</span>
 <span class="p">)</span>
@@ -977,11 +977,11 @@ pydantic code as well as what parts of the linkml metamodel are supported.</p>
 </pre></div>
 </div>
 <p>Renders to (along with the validator for the attribute):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyClass</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">my_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;My Field!&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;A Field that is mine!&quot;&quot;&quot;</span><span class="p">)</span>
 
     <span class="nd">@validator</span><span class="p">(</span><span class="s1">&#39;my_field&#39;</span><span class="p">,</span> <span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">pattern_my_field</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pattern_my_field</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="n">pattern</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;my_.*&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="nb">list</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
@@ -998,8 +998,8 @@ pydantic code as well as what parts of the linkml metamodel are supported.</p>
 </pre></div>
 </div>
 <p>Combine all the pieces:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">BaseModel</span><span class="p">,</span>
     <span class="n">Field</span>
 <span class="p">)</span>
@@ -1007,11 +1007,11 @@ pydantic code as well as what parts of the linkml metamodel are supported.</p>
 <span class="n">metamodel_version</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
 <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
 
-<span class="k">class</span> <span class="nc">WeakRefShimBaseModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WeakRefShimBaseModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="s1">&#39;__weakref__&#39;</span>
 
 
-<span class="k">class</span> <span class="nc">ConfiguredBaseModel</span><span class="p">(</span><span class="n">WeakRefShimBaseModel</span><span class="p">,</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConfiguredBaseModel</span><span class="p">(</span><span class="n">WeakRefShimBaseModel</span><span class="p">,</span>
                 <span class="n">validate_assignment</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                 <span class="n">validate_all</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                 <span class="n">underscore_attrs_are_private</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -1021,11 +1021,11 @@ pydantic code as well as what parts of the linkml metamodel are supported.</p>
     <span class="k">pass</span>
 
 
-<span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyClass</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">my_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;My Field!&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;A Field that is mine!&quot;&quot;&quot;</span><span class="p">)</span>
 
     <span class="nd">@validator</span><span class="p">(</span><span class="s1">&#39;my_field&#39;</span><span class="p">,</span> <span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">pattern_my_field</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pattern_my_field</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="n">pattern</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;my_.*&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="nb">list</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
@@ -1566,11 +1566,11 @@ before this is added to the injected imports!</p>
 </pre></div>
 </div>
 <p>Renders to:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Literal</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
 </pre></div>
 </div>
 </div>
@@ -1635,8 +1635,8 @@ without having many duplicates.</p>
 </pre></div>
 </div>
 <p>Renders to:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 </pre></div>
 </div>
 </div>
@@ -1797,11 +1797,6 @@ Any other value is passed through unchanged.</p>
 <span class="target" id="module-linkml.generators.pydanticgen.array"></span><dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.pydanticgen.array.ArrayRepresentation">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.pydanticgen.array.</span></span><span class="sig-name descname"><span class="pre">ArrayRepresentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/pydanticgen/array.html#ArrayRepresentation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pydanticgen.array.ArrayRepresentation" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="linkml.generators.pydanticgen.array.AnyShapeArrayType">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.pydanticgen.array.</span></span><span class="sig-name descname"><span class="pre">AnyShapeArrayType</span></span><a class="reference internal" href="../_modules/linkml/generators/pydanticgen/array.html#AnyShapeArrayType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pydanticgen.array.AnyShapeArrayType" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
@@ -2086,7 +2081,6 @@ pip<span class="w"> </span>install<span class="w"> </span>linkml
 </li>
 <li><a class="reference internal" href="#arrays">Arrays</a><ul>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.array.ArrayRepresentation"><code class="docutils literal notranslate"><span class="pre">ArrayRepresentation</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.pydanticgen.array.AnyShapeArrayType"><code class="docutils literal notranslate"><span class="pre">AnyShapeArrayType</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.array.ArrayValidator"><code class="docutils literal notranslate"><span class="pre">ArrayValidator</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.array.ArrayRangeGenerator"><code class="docutils literal notranslate"><span class="pre">ArrayRangeGenerator</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.array.ListOfListsArray"><code class="docutils literal notranslate"><span class="pre">ListOfListsArray</span></code></a></li>

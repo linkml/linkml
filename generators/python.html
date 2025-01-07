@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
         <title>Python - linkml documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
@@ -363,7 +363,7 @@
 </div>
 <p>This object model can now be used to create, load, and serialize
 objects. For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">personinfo</span> <span class="kn">import</span> <span class="n">Person</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">personinfo</span><span class="w"> </span><span class="kn">import</span> <span class="n">Person</span>
 <span class="n">p1</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s1">&#39;P1&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;John Smith&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -411,12 +411,12 @@ reference will be that identifier.</p>
 <p>For example, in the personinfo schema, the employment event class
 references organization via a non-inlined reference, so the following
 code is generated:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">OrganizationId</span><span class="p">(</span><span class="n">NamedThingId</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">OrganizationId</span><span class="p">(</span><span class="n">NamedThingId</span><span class="p">):</span>
 
 <span class="o">...</span>
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">EmploymentEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EmploymentEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
 
     <span class="n">employed_at</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">OrganizationId</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
@@ -712,7 +712,7 @@ these are outlined below</p>
 </pre></div>
 </div>
 <p>Generated Python:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Integer</span><span class="p">(</span><span class="nb">int</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Integer</span><span class="p">(</span><span class="nb">int</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; An integer &quot;&quot;&quot;</span>
     <span class="n">type_class_uri</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">integer</span>
     <span class="n">type_class_curie</span> <span class="o">=</span> <span class="s2">&quot;xsd:integer&quot;</span>
@@ -720,7 +720,7 @@ these are outlined below</p>
     <span class="n">type_model_uri</span> <span class="o">=</span> <span class="n">METATYPE</span><span class="o">.</span><span class="n">Integer</span>
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Integers</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Integers</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    various permutations of the integer type</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -730,7 +730,7 @@ these are outlined below</p>
     <span class="n">opt_integer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">opt_multi_integer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">empty_list</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mand_integer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mand_integer must be supplied&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mand_integer</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -871,7 +871,7 @@ list:
 </pre></div>
 </div>
 <p>python:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Date</span><span class="p">(</span><span class="n">XSDDate</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Date</span><span class="p">(</span><span class="n">XSDDate</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; a date (year, month and day) in an idealized calendar &quot;&quot;&quot;</span>
     <span class="n">type_class_uri</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">date</span>
     <span class="n">type_class_curie</span> <span class="o">=</span> <span class="s2">&quot;xsd:date&quot;</span>
@@ -879,7 +879,7 @@ list:
     <span class="n">type_model_uri</span> <span class="o">=</span> <span class="n">METATYPE</span><span class="o">.</span><span class="n">Date</span>
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Dates</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Dates</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    various permutations of the date type</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -890,7 +890,7 @@ list:
     <span class="n">opt_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">XSDDate</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">opt_multi_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">XSDDate</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">XSDDate</span><span class="p">]]]]</span> <span class="o">=</span> <span class="n">empty_list</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mand_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mand_date must be supplied&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mand_date</span><span class="p">,</span> <span class="n">XSDDate</span><span class="p">):</span>
@@ -947,21 +947,21 @@ the inherited type.</p>
 </div>
 <p>Python:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Types</span>
-<span class="k">class</span> <span class="nc">InheritedType</span><span class="p">(</span><span class="n">Integer</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">InheritedType</span><span class="p">(</span><span class="n">Integer</span><span class="p">):</span>
     <span class="n">type_class_uri</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">integer</span>
     <span class="n">type_class_curie</span> <span class="o">=</span> <span class="s2">&quot;xsd:integer&quot;</span>
     <span class="n">type_name</span> <span class="o">=</span> <span class="s2">&quot;InheritedType&quot;</span>
     <span class="n">type_model_uri</span> <span class="o">=</span> <span class="n">PTYPES</span><span class="o">.</span><span class="n">InheritedType</span>
 
 
-<span class="k">class</span> <span class="nc">InheritedType2</span><span class="p">(</span><span class="n">Uriorcurie</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">InheritedType2</span><span class="p">(</span><span class="n">Uriorcurie</span><span class="p">):</span>
     <span class="n">type_class_uri</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">anyURI</span>
     <span class="n">type_class_curie</span> <span class="o">=</span> <span class="s2">&quot;xsd:anyURI&quot;</span>
     <span class="n">type_name</span> <span class="o">=</span> <span class="s2">&quot;InheritedType2&quot;</span>
     <span class="n">type_model_uri</span> <span class="o">=</span> <span class="n">PTYPES</span><span class="o">.</span><span class="n">InheritedType2</span>
 
 
-<span class="k">class</span> <span class="nc">InheritedType3</span><span class="p">(</span><span class="n">InheritedType2</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">InheritedType3</span><span class="p">(</span><span class="n">InheritedType2</span><span class="p">):</span>
     <span class="n">type_class_uri</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">anyURI</span>
     <span class="n">type_class_curie</span> <span class="o">=</span> <span class="s2">&quot;xsd:anyURI&quot;</span>
     <span class="n">type_name</span> <span class="o">=</span> <span class="s2">&quot;InheritedType3&quot;</span>
@@ -970,7 +970,7 @@ the inherited type.</p>
      <span class="o">...</span>
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">InheritedTypes</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">InheritedTypes</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    various permutations of a typeof referencing a builtin</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -981,7 +981,7 @@ the inherited type.</p>
     <span class="n">opt_InheritedType</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">InheritedType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">opt_multi_InheritedType</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">InheritedType</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">InheritedType</span><span class="p">]]]]</span> <span class="o">=</span> <span class="n">empty_list</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mand_InheritedType</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mand_InheritedType must be supplied&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mand_InheritedType</span><span class="p">,</span> <span class="n">InheritedType</span><span class="p">):</span>
@@ -1073,7 +1073,7 @@ class:</p>
 </div>
 <p>An optional, single element class generates the following code:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
-    <span class="k">class</span> <span class="nc">OptionalOneElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">OptionalOneElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Range is a optional class that contains one non-key/non-identifier element</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1081,7 +1081,7 @@ class:</p>
 
         <span class="n">v1</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">OneElementClass</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="n">OneElementClass</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="o">=</span> <span class="n">OneElementClass</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">)</span>
 
@@ -1096,7 +1096,7 @@ OneElementClass if it exists (is not <code class="docutils literal notranslate">
 instance.</p>
 <p>Switching from optional to required produces:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RequiredOneElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RequiredOneElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Range is a required class that contains one non-key/non-identifier element</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1104,7 +1104,7 @@ instance.</p>
 
     <span class="n">v1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">OneElementClass</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;v1 must be supplied&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="n">OneElementClass</span><span class="p">):</span>
@@ -1117,7 +1117,7 @@ instance.</p>
 value, <code class="docutils literal notranslate"><span class="pre">v1</span></code> <em>must</em> be supplied.</p>
 <p>The third example, an optional list of <code class="docutils literal notranslate"><span class="pre">OneElementClass</span></code> instances:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">OptionalOneElementRangeList</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptionalOneElementRangeList</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Range is a optional list of a class that contain one non-key/non-identifier element</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1125,7 +1125,7 @@ value, <code class="docutils literal notranslate"><span class="pre">v1</span></c
 
     <span class="n">v1</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">OneElementClass</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">OneElementClass</span><span class="p">]]]]</span> <span class="o">=</span> <span class="n">empty_list</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -1148,7 +1148,7 @@ inline list looks like and b) show that the target type is irrelevant as
 long as it is a LinkML <code class="docutils literal notranslate"><span class="pre">Class</span></code> and has no <code class="docutils literal notranslate"><span class="pre">key</span></code> or <code class="docutils literal notranslate"><span class="pre">identifier</span></code>
 slots</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RequiredThreeElementRangeList</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RequiredThreeElementRangeList</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Range is a required list of a class that contain two non-key/non-identifier elements</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1156,7 +1156,7 @@ slots</p>
 
     <span class="n">v1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">ThreeElementClass</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">ThreeElementClass</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;v1 must be supplied&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -1209,14 +1209,14 @@ the <code class="docutils literal notranslate"><span class="pre">key</span></cod
 </pre></div>
 </div>
 <p>Python:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">KeyedThreeElementClassName</span><span class="p">(</span><span class="n">extended_str</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">KeyedThreeElementClassName</span><span class="p">(</span><span class="n">extended_str</span><span class="p">):</span>
     <span class="k">pass</span>
 
-<span class="k">class</span> <span class="nc">IdentifiedThreeElementClassName</span><span class="p">(</span><span class="n">extended_str</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">IdentifiedThreeElementClassName</span><span class="p">(</span><span class="n">extended_str</span><span class="p">):</span>
     <span class="k">pass</span>
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">KeyedThreeElementClass</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">KeyedThreeElementClass</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A keyed class with an additional integer and date</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1226,7 +1226,7 @@ the <code class="docutils literal notranslate"><span class="pre">key</span></cod
     <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">modifier</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">XSDDate</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;name must be supplied&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">KeyedThreeElementClassName</span><span class="p">):</span>
@@ -1241,7 +1241,7 @@ the <code class="docutils literal notranslate"><span class="pre">key</span></cod
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">IdentifiedThreeElementClass</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">IdentifiedThreeElementClass</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A identified class with an additional integer and date</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1251,7 +1251,7 @@ the <code class="docutils literal notranslate"><span class="pre">key</span></cod
     <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">modifier</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">XSDDate</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;name must be supplied&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">IdentifiedThreeElementClassName</span><span class="p">):</span>
@@ -1298,7 +1298,7 @@ the <code class="docutils literal notranslate"><span class="pre">key</span></cod
 </div>
 <p>Python equivalents</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">OptionalKeyedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptionalKeyedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Range is a optional class that contains one key and two regular elements</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1306,7 +1306,7 @@ the <code class="docutils literal notranslate"><span class="pre">key</span></cod
 
     <span class="n">v1</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">KeyedThreeElementClassName</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="n">KeyedThreeElementClassName</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="o">=</span> <span class="n">KeyedThreeElementClassName</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">)</span>
 
@@ -1328,7 +1328,7 @@ class, <code class="docutils literal notranslate"><span class="pre">OptionalKeye
 later version of the LinkML tooling. The second example, below, shows an
 optional <em>list</em></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">OptionalKeyedThreeElementRangeList</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptionalKeyedThreeElementRangeList</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Range is a optional list of a class that contains one key and two regular elements</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1336,7 +1336,7 @@ optional <em>list</em></p>
 
     <span class="n">v1</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">KeyedThreeElementClassName</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">KeyedThreeElementClassName</span><span class="p">]]]]</span> <span class="o">=</span> <span class="n">empty_list</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
@@ -1357,7 +1357,7 @@ other objects that can be coerced into <code class="docutils literal notranslate
 they are included below without comment. Note, in particular, that there
 is no difference between keyed and identified class representation.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RequiredIdentifiedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RequiredIdentifiedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Range is a required class that contains one identifier and two regular elements</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1365,7 +1365,7 @@ is no difference between keyed and identified class representation.</p>
 
     <span class="n">v1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IdentifiedThreeElementClassName</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;v1 must be supplied&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="n">IdentifiedThreeElementClassName</span><span class="p">):</span>
@@ -1375,7 +1375,7 @@ is no difference between keyed and identified class representation.</p>
 
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RequiredIdentifiedThreeElementRangeList</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RequiredIdentifiedThreeElementRangeList</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Range is a optional list of a class that contains one identifier and two regular elements</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1383,7 +1383,7 @@ is no difference between keyed and identified class representation.</p>
 
     <span class="n">v1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IdentifiedThreeElementClassName</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IdentifiedThreeElementClassName</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;v1 must be supplied&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
@@ -1597,14 +1597,14 @@ slots.</p>
 1.2 – non-inlined keyed or identified class, where the identifier or key
 of the class is the range of the <code class="docutils literal notranslate"><span class="pre">v1</span></code> slot in Python:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">OptionalThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptionalThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Case 1.1(o) -- single values optional slot - range has no keys or identifiers</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="o">...</span>
     <span class="n">v1</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">ThreeElementClass</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="n">ThreeElementClass</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="o">=</span> <span class="n">ThreeElementClass</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">)</span>
 
@@ -1612,14 +1612,14 @@ of the class is the range of the <code class="docutils literal notranslate"><spa
 
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RequiredThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RequiredThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Case 1.1(r) -- single values optional slot - range has no keys or identifiers</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="o">...</span>
     <span class="n">v1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">ThreeElementClass</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;v1 must be supplied&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="n">ThreeElementClass</span><span class="p">):</span>
@@ -1629,14 +1629,14 @@ of the class is the range of the <code class="docutils literal notranslate"><spa
 
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">OptionalIdentifiedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptionalIdentifiedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Case 1.2(o) -- single values optional slot - range has an identifier</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="o">...</span>
     <span class="n">v1</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IdentifiedThreeElementClassName</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="n">IdentifiedThreeElementClassName</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="o">=</span> <span class="n">IdentifiedThreeElementClassName</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">)</span>
 
@@ -1644,14 +1644,14 @@ of the class is the range of the <code class="docutils literal notranslate"><spa
 
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RequiredKeyedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RequiredKeyedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Case 1.2(r) -- single values optional slot - range has a key</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="o">...</span>
     <span class="n">v1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">KeyedThreeElementClassName</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;v1 must be supplied&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="n">KeyedThreeElementClassName</span><span class="p">):</span>
@@ -1661,14 +1661,14 @@ of the class is the range of the <code class="docutils literal notranslate"><spa
 
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">OptionalInlinedKeyedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptionalInlinedKeyedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Case 1.3(o) -- single values optional slot - range has an identifier</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="o">...</span>
     <span class="n">v1</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">KeyedThreeElementClass</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="n">KeyedThreeElementClass</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="o">=</span> <span class="n">KeyedThreeElementClass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">)</span>
 
@@ -1676,14 +1676,14 @@ of the class is the range of the <code class="docutils literal notranslate"><spa
 
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RequiredInlinedIdentifiedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RequiredInlinedIdentifiedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Case 1.3(r) -- single values optional slot - range has a key</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="o">...</span>
     <span class="n">v1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">IdentifiedThreeElementClass</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;v1 must be supplied&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="n">IdentifiedThreeElementClass</span><span class="p">):</span>
@@ -1693,14 +1693,14 @@ of the class is the range of the <code class="docutils literal notranslate"><spa
 
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">OptionalInlinedAsListKeyedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptionalInlinedAsListKeyedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Case 1.4(o) -- single values optional slot - range has an identifier</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="o">...</span>
     <span class="n">v1</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">KeyedThreeElementClass</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="n">KeyedThreeElementClass</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="o">=</span> <span class="n">KeyedThreeElementClass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">)</span>
 
@@ -1708,14 +1708,14 @@ of the class is the range of the <code class="docutils literal notranslate"><spa
 
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RequiredInlinedAsListIdentifiedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RequiredInlinedAsListIdentifiedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Case 1.4(r) -- single values optional slot - range has a key</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="o">...</span>
     <span class="n">v1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">IdentifiedThreeElementClass</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;v1 must be supplied&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="n">IdentifiedThreeElementClass</span><span class="p">):</span>
@@ -1887,14 +1887,14 @@ what was described earlier</p>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">OptionalMultivaluedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptionalMultivaluedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Case 2.1(o) -- multivalued optional slot - range has no key or identifier</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="o">...</span>
     <span class="n">v1</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">ThreeElementClass</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">ThreeElementClass</span><span class="p">]]]]</span> <span class="o">=</span> <span class="n">empty_list</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -1905,14 +1905,14 @@ what was described earlier</p>
 
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RequiredMultivaluedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RequiredMultivaluedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Case 2.1(r) -- multivalued optional slot - range has no key or identifier</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="o">...</span>
     <span class="n">v1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">ThreeElementClass</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">ThreeElementClass</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;v1 must be supplied&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -1924,14 +1924,14 @@ what was described earlier</p>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">OptionalMultivaluedKeyedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptionalMultivaluedKeyedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Case 2.2(o) -- multivalued optional slot - range has a key</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="o">...</span>
     <span class="n">v1</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">KeyedThreeElementClassName</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">KeyedThreeElementClassName</span><span class="p">]]]]</span> <span class="o">=</span> <span class="n">empty_list</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -1942,14 +1942,14 @@ what was described earlier</p>
 
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RequiredMultivaluedIdentifiedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RequiredMultivaluedIdentifiedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Case 2.2(r) -- multivalued required slot - range has an identifier</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="o">...</span>
     <span class="n">v1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IdentifiedThreeElementClassName</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IdentifiedThreeElementClassName</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;v1 must be supplied&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -1984,14 +1984,14 @@ what was described earlier</p>
 <p>The Python that is generated from the above entries will require some
 more description:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">OptionalMultivaluedInlinedListIdentifiedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptionalMultivaluedInlinedListIdentifiedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    2.3(o) Range is an optional identified three element class that is represented as an inlined list</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="o">...</span>
     <span class="n">v1</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IdentifiedThreeElementClassName</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">IdentifiedThreeElementClass</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">IdentifiedThreeElementClass</span><span class="p">]]]]</span> <span class="o">=</span> <span class="n">empty_list</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
@@ -2102,7 +2102,7 @@ examples that we used above, we could also use:</p>
 </pre></div>
 </div>
 <p>We then move on to the generated code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
@@ -2153,14 +2153,14 @@ than a list.</p>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">OptionalMultivaluedInlinedIdentifiedThreeElementRangeList</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptionalMultivaluedInlinedIdentifiedThreeElementRangeList</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    2.4(o) Range is an optional identified three element class that is represented as an inlined dictionary</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="o">...</span>
     <span class="n">v1</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IdentifiedThreeElementClassName</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">IdentifiedThreeElementClass</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">IdentifiedThreeElementClass</span><span class="p">]]]]</span> <span class="o">=</span> <span class="n">empty_dict</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
@@ -2171,14 +2171,14 @@ than a list.</p>
 
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RequiredMultivaluedInlinedKeyedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RequiredMultivaluedInlinedKeyedThreeElementRange</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    2.4(r) Range is a required keyed three element class that is represented as an inlined dictionary</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="o">...</span>
     <span class="n">v1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">KeyedThreeElementClassName</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">KeyedThreeElementClass</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">KeyedThreeElementClass</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">empty_dict</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;v1 must be supplied&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
@@ -2205,7 +2205,7 @@ loaded as a dictionary and visa-versa.</p>
 emitted Python.</p>
 <p>At the moment, the following code is emitted:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Slots</span>
-<span class="k">class</span> <span class="nc">slots</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">slots</span><span class="p">:</span>
     <span class="k">pass</span>
 
     <span class="o">...</span>

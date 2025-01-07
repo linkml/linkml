@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
         <title>linkml.utils.typereferences - linkml documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
@@ -343,10 +343,10 @@
         </div>
         <article role="main">
           <h1>Source code for linkml.utils.typereferences</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Set</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Set</span>
 
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ClassDefinitionName</span><span class="p">,</span>
     <span class="n">ElementName</span><span class="p">,</span>
     <span class="n">EnumDefinitionName</span><span class="p">,</span>
@@ -354,14 +354,14 @@
     <span class="n">SubsetDefinitionName</span><span class="p">,</span>
     <span class="n">TypeDefinitionName</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.metamodelcore</span> <span class="kn">import</span> <span class="n">empty_set</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.metamodelcore</span><span class="w"> </span><span class="kn">import</span> <span class="n">empty_set</span>
 
 
 <div class="viewcode-block" id="RefType"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.typereferences.RefType">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">RefType</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RefType</span><span class="p">:</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
 
 
@@ -373,7 +373,7 @@
 
 
 <div class="viewcode-block" id="References"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.typereferences.References">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">References</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">References</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Summary of references to a given class. The reference class is the key to the dictionary carrying classrefs</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -384,7 +384,7 @@
     <span class="n">subsetrefs</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">SubsetDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty_set</span><span class="p">()</span>  <span class="c1"># Refs of type subset</span>
     <span class="n">enumrefs</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">EnumDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty_set</span><span class="p">()</span>  <span class="c1"># Refs of type enum</span>
 
-<div class="viewcode-block" id="References.addref"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.typereferences.References.addref">[docs]</a>    <span class="k">def</span> <span class="nf">addref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fromtype</span><span class="p">:</span> <span class="n">RefType</span><span class="p">,</span> <span class="n">fromname</span><span class="p">:</span> <span class="n">ElementName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="References.addref"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.typereferences.References.addref">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">addref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fromtype</span><span class="p">:</span> <span class="n">RefType</span><span class="p">,</span> <span class="n">fromname</span><span class="p">:</span> <span class="n">ElementName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">fromtype</span> <span class="ow">is</span> <span class="n">ClassType</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">classrefs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ClassDefinitionName</span><span class="p">(</span><span class="n">fromname</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">fromtype</span> <span class="ow">is</span> <span class="n">TypeType</span><span class="p">:</span>
@@ -398,14 +398,14 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown typ: </span><span class="si">{</span><span class="n">fromtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="References.update"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.typereferences.References.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;References&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="References.update"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.typereferences.References.update">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;References&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">classrefs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">classrefs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">slotrefs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">slotrefs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">typerefs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">typerefs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subsetrefs</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">subsetrefs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">enumrefs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">enumrefs</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classrefs</span><span class="p">)</span>
             <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slotrefs</span><span class="p">)</span>
