@@ -31,3 +31,9 @@ def test_cli_generate_dbml_to_stdout(input_path):
     """
     runner = CliRunner()
     result = runner.invoke(cli, ["--schema", str(input_path("organization.yaml"))])
+    assert result.exit_code == 0
+    assert result.output.startswith("// DBML generated from LinkML schema\n")
+    assert "Table Organization" in result.output
+    assert "Table Employee" in result.output
+    assert """Table Organization {
+id varchar [not null, primary key]""" in result.output
