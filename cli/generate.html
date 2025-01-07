@@ -372,6 +372,12 @@ or run <code class="docutils literal notranslate"><span class="pre">linkml</span
 
 <dl class="object">
 <dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">cli</span></span></dt>
+<dd><p>CLI for LinkML to DBML generator.</p>
+</dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">csv</span></span></dt>
 <dd><p>Generate CSV/TSV file from LinkML model</p>
 </dd></dl>
@@ -705,6 +711,26 @@ it’s just a quirk of the package we use for documenting the cli</p>
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-cli-arg-YAMLFILE">
 <span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-cli-arg-YAMLFILE" title="Permalink to this definition">#</a></dt>
 <dd><p>Required argument</p>
+</dd></dl>
+
+</section>
+<section id="linkml-generate-full-cli">
+<h4>cli<a class="headerlink" href="#linkml-generate-full-cli" title="Permalink to this heading">#</a></h4>
+<p>CLI for LinkML to DBML generator.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>linkml<span class="w"> </span>generate<span class="w"> </span><span class="o">(</span>full<span class="o">)</span><span class="w"> </span>cli<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-cli-s">
+<span id="cmdoption-linkml-generate-full-cli-schema"></span><span class="sig-name descname"><span class="pre">-s</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--schema</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;schema&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-cli-s" title="Permalink to this definition">#</a></dt>
+<dd><p><strong>Required</strong> Path to the LinkML schema YAML file</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-cli-o">
+<span id="cmdoption-linkml-generate-(full)-cli-0"></span><span class="sig-name descname"><span class="pre">-o</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-cli-o" title="Permalink to this definition">#</a></dt>
+<dd><p>Path to save the generated DBML file. If not specified, DBML will be printed to stdout.</p>
 </dd></dl>
 
 </section>
@@ -5017,6 +5043,7 @@ is conformant to the same LinkML schema.</p>
 </li>
 <li><a class="reference internal" href="#complete">Complete</a><ul>
 <li><a class="reference internal" href="#linkml-generate-full">linkml generate (full)</a><ul>
+<li><a class="reference internal" href="#linkml-generate-full-cli">cli</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-cli">cli</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-csv">csv</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-doc">doc</a></li>
