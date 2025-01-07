@@ -1,5 +1,3 @@
-import pytest
-
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import ClassDefinition, EnumDefinition, SlotDefinition
 

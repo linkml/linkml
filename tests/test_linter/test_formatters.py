@@ -1,4 +1,5 @@
 import io
+
 from linkml.linter.config.datamodel.config import RuleLevel
 from linkml.linter.formatters import (
     JsonFormatter,

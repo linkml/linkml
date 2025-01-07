@@ -1,5 +1,3 @@
-import pytest
-
 from linkml_runtime import SchemaView
 
 from linkml.linter.config.datamodel.config import RuleConfig, RuleLevel
