@@ -1,8 +1,11 @@
 import logging
-from linkml_runtime.utils.schemaview import SchemaView
-from linkml.utils.generator import Generator, shared_arguments
-from linkml_runtime.utils.formatutils import camelcase, underscore
+
 import click
+from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.schemaview import SchemaView
+
+from linkml.utils.generator import Generator
+
 
 def _map_range_to_dbml_type(range_name: str) -> str:
     """
@@ -42,8 +45,10 @@ class DBMLGenerator(Generator):
 
         :return: DBML as a string
         """
-        dbml_lines = ["// DBML generated from LinkML schema\n",
-                      f"Project {{\n  name: '{self.schemaview.schema.name}'\n}}\n"]
+        dbml_lines = [
+            "// DBML generated from LinkML schema\n",
+            f"Project {{\n  name: '{self.schemaview.schema.name}'\n}}\n",
+        ]
 
         for class_name, class_def in self.schemaview.all_classes().items():
             dbml_lines.append(self._generate_table(class_name, class_def))
@@ -111,19 +116,21 @@ class DBMLGenerator(Generator):
 
                     # Find the identifier slot of the referenced class
                     identifier_slot_name = next(
-                        (slot_name.name for slot_name in self.schemaview.class_induced_slots(slot.range)
-                         if self.schemaview.get_slot(slot_name.name).identifier),
-                        None
+                        (
+                            slot_name.name
+                            for slot_name in self.schemaview.class_induced_slots(slot.range)
+                            if self.schemaview.get_slot(slot_name.name).identifier
+                        ),
+                        None,
                     )
 
                     if identifier_slot_name is None:
-                        raise ValueError(
-                            f"Referenced class '{slot.range}' does not have an identifier slot."
-                        )
+                        raise ValueError(f"Referenced class '{slot.range}' does not have an identifier slot.")
 
                     # Generate the DBML relationship
                     relationships.append(
-                        f"Ref: {camelcase(class_name)}.{underscore(slot.name)} > {camelcase(slot.range)}.{underscore(identifier_slot_name)}"
+                        f"Ref: {camelcase(class_name)}.{underscore(slot.name)} > "
+                        f"{camelcase(slot.range)}.{underscore(identifier_slot_name)}"
                     )
         return "\n".join(relationships)
 
