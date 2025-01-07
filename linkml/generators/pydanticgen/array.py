@@ -2,17 +2,13 @@ import sys
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import (
-    TYPE_CHECKING,
-    Any,
     ClassVar,
-    Generic,
     Iterable,
     List,
     Optional,
     Type,
     TypeVar,
     Union,
-    get_args,
 )
 
 from linkml_runtime.linkml_model import Element
@@ -21,24 +17,14 @@ from pydantic import VERSION as PYDANTIC_VERSION
 
 from linkml.utils.deprecation import deprecation_warning
 
-if int(PYDANTIC_VERSION[0]) >= 2:
-    from pydantic_core import core_schema
-else:
+if int(PYDANTIC_VERSION[0]) < 2:
     # Support for having pydantic 1 installed in the same environment will be dropped in 1.9.0
     deprecation_warning("pydantic-v1")
 
-if TYPE_CHECKING:
-    from pydantic import GetCoreSchemaHandler
-    from pydantic_core import CoreSchema
-
-if sys.version_info.minor < 9:
-    from typing_extensions import Annotated, TypeAliasType
-elif sys.version_info.minor < 12:
-    from typing import Annotated
-
+if sys.version_info.minor < 12:
     from typing_extensions import TypeAliasType
 else:
-    from typing import Annotated, TypeAliasType
+    from typing import TypeAliasType
 
 
 from linkml.generators.pydanticgen.build import RangeResult
@@ -54,83 +40,32 @@ class ArrayRepresentation(Enum):
 _BOUNDED_ARRAY_FIELDS = ("exact_number_dimensions", "minimum_number_dimensions", "maximum_number_dimensions")
 
 _T = TypeVar("_T")
-_RecursiveListType = TypeAliasType(
-    "_RecursiveListType", Iterable[Union[_T, Iterable["_RecursiveListType"]]], type_params=(_T,)
-)
-
-
-class AnyShapeArrayType(Generic[_T]):
-    @classmethod
-    def __get_pydantic_core_schema__(cls, source_type: Any, handler: "GetCoreSchemaHandler") -> "CoreSchema":
-        item_type = Any if len(get_args(source_type)) == 0 else get_args(source_type)[0]
-        item_schema = handler.generate_schema(item_type)
-
-        # Handle type unions as well as single types for finishing the schema by casting both to an iterable
-        if len(get_args(item_type)) > 0:
-            type_args = get_args(item_type)
-        else:
-            type_args = (item_type,)
-
-        # Strict mode prevents coercion, consistent with the general usage of types in linkml
-        if all([getattr(i, "__module__", "") == "builtins" and i is not Any for i in type_args]):
-            item_schema["strict"] = True
-
-        # Create a name for this parameterized anytype to deduplicate references in generated json schema
-        # Before python 3.11, `Any` type was a special object without a __name__
-        item_name = "_".join(["Any" if i is Any else i.__name__ for i in type_args])
-
-        array_ref = f"any-shape-array-{item_name}"
-
-        schema = core_schema.definitions_schema(
-            core_schema.list_schema(core_schema.definition_reference_schema(array_ref)),
-            [
-                core_schema.union_schema(
-                    [
-                        core_schema.list_schema(core_schema.definition_reference_schema(array_ref)),
-                        item_schema,
-                    ],
-                    ref=array_ref,
-                )
-            ],
-        )
-
-        return schema
-
-
-AnyShapeArray = Annotated[_RecursiveListType, AnyShapeArrayType]
+AnyShapeArray = TypeAliasType("AnyShapeArray", Iterable[Union[_T, Iterable["AnyShapeArray[_T]"]]], type_params=(_T,))
 
 _AnyShapeArrayImports = (
     Imports()
     + Import(
         module="typing",
         objects=[
-            ObjectImport(name="Generic"),
             ObjectImport(name="Iterable"),
             ObjectImport(name="TypeVar"),
             ObjectImport(name="Union"),
-            ObjectImport(name="get_args"),
         ],
     )
     + ConditionalImport(
         condition="sys.version_info.minor >= 12",
         module="typing",
-        objects=[ObjectImport(name="Annotated"), ObjectImport(name="TypeAliasType")],
-        alternative=Import(
-            module="typing_extensions", objects=[ObjectImport(name="Annotated"), ObjectImport(name="TypeAliasType")]
-        ),
+        objects=[ObjectImport(name="TypeAliasType")],
+        alternative=Import(module="typing_extensions", objects=[ObjectImport(name="TypeAliasType")]),
     )
-    + Import(module="pydantic", objects=[ObjectImport(name="GetCoreSchemaHandler")])
-    + Import(module="pydantic_core", objects=[ObjectImport(name="CoreSchema"), ObjectImport(name="core_schema")])
 )
 
 # annotated types are special and inspect.getsource() can't stringify them
 _AnyShapeArrayInjects = [
     '_T = TypeVar("_T")',
-    """_RecursiveListType = TypeAliasType(
-    "_RecursiveListType", Iterable[Union[_T, Iterable["_RecursiveListType"]]], type_params=(_T,)
+    """AnyShapeArray = TypeAliasType(
+    "AnyShapeArray", Iterable[Union[_T, Iterable["AnyShapeArray[_T]"]]], type_params=(_T,)
 )""",
-    AnyShapeArrayType,
-    "AnyShapeArray = Annotated[_RecursiveListType, AnyShapeArrayType]",
 ]
 
 _ConListImports = Imports() + Import(module="pydantic", objects=[ObjectImport(name="conlist")])
