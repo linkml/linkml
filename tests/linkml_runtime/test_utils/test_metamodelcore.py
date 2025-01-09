@@ -153,6 +153,7 @@ class MetamodelCoreTest(unittest.TestCase):
         XSDDate(datetime.datetime.now())
         self.assertFalse(XSDTime.is_valid('Jan 12, 2019'))
         self.assertFalse(XSDTime.is_valid(datetime.datetime.now()))
+        self.assertFalse(XSDTime.is_valid("2019-07-06T17:22:39Z"))
         self.assertTrue(XSDTime.is_valid(v))
 
     def test_date(self):
@@ -168,6 +169,9 @@ class MetamodelCoreTest(unittest.TestCase):
             XSDDate('Jan 12, 2019')
         with self.assertRaises(ValueError):
             XSDDate(datetime.datetime.now())
+        with self.assertRaises(ValueError):
+            XSDDate("2019-07-06T17:22:39Z")
+
         lax()
         bv = XSDDate('Jan 12, 2019')
         self.assertEqual('Jan 12, 2019', bv)
@@ -188,6 +192,7 @@ class MetamodelCoreTest(unittest.TestCase):
         vstr = str(Literal(v).value)
         self.assertEqual('2019-07-06 17:22:39.007300', vstr)       # Note that this has no 'T'
         self.assertEqual('2019-07-06T17:22:39.007300', XSDDateTime(vstr))
+        self.assertEqual('2019-07-06T17:22:39+00:00', XSDDateTime("2019-07-06T17:22:39Z"))
         with self.assertRaises(ValueError):
             XSDDateTime('Jan 12, 2019')
         lax()

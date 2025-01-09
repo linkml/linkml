@@ -18,7 +18,7 @@ jobs:
           python-version: "3.8"
 
     runs-on: ${{ matrix.os }}
-
+    
     steps:
 
       #----------------------------------------------
@@ -49,6 +49,7 @@ jobs:
       #              coverage report   
       #----------------------------------------------
       - name: Generate coverage results
+        shell: bash
         run: |
           poetry run coverage run -m pytest
           poetry run coverage xml
