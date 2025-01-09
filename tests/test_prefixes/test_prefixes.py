@@ -2,8 +2,8 @@ import csv
 import json
 import logging
 import re
-import pytest
 
+import pytest
 from rdflib import Graph, URIRef
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
