@@ -12,25 +12,49 @@ from linkml.generators.prefixmapgen import PrefixGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from tests.test_prefixes.environment import env
 
-SCHEMA = env.input_path("prefixtest.yaml")
-OWL_OUTPUT = env.expected_path("prefixtest.owl.ttl")
-RDF_OUTPUT = env.expected_path("prefixtest.rdf.nt")
-PM_OUTPUT = env.expected_path("prefixtest.prefixmap.json")
-CONTEXT_OUTPUT = env.expected_path("prefixtest.context.jsonld")
-TSV_OUTPUT = env.expected_path("prefix_map_prefixtest.tsv")
+
+@pytest.fixture
+def schema():
+    return env.input_path("prefixtest.yaml")
+
+
+@pytest.fixture
+def owl_output(tmp_path):
+    return str(tmp_path / "prefixtest.owl.ttl")
+
+
+@pytest.fixture
+def rdf_output(tmp_path):
+    return str(tmp_path / "prefixtest.rdf.nt")
+
+
+@pytest.fixture
+def pm_output(tmp_path):
+    return str(tmp_path / "prefixtest.prefixmap.json")
+
+
+@pytest.fixture
+def context_output(tmp_path):
+    return str(tmp_path / "prefixtest.context.jsonld")
+
+
+@pytest.fixture
+def tsv_output():
+    return env.expected_path("prefix_map_prefixtest.tsv")
+
 
 logger = logging.getLogger(__name__)
 
 
-def test_owlgen():
+def test_owlgen(schema, owl_output):
     """owl"""
-    owl = OwlSchemaGenerator(SCHEMA, mergeimports=False, ontology_uri_suffix=".owl.ttl", format="nt").serialize()
-    with open(OWL_OUTPUT, "w") as stream:
+    owl = OwlSchemaGenerator(schema, mergeimports=False, ontology_uri_suffix=".owl.ttl", format="nt").serialize()
+    with open(owl_output, "w") as stream:
         stream.write(owl)
     g = Graph()
     # TODO: test with turtle when https://github.com/linkml/linkml/issues/163#issuecomment-906507968 is resolved
-    # g.parse(OWL_OUTPUT, format="turtle")
-    g.parse(OWL_OUTPUT, format="nt")
+    # g.parse(owl_output, format="turtle")
+    g.parse(owl_output, format="nt")
     # TODO: fix owlgen such that we don't have to hardcode exceptions
     _check_triples(
         g,
@@ -44,20 +68,20 @@ def test_owlgen():
 
 # TODO: restore. See: https://github.com/linkml/linkml/issues/537
 @pytest.mark.skip("https://github.com/linkml/linkml/issues/537")
-def test_rdfgen():
+def test_rdfgen(schema, rdf_output):
     # TODO: ttl output fails - check why
     # TODO: imports do not seem to work
-    rdf = RDFGenerator(SCHEMA, mergeimports=True, format="nt").serialize()
-    with open(RDF_OUTPUT, "w") as stream:
+    rdf = RDFGenerator(schema, mergeimports=True, format="nt").serialize()
+    with open(rdf_output, "w") as stream:
         stream.write(rdf)
     g = Graph()
-    g.parse(RDF_OUTPUT, format="nt")
+    g.parse(rdf_output, format="nt")
     _check_triples(g)
 
 
-def test_prefixmapgen():
-    out = PrefixGenerator(SCHEMA, mergeimports=True).serialize()
-    with open(PM_OUTPUT, "w") as stream:
+def test_prefixmapgen(schema, pm_output, tsv_output):
+    out = PrefixGenerator(schema, mergeimports=True).serialize()
+    with open(pm_output, "w") as stream:
         stream.write(out)
     expected = {
         "BFO": "http://purl.obolibrary.org/obo/BFO_",
@@ -79,7 +103,7 @@ def test_prefixmapgen():
         "sdo": "http://schema.org/",
         "wd": "https://www.wikidata.org/wiki/",
     }
-    with open(PM_OUTPUT) as stream:
+    with open(pm_output) as stream:
         obj = json.load(stream)
     fails = 0
     for k, v in expected.items():
@@ -93,7 +117,7 @@ def test_prefixmapgen():
     assert fails == 0
 
     # unit test when format option tsv is supplied
-    tsv_str = PrefixGenerator(SCHEMA, format="tsv", mergeimports=True).serialize()
+    tsv_str = PrefixGenerator(schema, format="tsv", mergeimports=True).serialize()
     actual_tsv_dict = {}
     split_tsv = re.split(r"\n+", tsv_str)
     for elem in split_tsv:
@@ -103,7 +127,7 @@ def test_prefixmapgen():
             actual_tsv_dict[pair[0]] = pair[1]
 
     expected_tsv_dict = {}
-    with open(TSV_OUTPUT) as fd:
+    with open(tsv_output) as fd:
         rd = csv.reader(fd, delimiter="\t", quotechar='"')
         for row in rd:
             expected_tsv_dict[row[0]] = row[1]
@@ -114,9 +138,9 @@ def test_prefixmapgen():
 
 
 @staticmethod
-def test_jsonldcontext():
-    out = ContextGenerator(SCHEMA, mergeimports=True).serialize()
-    with open(CONTEXT_OUTPUT, "w") as stream:
+def test_jsonldcontext(schema, context_output):
+    out = ContextGenerator(schema, mergeimports=True).serialize()
+    with open(context_output, "w") as stream:
         stream.write(out)
     expected = {
         "BFO": {"@id": "http://purl.obolibrary.org/obo/BFO_", "@prefix": True},
@@ -144,7 +168,7 @@ def test_jsonldcontext():
         "part_of": {"@id": "BFO:0000050"},
         "type": {"@id": "rdf:type"},
     }
-    with open(CONTEXT_OUTPUT) as stream:
+    with open(context_output) as stream:
         obj = json.load(stream)["@context"]
     fails = 0
     for k, v in expected.items():
