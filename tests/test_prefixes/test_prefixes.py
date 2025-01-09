@@ -56,7 +56,7 @@ def test_owlgen(schema, owl_output):
     # g.parse(owl_output, format="turtle")
     g.parse(owl_output, format="nt")
     # TODO: fix owlgen such that we don't have to hardcode exceptions
-    _check_triples(
+    check_triples(
         g,
         exceptions=[
             "http://schema.org/additionalName",
@@ -76,7 +76,7 @@ def test_rdfgen(schema, rdf_output):
         stream.write(rdf)
     g = Graph()
     g.parse(rdf_output, format="nt")
-    _check_triples(g)
+    check_triples(g)
 
 
 def test_prefixmapgen(schema, pm_output, tsv_output):
@@ -137,7 +137,6 @@ def test_prefixmapgen(schema, pm_output, tsv_output):
     assert actual_tsv_dict == expected_tsv_dict
 
 
-@staticmethod
 def test_jsonldcontext(schema, context_output):
     out = ContextGenerator(schema, mergeimports=True).serialize()
     with open(context_output, "w") as stream:
@@ -188,8 +187,7 @@ def test_jsonldcontext(schema, context_output):
     assert "ENVO" not in obj
 
 
-@staticmethod
-def _check_triples(g, exceptions=None):
+def check_triples(g, exceptions=None):
     """
     currently testing is fairly weak: simply checks if the expected expanded URIs are
     present as objects
