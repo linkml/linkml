@@ -3,9 +3,11 @@ import datetime
 import re
 from dataclasses import field
 from decimal import Decimal
+import sys
 from typing import Union, Optional, Tuple
 from urllib.parse import urlparse
 
+import isodate
 from rdflib import Literal, BNode, URIRef
 from rdflib.namespace import is_ncname
 from rdflib.term import Identifier as rdflib_Identifier
@@ -230,13 +232,10 @@ class XSDTime(str, TypedNode):
             if not isinstance(value, datetime.time):
                 value = datetime.time.fromisoformat(value)
             return datetime.time.fromisoformat(str(value)).isoformat()
-        except TypeError as e:
-            pass
-        except ValueError as e:
-            pass
-        if not is_strict():
-            return str(value)
-        raise e
+        except (TypeError, ValueError) as e:
+            if is_strict():
+                raise e
+        return str(value)
 
     @classmethod
     def is_valid(cls, value: Union[str, datetime.time, datetime.datetime, Literal]) -> bool:
@@ -260,15 +259,15 @@ class XSDDate(str, TypedNode):
             value = value.value
         try:
             if not isinstance(value, datetime.date):
-                value = datetime.date.fromisoformat(str(value))
+                if sys.version_info >= (3, 11):
+                    value = datetime.date.fromisoformat(str(value))
+                else:
+                    value = isodate.parse_date(value)
             return value.isoformat()
-        except TypeError as e:
-            pass
-        except ValueError as e:
-            pass
-        if not is_strict():
-            return str(value)
-        raise e
+        except (TypeError, ValueError) as e:
+            if is_strict():
+                raise e
+        return str(value)
 
     @classmethod
     def is_valid(cls, value: Union[str, datetime.date, Literal]) -> bool:
@@ -279,7 +278,10 @@ class XSDDate(str, TypedNode):
         if not re.match(r'^\d{4}-\d{2}-\d{2}$', value):
             return False
         try:
-            datetime.date.fromisoformat(str(value))
+            if sys.version_info >= (3, 11):
+                datetime.date.fromisoformat(str(value))
+            else:
+                value = isodate.parse_date(value)
         except ValueError:
             return False
         return True
@@ -294,15 +296,18 @@ class XSDDateTime(str, TypedNode):
             value = value.value
         try:
             if not isinstance(value, datetime.datetime):
-                value = datetime.datetime.fromisoformat(value)      # Note that this handles non 'T' format as well
+                if sys.version_info >= (3, 11):
+                    value = datetime.datetime.fromisoformat(value)      # Note that this handles non 'T' format as well
+                else:
+                    if "T" in str(value):
+                        value = isodate.parse_datetime(value)
+                    else:
+                        value = isodate.parse_datetime("T".join(value.strip().split(' ', 1)))
             return value.isoformat()
-        except TypeError as e:
-            pass
-        except ValueError as e:
-            pass
-        if not is_strict():
-            return str(value)
-        raise e
+        except (TypeError, ValueError) as e:
+            if is_strict():
+                raise e
+        return str(value)
 
     @classmethod
     def is_valid(cls, value: Union[str, datetime.datetime, Literal]) -> bool:
@@ -311,8 +316,16 @@ class XSDDateTime(str, TypedNode):
         if isinstance(value, datetime.datetime):
             value = value.isoformat()
         try:
-            datetime.datetime.fromisoformat(value)
-        except ValueError:
+            if sys.version_info >= (3, 11):
+                datetime.datetime.fromisoformat(value)
+            else:
+                if "T" in str(value):
+                    isodate.parse_datetime(value)
+                elif " " in value.strip():
+                    isodate.parse_datetime("T".join(value.strip().split(' ', 1)))
+                else:
+                    datetime.datetime.fromisoformat(value)
+        except (ValueError, TypeError):
             return False
         return True
 

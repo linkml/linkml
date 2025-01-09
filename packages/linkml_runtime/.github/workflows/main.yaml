@@ -49,7 +49,6 @@ jobs:
       #              coverage report   
       #----------------------------------------------
       - name: Generate coverage results
-        shell: bash
         run: |
           poetry run coverage run -m pytest
           poetry run coverage xml
