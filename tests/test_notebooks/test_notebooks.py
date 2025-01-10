@@ -1,5 +1,4 @@
 import os
-import sys
 from io import StringIO
 
 import nbformat
@@ -14,11 +13,6 @@ FORCE_REWRITE = True
 NBBASEDIR = os.path.join(env.cwd, "..", "notebooks")
 
 
-@pytest.fixture(scope="module")
-def set_default_encoding_utf8():
-    sys.setdefaultencoding("utf-8")
-
-
 @pytest.fixture
 def ep():
     return ExecutePreprocessor(timeout=600)
@@ -31,14 +25,13 @@ def force_rewrite_comparator(expected: str, actual: str) -> str:
     return msg
 
 
-# @pytest.mark.skip(reason="Skipped until we figure out why this fails in github actions")
 @pytest.mark.parametrize(
     "nbname",
     [filename for filename in os.listdir(NBBASEDIR) if not filename.startswith(".") and filename.endswith(".ipynb")],
 )
 def test_redo_notebook(nbname, ep):
     # The information on how to do this comes from: http://tritemio.github.io/smbits/2016/01/02/execute-notebooks/
-    with open(os.path.join(NBBASEDIR, nbname)) as nbf:
+    with open(os.path.join(NBBASEDIR, nbname), "r", encoding="utf-8") as nbf:
         nb = nbformat.read(nbf, as_version=4)
     ep.preprocess(nb, dict(metadata=dict(path=NBBASEDIR)))
 
