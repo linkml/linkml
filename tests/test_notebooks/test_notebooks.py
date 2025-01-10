@@ -1,4 +1,5 @@
 import os
+import sys
 from io import StringIO
 
 import nbformat
@@ -11,6 +12,11 @@ from tests.utils.filters import nb_filter
 
 FORCE_REWRITE = True
 NBBASEDIR = os.path.join(env.cwd, "..", "notebooks")
+
+
+@pytest.fixture(scope="module")
+def set_default_encoding_utf8():
+    sys.setdefaultencoding("utf-8")
 
 
 @pytest.fixture
