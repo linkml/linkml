@@ -49,6 +49,8 @@ jobs:
       #              coverage report   
       #----------------------------------------------
       - name: Generate coverage results
+        # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668 
+        shell: bash
         run: |
           poetry run coverage run -m pytest
           poetry run coverage xml
