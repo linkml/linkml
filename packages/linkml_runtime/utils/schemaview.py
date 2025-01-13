@@ -179,10 +179,10 @@ class SchemaView(object):
     def namespaces(self) -> Namespaces:
         namespaces = Namespaces()
         for s in self.schema_map.values():
-            for prefix in s.prefixes.values():
-                namespaces[prefix.prefix_prefix] = prefix.prefix_reference
             for cmap in self.schema.default_curi_maps:
                 namespaces.add_prefixmap(cmap, include_defaults=False)
+            for prefix in s.prefixes.values():
+                namespaces[prefix.prefix_prefix] = prefix.prefix_reference
         return namespaces
 
     def load_import(self, imp: str, from_schema: SchemaDefinition = None):

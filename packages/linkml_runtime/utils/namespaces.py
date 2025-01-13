@@ -78,12 +78,11 @@ class Namespaces(CaseInsensitiveDict):
                 super().__setitem__(value, target_bnode)
         elif is_ncname(key):
             v = Namespace(str(value))
-            if key in self:
-                if self[key] != v:
-                    logging.getLogger('Namespaces').\
-                        warning(f"{key} namespace is already mapped to {self[key]} - Mapping to {v} ignored")
-            else:
-                super().__setitem__(key, v)
+            if key in self and self[key] != v:
+                logger = logging.getLogger('linkml_runtime.Namespaces')
+                logger.warning(f"{key} namespace is already mapped to {self[key]} - Overriding with mapping to {v}")
+
+            super().__setitem__(key, v)
         else:
             raise ValueError(f"Invalid NCName: {key}")
 
