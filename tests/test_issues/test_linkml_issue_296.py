@@ -1,6 +1,6 @@
 import pytest
-from linkml_runtime.utils.jsonasobj2 import JsonObj
 from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.jsonasobj2 import JsonObj
 from rdflib import Namespace
 
 from linkml.generators.pythongen import PythonGenerator

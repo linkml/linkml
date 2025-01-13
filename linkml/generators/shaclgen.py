@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from typing import Callable, List
 
 import click
-from linkml_runtime.utils.jsonasobj2 import JsonObj, as_dict
 from linkml_runtime.linkml_model.meta import ClassDefinition, ElementName
 from linkml_runtime.utils.formatutils import underscore
+from linkml_runtime.utils.jsonasobj2 import JsonObj, as_dict
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import TypedNode, extended_float, extended_int, extended_str
 from rdflib import BNode, Graph, Literal, URIRef

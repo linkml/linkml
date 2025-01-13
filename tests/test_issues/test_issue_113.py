@@ -1,5 +1,5 @@
-from linkml_runtime.utils.jsonasobj2 import as_json
 from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.jsonasobj2 import as_json
 
 from linkml.generators.pythongen import PythonGenerator
 

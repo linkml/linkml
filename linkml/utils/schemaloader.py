@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Dict, Iterator, List, Mapping, Optional, Set, TextIO, Tuple, Union, cast
 from urllib.parse import urlparse
 
-from linkml_runtime.utils.jsonasobj2 import values
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
@@ -21,6 +20,7 @@ from linkml_runtime.linkml_model.meta import (
 )
 from linkml_runtime.utils.context_utils import parse_import_map
 from linkml_runtime.utils.formatutils import camelcase, mangled_attribute_name, sfx, underscore
+from linkml_runtime.utils.jsonasobj2 import values
 from linkml_runtime.utils.metamodelcore import Bool
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.yamlutils import TypedNode
