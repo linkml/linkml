@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, Type
 
 import click
-from jsonasobj2 import as_dict
+from linkml_runtime.utils.jsonasobj2 import as_dict
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import (
     ClassDefinition,

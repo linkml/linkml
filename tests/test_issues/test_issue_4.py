@@ -1,4 +1,4 @@
-from jsonasobj2 import loads
+from linkml_runtime.utils.jsonasobj2 import loads
 from linkml_runtime.linkml_model.meta import LINKML
 
 from linkml import LOCAL_TYPES_YAML_FILE

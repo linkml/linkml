@@ -1,6 +1,6 @@
 from pathlib import PurePath
 
-from jsonasobj2 import loads
+from linkml_runtime.utils.jsonasobj2 import loads
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.yamlutils import as_rdf
 

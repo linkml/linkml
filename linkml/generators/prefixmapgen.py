@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from typing import Dict, Optional, Set, Union
 
 import click
-from jsonasobj2 import JsonObj, as_json
+from linkml_runtime.utils.jsonasobj2 import JsonObj, as_json
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.linkml_model.types import SHEX
 from linkml_runtime.utils.formatutils import camelcase

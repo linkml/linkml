@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, Optional, Set, Union
 
 import click
-from jsonasobj2 import JsonObj, values
+from linkml_runtime.utils.jsonasobj2 import JsonObj, values
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,

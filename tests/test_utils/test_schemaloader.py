@@ -2,7 +2,7 @@ import logging
 from io import StringIO
 
 import pytest
-from jsonasobj2 import as_json
+from linkml_runtime.utils.jsonasobj2 import as_json
 
 from linkml.utils.schemaloader import SchemaLoader
 
