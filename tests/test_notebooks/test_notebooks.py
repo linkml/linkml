@@ -26,7 +26,10 @@ def force_rewrite_comparator(expected: str, actual: str) -> str:
     return msg
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="Figure out charset fail on windows in github actions")
+@pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="charset failure on windows in github actions. See https://github.com/linkml/linkml/issues/314",
+)
 @pytest.mark.parametrize(
     "nbname",
     [filename for filename in os.listdir(NBBASEDIR) if not filename.startswith(".") and filename.endswith(".ipynb")],
