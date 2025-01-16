@@ -35,7 +35,7 @@ from typing import (
     Union
 )
 
-from jsonasobj2 import (
+from linkml_runtime.utils.jsonasobj2 import (
     JsonObj,
     as_dict
 )
