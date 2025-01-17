@@ -1,10 +1,10 @@
-import pytest
 import logging
+
+import pytest
 
 from linkml.generators.sparqlgen import SparqlGenerator
 from linkml.validators.sparqlvalidator import SparqlDataValidator
 from tests.test_validation.environment import env
-
 
 logger = logging.getLogger(__file__)
 
