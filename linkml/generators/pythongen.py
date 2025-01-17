@@ -504,6 +504,9 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             + (f"\n{constructor}" if constructor else "")
         )
 
+        if self.genmeta and cls.name == "permissible_value":
+            cd_str += "\n\tdef __str__(self):\n\t\treturn self.text"
+
         return cd_str
 
     def gen_inherited_slots(self, cls: ClassDefinition) -> str:
@@ -907,6 +910,10 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 pass
             elif slot.required:
                 rlines.append(f"if not isinstance(self.{aliased_slot_name}, {base_type_name}):")
+            elif slot.range in self.schema.enums:
+                rlines.append(
+                    f"if self.{aliased_slot_name} is not None and self.{aliased_slot_name} not in {base_type_name}:"
+                )
             else:
                 rlines.append(
                     f"if self.{aliased_slot_name} is not None and "
@@ -931,13 +938,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}()")
             else:
                 if slot.range in self.schema.enums and slot.ifabsent:
-                    # `ifabsent` for an enumeration cannot be assigned to
-                    # the dataclass field default, because it would be a
-                    # mutable. `python_ifabsent_processor.py` can specify
-                    # the default as string and here that string gets
-                    # converted into an object attribute invocation
-                    # TODO: fix according https://github.com/linkml/linkml/pull/2329#discussion_r1797534588
-                    rlines.append(f"\tself.{aliased_slot_name} = getattr({slot.range}, self.{aliased_slot_name})")
+                    rlines.append(f"\tself.{aliased_slot_name} = {slot.ifabsent}")
                 elif (
                     (self.class_identifier(slot.range) and not slot.inlined)
                     or slot.range in self.schema.types
