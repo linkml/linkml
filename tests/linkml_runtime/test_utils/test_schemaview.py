@@ -6,8 +6,9 @@ import pytest
 from jsonasobj2 import JsonObj
 
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model.meta import Example, SchemaDefinition, ClassDefinition, SlotDefinitionName, SlotDefinition, \
-    ClassDefinitionName, Prefix
+from linkml_runtime.linkml_model.meta import Example, SchemaDefinition, ClassDefinition, SlotDefinitionName, \
+    SlotDefinition, \
+    ClassDefinitionName, Prefix, TypeDefinition
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView, SchemaUsage, OrderedBy
@@ -897,3 +898,17 @@ def test_materialize_nonscalar_slot_usage():
     assert cls.attributes["tempo"].annotations.preferred_unit.value == "BPM"
     assert cls.attributes["tempo"].domain_of == ["DJController"]
     assert cls.slot_usage["tempo"].domain_of == []
+
+
+def test_type_and_slot_with_same_name():
+    """
+    Test that checks the case where a URI needs to be resolved and a name is ambiguously used for a slot and a
+    type
+    """
+    schema_definition = SchemaDefinition(id="https://example.org/test#", name="test_schema", default_prefix="ex")
+
+    view = SchemaView(schema_definition)
+    view.add_slot(SlotDefinition(name="test", from_schema="https://example.org/another#"))
+    view.add_type(TypeDefinition(name="test", from_schema="https://example.org/imported#"))
+
+    assert view.get_uri("test", imports=True) == "ex:test"

@@ -318,7 +318,16 @@ class SchemaView(object):
 
         if inject_metadata:
             for s in self.schema_map.values():
-                for x in {**s.classes, **s.enums, **s.slots, **s.subsets, **s.types}.values():
+                # It is important to merge element definitions as a list as multiple elements of different kinds can
+                # have the same name which means they have the same dict key.
+                elements = []
+                elements.extend(s.classes.values())
+                elements.extend(s.enums.values())
+                elements.extend(s.slots.values())
+                elements.extend(s.subsets.values())
+                elements.extend(s.types.values())
+
+                for x in elements:
                     x.from_schema = s.id
                 for c in s.classes.values():
                     for a in c.attributes.values():
@@ -1064,14 +1073,14 @@ class SchemaView(object):
         Return the CURIE or URI for a schema element. If the schema defines a specific URI, this is
         used, otherwise this is constructed from the default prefix combined with the element name
 
-        :param element_name: name of schema element
+        :param element: name of schema element
         :param imports: include imports closure
         :param native: return the native CURIE or URI rather than what is declared in the uri slot
         :param expand: expand the CURIE to a URI; defaults to False
         :return: URI or CURIE as a string
         """
         e = self.get_element(element, imports=imports)
-        e_name = e.name
+
         if isinstance(e, ClassDefinition):
             uri = e.class_uri
             e_name = camelcase(e.name)
@@ -1085,8 +1094,8 @@ class SchemaView(object):
             raise ValueError(f'Must be class or slot or type: {e}')
         if uri is None or native:
             if e.from_schema is not None:
-                schema = next(sc for sc in self.schema_map.values() if sc.id == e.from_schema)
-                if schema == None:
+                schema = next((sc for sc in self.schema_map.values() if sc.id == e.from_schema), None)
+                if schema is None:
                     raise ValueError(f'Cannot find {e.from_schema} in schema_map')
             else:
                 schema = self.schema_map[self.in_schema(e.name)]
