@@ -8,5 +8,5 @@ fields:
   display_name: street
 - id: city
   display_name: city
-- id: altitude
+- id: alt
   display_name: altitude

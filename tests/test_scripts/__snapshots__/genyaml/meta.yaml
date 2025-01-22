@@ -745,7 +745,8 @@ slots:
     name: altitude
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/altitude
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
-    slot_uri: ks:altitude
+    slot_uri: ks:alt
+    alias: alt
     owner: Address
     domain_of:
     - Address

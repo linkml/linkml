@@ -59,7 +59,7 @@
             "additionalProperties": false,
             "description": "",
             "properties": {
-                "altitude": {
+                "alt": {
                     "type": [
                         "number",
                         "null"
