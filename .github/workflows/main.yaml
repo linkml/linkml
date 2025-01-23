@@ -117,3 +117,44 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: coverage.xml
           fail_ci_if_error: true
+
+  test_slow:
+    name: Slow Tests
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+        python-version: [ "3.8", "3.12" ]
+    needs:
+      - quality-checks
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install poetry
+        run: pipx install poetry
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        id: setup-python
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'poetry'
+      - name: Install dependencies
+        run: poetry install --no-interaction --all-extras
+      - name: Generate coverage results
+        run: |
+          poetry run coverage run -m pytest --with-slow --with-biolink -m slow -n auto
+          poetry run coverage xml
+          poetry run coverage report -m
+        shell: bash
+      - name: Upload coverage report
+        if: github.repository == 'linkml/linkml'
+        uses: codecov/codecov-action@v4
+        with:
+          name: codecov-results-slow-${{ matrix.os }}-${{ matrix.python-version }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: coverage.xml
+          fail_ci_if_error: true
