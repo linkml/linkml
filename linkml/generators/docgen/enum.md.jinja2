@@ -1,4 +1,4 @@
-# Enum: {{ gen.name(element) }}
+# Enum: {{ gen.name(element) }} {% if element.deprecated %} <span style="color: red;"><strong> (DEPRECATED) </strong> {% endif %}
 
 {% if element.description %}
 {% set element_description_lines = element.description.split('\n') %}
