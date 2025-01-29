@@ -558,7 +558,7 @@ def test_equals_string(framework, range, multivalued, value_is_multivalued, valu
     # Decide validity
     # --------------------------------------------------
     ACCEPT_WRONG_TYPE = (PYDANTIC,)
-    COERCE_SCALAR = (SHACL,)
+    COERCE_SCALAR = (SHACL,OWL,)
 
     schema_generation_failure = False
     if range != "string" and framework not in ACCEPT_WRONG_TYPE:
@@ -684,6 +684,10 @@ def test_equals_string_in(framework, range, multivalued, value_is_multivalued, v
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if framework in (PYTHON_DATACLASSES, SQL_DDL_SQLITE):
         pytest.skip(f"{framework} has not implemented equals_string_in")
+    if framework in (OWL,):
+        # RDF/OWL does not distinguish between scalars and sets of size one.
+        if multivalued and not value_is_multivalued:
+            expected_behavior = ValidationBehavior.INCOMPLETE
 
     slots = {SLOT_S1: {"range": range, "multivalued": multivalued, "equals_string_in": EQUALS_STRING_IN}}
     classes = {CLASS_C: {"slots": [SLOT_S1]}}
