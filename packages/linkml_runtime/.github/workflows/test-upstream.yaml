@@ -1,3 +1,4 @@
+# Test linkml-runtime with upstream linkml and run linkml tests
 name: Test with upstream linkml
 on:
   pull_request:
@@ -83,7 +84,7 @@ jobs:
           echo "upstream_repo=${{ inputs.upstream_repo }}" >> "$GITHUB_ENV"
 
       - name: checkout upstream
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2
         with:
           repository: "${{ env.upstream_repo }}"
           path: linkml
@@ -91,7 +92,7 @@ jobs:
           fetch-depth: 0
 
       - name: checkout linkml-runtime
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2
         with:
           # don't specify repository like this or else we won't get pull request branches correctly
           # repository: linkml/linkml-runtime
@@ -113,22 +114,18 @@ jobs:
           git fetch upstream --tags
 
       - name: set up python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.5
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install poetry
-        run: pipx install poetry==1.*
-
-      - name: Check Poetry version
-        run: poetry --version
-
-      - name: Install dynamic versioning plugin
-        run: poetry self add "poetry-dynamic-versioning[plugin]"
+        run: |
+          pipx install poetry
+          pipx inject poetry poetry-dynamic-versioning
 
       - name: Load cached venv
         id: cached-poetry-dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57
         with:
           path: linkml/.venv
           key: venv-${{ matrix.python-version }}-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
@@ -156,9 +153,8 @@ jobs:
         working-directory: linkml
         run: poetry run python -c 'import linkml_runtime; from importlib.metadata import version; print(linkml_runtime.__file__); print(version("linkml_runtime"))'
 
-      - name: run tests
+      - name: run linkml tests
+        # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668
+        shell: bash
         working-directory: linkml
         run: poetry run python -m pytest --with-slow
-
-
-

@@ -1,6 +1,7 @@
 # Built from:
-# https://docs.github.com/en/actions/guides/building-and-testing-python
+# https://github.com/actions/checkout/
 # https://github.com/actions/setup-python/
+# https://github.com/codecov/codecov-action
 
 name: Build and test linkml-runtime
 
@@ -17,31 +18,37 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.9", "3.10", "3.12", "3.13"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
         exclude:
         - os: windows-latest
           python-version: "3.10"
         - os: windows-latest
+          python-version: "3.11"
+        - os: windows-latest
           python-version: "3.12"
 
     runs-on: ${{ matrix.os }}
-    
+
     steps:
 
       #----------------------------------------------
       #          install poetry
       #----------------------------------------------
       - name: Install Poetry
-        run: pipx install poetry==1.4.0
-        
+        run: |
+          pipx install poetry
+          pipx inject poetry poetry-dynamic-versioning
+
       #----------------------------------------------
       #       check-out repo and set-up python
       #----------------------------------------------
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.2
+        with:
+          fetch-depth: 0
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.5
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'poetry'
@@ -50,13 +57,14 @@ jobs:
       #    install your root project, if required 
       #----------------------------------------------      
       - name: Install library
-        run: poetry install --no-interaction
+        run: |
+          poetry install --no-interaction
 
       #----------------------------------------------
       #              coverage report   
       #----------------------------------------------
       - name: Generate coverage results
-        # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668 
+        # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668
         shell: bash
         run: |
           poetry run coverage run -m pytest
@@ -67,7 +75,7 @@ jobs:
       #           upload coverage results
       #----------------------------------------------
       - name: Upload coverage report
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           name: codecov-results-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}

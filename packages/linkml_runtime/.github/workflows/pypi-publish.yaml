@@ -1,19 +1,19 @@
 name: Publish Python Package
+# Upload to PyPI is triggered by creating & publishing a release in GitHub UI
 
 on:
   release:
-    types: [created]
+    types: [published]
 
 jobs:
-  build-n-publish:
-    name: Build and publish Python 🐍 distributions 📦 to PyPI
+  build:
+    name: Build Python 🐍 distributions 📦 for publishing to PyPI
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4.2
 
     - name: Set up Python
-      uses: actions/setup-python@v2.2.2
+      uses: actions/setup-python@v5.5
       with:
         python-version: 3.12
 
@@ -28,8 +28,40 @@ jobs:
         poetry version $(git describe --tags --abbrev=0)
         poetry build
 
-    - name: Publish distribution 📦 to PyPI
-      uses: pypa/gh-action-pypi-publish@v1.2.2
+    - name: Store built distribution
+      uses: actions/upload-artifact@v4.6
       with:
-        user: __token__
-        password: ${{ secrets.pypi_password }}
+        name: distribution-files
+        path: dist/
+
+  pypi-publish:
+    name: Build and publish Python 🐍 package 📦 to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    # Next 5 lines prepare for trusted publishing: https://docs.pypi.org/trusted-publishers/adding-a-publisher/
+    # environment:
+    #   name: pypi-release
+    #   url: https://pypi.org/p/linkml-runtime
+    # permissions:
+    #   id-token: write  # this permission is mandatory for trusted publishing
+    steps:
+      - name: Download built distribution
+        uses: actions/download-artifact@v4.2
+        with:
+          name: distribution-files
+          path: dist
+
+      - name: Publish package 📦 to PyPI
+        if: github.event_name == 'release'
+        uses: pypa/gh-action-pypi-publish@v1.12
+        with:
+          user: __token__
+          password: ${{ secrets.pypi_password }}
+          # verbose: true
+        
+# Used actions: (updates managed by dependabot)
+# - https://github.com/actions/checkout
+# - https://github.com/actions/setup-python
+# - https://github.com/actions/upload-artifact
+# - https://github.com/actions/download-artifact
+# - https://github.com/pypa/gh-action-pypi-publish/
