@@ -43,8 +43,8 @@ from linkml.utils.generator import Generator, shared_arguments
 
 logger = logging.getLogger(__name__)
 
-#OWL_TYPE = URIRef  ## RDFS.Literal or OWL.Thing
-OWL_TYPE = Union[OWL.Thing, RDFS.Literal, RDFS.Datatype]
+# TODO: simplify handling of OWL_TYPE
+OWL_TYPE = URIRef ## oneOf: [OWL.Thing, RDFS.Literal, RDFS.Datatype]
 
 SWRL = rdflib.Namespace("http://www.w3.org/2003/11/swrl#")
 SWRLB = rdflib.Namespace("http://www.w3.org/2003/11/swrlb#")
