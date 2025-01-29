@@ -693,6 +693,34 @@ def test_equals_string_in(framework, range, multivalued, value_is_multivalued, v
     classes = {CLASS_C: {"slots": [SLOT_S1]}}
     key = f"equals_string_in-multivalued{multivalued}-value_is_multivalued{value_is_multivalued}-range{range}"
 
+    expected_owl = (
+        "@prefix ex: <http://example.org/> ."
+        "@prefix linkml: <https://w3id.org/linkml/> ."
+        "@prefix owl: <http://www.w3.org/2002/07/owl#> ."
+        "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
+        "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ."
+        "@prefix schema1: <http://schema.org/> ."
+        "@prefix shex: <http://www.w3.org/ns/shex#> ."
+        "@prefix skos: <http://www.w3.org/2004/02/skos/core#> ."
+        "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> ."
+        ""
+        "ex:C a owl:Class ;"
+        "    rdfs:label \"C\" ;"
+        "    rdfs:subClassOf [ a owl:Restriction ;"
+        "            owl:maxCardinality 1 ;"
+        "            owl:onProperty ex:s1 ],"
+        "        [ a owl:Restriction ;"
+        "            owl:minCardinality 0 ;"
+        "            owl:onProperty ex:s1 ],"
+        "        [ a owl:Restriction ;"
+        "            owl:allValuesFrom [ a rdfs:Datatype ;"
+        "                    owl:intersectionOf ( xsd:string [ a rdfs:Datatype ;"
+        "                                owl:oneOf ( \"EQUALS_STRING_A\" \"EQUALS_STRING_B\" ) ] ) ] ;"
+        "            owl:onProperty ex:s1 ] ."
+    )
+    if multivalued is False and range == "string":
+        classes[CLASS_C]["_mappings"] = {OWL: expected_owl}
+
     # --------------------------------------------------
     # Run test
     # --------------------------------------------------

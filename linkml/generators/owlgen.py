@@ -2,6 +2,7 @@
 
 import logging
 import os
+import typing
 from collections import defaultdict
 from copy import copy
 from dataclasses import dataclass, field
@@ -42,7 +43,8 @@ from linkml.utils.generator import Generator, shared_arguments
 
 logger = logging.getLogger(__name__)
 
-OWL_TYPE = URIRef  ## RDFS.Literal or OWL.Thing
+#OWL_TYPE = URIRef  ## RDFS.Literal or OWL.Thing
+OWL_TYPE = Union[OWL.Thing, RDFS.Literal, RDFS.Datatype]
 
 SWRL = rdflib.Namespace("http://www.w3.org/2003/11/swrl#")
 SWRLB = rdflib.Namespace("http://www.w3.org/2003/11/swrlb#")
@@ -589,6 +591,26 @@ class OwlSchemaGenerator(Generator):
                 node_types.update(self.slot_node_owltypes(subslot, owning_class=owning_class))
         return node_types
 
+    def _owl_types_for_slot(self, slot: SlotDefinition, class_name: Optional[str] = None) -> Set[OWL_TYPE]:
+        """
+        Determine the OWL types of a named slot
+
+        The OWL type is either OWL.Thing or RDFS.Datatype
+
+        :param slot:
+        :return:
+        """
+        sv = self.schemaview
+        range = slot.range
+        if not range:
+            induced_slot = sv.induced_slot(slot.name, class_name)
+            range = induced_slot.range
+        if range in sv.all_classes(imports=True):
+            return {OWL.Thing}
+        if range in sv.all_types(imports=True):
+            return {RDFS.Datatype}
+        return set()
+
     def transform_class_slot_expression(
         self,
         cls: Optional[Union[ClassDefinition, AnonymousClassExpression]],
@@ -649,8 +671,11 @@ class OwlSchemaGenerator(Generator):
                 disj_exprs.append(pos_expr)
             owl_exprs.append(self._union_of(disj_exprs, owl_types=owl_types))
         range = slot.range
-        # if not range and not owl_exprs:
-        #    range = sv.schema.default_range
+        if not range:
+            induced_slot = sv.induced_slot(slot.name, cls.name)
+            range = induced_slot.range
+        if not range:
+            raise ValueError(f"Unable to determine range for {slot.name}")
         this_owl_types = set()
         if range:
             if range in sv.all_types(imports=True):
@@ -674,6 +699,10 @@ class OwlSchemaGenerator(Generator):
         is_literal = None
         if owl_types:
             is_literal = RDFS.Datatype in owl_types
+        elif this_owl_types:
+            is_literal = RDFS.Literal in this_owl_types
+        if is_literal is None:
+            raise ValueError(f"Unable to determine if {slot.name} {this_owl_types} is literal")
         constraints_exprs, constraints_owltypes = self.add_constraints(slot, is_literal=is_literal)
         this_owl_types.update(constraints_owltypes)
         owl_exprs.extend(constraints_exprs)
@@ -709,13 +738,16 @@ class OwlSchemaGenerator(Generator):
         if element.equals_string_in:
             equals_string_in = element.equals_string_in
             if is_literal is None:
+                raise ValueError(f"ignoring equals_string={equals_string_in} as unable to tell if literal")
                 logger.warning(f"ignoring equals_string={equals_string_in} as unable to tell if literal")
             elif is_literal:
-                dt_exprs = [
-                    self._datatype_restriction(XSD.string, [self._facet(XSD.pattern, s)]) for s in equals_string_in
-                ]
-                union_expr = self._union_of(dt_exprs, owl_types={RDFS.Literal})
-                owl_exprs.append(union_expr)
+                one_of_expr = self._boolean_expression([Literal(s) for s in equals_string_in], OWL.oneOf, owl_types={RDFS.Literal})
+                #dt_exprs = [
+                #    self._datatype_restriction(XSD.string, [self._facet(XSD.pattern, s)]) for s in equals_string_in
+                #]
+                #dt_exprs = [Literal(s) for s in equals_string_in]
+                #union_expr = self._union_of(dt_exprs, owl_types={RDFS.Literal})
+                owl_exprs.append(one_of_expr)
                 owl_types.add(RDFS.Literal)
             else:
                 eq_uris = [URIRef(self.schemaview.expand_curie(s)) for s in equals_string_in]
@@ -1140,7 +1172,7 @@ class OwlSchemaGenerator(Generator):
 
     def _boolean_expression(
         self,
-        exprs: List[Union[BNode, URIRef]],
+        exprs: List[Union[BNode, URIRef, Literal]],
         predicate: URIRef,
         node: Optional[URIRef] = None,
         owl_types: Set[OWL_TYPE] = None,
