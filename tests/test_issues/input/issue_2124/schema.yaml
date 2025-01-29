@@ -1,0 +1,16 @@
+id: https://examples.org/my-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+  myschema: https://examples.org/my-schema
+imports:
+  - linkml:types
+default_prefix: myschema
+default_range: string
+
+classes:
+  Room:
+    attributes:
+      room_name:
+        range: string
+      comment:
+        range: string
