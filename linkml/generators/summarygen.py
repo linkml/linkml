@@ -1,6 +1,4 @@
-"""Generate Summary Spreadsheets
-
-"""
+"""Generate Summary Spreadsheets"""
 
 import os
 from csv import DictWriter
