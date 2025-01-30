@@ -742,11 +742,6 @@ class OwlSchemaGenerator(Generator):
             elif is_literal:
                 literals = [Literal(s) for s in equals_string_in]
                 one_of_expr = self._boolean_expression(literals, OWL.oneOf, owl_types={RDFS.Literal})
-                #dt_exprs = [
-                #    self._datatype_restriction(XSD.string, [self._facet(XSD.pattern, s)]) for s in equals_string_in
-                #]
-                #dt_exprs = [Literal(s) for s in equals_string_in]
-                #union_expr = self._union_of(dt_exprs, owl_types={RDFS.Literal})
                 owl_exprs.append(one_of_expr)
                 owl_types.add(RDFS.Literal)
             else:
