@@ -558,7 +558,10 @@ def test_equals_string(framework, range, multivalued, value_is_multivalued, valu
     # Decide validity
     # --------------------------------------------------
     ACCEPT_WRONG_TYPE = (PYDANTIC,)
-    COERCE_SCALAR = (SHACL,OWL,)
+    COERCE_SCALAR = (
+        SHACL,
+        OWL,
+    )
 
     schema_generation_failure = False
     if range != "string" and framework not in ACCEPT_WRONG_TYPE:
@@ -705,7 +708,7 @@ def test_equals_string_in(framework, range, multivalued, value_is_multivalued, v
         "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> ."
         ""
         "ex:C a owl:Class ;"
-        "    rdfs:label \"C\" ;"
+        '    rdfs:label "C" ;'
         "    rdfs:subClassOf [ a owl:Restriction ;"
         "            owl:maxCardinality 1 ;"
         "            owl:onProperty ex:s1 ],"
@@ -715,7 +718,7 @@ def test_equals_string_in(framework, range, multivalued, value_is_multivalued, v
         "        [ a owl:Restriction ;"
         "            owl:allValuesFrom [ a rdfs:Datatype ;"
         "                    owl:intersectionOf ( xsd:string [ a rdfs:Datatype ;"
-        "                                owl:oneOf ( \"EQUALS_STRING_A\" \"EQUALS_STRING_B\" ) ] ) ] ;"
+        '                                owl:oneOf ( "EQUALS_STRING_A" "EQUALS_STRING_B" ) ] ) ] ;'
         "            owl:onProperty ex:s1 ] ."
     )
     if multivalued is False and range == "string":
