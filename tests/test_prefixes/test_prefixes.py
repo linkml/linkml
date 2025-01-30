@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 
 
 def test_owlgen(schema, owl_output):
-    """owl"""
+    """Tests gen-owl script"""
     owl = OwlSchemaGenerator(schema, mergeimports=False, ontology_uri_suffix=".owl.ttl", format="nt").serialize()
     with open(owl_output, "w") as stream:
         stream.write(owl)

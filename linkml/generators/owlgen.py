@@ -670,11 +670,9 @@ class OwlSchemaGenerator(Generator):
                 disj_exprs.append(pos_expr)
             owl_exprs.append(self._union_of(disj_exprs, owl_types=owl_types))
         range = slot.range
-        if not range:
+        if not range and isinstance(slot, SlotDefinition):
             induced_slot = sv.induced_slot(slot.name, cls.name if cls else None)
             range = induced_slot.range
-        if not range:
-            raise ValueError(f"Unable to determine range for {slot.name}")
         this_owl_types = set()
         if range:
             if range in sv.all_types(imports=True):
@@ -701,7 +699,7 @@ class OwlSchemaGenerator(Generator):
         elif this_owl_types:
             is_literal = RDFS.Literal in this_owl_types
         if is_literal is None:
-            logger.warning(f"Unable to determine if {slot.name} is literal or object")
+            logger.warning("Unable to determine if slot is literal or object")
         constraints_exprs, constraints_owltypes = self.add_constraints(slot, is_literal=is_literal)
         this_owl_types.update(constraints_owltypes)
         owl_exprs.extend(constraints_exprs)
