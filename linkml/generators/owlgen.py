@@ -671,7 +671,7 @@ class OwlSchemaGenerator(Generator):
             owl_exprs.append(self._union_of(disj_exprs, owl_types=owl_types))
         range = slot.range
         if not range and isinstance(slot, SlotDefinition):
-            induced_slot = sv.induced_slot(slot.name, cls.name if cls else None)
+            induced_slot = sv.induced_slot(slot.name, cls.name if isinstance(cls, ClassDefinition) else None)
             range = induced_slot.range
         this_owl_types = set()
         if range:
