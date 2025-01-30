@@ -2,7 +2,6 @@
 
 import logging
 import os
-import typing
 from collections import defaultdict
 from copy import copy
 from dataclasses import dataclass, field
@@ -741,7 +740,8 @@ class OwlSchemaGenerator(Generator):
                 raise ValueError(f"ignoring equals_string={equals_string_in} as unable to tell if literal")
                 logger.warning(f"ignoring equals_string={equals_string_in} as unable to tell if literal")
             elif is_literal:
-                one_of_expr = self._boolean_expression([Literal(s) for s in equals_string_in], OWL.oneOf, owl_types={RDFS.Literal})
+                literals = [Literal(s) for s in equals_string_in]
+                one_of_expr = self._boolean_expression(literals, OWL.oneOf, owl_types={RDFS.Literal})
                 #dt_exprs = [
                 #    self._datatype_restriction(XSD.string, [self._facet(XSD.pattern, s)]) for s in equals_string_in
                 #]
