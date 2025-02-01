@@ -130,7 +130,7 @@ jobs:
       # make extra sure we're removing any old version of linkml-runtime that exists
       - name: uninstall potentially cached linkml-runtime
         working-directory: linkml
-        run: poetry run pip uninstall linkml-runtime
+        run: poetry run pip uninstall -y linkml-runtime
 
       # we are not using linkml-runtime's lockfile, but simulating what will happen
       # when we merge this and update linkml's lockfile
