@@ -36,8 +36,13 @@ jobs:
         if: github.event_name == 'pull_request'
         shell: bash
         run: |
+          PR_BODY=$(cat <<EOF
+            ${{ github.event.pull_request.body }}
+          EOF
+          )
+          
           UPSTREAM_BRANCH=$( \
-            echo ${{ github.event.pull_request.body }} | \
+            echo $PR_BODY | \
             head -2 | \
             grep upstream_branch | \
             cut -d ":" -f 2 | \
@@ -52,7 +57,7 @@ jobs:
           fi
           
           UPSTREAM_REPO=$( \
-            echo ${{ github.event.pull_request.body }} | \
+            echo $PR_BODY | \
             head -2 | \
             grep upstream_repo | \
             cut -d ":" -f 2 | \
