@@ -410,9 +410,9 @@ class LogicalModelTransformer(ModelTransformer):
         target_class_name: ClassDefinitionName,
         ancestors: list[ClassDefinitionName],
     ):
-        anc_classes = [self.schemaview.get_class(anc) for anc in ancestors]
+        ancestor_classes = [self.schemaview.get_class(anc) for anc in ancestors]
         attributes: dict[SlotDefinitionName, SlotDefinition] = {}
-        for anc in anc_classes:
+        for anc in ancestor_classes:
             top_level_slots = [(s, target_schema.slots[s]) for s in anc.slots]
             for slot_name, slot_expr in list(anc.attributes.items()) + list(anc.slot_usage.items()) + top_level_slots:
                 if slot_name not in attributes:
@@ -645,7 +645,7 @@ class LogicalModelTransformer(ModelTransformer):
         if slot_expression.all_of:
             exprs.append(logictools.And(*[self._as_logical_expression(subx) for subx in slot_expression.all_of]))
         if slot_expression.exactly_one_of:
-            # TODO: disjointness
+            # TODO: disjointedness
             exprs.append(logictools.Or(*[self._as_logical_expression(subx) for subx in slot_expression.exactly_one_of]))
         if slot_expression.none_of:
             exprs.append(
