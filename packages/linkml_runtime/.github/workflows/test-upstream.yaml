@@ -42,7 +42,7 @@ jobs:
           )
           
           UPSTREAM_BRANCH=$( \
-            echo $PR_BODY | \
+            echo "$PR_BODY" | \
             head -2 | \
             grep upstream_branch | \
             cut -d ":" -f 2 | \
@@ -57,7 +57,7 @@ jobs:
           fi
           
           UPSTREAM_REPO=$( \
-            echo $PR_BODY | \
+            echo "$PR_BODY" | \
             head -2 | \
             grep upstream_repo | \
             cut -d ":" -f 2 | \
