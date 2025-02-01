@@ -53,6 +53,9 @@ in the first two lines of your pull request like this:
 > Hey everyone what up it's me your boy MC spongebob here with another banger
 > ... (PR continues)
 
+The order of the `upstream_repo` and `upstream_branch` tags doesn't matter,
+but they must be on the first two lines of the pull request comment and separated with a colon.
+
 Maintainers can also specify upstream branches to test against when 
 dispatching the `test-upstream` workflow manually via the GUI prompt.
 
