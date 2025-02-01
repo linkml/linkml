@@ -31,6 +31,31 @@ ALSO NOTE: github.com lets you create a pull request from the main branch, autom
 
 > A code review (which happens with both the contributor and the reviewer present) is required for contributing.
 
+## Pull Requests
+
+### Upstream Testing
+
+`linkml-runtime` is tightly coupled to upstream `linkml`, 
+so all pull requests have their changes tested by running the upstream tests
+against the PR version of `linkml-runtime`.
+
+In some circumstances, paired changes need to be made against *both*
+`linkml` and `linkml-runtime`, where testing against the `main` branch
+of `linkml` is insufficient. 
+
+When opening a pull request, you can specify that your PR needs to be
+tested against a specific upstream branch and repository by specifying it
+in the first two lines of your pull request like this:
+
+> upstream_repo: my-cool-username/linkml
+> upstream_branch: some-complicated-feature
+> 
+> Hey everyone what up it's me your boy MC spongebob here with another banger
+> ... (PR continues)
+
+Maintainers can also specify upstream branches to test against when 
+dispatching the `test-upstream` workflow manually via the GUI prompt.
+
 ## Development environment setup
 
 1. Install [poetry](https://python-poetry.org/docs/#installation).
@@ -70,7 +95,21 @@ All code added to the linkml-runtime source must have tests. The repo uses the n
 You can run the test suite in the following way:
 
 ```
-poetry run python -m unittest discover
+poetry run python -m pytest
+```
+
+### Upstream Testing
+
+To run the upstream `linkml` tests against your branch,
+install `linkml` locally with poetry, and then manually install your
+local copy of `linkml-runtime`
+
+```shell
+git clone https://github.com/linkml/linkml
+cd linkml
+poetry install --all-extras --with tests
+poetry run pip install -e ~/location/of/linkml-runtime
+poetry run pytest
 ```
 
 ## Code style
