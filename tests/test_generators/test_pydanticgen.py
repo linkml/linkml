@@ -1597,7 +1597,7 @@ class TestCase:
     type: Literal["pass", "fail-shape", "fail-dtype", "fail-scalar"]
     array: np.ndarray
 
-    def expectation(self, array_representation: List[ArrayRepresentation]):
+    def expectation(self, array_representation: list[ArrayRepresentation]):
         if self.type == "pass":
             return does_not_raise()
         elif self.type in ("fail-dtype", "fail-scalar") and ArrayRepresentation.LIST in array_representation:

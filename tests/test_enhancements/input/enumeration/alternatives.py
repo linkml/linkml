@@ -12,15 +12,11 @@ from typing import Any, ClassVar, Optional, Union
 
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
 from rdflib import URIRef
 
 metamodel_version = "1.7.0"
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 CLUE = CurieNamespace("CLUE", "http://ontologies-r.us/clue/")
