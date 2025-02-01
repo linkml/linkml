@@ -5,10 +5,14 @@ on:
       - main
   workflow_dispatch:
     inputs:
+      upstream_repo:
+        description: "Upstream linkml repository to test against"
+        required: true
+        default: "linkml/linkml"
       upstream_branch:
         description: "Upstream linkml branch to test against"
         required: true
-        default: 'main'
+        default: "main"
 
 jobs:
   test_upstream:
@@ -28,13 +32,13 @@ jobs:
       POETRY_VIRTUALENVS_IN_PROJECT: true
 
     steps:
-      - name: Get upstream branch from first line of PR Body
+      - name: Get upstream branch and repo from first lines of PR Body
         if: github.event_name == 'pull_request'
         shell: bash
         run: |
           UPSTREAM_BRANCH=$( \
             echo ${{ github.event.pull_request.body }} | \
-            head -1 | \
+            head -2 | \
             grep upstream_branch | \
             cut -d ":" -f 2 | \
             awk '{$1=$1};1' \
@@ -46,8 +50,24 @@ jobs:
             echo "Using main as default"
             UPSTREAM_BRANCH="main"
           fi
+          
+          UPSTREAM_REPO=$( \
+            echo ${{ github.event.pull_request.body }} | \
+            head -2 | \
+            grep upstream_repo | \
+            cut -d ":" -f 2 | \
+            awk '{$1=$1};1' \
+          )
+          echo "Got upstream repo:"
+          echo $UPSTREAM_REPO
+          
+          if [[ -z "$UPSTREAM_REPO" ]]; then
+            echo "Using linkml/linkml as default"
+            UPSTREAM_REPO="linkml/linkml"
+          fi
 
-          echo "upstream_branch=$UPSTREAM_BRANCH" >> "$GITHUB_ENV"    
+          echo "upstream_branch=$UPSTREAM_BRANCH" >> "$GITHUB_ENV"
+          echo "upstream_repo=$UPSTREAM_REPO" >> "$GITHUB_ENV"
 
       - name: Get upstream branch from workflow dispatch
         if: github.event_name == 'workflow_dispatch'
@@ -58,7 +78,7 @@ jobs:
       - name: checkout upstream
         uses: actions/checkout@v4
         with:
-          repository: linkml/linkml
+          repository: "${{ env.upstream_repo }}"
           path: linkml
           ref: "${{ env.upstream_branch }}"
           fetch-depth: 0
@@ -71,7 +91,14 @@ jobs:
           path: linkml-runtime
           fetch-depth: 0
 
-      - name: Ensure tags if not run from main repo
+      - name: Ensure tags for linkml upstream if a different one than linkml/linkml is specified
+        if: "${{ env.upstream_repo }}" != "linkml/linkml"
+        working-directory: linkml
+        run: |
+          git remote add upstream https://github.com/linkml/linkml
+          git fetch upstream --tags
+
+      - name: Ensure tags for linkml-runtime if not run from main repo
         if: github.repository != 'linkml/linkml-runtime'
         working-directory: linkml-runtime
         run: |
