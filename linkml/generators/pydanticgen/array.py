@@ -5,7 +5,6 @@ from enum import Enum
 from typing import (
     ClassVar,
     Optional,
-    Type,
     TypeVar,
     Union,
 )
