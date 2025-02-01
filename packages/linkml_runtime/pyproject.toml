@@ -47,7 +47,7 @@ comparefiles = "linkml_runtime.utils.comparefiles:cli"
 linkml-normalize = "linkml_runtime.processing.referencevalidator:cli"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8.1"
 click = "*"
 deprecated = "*"
 hbreader = "*"
