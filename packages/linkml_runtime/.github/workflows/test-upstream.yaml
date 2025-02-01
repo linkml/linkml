@@ -36,12 +36,9 @@ jobs:
       - name: Get upstream branch and repo from first lines of PR Body
         if: github.event_name == 'pull_request'
         shell: bash
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
         run: |
-          PR_BODY=$(cat <<EOF
-            ${{ github.event.pull_request.body }}
-          EOF
-          )
-          
           UPSTREAM_BRANCH=$( \
             echo "$PR_BODY" | \
             head -2 | \

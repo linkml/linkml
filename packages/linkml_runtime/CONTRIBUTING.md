@@ -56,6 +56,11 @@ in the first two lines of your pull request like this:
 Maintainers can also specify upstream branches to test against when 
 dispatching the `test-upstream` workflow manually via the GUI prompt.
 
+Testing against an unverified upstream branch is not necessarily dangerous,
+since the [input is stored as a variable first and not executed as untrusted code](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable),
+but maintainers should take care to verify that the upstream branch and repo
+are correct and expected given the context of the PR.
+
 ## Development environment setup
 
 1. Install [poetry](https://python-poetry.org/docs/#installation).
