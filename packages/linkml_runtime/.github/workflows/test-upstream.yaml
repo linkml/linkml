@@ -4,6 +4,11 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      upstream_branch:
+        description: "Upstream linkml branch to test against"
+        required: true
+        default: 'main'
 
 jobs:
   test_upstream:
@@ -23,13 +28,39 @@ jobs:
       POETRY_VIRTUALENVS_IN_PROJECT: true
 
     steps:
+      - name: Get upstream branch from first line of PR Body
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          UPSTREAM_BRANCH=$( \
+            echo ${{ github.event.pull_request.body }} | \
+            head -1 | \
+            grep upstream_branch | \
+            cut -d ":" -f 2 | \
+            awk '{$1=$1};1' \
+          )
+          echo "Got upstream branch:"
+          echo $UPSTREAM_BRANCH
+          
+          if [[ -z "$UPSTREAM_BRANCH" ]]; then
+            echo "Using main as default"
+            UPSTREAM_BRANCH="main"
+          fi
+
+          echo "upstream_branch=$UPSTREAM_BRANCH" >> "$GITHUB_ENV"    
+
+      - name: Get upstream branch from workflow dispatch
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          echo "upstream_branch=${{ inputs.upstream_branch }}" >> "$GITHUB_ENV"
 
       - name: checkout upstream
         uses: actions/checkout@v4
         with:
           repository: linkml/linkml
           path: linkml
-          ref: main
+          ref: "${{ env.upstream_branch }}"
           fetch-depth: 0
 
       - name: checkout linkml-runtime
