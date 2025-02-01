@@ -39,6 +39,9 @@ jobs:
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
         run: |
+          set +e
+          set +o pipefail
+          
           UPSTREAM_BRANCH=$( \
             echo "$PR_BODY" | \
             head -2 | \
