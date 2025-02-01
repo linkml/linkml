@@ -410,11 +410,13 @@ class LogicalModelTransformer(ModelTransformer):
         target_class_name: ClassDefinitionName,
         ancestors: list[ClassDefinitionName],
     ):
-        ancestor_classes = [self.schemaview.get_class(anc) for anc in ancestors]
+        ancestor_classes = [self.schemaview.get_class(ancestor) for ancestor in ancestors]
         attributes: dict[SlotDefinitionName, SlotDefinition] = {}
-        for anc in ancestor_classes:
-            top_level_slots = [(s, target_schema.slots[s]) for s in anc.slots]
-            for slot_name, slot_expr in list(anc.attributes.items()) + list(anc.slot_usage.items()) + top_level_slots:
+        for ancestor in ancestor_classes:
+            top_level_slots = [(s, target_schema.slots[s]) for s in ancestor.slots]
+            for slot_name, slot_expr in (
+                list(ancestor.attributes.items()) + list(ancestor.slot_usage.items()) + top_level_slots
+            ):
                 if slot_name not in attributes:
                     attributes[slot_name] = SlotDefinition(slot_name)
                 sx = attributes[slot_name]
