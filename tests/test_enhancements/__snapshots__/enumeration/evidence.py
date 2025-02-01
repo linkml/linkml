@@ -33,7 +33,6 @@ from linkml_runtime.linkml_model.meta import (
     PvFormulaOptions
 )
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.formatutils import (
     camelcase,
@@ -62,9 +61,6 @@ from linkml_runtime.linkml_model.types import String
 metamodel_version = "1.7.0"
 version = None
 
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
-
 # Namespaces
 CLUE = CurieNamespace('CLUE', 'http://example.org/clue/')
 EVIDENCE = CurieNamespace('evidence', 'http://example.org/test/evidence/')
@@ -81,7 +77,7 @@ class EvidencerName(extended_str):
 
 @dataclass(repr=False)
 class Evidencer(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EVIDENCE["Evidencer"]
     class_class_curie: ClassVar[str] = "evidence:Evidencer"
@@ -91,7 +87,7 @@ class Evidencer(YAMLRoot):
     name: Union[str, EvidencerName] = None
     code: Union[str, "Evidence"] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.name):
             self.MissingRequiredField("name")
         if not isinstance(self.name, EvidencerName):

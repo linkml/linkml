@@ -1,11 +1,12 @@
 import importlib.util
 import logging
 import os
+from collections.abc import Iterable, Iterator
 from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Dict, Iterable, Iterator, List, Optional, Tuple, Union
+from typing import Optional, Union
 
 import click
 from jinja2 import Environment, FileSystemLoader, Template
@@ -135,7 +136,7 @@ class DocGenerator(Generator):
     """markdown dialect (e.g MyST, Python)"""
     sort_by: str = "name"
     visit_all_class_slots = False
-    template_mappings: Dict[str, str] = None
+    template_mappings: dict[str, str] = None
     directory: str = None
     """directory in which to write documents"""
 
@@ -462,7 +463,7 @@ class DocGenerator(Generator):
         else:
             return e.name
 
-    def links(self, e_list: List[DefinitionName]) -> List[str]:
+    def links(self, e_list: list[DefinitionName]) -> list[str]:
         """Render list of element documentation pages as hyperlinks.
 
         :param e_list: list of elements
@@ -521,7 +522,7 @@ class DocGenerator(Generator):
         mixins=True,
         descriptions=False,
         focus: DefinitionName = None,
-    ) -> Tuple[str, int]:
+    ) -> tuple[str, int]:
         sv = self.schemaview
         if element.is_a:
             pre, depth = self._tree(
@@ -681,7 +682,7 @@ class DocGenerator(Generator):
         else:
             return "mermaid"
 
-    def mermaid_diagram(self, class_names: List[Union[str, ClassDefinitionName]] = None) -> str:
+    def mermaid_diagram(self, class_names: list[Union[str, ClassDefinitionName]] = None) -> str:
         """
         Render a mermaid diagram for a set of classes
 
@@ -750,8 +751,7 @@ class DocGenerator(Generator):
         """
         elts = self.schemaview.class_induced_slots(class_name)
         _ensure_ranked(elts)
-        for e in elts:
-            yield e
+        yield from elts
 
     def all_class_objects(self) -> Iterator[ClassDefinition]:
         """
@@ -762,8 +762,7 @@ class DocGenerator(Generator):
         """
         elts = self.schemaview.all_classes(imports=self.render_imports).values()
         _ensure_ranked(elts)
-        for e in elts:
-            yield e
+        yield from elts
 
     def all_slot_objects(self) -> Iterator[SlotDefinition]:
         """
@@ -774,8 +773,7 @@ class DocGenerator(Generator):
         """
         elts = self.schemaview.all_slots(imports=self.render_imports).values()
         _ensure_ranked(elts)
-        for e in elts:
-            yield e
+        yield from elts
 
     def all_type_objects(self) -> Iterator[TypeDefinition]:
         """
@@ -786,10 +784,9 @@ class DocGenerator(Generator):
         """
         elts = self.schemaview.all_types(imports=self.render_imports).values()
         _ensure_ranked(elts)
-        for e in elts:
-            yield e
+        yield from elts
 
-    def all_type_object_names(self) -> List[TypeDefinitionName]:
+    def all_type_object_names(self) -> list[TypeDefinitionName]:
         return [t.name for t in list(self.all_type_objects())]
 
     def all_enum_objects(self) -> Iterator[EnumDefinition]:
@@ -801,8 +798,7 @@ class DocGenerator(Generator):
         """
         elts = self.schemaview.all_enums(imports=self.render_imports).values()
         _ensure_ranked(elts)
-        for e in elts:
-            yield e
+        yield from elts
 
     def all_subset_objects(self) -> Iterator[SubsetDefinition]:
         """
@@ -813,10 +809,9 @@ class DocGenerator(Generator):
         """
         elts = self.schemaview.all_subsets(imports=self.render_imports).values()
         _ensure_ranked(elts)
-        for e in elts:
-            yield e
+        yield from elts
 
-    def class_hierarchy_as_tuples(self) -> Iterator[Tuple[int, ClassDefinitionName]]:
+    def class_hierarchy_as_tuples(self) -> Iterator[tuple[int, ClassDefinitionName]]:
         """
         Generate a hierarchical representation of all classes in the schema
 
@@ -880,7 +875,7 @@ class DocGenerator(Generator):
         return slot
 
     @staticmethod
-    def get_direct_slot_names(cls: ClassDefinition) -> List[SlotDefinitionName]:
+    def get_direct_slot_names(cls: ClassDefinition) -> list[SlotDefinitionName]:
         """Fetch list of all own attributes of a class, i.e.,
         all slot names of slots that belong to the domain of a class.
 
@@ -889,7 +884,7 @@ class DocGenerator(Generator):
         """
         return cls.slots + list(cls.attributes.keys())
 
-    def get_direct_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
+    def get_direct_slots(self, cls: ClassDefinition) -> list[SlotDefinition]:
         """Fetch list of all own attributes of a class, i.e.,
         all slots that belong to the domain of a class.
 
@@ -900,7 +895,7 @@ class DocGenerator(Generator):
             self.inject_slot_info(self.schemaview.induced_slot(sn, cls.name)) for sn in self.get_direct_slot_names(cls)
         ]
 
-    def get_indirect_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
+    def get_indirect_slots(self, cls: ClassDefinition) -> list[SlotDefinition]:
         """Fetch list of all inherited attributes of a class, i.e.,
         all slots that belong to the domain of a class.
 
@@ -917,7 +912,7 @@ class DocGenerator(Generator):
 
     def get_slot_inherited_from(
         self, class_name: ClassDefinitionName, slot_name: SlotDefinitionName
-    ) -> List[ClassDefinitionName]:
+    ) -> list[ClassDefinitionName]:
         """Get the name of the class that a given slot is inherited from.
 
         :param class_name: name of the class whose slot we are checking
@@ -929,7 +924,7 @@ class DocGenerator(Generator):
         ancestors = sv.class_ancestors(class_name)
         return list(set(induced_slot.domain_of).intersection(ancestors))
 
-    def get_mixin_inherited_slots(self, cls: ClassDefinition) -> Dict[str, List[str]]:
+    def get_mixin_inherited_slots(self, cls: ClassDefinition) -> dict[str, list[str]]:
         """Fetch list of all slots acquired through mixing.
 
         :param cls: class for which we want to determine the mixed in slots
@@ -944,7 +939,7 @@ class DocGenerator(Generator):
 
         return mixed_in_slots
 
-    def example_object_blobs(self, class_name: str) -> List[Tuple[str, str]]:
+    def example_object_blobs(self, class_name: str) -> list[tuple[str, str]]:
         """Fetch list of all examples of a class.
 
         :param class_name: class for which we want to determine the examples

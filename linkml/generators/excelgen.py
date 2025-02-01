@@ -1,7 +1,6 @@
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
 
 import click
 from linkml_runtime.utils.schemaview import SchemaView
@@ -42,7 +41,7 @@ class ExcelGenerator(Generator):
         workbook.save(workbook_path)
         return workbook
 
-    def create_workbook_and_worksheets(self, output_path: Path, classes: List[str]) -> None:
+    def create_workbook_and_worksheets(self, output_path: Path, classes: list[str]) -> None:
         """
         Creates a workbook with worksheets for each class.
 
@@ -89,7 +88,7 @@ class ExcelGenerator(Generator):
             self.logger.info(f"The Excel workbooks have been written to {output_path}")
 
     @staticmethod
-    def add_columns_to_worksheet(workbook: Workbook, worksheet_name: str, sheet_headings: List[str]) -> None:
+    def add_columns_to_worksheet(workbook: Workbook, worksheet_name: str, sheet_headings: list[str]) -> None:
         """
         Get a worksheet by name and add a column to it in an existing workbook.
 

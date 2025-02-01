@@ -6,7 +6,7 @@ Generate JSON-LD contexts
 import os
 import re
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional, Set, Union
+from typing import Any, Optional, Union
 
 import click
 from jsonasobj2 import JsonObj, as_json
@@ -39,10 +39,10 @@ class ContextGenerator(Generator):
     file_extension = "context.jsonld"
 
     # ObjectVars
-    emit_prefixes: Set[str] = field(default_factory=lambda: set())
+    emit_prefixes: set[str] = field(default_factory=lambda: set())
     default_ns: str = None
-    context_body: Dict = field(default_factory=lambda: dict())
-    slot_class_maps: Dict = field(default_factory=lambda: dict())
+    context_body: dict = field(default_factory=lambda: dict())
+    slot_class_maps: dict = field(default_factory=lambda: dict())
     emit_metadata: bool = False
     model: Optional[bool] = True
     base: Optional[Union[str, Namespace]] = None

@@ -31,7 +31,7 @@ def test_sssom_metadata(schema_path, sssom_path):
     msdf_as_dict = {}
 
     # Read Input file
-    with open(schema_path, "r") as input_yaml:
+    with open(schema_path) as input_yaml:
         try:
             input_data = yaml.safe_load(input_yaml)
         except yaml.YAMLError as exc:

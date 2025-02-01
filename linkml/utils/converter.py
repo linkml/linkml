@@ -123,7 +123,7 @@ def cli(
         prefix_path = pathlib.Path(prefix_file).resolve()
         if not prefix_path.exists():
             raise Exception(f"Path {prefix_file} to prefix map does not exists.")
-        with open(prefix_path, "r") as prefix_stream:
+        with open(prefix_path) as prefix_stream:
             raw_prefix_map = yaml.safe_load(prefix_stream)
         prefix_file_map = raw_prefix_map.get("prefixes", None)
         if prefix_file_map is None:

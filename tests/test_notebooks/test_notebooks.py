@@ -36,7 +36,7 @@ def force_rewrite_comparator(expected: str, actual: str) -> str:
 )
 def test_redo_notebook(nbname, ep):
     # The information on how to do this comes from: http://tritemio.github.io/smbits/2016/01/02/execute-notebooks/
-    with open(os.path.join(NBBASEDIR, nbname), "r", encoding="utf-8") as nbf:
+    with open(os.path.join(NBBASEDIR, nbname), encoding="utf-8") as nbf:
         nb = nbformat.read(nbf, as_version=4)
     ep.preprocess(nb, dict(metadata=dict(path=NBBASEDIR)))
 

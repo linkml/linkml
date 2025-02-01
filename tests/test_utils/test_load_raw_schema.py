@@ -119,7 +119,7 @@ def test_load_text(input_path):
 def test_representation_errors(input_path):
     """Test malformed schema elements"""
     fn = input_path("typeerror1.yaml")
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         SchemaLoader(fn)
     # previously, this returned a value error.  The new loader is robust enough that it no longer does
     fn = input_path("typeerror2.yaml")
