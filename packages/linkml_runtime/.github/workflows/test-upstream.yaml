@@ -74,6 +74,7 @@ jobs:
         shell: bash
         run: |
           echo "upstream_branch=${{ inputs.upstream_branch }}" >> "$GITHUB_ENV"
+          echo "upstream_repo=${{ inputs.upstream_repo }}" >> $GITHUB_ENV"
 
       - name: checkout upstream
         uses: actions/checkout@v4
@@ -92,7 +93,7 @@ jobs:
           fetch-depth: 0
 
       - name: Ensure tags for linkml upstream if a different one than linkml/linkml is specified
-        if: "${{ env.upstream_repo }}" != "linkml/linkml"
+        if: "${{ env.upstream_repo != 'linkml/linkml' }}"
         working-directory: linkml
         run: |
           git remote add upstream https://github.com/linkml/linkml
