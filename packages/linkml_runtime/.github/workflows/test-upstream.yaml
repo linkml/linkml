@@ -7,7 +7,6 @@ on:
 
 jobs:
   test_upstream:
-    if: github.event_name == 'workflow_dispatch' || github.event.review.state == 'APPROVED'
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest ]
