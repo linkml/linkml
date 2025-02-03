@@ -716,12 +716,12 @@ class OwlSchemaGenerator(Generator):
             current_node = list_node
             for s in equals_string_in:
                 next_node = BNode()
+                graph.add((current_node, RDF.type, RDF.List))
                 graph.add((current_node, RDF.first, Literal(s, datatype=XSD.string)))
                 graph.add((current_node, RDF.rest, next_node))
                 current_node = next_node
             graph.add((current_node, RDF.rest, RDF.nil))
             owl_exprs.append(data_range_node)
-            owl_types.add(RDFS.Datatype)
         for constraint_prop, constraint_val in constraints.items():
             if is_literal is not None and not is_literal:
                 # In LinkML, it is permissible to have a literal constraints on slots that refer to
