@@ -1,12 +1,12 @@
 name: Test with upstream linkml
 on:
-  pull_request_review:
-    types: [ submitted ]
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   test_upstream:
-    if: github.event_name == 'workflow_dispatch' || github.event.review.state == 'APPROVED'
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest ]
