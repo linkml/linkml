@@ -147,6 +147,31 @@ enums:
     assert enum["values"]["value3"]["value"] == "value3"
 
 
+@pytest.mark.parametrize("class_name", ["3DModel", "😍", "Per-son", "Per!son"])
+def test_invalid_class_names_without_aliases_produce_exception(class_name: str):
+    sb = SchemaBuilder("test")
+    sb.add_class(class_name)
+    with pytest.raises(ValueError):
+        gen = PydanticGenerator(sb.schema, package=PACKAGE)
+        gen.serialize()
+
+@pytest.mark.parametrize("class_name, class_alias", [("3DModel", "Model"), ("😍", "Heart"), ("Per-son", "Person"), ("Per!son", "Person")])
+def test_pydantic_class_name_with_alias(class_name, class_alias):
+    sb = SchemaBuilder("test")
+    sb.add_class(ClassDefinition(name=class_name, alias=class_alias))
+    gen = PydanticGenerator(sb.schema, package=PACKAGE)
+    assert class_alias in gen.render().classes, f"Class alias '{class_alias}' not found as a generated class"
+
+@pytest.mark.parametrize("slot_name, slot_alias", [("3dmodel", "model"), ("😍", "heart"), ("per-son", "person"), ("per!son", "person")])
+def test_pydantic_slot_name_with_alias(slot_name, slot_alias):
+    CLASS_NAME = "MyClass"
+    sb = SchemaBuilder("test")
+    sb.add_class(CLASS_NAME, slots=[SlotDefinition(name=slot_name, alias=slot_alias)])
+    gen = PydanticGenerator(sb.schema, package=PACKAGE)
+    generated_class = gen.render().classes[CLASS_NAME]
+    assert generated_class
+    assert slot_alias in generated_class.slots, f"Slot alias '{slot_alias}' not found in generated class slots"
+
 def test_pydantic_any_of():
     # TODO: convert to SchemaBuilder and parameterize?
     schema_str = """
