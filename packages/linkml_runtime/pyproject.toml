@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "linkml-runtime"
-version = "0.0.0"
+version = "1.8.3.dev0"
 description = "Runtime environment for LinkML, the Linked open data modeling language"
 authors = [
     "Chris Mungall <cjmungall@lbl.gov>",
