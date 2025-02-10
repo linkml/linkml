@@ -1,6 +1,4 @@
-""" Generate JSONld
-
-"""
+"""Generate JSONld"""
 
 import os
 from copy import deepcopy
