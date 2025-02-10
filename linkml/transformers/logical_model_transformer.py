@@ -644,7 +644,7 @@ class LogicalModelTransformer(ModelTransformer):
         if slot_expression.all_of:
             exprs.append(logictools.And(*[self._as_logical_expression(subx) for subx in slot_expression.all_of]))
         if slot_expression.exactly_one_of:
-            # TODO: disjointness
+            # TODO: disjointedness
             exprs.append(logictools.Or(*[self._as_logical_expression(subx) for subx in slot_expression.exactly_one_of]))
         if slot_expression.none_of:
             exprs.append(
