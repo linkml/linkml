@@ -2,7 +2,7 @@ from collections import Counter
 from typing import Any, List, Tuple
 
 import rdflib
-from rdflib import SH, Literal, URIRef
+from rdflib import RDF, SH, Literal, URIRef
 from rdflib.collection import Collection
 
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
@@ -425,7 +425,7 @@ def test_ifabsent(input_path):
 
 
 def test_custom_class_range_is_blank_node_or_iri(input_path):
-    shacl = ShaclGenerator(input_path("shaclgen_custom_class_range.yaml"), mergeimports=True).serialize()
+    shacl = ShaclGenerator(input_path("shaclgen/custom_class_range.yaml"), mergeimports=True).serialize()
 
     g = rdflib.Graph()
     g.parse(data=shacl)
@@ -439,7 +439,7 @@ def test_custom_class_range_is_blank_node_or_iri(input_path):
 
 def test_slot_with_annotations_and_any_of(input_path):
     shacl = ShaclGenerator(
-        input_path("shaclgen_boolean_constraints.yaml"), mergeimports=True, include_annotations=True
+        input_path("shaclgen/boolean_constraints.yaml"), mergeimports=True, include_annotations=True
     ).serialize()
 
     g = rdflib.Graph()
@@ -459,7 +459,7 @@ def test_slot_with_annotations_and_any_of(input_path):
 
 
 def test_ignore_subclass_properties(input_path):
-    shacl = ShaclGenerator(input_path("shaclgen_subclass_ignored_properties.yaml"), mergeimports=True).serialize()
+    shacl = ShaclGenerator(input_path("shaclgen/subclass_ignored_properties.yaml"), mergeimports=True).serialize()
 
     g = rdflib.Graph()
     g.parse(data=shacl)
@@ -509,7 +509,7 @@ def test_ignore_subclass_properties(input_path):
 
 
 def test_multivalued_slot_min_cardinality(input_path):
-    shacl = ShaclGenerator(input_path("shaclgen_cardinality.yaml"), mergeimports=True).serialize()
+    shacl = ShaclGenerator(input_path("shaclgen/cardinality.yaml"), mergeimports=True).serialize()
 
     g = rdflib.Graph()
     g.parse(data=shacl)
@@ -528,7 +528,7 @@ def test_multivalued_slot_min_cardinality(input_path):
 
 
 def test_multivalued_slot_max_cardinality(input_path):
-    shacl = ShaclGenerator(input_path("shaclgen_cardinality.yaml"), mergeimports=True).serialize()
+    shacl = ShaclGenerator(input_path("shaclgen/cardinality.yaml"), mergeimports=True).serialize()
 
     g = rdflib.Graph()
     g.parse(data=shacl)
@@ -547,7 +547,7 @@ def test_multivalued_slot_max_cardinality(input_path):
 
 
 def test_multivalued_slot_exact_cardinality(input_path):
-    shacl = ShaclGenerator(input_path("shaclgen_cardinality.yaml"), mergeimports=True).serialize()
+    shacl = ShaclGenerator(input_path("shaclgen/cardinality.yaml"), mergeimports=True).serialize()
 
     g = rdflib.Graph()
     g.parse(data=shacl)
@@ -566,3 +566,27 @@ def test_multivalued_slot_exact_cardinality(input_path):
         SH.maxCount,
         rdflib.term.Literal("3", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer")),
     ) in g
+
+
+def test_exclude_imports(input_path):
+    shacl = ShaclGenerator(
+        input_path("shaclgen/exclude_imports.yaml"), mergeimports=True, exclude_imports=True
+    ).serialize()
+    print(shacl)
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    # Check there is a single class from the source LinkML file, not the extended classes
+    classes = list(g.subjects(RDF.type, SH.NodeShape))
+
+    assert classes == [URIRef("https://example.org/ExtendedClass")]
+
+    # Check that the single extending class has its slots and inherited slots too from the extended class
+    property_paths = []
+    for subject_node, property_node in g.subject_objects(URIRef("http://www.w3.org/ns/shacl#property")):
+        property_paths.append(str(next(g.objects(property_node, SH.path, True))))
+
+    assert len(property_paths) == 2
+    assert "https://example.org/extendedProperty" in property_paths
+    assert "https://example.org/baseProperty" in property_paths
