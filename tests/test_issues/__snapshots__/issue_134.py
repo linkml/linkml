@@ -33,7 +33,6 @@ from linkml_runtime.linkml_model.meta import (
     PvFormulaOptions
 )
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.formatutils import (
     camelcase,
@@ -61,9 +60,6 @@ from rdflib import (
 
 metamodel_version = "1.7.0"
 version = None
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 XSD = CurieNamespace('xsd', 'http://example.org/UNKNOWN/xsd/')
@@ -105,7 +101,7 @@ class EId(D1Id):
 
 @dataclass(repr=False)
 class A(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("http://example.org/sample/example1/A")
     class_class_curie: ClassVar[str] = None
@@ -114,7 +110,7 @@ class A(YAMLRoot):
 
     id: Union[str, AId] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, AId):
@@ -125,7 +121,7 @@ class A(YAMLRoot):
 
 @dataclass(repr=False)
 class B(A):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("http://example.org/sample/example1/B")
     class_class_curie: ClassVar[str] = None
@@ -135,7 +131,7 @@ class B(A):
     id: Union[str, BId] = None
     has_a: Optional[Union[str, AId]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, BId):
@@ -149,7 +145,7 @@ class B(A):
 
 @dataclass(repr=False)
 class C(B):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("http://example.org/sample/example1/C")
     class_class_curie: ClassVar[str] = None
@@ -159,7 +155,7 @@ class C(B):
     id: Union[str, CId] = None
     has_b: Optional[Union[str, BId]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, CId):
@@ -173,7 +169,7 @@ class C(B):
 
 @dataclass(repr=False)
 class D1(C):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("http://example.org/sample/example1/D1")
     class_class_curie: ClassVar[str] = None
@@ -183,7 +179,7 @@ class D1(C):
     id: Union[str, D1Id] = None
     has_c: Optional[Union[str, CId]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, D1Id):
@@ -197,7 +193,7 @@ class D1(C):
 
 @dataclass(repr=False)
 class D2(C):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("http://example.org/sample/example1/D2")
     class_class_curie: ClassVar[str] = None
@@ -206,7 +202,7 @@ class D2(C):
 
     id: Union[str, D2Id] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, D2Id):
@@ -217,7 +213,7 @@ class D2(C):
 
 @dataclass(repr=False)
 class E(D1):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("http://example.org/sample/example1/E")
     class_class_curie: ClassVar[str] = None
@@ -226,7 +222,7 @@ class E(D1):
 
     id: Union[str, EId] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, EId):

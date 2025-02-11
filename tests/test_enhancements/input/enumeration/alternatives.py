@@ -6,21 +6,16 @@
 # description: Enumeration alternatives
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
 from dataclasses import dataclass
-from typing import Any, ClassVar, Dict, List, Optional, Union
+from typing import Any, ClassVar, Optional, Union
 
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
 from rdflib import URIRef
 
 metamodel_version = "1.7.0"
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 CLUE = CurieNamespace("CLUE", "http://ontologies-r.us/clue/")
@@ -44,7 +39,7 @@ class AllEnums(YAMLRoot):
     A class that incorporates all of the enumeration examples above
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EVIDENCE.AllEnums
     class_class_curie: ClassVar[str] = "evidence:AllEnums"
@@ -52,7 +47,7 @@ class AllEnums(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = EVIDENCE.AllEnums
 
     entry_name: Union[str, AllEnumsEntryName] = None
-    code_1: Union[Union[str, "OpenEnum"], List[Union[str, "OpenEnum"]]] = None
+    code_1: Union[Union[str, "OpenEnum"], list[Union[str, "OpenEnum"]]] = None
     code_2: Optional[Union[str, "ConstrainedEnum2"]] = None
     code_3: Optional[Union[str, "ConstrainedEnum3"]] = None
     code_4: Optional[Union[str, "ConstrainedEnum4"]] = None
@@ -61,7 +56,7 @@ class AllEnums(YAMLRoot):
     code_7: Optional[Union[str, "ConstrainedEvidence"]] = None
     code_8: Optional[Union[str, "MappedEvidence"]] = None
 
-    def __post_init__(self, **kwargs: Dict[str, Any]):
+    def __post_init__(self, **kwargs: dict[str, Any]):
         if self.entry_name is None:
             raise ValueError("entry_name must be supplied")
         if not isinstance(self.entry_name, AllEnumsEntryName):
@@ -258,7 +253,7 @@ slots.allEnums__code_1 = Slot(
     curie=EVIDENCE.curie("code_1"),
     model_uri=EVIDENCE.allEnums__code_1,
     domain=None,
-    range=Union[Union[str, "OpenEnum"], List[Union[str, "OpenEnum"]]],
+    range=Union[Union[str, "OpenEnum"], list[Union[str, "OpenEnum"]]],
 )
 
 slots.allEnums__code_2 = Slot(

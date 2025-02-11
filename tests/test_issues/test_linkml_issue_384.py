@@ -59,6 +59,7 @@ def _contains_restriction(g: Graph, c: URIRef, prop: URIRef, pred: URIRef, fille
     return False
 
 
+@pytest.mark.owlgen
 def test_issue_owl_properties(input_path, snapshot):
     def uri(s) -> URIRef:
         return URIRef(f"https://w3id.org/linkml/examples/personinfo/{s}")
@@ -99,6 +100,10 @@ def test_issue_owl_properties(input_path, snapshot):
     # self.assertIn((NAME, RDF.type, OWL.ObjectProperty), g)
 
 
+@pytest.mark.rdfgen
+@pytest.mark.jsonldcontextgen
+@pytest.mark.yamlgen
+@pytest.mark.pythongen
 @pytest.mark.network
 def test_other_formats(input_path, snapshot):
     _test_other(TESTFILE, input_path, snapshot)

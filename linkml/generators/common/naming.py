@@ -10,7 +10,7 @@ class NamingProfiles(str, Enum):
     graphql = "graphql"
 
 
-class NameCompatibility(object):
+class NameCompatibility:
     """Make a name compatible to the given profile"""
 
     # heading double underscores and digit reserved to names starting with a digit

@@ -6,21 +6,16 @@
 # description:
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
 from dataclasses import dataclass
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Optional
 
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.yamlutils import YAMLRoot
 from parse import parse
 from rdflib import URIRef
 
 metamodel_version = "1.7.0"
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 BIOLINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
@@ -36,7 +31,7 @@ DEFAULT_ = CurieNamespace("", "http://example.org/")
 
 @dataclass
 class C(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("http://example.org/C")
     class_class_curie: ClassVar[str] = None
@@ -47,7 +42,7 @@ class C(YAMLRoot):
     t: Optional[str] = None
     as_str: Optional[str]
 
-    def __post_init__(self, **kwargs: Dict[str, Any]):
+    def __post_init__(self, **kwargs: dict[str, Any]):
         if self.s is not None and not isinstance(self.s, str):
             self.s = str(self.s)
 

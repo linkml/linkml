@@ -1,8 +1,9 @@
 import logging
 import sys
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass, field
-from functools import lru_cache
-from typing import Any, Iterable, List, Type, Union
+from functools import cache
+from typing import Any, Union
 
 import click
 import jsonschema
@@ -28,7 +29,7 @@ class HashableSchemaDefinition(SchemaDefinition):
         return hash(self.id)
 
 
-@lru_cache(maxsize=None)
+@cache
 def _generate_jsonschema(schema, top_class, closed, include_range_class_descendants):
     deprecation_warning("validators")
     logger.debug("Generating JSON Schema")
@@ -43,7 +44,7 @@ def _generate_jsonschema(schema, top_class, closed, include_range_class_descenda
 
 
 class JsonSchemaDataValidatorError(Exception):
-    def __init__(self, validation_messages: List[str]) -> None:
+    def __init__(self, validation_messages: list[str]) -> None:
         deprecation_warning("validators")
         super().__init__("\n".join(validation_messages))
         self.validation_messages = validation_messages
@@ -72,7 +73,7 @@ class JsonSchemaDataValidator(DataValidator):
         deprecation_warning("validators")
         pass
 
-    def validate_object(self, data: YAMLRoot, target_class: Type[YAMLRoot] = None, closed: bool = True) -> None:
+    def validate_object(self, data: YAMLRoot, target_class: type[YAMLRoot] = None, closed: bool = True) -> None:
         """
         validates instance data against a schema
 

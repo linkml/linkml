@@ -1,9 +1,11 @@
+import pytest
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.yamlutils import YAMLRoot, as_yaml
 
 from linkml.generators.pythongen import PythonGenerator
 
 
+@pytest.mark.pythongen
 def test_contained_constructor(input_path, snapshot):
     """Make sure that types are generated as part of the output"""
     test_name = "issue_355"

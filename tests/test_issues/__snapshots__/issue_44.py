@@ -33,7 +33,6 @@ from linkml_runtime.linkml_model.meta import (
     PvFormulaOptions
 )
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.formatutils import (
     camelcase,
@@ -61,9 +60,6 @@ from linkml_runtime.utils.metamodelcore import Bool, Curie, Decimal, ElementIden
 
 metamodel_version = "1.7.0"
 version = None
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
@@ -241,16 +237,16 @@ class IriType(Uriorcurie):
 
 @dataclass(repr=False)
 class NamedThing(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://example.com/test44/NamedThing")
     class_class_curie: ClassVar[str] = None
     class_name: ClassVar[str] = "named thing"
     class_model_uri: ClassVar[URIRef] = URIRef("https://example.com/test44/NamedThing")
 
-    category: Union[Union[str, IriType], List[Union[str, IriType]]] = None
+    category: Union[Union[str, IriType], list[Union[str, IriType]]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.category):
             self.MissingRequiredField("category")
         if not isinstance(self.category, list):
@@ -268,4 +264,4 @@ class slots:
     pass
 
 slots.category = Slot(uri=RDFS.subClassOf, name="category", curie=RDFS.curie('subClassOf'),
-                   model_uri=DEFAULT_.category, domain=NamedThing, range=Union[Union[str, IriType], List[Union[str, IriType]]])
+                   model_uri=DEFAULT_.category, domain=NamedThing, range=Union[Union[str, IriType], list[Union[str, IriType]]])
