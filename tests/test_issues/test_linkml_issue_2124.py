@@ -9,10 +9,13 @@ def cli_runner():
     return CliRunner()
 
 
-@pytest.mark.parametrize("data_file,valid",  [
-    ("data_valid.tsv", True),
-    ("data_invalid.tsv", False),
-])
+@pytest.mark.parametrize(
+    "data_file,valid",
+    [
+        ("data_valid.tsv", True),
+        ("data_invalid.tsv", False),
+    ],
+)
 def test_tsv_mixed_ints_strings(cli_runner, input_path, data_file, valid):
     """
     Tests that validator uses schema to coerce ints and strings in TSV data.
