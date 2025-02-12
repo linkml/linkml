@@ -1,6 +1,4 @@
-"""Generate ShEx definition of a model
-
-"""
+"""Generate ShEx definition of a model"""
 
 import os
 import urllib.parse as urlparse
