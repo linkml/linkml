@@ -18,7 +18,6 @@ def test_linkmlgen_prefixes():
         "xsd": "http://www.w3.org/2001/XMLSchema#",
     }
 
-    sv = SchemaView(schema)
     lml_gen = LinkmlGenerator(schema=schema, format="yaml")
     yaml_text = lml_gen.serialize()
 
