@@ -1,4 +1,4 @@
-"""Generate JSONld"""
+"""Generate JSONld from a LinkML schema."""
 
 import os
 from copy import deepcopy
