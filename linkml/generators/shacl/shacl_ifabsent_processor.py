@@ -62,7 +62,8 @@ class ShaclIfAbsentProcessor(IfAbsentProcessor):
         return Literal(f"{year}-{month}-{day}T{hour}:{minutes}:{seconds}", datatype=ShaclDataType.DATETIME.uri_ref)
 
     def map_uri_or_curie_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
-        raise NotImplementedError()
+        uri = URIRef(self.schema_view.expand_curie(default_value))
+        return Literal(uri, datatype=ShaclDataType.URI.uri_ref)
 
     def map_curie_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
         return Literal(default_value, datatype=ShaclDataType.CURIE.uri_ref)
