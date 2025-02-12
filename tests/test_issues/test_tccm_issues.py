@@ -1,4 +1,4 @@
-""" Unit tests for issues encountered in the TCCM model generation """
+"""Unit tests for issues encountered in the TCCM model generation."""
 
 import logging
 
