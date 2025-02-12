@@ -52,7 +52,6 @@ class SchemaValidationPlugin(ValidationPlugin):
         :rtype: Iterator[ValidationResult]
         """
         yield from self.wrapped_plugin.process(instance, context)
-        schema_view = SchemaView(instance)
 
     def validate_implements(self, schema_view: SchemaView, context: ValidationContext) -> Iterator[ValidationResult]:
         """Validate that the schema implements the LinkML metamodel
