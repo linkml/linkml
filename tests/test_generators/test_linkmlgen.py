@@ -19,8 +19,6 @@ def test_linkmlgen_prefixes():
     }
 
     sv = SchemaView(schema)
-    print(sv.schema.prefixes)
-    print(type(sv.schema.prefixes))
     lml_gen = LinkmlGenerator(schema=schema, format="yaml")
     yaml_text = lml_gen.serialize()
 
