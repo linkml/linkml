@@ -49,14 +49,13 @@ class PlantumlGenerator(Generator):
     classes: Set[ClassDefinitionName] = None
     directory: Optional[str] = None
     kroki_server: Optional[str] = "https://kroki.io"
-    load_image: bool = True
     tooltips_flag: bool = False
+    dry_run: bool = False
 
     def visit_schema(
         self,
         classes: Set[ClassDefinitionName] = None,
         directory: Optional[str] = None,
-        load_image: bool = True,
         **_,
     ) -> Optional[str]:
         if directory:
@@ -96,20 +95,21 @@ class PlantumlGenerator(Generator):
         b64_diagram = base64.urlsafe_b64encode(zlib.compress(plantuml_code.encode(), 9))
 
         plantuml_url = self.kroki_server + "/plantuml/svg/" + b64_diagram.decode()
+        if self.dry_run:
+            return plantuml_url
         if directory:
             file_suffix = ".svg" if self.format == "puml" or self.format == "puml" else "." + self.format
             self.output_file_name = os.path.join(
                 directory,
                 camelcase(sorted(classes)[0] if classes else self.schema.name) + file_suffix,
             )
-            if load_image:
-                resp = requests.get(plantuml_url, stream=True, timeout=REQUESTS_TIMEOUT)
-                if resp.ok:
-                    with open(self.output_file_name, "wb") as f:
-                        for chunk in resp.iter_content(chunk_size=2048):
-                            f.write(chunk)
-                else:
-                    self.logger.error(f"{resp.reason} accessing {plantuml_url}")
+            resp = requests.get(plantuml_url, stream=True, timeout=REQUESTS_TIMEOUT)
+            if resp.ok:
+                with open(self.output_file_name, "wb") as f:
+                    for chunk in resp.iter_content(chunk_size=2048):
+                        f.write(chunk)
+            else:
+                self.logger.error(f"{resp.reason} accessing {plantuml_url}")
         else:
             out = (
                 "@startuml\n"
@@ -351,6 +351,13 @@ class PlantumlGenerator(Generator):
     "-k",
     help="URL of the Kroki server to use for diagram drawing",
     default="https://kroki.io",
+)
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help="Print out Kroki URL calls instead of sending the real requests",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):

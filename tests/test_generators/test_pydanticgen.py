@@ -20,7 +20,7 @@ from linkml_runtime.linkml_model import ClassDefinition, Definition, SchemaDefin
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
 from linkml_runtime.utils.schemaview import load_schema_wrap
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, ConfigDict, ValidationError
 
 from linkml.generators import pydanticgen as pydanticgen_root
 from linkml.generators.common.lifecycle import TClass, TSlot
@@ -197,9 +197,9 @@ slots:
         """
     gen = PydanticGenerator(schema_str, package=PACKAGE)
     code = gen.serialize()
-    assert "inlined_things: Optional[Dict[str, Union[A, B]]] = Field(None" in code
-    assert "inlined_as_list_things: Optional[List[Union[A, B]]] = Field(None" in code
-    assert "not_inlined_things: Optional[List[str]] = Field(None" in code
+    assert "inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default=None" in code
+    assert "inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default=None" in code
+    assert "not_inlined_things: Optional[List[str]] = Field(default=None" in code
 
 
 @pytest.mark.parametrize(
@@ -279,11 +279,11 @@ slots:
 def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_identifier, expected, notes):
     # Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
     expected_default_factories = {
-        "Optional[List[str]]": "Field(None",
-        "Optional[List[B]]": "Field(None",
-        "Optional[Dict[str, B]]": "Field(None",
-        "Optional[Dict[str, str]]": "Field(None",
-        "Optional[Dict[str, Union[str, B]]]": "Field(None",
+        "Optional[List[str]]": "Field(default=None",
+        "Optional[List[B]]": "Field(default=None",
+        "Optional[Dict[str, B]]": "Field(default=None",
+        "Optional[Dict[str, str]]": "Field(default=None",
+        "Optional[Dict[str, Union[str, B]]]": "Field(default=None",
     }
 
     sb = SchemaBuilder("test")
@@ -351,12 +351,12 @@ classes:
 
     gen = PydanticGenerator(schema_str)
     code = gen.serialize()
-    assert "attr1: Optional[int] = Field(10" in code
-    assert 'attr2: Optional[str] = Field("hello world"' in code
-    assert "attr3: Optional[bool] = Field(True" in code
-    assert "attr4: Optional[float] = Field(1.0" in code
-    assert "attr5: Optional[date] = Field(date(2020, 1, 1)" in code
-    assert "attr6: Optional[datetime ] = Field(datetime(2020, 1, 1, 0, 0, 0)" in code
+    assert "attr1: Optional[int] = Field(default=10" in code
+    assert 'attr2: Optional[str] = Field(default="hello world"' in code
+    assert "attr3: Optional[bool] = Field(default=True" in code
+    assert "attr4: Optional[float] = Field(default=1.0" in code
+    assert "attr5: Optional[date] = Field(default=date(2020, 1, 1)" in code
+    assert "attr6: Optional[datetime ] = Field(default=datetime(2020, 1, 1, 0, 0, 0)" in code
 
 
 def test_equals_string():
@@ -922,7 +922,7 @@ def test_inject_classes(kitchen_sink_path, tmp_path, input_path, inject, expecte
     "inject,name,type,default,description",
     (
         (
-            'object_id: Optional[str] = Field(None, description="Unique UUID for each object")',
+            'object_id: Optional[str] = Field(default=None, description="Unique UUID for each object")',
             "object_id",
             Optional[str],
             None,
@@ -1414,7 +1414,7 @@ None"""
 
 def test_arrays_anyshape():
     """
-    Test anyshape class itself
+    AnyShapeArray should validate any list with the specified dtype
     """
 
     class MyModel(BaseModel):
@@ -1423,9 +1423,79 @@ def test_arrays_anyshape():
     arr = np.ones((2, 4, 5, 3, 2), dtype=int)
     _ = MyModel(array=arr.tolist())
 
+    # Coercion is allowed when not specifying strict
+    arr = np.random.random((2, 5, 3))
+    _ = MyModel(array=arr.tolist())
+
+
+@pytest.mark.parametrize("dtype", [int, float, str])
+def test_arrays_anyshape_anytype(dtype):
+    """
+    Without specifying a type, we should validate against any dtype
+    """
+
+    class MyModel(BaseModel):
+        array: AnyShapeArray
+
+    arr = np.ones((2, 4, 5, 3, 2), dtype=dtype)
+    _ = MyModel(array=arr.tolist())
+
+
+def test_arrays_anyshape_union():
+    """
+    Anyshape arrays can validate a type union
+    """
+
+    class MyModel(BaseModel):
+        array: AnyShapeArray[Union[int, float]]
+
+    arr = np.ones((2, 4, 5, 3, 2), dtype=int)
+    _ = MyModel(array=arr.tolist())
+
+    arr = np.random.random((2, 5, 3))
+    _ = MyModel(array=arr.tolist())
+
+    arr = np.ones((2, 4, 5, 3, 2), dtype=str)
+    _ = MyModel(array=arr.tolist())
+
+
+@pytest.mark.parametrize(
+    "dtype,expected",
+    ((None, [{}]), (int, [{"type": "integer"}]), (Union[int, float], [{"type": "integer"}, {"type": "number"}])),
+)
+def test_arrays_anyshape_json_schema(dtype, expected):
+    if dtype is None:
+
+        class MyModel(BaseModel):
+            array: AnyShapeArray
+
+    else:
+
+        class MyModel(BaseModel):
+            array: AnyShapeArray[dtype]
+
+    schema = MyModel.model_json_schema()
+    array_ref = schema["properties"]["array"]["$ref"].split("/")[-1]
+    assert "AnyShapeArray" in array_ref
+    assert "anyOf" in schema["$defs"][array_ref]["items"]
+    anyOf = schema["$defs"][array_ref]["items"]["anyOf"]
+    assert anyOf[0:-1] == expected
+    assert anyOf[-1] == {"items": {"$ref": f"#/$defs/{array_ref}"}, "type": "array"}
+
+
+@pytest.mark.xfail()
+def test_arrays_anyshape_strict():
+    """
+    CURRENTLY FAILING: see https://github.com/pydantic/pydantic/issues/11224
+    """
+
+    class MyStrictModel(BaseModel):
+        array: AnyShapeArray[int]
+        model_config = ConfigDict(strict=True)
+
     with pytest.raises(ValidationError):
-        arr = np.random.random((2, 5, 3))
-        _ = MyModel(array=arr.tolist())
+        arr = np.ones((2, 4, 5, 3, 2), dtype=str)
+        _ = MyStrictModel(array=arr.tolist())
 
 
 # --------------------------------------------------
@@ -1499,13 +1569,17 @@ def array_representation(request) -> List[ArrayRepresentation]:
 @dataclass
 class TestCase:
     __test__ = False
-    type: Literal["pass", "fail"]
+    type: Literal["pass", "fail-shape", "fail-dtype", "fail-scalar"]
     array: np.ndarray
 
-    @property
-    def expectation(self):
+    def expectation(self, array_representation: List[ArrayRepresentation]):
         if self.type == "pass":
             return does_not_raise()
+        elif self.type in ("fail-dtype", "fail-scalar") and ArrayRepresentation.LIST in array_representation:
+            pytest.xfail(
+                "Pydantic cant apply strict validation with type annotations at the moment, see:"
+                "https://github.com/pydantic/pydantic/issues/11224"
+            )
         else:
             return pytest.raises(ValidationError)
 
@@ -1513,7 +1587,7 @@ class TestCase:
 @pytest.mark.parametrize(
     "case",
     [TestCase(type="pass", array=np.zeros((3, 4, 5, 6), dtype=dt)) for dt in (int, float, str)]
-    + [TestCase(type="fail", array=a) for a in (4, 3.0, "three")],
+    + [TestCase(type="fail-scalar", array=a) for a in (4, 3.0, "three")],
 )
 def test_generate_array_anyshape(case, array_representation, array_anyshape):
     """
@@ -1521,13 +1595,13 @@ def test_generate_array_anyshape(case, array_representation, array_anyshape):
     """
     if ArrayRepresentation.LIST in array_representation and isinstance(case.array, np.ndarray):
         case.array = case.array.tolist()
-    if ArrayRepresentation.NUMPYDANTIC in array_representation and case.type == "fail":
+    if ArrayRepresentation.NUMPYDANTIC in array_representation and case.type == "fail-scalar":
         pytest.skip("numpydantic coerces scalars rather than failing validation")
 
     generated = PydanticGenerator(array_anyshape, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "AnyType")
-    with case.expectation:
+    with case.expectation(array_representation):
         cls(array=case.array)
 
 
@@ -1535,8 +1609,8 @@ def test_generate_array_anyshape(case, array_representation, array_anyshape):
     "case",
     [
         TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
-        TestCase(type="fail", array=np.zeros((2, 3, 4), dtype=float)),
-        TestCase(type="fail", array=np.zeros((2, 3, 4), dtype=str)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=float)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
     ],
 )
 def test_generate_array_anyshape_typed(case, array_representation, array_anyshape):
@@ -1549,7 +1623,7 @@ def test_generate_array_anyshape_typed(case, array_representation, array_anyshap
     generated = PydanticGenerator(array_anyshape, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "Typed")
-    with case.expectation:
+    with case.expectation(array_representation):
         cls(array=case.array)
 
 
@@ -1558,7 +1632,7 @@ def test_generate_array_anyshape_typed(case, array_representation, array_anyshap
     [
         TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
         TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=float)),
-        TestCase(type="fail", array=np.zeros((2, 3, 4), dtype=str)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
     ],
 )
 def test_generate_array_dtype_union(case, array_representation, array_dtype):
@@ -1573,7 +1647,7 @@ def test_generate_array_dtype_union(case, array_representation, array_dtype):
     generated = PydanticGenerator(array_dtype, array_representations=array_representation, imports=imports).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "UnionDtype")
-    with case.expectation:
+    with case.expectation(array_representation):
         cls(array=case.array)
 
 
@@ -1581,7 +1655,7 @@ def test_generate_array_dtype_union(case, array_representation, array_dtype):
     "case",
     [
         TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=np.uint8)),
-        TestCase(type="fail", array=np.zeros((2, 3, 4), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=int)),
     ],
 )
 def test_generate_array_dtype_numpy(case, array_representation, array_dtype):
@@ -1596,7 +1670,7 @@ def test_generate_array_dtype_numpy(case, array_representation, array_dtype):
     generated = PydanticGenerator(array_dtype, array_representations=array_representation, imports=imports).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "NumpyDtype")
-    with case.expectation:
+    with case.expectation(array_representation):
         cls(array=case.array)
 
 
@@ -1620,7 +1694,10 @@ def test_generate_array_dtype_class(array_representation, array_dtype):
     # validates
     instance = cls(array=array)
     # and preserves object
-    assert isinstance(instance.array[0][0][0], target_cls)
+    if ArrayRepresentation.LIST in array_representation:
+        assert isinstance(next(next(next(instance.array))), target_cls)
+    else:
+        assert isinstance(instance.array[0][0][0], target_cls)
 
 
 @pytest.mark.parametrize(
@@ -1629,9 +1706,9 @@ def test_generate_array_dtype_class(array_representation, array_dtype):
         TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
         TestCase(type="pass", array=np.zeros((6, 3, 1, 4), dtype=int)),
         TestCase(type="pass", array=np.zeros((2, 3), dtype=int)),
-        TestCase(type="fail", array=np.zeros((2,), dtype=int)),
-        TestCase(type="fail", array=np.zeros((2, 3, 4), dtype=str)),
-        TestCase(type="fail", array=np.zeros((2,), dtype=str)),
+        TestCase(type="fail-shape", array=np.zeros((2,), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
+        TestCase(type="fail-dtype", array=np.zeros((2,), dtype=str)),
     ],
 )
 def test_generate_array_bounded_min(case, array_representation, array_bounded):
@@ -1644,7 +1721,7 @@ def test_generate_array_bounded_min(case, array_representation, array_bounded):
     generated = PydanticGenerator(array_bounded, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "MinDimensions")
-    with case.expectation:
+    with case.expectation(array_representation):
         cls(array=case.array)
 
 
@@ -1653,9 +1730,9 @@ def test_generate_array_bounded_min(case, array_representation, array_bounded):
     [
         TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
         TestCase(type="pass", array=np.zeros((2, 6, 7, 2, 3), dtype=int)),
-        TestCase(type="fail", array=np.zeros((2, 6, 7, 2, 3, 6), dtype=int)),
-        TestCase(type="fail", array=np.zeros((2, 3, 4), dtype=str)),
-        TestCase(type="fail", array=np.zeros((2, 6, 7, 2, 3, 6), dtype=str)),
+        TestCase(type="fail-shape", array=np.zeros((2, 6, 7, 2, 3, 6), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 6, 7, 2, 3, 6), dtype=str)),
     ],
 )
 def test_generate_array_bounded_max(case, array_representation, array_bounded):
@@ -1668,7 +1745,7 @@ def test_generate_array_bounded_max(case, array_representation, array_bounded):
     generated = PydanticGenerator(array_bounded, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "MaxDimensions")
-    with case.expectation:
+    with case.expectation(array_representation):
         cls(array=case.array)
 
 
@@ -1678,12 +1755,12 @@ def test_generate_array_bounded_max(case, array_representation, array_bounded):
         TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
         TestCase(type="pass", array=np.zeros((6, 3, 1, 4), dtype=int)),
         TestCase(type="pass", array=np.zeros((2, 3), dtype=int)),
-        TestCase(type="fail", array=np.zeros((2,), dtype=int)),
-        TestCase(type="fail", array=np.zeros((2, 3, 4), dtype=str)),
-        TestCase(type="fail", array=np.zeros((2,), dtype=str)),
+        TestCase(type="fail-shape", array=np.zeros((2,), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
+        TestCase(type="fail-dtype", array=np.zeros((2,), dtype=str)),
         TestCase(type="pass", array=np.zeros((2, 6, 7, 2, 3), dtype=int)),
-        TestCase(type="fail", array=np.zeros((2, 6, 7, 2, 3, 6), dtype=int)),
-        TestCase(type="fail", array=np.zeros((2, 6, 7, 2, 3, 6), dtype=str)),
+        TestCase(type="fail-shape", array=np.zeros((2, 6, 7, 2, 3, 6), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 6, 7, 2, 3, 6), dtype=str)),
     ],
 )
 def test_generate_array_bounded_range(case, array_representation, array_bounded):
@@ -1696,7 +1773,7 @@ def test_generate_array_bounded_range(case, array_representation, array_bounded)
     generated = PydanticGenerator(array_bounded, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "RangeDimensions")
-    with case.expectation:
+    with case.expectation(array_representation):
         cls(array=case.array)
 
 
@@ -1705,11 +1782,11 @@ def test_generate_array_bounded_range(case, array_representation, array_bounded)
     [
         TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
         TestCase(type="pass", array=np.zeros((6, 3, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((2, 3, 4), dtype=str)),
-        TestCase(type="fail", array=np.zeros((2, 3), dtype=int)),
-        TestCase(type="fail", array=np.zeros((2, 3, 4, 5), dtype=int)),
-        TestCase(type="fail", array=np.zeros((2, 2), dtype=str)),
-        TestCase(type="fail", array=np.zeros((2, 3, 4, 5), dtype=str)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
+        TestCase(type="fail-shape", array=np.zeros((2, 3), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2, 3, 4, 5), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 2), dtype=str)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4, 5), dtype=str)),
     ],
 )
 def test_generate_array_bounded_exact(case, array_representation, array_bounded):
@@ -1722,7 +1799,7 @@ def test_generate_array_bounded_exact(case, array_representation, array_bounded)
     generated = PydanticGenerator(array_bounded, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ExactDimensions")
-    with case.expectation:
+    with case.expectation(array_representation):
         cls(array=case.array)
 
 
@@ -1731,10 +1808,10 @@ def test_generate_array_bounded_exact(case, array_representation, array_bounded)
     [
         TestCase(type="pass", array=np.zeros((2, 5, 4, 6), dtype=int)),
         TestCase(type="pass", array=np.zeros((3, 5, 4, 6), dtype=int)),
-        TestCase(type="fail", array=np.zeros((1, 5, 4, 6), dtype=int)),
-        TestCase(type="fail", array=np.zeros((6, 5, 4), dtype=int)),
-        TestCase(type="fail", array=np.zeros((6, 5, 4, 6, 6), dtype=int)),
-        TestCase(type="fail", array=np.zeros((3, 5, 4, 6), dtype=str)),
+        TestCase(type="fail-shape", array=np.zeros((1, 5, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((6, 5, 4), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((6, 5, 4, 6, 6), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((3, 5, 4, 6), dtype=str)),
         # FIXME: Add a float testcase back in here when https://github.com/linkml/linkml/issues/1955 is resolved
     ],
 )
@@ -1748,7 +1825,7 @@ def test_generate_array_parameterized_min(case, array_representation, array_para
     generated = PydanticGenerator(array_parameterized, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ParameterizedArray")
-    with case.expectation:
+    with case.expectation(array_representation):
         cls(array=case.array)
 
 
@@ -1757,7 +1834,7 @@ def test_generate_array_parameterized_min(case, array_representation, array_para
     [
         TestCase(type="pass", array=np.zeros((2, 5, 4, 6), dtype=int)),
         TestCase(type="pass", array=np.zeros((2, 4, 4, 6), dtype=int)),
-        TestCase(type="fail", array=np.zeros((2, 6, 4, 6), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 6, 4, 6), dtype=int)),
         # this is the same field, so dtype failures only need to be tested in one case
     ],
 )
@@ -1771,7 +1848,7 @@ def test_generate_array_parameterized_max(case, array_representation, array_para
     generated = PydanticGenerator(array_parameterized, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ParameterizedArray")
-    with case.expectation:
+    with case.expectation(array_representation):
         cls(array=case.array)
 
 
@@ -1780,8 +1857,8 @@ def test_generate_array_parameterized_max(case, array_representation, array_para
     [
         TestCase(type="pass", array=np.zeros((2, 5, 2, 6), dtype=int)),
         TestCase(type="pass", array=np.zeros((2, 5, 5, 6), dtype=int)),
-        TestCase(type="fail", array=np.zeros((2, 5, 1, 6), dtype=int)),
-        TestCase(type="fail", array=np.zeros((2, 5, 6, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2, 5, 1, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2, 5, 6, 6), dtype=int)),
         # this is the same field, so dtype failures only need to be tested in one case
     ],
 )
@@ -1795,7 +1872,7 @@ def test_generate_array_parameterized_range(case, array_representation, array_pa
     generated = PydanticGenerator(array_parameterized, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ParameterizedArray")
-    with case.expectation:
+    with case.expectation(array_representation):
         cls(array=case.array)
 
 
@@ -1803,8 +1880,8 @@ def test_generate_array_parameterized_range(case, array_representation, array_pa
     "case",
     [
         TestCase(type="pass", array=np.zeros((2, 5, 4, 6), dtype=int)),
-        TestCase(type="fail", array=np.zeros((2, 5, 4, 4), dtype=int)),
-        TestCase(type="fail", array=np.zeros((2, 5, 4, 7), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2, 5, 4, 4), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2, 5, 4, 7), dtype=int)),
         # this is the same field, so dtype failures only need to be tested in one case
     ],
 )
@@ -1818,7 +1895,7 @@ def test_generate_array_parameterized_exact(case, array_representation, array_pa
     generated = PydanticGenerator(array_parameterized, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ParameterizedArray")
-    with case.expectation:
+    with case.expectation(array_representation):
         cls(array=case.array)
 
 
@@ -1827,14 +1904,14 @@ def test_generate_array_parameterized_exact(case, array_representation, array_pa
     [
         TestCase(type="pass", array=np.zeros((5, 2, 4, 6), dtype=int)),
         TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 7, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((6, 2, 4, 6), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 1, 4, 6), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 1, 6), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 6, 6), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 4, 5), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 4, 7), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 4, 6), dtype=str)),
-        TestCase(type="fail", array=np.zeros((5, 2, 4), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((6, 2, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 1, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 1, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 6, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 5), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 7), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((5, 2, 4, 6), dtype=str)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4), dtype=int)),
     ],
 )
 def test_generate_array_complex_any(case, array_representation, array_complex):
@@ -1851,7 +1928,7 @@ def test_generate_array_complex_any(case, array_representation, array_complex):
     generated = PydanticGenerator(array_complex, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ComplexAnyShapeArray")
-    with case.expectation:
+    with case.expectation(array_representation):
         cls(array=case.array)
 
 
@@ -1860,15 +1937,15 @@ def test_generate_array_complex_any(case, array_representation, array_complex):
     [
         TestCase(type="pass", array=np.zeros((5, 2, 4, 6), dtype=int)),
         TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 7, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 4, 6, 7, 1, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((6, 2, 4, 6), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 1, 4, 6), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 1, 6), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 6, 6), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 4, 5), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 4, 7), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 4, 6), dtype=str)),
-        TestCase(type="fail", array=np.zeros((5, 2, 4), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6, 7, 1, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((6, 2, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 1, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 1, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 6, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 5), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 7), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((5, 2, 4, 6), dtype=str)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4), dtype=int)),
     ],
 )
 def test_generate_array_complex_max(case, array_representation, array_complex):
@@ -1885,14 +1962,14 @@ def test_generate_array_complex_max(case, array_representation, array_complex):
     generated = PydanticGenerator(array_complex, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ComplexMaxShapeArray")
-    with case.expectation:
+    with case.expectation(array_representation):
         cls(array=case.array)
 
 
 @pytest.mark.parametrize(
     "case",
     [
-        TestCase(type="fail", array=np.zeros((5, 2, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6), dtype=int)),
         TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 7), dtype=int)),
         TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 7, 1, 1), dtype=int)),
     ],
@@ -1907,25 +1984,25 @@ def test_generate_array_complex_min(case, array_representation, array_complex):
     generated = PydanticGenerator(array_complex, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ComplexMinShapeArray")
-    with case.expectation:
+    with case.expectation(array_representation):
         cls(array=case.array)
 
 
 @pytest.mark.parametrize(
     "case",
     [
-        TestCase(type="fail", array=np.zeros((5, 2, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6), dtype=int)),
         TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 1), dtype=int)),
         TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 1, 1), dtype=int)),
         TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 1, 1, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 4, 6, 1, 1, 1, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((6, 2, 4, 6, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 1, 4, 6, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 1, 6, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 6, 6, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 4, 5, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 4, 7, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 4, 6, 1), dtype=str)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6, 1, 1, 1, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((6, 2, 4, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 1, 4, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 1, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 6, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 5, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 7, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6, 1), dtype=str)),
     ],
 )
 def test_generate_array_complex_range(case, array_representation, array_complex):
@@ -1942,23 +2019,23 @@ def test_generate_array_complex_range(case, array_representation, array_complex)
     generated = PydanticGenerator(array_complex, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ComplexRangeShapeArray")
-    with case.expectation:
+    with case.expectation(array_representation):
         cls(array=case.array)
 
 
 @pytest.mark.parametrize(
     "case",
     [
-        TestCase(type="fail", array=np.zeros((5, 2, 4, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6, 1), dtype=int)),
         TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 1, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 4, 6, 1, 1, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((6, 2, 4, 6, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 1, 4, 6, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 1, 6, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 6, 6, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 4, 5, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 4, 7, 1), dtype=int)),
-        TestCase(type="fail", array=np.zeros((5, 2, 4, 6, 1), dtype=str)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6, 1, 1, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((6, 2, 4, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 1, 4, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 1, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 6, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 5, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 7, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6, 1), dtype=str)),
     ],
 )
 def test_generate_array_complex_exact(case, array_representation, array_complex):
@@ -1975,7 +2052,7 @@ def test_generate_array_complex_exact(case, array_representation, array_complex)
     generated = PydanticGenerator(array_complex, array_representations=array_representation).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ComplexExactShapeArray")
-    with case.expectation:
+    with case.expectation(array_representation):
         cls(array=case.array)
 
 
@@ -2117,7 +2194,7 @@ def test_template_black(array_complex):
             ),
         ),
     )
-] = Field(None)
+] = Field(default=None)
 """
     )
 
@@ -2151,7 +2228,7 @@ def test_template_noblack(array_complex, mock_black_import):
 
     assert (
         array_repr
-        == "array: Optional[conlist(max_length=5, item_type=conlist(min_length=2, item_type=conlist(min_length=2, max_length=5, item_type=conlist(min_length=6, max_length=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]]))))] = Field(None)"  # noqa: E501
+        == "array: Optional[conlist(max_length=5, item_type=conlist(min_length=2, item_type=conlist(min_length=2, max_length=5, item_type=conlist(min_length=6, max_length=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]]))))] = Field(default=None)"  # noqa: E501
     )
 
     # trying to render with black when we don't have it should raise a ValueError

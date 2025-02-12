@@ -1,0 +1,53 @@
+name: Sphinx Documentation
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ "3.12" ]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ensure tags if not run from main repo
+        if: github.repository != 'linkml/linkml'
+        run: |
+          git remote add upstream https://github.com/linkml/linkml
+          git fetch upstream --tags
+
+      - name: Install Poetry 1.x
+        run: pipx install poetry==1.*
+
+      - name: Install dynamic versioning plugin
+        run: poetry self add "poetry-dynamic-versioning[plugin]"
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        id: setup-python
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'poetry'
+
+      - name: install
+        run: poetry install --with docs --all-extras
+
+      - name: Build documentation.
+        run: |
+          mkdir gh-pages
+          touch gh-pages/.nojekyll
+          cd docs/
+          poetry run sphinx-build -b html . _build
+          cp -r _build/* ../gh-pages/
+      - name: Deploy documentation.
+        if: ${{ github.event_name == 'push' }}
+        uses: JamesIves/github-pages-deploy-action@v4.4.1
+        with:
+          branch: gh-pages
+          force: true
+          folder: gh-pages

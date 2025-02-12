@@ -222,6 +222,16 @@ DEPRECATIONS = (
         recommendation="Update dependent packages to use pydantic>=2",
         issue=1925,
     ),
+    Deprecation(
+        name="validators",
+        deprecated_in=SemVer.from_str("1.8.6"),
+        removed_in=SemVer.from_str("1.9.0"),
+        message=(
+            "linkml.validators and linkml.utils.validation are the older versions "
+            "of linkml.validator and have unmaintained, duplicated functionality"
+        ),
+        recommendation="Update to use linkml.validator",
+    ),
 )  # type: tuple[Deprecation, ...]
 
 EMITTED = set()  # type: set[str]

@@ -96,7 +96,7 @@ enums:
 Note that the range of `vital_status` is declared as `Any`, which is further constrained by the `any_of` expression.
 
 Currently, it is important to always have a range declaration (even if it is `Any`), because LinkML constraint semantics are
-monotonic (i.e. new constraints can be specified but additional ones cannot be overridden - see [slots](slots.md) for more on this). 
+monotonic (i.e. new constraints can be specified but existing ones cannot be overridden - see [slots](slots.md) for more on this).
 If this range declaration were not explicitly stated, then the `default_range` of string would be applied. 
 
 In future, LinkML may allow limited forms of non-monotonicity around default ranges, see:
@@ -206,3 +206,8 @@ Documentation of the expression language is available [here](../schemas/expressi
 
 See the developer documentation on [inference](../developers/inference) for
 details of how to use this in code.
+
+## URI or CURIE as a range
+In some cases, you may want to use a URI or CURIE as a range. To do this,
+create a class with `class_uri` set to the URI or CURIE and use that class
+as the range.

@@ -55,4 +55,5 @@ class JsonschemaValidationPlugin(ValidationPlugin):
                 instantiates=context.target_class,
                 message=f"{best_error.message} in /{'/'.join(str(p) for p in best_error.absolute_path)}",
                 context=error_context,
+                source=best_error,
             )

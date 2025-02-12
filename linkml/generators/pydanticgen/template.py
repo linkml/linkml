@@ -675,7 +675,18 @@ class PydanticModule(PydanticTemplateModel):
         return [c.name for c in self.classes.values()]
 
 
-_some_stdlib_module_names = {"copy", "datetime", "decimal", "enum", "inspect", "os", "re", "sys", "typing"}
+_some_stdlib_module_names = {
+    "copy",
+    "datetime",
+    "decimal",
+    "enum",
+    "inspect",
+    "os",
+    "re",
+    "sys",
+    "typing",
+    "dataclasses",
+}
 """
 sys.stdlib_module_names is only present in 3.10 and later
 so we make a cheap copy of the stdlib modules that we commonly use here,

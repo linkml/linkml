@@ -280,7 +280,9 @@ def cli(yamlfile, gen_type_utils=False, include_induced_slots=False, output=None
     gen = TypescriptGenerator(
         yamlfile, gen_type_utils=gen_type_utils, include_induced_slots=include_induced_slots, **args
     )
-    gen.serialize(output=output)
+    serialized = gen.serialize(output=output)
+    if output is None:
+        print(serialized)
 
 
 if __name__ == "__main__":

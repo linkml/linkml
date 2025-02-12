@@ -8,6 +8,7 @@ import click
 
 from linkml._version import __version__
 from linkml.generators.csvgen import cli as gen_csv
+from linkml.generators.dbmlgen import cli as gen_dbml
 from linkml.generators.docgen import cli as gen_doc
 from linkml.generators.dotgen import cli as gen_graphviz
 from linkml.generators.erdiagramgen import cli as gen_erdiagram
@@ -125,6 +126,7 @@ generate.add_command(gen_project, name="project")
 generate.add_command(gen_excel, name="excel")
 generate.add_command(gen_sssom, name="sssom")
 generate.add_command(gen_linkml, name="linkml")
+generate.add_command(gen_dbml, name="dbml")
 
 # Dev helpers
 dev.add_command(run_tutorial, name="tutorial")
