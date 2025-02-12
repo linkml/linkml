@@ -1,8 +1,28 @@
 import yaml
 from click.testing import CliRunner
 from linkml_runtime import SchemaView
+from linkml_runtime.linkml_model import SchemaDefinition
 
 from linkml.generators.linkmlgen import LinkmlGenerator, cli
+
+
+def test_linkmlgen_prefixes():
+    schema = SchemaDefinition(
+        name="EquipmentSchema", description="", id="equipment_schema", default_prefix="equipment_schema"
+    )
+
+    schema.default_range = "string"
+    schema.prefixes = {
+        "equipment_schema": "https://example.org/equipment_schema/",
+        "linkml": "https://w3id.org/linkml/",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+    }
+
+    lml_gen = LinkmlGenerator(schema=schema, format="yaml")
+    yaml_text = lml_gen.serialize()
+
+    with open("output.yaml", "w") as f:
+        f.write(yaml_text)
 
 
 def test_generate(kitchen_sink_path):
