@@ -18,6 +18,9 @@ from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.utils import datautils
 from linkml.utils.datavalidator import DataValidator
+from linkml.utils.deprecation import deprecation_warning
+
+logger = logging.getLogger(__name__)
 
 
 class HashableSchemaDefinition(SchemaDefinition):
@@ -27,7 +30,8 @@ class HashableSchemaDefinition(SchemaDefinition):
 
 @lru_cache(maxsize=None)
 def _generate_jsonschema(schema, top_class, closed, include_range_class_descendants):
-    logging.debug("Generating JSON Schema")
+    deprecation_warning("validators")
+    logger.debug("Generating JSON Schema")
     not_closed = not closed
     return JsonSchemaGenerator(
         schema=schema,
@@ -40,6 +44,7 @@ def _generate_jsonschema(schema, top_class, closed, include_range_class_descenda
 
 class JsonSchemaDataValidatorError(Exception):
     def __init__(self, validation_messages: List[str]) -> None:
+        deprecation_warning("validators")
         super().__init__("\n".join(validation_messages))
         self.validation_messages = validation_messages
 
@@ -54,6 +59,7 @@ class JsonSchemaDataValidator(DataValidator):
     _hashable_schema: Union[str, HashableSchemaDefinition] = field(init=False, repr=False)
 
     def __setattr__(self, __name: str, __value: Any) -> None:
+        deprecation_warning("validators")
         if __name == "schema":
             if isinstance(__value, SchemaDefinition):
                 self._hashable_schema = HashableSchemaDefinition(**asdict(__value))
@@ -63,6 +69,7 @@ class JsonSchemaDataValidator(DataValidator):
 
     def validate_file(self, input: str, format: str = "json", **kwargs):
         # return self.validate_object(obj)
+        deprecation_warning("validators")
         pass
 
     def validate_object(self, data: YAMLRoot, target_class: Type[YAMLRoot] = None, closed: bool = True) -> None:
@@ -74,6 +81,7 @@ class JsonSchemaDataValidator(DataValidator):
         :param closed:
         :return:
         """
+        deprecation_warning("validators")
         if target_class is None:
             target_class = type(data)
         inst_dict = as_simple_dict(data)
@@ -88,6 +96,7 @@ class JsonSchemaDataValidator(DataValidator):
         :param closed:
         :return:
         """
+        deprecation_warning("validators")
         results = list(self.iter_validate_dict(data, target_class, closed))
         if results:
             raise JsonSchemaDataValidatorError(results)
@@ -95,6 +104,7 @@ class JsonSchemaDataValidator(DataValidator):
     def iter_validate_dict(
         self, data: dict, target_class_name: ClassDefinitionName = None, closed: bool = True
     ) -> Iterable[str]:
+        deprecation_warning("validators")
         if self.schema is None:
             raise ValueError("schema object must be set")
         if target_class_name is None:
@@ -157,6 +167,8 @@ def cli(
     """
     Validates instance data
     """
+    deprecation_warning("validators")
+
     if module is None:
         if schema is None:
             raise Exception("must pass one of module OR schema")

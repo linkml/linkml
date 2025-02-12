@@ -12,7 +12,6 @@ import rdflib
 
 from tests.test_compliance.helper import (
     JSONLD_CONTEXT,
-    PYDANTIC,
     SHACL,
     SQL_DDL_SQLITE,
     ValidationBehavior,
@@ -195,9 +194,6 @@ def test_import(
     if data_name == "conflict_s2":
         pytest.skip("Behavior TBD")
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if slot_2_alias or slot_1_alias:
-        if framework == PYDANTIC:
-            expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data_name,

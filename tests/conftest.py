@@ -1,10 +1,13 @@
+import os
 import shutil
 import sys
 from abc import ABC, abstractmethod
 from importlib.abc import MetaPathFinder
+from importlib.metadata import version
 from pathlib import Path
 from typing import Callable, List, Optional, Union
 
+import docker
 import pytest
 import requests_cache
 from _pytest.assertion.util import _diff_text
@@ -15,6 +18,9 @@ from tests.utils.compare_rdf import compare_rdf
 from tests.utils.dirutils import are_dir_trees_equal
 
 KITCHEN_SINK_PATH = str(Path(__file__).parent / "test_generators" / "input" / "kitchen_sink.yaml")
+
+# avoid an error from nbconvert -> jupyter_core. remove this after jupyter_core v6
+os.environ["JUPYTER_PLATFORM_DIRS"] = "1"
 
 
 def normalize_line_endings(string: str):
@@ -181,6 +187,7 @@ def pytest_addoption(parser):
         help="Generate new files into __snapshot__ directories instead of checking against existing files",
     )
     parser.addoption("--with-slow", action="store_true", help="include tests marked slow")
+    parser.addoption("--with-network", action="store_true", help="include tests marked network")
     parser.addoption(
         "--with-output", action="store_true", help="dump output in compliance test for richer debugging information"
     )
@@ -194,11 +201,31 @@ def pytest_collection_modifyitems(config, items: List[pytest.Item]):
             if item.get_closest_marker("slow"):
                 item.add_marker(skip_slow)
 
+    if not config.getoption("--with-network"):
+        skip_network = pytest.mark.skip(reason="need --with-network option to run")
+        for item in items:
+            if item.get_closest_marker("network"):
+                item.add_marker(skip_network)
+
     # make sure deprecation test happens at the end
     test_deps = [i for i in items if i.name == "test_removed_are_removed"]
     if len(test_deps) == 1:
         items.remove(test_deps[0])
         items.append(test_deps[0])
+
+    # numpydantic only supported python>=3.9
+    if sys.version_info.minor < 9 or version("pydantic").startswith("1"):
+        skip_npd = pytest.mark.skip(reason="Numpydantic is only supported in python>=3.9 and with pydantic>=2")
+        for item in items:
+            if item.get_closest_marker("pydanticgen_npd"):
+                item.add_marker(skip_npd)
+
+    # skip docker tests when docker server not present on the system
+    if not _docker_server_running():
+        skip_docker = pytest.mark.skip(reason="Docker server not running on host machine")
+        for item in items:
+            if item.get_closest_marker("docker"):
+                item.add_marker(skip_docker)
 
     # the fixture that mocks black import failures should always come all the way last
     # see: https://github.com/linkml/linkml/pull/2209#issuecomment-2231548078
@@ -288,3 +315,16 @@ def mock_black_import():
 
     sys.modules.update(removed)
     sys.meta_path.remove(meta_finder)
+
+
+# --------------------------------------------------
+# Helper functions ~onl¥~
+# --------------------------------------------------
+
+
+def _docker_server_running() -> bool:
+    try:
+        _ = docker.from_env()
+        return True
+    except docker.errors.DockerException:
+        return False

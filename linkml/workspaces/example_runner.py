@@ -1,6 +1,4 @@
-"""Iterate through all examples in a folder testing them for validity.
-
-"""
+"""Iterate through all examples in a folder testing them for validity."""
 
 import glob
 import json
@@ -22,7 +20,10 @@ from linkml_runtime.utils.formatutils import camelcase
 
 from linkml._version import __version__
 from linkml.generators.pythongen import PythonGenerator
+from linkml.utils.helpers import get_range_associated_slots
 from linkml.validator import Validator, _get_default_validator
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -134,7 +135,7 @@ class ExampleRunner:
             input_examples = glob.glob(os.path.join(str(input_dir), f"*.{fmt}"))
             input_counter_examples = glob.glob(os.path.join(str(counter_example_dir), f"*.{fmt}"))
             if not input_counter_examples:
-                logging.warning(f"No counter examples found in {self.counter_example_input_directory}")
+                logger.warning(f"No counter examples found in {self.counter_example_input_directory}")
             self.process_examples_from_list(input_examples, fmt, False)
             self.process_examples_from_list(input_counter_examples, fmt, True)
 
@@ -242,10 +243,28 @@ class ExampleRunner:
                     raise ValueError(f"Cannot find unique class for URI {target_class}; got: {target_classes}")
                 target_class = target_classes[0]
             new_dict_obj = {}
+
             for k, v in dict_obj.items():
                 if v is not None:
                     islot = sv.induced_slot(k, target_class)
-                    v2 = self._load_from_dict(v, target_class=islot.range)
+                    # if slot is a dictionary, repeat key in dictionary value object
+                    if islot.multivalued and islot.inlined and not islot.inlined_as_list:
+                        (range_id_slot, range_simple_dict_value_slot, _) = get_range_associated_slots(
+                            self.schemaview, islot.range
+                        )
+                        v_as_list = []
+                        for ik, iv in v.items():
+                            # simple dictionaries can be simply created
+                            if range_simple_dict_value_slot is not None:
+                                value = {range_id_slot.name: ik, range_simple_dict_value_slot.name: iv}
+                            # other dictionaries => simply add the identifier to the dictionary
+                            else:
+                                value = iv
+                                value[range_id_slot.name] = ik
+                            v_as_list.append(value)
+                        v2 = self._load_from_dict(v_as_list, target_class=islot.range)
+                    else:
+                        v2 = self._load_from_dict(v, target_class=islot.range)
                     new_dict_obj[k] = v2
             py_target_class = getattr(self.python_module, camelcase(target_class))
             return py_target_class(**new_dict_obj)

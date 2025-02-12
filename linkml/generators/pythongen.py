@@ -29,8 +29,11 @@ from rdflib import URIRef
 
 import linkml
 from linkml._version import __version__
+from linkml.generators.pydanticgen.template import Import, Imports, ObjectImport
 from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -57,10 +60,10 @@ class PythonGenerator(Generator):
     dataclass_repr: bool = False
     """
     Whether generated dataclasses should also generate a default __repr__ method.
-    
+
     Default ``False`` so that the parent :class:`linkml_runtime.utils.yamlutils.YAMLRoot` 's
     ``__repr__`` method is inherited for model pretty printing.
-    
+
     References:
         - https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass
     """
@@ -75,7 +78,7 @@ class PythonGenerator(Generator):
         if self.format is None:
             self.format = self.valid_formats[0]
         if self.schema.default_prefix == "linkml" and not self.genmeta:
-            logging.error("Generating metamodel without --genmeta is highly inadvisable!")
+            logger.error("Generating metamodel without --genmeta is highly inadvisable!")
         if not self.schema.source_file and isinstance(self.sourcefile, str) and "\n" not in self.sourcefile:
             self.schema.source_file = os.path.basename(self.sourcefile)
 
@@ -88,8 +91,8 @@ class PythonGenerator(Generator):
         try:
             return compile_python(pycode)
         except NameError as e:
-            logging.error(f"Code:\n{pycode}")
-            logging.error(f"Error compiling generated python code: {e}")
+            logger.error(f"Code:\n{pycode}")
+            logger.error(f"Error compiling generated python code: {e}")
             raise e
 
     def visit_schema(self, **kwargs) -> None:
@@ -125,13 +128,120 @@ class PythonGenerator(Generator):
                 self.emit_prefixes.add(type_prefix)
 
     def gen_schema(self) -> str:
-        # The metamodel uses Enumerations to define itself, so don't import if we are generating the metamodel
-        enumimports = (
-            ""
-            if self.genmeta
-            else "from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions\n"
+        all_imports = Imports()
+        # generic imports
+        all_imports = (
+            all_imports
+            + Import(module="dataclasses")
+            + Import(module="re")
+            + Import(
+                module="jsonasobj2",
+                objects=[
+                    ObjectImport(name="JsonObj"),
+                    ObjectImport(name="as_dict"),
+                ],
+            )
+            + Import(
+                module="typing",
+                objects=[
+                    ObjectImport(name="Optional"),
+                    ObjectImport(name="List"),
+                    ObjectImport(name="Union"),
+                    ObjectImport(name="Dict"),
+                    ObjectImport(name="ClassVar"),
+                    ObjectImport(name="Any"),
+                ],
+            )
+            + Import(
+                module="dataclasses",
+                objects=[
+                    ObjectImport(name="dataclass"),
+                ],
+            )
+            + Import(
+                module="datetime",
+                objects=[
+                    ObjectImport(name="date"),
+                    ObjectImport(name="datetime"),
+                    ObjectImport(name="time"),
+                ],
+            )
         )
-        handlerimport = "from linkml_runtime.utils.enumerations import EnumDefinitionImpl"
+
+        # The metamodel uses Enumerations to define itself, so don't import if we are generating the metamodel
+        if not self.genmeta:
+            all_imports = all_imports + Import(
+                module="linkml_runtime.linkml_model.meta",
+                objects=[
+                    ObjectImport(name="EnumDefinition"),
+                    ObjectImport(name="PermissibleValue"),
+                    ObjectImport(name="PvFormulaOptions"),
+                ],
+            )
+        # linkml imports
+        all_imports = (
+            all_imports
+            + Import(
+                module="linkml_runtime.utils.slot",
+                objects=[
+                    ObjectImport(name="Slot"),
+                ],
+            )
+            + Import(
+                module="linkml_runtime.utils.metamodelcore",
+                objects=[
+                    ObjectImport(name="empty_list"),
+                    ObjectImport(name="empty_dict"),
+                    ObjectImport(name="bnode"),
+                ],
+            )
+            + Import(
+                module="linkml_runtime.utils.yamlutils",
+                objects=[
+                    ObjectImport(name="YAMLRoot"),
+                    ObjectImport(name="extended_str"),
+                    ObjectImport(name="extended_float"),
+                    ObjectImport(name="extended_int"),
+                ],
+            )
+            + Import(
+                module="linkml_runtime.utils.dataclass_extensions_376",
+                objects=[
+                    ObjectImport(name="dataclasses_init_fn_with_kwargs"),
+                ],
+            )
+            + Import(
+                module="linkml_runtime.utils.formatutils",
+                objects=[
+                    ObjectImport(name="camelcase"),
+                    ObjectImport(name="underscore"),
+                    ObjectImport(name="sfx"),
+                ],
+            )
+        )
+
+        # handler import
+        all_imports = all_imports + Import(
+            module="linkml_runtime.utils.enumerations", objects=[ObjectImport(name="EnumDefinitionImpl")]
+        )
+        # other imports
+        all_imports = (
+            all_imports
+            + Import(
+                module="rdflib",
+                objects=[
+                    ObjectImport(name="Namespace"),
+                    ObjectImport(name="URIRef"),
+                ],
+            )
+            + Import(
+                module="linkml_runtime.utils.curienamespace",
+                objects=[
+                    ObjectImport(name="CurieNamespace"),
+                ],
+            )
+        )
+
         split_description = ""
         if self.schema.description:
             split_description = "\n#   ".join(d for d in self.schema.description.split("\n") if d is not None)
@@ -149,21 +259,7 @@ class PythonGenerator(Generator):
 # description: {split_description}
 # license: {be(self.schema.license)}
 
-import dataclasses
-import re
-from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
-from dataclasses import dataclass
-from datetime import date, datetime, time
-{enumimports}
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
-{handlerimport}
-from rdflib import Namespace, URIRef
-from linkml_runtime.utils.curienamespace import CurieNamespace
+{all_imports.render()}
 {self.gen_imports()}
 
 metamodel_version = "{self.schema.metamodel_version}"
@@ -834,7 +930,15 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             ):
                 rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}()")
             else:
-                if (
+                if slot.range in self.schema.enums and slot.ifabsent:
+                    # `ifabsent` for an enumeration cannot be assigned to
+                    # the dataclass field default, because it would be a
+                    # mutable. `python_ifabsent_processor.py` can specify
+                    # the default as string and here that string gets
+                    # converted into an object attribute invocation
+                    # TODO: fix according https://github.com/linkml/linkml/pull/2329#discussion_r1797534588
+                    rlines.append(f"\tself.{aliased_slot_name} = getattr({slot.range}, self.{aliased_slot_name})")
+                elif (
                     (self.class_identifier(slot.range) and not slot.inlined)
                     or slot.range in self.schema.types
                     or slot.range in self.schema.enums
@@ -944,11 +1048,11 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
     def forward_reference(self, slot_range: str, owning_class: str) -> bool:
         """Determine whether slot_range is a forward reference"""
-        # logging.info(f"CHECKING: {slot_range} {owning_class}")
+        # logger.info(f"CHECKING: {slot_range} {owning_class}")
         if (slot_range in self.schema.classes and self.schema.classes[slot_range].imported_from) or (
             slot_range in self.schema.enums and self.schema.enums[slot_range].imported_from
         ):
-            logging.info(
+            logger.info(
                 f"FALSE: FORWARD: {slot_range} {owning_class} // IMP={self.schema.classes[slot_range].imported_from}"
             )
             return False
@@ -957,10 +1061,10 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         clist = [x.name for x in self._sort_classes(self.schema.classes.values())]
         for cname in clist:
             if cname == owning_class:
-                logging.info(f"TRUE: OCCURS SAME: {cname} == {slot_range} owning: {owning_class}")
+                logger.info(f"TRUE: OCCURS SAME: {cname} == {slot_range} owning: {owning_class}")
                 return True  # Occurs on or after
             elif cname == slot_range:
-                logging.info(f"FALSE: OCCURS BEFORE: {cname} == {slot_range} owning: {owning_class}")
+                logger.info(f"FALSE: OCCURS BEFORE: {cname} == {slot_range} owning: {owning_class}")
                 return False  # Occurs before
         return True
 
@@ -1214,7 +1318,7 @@ def cli(
     )
     if validate:
         mod = gen.compile_module()
-        logging.info(f"Module {mod} compiled successfully")
+        logger.info(f"Module {mod} compiled successfully")
     print(gen.serialize(emit_metadata=head, **args))
 
 

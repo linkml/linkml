@@ -2,7 +2,8 @@ from collections import Counter
 from typing import Any, List, Tuple
 
 import rdflib
-from rdflib import RDFS, SH, Literal, URIRef
+from rdflib import SH, Literal, URIRef
+from rdflib.collection import Collection
 
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shaclgen import ShaclGenerator
@@ -436,14 +437,132 @@ def test_custom_class_range_is_blank_node_or_iri(input_path):
     assert (persons_node, SH.nodeKind, SH.BlankNodeOrIRI) in g
 
 
-def test_is_a_becomes_a_rdfs_subclass_of(input_path):
-    shacl = ShaclGenerator(input_path("shaclgen_subclass_of.yaml"), mergeimports=True).serialize()
+def test_slot_with_annotations_and_any_of(input_path):
+    shacl = ShaclGenerator(
+        input_path("shaclgen_boolean_constraints.yaml"), mergeimports=True, include_annotations=True
+    ).serialize()
 
     g = rdflib.Graph()
     g.parse(data=shacl)
 
+    class_properties = g.objects(
+        URIRef("https://w3id.org/linkml/examples/boolean_constraints/AnyOfSimpleType"), SH.property
+    )
+    attribute_node = next(class_properties, None)
+    assert attribute_node
+
     assert (
-        URIRef("https://w3id.org/linkml/examples/personinfo/Citizen"),
-        RDFS.subClassOf,
-        URIRef("https://w3id.org/linkml/examples/personinfo/Person"),
+        attribute_node,
+        rdflib.term.Literal("resting", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#string")),
+        rdflib.term.Literal("supine", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#string")),
+    ) in g
+
+
+def test_ignore_subclass_properties(input_path):
+    shacl = ShaclGenerator(input_path("shaclgen_subclass_ignored_properties.yaml"), mergeimports=True).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    count = 0
+    ignored_properties = {}
+    for triple in g.triples((None, SH.ignoredProperties, None)):
+        count += 1
+        (subject, predicate, object) = triple
+        ignored_properties[subject] = list(Collection(g, object))
+
+    assert count == 7
+    assert frozenset(ignored_properties[URIRef("https://w3id.org/linkml/examples/animals/Animal")]) == frozenset(
+        [
+            URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            URIRef("https://w3id.org/linkml/examples/animals/maxAltitude"),
+            URIRef("https://w3id.org/linkml/examples/animals/maxDepth"),
+            URIRef("https://w3id.org/linkml/examples/animals/mammaryGlandCount"),
+            URIRef("https://w3id.org/linkml/examples/animals/ocean"),
+            URIRef("https://w3id.org/linkml/examples/animals/name"),
+        ]
+    )
+    assert frozenset(ignored_properties[URIRef("https://w3id.org/linkml/examples/animals/CanFly")]) == frozenset(
+        [URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")]
+    )
+    assert frozenset(ignored_properties[URIRef("https://w3id.org/linkml/examples/animals/CanSwim")]) == frozenset(
+        [URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")]
+    )
+    assert frozenset(ignored_properties[URIRef("https://w3id.org/linkml/examples/animals/Mammal")]) == frozenset(
+        [
+            URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            URIRef("https://w3id.org/linkml/examples/animals/maxAltitude"),
+            URIRef("https://w3id.org/linkml/examples/animals/maxDepth"),
+            URIRef("https://w3id.org/linkml/examples/animals/ocean"),
+            URIRef("https://w3id.org/linkml/examples/animals/name"),
+        ]
+    )
+    assert frozenset(ignored_properties[URIRef("https://w3id.org/linkml/examples/animals/Whale")]) == frozenset(
+        [URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")]
+    )
+    assert frozenset(ignored_properties[URIRef("https://w3id.org/linkml/examples/animals/Dog")]) == frozenset(
+        [URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")]
+    )
+    assert frozenset(ignored_properties[URIRef("https://w3id.org/linkml/examples/animals/Bat")]) == frozenset(
+        [URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")]
+    )
+
+
+def test_multivalued_slot_min_cardinality(input_path):
+    shacl = ShaclGenerator(input_path("shaclgen_cardinality.yaml"), mergeimports=True).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    variable_class_properties = g.objects(
+        URIRef("https://w3id.org/linkml/examples/cardinality/VariableClass"), SH.property
+    )
+    variable_size_list_node = next(variable_class_properties, None)
+    assert variable_size_list_node
+
+    assert (
+        variable_size_list_node,
+        SH.minCount,
+        rdflib.term.Literal("2", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer")),
+    ) in g
+
+
+def test_multivalued_slot_max_cardinality(input_path):
+    shacl = ShaclGenerator(input_path("shaclgen_cardinality.yaml"), mergeimports=True).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    variable_class_properties = g.objects(
+        URIRef("https://w3id.org/linkml/examples/cardinality/VariableClass"), SH.property
+    )
+    variable_size_list_node = next(variable_class_properties, None)
+    assert variable_size_list_node
+
+    assert (
+        variable_size_list_node,
+        SH.maxCount,
+        rdflib.term.Literal("5", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer")),
+    ) in g
+
+
+def test_multivalued_slot_exact_cardinality(input_path):
+    shacl = ShaclGenerator(input_path("shaclgen_cardinality.yaml"), mergeimports=True).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    exact_class_properties = g.objects(URIRef("https://w3id.org/linkml/examples/cardinality/ExactClass"), SH.property)
+    exact_size_list_node = next(exact_class_properties, None)
+    assert exact_size_list_node
+
+    assert (
+        exact_size_list_node,
+        SH.minCount,
+        rdflib.term.Literal("3", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer")),
+    ) in g
+    assert (
+        exact_size_list_node,
+        SH.maxCount,
+        rdflib.term.Literal("3", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer")),
     ) in g

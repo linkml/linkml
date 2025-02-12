@@ -50,6 +50,13 @@ DIALECT = MarkdownDialect
 MAX_CHARS_IN_TABLE = 80
 MAX_RANK = 1000
 
+SCHEMA_SUBFOLDER = "schemas"
+CLASS_SUBFOLDER = "classes"
+SLOT_SUBFOLDER = "slots"
+ENUM_SUBFOLDER = "enums"
+TYPE_SUBFOLDER = "types"
+SUBSET_SUBFOLDER = "subsets"
+
 
 def enshorten(input):
     """
@@ -144,6 +151,9 @@ class DocGenerator(Generator):
     include_top_level_diagram: bool = False
     """Whether the index page should include a schema diagram"""
 
+    subfolder_type_separation: bool = False
+    """Whether each type (class, slot, etc.) should be put in separate subfolder for navigation purposes"""
+
     example_directory: Optional[str] = None
     example_runner: ExampleRunner = field(default_factory=lambda: ExampleRunner())
 
@@ -154,6 +164,7 @@ class DocGenerator(Generator):
     use_slot_uris: bool = False
     use_class_uris: bool = False
     hierarchical_class_view: bool = False
+    render_imports: bool = False
 
     def __post_init__(self):
         dialect = self.dialect
@@ -205,7 +216,11 @@ class DocGenerator(Generator):
             self.logger.debug(f"  Generating doc for {schema_name}")
             imported_schema = sv.schema_map.get(schema_name)
             out_str = template.render(gen=self, schema=imported_schema, schemaview=sv, **template_vars)
-            self._write(out_str, directory, imported_schema.name)
+            self._write(
+                out_str,
+                f"{directory}/{SCHEMA_SUBFOLDER}" if self.subfolder_type_separation else directory,
+                imported_schema.name,
+            )
         self.logger.debug("Processing Classes...")
         template = self._get_template("class")
         for cn, c in sv.all_classes().items():
@@ -214,7 +229,7 @@ class DocGenerator(Generator):
             n = self.name(c)
             self.logger.debug(f"  Generating doc for {n}")
             out_str = template.render(gen=self, element=c, schemaview=sv, **template_vars)
-            self._write(out_str, directory, n)
+            self._write(out_str, f"{directory}/{CLASS_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
         self.logger.debug("Processing Slots...")
         template = self._get_template("slot")
         for sn, s in sv.all_slots().items():
@@ -224,7 +239,7 @@ class DocGenerator(Generator):
             self.logger.debug(f"  Generating doc for {n}")
             s = sv.induced_slot(sn)
             out_str = template.render(gen=self, element=s, schemaview=sv, **template_vars)
-            self._write(out_str, directory, n)
+            self._write(out_str, f"{directory}/{SLOT_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
         self.logger.debug("Processing Enums...")
         template = self._get_template("enum")
         for en, e in sv.all_enums().items():
@@ -233,7 +248,7 @@ class DocGenerator(Generator):
             n = self.name(e)
             self.logger.debug(f"  Generating doc for {n}")
             out_str = template.render(gen=self, element=e, schemaview=sv, **template_vars)
-            self._write(out_str, directory, n)
+            self._write(out_str, f"{directory}/{ENUM_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
         self.logger.debug("Processing Types...")
         template = self._get_template("type")
         for tn, t in sv.all_types().items():
@@ -243,7 +258,7 @@ class DocGenerator(Generator):
             self.logger.debug(f"  Generating doc for {n}")
             t = sv.induced_type(tn)
             out_str = template.render(gen=self, element=t, schemaview=sv, **template_vars)
-            self._write(out_str, directory, n)
+            self._write(out_str, f"{directory}/{TYPE_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
         self.logger.debug("Processing Subsets...")
         template = self._get_template("subset")
         for _, s in sv.all_subsets().items():
@@ -252,7 +267,7 @@ class DocGenerator(Generator):
             n = self.name(s)
             self.logger.debug(f"  Generating doc for {n}")
             out_str = template.render(gen=self, element=s, schemaview=sv, **template_vars)
-            self._write(out_str, directory, n)
+            self._write(out_str, f"{directory}/{SUBSET_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
 
     def _write(self, out_str: str, directory: str, name: str) -> None:
         """
@@ -384,13 +399,19 @@ class DocGenerator(Generator):
         curie = self.uri(element, expand=False)
         return f"[{curie}]({uri})"
 
-    def link(self, e: Union[Definition, DefinitionName]) -> str:
+    def link(self, e: Union[Definition, DefinitionName], index_link: bool = False) -> str:
         """
         Render an element as a hyperlink
 
         :param e:
+        :param index_link: Whether this is a link for the index page or not
         :return:
         """
+        if index_link:
+            subfolder = ""
+        else:
+            subfolder = "../"
+
         if e is None:
             return "NONE"
         if not isinstance(e, Definition):
@@ -401,20 +422,43 @@ class DocGenerator(Generator):
             if self.use_class_uris:
                 curie = self.schemaview.get_uri(e)
                 if curie is not None:
-                    return self._markdown_link(n=curie.split(":")[1], name=e.name)
-            return self._markdown_link(camelcase(e.name))
+                    return self._markdown_link(
+                        n=curie.split(":")[1],
+                        name=e.name,
+                        subfolder=subfolder + CLASS_SUBFOLDER if self.subfolder_type_separation else None,
+                    )
+            return self._markdown_link(
+                camelcase(e.name),
+                subfolder=subfolder + CLASS_SUBFOLDER if self.subfolder_type_separation else None,
+            )
         elif isinstance(e, EnumDefinition):
-            return self._markdown_link(camelcase(e.name))
+            return self._markdown_link(
+                camelcase(e.name),
+                subfolder=subfolder + ENUM_SUBFOLDER if self.subfolder_type_separation else None,
+            )
         elif isinstance(e, SlotDefinition):
             if self.use_slot_uris:
                 curie = self.schemaview.get_uri(e)
                 if curie is not None:
-                    return self._markdown_link(n=curie.split(":")[1], name=e.name)
-            return self._markdown_link(underscore(e.name))
+                    return self._markdown_link(
+                        n=curie.split(":")[1],
+                        name=e.name,
+                        subfolder=subfolder + SLOT_SUBFOLDER if self.subfolder_type_separation else None,
+                    )
+            return self._markdown_link(
+                underscore(e.name),
+                subfolder=subfolder + SLOT_SUBFOLDER if self.subfolder_type_separation else None,
+            )
         elif isinstance(e, TypeDefinition):
-            return self._markdown_link(camelcase(e.name))
+            return self._markdown_link(
+                camelcase(e.name),
+                subfolder=subfolder + TYPE_SUBFOLDER if self.subfolder_type_separation else None,
+            )
         elif isinstance(e, SubsetDefinition):
-            return self._markdown_link(camelcase(e.name))
+            return self._markdown_link(
+                camelcase(e.name),
+                subfolder=subfolder + SUBSET_SUBFOLDER if self.subfolder_type_separation else None,
+            )
         else:
             return e.name
 
@@ -716,7 +760,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_classes(imports=self.mergeimports).values()
+        elts = self.schemaview.all_classes(imports=self.render_imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -728,7 +772,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_slots(imports=self.mergeimports).values()
+        elts = self.schemaview.all_slots(imports=self.render_imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -740,7 +784,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_types(imports=self.mergeimports).values()
+        elts = self.schemaview.all_types(imports=self.render_imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -755,7 +799,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_enums(imports=self.mergeimports).values()
+        elts = self.schemaview.all_enums(imports=self.render_imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -767,7 +811,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_subsets(imports=self.mergeimports).values()
+        elts = self.schemaview.all_subsets(imports=self.render_imports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -791,7 +835,7 @@ class DocGenerator(Generator):
         :return: tuples (depth: int, cls: ClassDefinitionName)
         """
         sv = self.schemaview
-        roots = sv.class_roots(mixins=False, imports=self.mergeimports)
+        roots = sv.class_roots(mixins=False, imports=self.render_imports)
 
         # by default the classes are sorted alphabetically
         roots = sorted(roots, key=str.casefold, reverse=True)
@@ -805,7 +849,7 @@ class DocGenerator(Generator):
             depth, class_name = stack.pop()
             yield depth, class_name
             children = sorted(
-                sv.class_children(class_name=class_name, mixins=False, imports=self.mergeimports),
+                sv.class_children(class_name=class_name, mixins=False, imports=self.render_imports),
                 key=str.casefold,
                 reverse=True,
             )
@@ -966,6 +1010,12 @@ class DocGenerator(Generator):
     help="Render class table on index page in a hierarchically indented view",
 )
 @click.option(
+    "--render-imports/--no-render-imports",
+    default=False,
+    show_default=True,
+    help="Render also the documentation of elements from imported schemas",
+)
+@click.option(
     "--example-directory",
     help="Folder in which example files are found. These are used to make inline examples",
 )
@@ -976,6 +1026,11 @@ class DocGenerator(Generator):
 Include LinkML Schema outside of imports mechanism.  Helpful in including deprecated classes and slots in a separate
 YAML, and including it when necessary but not by default (e.g. in documentation or for backwards compatibility)
 """,
+)
+@click.option(
+    "--subfolder-type-separation/--no-subfolder-type-separation",
+    default=False,
+    help="Separate type (class, slot, etc.) outputs in different subfolders for navigation purposes",
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="doc")
@@ -988,6 +1043,8 @@ def cli(
     use_slot_uris,
     use_class_uris,
     hierarchical_class_view,
+    subfolder_type_separation,
+    render_imports,
     **args,
 ):
     """Generate documentation folder from a LinkML YAML schema
@@ -1018,6 +1075,8 @@ def cli(
         use_class_uris=use_class_uris,
         hierarchical_class_view=hierarchical_class_view,
         index_name=index_name,
+        subfolder_type_separation=subfolder_type_separation,
+        render_imports=render_imports,
         **args,
     )
     print(gen.serialize())

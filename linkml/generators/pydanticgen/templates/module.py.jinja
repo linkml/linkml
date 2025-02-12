@@ -1,6 +1,4 @@
-{% for import in python_imports %}
-{{ import }}
-{%- endfor -%}
+{{ python_imports }}
 
 metamodel_version = "{{metamodel_version}}"
 version = "{{version if version else None}}"

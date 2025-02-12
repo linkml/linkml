@@ -5,18 +5,20 @@ from typing import Callable, List
 
 import click
 from jsonasobj2 import JsonObj, as_dict
-from linkml_runtime.linkml_model.meta import ElementName
+from linkml_runtime.linkml_model.meta import ClassDefinition, ElementName
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import TypedNode, extended_float, extended_int, extended_str
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
-from rdflib.namespace import RDF, RDFS, SH, XSD
+from rdflib.namespace import RDF, SH, XSD
 
 from linkml._version import __version__
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -74,9 +76,6 @@ class ShaclGenerator(Generator):
             shape_pv(RDF.type, SH.NodeShape)
             shape_pv(SH.targetClass, class_uri)  # TODO
 
-            if c.is_a:
-                shape_pv(RDFS.subClassOf, URIRef(sv.get_uri(c.is_a, expand=True)))
-
             if self.closed:
                 if c.mixin or c.abstract:
                     shape_pv(SH.closed, Literal(False))
@@ -88,9 +87,9 @@ class ShaclGenerator(Generator):
                 shape_pv(SH.name, Literal(c.title))
             if c.description is not None:
                 shape_pv(SH.description, Literal(c.description))
-            list_node = BNode()
-            Collection(g, list_node, [RDF.type])
-            shape_pv(SH.ignoredProperties, list_node)
+
+            shape_pv(SH.ignoredProperties, self._build_ignored_properties(g, c))
+
             if c.annotations and self.include_annotations:
                 self._add_annotations(shape_pv, c)
             order = 0
@@ -117,10 +116,20 @@ class ShaclGenerator(Generator):
                 order += 1
                 prop_pv_literal(SH.name, s.title)
                 prop_pv_literal(SH.description, s.description)
-                if not s.multivalued:
-                    prop_pv_literal(SH.maxCount, 1)
-                if s.required:
+                # minCount
+                if s.minimum_cardinality:
+                    prop_pv_literal(SH.minCount, s.minimum_cardinality)
+                elif s.exact_cardinality:
+                    prop_pv_literal(SH.minCount, s.exact_cardinality)
+                elif s.required:
                     prop_pv_literal(SH.minCount, 1)
+                # maxCount
+                if s.maximum_cardinality:
+                    prop_pv_literal(SH.maxCount, s.maximum_cardinality)
+                elif s.exact_cardinality:
+                    prop_pv_literal(SH.maxCount, s.exact_cardinality)
+                elif not s.multivalued:
+                    prop_pv_literal(SH.maxCount, 1)
                 prop_pv_literal(SH.minInclusive, s.minimum_value)
                 prop_pv_literal(SH.maxInclusive, s.maximum_value)
 
@@ -130,7 +139,7 @@ class ShaclGenerator(Generator):
                     # slot definition, as both are mapped to sh:in in SHACL
                     if s.equals_string or s.equals_string_in:
                         error = "'equals_string'/'equals_string_in' and 'any_of' are mutually exclusive"
-                        raise ValueError(f'{TypedNode.yaml_loc(s, suffix="")} {error}')
+                        raise ValueError(f'{TypedNode.yaml_loc(str(s), suffix="")} {error}')
 
                     or_node = BNode()
                     prop_pv(SH["or"], or_node)
@@ -199,14 +208,15 @@ class ShaclGenerator(Generator):
                         add_simple_data_type(prop_pv, r)
                     if s.pattern:
                         prop_pv(SH.pattern, Literal(s.pattern))
-                    if s.annotations and self.include_annotations:
-                        self._add_annotations(prop_pv, s)
                     if s.equals_string:
                         # Map equal_string and equal_string_in to sh:in
                         self._and_equals_string(g, prop_pv, [s.equals_string])
                     if s.equals_string_in:
                         # Map equal_string and equal_string_in to sh:in
                         self._and_equals_string(g, prop_pv, s.equals_string_in)
+
+                if s.annotations and self.include_annotations:
+                    self._add_annotations(prop_pv, s)
 
                 default_value = ifabsent_processor.process_slot(s, c)
                 if default_value:
@@ -244,7 +254,7 @@ class ShaclGenerator(Generator):
             if rt.annotations and self.include_annotations:
                 self._add_annotations(func, rt)
         else:
-            logging.error(f"No URI for type {rt.name}")
+            logger.error(f"No URI for type {rt.name}")
 
     def _and_equals_string(self, g: Graph, func: Callable, values: List) -> None:
         pv_node = BNode()
@@ -300,6 +310,31 @@ class ShaclGenerator(Generator):
             [Literal(v) for v in values],
         )
         func(SH["in"], pv_node)
+
+    def _build_ignored_properties(self, g: Graph, c: ClassDefinition) -> BNode:
+        def collect_child_properties(class_name: str, output: set) -> None:
+            for childName in self.schemaview.class_children(class_name, imports=True, mixins=False, is_a=True):
+                output.update(
+                    {
+                        URIRef(self.schemaview.get_uri(prop, expand=True))
+                        for prop in self.schemaview.class_slots(childName)
+                    }
+                )
+                collect_child_properties(childName, output)
+
+        child_properties = set()
+        collect_child_properties(c.name, child_properties)
+
+        class_slot_uris = {
+            URIRef(self.schemaview.get_uri(prop, expand=True)) for prop in self.schemaview.class_slots(c.name)
+        }
+        ignored_properties = child_properties.difference(class_slot_uris)
+
+        list_node = BNode()
+        ignored_properties.add(RDF.type)
+        Collection(g, list_node, list(ignored_properties))
+
+        return list_node
 
 
 def add_simple_data_type(func: Callable, r: ElementName) -> None:

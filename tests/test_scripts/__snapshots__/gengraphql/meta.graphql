@@ -1,4 +1,49 @@
 # metamodel_version: 1.7.0
+enum CordialnessEnum
+  {
+    heartfelt
+    hateful
+    indifferent
+  }
+
+enum DiagnosisType
+  {
+    TODO
+  }
+
+enum EmploymentEventType
+  {
+    HIRE
+    FIRE
+    PROMOTION
+    TRANSFER
+  }
+
+enum FamilialRelationshipType
+  {
+    SIBLING_OF
+    PARENT_OF
+    CHILD_OF
+  }
+
+enum KitchenStatus
+  {
+    DIRTY
+    CLEAN
+  }
+
+enum LifeStatusEnum
+  {
+    LIVING
+    DEAD
+    UNKNOWN
+  }
+
+enum OtherCodes
+  {
+    a_b
+  }
+
 type Activity
   {
     id: String!

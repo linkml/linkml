@@ -27,6 +27,7 @@ from typing import Callable, ClassVar, Dict, List, Mapping, Optional, Set, TextI
 
 import click
 from click import Argument, Command, Option
+from jsonasobj2 import JsonObj
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
@@ -54,6 +55,8 @@ from linkml.utils.mergeutils import alias_root
 from linkml.utils.schemaloader import SchemaLoader
 from linkml.utils.typereferences import References
 
+logger = logging.getLogger(__name__)
+
 
 @lru_cache
 def _resolved_metamodel(mergeimports):
@@ -61,7 +64,7 @@ def _resolved_metamodel(mergeimports):
         raise AssertionError(f"{LOCAL_METAMODEL_YAML_FILE} not found")
 
     base_dir = str(Path(str(LOCAL_METAMODEL_YAML_FILE)).parent)
-    logging.debug(f"BASE={base_dir}")
+    logger.debug(f"BASE={base_dir}")
     metamodel = SchemaLoader(
         LOCAL_METAMODEL_YAML_FILE,
         importmap={"linkml": base_dir},
@@ -179,7 +182,7 @@ class Generator(metaclass=abc.ABCMeta):
 
     def __post_init__(self) -> None:
         if not self.logger:
-            self.logger = logging.getLogger()
+            self.logger = logger
         if self.log_level is not None:
             self.logger.setLevel(self.log_level)
         if self.format is None:
@@ -203,7 +206,7 @@ class Generator(metaclass=abc.ABCMeta):
         if self.uses_schemaloader:
             self._initialize_using_schemaloader(schema)
         else:
-            logging.info(f"Using SchemaView with im={self.importmap} // base_dir={self.base_dir}")
+            self.logger.info(f"Using SchemaView with im={self.importmap} // base_dir={self.base_dir}")
             self.schemaview = SchemaView(schema, importmap=self.importmap, base_dir=self.base_dir)
             if self.include:
                 if isinstance(self.include, (str, Path)):
@@ -263,8 +266,16 @@ class Generator(metaclass=abc.ABCMeta):
     def _init_namespaces(self):
         if self.namespaces is None:
             self.namespaces = Namespaces()
-            for prefix in self.schema.prefixes.values():
-                self.namespaces[prefix.prefix_prefix] = prefix.prefix_reference
+            if isinstance(self.schema.prefixes, dict):
+                for key, value in self.schema.prefixes.items():
+                    self.namespaces[key] = value
+            elif isinstance(self.schema.prefixes, JsonObj):
+                prefixes = vars(self.schema.prefixes)
+                for key, value in prefixes.items():
+                    self.namespaces[key] = value
+            else:
+                for prefix in self.schema.prefixes.values():
+                    self.namespaces[prefix.prefix_prefix] = prefix.prefix_reference
 
     def serialize(self, **kwargs) -> str:
         """
@@ -840,7 +851,7 @@ class Generator(metaclass=abc.ABCMeta):
             if ":" not in mapping or len(mapping.split(":")) != 2:
                 raise ValueError(f"Definition {defn.name} - unrecognized mapping: {mapping}")
             ns = mapping.split(":")[0]
-            logging.debug(f"Adding {ns} from {mapping} // {defn}")
+            self.logger.debug(f"Adding {ns} from {mapping} // {defn}")
             if ns:
                 self.add_prefix(ns)
 

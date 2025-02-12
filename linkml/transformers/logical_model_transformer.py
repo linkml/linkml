@@ -360,13 +360,13 @@ class LogicalModelTransformer(ModelTransformer):
         target_schema = target_schemaview.schema
         for tn, typ in target_schema.types.items():
             ancs = sv.type_ancestors(tn, reflexive=False)
-            logging.debug(f"Unrolling type {tn}, merging {len(ancs)}")
+            logger.debug(f"Unrolling type {tn}, merging {len(ancs)}")
             if ancs:
                 for type_anc in ancs:
                     self._merge_type_ancestors(target=typ, source=sv.get_type(type_anc))
         for sn, slot in target_schema.slots.items():
             ancs = sv.slot_ancestors(sn, reflexive=False)
-            logging.debug(f"Unrolling slot {sn}, merging {len(ancs)}")
+            logger.debug(f"Unrolling slot {sn}, merging {len(ancs)}")
             if ancs:
                 for slot_anc in ancs:
                     self._merge_slot_ancestors(target=slot, source=target_schema.slots[slot_anc])
@@ -379,7 +379,7 @@ class LogicalModelTransformer(ModelTransformer):
                 depth_first=False,
             )
             ancs = list(reversed(ancs))
-            logging.debug(f"Unrolling class {cn}, merging {len(ancs)}")
+            logger.debug(f"Unrolling class {cn}, merging {len(ancs)}")
             self._roll_down(target_schema, cn, ancs)
         self.apply_defaults(target_schema)
         if simplify:
@@ -409,11 +409,13 @@ class LogicalModelTransformer(ModelTransformer):
         target_class_name: ClassDefinitionName,
         ancestors: List[ClassDefinitionName],
     ):
-        anc_classes = [self.schemaview.get_class(anc) for anc in ancestors]
+        anc_classes = [self.schemaview.get_class(ancestor) for ancestor in ancestors]
         attributes: Dict[SlotDefinitionName, SlotDefinition] = {}
-        for anc in anc_classes:
-            top_level_slots = [(s, target_schema.slots[s]) for s in anc.slots]
-            for slot_name, slot_expr in list(anc.attributes.items()) + list(anc.slot_usage.items()) + top_level_slots:
+        for ancestor_class in anc_classes:
+            top_level_slots = [(s, target_schema.slots[s]) for s in ancestor_class.slots]
+            for slot_name, slot_expr in (
+                list(ancestor_class.attributes.items()) + list(ancestor_class.slot_usage.items()) + top_level_slots
+            ):
                 if slot_name not in attributes:
                     attributes[slot_name] = SlotDefinition(slot_name)
                 sx = attributes[slot_name]
@@ -644,7 +646,7 @@ class LogicalModelTransformer(ModelTransformer):
         if slot_expression.all_of:
             exprs.append(logictools.And(*[self._as_logical_expression(subx) for subx in slot_expression.all_of]))
         if slot_expression.exactly_one_of:
-            # TODO: disjointness
+            # TODO: disjointedness
             exprs.append(logictools.Or(*[self._as_logical_expression(subx) for subx in slot_expression.exactly_one_of]))
         if slot_expression.none_of:
             exprs.append(

@@ -308,6 +308,7 @@ class ERDiagramGenerator(Generator):
     default=False,
     help="If True, follow references even if not inlined",
 )
+@click.option("--format", "-f", default="markdown", type=click.Choice(ERDiagramGenerator.valid_formats))
 @click.option("--max-hops", default=None, type=click.INT, help="Maximum number of hops")
 @click.option("--classes", "-c", multiple=True, help="List of classes to serialize")
 @click.option("--include-upstream", is_flag=True, help="Include upstream classes")

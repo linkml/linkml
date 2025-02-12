@@ -18,11 +18,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install poetry
-        run: pipx install poetry
+      - name: Install Poetry 1.x
+        run: pipx install poetry==1.*
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: 3.12  # Adjust Python version as needed
       - name: Check pyproject.toml and poetry.lock
         run: poetry check
       - name: Install tox
@@ -101,7 +101,7 @@ jobs:
       #----------------------------------------------
       - name: Generate coverage results
         run: |
-          poetry run coverage run -m pytest --with-slow
+          poetry run coverage run -m pytest --with-slow --with-network
           poetry run coverage xml
           poetry run coverage report -m
         shell: bash

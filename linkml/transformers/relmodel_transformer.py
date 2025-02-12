@@ -12,8 +12,11 @@ from linkml_runtime.linkml_model import (
     SchemaDefinition,
     SlotDefinition,
 )
+from linkml_runtime.linkml_model.meta import UniqueKey
 from linkml_runtime.utils.schemaview import SchemaView, SlotDefinitionName
 from sqlalchemy import Enum
+
+logger = logging.getLogger(__name__)
 
 
 class RelationalAnnotations(Enum):
@@ -215,11 +218,11 @@ class RelationalModelTransformer:
         for cn in target_sv.all_classes():
             pk = self.get_direct_identifier_attribute(target_sv, cn)
             if self.foreign_key_policy == ForeignKeyPolicy.NO_FOREIGN_KEYS:
-                logging.info(f"Will not inject any PKs, and policy == {self.foreign_key_policy}")
+                logger.info(f"Will not inject any PKs, and policy == {self.foreign_key_policy}")
             else:
                 if pk is None:
                     pk = self.add_primary_key(cn, target_sv)
-                    logging.info(f"Added primary key {cn}.{pk.name}")
+                    logger.info(f"Added primary key {cn}.{pk.name}")
                 for link in links:
                     if link.target_class == cn:
                         link.target_slot = pk.name
@@ -233,7 +236,7 @@ class RelationalModelTransformer:
                 continue
             pk_slot = self.get_direct_identifier_attribute(target_sv, cn)
             # if self.is_skip(c) and len(incoming_links) == 0:
-            #    logging.info(f'Skipping class: {c.name}')
+            #    logger.info(f'Skipping class: {c.name}')
             #    del target.classes[cn]
             #    continue
             for src_slot in list(c.attributes.values()):
@@ -278,6 +281,17 @@ class RelationalModelTransformer:
                                 target_slot=backref_slot.name,
                             )
                         )
+                        backref_key_slots = [s for s in backref_class.attributes.values() if s.key]
+                        if backref_key_slots:
+                            if len(backref_key_slots) > 1:
+                                raise ValueError(f"Multiple keys for {c.name}: {backref_key_slots}")
+                            backref_key_slot = backref_key_slots[0]
+                            unique_key_name = f"{c.name}_{backref_key_slot.name}"
+                            backref_class.unique_keys[unique_key_name] = UniqueKey(
+                                unique_key_name=unique_key_name,
+                                unique_key_slots=[backref_slot.name, backref_key_slot.name],
+                            )
+
                     else:
                         # MANY-TO-MANY
                         # create new linking table
@@ -375,7 +389,7 @@ class RelationalModelTransformer:
             removed_ucs = []
             for uc_name, uc in c.unique_keys.items():
                 if any(sn in multivalued_slots_original for sn in uc.unique_key_slots):
-                    logging.warning(
+                    logger.warning(
                         f"Cannot represent uniqueness constraint {uc_name}. "
                         f"one of the slots {uc.unique_key_slots} is multivalued"
                     )

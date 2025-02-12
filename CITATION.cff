@@ -3,33 +3,46 @@ message: If you use this software, please cite it as below.
 authors:
   - family-names: Moxon
     given-names: Sierra
+    orcid: https://orcid.org/0000-0002-8719-7760
     affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
-  - family-names: Unni
-    given-names: Deepak
-    affiliation: "SIB Swiss Institute of Bioinformatics"
-  - family-names: Vaidya
-    given-names: Gaurav
-    affiliation: "RENCI"
+  - family-names: Kalita
+    given-names: Patrick
+    affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
+  - family-names: Saunders
+    given-names: Jonny
+    affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
   - family-names: Hegde
     given-names: Harshad
     affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
   - family-names: Patil
     given-names: Sujay
     affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
-  - family-names: Schafer
+  - family-names: Schaper
     given-names: Kevin
-    affiliation: "University of Colorado Anschutz"
-  - family-names: Kalita
-    given-names: Patrick
-    affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
+    affiliation: "University of North Carolina - Chapel Hill"
   - family-names: Harris
     given-names: Nomi
+    orcid: https://orcid.org/0000-0001-6315-3707
     affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
+  - family-names: Cox
+    given-names: Corey
+    affiliation: "University of North Carolina - Chapel Hill"
+  - family-names: Linke
+    given-names: David
+    affiliation: "Leibniz-Institut für Katalyse e.V. (LIKAT)"
+  - family-names: Unni
+    given-names: Deepak
+    affiliation: "SIB Swiss Institute of Bioinformatics"
+  - family-names: Vaidya
+    given-names: Gaurav
+    affiliation: "RENCI"
   - family-names: Putman
     given-names: Tim
   - family-names: Solbrig
     given-names: Harold
     affiliation: "independent"
+  - family-names: "All GitHub Contributors"
+    given-names: "https://github.com/linkml/linkml/graphs/contributors"
   - family-names: Haendel
     given-names: Melissa
     orcid: https://orcid.org/0000-0001-9114-8737

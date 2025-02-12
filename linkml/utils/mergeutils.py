@@ -18,6 +18,8 @@ from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.yamlutils import extended_str
 from rdflib import URIRef
 
+logger = logging.getLogger(__name__)
+
 
 def merge_schemas(
     target: SchemaDefinition,
@@ -72,7 +74,7 @@ def merge_namespaces(target: SchemaDefinition, mergee: SchemaDefinition, namespa
             # We cannot resolve this to an absolute path, so we have to assume that
             # this prefix is already defined correctly in the target
             if prefix.prefix_prefix not in namespaces:
-                logging.info(
+                logger.info(
                     "Adding an unadjusted relative prefix for %s from %s, "
                     + "as the prefix is not yet defined, even as we cannot adjust it relative to the final file. "
                     + "If it cannot be resolved, add the prefix definition to the input schema!",
@@ -85,7 +87,7 @@ def merge_namespaces(target: SchemaDefinition, mergee: SchemaDefinition, namespa
                     prefix.prefix_prefix in target.prefixes
                     and target.prefixes[prefix.prefix_prefix].prefix_reference != prefix.prefix_reference
                 ):
-                    logging.info(
+                    logger.info(
                         "Ignoring different relative prefix for %s from %s, "
                         + "as we cannot adjust it relative to the final file. "
                         + "Assuming the first found location is correct: %s!",

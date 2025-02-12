@@ -1,3 +1,4 @@
+import pytest
 from linkml_runtime.linkml_model import String
 from rdflib import Graph, URIRef
 from rdflib.namespace import OWL, RDF, RDFS, XSD
@@ -98,5 +99,6 @@ def test_issue_owl_properties(input_path, snapshot):
     # self.assertIn((NAME, RDF.type, OWL.ObjectProperty), g)
 
 
+@pytest.mark.network
 def test_other_formats(input_path, snapshot):
     _test_other(TESTFILE, input_path, snapshot)
