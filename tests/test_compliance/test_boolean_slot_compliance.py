@@ -591,7 +591,7 @@ def test_class_any_of_with_required(framework, nest, op, name, family_name, give
                     "required": True,
                 }
             }
-        }
+        },
     }
     schema = validated_schema(
         test_class_any_of_with_required,

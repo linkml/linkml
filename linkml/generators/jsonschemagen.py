@@ -388,10 +388,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             class_subschema["allOf"] = [self.get_subschema_for_anonymous_class(c, False) for c in cls.all_of]
 
         if cls.exactly_one_of is not None and len(cls.exactly_one_of) > 0:
-            class_subschema["oneOf"] = [
-                self.get_subschema_for_anonymous_class(c, False) for c in cls.exactly_one_of
-            ]
-
+            class_subschema["oneOf"] = [self.get_subschema_for_anonymous_class(c, False) for c in cls.exactly_one_of]
 
     def get_subschema_for_anonymous_class(
         self, cls: AnonymousClassExpression, properties_required: bool = False
