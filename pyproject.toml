@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "linkml"
-version = "1.8.6.post38.dev0+9ea54f38"
+version = "0.0.0"
 description = "Linked Open Data Modeling Language"
 authors = [
     "Chris Mungall <cjmungall@lbl.gov>",
@@ -42,7 +42,7 @@ packages = [
 ]
 
 [tool.poetry-dynamic-versioning]
-enable = false
+enable = true
 vcs = "git"
 style = "pep440"
 
