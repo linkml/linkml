@@ -158,7 +158,10 @@ ks:EqualsStringIn a owl:Class ;
             owl:minCardinality 0 ;
             owl:onProperty ks:attribute6 ],
         [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
+             owl:allValuesFrom [ a owl:DataRange ;
+                             owl:oneOf [ rdf:first "foo"^^xsd:string ;
+                                     rdf:rest [ rdf:first "bar"^^xsd:string ;
+                                             rdf:rest [ rdf:rest () ] ] ] ] ;
             owl:onProperty ks:attribute6 ] ;
     skos:inScheme <https://w3id.org/linkml/tests/kitchen_sink> .
 

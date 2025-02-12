@@ -96,6 +96,54 @@ More on enums:
 
 <iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQyQsRIBjSxhaDie5ASDAOTfJO9JqFjYmdoBHgCVVKMHzKo0AyL04lGNqWdgbCnyV8a-syk1U81tRXg/embed?start=false&loop=false&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
 
+## How do I constrain the value of a slot based on an entry in a different slot?
+
+You may want to make the entries in one slot contingent on a different slot. If, for example, you are developing a schema for a toy store that sells wooden horses and frogs. The horses are available in red and green, but the frogs are available in blue and pink.
+
+You can use a [rules block](https://linkml.io/linkml/schemas/advanced.html#rules) to constrain the permissible values for a particular slot dependent on the entry in another slot. 
+
+```yaml
+classes:
+  Toys:
+    attributes:
+      species:
+        range: SpeciesRng
+      colour:
+    rules:
+      - preconditions:
+          slot_conditions:
+            species:
+              equals_string: horse
+        postconditions:
+          slot_conditions:
+            colour:
+              any_of:
+                - range: RedGreen
+      - preconditions:
+          slot_conditions:
+            species:
+              equals_string: frog
+        postconditions:
+          slot_conditions:
+            colour:
+              any_of:
+                - range: BluePink
+
+enums:
+  SpeciesRng:
+    permissible_values: 
+      horse:
+      frog:
+  BluePink:
+    permissible_values:
+      blue:
+      pink:
+  RedGreen:
+    permissible_values:
+      red:
+      green:
+```
+
 ## How do I constrain the value of a slot using an ontology or vocabulary?
 
 There are a variety of ways of tackling this in LinkML.

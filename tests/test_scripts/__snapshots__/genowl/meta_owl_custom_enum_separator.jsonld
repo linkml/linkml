@@ -4841,7 +4841,7 @@
     ],
     "http://www.w3.org/2002/07/owl#allValuesFrom": [
       {
-        "@id": "_:Nbcee163615a74ba990ffc17d51b4087c"
+        "@id": "_:Nabe1ad233c144f9aa79dbd1c2b00af09"
       }
     ],
     "http://www.w3.org/2002/07/owl#onProperty": [
@@ -4869,7 +4869,28 @@
     ]
   },
   {
-    "@id": "_:Nf5b54048dcbc4a1aa4641645fb558621",
+    "@id": "_:Nabe1ad233c144f9aa79dbd1c2b00af09",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#DataRange"
+    ],
+    "http://www.w3.org/2002/07/owl#oneOf": [
+      {
+        "@list": [
+          {
+            "@type": "http://www.w3.org/2001/XMLSchema#string",
+            "@value": "foo"
+          },
+          {
+            "@type": "http://www.w3.org/2001/XMLSchema#string",
+            "@value": "bar"
+          },
+          null
+        ]
+      }
+    ]
+  },
+  {
+    "@id": "_:N1d228064c6f24aa38ead1c6e4412095c",
     "@type": [
       "http://www.w3.org/2002/07/owl#Restriction"
     ],

@@ -708,18 +708,20 @@ class OwlSchemaGenerator(Generator):
                 owl_exprs.append(eq_uri)
         if element.equals_string_in:
             equals_string_in = element.equals_string_in
-            if is_literal is None:
-                logger.warning(f"ignoring equals_string={equals_string_in} as unable to tell if literal")
-            elif is_literal:
-                dt_exprs = [
-                    self._datatype_restriction(XSD.string, [self._facet(XSD.pattern, s)]) for s in equals_string_in
-                ]
-                union_expr = self._union_of(dt_exprs, owl_types={RDFS.Literal})
-                owl_exprs.append(union_expr)
-                owl_types.add(RDFS.Literal)
-            else:
-                eq_uris = [URIRef(self.schemaview.expand_curie(s)) for s in equals_string_in]
-                owl_exprs.append(self._union_of(eq_uris))
+            # Construct an OWL enumerated datatype using owl:oneOf
+            data_range_node = BNode()
+            list_node = BNode()
+            graph.add((data_range_node, RDF.type, OWL.DataRange))
+            graph.add((data_range_node, OWL.oneOf, list_node))
+            current_node = list_node
+            for s in equals_string_in:
+                next_node = BNode()
+                graph.add((current_node, RDF.type, RDF.List))
+                graph.add((current_node, RDF.first, Literal(s, datatype=XSD.string)))
+                graph.add((current_node, RDF.rest, next_node))
+                current_node = next_node
+            graph.add((current_node, RDF.rest, RDF.nil))
+            owl_exprs.append(data_range_node)
         for constraint_prop, constraint_val in constraints.items():
             if is_literal is not None and not is_literal:
                 # In LinkML, it is permissible to have a literal constraints on slots that refer to

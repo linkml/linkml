@@ -59,6 +59,7 @@ gen-java = "linkml.generators.javagen:cli"
 gen-jsonld = "linkml.generators.jsonldgen:cli"
 gen-json-schema = "linkml.generators.jsonschemagen:cli"
 gen-markdown = "linkml.generators.markdowngen:cli"
+gen-dbml = "linkml.generators.dbmlgen:cli"
 gen-doc = "linkml.generators.docgen:cli"
 gen-namespaces = "linkml.generators.namespacegen:cli"
 gen-owl = "linkml.generators.owlgen:cli"
@@ -122,7 +123,7 @@ sqlalchemy = ">=1.4.31"
 watchdog = ">=0.9.0"
 pyshacl = { version = "^0.25.0", optional = true }
 black = { version=">=24.0.0", optional = true }
-typing-extensions = { version=">=4.4.0", python="<3.9" }
+typing-extensions = { version=">=4.6.0", python="<3.12" }
 numpydantic = { version=">=1.6.1", python = ">=3.9", optional = true}
 
 [tool.poetry.group.dev.dependencies]
@@ -176,11 +177,11 @@ build-backend = "poetry_dynamic_versioning.backend"
 
 [tool.codespell]
 # TODO: bring in tests in too
-skip = '.git,*.pdf,*.svg,./tests,pyproject.toml,*.dill,poetry.lock'
+skip = '.git,*.pdf,*.svg,./tests,pyproject.toml,*.dill,poetry.lock,./notebooks/DistributedModels.ipynb'
 # Ignore table where words could be split across rows
 # Ignore shortcut specifications like [Ff]alse
 ignore-regex = '(\|.*\|.*\|.*\||\[[A-Z][a-z]\][a-z][a-z])'
-ignore-words-list = 'mater,connexion,infarction,thirdparty,linke'
+ignore-words-list = 'anc,mater,connexion,infarction,thirdparty,linke'
 quiet-level = 3
 
 [tool.black]

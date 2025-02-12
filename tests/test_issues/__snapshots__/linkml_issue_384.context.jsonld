@@ -31,7 +31,7 @@
          "@id": "id"
       },
       "parent": {
-         "@type": "@id",
+         "@type": "ex:Thing",
          "@id": "parent"
       },
       "phone": {
