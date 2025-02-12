@@ -437,6 +437,27 @@ def test_custom_class_range_is_blank_node_or_iri(input_path):
     assert (persons_node, SH.nodeKind, SH.BlankNodeOrIRI) in g
 
 
+def test_slot_with_annotations_and_any_of(input_path):
+    shacl = ShaclGenerator(
+        input_path("shaclgen_boolean_constraints.yaml"), mergeimports=True, include_annotations=True
+    ).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    class_properties = g.objects(
+        URIRef("https://w3id.org/linkml/examples/boolean_constraints/AnyOfSimpleType"), SH.property
+    )
+    attribute_node = next(class_properties, None)
+    assert attribute_node
+
+    assert (
+        attribute_node,
+        rdflib.term.Literal("resting", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#string")),
+        rdflib.term.Literal("supine", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#string")),
+    ) in g
+
+
 def test_ignore_subclass_properties(input_path):
     shacl = ShaclGenerator(input_path("shaclgen_subclass_ignored_properties.yaml"), mergeimports=True).serialize()
 
@@ -485,3 +506,63 @@ def test_ignore_subclass_properties(input_path):
     assert frozenset(ignored_properties[URIRef("https://w3id.org/linkml/examples/animals/Bat")]) == frozenset(
         [URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")]
     )
+
+
+def test_multivalued_slot_min_cardinality(input_path):
+    shacl = ShaclGenerator(input_path("shaclgen_cardinality.yaml"), mergeimports=True).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    variable_class_properties = g.objects(
+        URIRef("https://w3id.org/linkml/examples/cardinality/VariableClass"), SH.property
+    )
+    variable_size_list_node = next(variable_class_properties, None)
+    assert variable_size_list_node
+
+    assert (
+        variable_size_list_node,
+        SH.minCount,
+        rdflib.term.Literal("2", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer")),
+    ) in g
+
+
+def test_multivalued_slot_max_cardinality(input_path):
+    shacl = ShaclGenerator(input_path("shaclgen_cardinality.yaml"), mergeimports=True).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    variable_class_properties = g.objects(
+        URIRef("https://w3id.org/linkml/examples/cardinality/VariableClass"), SH.property
+    )
+    variable_size_list_node = next(variable_class_properties, None)
+    assert variable_size_list_node
+
+    assert (
+        variable_size_list_node,
+        SH.maxCount,
+        rdflib.term.Literal("5", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer")),
+    ) in g
+
+
+def test_multivalued_slot_exact_cardinality(input_path):
+    shacl = ShaclGenerator(input_path("shaclgen_cardinality.yaml"), mergeimports=True).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    exact_class_properties = g.objects(URIRef("https://w3id.org/linkml/examples/cardinality/ExactClass"), SH.property)
+    exact_size_list_node = next(exact_class_properties, None)
+    assert exact_size_list_node
+
+    assert (
+        exact_size_list_node,
+        SH.minCount,
+        rdflib.term.Literal("3", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer")),
+    ) in g
+    assert (
+        exact_size_list_node,
+        SH.maxCount,
+        rdflib.term.Literal("3", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer")),
+    ) in g

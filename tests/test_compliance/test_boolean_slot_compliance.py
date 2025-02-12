@@ -115,7 +115,7 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
                     "_mappings": {
                         PYDANTIC: f"{SLOT_S1}: Optional[Union[D, int]]",
                         JSON_SCHEMA: expected_json_schema,
-                        JSONLD_CONTEXT: {"s1": {"@id": "s1", "@type": "@id"}},
+                        JSONLD_CONTEXT: {SLOT_S1: {"@id": SLOT_S1, "@type": "@id"}},
                     },
                 },
             },
@@ -130,6 +130,7 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
             "class_uri": "linkml:Any",
         }
         classes[CLASS_C]["attributes"][SLOT_S1]["range"] = CLASS_ANY
+        classes[CLASS_C]["attributes"][SLOT_S1]["_mappings"][JSONLD_CONTEXT][SLOT_S1]["@type"] = "linkml:Any"
 
     schema = validated_schema(
         test_slot_any_of,
@@ -1841,7 +1842,9 @@ def test_min_max(framework, min_val, max_val, equals_number: Optional[int], valu
                     "equals_number": equals_number,
                     "_mappings": {
                         PYDANTIC: (
-                            f"{SLOT_S1}: int = Field(..., ge={min_val}, le={max_val}" if not equals_number else ""
+                            f"{SLOT_S1}: int = Field(default=..., ge={min_val}, le={max_val}"
+                            if not equals_number
+                            else ""
                         )
                     },
                 },
