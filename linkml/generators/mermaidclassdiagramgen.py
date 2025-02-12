@@ -1,16 +1,15 @@
 import importlib
 import logging
 import os
-
-import click
-
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional, List
-from jinja2 import Environment, FileSystemLoader
+from typing import List, Optional
 
-from linkml_runtime.utils.schemaview import SchemaView
+import click
+from jinja2 import Environment, FileSystemLoader
 from linkml_runtime.linkml_model.meta import Element, SlotDefinition
+from linkml_runtime.utils.schemaview import SchemaView
+
 from linkml.generators.docgen import DocGenerator, customize_environment
 from linkml.utils.generator import Generator, shared_arguments
 
@@ -114,7 +113,8 @@ class MermaidClassDiagramGenerator(Generator):
     "--classes",
     "-c",
     multiple=True,
-    help="One or more classes in the schema for which to generate diagrams. If omitted, diagrams for all classes are generated.",
+    help="One or more classes in the schema for which to generate diagrams. "
+    "If omitted, diagrams for all classes are generated.",
 )
 @click.version_option(click.__version__, "-V", "--version")
 def cli(yamlfile, template_file, directory, classes, **args):
