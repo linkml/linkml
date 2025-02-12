@@ -4,10 +4,20 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      upstream_repo:
+        description: "Upstream linkml repository to test against"
+        required: true
+        default: "linkml/linkml"
+      upstream_branch:
+        description: "Upstream linkml branch to test against"
+        required: true
+        default: "main"
 
 jobs:
   test_upstream:
     strategy:
+      fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest ]
         python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12" ]
@@ -23,13 +33,61 @@ jobs:
       POETRY_VIRTUALENVS_IN_PROJECT: true
 
     steps:
+      - name: Get upstream branch and repo from first lines of PR Body
+        if: github.event_name == 'pull_request'
+        shell: bash
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          set +e
+          set +o pipefail
+          
+          UPSTREAM_BRANCH=$( \
+            echo "$PR_BODY" | \
+            head -2 | \
+            grep upstream_branch | \
+            cut -d ":" -f 2 | \
+            awk '{$1=$1};1' \
+          )
+          echo "Got upstream branch:"
+          echo $UPSTREAM_BRANCH
+          
+          if [[ -z "$UPSTREAM_BRANCH" ]]; then
+            echo "Using main as default"
+            UPSTREAM_BRANCH="main"
+          fi
+          
+          UPSTREAM_REPO=$( \
+            echo "$PR_BODY" | \
+            head -2 | \
+            grep upstream_repo | \
+            cut -d ":" -f 2 | \
+            awk '{$1=$1};1' \
+          )
+          echo "Got upstream repo:"
+          echo $UPSTREAM_REPO
+          
+          if [[ -z "$UPSTREAM_REPO" ]]; then
+            echo "Using linkml/linkml as default"
+            UPSTREAM_REPO="linkml/linkml"
+          fi
+
+          echo "upstream_branch=$UPSTREAM_BRANCH" >> "$GITHUB_ENV"
+          echo "upstream_repo=$UPSTREAM_REPO" >> "$GITHUB_ENV"
+
+      - name: Get upstream branch from workflow dispatch
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          echo "upstream_branch=${{ inputs.upstream_branch }}" >> "$GITHUB_ENV"
+          echo "upstream_repo=${{ inputs.upstream_repo }}" >> $GITHUB_ENV"
 
       - name: checkout upstream
         uses: actions/checkout@v4
         with:
-          repository: linkml/linkml
+          repository: "${{ env.upstream_repo }}"
           path: linkml
-          ref: main
+          ref: "${{ env.upstream_branch }}"
           fetch-depth: 0
 
       - name: checkout linkml-runtime
@@ -40,7 +98,14 @@ jobs:
           path: linkml-runtime
           fetch-depth: 0
 
-      - name: Ensure tags if not run from main repo
+      - name: Ensure tags for linkml upstream if a different one than linkml/linkml is specified
+        if: "${{ env.upstream_repo != 'linkml/linkml' }}"
+        working-directory: linkml
+        run: |
+          git remote add upstream https://github.com/linkml/linkml
+          git fetch upstream --tags
+
+      - name: Ensure tags for linkml-runtime if not run from main repo
         if: github.repository != 'linkml/linkml-runtime'
         working-directory: linkml-runtime
         run: |
@@ -68,7 +133,7 @@ jobs:
       # make extra sure we're removing any old version of linkml-runtime that exists
       - name: uninstall potentially cached linkml-runtime
         working-directory: linkml
-        run: poetry run pip uninstall linkml-runtime
+        run: poetry run pip uninstall -y linkml-runtime
 
       # we are not using linkml-runtime's lockfile, but simulating what will happen
       # when we merge this and update linkml's lockfile
