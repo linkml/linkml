@@ -1,5 +1,5 @@
-# Auto generated from config.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-09-19T10:30:48
+# Auto generated from config.yaml by pythongen.py version: 0.0.1
+# Generation date: 2025-02-03T13:42:27
 # Schema: linter-config
 #
 # id: https://w3id.org/linkml/linter/config
@@ -37,16 +37,16 @@ DEFAULT_ = LINTCFG
 # Class references
 
 
-@dataclass
+@dataclass(repr=False)
 class Config(YAMLRoot):
     """
-    This is the top-level representation of a LinkML linter configuration file. Each attribute represents a rule that
-    can be enabled and possibly configured by a configuration file.
+    This is the top-level representation of a LinkML linter configuration file. It allows defining a set of rules
+    while also optionally extending a predefined set of rules.
     """
 
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINTCFG.Config
+    class_class_uri: ClassVar[URIRef] = LINTCFG["Config"]
     class_class_curie: ClassVar[str] = "lintcfg:Config"
     class_name: ClassVar[str] = "Config"
     class_model_uri: ClassVar[URIRef] = LINTCFG.Config
@@ -64,11 +64,16 @@ class Config(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Rules(YAMLRoot):
+    """
+    Each attribute of this class represents a rule that can be enabled and possibly configured by a configuration
+    file.
+    """
+
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINTCFG.Rules
+    class_class_uri: ClassVar[URIRef] = LINTCFG["Rules"]
     class_class_curie: ClassVar[str] = "lintcfg:Rules"
     class_name: ClassVar[str] = "Rules"
     class_model_uri: ClassVar[URIRef] = LINTCFG.Rules
@@ -114,7 +119,7 @@ class Rules(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RuleConfig(YAMLRoot):
     """
     This is the base class for linter rules. It contains configuration options that are  common to all rules.
@@ -122,7 +127,7 @@ class RuleConfig(YAMLRoot):
 
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINTCFG.RuleConfig
+    class_class_uri: ClassVar[URIRef] = LINTCFG["RuleConfig"]
     class_class_curie: ClassVar[str] = "lintcfg:RuleConfig"
     class_name: ClassVar[str] = "RuleConfig"
     class_model_uri: ClassVar[URIRef] = LINTCFG.RuleConfig
@@ -138,7 +143,7 @@ class RuleConfig(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class PermissibleValuesFormatRuleConfig(RuleConfig):
     """
     Additional configuration options for the `permissible_values_format` rule
@@ -146,7 +151,7 @@ class PermissibleValuesFormatRuleConfig(RuleConfig):
 
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINTCFG.PermissibleValuesFormatRuleConfig
+    class_class_uri: ClassVar[URIRef] = LINTCFG["PermissibleValuesFormatRuleConfig"]
     class_class_curie: ClassVar[str] = "lintcfg:PermissibleValuesFormatRuleConfig"
     class_name: ClassVar[str] = "PermissibleValuesFormatRuleConfig"
     class_model_uri: ClassVar[URIRef] = LINTCFG.PermissibleValuesFormatRuleConfig
@@ -161,7 +166,7 @@ class PermissibleValuesFormatRuleConfig(RuleConfig):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class TreeRootClassRuleConfig(RuleConfig):
     """
     Additional configuration options for the `tree_root_class` rule
@@ -169,7 +174,7 @@ class TreeRootClassRuleConfig(RuleConfig):
 
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINTCFG.TreeRootClassRuleConfig
+    class_class_uri: ClassVar[URIRef] = LINTCFG["TreeRootClassRuleConfig"]
     class_class_curie: ClassVar[str] = "lintcfg:TreeRootClassRuleConfig"
     class_name: ClassVar[str] = "TreeRootClassRuleConfig"
     class_model_uri: ClassVar[URIRef] = LINTCFG.TreeRootClassRuleConfig
@@ -188,7 +193,7 @@ class TreeRootClassRuleConfig(RuleConfig):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RecommendedRuleConfig(RuleConfig):
     """
     Additional configuration options for the `recommended` rule
@@ -196,7 +201,7 @@ class RecommendedRuleConfig(RuleConfig):
 
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINTCFG.RecommendedRuleConfig
+    class_class_uri: ClassVar[URIRef] = LINTCFG["RecommendedRuleConfig"]
     class_class_curie: ClassVar[str] = "lintcfg:RecommendedRuleConfig"
     class_name: ClassVar[str] = "RecommendedRuleConfig"
     class_model_uri: ClassVar[URIRef] = LINTCFG.RecommendedRuleConfig
@@ -204,6 +209,7 @@ class RecommendedRuleConfig(RuleConfig):
     level: Union[str, "RuleLevel"] = None
     include: Optional[Union[str, List[str]]] = empty_list()
     exclude: Optional[Union[str, List[str]]] = empty_list()
+    exclude_type: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if not isinstance(self.include, list):
@@ -214,10 +220,14 @@ class RecommendedRuleConfig(RuleConfig):
             self.exclude = [self.exclude] if self.exclude is not None else []
         self.exclude = [v if isinstance(v, str) else str(v) for v in self.exclude]
 
+        if not isinstance(self.exclude_type, list):
+            self.exclude_type = [self.exclude_type] if self.exclude_type is not None else []
+        self.exclude_type = [v if isinstance(v, str) else str(v) for v in self.exclude_type]
+
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class StandardNamingConfig(RuleConfig):
     """
     Additional configuration options for the `standard_naming` rule
@@ -225,30 +235,22 @@ class StandardNamingConfig(RuleConfig):
 
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINTCFG.StandardNamingConfig
+    class_class_uri: ClassVar[URIRef] = LINTCFG["StandardNamingConfig"]
     class_class_curie: ClassVar[str] = "lintcfg:StandardNamingConfig"
     class_name: ClassVar[str] = "StandardNamingConfig"
     class_model_uri: ClassVar[URIRef] = LINTCFG.StandardNamingConfig
 
     level: Union[str, "RuleLevel"] = None
     permissible_values_upper_case: Optional[Union[bool, Bool]] = None
-    slot_pattern: Optional[str] = None
-    class_pattern: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.permissible_values_upper_case is not None and not isinstance(self.permissible_values_upper_case, Bool):
             self.permissible_values_upper_case = Bool(self.permissible_values_upper_case)
 
-        if self.class_pattern is not None and not isinstance(self.class_pattern, str):
-            self.class_pattern = str(self.class_pattern)
-
-        if self.slot_pattern is not None and not isinstance(self.slot_pattern, str):
-            self.slot_pattern = str(self.slot_pattern)
-
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class CanonicalPrefixesConfig(RuleConfig):
     """
     Additional configuration options for the canonical_prefixes rule
@@ -256,7 +258,7 @@ class CanonicalPrefixesConfig(RuleConfig):
 
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINTCFG.CanonicalPrefixesConfig
+    class_class_uri: ClassVar[URIRef] = LINTCFG["CanonicalPrefixesConfig"]
     class_class_curie: ClassVar[str] = "lintcfg:CanonicalPrefixesConfig"
     class_name: ClassVar[str] = "CanonicalPrefixesConfig"
     class_model_uri: ClassVar[URIRef] = LINTCFG.CanonicalPrefixesConfig
@@ -293,12 +295,10 @@ class RuleLevel(EnumDefinitionImpl):
 
     disabled = PermissibleValue(text="disabled", description="The rule will not be checked")
     warning = PermissibleValue(
-        text="warning",
-        description="A violation of a rule at this level is a minor issue that should be fixed",
+        text="warning", description="A violation of a rule at this level is a minor issue that should be fixed"
     )
     error = PermissibleValue(
-        text="error",
-        description="A violation of a rule at this level is a major issue that must be fixed",
+        text="error", description="A violation of a rule at this level is a major issue that must be fixed"
     )
 
     _defn = EnumDefinition(
@@ -452,6 +452,15 @@ slots.recommendedRuleConfig__exclude = Slot(
     name="recommendedRuleConfig__exclude",
     curie=LINTCFG.curie("exclude"),
     model_uri=LINTCFG.recommendedRuleConfig__exclude,
+    domain=None,
+    range=Optional[Union[str, List[str]]],
+)
+
+slots.recommendedRuleConfig__exclude_type = Slot(
+    uri=LINTCFG.exclude_type,
+    name="recommendedRuleConfig__exclude_type",
+    curie=LINTCFG.curie("exclude_type"),
+    model_uri=LINTCFG.recommendedRuleConfig__exclude_type,
     domain=None,
     range=Optional[Union[str, List[str]]],
 )
