@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass, fields
 from typing import Dict, List, Union, Optional
 
 from linkml_runtime.linkml_model import (ClassDefinition, EnumDefinition,
@@ -16,7 +16,7 @@ class SchemaBuilder:
 
     Example:
 
-        >>> from linkml.utils.schema_builder import SchemaBuilder
+        >>> from linkml_runtime.utils.schema_builder import SchemaBuilder
         >>> sb = SchemaBuilder('test-schema')
         >>> sb.add_class('Person', slots=['name', 'age'])
         >>> sb.add_class('Organization', slots=['name', 'employees'])
@@ -57,26 +57,47 @@ class SchemaBuilder:
         cls: Union[ClassDefinition, Dict, str],
         slots: List[Union[str, SlotDefinition]] = None,
         slot_usage: Dict[str, SlotDefinition] = None,
-        replace_if_present=False,
-        use_attributes=False,
+        replace_if_present: bool = False,
+        use_attributes: bool = False,
         **kwargs,
     ) -> "SchemaBuilder":
         """
         Adds a class to the schema.
 
         :param cls: name, dict object, or ClassDefinition object to add
-        :param slots: slot of slot names or slot objects.
-        :param slot_usage: slots keyed by slot name
+        :param slots: list of slot names or slot objects. This must be a list of
+            `SlotDefinition` objects if `use_attributes=True`
+        :param slot_usage: slots keyed by slot name (ignored if `use_attributes=True`)
         :param replace_if_present: if True, replace existing class if present
+        :param use_attributes: Whether to specify the given slots as an inline
+            definition of slots, attributes, in the class definition
         :param kwargs: additional ClassDefinition properties
         :return: builder
         :raises ValueError: if class already exists and replace_if_present=False
         """
+        if slots is None:
+            slots = []
+        if slot_usage is None:
+            slot_usage = {}
+
         if isinstance(cls, str):
             cls = ClassDefinition(cls, **kwargs)
-        if isinstance(cls, dict):
+        elif isinstance(cls, dict):
             cls = ClassDefinition(**{**cls, **kwargs})
-        if cls.name is self.schema.classes and not replace_if_present:
+        else:
+            # Ensure that `cls` is a `ClassDefinition` object
+            if not isinstance(cls, ClassDefinition):
+                msg = (
+                    f"cls must be a string, dict, or ClassDefinition, "
+                    f"not {type(cls)!r}"
+                )
+                raise TypeError(msg)
+
+            cls_as_dict = {f.name: getattr(cls, f.name) for f in fields(cls)}
+
+            cls = ClassDefinition(**{**cls_as_dict, **kwargs})
+
+        if cls.name in self.schema.classes and not replace_if_present:
             raise ValueError(f"Class {cls.name} already exists")
         self.schema.classes[cls.name] = cls
         if use_attributes:
@@ -88,18 +109,14 @@ class SchemaBuilder:
                         f"If use_attributes=True then slots must be SlotDefinitions"
                     )
         else:
-            if slots is not None:
-                for s in slots:
-                    cls.slots.append(s.name if isinstance(s, SlotDefinition) else s)
-                    if isinstance(s, str) and s in self.schema.slots:
-                        # top-level slot already exists
-                        continue
-                    self.add_slot(s, replace_if_present=replace_if_present)
-            if slot_usage:
-                for k, v in slot_usage.items():
-                    cls.slot_usage[k] = v
-        for k, v in kwargs.items():
-            setattr(cls, k, v)
+            for s in slots:
+                cls.slots.append(s.name if isinstance(s, SlotDefinition) else s)
+                if isinstance(s, str) and s in self.schema.slots:
+                    # top-level slot already exists
+                    continue
+                self.add_slot(s, replace_if_present=replace_if_present)
+            for k, v in slot_usage.items():
+                cls.slot_usage[k] = v
         return self
 
     def add_slot(
