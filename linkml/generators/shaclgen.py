@@ -208,14 +208,15 @@ class ShaclGenerator(Generator):
                         add_simple_data_type(prop_pv, r)
                     if s.pattern:
                         prop_pv(SH.pattern, Literal(s.pattern))
-                    if s.annotations and self.include_annotations:
-                        self._add_annotations(prop_pv, s)
                     if s.equals_string:
                         # Map equal_string and equal_string_in to sh:in
                         self._and_equals_string(g, prop_pv, [s.equals_string])
                     if s.equals_string_in:
                         # Map equal_string and equal_string_in to sh:in
                         self._and_equals_string(g, prop_pv, s.equals_string_in)
+
+                if s.annotations and self.include_annotations:
+                    self._add_annotations(prop_pv, s)
 
                 default_value = ifabsent_processor.process_slot(s, c)
                 if default_value:

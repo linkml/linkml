@@ -4842,12 +4842,33 @@
     ],
     "http://www.w3.org/2002/07/owl#allValuesFrom": [
       {
-        "@id": "http://www.w3.org/2001/XMLSchema#string"
+        "@id": "_:Nabe1ad233c144f9aa79dbd1c2b00af09"
       }
     ],
     "http://www.w3.org/2002/07/owl#onProperty": [
       {
         "@id": "https://w3id.org/linkml/tests/kitchen_sink/attribute6"
+      }
+    ]
+  },
+  {
+    "@id": "_:Nabe1ad233c144f9aa79dbd1c2b00af09",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#DataRange"
+    ],
+    "http://www.w3.org/2002/07/owl#oneOf": [
+      {
+        "@list": [
+          {
+            "@type": "http://www.w3.org/2001/XMLSchema#string",
+            "@value": "foo"
+          },
+          {
+            "@type": "http://www.w3.org/2001/XMLSchema#string",
+            "@value": "bar"
+          },
+          null
+        ]
       }
     ]
   },
