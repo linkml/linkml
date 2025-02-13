@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 import sys
 from abc import ABC, abstractmethod
@@ -21,6 +22,8 @@ KITCHEN_SINK_PATH = str(Path(__file__).parent / "test_generators" / "input" / "k
 
 # avoid an error from nbconvert -> jupyter_core. remove this after jupyter_core v6
 os.environ["JUPYTER_PLATFORM_DIRS"] = "1"
+
+UNSAFE_PATHS = re.compile(r"[^\w_.-]")
 
 
 def normalize_line_endings(string: str):
@@ -173,11 +176,11 @@ def input_path(request) -> Callable[[str], Path]:
 @pytest.fixture(scope="function")
 def temp_dir(request) -> Path:
     base = Path(request.path.parent) / "temp"
-    test_dir = base / request.function.__name__
+    test_dir = base / UNSAFE_PATHS.sub("_", request.node.name)
     test_dir.mkdir(exist_ok=True, parents=True)
     yield test_dir
     if not request.config.getoption("with_output"):
-        shutil.rmtree(test_dir)
+        shutil.rmtree(test_dir, ignore_errors=True)
 
 
 def pytest_addoption(parser):
@@ -192,6 +195,7 @@ def pytest_addoption(parser):
         "--with-output", action="store_true", help="dump output in compliance test for richer debugging information"
     )
     parser.addoption("--without-cache", action="store_true", help="Don't use a sqlite cache for network requests")
+    parser.addoption("--with-biolink", action="store_true", help="Include tests marked as for the biolink model")
 
 
 def pytest_collection_modifyitems(config, items: List[pytest.Item]):
@@ -200,6 +204,12 @@ def pytest_collection_modifyitems(config, items: List[pytest.Item]):
         for item in items:
             if item.get_closest_marker("slow"):
                 item.add_marker(skip_slow)
+
+    if not config.getoption("--with-biolink"):
+        skip_biolink = pytest.mark.skip(reason="need --with-biolink option to run")
+        for item in items:
+            if item.get_closest_marker("biolink"):
+                item.add_marker(skip_biolink)
 
     if not config.getoption("--with-network"):
         skip_network = pytest.mark.skip(reason="need --with-network option to run")

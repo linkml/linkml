@@ -19,6 +19,8 @@ from linkml.generators.shexgen import ShExGenerator
 
 BIOLINK_NS = Namespace("https://w3id.org/biolink/vocab/")
 
+pytestmark = pytest.mark.biolink
+
 
 @pytest.mark.slow
 @pytest.mark.parametrize(
