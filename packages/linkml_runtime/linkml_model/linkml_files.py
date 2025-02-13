@@ -1,6 +1,6 @@
 from pathlib import Path
 from enum import Enum, auto
-from typing import Dict, Optional, Union, Tuple, NamedTuple
+from typing import Dict, Optional, Union, NamedTuple
 from urllib.parse import urljoin
 from dataclasses import dataclass
 
@@ -84,7 +84,7 @@ class _Path:
     SHEXJ = FormatPath("shex","shexj" )
     SQLDDL = FormatPath("sqlddl","sql" )
     SQLSCHEMA = FormatPath("sqlschema","sql" )
-    YAML = FormatPath(str(Path("model") / "schema"),"yaml" )
+    YAML = FormatPath((Path("model") / "schema").as_posix(),"yaml" )
 
     @classmethod
     def items(cls) -> Dict[str, FormatPath]:
