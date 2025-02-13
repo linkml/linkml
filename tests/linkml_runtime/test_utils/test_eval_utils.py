@@ -70,6 +70,8 @@ def test_eval_expressions():
     assert eval_expr('c.person_index.name', c=c) == ['x', 'x2']
     assert eval_expr('c.person_index.address.street', c=c) == ['1 x street', '2 x street']
     assert eval_expr('strlen(c.person_index.name)', c=c) == [1, 2]
+    pd = dict(name='x', aliases=['a', 'b', 'c'], address=Address(street='1 x street'))
+    assert eval_expr('p.name', p=pd, _distribute=False) == 'x'
 
 
 def test_no_eval_prohibited():

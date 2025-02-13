@@ -31,6 +31,7 @@ def eval_conditional(*conds: List[Tuple[bool, Any]]) -> Any:
             return val
 
 
+# (takes_list, func)
 funcs = {'max': (True, max),
          'min': (True, min),
          'len': (True, len),
@@ -43,7 +44,7 @@ class UnsetValueException(Exception):
     pass
 
 
-def eval_expr(expr: str, **kwargs) -> Any:
+def eval_expr(expr: str, _distribute=True, **kwargs) -> Any:
     """
     Evaluates a given expression, with restricted syntax
 
@@ -82,6 +83,9 @@ def eval_expr(expr: str, **kwargs) -> Any:
     - Similarly `strlen(container.persons.name)` will return a list whose members are the lengths of all names
 
     :param expr: expression to evaluate
+    :param _distribute: if True, distribute operations over collections and return array
+    :param kwargs: variables to substitute
+    :return: result of evaluation
     """
     #if kwargs:
     #    expr = expr.format(**kwargs)
@@ -90,13 +94,15 @@ def eval_expr(expr: str, **kwargs) -> Any:
         return None
     else:
         try:
-            return eval_(ast.parse(expr, mode='eval').body, kwargs)
+            return eval_(ast.parse(expr, mode='eval').body, kwargs, distribute=_distribute)
         except UnsetValueException:
             return None
 
 
 
-def eval_(node, bindings={}):
+def eval_(node, bindings=None, distribute=True):
+    if bindings is None:
+        bindings = {}
     if isinstance(node, ast.Num):
         return node.n
     elif isinstance(node, ast.Str):
@@ -123,7 +129,7 @@ def eval_(node, bindings={}):
         # e.g. for person.name, this returns the val of person
         v = eval_(node.value, bindings)
         # lookup attribute, potentially distributing the results over collections
-        def _get(obj: Any, k: str, recurse=True) -> Any:
+        def _get(obj: Any, k: str, recurse=distribute) -> Any:
             if isinstance(obj, dict):
                 # dicts are treated as collections; distribute results
                 if recurse:
