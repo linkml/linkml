@@ -558,7 +558,10 @@ def test_equals_string(framework, range, multivalued, value_is_multivalued, valu
     # Decide validity
     # --------------------------------------------------
     ACCEPT_WRONG_TYPE = (PYDANTIC,)
-    COERCE_SCALAR = (SHACL,)
+    COERCE_SCALAR = (
+        SHACL,
+        OWL,
+    )
 
     schema_generation_failure = False
     if range != "string" and framework not in ACCEPT_WRONG_TYPE:
@@ -642,7 +645,7 @@ def test_equals_string_in(framework, range, multivalued, value_is_multivalued, v
         value: test data
         value_is_multivalued: whether the value should be
             * multiplied as a list (True)
-            * left as is (False)
+            * left as-is (False)
             * made a list with an incorrect value ("wrong")
         multivalued: whether the slot definition is multivalued
         range: range of the slot
@@ -684,10 +687,42 @@ def test_equals_string_in(framework, range, multivalued, value_is_multivalued, v
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if framework in (PYTHON_DATACLASSES, SQL_DDL_SQLITE):
         pytest.skip(f"{framework} has not implemented equals_string_in")
+    if framework in (OWL,):
+        # RDF/OWL does not distinguish between scalars and sets of size one.
+        if multivalued and not value_is_multivalued:
+            expected_behavior = ValidationBehavior.INCOMPLETE
 
     slots = {SLOT_S1: {"range": range, "multivalued": multivalued, "equals_string_in": EQUALS_STRING_IN}}
     classes = {CLASS_C: {"slots": [SLOT_S1]}}
     key = f"equals_string_in-multivalued{multivalued}-value_is_multivalued{value_is_multivalued}-range{range}"
+
+    expected_owl = (
+        "@prefix ex: <http://example.org/> ."
+        "@prefix linkml: <https://w3id.org/linkml/> ."
+        "@prefix owl: <http://www.w3.org/2002/07/owl#> ."
+        "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
+        "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ."
+        "@prefix schema1: <http://schema.org/> ."
+        "@prefix shex: <http://www.w3.org/ns/shex#> ."
+        "@prefix skos: <http://www.w3.org/2004/02/skos/core#> ."
+        "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> ."
+        ""
+        "ex:C a owl:Class ;"
+        '    rdfs:label "C" ;'
+        "    rdfs:subClassOf [ a owl:Restriction ;"
+        "            owl:maxCardinality 1 ;"
+        "            owl:onProperty ex:s1 ],"
+        "        [ a owl:Restriction ;"
+        "            owl:minCardinality 0 ;"
+        "            owl:onProperty ex:s1 ],"
+        "        [ a owl:Restriction ;"
+        "            owl:allValuesFrom [ a rdfs:Datatype ;"
+        "                    owl:intersectionOf ( xsd:string [ a rdfs:Datatype ;"
+        '                                owl:oneOf ( "EQUALS_STRING_A" "EQUALS_STRING_B" ) ] ) ] ;'
+        "            owl:onProperty ex:s1 ] ."
+    )
+    if multivalued is False and range == "string":
+        classes[CLASS_C]["_mappings"] = {OWL: expected_owl}
 
     # --------------------------------------------------
     # Run test
