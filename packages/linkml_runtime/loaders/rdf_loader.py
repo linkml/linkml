@@ -1,7 +1,5 @@
 from typing import Union, TextIO, Optional, Type, List
-
 from hbreader import FileInfo
-
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE
 from linkml_runtime.utils.yamlutils import YAMLRoot

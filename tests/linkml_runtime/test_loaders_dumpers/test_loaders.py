@@ -1,7 +1,7 @@
 import os
 import unittest
 from typing import Union, TextIO, Type, Optional
-
+from pathlib import Path
 from hbreader import FileInfo
 
 from linkml_runtime.loaders import yaml_loader, json_loader, rdf_loader, RDFLoader
@@ -24,6 +24,14 @@ class LoadersUnitTest(LoaderDumperTestCase):
     def test_yaml_loader(self):
         """ Load obo_sample.yaml, emit obo_sample_yaml.yaml and compare to obo_sample_output.yaml """
         self.loader_test('obo_sample.yaml', Package, yaml_loader)
+
+    def test_json_loader_path(self):
+        """ Load obo_sample.json, emit obo_sample_json.yaml and check the results """
+        REPO_ROOT = Path(__file__).parent.parent.parent
+        path = REPO_ROOT / "tests" /  "test_loaders_dumpers" / "input" / "obo_sample.json"
+        data = json_loader.load(Path(path), Package, base_dir=self.env.indir)
+        assert isinstance(data, Package)
+        assert "system" in data
 
     def test_json_loader(self):
         """ Load obo_sample.json, emit obo_sample_json.yaml and check the results """
