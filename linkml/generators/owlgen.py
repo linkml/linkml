@@ -711,7 +711,7 @@ class OwlSchemaGenerator(Generator):
             # Construct an OWL enumerated datatype using owl:oneOf
             data_range_node = BNode()
             list_node = BNode()
-            graph.add((data_range_node, RDF.type, OWL.DataRange))
+            graph.add((data_range_node, RDF.type, RDFS.Datatype))
             graph.add((data_range_node, OWL.oneOf, list_node))
             current_node = list_node
             for s in equals_string_in:
