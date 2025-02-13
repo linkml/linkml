@@ -628,6 +628,34 @@ To see examples, Biolink uses id_prefixes extensively. For example, the [Molecul
 
 For more, see [URIs and Mappings](https://linkml.io/linkml/schemas/uris-and-mappings.html)
 
+## How to use the `alias` metamodel construct?
+
+The [alias](https://linkml.io/linkml-model/latest/docs/alias/) construct from the metamodel is an element that can be asserted on slot definitions in the schema. If *alias* is asserted on a slot and the slot is asserted on a class then, we would need to use the alias name to refer to the slot in the instance file (CSV/TSV, YAML, JSON, etc.).
+
+For example:
+
+Snippet of schema file:
+
+```yaml
+classes:
+  Sample:
+    slots:
+      - id
+      - altitude
+slots:
+  altitude_in_meters:
+    alias: alt_in_m
+    unit:
+      ucum_code: m
+```
+
+Instance file (as YAML):
+
+```yaml
+- id: EX-123
+  alt_in_m: 5
+```
+
 ## When is it important to have mappings?
 
 Any element in a LinkML schema can have any number of *mappings* associated with it
