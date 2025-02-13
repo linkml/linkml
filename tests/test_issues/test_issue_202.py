@@ -1,5 +1,5 @@
 import pytest
-from jsonasobj2 import loads
+from linkml_runtime.utils.jsonasobj2 import loads
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 

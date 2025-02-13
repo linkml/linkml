@@ -150,12 +150,12 @@ generated classes:
 import dataclasses
 import sys
 import re
-from jsonasobj2 import JsonObj, as_dict
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 from datetime import date, datetime, time
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
 
+from linkml_runtime.utils.jsonasobj2 import JsonObj, as_dict
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
 from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
@@ -200,10 +200,10 @@ class NamedThing(YAMLRoot):
    ...
 ```
 
-The `as_dict` method from jsonasobj2 provides convenient methods for normalizing inputs to initialization routines:
+The `as_dict` method from linkml_runtime.utils.jsonasobj2 provides convenient methods for normalizing inputs to initialization routines:
 
 ```python
-from jsonasobj2 import JsonObj, as_dict
+from linkml_runtime.utils.jsonasobj2 import JsonObj, as_dict
 ...
 
 @dataclass
