@@ -1,0 +1,44 @@
+{#-
+  Jinja2 Template for a Pandera class-based model
+  Details at https://pandera.readthedocs.io/en/stable/dataframe_models.html
+-#}
+import pandera.polars as pla
+from typing import Optional, List, Dict
+from pandera.typing import (
+    Index,
+    DataFrame,
+    Series
+)
+from pandera.engines.polars_engine import (
+    DateTime,
+    Enum
+)
+
+{% if metamodel_version %}# metamodel_version: {{metamodel_version}}{% endif %}
+{% if model_version %}# version: {{model_version}}{% endif %}
+{%- for doc in docs -%}
+{% for cls in doc.classes %}
+
+class {{cls.name}}({% if cls.is_a %}{{ cls.is_a }}{% else %}pla.DataFrameModel{% endif %}):
+{%- if cls.source_class.description %}
+    """
+    {{ cls.source_class.description }}
+    """
+{%- endif %}
+{%- if (cls.fields | length) == 0 %}
+    pass
+{% endif -%}
+{%- for field in cls.fields -%}
+{%- with slot = field.source_slot %}
+    {{ field.name }}:
+{%- if slot.required == None or slot.required == False %} Optional[{% endif -%}
+Series[{{field.range}}]
+{%- if slot.required == None or slot.required == False %}]{% endif -%}
+{{ " =" }} pla.Field(
+{%- if slot.minimum_value != None -%}ge={{ slot.minimum_value }}, {% endif -%}
+{%- if slot.maximum_value != None -%}le={{ slot.maximum_value }}, {% endif -%}
+)
+{%- endwith -%}
+{% endfor %}
+{%- endfor %}
+{%- endfor -%}
