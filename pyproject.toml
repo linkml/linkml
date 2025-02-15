@@ -181,7 +181,7 @@ skip = '.git,*.pdf,*.svg,./tests,pyproject.toml,*.dill,poetry.lock,./notebooks/D
 # Ignore table where words could be split across rows
 # Ignore shortcut specifications like [Ff]alse
 ignore-regex = '(\|.*\|.*\|.*\||\[[A-Z][a-z]\][a-z][a-z])'
-ignore-words-list = 'mater,connexion,infarction,thirdparty,linke'
+ignore-words-list = 'anc,mater,connexion,infarction,thirdparty,linke'
 quiet-level = 3
 
 [tool.black]
@@ -210,6 +210,7 @@ markers = [
   "slow: mark test as slow to run",
   "no_asserts: tests that don't have meaningful asserts, but are only snapshot comparisons, or historically had print statements, or other non-erroring behavior",
   "strcmp: tests that compare stringified values rather than the values themselves",
+  "biolink: tests that validate that the biolink model is unchanged",
   "docker: tests that require a running docker server",
   "plantumlgen: Tests for the plantuml generator",
   "pydanticgen_split: Split module generation in pydanticgen",
