@@ -188,7 +188,7 @@ def test_invalid_slot_throws_error(slot_name):
         gen.serialize()
 
 
-@pytest.mark.parametrize("slot_name", ["3DModel", "😍", "Per-son", "Per!son", "Def", "Class", "In"])
+@pytest.mark.parametrize("class_name", ["3DModel", "😍", "Per-son", "Per!son", "Def", "Class", "In"])
 def test_invalid_class_throws_error(class_name):
     sb = SchemaBuilder("test")
     sb.add_class(class_name)
