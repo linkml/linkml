@@ -1,4 +1,5 @@
 import inspect
+import keyword
 import logging
 import os
 import re
@@ -426,8 +427,9 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         return slist
 
     def generate_class(self, cls: ClassDefinition) -> ClassResult:
+
         pyclass = PydanticClass(
-            name=camelcase(cls.name),
+            name=PydanticGenerator._generate_class_name(cls),
             bases=self.class_bases.get(camelcase(cls.name), PydanticBaseModel.default_name),
             description=cls.description.replace('"', '\\"') if cls.description is not None else None,
         )
@@ -679,6 +681,36 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             # logger.error(f'range: {s.range} is unknown')
             raise Exception(f"range: {slot_range}")
         return pyrange
+
+    @staticmethod
+    def _is_valid_python_name(name: str) -> bool:
+        return not keyword.iskeyword(name) and name.isidentifier()
+
+    @staticmethod
+    def _generate_class_name(class_def: ClassDefinition) -> str:
+        class_name = camelcase(class_def.name)
+        if PydanticGenerator._is_valid_python_name(class_name):
+            return class_name
+        # TODO: when the meta model supports class alias, try using it as an alternative when the class name is invalid
+        else:
+            raise ValueError(f"Class name '{class_name}' is not a valid Python identifier")
+
+    @staticmethod
+    def _generate_slot_name(slot_def: SlotDefinition) -> str:
+        slot_name = underscore(slot_def.name)
+        if PydanticGenerator._is_valid_python_name(slot_name):
+            return slot_name
+        elif slot_def.alias:
+            slot_alias = underscore(slot_def.alias)
+            if PydanticGenerator._is_valid_python_name(slot_alias):
+                return slot_alias
+            else:
+                raise ValueError(f"Slot alias '{slot_alias}' is not a valid Python identifier")
+        else:
+            raise ValueError(
+                f"Slot name '{slot_name}' is not a valid Python identifier, "
+                "consider providing an alias for the slot that is a valid python identifier"
+            )
 
     def generate_collection_key(
         self,
