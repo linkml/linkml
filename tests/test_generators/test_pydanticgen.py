@@ -179,6 +179,23 @@ def test_pydantic_slot_name_with_alias(slot_name, slot_alias):
     assert slot_alias in generated_class.slots, f"Slot alias '{slot_alias}' not found in generated class slots"
 
 
+@pytest.mark.parametrize("slot_name", ["3DModel", "😍", "Per-son", "Per!son", "def", "class", "in"])
+def test_invalid_slot_throws_error(slot_name):
+    sb = SchemaBuilder("test")
+    sb.add_class("MyClass", slots=[SlotDefinition(name=slot_name)])
+    with pytest.raises(ValueError):
+        gen = PydanticGenerator(sb.schema, package=PACKAGE)
+        gen.serialize()
+
+@pytest.mark.parametrize("slot_name", ["3DModel", "😍", "Per-son", "Per!son", "Def", "Class", "In"])
+def test_invalid_class_throws_error(class_name):
+    sb = SchemaBuilder("test")
+    sb.add_class(class_name)
+    with pytest.raises(ValueError):
+        gen = PydanticGenerator(sb.schema, package=PACKAGE)
+        gen.serialize()
+
+
 def test_pydantic_any_of():
     # TODO: convert to SchemaBuilder and parameterize?
     schema_str = """
