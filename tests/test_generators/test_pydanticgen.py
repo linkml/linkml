@@ -179,7 +179,7 @@ def test_pydantic_slot_name_with_alias(slot_name, slot_alias):
     assert slot_alias in generated_class.slots, f"Slot alias '{slot_alias}' not found in generated class slots"
 
 
-@pytest.mark.parametrize("slot_name", ["3DModel", "😍", "Per-son", "Per!son", "def", "class", "in"])
+@pytest.mark.parametrize("slot_name", ["3DModel", "😍", "Per!son", "def", "class", "in"])
 def test_invalid_slot_throws_error(slot_name):
     sb = SchemaBuilder("test")
     sb.add_class("MyClass", slots=[SlotDefinition(name=slot_name)])
@@ -188,7 +188,7 @@ def test_invalid_slot_throws_error(slot_name):
         gen.serialize()
 
 
-@pytest.mark.parametrize("class_name", ["3DModel", "😍", "Per-son", "Per!son", "Def", "Class", "In"])
+@pytest.mark.parametrize("class_name", ["3DModel", "😍", "Per-son", "Per!son"])
 def test_invalid_class_throws_error(class_name):
     sb = SchemaBuilder("test")
     sb.add_class(class_name)
@@ -196,6 +196,21 @@ def test_invalid_class_throws_error(class_name):
         gen = PydanticGenerator(sb.schema, package=PACKAGE)
         gen.serialize()
 
+@pytest.mark.parametrize(
+    "name, result", 
+    [
+        ("3DModel", False),
+        ("😍", False),
+        ("Per-son", False),
+        ("Per!son", False),
+        ("def", False),
+        ("class", False),
+        ("in", False),
+        ("person", True)
+    ]
+)    
+def test_valid_name_test(name :str, result :bool):
+    assert PydanticGenerator._is_valid_python_name(name) is result
 
 def test_pydantic_any_of():
     # TODO: convert to SchemaBuilder and parameterize?

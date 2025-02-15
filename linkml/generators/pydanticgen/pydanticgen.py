@@ -464,8 +464,8 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             for k in PydanticAttribute.model_fields.keys()
             if getattr(slot, k, None) is not None
         }
-        slot_alias = slot.alias if slot.alias else slot.name
-        slot_args["name"] = underscore(slot_alias)
+                
+        slot_args["name"] = PydanticGenerator._generate_slot_name(slot)
         slot_args["description"] = slot.description.replace('"', '\\"') if slot.description is not None else None
         predef = self.predefined_slot_values.get(camelcase(cls.name), {}).get(slot.name, None)
         if predef is not None:
@@ -697,20 +697,18 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
     @staticmethod
     def _generate_slot_name(slot_def: SlotDefinition) -> str:
-        slot_name = underscore(slot_def.name)
+        slot_name = underscore(slot_def.alias) if slot_def.alias else underscore(slot_def.name)
+
         if PydanticGenerator._is_valid_python_name(slot_name):
             return slot_name
-        elif slot_def.alias:
-            slot_alias = underscore(slot_def.alias)
-            if PydanticGenerator._is_valid_python_name(slot_alias):
-                return slot_alias
-            else:
-                raise ValueError(f"Slot alias '{slot_alias}' is not a valid Python identifier")
-        else:
+
+        if slot_def.alias is None:
             raise ValueError(
                 f"Slot name '{slot_name}' is not a valid Python identifier, "
                 "consider providing an alias for the slot that is a valid python identifier"
             )
+        else:
+            raise ValueError(f"Slot alias '{slot_name}' is not a valid Python identifier")
 
     def generate_collection_key(
         self,
