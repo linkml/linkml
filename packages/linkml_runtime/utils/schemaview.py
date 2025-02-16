@@ -113,7 +113,12 @@ def resolve_import(sn: str, i: str) -> str:
     if urlparse(i).scheme:
         return i
     else:
-        return os.path.normpath(str(Path(sn).parent / i))
+        path = os.path.normpath(str(Path(sn).parent / i))
+        if i.startswith(".") and not path.startswith("."):
+            # Above condition handles cases where both sn and i are relative paths, and path is not already relative
+            return f"./{path}"
+        else:
+            return path
 
 
 @dataclass
@@ -301,7 +306,9 @@ class SchemaView(object):
                     if i == sn:
                         continue
                     else:
+                        temp = i
                         i = resolve_import(sn, i)
+                    _ = sn, temp, i
                     todo.append(i)
 
             # add item to closure
