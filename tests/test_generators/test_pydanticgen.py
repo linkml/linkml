@@ -196,8 +196,9 @@ def test_invalid_class_throws_error(class_name):
         gen = PydanticGenerator(sb.schema, package=PACKAGE)
         gen.serialize()
 
+
 @pytest.mark.parametrize(
-    "name, result", 
+    "name, result",
     [
         ("3DModel", False),
         ("😍", False),
@@ -206,11 +207,12 @@ def test_invalid_class_throws_error(class_name):
         ("def", False),
         ("class", False),
         ("in", False),
-        ("person", True)
-    ]
-)    
-def test_valid_name_test(name :str, result :bool):
+        ("person", True),
+    ],
+)
+def test_valid_name_test(name: str, result: bool):
     assert PydanticGenerator._is_valid_python_name(name) is result
+
 
 def test_pydantic_any_of():
     # TODO: convert to SchemaBuilder and parameterize?
