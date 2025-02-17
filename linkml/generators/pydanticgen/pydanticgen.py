@@ -464,7 +464,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             for k in PydanticAttribute.model_fields.keys()
             if getattr(slot, k, None) is not None
         }
-                
+
         slot_args["name"] = PydanticGenerator._generate_slot_name(slot)
         slot_args["description"] = slot.description.replace('"', '\\"') if slot.description is not None else None
         predef = self.predefined_slot_values.get(camelcase(cls.name), {}).get(slot.name, None)
