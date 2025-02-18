@@ -1,4 +1,4 @@
-from jsonasobj2 import loads
+from linkml_runtime.utils.jsonasobj2 import loads
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
 
