@@ -21,7 +21,7 @@
     {%- endif -%}
 {% endmacro %}
 
-# Slot: {{ title }}
+# Slot: {{ title }} {% if element.deprecated %} <span style="color: red;"><strong> (DEPRECATED) </strong> {% endif %}
 
 {%- if header -%}
 {{header}}
