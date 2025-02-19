@@ -692,8 +692,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
     def serialize(self, **kwargs) -> str:
         if self.materialize_patterns:
-           logger.info("Materializing patterns in the schema before serialization")
-           self.schemaview.materialize_patterns()
+            logger.info("Materializing patterns in the schema before serialization")
+            self.schemaview.materialize_patterns()
 
         return self.generate().to_json(sort_keys=True, indent=self.indent if self.indent > 0 else None)
 
@@ -761,7 +761,7 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
     "--materialize-patterns/--no-materialize-patterns",
     default=True,  # Default set to True
     show_default=True,
-    help="If set, patterns will be materialized in the generated JSON Schema."
+    help="If set, patterns will be materialized in the generated JSON Schema.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
