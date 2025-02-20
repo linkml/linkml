@@ -156,6 +156,8 @@ black = ["black"]
 numpydantic = ["numpydantic"]
 shacl = ["pyshacl"]
 tests = ["black", "numpydantic", "pyshacl"]
+pandera-polars = ["pandera","polars"]
+pandera-polars-lts = ["pandera","polars-lts-cpu"]
 
 [tool.poetry.group.docs]
 optional = true
