@@ -30,6 +30,8 @@ class ShaclGenerator(Generator):
     """parameterized suffix to be appended. No suffix per default."""
     include_annotations: bool = False
     """True means include all class / slot / type annotations in generated Node or Property shapes"""
+    exclude_imports: bool = False
+    """If True, elements from imported ontologies won't be included in the generator's output"""
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
@@ -63,7 +65,7 @@ class ShaclGenerator(Generator):
         for pfx in self.schema.prefixes.values():
             g.bind(str(pfx.prefix_prefix), pfx.prefix_reference)
 
-        for c in sv.all_classes().values():
+        for c in sv.all_classes(imports=not self.exclude_imports).values():
 
             def shape_pv(p, v):
                 if v is not None:
@@ -363,6 +365,13 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     default=False,
     show_default=True,
     help="Use --include-annotations to include annotations of slots, types, and classes in the generated SHACL shapes.",
+)
+@click.option(
+    "--exclude-imports/--include-imports",
+    default=False,
+    show_default=True,
+    help="Use --exclude-imports to exclude imported elements from the generated SHACL shapes. This is useful when "
+    "extending a substantial ontology to avoid large output files.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
