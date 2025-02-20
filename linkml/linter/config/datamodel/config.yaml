@@ -141,7 +141,13 @@ classes:
         multivalued: true
         description: >-
           Default: []
-          All elements except the ones with names specified in this list will be checked 
+          All elements except the ones with names specified in this list will be checked
+      exclude_type:
+        range: string
+        multivalued: true
+        description: >-
+          Default: []
+          Elements of all types (class, slot, enum, etc.) except the types specified in this list will be checked 
         
   StandardNamingConfig:
     description: >-
