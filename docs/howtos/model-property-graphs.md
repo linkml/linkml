@@ -166,7 +166,7 @@ There are a number of different design patterns here, and from an RDF modeling p
 
 In RDF-star, we can represent the role of the actor in the movie as a property on the edge between the person and the movie:
 
-```turtle
+```
 :Tom_Hanks :acted_in :Forrest_Gump   {| :role "Forrest Gump" |} .
 :Robert_Zemeckis :directed :Forrest_Gump .
 ```
@@ -338,7 +338,7 @@ This would be flagged as invalid.
 
 If we were to serialize the above data as RDF using the schema above, this would result in triples such as:
 
-```turtle
+```
 PERSON:TH a my:Person ;
   rdfs:label "Tom Hanks" ;
   born 1956 ;
@@ -375,7 +375,7 @@ SELECT ?person WHERE {?s rdf:subject ?person ; rdf:predicate my:ActedIn ; rdf:ob
 
 In RDF-star the edge statements can be represented using quotation syntactic sugar:
 
-```turtle
+```
 << Tom_Hanks :acted_in :Forrest_Gump >> :role "Forrest Gump" .
 << :Robert_Zemeckis :directed :Forrest_Gump >> .
 ```
