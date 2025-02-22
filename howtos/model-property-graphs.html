@@ -1,0 +1,996 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="How to Generate AI prompts" href="generate-ai-prompts.html" /><link rel="prev" title="Multidimensional Arrays" href="multidimensional-arrays.html" />
+
+    <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
+        <title>How to make a property graph schema - linkml documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/common.css?v=b029f2e4" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/notebooks.css?v=8a1ccf7d" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">linkml  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="https://linkml.io/uploads/linkml-logo_color.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">linkml  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorial</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial01.html">Part 1: Creating your first LinkML schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial02.html">Part 2: Adding a container object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial03.html">Part 3: Adding constraints and performing validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial04.html">Part 4: Working with RDF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial05.html">Part 5: Using Python dataclasses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial06.html">Part 6: Enumerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial07.html">Part 7: Slots and inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial08.html">Part 8: Generating Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial09.html">Part 9: Working with SQL databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial10.html">Part 10: Working with SQL databases</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of LinkML Schemas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/metadata.html">Schema Element Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/inheritance.html">Inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/slots.html">Slots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/arrays.html">Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/uris-and-mappings.html">URIs and Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/enums.html">Semantic Enumerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/inlining.html">Inlining objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/constraints.html">Adding constraints and rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/type-designators.html">Type designators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/subsets.html">Subsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/imports.html">Imports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/advanced.html">Advanced features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/generators.html">Mapping schemas to other frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/linter.html">Schema Linter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/derived-models.html">Derived models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/annotations.html">Annotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/metamodel.html">The metamodel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/expression-language.html">Expression Language</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../data/index.html">Working with Data</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Working with Data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../data/conversion.html">Converting between different representations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/validating-data.html">Data Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/rdf.html">Working with RDF and LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/csvs.html">CSVs and Tabular Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/python.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/sql-databases.html">Working with data in SQL Databases</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../generators/index.html">Generators</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Generators</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generators/json-schema.html">JSON Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/protobuf.html">ProtoBuf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/graphql.html">GraphQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/jsonld-context.html">JSON-LD Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/jsonld.html">JSON-LD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/rdf.html">RDF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/sparql.html">SPARQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/shex.html">ShEx</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/shacl.html">SHACL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/owl.html">OWL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/markdown.html">Markdown</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/docgen.html">Docs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/erdiagram.html">ER Diagrams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/yuml.html">YUML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/plantumlgen.html">PlantUML Diagram Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/project-generator.html">Project Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/python.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/pydantic.html">Pydantic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/java.html">Java</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/typescript.html">Typescript</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/sqltable.html">SQL DDL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/sqlalchemy.html">SQL Alchemy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/linkml.html">LinkML Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/prefixmap.html">Prefix Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/sssom.html">SSSOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/terminusdb.html">TerminusDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/excel.html">Excel Spreadsheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/csv.html">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/yaml.html">Yaml</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../generators/common/index.html">Common</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Common</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../generators/common/build.html">Build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generators/common/lifecycle.html">Lifecycle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generators/common/type_designators.html">Type Designators</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">How-to Guides</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of How-to Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collaborative-development.html">How to run a collaborative data modeling project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recognize-structural-forms.html">How to recognize and work with different structural forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="using-jsonld.html">Using JSON-LD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model-measurements.html">How to model quantities and measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="port-linkml.html">Porting LinkML tools to other programming languages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multidimensional-arrays.html">Multidimensional Arrays</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">How to make a property graph schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generate-ai-prompts.html">How to Generate AI prompts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deprecating-elements.html">Deprecating elements while maintaining PURLs and other URIs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/contributing.html">Contribution Guidelines</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of FAQ</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/general.html">FAQ: General</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/why-linkml.html">FAQ: Why LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/modeling.html">FAQ: Modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/tools.html">FAQ: Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/python.html">FAQ: Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/getting-help.html">FAQ: Getting Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/contributing.html">FAQ: Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/tricky_choices.html">FAQ: Tricky Choices</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cli/index.html">CLI</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of CLI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cli/linkml.html"><code class="docutils literal notranslate"><span class="pre">linkml</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli/generate.html"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">generate</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli/lint.html"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">lint</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli/validate.html"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">validate</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli/entrypoints.html">Entrypoints</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../developers/index.html">Developers guide</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Developers guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../developers/organization.html">GitHub Organization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/notebooks.html">Jupyter Notebooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/manipulating-schemas.html">Manipulating Schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/manage-releases.html">How to Manage Releases of your LinkML Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/schemaview.html">SchemaView</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/schemabuilder.html">SchemaBuilder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/loaders-and-dumpers.html">Data Conversion: Loaders and Dumpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/inference.html">Inferring Missing Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/using-sql-dbs.html">Using SQL Databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/sqlstore.html">SQLStore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/tool-developer-guide.html">Tool Implementer Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/contributing-code.html">Contributing Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/deprecation.html">Deprecations</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Code</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Code</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../code/metamodel.html">MetaModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/utils.html">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/validator.html">Validator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/deprecation.html">Deprecation Log</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="how-to-make-a-property-graph-schema">
+<h1>How to make a property graph schema<a class="headerlink" href="#how-to-make-a-property-graph-schema" title="Permalink to this heading">#</a></h1>
+<p>LinkML is intended to be a flexible, general purpose “<a class="reference external" href="https://github.com/json-ld/yaml-ld/issues/19">polyglot</a>” data modeling framework. You can use it with JSON documents and document databases like MongoDB, with tables and data frames, or with graph or RDF databases, and more. See <a class="reference internal" href="recognize-structural-forms.html"><span class="std std-doc">How to recognize and work with different structural forms</span></a> for more details.</p>
+<p>A lot of the LinkML documentation uses JSON/YAML as examples, as these are flexible commonly used syntaxes for exchanging data, but many of the original use cases for LinkML came from <a class="reference external" href="https://biolink.github.io/biolink-model/">graph modeling</a>, and this continues to be a driving use case.</p>
+<p>This how-to guide walks through the steps for making a schema for a <a class="reference external" href="https://en.wikipedia.org/wiki/Property_graph">Property Graph</a> (PG), such as what might be found in a graph database like <a class="reference external" href="https://neo4j.com/">Neo4J</a>, or also in an RDF database that supports <a class="reference external" href="https://www.ontotext.com/knowledgehub/fundamentals/what-is-rdf-star/">RDF-star</a>, such as GraphDB.</p>
+<p>We focus here on PGs, because there are some specific design considerations that don’t come up when thinking about simple RDF-style subject-property-object graphs (see <a class="reference external" href="https://linkml.io/linkml/data/rdf.html">working with RDF</a> for more on this topic).</p>
+<section id="what-is-a-property-graph">
+<h2>What is a property graph?<a class="headerlink" href="#what-is-a-property-graph" title="Permalink to this heading">#</a></h2>
+<p>A property graph (PG) is a graph data model that allows for properties to be associated with both edges (relationships) and nodes (vertices). This allows for more expressive queries and data modeling than a simple graph.</p>
+<p>The Neo4J documentation on <a class="reference external" href="https://neo4j.com/docs/getting-started/appendix/graphdb-concepts/">graph database concepts</a> shows an example of a PG for representing relationships of persons to Movies:</p>
+<p><img alt="example graph" src="https://neo4j.com/docs/getting-started/_images/graph_simple-arr.svg" /></p>
+<p>As can be seen, the graph in this example has two edges:</p>
+<ul class="simple">
+<li><p>a simple edge between <code class="docutils literal notranslate"><span class="pre">Person</span></code> and <code class="docutils literal notranslate"><span class="pre">Movie</span></code>, with an edge label <code class="docutils literal notranslate"><span class="pre">DIRECTED</span></code></p></li>
+<li><p>a more complex edge between <code class="docutils literal notranslate"><span class="pre">Person</span></code> and <code class="docutils literal notranslate"><span class="pre">Movie</span></code>, with an edge label <code class="docutils literal notranslate"><span class="pre">ACTED_IN</span></code> and an edge property <code class="docutils literal notranslate"><span class="pre">roles</span></code></p></li>
+</ul>
+<p>Let’s explore how this could be modeled in LinkML. Our first attempt will be a simple projection of the PG where each edge is a <em>slot</em>, but this has some limitations. Then we will explore an alternative way of doing this.</p>
+</section>
+<section id="first-attempt-a-simple-graph-projection">
+<h2>First attempt: A simple graph projection<a class="headerlink" href="#first-attempt-a-simple-graph-projection" title="Permalink to this heading">#</a></h2>
+<p>If we ignore the edge property <code class="docutils literal notranslate"><span class="pre">roles</span></code>, then coming up with a schema for this graph is quite easy:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://example.org/person-movie</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Person-Movie</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Illustration of simple RDF graph model</span>
+<span class="nt">prefixes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">neo4j</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://neo4j.com/</span>
+<span class="w">  </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://schema.org/</span>
+<span class="w">  </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://example.org/</span>
+
+<span class="nt">imports</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:types</span>
+<span class="w">  </span>
+<span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example</span>
+<span class="nt">default_range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">  </span>
+<span class="nt">classes</span><span class="p">:</span>
+
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">born</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">profession</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">acted_in</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Movie</span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">directed</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Movie</span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="w w-Error"> </span><span class="nt">Movie</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">title</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">released</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>Each edge type in the graph corresponds to a slot/attribute, whose range is a class.</p>
+<p>Here we choose to make the <code class="docutils literal notranslate"><span class="pre">acted_in</span></code> and <code class="docutils literal notranslate"><span class="pre">directed</span></code> attributes as owned by Person, but we could equally have flipped this around and made <code class="docutils literal notranslate"><span class="pre">actors</span></code> and <code class="docutils literal notranslate"><span class="pre">directors</span></code> attributes of Movie. While this doesn’t make any semantic difference, the choice of direction can have practical implications on YAML/JSON and Object Oriented representations.</p>
+<p>We have also chosen to model the profession as a simple string, for simplicity for now.</p>
+<p>We can also think of this as a <em>graph projection</em>:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Graph Element</p></th>
+<th class="head"><p>LinkML</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Node</p></td>
+<td><p>instance of a Class</p></td>
+</tr>
+<tr class="row-odd"><td><p>Edge</p></td>
+<td><p>Attribute-Value Assignment</p></td>
+</tr>
+<tr class="row-even"><td><p>Predicate (Edge Label)</p></td>
+<td><p>Attribute</p></td>
+</tr>
+<tr class="row-odd"><td><p>Node Property</p></td>
+<td><p>Attribute-Value Assignment</p></td>
+</tr>
+<tr class="row-even"><td><p>Edge Property</p></td>
+<td><p><em>not represented</em></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Note that in this simple graph projection, we don’t have any way of representing the <code class="docutils literal notranslate"><span class="pre">roles</span></code> edge property in the original Neo4J example.</p>
+<section id="schemasheets-representation-of-direct-simple-graphs">
+<h3>Schemasheets representation of direct simple graphs<a class="headerlink" href="#schemasheets-representation-of-direct-simple-graphs" title="Permalink to this heading">#</a></h3>
+<p>The above schema can easily be represented in a tabular form using <a class="reference external" href="https://linkml.io/schemasheets/">SchemaSheets</a>:</p>
+<p>Main tab:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Class</p></th>
+<th class="head"><p>Attribute</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Multivalued</p></th>
+<th class="head"><p>Identifier</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Person</p></td>
+<td><p>name</p></td>
+<td><p>string</p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>Person</p></td>
+<td><p>born</p></td>
+<td><p>string</p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>Person</p></td>
+<td><p>profession</p></td>
+<td><p>string</p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>Person</p></td>
+<td><p>acted_in</p></td>
+<td><p>Movie</p></td>
+<td><p>true</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>Person</p></td>
+<td><p>directed</p></td>
+<td><p>Movie</p></td>
+<td><p>true</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>Movie</p></td>
+<td><p>title</p></td>
+<td><p>string</p></td>
+<td><p></p></td>
+<td><p>true</p></td>
+</tr>
+<tr class="row-even"><td><p>Movie</p></td>
+<td><p>released</p></td>
+<td><p>string</p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="example-data">
+<h3>Example data<a class="headerlink" href="#example-data" title="Permalink to this heading">#</a></h3>
+<p>Let’s examine some example data instances, using the simple projection schema. We’ll show these first as YAML:</p>
+<p>Persons:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Tom Hanks</span>
+<span class="w">  </span><span class="nt">profession</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Actor</span>
+<span class="w">  </span><span class="nt">born</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1956</span>
+<span class="w">  </span><span class="nt">acted_in</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Forrest Gump</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Robert Zemeckis</span>
+<span class="w">  </span><span class="nt">profession</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Director</span>
+<span class="w">  </span><span class="nt">born</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1951</span>
+<span class="w">  </span><span class="nt">directed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Forrest Gump</span>
+</pre></div>
+</div>
+<p>Movies:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Forrest Gump</span>
+<span class="w">  </span><span class="nt">released</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1994</span>
+</pre></div>
+</div>
+<p>We are using references rather than <a class="reference external" href="https://linkml.io/linkml/schemas/inlining.html">inlining</a> here, so although the YAML looks “flat” it is semantically a graph.</p>
+<p>These have a natural representation as RDF graphs, with persons and movies being nodes, and the edges being the triples connecting them:</p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="c"># node-to-node edges</span>
+<span class="p">:</span><span class="nt">Tom_Hanks</span> <span class="p">:</span><span class="nt">acted_in</span> <span class="p">:</span><span class="nt">Forrest_Gump</span> <span class="p">.</span>
+<span class="p">:</span><span class="nt">Robert_Zemeckis</span> <span class="p">:</span><span class="nt">directed</span> <span class="p">:</span><span class="nt">Forrest_Gump</span> <span class="p">.</span>
+
+<span class="c"># node-to-literal edges</span>
+<span class="p">:</span><span class="nt">Tom_Hanks</span> <span class="p">:</span><span class="nt">born</span> <span class="s">&quot;1956&quot;</span> <span class="p">.</span>
+<span class="p">:</span><span class="nt">Robert_Zemeckis</span> <span class="p">:</span><span class="nt">born</span> <span class="s">&quot;1951&quot;</span> <span class="p">.</span>
+<span class="p">:</span><span class="nt">Tom_Hanks</span> <span class="p">:</span><span class="nt">profession</span> <span class="s">&quot;Actor&quot;</span> <span class="p">.</span>
+<span class="p">:</span><span class="nt">Forest_Gump</span> <span class="p">:</span><span class="nt">title</span> <span class="s">&quot;Forrest Gump&quot;</span> <span class="p">.</span>
+<span class="p">:</span><span class="nt">Forest_Gump</span> <span class="p">:</span><span class="nt">released</span> <span class="s">&quot;1994&quot;</span> <span class="p">.</span>
+</pre></div>
+</div>
+<p>In RDF, we also have “literal edges” as triples, so the relationship between a person and the string literal representing the year they were born are also represented as triples,</p>
+<p>When working with the default python or pydantic models for this, we can iterate over all movies a person has participated in:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># assume we have two lists, movies and persons</span>
+<span class="n">movies_ix</span> <span class="o">=</span> <span class="p">{</span><span class="n">movie</span><span class="o">.</span><span class="n">title</span><span class="p">:</span> <span class="n">movie</span> <span class="k">for</span> <span class="n">movie</span> <span class="ow">in</span> <span class="n">movies</span><span class="p">}</span>
+<span class="k">for</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">persons</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Person: </span><span class="si">{</span><span class="n">person</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">movie_id</span> <span class="ow">in</span> <span class="n">person</span><span class="o">.</span><span class="n">acted_in</span><span class="p">:</span>
+        <span class="n">movie</span> <span class="o">=</span> <span class="n">movies_ix</span><span class="p">[</span><span class="n">movie_id</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">person</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> acted in </span><span class="si">{</span><span class="n">movie</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">, released in </span><span class="si">{</span><span class="n">movie</span><span class="o">.</span><span class="n">released</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">movie_id</span> <span class="ow">in</span> <span class="n">person</span><span class="o">.</span><span class="n">directed</span><span class="p">:</span>
+        <span class="n">movie</span> <span class="o">=</span> <span class="n">movies_ix</span><span class="p">[</span><span class="n">movie_id</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">person</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> directed </span><span class="si">{</span><span class="n">movie</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">, released in </span><span class="si">{</span><span class="n">movie</span><span class="o">.</span><span class="n">released</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that when we try and traverse from movie to persons directly, this won’t work as associations are directional in OO models. Note also the awkward need to lookup non-inlined references.</p>
+</section>
+<section id="limitations-of-simple-graphs">
+<h3>Limitations of simple graphs<a class="headerlink" href="#limitations-of-simple-graphs" title="Permalink to this heading">#</a></h3>
+<p>This all works well for simple graphs, but what happens if we want to represent the <em>role</em> of the actor in the movie, e.g. the name of the character that Tom Hanks plays in the movie Forest Gump is… “Forrest Gump”?</p>
+<p><img alt="example graph" src="https://neo4j.com/docs/getting-started/_images/graph_simple-arr.svg" /></p>
+<p>There are a number of different design patterns here, and from an RDF modeling perspective these have all been collected in an influential W3C note on <a class="reference external" href="https://www.w3.org/TR/swbp-n-aryRelations/">n-ary relations</a>. More recently, the RDF-star extension to RDF has been proposed to allow for properties on edges. The Ontotext site has good up to date documentation contrasting the different design patterns for representing PGs in RDF, and their relationship to RDF-star: <a class="reference external" href="https://www.ontotext.com/knowledgehub/fundamentals/what-is-rdf-star/">What is rdf-star?</a></p>
+<p>In RDF-star, we can represent the role of the actor in the movie as a property on the edge between the person and the movie:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">Tom_Hanks</span> <span class="p">:</span><span class="n">acted_in</span> <span class="p">:</span><span class="n">Forrest_Gump</span>   <span class="p">{</span><span class="o">|</span> <span class="p">:</span><span class="n">role</span> <span class="s2">&quot;Forrest Gump&quot;</span> <span class="o">|</span><span class="p">}</span> <span class="o">.</span>
+<span class="p">:</span><span class="n">Robert_Zemeckis</span> <span class="p">:</span><span class="n">directed</span> <span class="p">:</span><span class="n">Forrest_Gump</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>This uses <a class="reference external" href="https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#annotation-syntax">annotation syntax</a>, which is a shorthand for both asserting the triple, and the reification.</p>
+<p>However, there is as yet not agreed upon standard for schematizing RDF-star (see <a class="reference external" href="https://github.com/w3c/shacl/issues/23">w3c/shacl#23</a> for discussion on combining RDF-star and SHACL), and no agreed upon standard for schematizing PGs more generally.</p>
+</section>
+</section>
+<section id="second-attempt-standard-pg-pattern-node-and-edge-classes">
+<h2>Second attempt: Standard PG Pattern: Node and Edge classes<a class="headerlink" href="#second-attempt-standard-pg-pattern-node-and-edge-classes" title="Permalink to this heading">#</a></h2>
+<p>A standard pattern for modeling PGs is to have two sets of classes: classes for nodes, and classes for edges. These could either be generic, or they could be abstract base classes intended to be subclassed.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Node</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">abstract</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdfs:label</span>
+<span class="w">      </span><span class="nt">category</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdf:type</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">        </span><span class="nt">designates_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">types</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">Edge</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">abstract</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdf:Statement</span>
+<span class="w">      </span><span class="nt">subject</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdf:subject</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Node</span>
+<span class="w">      </span><span class="nt">predicate</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span>
+<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdf:predicate</span>
+<span class="w">        </span><span class="nt">designates_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">object</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdf:object</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Node</span>
+<span class="w">  </span><span class="nt">Graphs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">nodes</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Node</span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">edges</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Edge</span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>The <em>graph projection</em> for this schema is</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Graph Element</p></th>
+<th class="head"><p>LinkML</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Node</p></td>
+<td><p>instance of a (Node) Class</p></td>
+</tr>
+<tr class="row-odd"><td><p>Edge</p></td>
+<td><p>instance of an (Edge) Class</p></td>
+</tr>
+<tr class="row-even"><td><p>Predicate (Edge Label)</p></td>
+<td><p>(Edge) Class</p></td>
+</tr>
+<tr class="row-odd"><td><p>Node Property</p></td>
+<td><p>Attribute-Value Assignment on Node instance</p></td>
+</tr>
+<tr class="row-even"><td><p>Edge Property</p></td>
+<td><p>Attribute-Value Assignment on Edge instance</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>We made a few design decisions here, but these are not set in stone. For different use cases, you may want to
+model differently.</p>
+<ul class="simple">
+<li><p>identifiers</p>
+<ul>
+<li><p>nodes have identifiers, and references to nodes from edges are not inlined. Data providers are expected to mint these.</p></li>
+<li><p>edges do not have identifiers. This makes it harder for an edge to reference another edge.</p></li>
+</ul>
+</li>
+<li><p>vocabulary</p>
+<ul>
+<li><p>we use the RDF reification vocabulary for URIs, but we could use anything here.</p></li>
+<li><p>we use <code class="docutils literal notranslate"><span class="pre">name</span></code> for a human-readable name, and map this to <code class="docutils literal notranslate"><span class="pre">rdfs:label</span></code> (not to be confused with neo4j <a class="reference external" href="https://neo4j.com/news/labels-and-schema-indexes-in-neo4j/">labels</a>)</p></li>
+</ul>
+</li>
+<li><p>extensibility</p>
+<ul>
+<li><p>both <code class="docutils literal notranslate"><span class="pre">Node</span></code> and <code class="docutils literal notranslate"><span class="pre">Edge</span></code> are declared abstract, so they are intended to be subclassed</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Node</span></code> uses a <code class="docutils literal notranslate"><span class="pre">category</span></code> as a <a class="reference external" href="https://linkml.io/linkml/schemas/type-designators.html">type designator</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Edge</span></code> uses a <code class="docutils literal notranslate"><span class="pre">predicate</span></code> as a type designator (we will see the consequences of this later)</p></li>
+<li><p>We also allow any number of types to be associated with a node (akin to “labels” in neo4j)</p></li>
+</ul>
+</li>
+<li><p>containers</p>
+<ul>
+<li><p>We include a <code class="docutils literal notranslate"><span class="pre">Graphs</span></code> class that can hold a list of nodes and a list of edges.</p></li>
+<li><p>Graphs are treated as different from nodes and edges, but we could have made graphs a subtype of node, allowing them to be referenced as if they were nodes.</p></li>
+</ul>
+</li>
+</ul>
+<p>The above module could be reused across multiple different domains. Let’s extend it for the movie domain:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Node</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">born</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">profession</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Movie</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Node</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">title</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">released</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ActedIn</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Edge</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">role</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Directed</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Edge</span>
+</pre></div>
+</div>
+<p>Note that unlike the previous schema, edges are “first-class”, and nodes no longer “own” the edges. From a graph database perspective, there is no such distinction, but this has implications for e.g. Pydantic and JSON representations.</p>
+<p>As before, we can easily represent this in SchemaSheets:</p>
+<p>Nodes tab:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Node Class</p></th>
+<th class="head"><p>Attribute</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Multivalued</p></th>
+<th class="head"><p>Identifier</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Person</p></td>
+<td><p>name</p></td>
+<td><p>string</p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>Person</p></td>
+<td><p>born</p></td>
+<td><p>string</p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>Person</p></td>
+<td><p>profession</p></td>
+<td><p>string</p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>Movie</p></td>
+<td><p>title</p></td>
+<td><p>string</p></td>
+<td><p></p></td>
+<td><p>true</p></td>
+</tr>
+<tr class="row-even"><td><p>Movie</p></td>
+<td><p>released</p></td>
+<td><p>string</p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Edges tab:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Predicate</p></th>
+<th class="head"><p>Subject</p></th>
+<th class="head"><p>Object</p></th>
+<th class="head"><p>Attribute</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Multivalued</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>ActedIn</p></td>
+<td><p>Person</p></td>
+<td><p>Movie</p></td>
+<td><p>role</p></td>
+<td><p>string</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>Directed</p></td>
+<td><p>Person</p></td>
+<td><p>Movie</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Data in YAML might look like this:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">nodes</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PERSON:TH</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Tom Hanks</span>
+<span class="w">  </span><span class="nt">profession</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Actor</span>
+<span class="w">  </span><span class="nt">born</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1956</span>
+<span class="w">  </span><span class="nt">category</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my:Person</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PERSON:RZ</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Robert Zemeckis</span>
+<span class="w">  </span><span class="nt">profession</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Director</span>
+<span class="w">  </span><span class="nt">born</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1951</span>
+<span class="w">  </span><span class="nt">category</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my:Person</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MOVIE:FG</span>
+<span class="w">  </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Forrest Gump</span>
+<span class="w">  </span><span class="nt">released</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1994</span>
+<span class="w">  </span><span class="nt">category</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my:Movie</span>
+<span class="nt">edges</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">subject</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PERSON:TH</span>
+<span class="w">  </span><span class="nt">predicate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my:ActedIn</span>
+<span class="w">  </span><span class="nt">object</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MOVIE:FG</span>
+<span class="w">  </span><span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Forrest Gump</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">subject</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PERSON:RZ</span>
+<span class="w">  </span><span class="nt">predicate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my:Directed</span>
+<span class="w">  </span><span class="nt">object</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MOVIE:FG</span>
+</pre></div>
+</div>
+<p>Our decision to use classes to represent edge types (which for now we conflate with predicates) has the advantage of allowing fine-grained control over the properties of edges. For example, if we had an edge:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">subject</span><span class="p">:</span> <span class="n">PERSON</span><span class="p">:</span><span class="n">RZ</span>
+  <span class="n">predicate</span><span class="p">:</span> <span class="n">my</span><span class="p">:</span><span class="n">Directed</span>
+  <span class="nb">object</span><span class="p">:</span> <span class="n">MOVIE</span><span class="p">:</span><span class="n">FG</span>
+  <span class="n">role</span><span class="p">:</span> <span class="n">Director</span>
+</pre></div>
+</div>
+<p>This would be flagged as invalid.</p>
+<section id="direct-rdf-mapping-of-example-data">
+<h3>Direct RDF mapping of example data<a class="headerlink" href="#direct-rdf-mapping-of-example-data" title="Permalink to this heading">#</a></h3>
+<p>If we were to serialize the above data as RDF using the schema above, this would result in triples such as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PERSON</span><span class="p">:</span><span class="n">TH</span> <span class="n">a</span> <span class="n">my</span><span class="p">:</span><span class="n">Person</span> <span class="p">;</span>
+  <span class="n">rdfs</span><span class="p">:</span><span class="n">label</span> <span class="s2">&quot;Tom Hanks&quot;</span> <span class="p">;</span>
+  <span class="n">born</span> <span class="mi">1956</span> <span class="p">;</span>
+  <span class="n">profession</span> <span class="s2">&quot;Actor&quot;</span> <span class="o">.</span>
+<span class="n">PERSON</span><span class="p">:</span><span class="n">RZ</span> <span class="n">a</span> <span class="n">my</span><span class="p">:</span><span class="n">Person</span> <span class="p">;</span>
+  <span class="n">rdfs</span><span class="p">:</span><span class="n">label</span> <span class="s2">&quot;Robert Zemeckis&quot;</span> <span class="p">;</span>
+  <span class="n">born</span> <span class="mi">1951</span> <span class="p">;</span>
+  <span class="n">profession</span> <span class="s2">&quot;Director&quot;</span> <span class="o">.</span>
+<span class="n">MOVIE</span><span class="p">:</span><span class="n">FG</span> <span class="n">a</span> <span class="n">my</span><span class="p">:</span><span class="n">Movie</span> <span class="p">;</span>
+  <span class="n">rdfs</span><span class="p">:</span><span class="n">label</span> <span class="s2">&quot;Forrest Gump&quot;</span> <span class="p">;</span>
+  <span class="n">released</span> <span class="mi">1994</span> <span class="o">.</span>
+<span class="p">[</span> <span class="n">a</span> <span class="n">rdf</span><span class="p">:</span><span class="n">Statement</span> <span class="p">;</span>
+  <span class="n">rdf</span><span class="p">:</span><span class="n">subject</span> <span class="n">PERSON</span><span class="p">:</span><span class="n">TH</span> <span class="p">;</span>
+  <span class="n">rdf</span><span class="p">:</span><span class="n">predicate</span> <span class="n">my</span><span class="p">:</span><span class="n">ActedIn</span> <span class="p">;</span>
+  <span class="n">rdf</span><span class="p">:</span><span class="nb">object</span> <span class="n">MOVIE</span><span class="p">:</span><span class="n">FG</span> <span class="p">;</span>
+  <span class="n">my</span><span class="p">:</span><span class="n">role</span> <span class="s2">&quot;Forrest Gump&quot;</span> <span class="p">]</span> <span class="o">.</span>
+<span class="p">[</span> <span class="n">a</span> <span class="n">rdf</span><span class="p">:</span><span class="n">Statement</span> <span class="p">;</span>
+  <span class="n">rdf</span><span class="p">:</span><span class="n">subject</span> <span class="n">PERSON</span><span class="p">:</span><span class="n">RZ</span> <span class="p">;</span>
+  <span class="n">rdf</span><span class="p">:</span><span class="n">predicate</span> <span class="n">my</span><span class="p">:</span><span class="n">Directed</span> <span class="p">;</span>
+  <span class="n">rdf</span><span class="p">:</span><span class="nb">object</span> <span class="n">MOVIE</span><span class="p">:</span><span class="n">FG</span> <span class="p">]</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>This is perhaps slightly unusual from an RDF perspective, as we are using the reification vocabulary, but we are only “quoting” the edge and not asserting it. This means that a query:</p>
+<div class="highlight-sparql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="nv">?person</span> <span class="k">WHERE</span> <span class="p">{</span><span class="nv">?person</span> <span class="nn">my</span><span class="p">:</span><span class="nt">ActedIn</span> <span class="nn">MOVIE</span><span class="p">:</span><span class="nt">FG</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Would not return any results; it’s necessary to query the reified edge:</p>
+<div class="highlight-sparql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="nv">?person</span> <span class="k">WHERE</span> <span class="p">{</span><span class="nv">?s</span> <span class="nn">rdf</span><span class="p">:</span><span class="nt">subject</span> <span class="nv">?person</span> <span class="p">;</span> <span class="nn">rdf</span><span class="p">:</span><span class="nt">predicate</span> <span class="nn">my</span><span class="p">:</span><span class="nt">ActedIn</span> <span class="p">;</span> <span class="nn">rdf</span><span class="p">:</span><span class="nt">object</span> <span class="nn">MOVIE</span><span class="p">:</span><span class="nt">FG</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>In RDF-star the edge statements can be represented using quotation syntactic sugar:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;&lt;</span> <span class="n">Tom_Hanks</span> <span class="p">:</span><span class="n">acted_in</span> <span class="p">:</span><span class="n">Forrest_Gump</span> <span class="o">&gt;&gt;</span> <span class="p">:</span><span class="n">role</span> <span class="s2">&quot;Forrest Gump&quot;</span> <span class="o">.</span>
+<span class="o">&lt;&lt;</span> <span class="p">:</span><span class="n">Robert_Zemeckis</span> <span class="p">:</span><span class="n">directed</span> <span class="p">:</span><span class="n">Forrest_Gump</span> <span class="o">&gt;&gt;</span> <span class="o">.</span>
+</pre></div>
+</div>
+</section>
+<section id="edge-types">
+<h3>Edge types<a class="headerlink" href="#edge-types" title="Permalink to this heading">#</a></h3>
+<p>In the above example, we equate the RDF predicate with the edge type. This has the advantage of simplicity.</p>
+<p>In some cases we might want to make edge types more granular than predicates. For example, consider a schema that uses a <code class="docutils literal notranslate"><span class="pre">HasPart</span></code> predicate. This is a very general predicate that could be used for:</p>
+<ul class="simple">
+<li><p>protein complex to sub-complexes to proteins (to amino acids…)</p></li>
+<li><p>anatomical structures such as organisms relating to organisms to organs to tissues to cells to molecules…</p></li>
+<li><p>engineered structures such as a car to parts to sub-parts to materials…</p></li>
+</ul>
+<p>In this case, we might want to have a more granular set of edge types, such as <code class="docutils literal notranslate"><span class="pre">AnatomicalHasPart</span></code>, <code class="docutils literal notranslate"><span class="pre">ProteinHasPart</span></code>, in order to enforce constraints. However, we might still want the rdf predicate to map to the more general <code class="docutils literal notranslate"><span class="pre">HasPart</span></code>.</p>
+<p>We might do this by modifying the <code class="docutils literal notranslate"><span class="pre">Edge</span></code> class to have a distinct <code class="docutils literal notranslate"><span class="pre">type</span></code> attribute, and then subclassing <code class="docutils literal notranslate"><span class="pre">Edge</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">classes</span><span class="p">:</span>
+  <span class="n">Edge</span><span class="p">:</span>
+    <span class="n">abstract</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">attributes</span><span class="p">:</span>
+      <span class="n">class_uri</span><span class="p">:</span> <span class="n">rdf</span><span class="p">:</span><span class="n">Statement</span>
+      <span class="n">subject</span><span class="p">:</span>
+        <span class="n">slot_uri</span><span class="p">:</span> <span class="n">rdf</span><span class="p">:</span><span class="n">subject</span>
+        <span class="nb">range</span><span class="p">:</span> <span class="n">Node</span>
+      <span class="n">predicate</span><span class="p">:</span>
+        <span class="nb">range</span><span class="p">:</span> <span class="n">uriorcurie</span>
+        <span class="n">slot_uri</span><span class="p">:</span> <span class="n">rdf</span><span class="p">:</span><span class="n">predicate</span>
+        <span class="n">designates_type</span><span class="p">:</span> <span class="n">true</span>
+      <span class="nb">object</span><span class="p">:</span>
+        <span class="n">slot_uri</span><span class="p">:</span> <span class="n">rdf</span><span class="p">:</span><span class="nb">object</span>
+        <span class="nb">range</span><span class="p">:</span> <span class="n">Node</span>
+      <span class="nb">type</span><span class="p">:</span>
+        <span class="n">slot_uri</span><span class="p">:</span> <span class="n">rdf</span><span class="p">:</span><span class="nb">type</span>
+        <span class="nb">range</span><span class="p">:</span> <span class="n">uriorcurie</span>
+        <span class="n">designates_type</span><span class="p">:</span> <span class="n">true</span>
+  <span class="n">HasPart</span><span class="p">:</span>
+    <span class="n">is_a</span><span class="p">:</span> <span class="n">Edge</span>
+    <span class="n">slot_usage</span><span class="p">:</span>
+      <span class="n">predicate</span><span class="p">:</span>
+        <span class="n">equals_string</span><span class="p">:</span> <span class="s2">&quot;BFO:0000051&quot;</span>
+    <span class="n">attributes</span><span class="p">:</span>
+      <span class="n">quantity</span><span class="p">:</span>
+      <span class="nb">range</span><span class="p">:</span> <span class="n">integer</span>
+  <span class="n">AnatomicalHasPart</span><span class="p">:</span>
+    <span class="n">is_a</span><span class="p">:</span> <span class="n">HasPart</span>
+    <span class="n">slot_usages</span><span class="p">:</span>
+      <span class="n">subject</span><span class="p">:</span> <span class="n">AnatomicalEntity</span>
+      <span class="nb">object</span><span class="p">:</span> <span class="n">AnatomicalEntity</span>
+  <span class="n">VehicleHasPart</span><span class="p">:</span>
+    <span class="n">is_a</span><span class="p">:</span> <span class="n">HasPart</span>
+    <span class="o">...</span>    
+</pre></div>
+</div>
+<p>Our YAML/JSON objects might look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">edges</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">subject</span><span class="p">:</span> <span class="n">Heart</span>
+  <span class="n">predicate</span><span class="p">:</span> <span class="n">BFO</span><span class="p">:</span><span class="mi">0000051</span>
+  <span class="nb">object</span><span class="p">:</span> <span class="n">Ventricle</span>
+  <span class="nb">type</span><span class="p">:</span> <span class="n">my</span><span class="p">:</span><span class="n">AnatomicalHasPart</span>
+  <span class="n">quantity</span><span class="p">:</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<p>This provides a bit more flexibility, but with some additional complexity.</p>
+</section>
+<section id="assertions-vs-quotes">
+<h3>Assertions vs Quotes<a class="headerlink" href="#assertions-vs-quotes" title="Permalink to this heading">#</a></h3>
+<p>As noted above, when using the standard PG modeling pattern, edge types (predicates) are classes. We do not have slots <code class="docutils literal notranslate"><span class="pre">acted_in</span></code> and <code class="docutils literal notranslate"><span class="pre">directed</span></code>. Instead we have <code class="docutils literal notranslate"><span class="pre">ActedIn</span></code> and <code class="docutils literal notranslate"><span class="pre">Directed</span></code> classes, and generic n-ary relation properties to relate edge instances to nodes.</p>
+<p>This is in contrast to the simple representation, where we have explicit slots for each predicate, but we can’t represent directly the edge properties.</p>
+<p>We are currently exploring options for allow features such as auto-asserting PG style models when mapping to RDF-star.</p>
+</section>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.ontotext.com/knowledgehub/fundamentals/what-is-rdf-star/">What is RDF-star</a> from GraphDB docs</p></li>
+<li><p><a class="reference external" href="https://linkml.io/linkml-store/how-to/Use-Neo4j.html">Property Graphs with LinkML store</a></p></li>
+</ul>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="generate-ai-prompts.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">How to Generate AI prompts</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="multidimensional-arrays.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Multidimensional Arrays</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2021-2024, LinkML Authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">How to make a property graph schema</a><ul>
+<li><a class="reference internal" href="#what-is-a-property-graph">What is a property graph?</a></li>
+<li><a class="reference internal" href="#first-attempt-a-simple-graph-projection">First attempt: A simple graph projection</a><ul>
+<li><a class="reference internal" href="#schemasheets-representation-of-direct-simple-graphs">Schemasheets representation of direct simple graphs</a></li>
+<li><a class="reference internal" href="#example-data">Example data</a></li>
+<li><a class="reference internal" href="#limitations-of-simple-graphs">Limitations of simple graphs</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#second-attempt-standard-pg-pattern-node-and-edge-classes">Second attempt: Standard PG Pattern: Node and Edge classes</a><ul>
+<li><a class="reference internal" href="#direct-rdf-mapping-of-example-data">Direct RDF mapping of example data</a></li>
+<li><a class="reference internal" href="#edge-types">Edge types</a></li>
+<li><a class="reference internal" href="#assertions-vs-quotes">Assertions vs Quotes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    </body>
+</html>
