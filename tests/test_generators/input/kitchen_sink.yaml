@@ -429,6 +429,7 @@ slots:
     mixin: true
   life_status:
     range: LifeStatusEnum
+    deprecated: This slot is not asserted on any classes yet
   cordialness:
   altitude:
     range: decimal

@@ -21,7 +21,7 @@
     {%- endif -%}
 {% endmacro %}
 
-# Class: {{ title }}
+# Class: {{ title }} {% if element.deprecated %} <span style="color: red;"><strong> (DEPRECATED) </strong> {% endif %}
 
 {%- if header -%}
 {{header}}
