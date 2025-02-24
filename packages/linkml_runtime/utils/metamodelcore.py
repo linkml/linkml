@@ -301,8 +301,11 @@ class XSDDateTime(str, TypedNode):
                 else:
                     if "T" in str(value):
                         value = isodate.parse_datetime(value)
-                    else:
+                    elif " " in value.strip():
                         value = isodate.parse_datetime("T".join(value.strip().split(' ', 1)))
+                    else: 
+                        # As datetime.fromisoformat allows dates to be parsed as datetime we do the same.
+                        value = isodate.parse_datetime(f"{value.strip()}T00:00:00")
             return value.isoformat()
         except (TypeError, ValueError) as e:
             if is_strict():

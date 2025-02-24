@@ -193,8 +193,10 @@ class MetamodelCoreTest(unittest.TestCase):
         self.assertEqual('2019-07-06 17:22:39.007300', vstr)       # Note that this has no 'T'
         self.assertEqual('2019-07-06T17:22:39.007300', XSDDateTime(vstr))
         self.assertEqual('2019-07-06T17:22:39+00:00', XSDDateTime("2019-07-06T17:22:39Z"))
+        self.assertEqual('2019-07-06T00:00:00', XSDDateTime("2019-07-06")) # Date as datetime
         with self.assertRaises(ValueError):
             XSDDateTime('Jan 12, 2019')
+
         lax()
         self.assertEqual('penguins', XSDDateTime('penguins'))
         XSDDateTime(datetime.datetime.now())
