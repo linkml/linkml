@@ -30,10 +30,10 @@ class {{cls.name}}({% if cls.is_a %}{{ cls.is_a }}{% else %}pla.DataFrameModel{%
 {% endif -%}
 {%- for field in cls.fields -%}
 {%- with slot = field.source_slot %}
-    {{ field.name }}:
-{%- if slot.required == None or slot.required == False %} Optional[{% endif -%}
+    {{ field.name }}:{{ ' ' }}
+{%- if slot.required is none or slot.required is false %}Optional[{% endif -%}
 Series[{{field.range}}]
-{%- if slot.required == None or slot.required == False %}]{% endif -%}
+{%- if slot.required is none or slot.required is false %}]{% endif -%}
 {{ " =" }} pla.Field(
 {%- if slot.minimum_value != None -%}ge={{ slot.minimum_value }}, {% endif -%}
 {%- if slot.maximum_value != None -%}le={{ slot.maximum_value }}, {% endif -%}
@@ -41,4 +41,5 @@ Series[{{field.range}}]
 {%- endwith -%}
 {% endfor %}
 {%- endfor %}
-{%- endfor -%}
+{%- endfor %}
+

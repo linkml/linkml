@@ -210,7 +210,7 @@ class PanderaGenerator(OOCodeGenerator):
                 range = slot.range
                 default_value = DEFAULT_VALUE
 
-                logging.info(f"RANGE: {range}")
+                logging.info(f"RANGE: {cn}.{sn} -> {range}")
 
                 if range is None:
                     # TODO: schemaview should infer this
@@ -218,8 +218,7 @@ class PanderaGenerator(OOCodeGenerator):
 
                 if range is None:
                     range = "str"
-
-                if range in sv.all_classes():
+                elif range in sv.all_classes():
                     # TODO: account for declaring in order, then use real ranges
                     range = "str"
                     # range = self.get_class_name(range)

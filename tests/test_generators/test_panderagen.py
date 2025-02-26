@@ -1,11 +1,42 @@
 import logging
 import re
-import numpy as np
 import pytest
 
 from linkml.generators.panderagen import PanderaGenerator
 
 logger = logging.getLogger(__name__)
+
+@pytest.fixture(scope="module")
+def synthetic_flat_dataframe_model():
+    return """\
+id: https://w3id.org/linkml/examples/pandera_constraints
+name: test_pandera_constraints
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://w3id.org/linkml/examples/pandera_constraints/
+imports:
+  - linkml:types
+default_range: string
+default_prefix: ex
+
+classes:
+  PanderaSyntheticTable:
+    attributes:
+      bool_column:
+        range: boolean
+        required: true
+      integer_column:
+        range: integer
+        required: true
+        minimum_value: 0
+        maximum_value: 999
+      float_column:
+        range: float
+        required: true
+      string_column:
+        range: string
+        required: true
+"""
 
 
 @pytest.fixture(scope="module")
@@ -21,6 +52,7 @@ def pl():
     """
     return pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
 
+
 @pytest.fixture(scope="module")
 def pandera():
     """The pandera package is optional, so use fixtures and importorskip to only run tests when it's installed
@@ -34,52 +66,32 @@ def N():
     """
     return 100000
 
-# for use with Person age_in_years column
-OK_AGE_RANGE = 99
-MAX_AGE = 999
+
+@pytest.fixture(scope="module")
+def big_synthetic_dataframe(pl, np, N):
+    return pl.DataFrame({
+        "bool_column": np.random.choice([True, False], size=N),
+        "integer_column": np.random.choice(range(100), size=N),
+        "float_column": np.random.choice([1.0, 2.0, 3.0], size=N),
+        "string_column": np.random.choice(["this", "that"], size=N)
+    })
 
 
 @pytest.fixture(scope="module")
-def big_person_dataframe(pl, np, N):
-    """Construct a dataframe with person records (id, name, age_in_years) using efficient numpy and polars operations
-    """
-    return (
-        pl.DataFrame({
-            "id": np.arange(0, N)
-        })
-        .select(
-            pl.col("id").cast(pl.Utf8),
-            pl.concat_str(
-                pl.lit("Person "),
-                pl.col("id")
-            ).alias("name"),
-            (pl.col("id") % OK_AGE_RANGE).alias("age_in_years")
-        )
-    )
-
+def synthetic_schema(synthetic_flat_dataframe_model):
+    return PanderaGenerator(synthetic_flat_dataframe_model)
 
 @pytest.fixture(scope="module")
-def schema(input_path):
-    return str(input_path("personinfo.yaml"))
+def compiled_synthetic_schema_module(synthetic_schema):
+    return synthetic_schema.compile_pandera(compile_python_dataclasses=False)
 
-
-@pytest.fixture(scope="module")
-def generator(schema):
-    return PanderaGenerator(schema)
-
-
-@pytest.fixture(scope="module")
-def compiled_schema_module(generator):
-    return generator.compile_pandera(compile_python_dataclasses=False)
-
-
-def test_pandera_basic_class_based(generator):
+def test_pandera_basic_class_based(synthetic_schema):
     """
     Test generation of Pandera for classed-based mode
 
     This test will check the generated python, but does not include a compilation step
     """
-    code = generator.generate_pandera()  # default is class-based
+    code = synthetic_schema.generate_pandera()  # default is class-based
 
     logger.info(f"generated Pandera model:\n{code}")
 
@@ -93,70 +105,77 @@ def test_pandera_basic_class_based(generator):
             classes.append(match.group(1))
 
     expected_classes = [
-        "NamedThing",
-        "Person",
-        "Organization",
-        "Place",
-        "Address",
-        "Event",
-        "NewsEvent",
-        "WithLocation",
-        "Concept",
-        "DiagnosisConcept",
-        "ProcedureConcept",
-        "Relationship",
-        "FamilialRelationship",
-        "HasAliases",
-        "HasNewsEvents",
-        "IntegerPrimaryKeyObject",
-        "EmploymentEvent",
-        "MedicalEvent",
-        "Container" # check if this is expected
+        "PanderaSyntheticTable"
     ]
 
     assert sorted(expected_classes) == sorted(classes)
 
 
-def test_pandera_compile_basic_class_based(compiled_schema_module, big_person_dataframe):
+def test_pandera_compile_basic_class_based(compiled_synthetic_schema_module, big_synthetic_dataframe):
     """
     tests compilation and validation of correct class-based schema
     """
     # raises pandera.errors.SchemaErrors, so no assert needed
-    compiled_schema_module.Person.validate(big_person_dataframe, lazy=True) 
+    compiled_synthetic_schema_module.PanderaSyntheticTable.validate(big_synthetic_dataframe, lazy=True) 
 
 
-def test_pandera_validation_error_ge(pl, pandera, compiled_schema_module, big_person_dataframe):
+def test_pandera_validation_error_ge(pl, pandera, compiled_synthetic_schema_module, big_synthetic_dataframe):
     """
     tests ge range validation error
     """
-    high_age_dataframe = (
-        big_person_dataframe
+    high_int_dataframe = (
+        big_synthetic_dataframe
         .with_columns(
-            (pl.col("age_in_years") + MAX_AGE).alias("age_in_years")
+            pl.lit(1000, pl.Int64).alias("integer_column")
         )
     )
 
     with pytest.raises(pandera.errors.SchemaErrors) as e:
-        compiled_schema_module.Person.validate(high_age_dataframe, lazy=True)
+        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(high_int_dataframe, lazy=True)
 
-    assert "DATAFRAME_CHECK" in str(e)
-    assert "'column': 'age_in_years'" in str(e)
+    assert "DATAFRAME_CHECK" in str(e.value)
+    assert "less_than_or_equal_to(999)" in str(e.value)
+    assert "'column': 'integer_column'" in str(e)
 
 
-def test_pandera_validation_error_it_type(pl, pandera, compiled_schema_module, big_person_dataframe):
-    """
-    tests incorrect datatype of a dataframe column
-    """
-    high_age_dataframe = (
-        big_person_dataframe
+@pytest.mark.parametrize(
+    "bad_column",
+    ["bool_column", "integer_column", "float_column", "string_column"]
+)
+def test_synthetic_dataframe_wrong_datatype(pl, pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, bad_column):
+    if bad_column == "bool_column":
+        bad_value = None
+    else:
+        bad_value = False
+
+    error_dataframe = (
+        big_synthetic_dataframe
         .with_columns(
-            pl.col("id").cast(pl.Int32).alias("id")
+            pl.lit(bad_value).alias(bad_column)
         )
     )
 
     with pytest.raises(pandera.errors.SchemaErrors) as e:
-        compiled_schema_module.Person.validate(high_age_dataframe, lazy=True)
+        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(error_dataframe, lazy=True)
 
     assert "WRONG_DATATYPE" in str(e.value)
-    assert "'column': 'id'" in str(e)
-    
+    assert f"expected column '{bad_column}' to have type" in str(e.value)
+
+
+@pytest.mark.parametrize(
+    "drop_column",
+    ["bool_column", "integer_column", "float_column", "string_column"]
+)
+def test_synthetic_dataframe_boolean_error(pl, pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, drop_column):
+    error_dataframe = (
+        big_synthetic_dataframe
+        .drop(
+            pl.col(drop_column)
+        )
+    )
+
+    with pytest.raises(pandera.errors.SchemaErrors) as e:
+        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(error_dataframe, lazy=True)
+
+    assert "COLUMN_NOT_IN_DATAFRAME" in str(e.value)
+    assert f"column '{drop_column}' not in dataframe" in str(e.value)
