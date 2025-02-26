@@ -322,6 +322,8 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
     domain_of_species_name = person_dict["attributes"]["species name"]["domain_of"]
     assert len(set(domain_of_species_name)) == len(domain_of_species_name)
 
+    assert_mdfile_contains(tmp_path / "life_status.md", "(DEPRECATED)")
+
 
 def test_docgen_no_mergeimports(kitchen_sink_path, tmp_path):
     """Tests when imported schemas are not folded into main schema"""
