@@ -29,4 +29,3 @@ It also includes the [SchemaView](https://linkml.io/linkml/developers/manipulati
 ## Notebooks
 
 See the [notebooks](https://github.com/linkml/linkml-runtime/tree/main/notebooks) folder for examples
- 
