@@ -1,4 +1,5 @@
-from typing import Any, Iterator
+from collections.abc import Iterator
+from typing import Any
 
 from linkml.validator.plugins.validation_plugin import ValidationPlugin
 from linkml.validator.report import Severity, ValidationResult

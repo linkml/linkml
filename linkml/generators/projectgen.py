@@ -4,7 +4,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List, Tuple, Type
+from typing import Any
 
 import click
 import yaml
@@ -30,9 +30,9 @@ logger = logging.getLogger(__name__)
 
 PATH_FSTRING = str
 GENERATOR_NAME = str
-ARG_DICT = Dict[str, Any]
-CONFIG_TUPLE = Tuple[Type[Generator], PATH_FSTRING, ARG_DICT]
-GEN_MAP: Dict[GENERATOR_NAME, CONFIG_TUPLE]
+ARG_DICT = dict[str, Any]
+CONFIG_TUPLE = tuple[type[Generator], PATH_FSTRING, ARG_DICT]
+GEN_MAP: dict[GENERATOR_NAME, CONFIG_TUPLE]
 GEN_MAP = {
     "graphql": (GraphqlGenerator, "graphql/{name}.graphql", {}),
     "jsonldcontext": (ContextGenerator, "jsonld/{name}.context.jsonld", {}),
@@ -63,7 +63,7 @@ GEN_MAP = {
 }
 
 
-@lru_cache()
+@lru_cache
 def get_local_imports(schema_path: str, dir: str):
     logger.info(f"GETTING IMPORTS = {schema_path}")
     all_imports = [schema_path]
@@ -85,9 +85,9 @@ class ProjectConfiguration:
     """
 
     directory: str = "tmp"
-    generator_args: Dict[GENERATOR_NAME, ARG_DICT] = field(default_factory=lambda: defaultdict(dict))
-    includes: List[str] = None
-    excludes: List[str] = None
+    generator_args: dict[GENERATOR_NAME, ARG_DICT] = field(default_factory=lambda: defaultdict(dict))
+    includes: list[str] = None
+    excludes: list[str] = None
     mergeimports: bool = None
 
 
@@ -188,8 +188,8 @@ class ProjectGenerator:
 def cli(
     yamlfile,
     dir,
-    exclude: List[str],
-    include: List[str],
+    exclude: list[str],
+    include: list[str],
     config_file,
     mergeimports,
     generator_arguments: str,

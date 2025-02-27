@@ -1,7 +1,8 @@
 import operator
+from collections.abc import Collection
 from copy import deepcopy
 from itertools import product
-from typing import Any, Collection, List, Optional, Tuple, Type
+from typing import Any, Optional
 
 
 def member_of(item: Any, collection: Collection[Any]) -> bool:
@@ -121,7 +122,7 @@ class And(Expression):
     """Conjunction of expressions"""
 
     def __init__(self, *operands: Expression):
-        self.operands: List[Expression] = list(operands)
+        self.operands: list[Expression] = list(operands)
 
     def __str__(self):
         return f'({" & ".join(str(operand) for operand in self.operands)})'
@@ -173,7 +174,7 @@ class Term(Expression):
 
 
 class IsIn(Term):
-    def __init__(self, element: Expression, collection: List[Any]):
+    def __init__(self, element: Expression, collection: list[Any]):
         self.predicate = "in"
         self.operands = [element, collection]
 
@@ -640,7 +641,7 @@ def _unsat(x: Expression, y: Expression) -> bool:
     return False
 
 
-def compose_operators(boolean_op: Type[Expression], op1: str, v1: Any, op2: str, v2: Any) -> Optional[Tuple]:
+def compose_operators(boolean_op: type[Expression], op1: str, v1: Any, op2: str, v2: Any) -> Optional[tuple]:
     """
     Compose two expressions.
 

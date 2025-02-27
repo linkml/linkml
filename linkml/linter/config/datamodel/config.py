@@ -6,14 +6,12 @@
 # description: A datamodel describing the configuration file accepted by the linkml-lint command
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
 from dataclasses import dataclass
-from typing import Any, ClassVar, Dict, List, Optional, Union
+from typing import Any, ClassVar, Optional, Union
 
 from jsonasobj2 import as_dict
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.metamodelcore import Bool, empty_list
 from linkml_runtime.utils.slot import Slot
@@ -23,8 +21,6 @@ from rdflib import URIRef
 metamodel_version = "1.7.0"
 version = None
 
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
@@ -44,7 +40,7 @@ class Config(YAMLRoot):
     can be enabled and possibly configured by a configuration file.
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG.Config
     class_class_curie: ClassVar[str] = "lintcfg:Config"
@@ -54,7 +50,7 @@ class Config(YAMLRoot):
     extends: Optional[Union[str, "ExtendableConfigs"]] = None
     rules: Optional[Union[dict, "Rules"]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.extends is not None and not isinstance(self.extends, ExtendableConfigs):
             self.extends = ExtendableConfigs(self.extends)
 
@@ -66,7 +62,7 @@ class Config(YAMLRoot):
 
 @dataclass
 class Rules(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG.Rules
     class_class_curie: ClassVar[str] = "lintcfg:Rules"
@@ -82,7 +78,7 @@ class Rules(YAMLRoot):
     standard_naming: Optional[Union[dict, "StandardNamingConfig"]] = None
     canonical_prefixes: Optional[Union[dict, "CanonicalPrefixesConfig"]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.no_empty_title is not None and not isinstance(self.no_empty_title, RuleConfig):
             self.no_empty_title = RuleConfig(**as_dict(self.no_empty_title))
 
@@ -120,7 +116,7 @@ class RuleConfig(YAMLRoot):
     This is the base class for linter rules. It contains configuration options that are  common to all rules.
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG.RuleConfig
     class_class_curie: ClassVar[str] = "lintcfg:RuleConfig"
@@ -129,7 +125,7 @@ class RuleConfig(YAMLRoot):
 
     level: Union[str, "RuleLevel"] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.level):
             self.MissingRequiredField("level")
         if not isinstance(self.level, RuleLevel):
@@ -144,7 +140,7 @@ class PermissibleValuesFormatRuleConfig(RuleConfig):
     Additional configuration options for the `permissible_values_format` rule
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG.PermissibleValuesFormatRuleConfig
     class_class_curie: ClassVar[str] = "lintcfg:PermissibleValuesFormatRuleConfig"
@@ -154,7 +150,7 @@ class PermissibleValuesFormatRuleConfig(RuleConfig):
     level: Union[str, "RuleLevel"] = None
     format: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.format is not None and not isinstance(self.format, str):
             self.format = str(self.format)
 
@@ -167,7 +163,7 @@ class TreeRootClassRuleConfig(RuleConfig):
     Additional configuration options for the `tree_root_class` rule
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG.TreeRootClassRuleConfig
     class_class_curie: ClassVar[str] = "lintcfg:TreeRootClassRuleConfig"
@@ -178,7 +174,7 @@ class TreeRootClassRuleConfig(RuleConfig):
     root_class_name: Optional[str] = None
     validate_existing_class_name: Optional[Union[bool, Bool]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.root_class_name is not None and not isinstance(self.root_class_name, str):
             self.root_class_name = str(self.root_class_name)
 
@@ -194,7 +190,7 @@ class RecommendedRuleConfig(RuleConfig):
     Additional configuration options for the `recommended` rule
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG.RecommendedRuleConfig
     class_class_curie: ClassVar[str] = "lintcfg:RecommendedRuleConfig"
@@ -202,10 +198,10 @@ class RecommendedRuleConfig(RuleConfig):
     class_model_uri: ClassVar[URIRef] = LINTCFG.RecommendedRuleConfig
 
     level: Union[str, "RuleLevel"] = None
-    include: Optional[Union[str, List[str]]] = empty_list()
-    exclude: Optional[Union[str, List[str]]] = empty_list()
+    include: Optional[Union[str, list[str]]] = empty_list()
+    exclude: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if not isinstance(self.include, list):
             self.include = [self.include] if self.include is not None else []
         self.include = [v if isinstance(v, str) else str(v) for v in self.include]
@@ -223,7 +219,7 @@ class StandardNamingConfig(RuleConfig):
     Additional configuration options for the `standard_naming` rule
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG.StandardNamingConfig
     class_class_curie: ClassVar[str] = "lintcfg:StandardNamingConfig"
@@ -235,7 +231,7 @@ class StandardNamingConfig(RuleConfig):
     slot_pattern: Optional[str] = None
     class_pattern: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.permissible_values_upper_case is not None and not isinstance(self.permissible_values_upper_case, Bool):
             self.permissible_values_upper_case = Bool(self.permissible_values_upper_case)
 
@@ -254,7 +250,7 @@ class CanonicalPrefixesConfig(RuleConfig):
     Additional configuration options for the canonical_prefixes rule
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG.CanonicalPrefixesConfig
     class_class_curie: ClassVar[str] = "lintcfg:CanonicalPrefixesConfig"
@@ -262,9 +258,9 @@ class CanonicalPrefixesConfig(RuleConfig):
     class_model_uri: ClassVar[URIRef] = LINTCFG.CanonicalPrefixesConfig
 
     level: Union[str, "RuleLevel"] = None
-    prefixmaps_contexts: Optional[Union[str, List[str]]] = empty_list()
+    prefixmaps_contexts: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if not isinstance(self.prefixmaps_contexts, list):
             self.prefixmaps_contexts = [self.prefixmaps_contexts] if self.prefixmaps_contexts is not None else []
         self.prefixmaps_contexts = [v if isinstance(v, str) else str(v) for v in self.prefixmaps_contexts]
@@ -444,7 +440,7 @@ slots.recommendedRuleConfig__include = Slot(
     curie=LINTCFG.curie("include"),
     model_uri=LINTCFG.recommendedRuleConfig__include,
     domain=None,
-    range=Optional[Union[str, List[str]]],
+    range=Optional[Union[str, list[str]]],
 )
 
 slots.recommendedRuleConfig__exclude = Slot(
@@ -453,7 +449,7 @@ slots.recommendedRuleConfig__exclude = Slot(
     curie=LINTCFG.curie("exclude"),
     model_uri=LINTCFG.recommendedRuleConfig__exclude,
     domain=None,
-    range=Optional[Union[str, List[str]]],
+    range=Optional[Union[str, list[str]]],
 )
 
 slots.standardNamingConfig__permissible_values_upper_case = Slot(
@@ -471,5 +467,5 @@ slots.canonicalPrefixesConfig__prefixmaps_contexts = Slot(
     curie=LINTCFG.curie("prefixmaps_contexts"),
     model_uri=LINTCFG.canonicalPrefixesConfig__prefixmaps_contexts,
     domain=None,
-    range=Optional[Union[str, List[str]]],
+    range=Optional[Union[str, list[str]]],
 )

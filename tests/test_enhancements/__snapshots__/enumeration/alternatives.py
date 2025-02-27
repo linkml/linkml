@@ -33,7 +33,6 @@ from linkml_runtime.linkml_model.meta import (
     PvFormulaOptions
 )
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.formatutils import (
     camelcase,
@@ -62,9 +61,6 @@ from linkml_runtime.linkml_model.types import String
 metamodel_version = "1.7.0"
 version = None
 
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
-
 # Namespaces
 CLUE = CurieNamespace('CLUE', 'http://ontologies-r.us/clue/')
 CS = CurieNamespace('CS', 'http://ontologies-r.us/codesystems/')
@@ -85,7 +81,7 @@ class AllEnums(YAMLRoot):
     """
     A class that incorporates all of the enumeration examples above
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EVIDENCE["AllEnums"]
     class_class_curie: ClassVar[str] = "evidence:AllEnums"
@@ -93,7 +89,7 @@ class AllEnums(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = EVIDENCE.AllEnums
 
     entry_name: Union[str, AllEnumsEntryName] = None
-    code_1: Union[Union[str, "OpenEnum"], List[Union[str, "OpenEnum"]]] = None
+    code_1: Union[Union[str, "OpenEnum"], list[Union[str, "OpenEnum"]]] = None
     code_2: Optional[Union[str, "ConstrainedEnum2"]] = None
     code_3: Optional[Union[str, "ConstrainedEnum3"]] = None
     code_4: Optional[Union[str, "ConstrainedEnum4"]] = None
@@ -102,7 +98,7 @@ class AllEnums(YAMLRoot):
     code_7: Optional[Union[str, "ConstrainedEvidence"]] = None
     code_8: Optional[Union[str, "MappedEvidence"]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.entry_name):
             self.MissingRequiredField("entry_name")
         if not isinstance(self.entry_name, AllEnumsEntryName):
@@ -236,7 +232,7 @@ slots.allEnums__entry_name = Slot(uri=EVIDENCE.entry_name, name="allEnums__entry
                    model_uri=EVIDENCE.allEnums__entry_name, domain=None, range=URIRef)
 
 slots.allEnums__code_1 = Slot(uri=EVIDENCE.code_1, name="allEnums__code_1", curie=EVIDENCE.curie('code_1'),
-                   model_uri=EVIDENCE.allEnums__code_1, domain=None, range=Union[Union[str, "OpenEnum"], List[Union[str, "OpenEnum"]]])
+                   model_uri=EVIDENCE.allEnums__code_1, domain=None, range=Union[Union[str, "OpenEnum"], list[Union[str, "OpenEnum"]]])
 
 slots.allEnums__code_2 = Slot(uri=EVIDENCE.code_2, name="allEnums__code_2", curie=EVIDENCE.curie('code_2'),
                    model_uri=EVIDENCE.allEnums__code_2, domain=None, range=Optional[Union[str, "ConstrainedEnum2"]])
