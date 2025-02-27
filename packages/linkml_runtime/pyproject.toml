@@ -61,6 +61,7 @@ requests = "*"
 prefixmaps = ">=0.1.4"
 curies = ">=0.5.4"
 pydantic = ">=1.10.2, <3.0.0"
+isodate = "^0.7.2"
 
 [tool.ruff]
 line-length = 120
