@@ -4846,10 +4846,12 @@ type = ["pytest-mypy"]
 [extras]
 black = ["black"]
 numpydantic = ["numpydantic"]
+pandera-polars = []
+pandera-polars-lts = []
 shacl = ["pyshacl"]
 tests = ["black", "numpydantic", "pyshacl"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.8.1"
-content-hash = "bdfa5935032184a3743738cc6574b406c29e77794b115cb597566f2974b1e87e"
+content-hash = "7574f6ce84d9a9832330a3f8a3e5fae397a78f375e60a025e694c5b57719ffcb"
