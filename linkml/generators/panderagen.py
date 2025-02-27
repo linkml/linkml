@@ -9,9 +9,9 @@ import click
 from jinja2 import Environment, PackageLoader
 from linkml_runtime.linkml_model import ClassDefinitionName
 from linkml_runtime.linkml_model.meta import (
-    TypeDefinition,
     PermissibleValue,
     PermissibleValueText,
+    TypeDefinition,
 )
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase

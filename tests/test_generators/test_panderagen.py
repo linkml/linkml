@@ -1,10 +1,12 @@
 import logging
 import re
+
 import pytest
 
 from linkml.generators.panderagen import PanderaGenerator
 
 logger = logging.getLogger(__name__)
+
 
 @pytest.fixture(scope="module")
 def synthetic_flat_dataframe_model():
@@ -63,34 +65,39 @@ enums:
 """
 
 
-MODEL_COLUMNS = ["bool_column", "integer_column", "float_column", "string_column", "date_column", "datetime_column", "enum_column", "ontology_enum_column"]
+MODEL_COLUMNS = [
+    "bool_column",
+    "integer_column",
+    "float_column",
+    "string_column",
+    "date_column",
+    "datetime_column",
+    "enum_column",
+    "ontology_enum_column",
+]
 
 
 @pytest.fixture(scope="module")
 def np():
-    """The numpy package is optional? so use fixtures and importorskip to only run tests when it's installed
-    """
+    """The numpy package is optional? so use fixtures and importorskip to only run tests when it's installed"""
     return pytest.importorskip("numpy", minversion="1.0", reason="Polars >= 1.0 not installed")
 
 
 @pytest.fixture(scope="module")
 def pl():
-    """The PolaRS package is optional, so use fixtures and importorskip to only run tests when it's installed
-    """
+    """The PolaRS package is optional, so use fixtures and importorskip to only run tests when it's installed"""
     return pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
 
 
 @pytest.fixture(scope="module")
 def pandera():
-    """The pandera package is optional, so use fixtures and importorskip to only run tests when it's installed
-    """
+    """The pandera package is optional, so use fixtures and importorskip to only run tests when it's installed"""
     return pytest.importorskip("pandera", reason="Pandera not installed")
 
 
 @pytest.fixture(scope="module")
 def N():
-    """Number of rows in the test dataframes, 1M is enough to be real but not strain most machines.
-    """
+    """Number of rows in the test dataframes, 1M is enough to be real but not strain most machines."""
     return 1000000
 
 
@@ -99,6 +106,7 @@ def big_synthetic_dataframe(pl, np, N):
     test_enum = pl.Enum(["ANIMAL", "VEGETABLE", "MINERAL"])
     test_ont_enum = pl.Enum(["fiction", "non fiction"])
 
+    # fmt: off
     return (
         pl.DataFrame(
             {
@@ -109,7 +117,9 @@ def big_synthetic_dataframe(pl, np, N):
                 "date_column": np.random.choice(["2021-03-27", "2021-03-28"], size=N),
                 "datetime_column": np.random.choice(["2021-03-27 03:00", "2021-03-28 03:00"], size=N),
                 "enum_column": pl.Series(np.random.choice(["ANIMAL", "VEGETABLE", "MINERAL"], size=N), dtype=test_enum),
-                "ontology_enum_column": pl.Series(np.random.choice(["fiction", "non fiction"], size=N), dtype=test_ont_enum)
+                "ontology_enum_column": pl.Series(
+                    np.random.choice(["fiction", "non fiction"], size=N), dtype=test_ont_enum
+                )
             }
         )
         .with_columns(
@@ -117,15 +127,18 @@ def big_synthetic_dataframe(pl, np, N):
             pl.col("datetime_column").str.to_datetime()
         )
     )
+    # fmt: on
 
 
 @pytest.fixture(scope="module")
 def synthetic_schema(synthetic_flat_dataframe_model):
     return PanderaGenerator(synthetic_flat_dataframe_model)
 
+
 @pytest.fixture(scope="module")
 def compiled_synthetic_schema_module(synthetic_schema):
     return synthetic_schema.compile_pandera(compile_python_dataclasses=False)
+
 
 def test_pandera_basic_class_based(synthetic_schema):
     """
@@ -146,11 +159,10 @@ def test_pandera_basic_class_based(synthetic_schema):
         if match:
             classes.append(match.group(1))
 
-    expected_classes = [
-        "PanderaSyntheticTable"
-    ]
+    expected_classes = ["PanderaSyntheticTable"]
 
     assert sorted(expected_classes) == sorted(classes)
+
 
 #
 # TODO: note that this is using series
@@ -160,30 +172,35 @@ def test_dump_schema_code(synthetic_schema):
     code = synthetic_schema.generate_pandera()
 
     assert all(column in code for column in MODEL_COLUMNS)
+
+
 #
 # so cool
 #
 def test_dump_synthetic_df(big_synthetic_dataframe):
     print(big_synthetic_dataframe)
 
+
 def test_pandera_compile_basic_class_based(compiled_synthetic_schema_module, big_synthetic_dataframe):
     """
     tests compilation and validation of correct class-based schema
     """
     # raises pandera.errors.SchemaErrors, so no assert needed
-    compiled_synthetic_schema_module.PanderaSyntheticTable.validate(big_synthetic_dataframe, lazy=True) 
+    compiled_synthetic_schema_module.PanderaSyntheticTable.validate(big_synthetic_dataframe, lazy=True)
 
 
 def test_pandera_validation_error_ge(pl, pandera, compiled_synthetic_schema_module, big_synthetic_dataframe):
     """
     tests ge range validation error
     """
+    # fmt: off
     high_int_dataframe = (
         big_synthetic_dataframe
         .with_columns(
             pl.lit(1000, pl.Int64).alias("integer_column")
         )
     )
+    # fmt: on
 
     with pytest.raises(pandera.errors.SchemaErrors) as e:
         compiled_synthetic_schema_module.PanderaSyntheticTable.validate(high_int_dataframe, lazy=True)
@@ -194,18 +211,22 @@ def test_pandera_validation_error_ge(pl, pandera, compiled_synthetic_schema_modu
 
 
 @pytest.mark.parametrize("bad_column", MODEL_COLUMNS)
-def test_synthetic_dataframe_wrong_datatype(pl, pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, bad_column):
+def test_synthetic_dataframe_wrong_datatype(
+    pl, pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, bad_column
+):
     if bad_column == "bool_column":
         bad_value = None
     else:
         bad_value = False
 
+    # fmt: off
     error_dataframe = (
         big_synthetic_dataframe
         .with_columns(
             pl.lit(bad_value).alias(bad_column)
         )
     )
+    # fmt: on
 
     with pytest.raises(pandera.errors.SchemaErrors) as e:
         compiled_synthetic_schema_module.PanderaSyntheticTable.validate(error_dataframe, lazy=True)
@@ -215,14 +236,18 @@ def test_synthetic_dataframe_wrong_datatype(pl, pandera, compiled_synthetic_sche
 
 
 @pytest.mark.parametrize("drop_column", MODEL_COLUMNS)
+def test_synthetic_dataframe_boolean_error(
+    pl, pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, drop_column
+):
 
-def test_synthetic_dataframe_boolean_error(pl, pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, drop_column):
+    # fmt: off
     error_dataframe = (
         big_synthetic_dataframe
         .drop(
             pl.col(drop_column)
         )
     )
+    # fmt: on
 
     with pytest.raises(pandera.errors.SchemaErrors) as e:
         compiled_synthetic_schema_module.PanderaSyntheticTable.validate(error_dataframe, lazy=True)
