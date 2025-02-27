@@ -708,20 +708,10 @@ class OwlSchemaGenerator(Generator):
                 owl_exprs.append(eq_uri)
         if element.equals_string_in:
             equals_string_in = element.equals_string_in
-            # Construct an OWL enumerated datatype using owl:oneOf
-            data_range_node = BNode()
-            list_node = BNode()
-            graph.add((data_range_node, RDF.type, RDFS.Datatype))
-            graph.add((data_range_node, OWL.oneOf, list_node))
-            current_node = list_node
-            for s in equals_string_in:
-                next_node = BNode()
-                graph.add((current_node, RDF.type, RDF.List))
-                graph.add((current_node, RDF.first, Literal(s, datatype=XSD.string)))
-                graph.add((current_node, RDF.rest, next_node))
-                current_node = next_node
-            graph.add((current_node, RDF.rest, RDF.nil))
-            owl_exprs.append(data_range_node)
+            literals = [Literal(s) for s in equals_string_in]
+            one_of_expr = self._boolean_expression(literals, OWL.oneOf, owl_types={RDFS.Literal})
+            owl_exprs.append(one_of_expr)
+            owl_types.add(RDFS.Literal)
         for constraint_prop, constraint_val in constraints.items():
             if is_literal is not None and not is_literal:
                 # In LinkML, it is permissible to have a literal constraints on slots that refer to
@@ -1142,7 +1132,7 @@ class OwlSchemaGenerator(Generator):
 
     def _boolean_expression(
         self,
-        exprs: List[Union[BNode, URIRef]],
+        exprs: List[Union[BNode, URIRef, Literal]],
         predicate: URIRef,
         node: Optional[URIRef] = None,
         owl_types: Set[OWL_TYPE] = None,
