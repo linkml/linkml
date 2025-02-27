@@ -36,7 +36,34 @@ classes:
       string_column:
         range: string
         required: true
+      date_column:
+        range: date
+        required: true
+      datetime_column:
+        range: datetime
+        required: true
+      enum_column:
+        range: SyntheticEnum
+        required: true
+      ontology_enum_column:
+        range: SyntheticEnumOnt
+        required: true
+
+enums:
+  SyntheticEnum:
+    permissible_values:
+      ANIMAL:
+      VEGETABLE:
+      MINERAL:
+
+  SyntheticEnumOnt:
+    permissible_values:
+      fiction: ex:000001
+      non fiction: ex:000002
 """
+
+
+MODEL_COLUMNS = ["bool_column", "integer_column", "float_column", "string_column", "date_column", "datetime_column", "enum_column", "ontology_enum_column"]
 
 
 @pytest.fixture(scope="module")
@@ -62,19 +89,34 @@ def pandera():
 
 @pytest.fixture(scope="module")
 def N():
-    """Number of rows in the test dataframes, 100K is enough to be real but not strain most machines.
+    """Number of rows in the test dataframes, 1M is enough to be real but not strain most machines.
     """
-    return 100000
+    return 1000000
 
 
 @pytest.fixture(scope="module")
 def big_synthetic_dataframe(pl, np, N):
-    return pl.DataFrame({
-        "bool_column": np.random.choice([True, False], size=N),
-        "integer_column": np.random.choice(range(100), size=N),
-        "float_column": np.random.choice([1.0, 2.0, 3.0], size=N),
-        "string_column": np.random.choice(["this", "that"], size=N)
-    })
+    test_enum = pl.Enum(["ANIMAL", "VEGETABLE", "MINERAL"])
+    test_ont_enum = pl.Enum(["fiction", "non fiction"])
+
+    return (
+        pl.DataFrame(
+            {
+                "bool_column": np.random.choice([True, False], size=N),
+                "integer_column": np.random.choice(range(100), size=N),
+                "float_column": np.random.choice([1.0, 2.0, 3.0], size=N),
+                "string_column": np.random.choice(["this", "that"], size=N),
+                "date_column": np.random.choice(["2021-03-27", "2021-03-28"], size=N),
+                "datetime_column": np.random.choice(["2021-03-27 03:00", "2021-03-28 03:00"], size=N),
+                "enum_column": pl.Series(np.random.choice(["ANIMAL", "VEGETABLE", "MINERAL"], size=N), dtype=test_enum),
+                "ontology_enum_column": pl.Series(np.random.choice(["fiction", "non fiction"], size=N), dtype=test_ont_enum)
+            }
+        )
+        .with_columns(
+            pl.col("date_column").str.to_date(),
+            pl.col("datetime_column").str.to_datetime()
+        )
+    )
 
 
 @pytest.fixture(scope="module")
@@ -93,7 +135,7 @@ def test_pandera_basic_class_based(synthetic_schema):
     """
     code = synthetic_schema.generate_pandera()  # default is class-based
 
-    logger.info(f"generated Pandera model:\n{code}")
+    logger.info(f"\nGenerated Pandera model:\n{code}")
 
     classes = []
 
@@ -110,6 +152,19 @@ def test_pandera_basic_class_based(synthetic_schema):
 
     assert sorted(expected_classes) == sorted(classes)
 
+#
+# TODO: note that this is using series
+#       and this page doesn't? https://pandera.readthedocs.io/en/v0.20.1/polars.html
+#
+def test_dump_schema_code(synthetic_schema):
+    code = synthetic_schema.generate_pandera()
+
+    assert all(column in code for column in MODEL_COLUMNS)
+#
+# so cool
+#
+def test_dump_synthetic_df(big_synthetic_dataframe):
+    print(big_synthetic_dataframe)
 
 def test_pandera_compile_basic_class_based(compiled_synthetic_schema_module, big_synthetic_dataframe):
     """
@@ -138,10 +193,7 @@ def test_pandera_validation_error_ge(pl, pandera, compiled_synthetic_schema_modu
     assert "'column': 'integer_column'" in str(e)
 
 
-@pytest.mark.parametrize(
-    "bad_column",
-    ["bool_column", "integer_column", "float_column", "string_column"]
-)
+@pytest.mark.parametrize("bad_column", MODEL_COLUMNS)
 def test_synthetic_dataframe_wrong_datatype(pl, pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, bad_column):
     if bad_column == "bool_column":
         bad_value = None
@@ -162,10 +214,8 @@ def test_synthetic_dataframe_wrong_datatype(pl, pandera, compiled_synthetic_sche
     assert f"expected column '{bad_column}' to have type" in str(e.value)
 
 
-@pytest.mark.parametrize(
-    "drop_column",
-    ["bool_column", "integer_column", "float_column", "string_column"]
-)
+@pytest.mark.parametrize("drop_column", MODEL_COLUMNS)
+
 def test_synthetic_dataframe_boolean_error(pl, pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, drop_column):
     error_dataframe = (
         big_synthetic_dataframe

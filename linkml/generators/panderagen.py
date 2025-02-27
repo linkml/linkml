@@ -8,7 +8,11 @@ from typing import List, Optional
 import click
 from jinja2 import Environment, PackageLoader
 from linkml_runtime.linkml_model import ClassDefinitionName
-from linkml_runtime.linkml_model.meta import TypeDefinition
+from linkml_runtime.linkml_model.meta import (
+    TypeDefinition,
+    PermissibleValue,
+    PermissibleValueText,
+)
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase
 from linkml_runtime.utils.schemaview import SchemaView
@@ -29,9 +33,9 @@ TYPEMAP = {
     "xsd:float": "float",
     "xsd:double": "float",
     "xsd:boolean": "bool",
-    "xsd:dateTime": "Time(time_zone_agnostic=True)",
-    "xsd:date": "DateTime(time_zone_agnostic=True)",
-    "xsd:time": "Time(time_zone_agnostic=True)",
+    "xsd:dateTime": "DateTime",
+    "xsd:date": "Date",
+    "xsd:time": "Time",
     "xsd:anyURI": "str",
     "xsd:decimal": "int",
 }
@@ -133,7 +137,6 @@ class PanderaGenerator(OOCodeGenerator):
             model_path = self.schema.name
 
         pandera_code = self.generate_pandera(**kwargs)
-        logger.info(f"generated Pandera model:\n{pandera_code}")
 
         return compile_python(pandera_code, package_path=model_path)
 
@@ -163,6 +166,17 @@ class PanderaGenerator(OOCodeGenerator):
         path = os.path.join(directory, filename)
         with open(path, "w", encoding="UTF-8") as stream:
             stream.write(code)
+
+    def extract_permissible_text(self, pv):
+        if isinstance(pv, str) or isinstance(pv, PermissibleValueText):
+            return pv
+        elif isinstance(pv, PermissibleValue):
+            return pv.text.code
+        else:
+            raise ValueError(f"Invalid permissible value in enum : {pv}")
+
+    def get_enum_permissible_values(self, enum):
+        return list(map(self.extract_permissible_text, enum.permissible_values or []))
 
     ## This was copied over from OOCodeGen and is only a rough implementation
     def create_documents(self) -> List[OODocument]:
@@ -210,8 +224,6 @@ class PanderaGenerator(OOCodeGenerator):
                 range = slot.range
                 default_value = DEFAULT_VALUE
 
-                logging.info(f"RANGE: {cn}.{sn} -> {range}")
-
                 if range is None:
                     # TODO: schemaview should infer this
                     range = sv.schema.default_range
@@ -229,11 +241,11 @@ class PanderaGenerator(OOCodeGenerator):
                     if range is None:  # If mapping fails,
                         range = self.map_type(sv.all_types().get(DEFAULT_RANGE))
                 elif range in sv.all_enums():
-                    range = self.map_type(sv.all_types().get(DEFAULT_RANGE))
+                    enum_definition = sv.all_enums().get(range)
+                    range = "Enum"
+                    slot.annotations["permissible_values"] = self.get_enum_permissible_values(enum_definition)
                 else:
                     raise Exception(f"Unknown range {range}")
-
-                logging.info(f"RANGE 2: {range}")
 
                 # Set default values for
                 if range == "boolean":

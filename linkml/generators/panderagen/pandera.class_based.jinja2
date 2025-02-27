@@ -11,6 +11,7 @@ from pandera.typing import (
 )
 from pandera.engines.polars_engine import (
     DateTime,
+    Date,
     Enum
 )
 
@@ -32,11 +33,17 @@ class {{cls.name}}({% if cls.is_a %}{{ cls.is_a }}{% else %}pla.DataFrameModel{%
 {%- with slot = field.source_slot %}
     {{ field.name }}:{{ ' ' }}
 {%- if slot.required is none or slot.required is false %}Optional[{% endif -%}
-Series[{{field.range}}]
+{{field.range}}
 {%- if slot.required is none or slot.required is false %}]{% endif -%}
 {{ " =" }} pla.Field(
-{%- if slot.minimum_value != None -%}ge={{ slot.minimum_value }}, {% endif -%}
-{%- if slot.maximum_value != None -%}le={{ slot.maximum_value }}, {% endif -%}
+{%- if slot.minimum_value is not none -%}ge={{ slot.minimum_value }}, {% endif -%}
+{%- if slot.maximum_value is not none -%}le={{ slot.maximum_value }}, {% endif -%}
+{%- if slot.annotations['permissible_values']|length > 0 -%}dtype_kwargs={"categories":(
+{%- for pv in slot.annotations['permissible_values'] -%}
+'{{ pv }}',
+{%- endfor -%}
+)}
+{%- endif -%}
 )
 {%- endwith -%}
 {% endfor %}
