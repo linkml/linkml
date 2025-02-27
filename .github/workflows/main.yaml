@@ -22,7 +22,7 @@ jobs:
         run: pipx install poetry==1.*
       - uses: actions/setup-python@v5
         with:
-          python-version: 3.12  # Adjust Python version as needed
+          python-version: 3.13  # Adjust Python version as needed
       - name: Check pyproject.toml and poetry.lock
         run: poetry check
       - name: Install tox
@@ -124,7 +124,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest ]
-        python-version: [ "3.8", "3.12" ]
+        python-version: [ "3.9", "3.13" ]
     needs:
       - quality-checks
     runs-on: ${{ matrix.os }}
