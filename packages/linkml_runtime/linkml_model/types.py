@@ -6,7 +6,6 @@
 # description: Shared type definitions for the core LinkML mode and metamodel
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
 
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.metamodelcore import Bool, Curie, Decimal, ElementIdentifier, NCName, NodeIdentifier, URI, URIorCURIE, XSDDate, XSDDateTime, XSDTime

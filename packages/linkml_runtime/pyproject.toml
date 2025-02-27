@@ -64,11 +64,21 @@ pydantic = ">=1.10.2, <3.0.0"
 
 [tool.ruff]
 line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
 select = [
     "F401",
     "UP"
 ]
-target-version = "py39"
+ignore = [
+    # Until 3.9 is dropped
+    "UP007",
+]
+
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["F401"] # unused imports
 
 [tool.poetry.dev-dependencies]
 coverage = "^6.2"

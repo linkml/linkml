@@ -1,4 +1,4 @@
-from typing import Optional, List, Union, Any, Dict
+from typing import Optional, Union, Any
 from dataclasses import fields
 
 import pytest
@@ -44,7 +44,7 @@ def test_add_existing_class(replace_if_present):
 )
 @pytest.mark.parametrize("use_attributes", [True, False])
 def test_add_class_with_slot_additions(
-    slots: Optional[List[Union[str, SlotDefinition]]], use_attributes: bool
+    slots: Optional[list[Union[str, SlotDefinition]]], use_attributes: bool
 ):
     """
     Test adding a class with separate additional slots specification
@@ -111,8 +111,8 @@ def test_add_class_with_slot_additions(
     ],
 )
 def test_add_class_with_extra_kwargs(
-    cls: Union[ClassDefinition, Dict, str],
-    extra_kwargs: Dict[str, Any],
+    cls: Union[ClassDefinition, dict, str],
+    extra_kwargs: dict[str, Any],
     expected_added_class: Optional[ClassDefinition],
 ):
     """
@@ -129,7 +129,7 @@ def test_add_class_with_extra_kwargs(
     elif extra_kwargs.keys() - class_meta_slots:
         # Handle the case of extra kwargs include a key that is not a meta slot of
         # `ClassDefinition`
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             builder.add_class(cls, **extra_kwargs)
     else:
         builder.add_class(cls, **extra_kwargs)

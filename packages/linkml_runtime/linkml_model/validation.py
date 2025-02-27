@@ -6,7 +6,6 @@
 # description: A datamodel for reports on data, based on SHACL
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
 from jsonasobj2 import as_dict
 from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass

@@ -25,8 +25,7 @@ except ImportError:
 class YAMLMark(yaml.error.Mark):
     def __str__(self):
         snippet = self.get_snippet()
-        where = "\nFile \"%s\", line %d, column %d"   \
-                % (self.name, self.line+1, self.column+1)
+        where = f"\nFile \"{self.name}\", line {self.line+1}, column {self.column+1}"
         if snippet is not None:
             where += ":\n"+snippet
         return where

@@ -34,7 +34,7 @@ class PydanticDumpersTestCase(LoaderDumperTestCase):
                 'genres' not in data['books'][i].keys()
                 'inStock' not in data['books'][i].keys()
                 'creator' not in data['books'][i].keys()
-            self.assertEqual(data, remove_empty_items(self.bookseries.dict()))
+            self.assertEqual(data, remove_empty_items(self.bookseries.model_dump()))
 
 
     def test_json_dumper(self):
@@ -50,4 +50,4 @@ class PydanticDumpersTestCase(LoaderDumperTestCase):
                 'genres' not in data['books'][i].keys()
                 'inStock' not in data['books'][i].keys()
                 'creator' not in data['books'][i].keys()
-            self.assertEqual(data, remove_empty_items(self.bookseries.dict()))
+            self.assertEqual(data, remove_empty_items(self.bookseries.model_dump()))

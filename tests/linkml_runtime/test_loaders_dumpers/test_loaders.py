@@ -1,6 +1,6 @@
 import os
 import unittest
-from typing import Union, TextIO, Type, Optional
+from typing import Union, TextIO, Optional
 from pathlib import Path
 from hbreader import FileInfo
 

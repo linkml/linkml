@@ -30,7 +30,6 @@
 #   [https://w3id.org/linkml/is_a](https://w3id.org/linkml/is_a)
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
 from jsonasobj2 import as_dict
 from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass

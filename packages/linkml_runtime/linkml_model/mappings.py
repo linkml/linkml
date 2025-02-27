@@ -6,7 +6,6 @@
 # description: LinkML model for mappings
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
 from typing import Optional, Union
 
 from linkml_runtime.utils.slot import Slot
