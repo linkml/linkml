@@ -10,10 +10,10 @@ from linkml_runtime.utils.formatutils import underscore
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
     OWL,
-    PYDANTIC,
-    PYDANTIC_ROOT_CLASS,
     PANDERA_POLARS_CLASS,
     PANDERA_ROOT_CLASS,
+    PYDANTIC,
+    PYDANTIC_ROOT_CLASS,
     PYTHON_DATACLASSES,
     PYTHON_DATACLASSES_ROOT_CLASS,
     SHACL,

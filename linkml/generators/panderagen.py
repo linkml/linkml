@@ -1,19 +1,15 @@
 import logging
 import os
+import re
 from dataclasses import dataclass
 from enum import Enum
 from types import ModuleType
 from typing import List, Optional
+
 import click
-import re
 from jinja2 import Environment, PackageLoader
 from linkml_runtime.linkml_model import ClassDefinitionName
-from linkml_runtime.linkml_model.meta import (
-    PermissibleValue,
-    PermissibleValueText,
-    TypeDefinition,
-    SlotDefinition
-)
+from linkml_runtime.linkml_model.meta import PermissibleValue, PermissibleValueText, SlotDefinition, TypeDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase
 from linkml_runtime.utils.schemaview import SchemaView
@@ -76,8 +72,7 @@ class PanderaGenerator(OOCodeGenerator):
     emit_metadata: bool = True
 
     def default_value_for_type(self, typ: str) -> str:
-        """Allow underlying framework to handle default if not specified.
-        """
+        """Allow underlying framework to handle default if not specified."""
         return None
 
     @staticmethod
@@ -128,16 +123,16 @@ class PanderaGenerator(OOCodeGenerator):
                 ifabsent_cast = ifabsent_match.group(1)
                 ifabsent_value = ifabsent_match.group(8)
 
-                if ifabsent_cast == 'string':
-                    default_value = f'{ifabsent_value}'
-                elif ifabsent_cast == 'int':
+                if ifabsent_cast == "string":
+                    default_value = f"{ifabsent_value}"
+                elif ifabsent_cast == "int":
                     default_value = str(int(ifabsent_value))
-                elif ifabsent_cast == 'float':
+                elif ifabsent_cast == "float":
                     default_value = str(float(ifabsent_value))
-                elif ifabsent_cast == 'date':
+                elif ifabsent_cast == "date":
                     raise NotImplementedError("ifabsent date not implemented.")
                     # default_value = f"datetime.strptime({ifabsent_value})"
-                elif ifabsent_cast == 'datetime':
+                elif ifabsent_cast == "datetime":
                     raise NotImplementedError("ifabsent datetime not implemented.")
                     # default_value = f"datetime.strptime({ifabsent_value})"
                 else:
@@ -284,7 +279,7 @@ class PanderaGenerator(OOCodeGenerator):
 
                 if slot.multivalued:
                     range = self.make_multivalued(range)
-                    #default_value = "List.of()"
+                    # default_value = "List.of()"
 
                 default_value = self.ifabsent_default_value(slot)
 
