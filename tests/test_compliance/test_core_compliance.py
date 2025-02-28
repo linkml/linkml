@@ -12,6 +12,8 @@ from tests.test_compliance.helper import (
     OWL,
     PYDANTIC,
     PYDANTIC_ROOT_CLASS,
+    PANDERA_POLARS_CLASS,
+    PANDERA_ROOT_CLASS,
     PYTHON_DATACLASSES,
     PYTHON_DATACLASSES_ROOT_CLASS,
     SHACL,
@@ -89,6 +91,7 @@ def test_attributes(framework, description, object, is_valid):
                     "_mappings": {
                         PYDANTIC: "s1: Optional[str] = Field(default=None",
                         PYTHON_DATACLASSES: "s1: Optional[str] = None",
+                        PANDERA_POLARS_CLASS: "s1: Optional[str] = pla.Field()",
                     }
                 },
                 SLOT_S2: {},
@@ -96,6 +99,7 @@ def test_attributes(framework, description, object, is_valid):
             "_mappings": {
                 PYDANTIC: f"class C({PYDANTIC_ROOT_CLASS}):",
                 PYTHON_DATACLASSES: f"@dataclass(repr=False)\nclass C({PYTHON_DATACLASSES_ROOT_CLASS}):",
+                PANDERA_POLARS_CLASS: f"class C({PANDERA_ROOT_CLASS})",
                 JSON_SCHEMA: {
                     "$defs": {
                         "C": {
@@ -135,6 +139,7 @@ def test_type_range(framework, linkml_type, example_value):
     This test will check the cross-product of a set of example values again schemas where the
     expected type for these values varies.
 
+
     Known issues:
 
     - Many frameworks **coerce** values to the correct type.
@@ -166,7 +171,8 @@ def test_type_range(framework, linkml_type, example_value):
                     "_mappings": {
                         PYDANTIC: f"{SLOT_S1}: Optional[{typ_py_name}]",
                         PYTHON_DATACLASSES: f"{SLOT_S1}: Optional[{typ_py_name}]",
-                    },
+                        PANDERA_POLARS_CLASS: f"{SLOT_S1}: Optional[{typ_py_name}]",
+                     },
                 },
             }
         },

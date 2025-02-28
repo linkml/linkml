@@ -4,14 +4,15 @@ from dataclasses import dataclass
 from enum import Enum
 from types import ModuleType
 from typing import List, Optional
-
 import click
+import re
 from jinja2 import Environment, PackageLoader
 from linkml_runtime.linkml_model import ClassDefinitionName
 from linkml_runtime.linkml_model.meta import (
     PermissibleValue,
     PermissibleValueText,
     TypeDefinition,
+    SlotDefinition
 )
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase
@@ -39,8 +40,6 @@ TYPEMAP = {
     "xsd:anyURI": "str",
     "xsd:decimal": "int",
 }
-
-TYPE_DEFAULTS = {"boolean": "false", "int": "0", "float": "0f", "double": "0d", "String": '""'}
 
 
 class TemplateEnum(Enum):
@@ -77,7 +76,9 @@ class PanderaGenerator(OOCodeGenerator):
     emit_metadata: bool = True
 
     def default_value_for_type(self, typ: str) -> str:
-        return TYPE_DEFAULTS.get(typ, "null")
+        """Allow underlying framework to handle default if not specified.
+        """
+        return None
 
     @staticmethod
     def make_multivalued(range: str) -> str:
@@ -108,6 +109,42 @@ class PanderaGenerator(OOCodeGenerator):
             return self.map_type(self.schemaview.get_type(t.typeof))
         else:
             raise ValueError(f"{t} cannot be mapped to a type")
+
+    def ifabsent_default_value(self, slot: SlotDefinition) -> str:
+        ifabsent_pattern = re.compile(r"^((string)|(int)|(float)|(date)|(datetime)|([A-Za-z0-9_]+))\((.*)\)$")
+        ifabsent = slot.ifabsent
+        default_value = None
+
+        if ifabsent is None:
+            default_value = None
+        elif ifabsent is True or ifabsent == "True":
+            default_value = "True"
+        elif ifabsent is False or ifabsent == "False":
+            default_value = "False"
+        else:
+            ifabsent_match = ifabsent_pattern.match(ifabsent)
+
+            if ifabsent_match:
+                ifabsent_cast = ifabsent_match.group(1)
+                ifabsent_value = ifabsent_match.group(8)
+
+                if ifabsent_cast == 'string':
+                    default_value = f'{ifabsent_value}'
+                elif ifabsent_cast == 'int':
+                    default_value = str(int(ifabsent_value))
+                elif ifabsent_cast == 'float':
+                    default_value = str(float(ifabsent_value))
+                elif ifabsent_cast == 'date':
+                    raise NotImplementedError("ifabsent date not implemented.")
+                    # default_value = f"datetime.strptime({ifabsent_value})"
+                elif ifabsent_cast == 'datetime':
+                    raise NotImplementedError("ifabsent datetime not implemented.")
+                    # default_value = f"datetime.strptime({ifabsent_value})"
+                else:
+                    # may need to look up the enum value here
+                    pass
+
+        return default_value
 
     # prefer loading jinja2 templates via the packageloader
     def load_template(self, template_filename):
@@ -156,8 +193,11 @@ class PanderaGenerator(OOCodeGenerator):
 
     # This was copied from javagen, which created multiple files.
     # Would need cleanup for a multi-class python file.
-    def serialize(self, directory: str, **kwargs) -> None:
-        self.directory = directory
+    def serialize(self, directory: str = None, **kwargs) -> str:
+        if directory is not None:
+            self.directory = directory
+        else:
+            directory = "."
 
         code = self.generate_pandera()
 
@@ -166,6 +206,8 @@ class PanderaGenerator(OOCodeGenerator):
         path = os.path.join(directory, filename)
         with open(path, "w", encoding="UTF-8") as stream:
             stream.write(code)
+
+        return code
 
     def extract_permissible_text(self, pv):
         if isinstance(pv, str) or isinstance(pv, PermissibleValueText):
@@ -181,19 +223,18 @@ class PanderaGenerator(OOCodeGenerator):
     ## This was copied over from OOCodeGen and is only a rough implementation
     def create_documents(self) -> List[OODocument]:
         """
-        Currently hardcoded for java-style
+        Implementation in progress
         :return:
         """
         DEFAULT_RANGE = "string"
-        DEFAULT_VALUE = "null"
         sv: SchemaView
         sv = self.schemaview
         docs = []
 
+        # this will need to take into account slot ranges as well.
         ordered_classes = [sv.get_class(cn, strict=True) for cn in self.order_classes_by_hierarchy(sv)]
 
         for c in ordered_classes:
-            # c = sv.get_class(cn)
             cn = c.name
             safe_cn = camelcase(cn)
             oodoc = OODocument(name=safe_cn, package=self.package, source_schema=sv.schema)
@@ -222,19 +263,13 @@ class PanderaGenerator(OOCodeGenerator):
                 safe_sn = self.get_slot_name(sn)
                 slot = sv.induced_slot(sn, cn)
                 range = slot.range
-                default_value = DEFAULT_VALUE
 
                 if range is None:
-                    # TODO: schemaview should infer this
                     range = sv.schema.default_range
-
-                if range is None:
-                    range = "str"
                 elif range in sv.all_classes():
                     # TODO: account for declaring in order, then use real ranges
                     range = "str"
                     # range = self.get_class_name(range)
-                    default_value = DEFAULT_VALUE
                 elif range in sv.all_types():
                     t = sv.get_type(range)
                     range = self.map_type(t, slot.required)
@@ -247,20 +282,12 @@ class PanderaGenerator(OOCodeGenerator):
                 else:
                     raise Exception(f"Unknown range {range}")
 
-                # Set default values for
-                if range == "boolean":
-                    default_value = "false"
-                elif range == "integer":
-                    default_value = "0"
-                elif range == "String":
-                    default_value = '""'
-
-                # TODO:
-                #  default_value = default_value_for_type(range)
-
                 if slot.multivalued:
                     range = self.make_multivalued(range)
-                    default_value = "List.of()"
+                    #default_value = "List.of()"
+
+                default_value = self.ifabsent_default_value(slot)
+
                 oofield = OOField(
                     name=safe_sn,
                     source_slot=slot,

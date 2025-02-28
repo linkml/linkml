@@ -12,6 +12,7 @@ from pandera.typing import (
 from pandera.engines.polars_engine import (
     DateTime,
     Date,
+    Time,
     Enum
 )
 
@@ -36,6 +37,7 @@ class {{cls.name}}({% if cls.is_a %}{{ cls.is_a }}{% else %}pla.DataFrameModel{%
 {{field.range}}
 {%- if slot.required is none or slot.required is false %}]{% endif -%}
 {{ " =" }} pla.Field(
+{%- if field.default_value is not none -%}default={{ field.default_value }}, {% endif -%}
 {%- if slot.minimum_value is not none -%}ge={{ slot.minimum_value }}, {% endif -%}
 {%- if slot.maximum_value is not none -%}le={{ slot.maximum_value }}, {% endif -%}
 {%- if slot.annotations['permissible_values']|length > 0 -%}dtype_kwargs={"categories":(

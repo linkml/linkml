@@ -26,30 +26,37 @@ classes:
     attributes:
       bool_column:
         range: boolean
-        required: true
+        required: True
+        #ifabsent: True
       integer_column:
         range: integer
-        required: true
+        required: True
         minimum_value: 0
         maximum_value: 999
+        #ifabsent: int(5)
       float_column:
         range: float
-        required: true
+        required: True
+        #ifabsent: float(2.3)
       string_column:
         range: string
-        required: true
+        required: True
+        #ifabsent: string("whatever")
       date_column:
         range: date
-        required: true
+        required: True
+        #ifabsent: date("2020-01-31")
       datetime_column:
         range: datetime
-        required: true
+        required: True
+        #ifabsent: datetime("2020-01-31 03:23:57")
       enum_column:
         range: SyntheticEnum
-        required: true
+        required: True
       ontology_enum_column:
         range: SyntheticEnumOnt
-        required: true
+        required: True
+        #ifabsent: SyntheticEnumOnt(ANIMAL)
 
 enums:
   SyntheticEnum:
