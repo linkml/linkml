@@ -913,6 +913,7 @@ def check_data(
             )
         )
 
+
 def check_data_pandera(output, target_class, object_to_validate, expected_behavior, valid):
     pl = pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
     pa = pytest.importorskip("pandera", reason="Pandera not installed")
@@ -927,11 +928,7 @@ def check_data_pandera(output, target_class, object_to_validate, expected_behavi
     # iterate over columns and try to coerce to various date / time formats
     # some tested formats are non-standard and not supported
     for c in dataframe_to_validate.columns:
-        for expr in [
-            pl.col(c).str.to_time(),
-            pl.col(c).str.to_date(),
-            pl.col(c).str.to_datetime()
-        ]:
+        for expr in [pl.col(c).str.to_time(), pl.col(c).str.to_date(), pl.col(c).str.to_datetime()]:
             try:
                 dataframe_to_validate = dataframe_to_validate.with_columns(expr)
             except Exception as e:

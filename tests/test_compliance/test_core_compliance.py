@@ -172,7 +172,7 @@ def test_type_range(framework, linkml_type, example_value):
                         PYDANTIC: f"{SLOT_S1}: Optional[{typ_py_name}]",
                         PYTHON_DATACLASSES: f"{SLOT_S1}: Optional[{typ_py_name}]",
                         PANDERA_POLARS_CLASS: f"{SLOT_S1}: Optional[{typ_py_name}]",
-                     },
+                    },
                 },
             }
         },
