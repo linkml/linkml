@@ -151,6 +151,7 @@ class PanderaGenerator(OOCodeGenerator):
         self,
         model_path=None,
         template: TemplateEnum = TemplateEnum.CLASS_BASED,
+        coerce: bool = False,
         **kwargs,
     ) -> ModuleType:
         """
@@ -168,12 +169,12 @@ class PanderaGenerator(OOCodeGenerator):
         if model_path is None:
             model_path = self.schema.name
 
-        pandera_code = self.generate_pandera(**kwargs)
+        pandera_code = self.generate_pandera(coerce=coerce, **kwargs)
 
         return compile_python(pandera_code, package_path=model_path)
 
     # Based on javagen
-    def generate_pandera(self, **kwargs):
+    def generate_pandera(self, coerce=False, **kwargs):
         template_obj = self.load_template(PanderaGenerator.DEFAULT_TEMPLATE_PATH)
 
         oodocs = self.create_documents()
@@ -182,6 +183,7 @@ class PanderaGenerator(OOCodeGenerator):
             docs=oodocs,
             metamodel_version=self.schema.metamodel_version,
             model_version=self.schema.version,
+            coerce=coerce,
         )
 
         return code

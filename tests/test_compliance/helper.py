@@ -812,7 +812,7 @@ def check_data(
         elif isinstance(gen, JsonSchemaGenerator):
             plugins = [JsonschemaValidationPlugin(closed=True, include_range_class_descendants=False)]
         elif isinstance(gen, GENERATORS[PANDERA_POLARS_CLASS]):
-            check_data_pandera(output, target_class, object_to_validate, expected_behavior, valid)
+            check_data_pandera(schema, output, target_class, object_to_validate, expected_behavior, valid)
         elif isinstance(gen, ContextGenerator):
             context_dir = _schema_out_path(schema) / "generated" / "jsonld_context.context.jsonld"
             if not context_dir.exists() and tests.WITH_OUTPUT:
@@ -914,31 +914,31 @@ def check_data(
         )
 
 
-def check_data_pandera(output, target_class, object_to_validate, expected_behavior, valid):
+def check_data_pandera(schema, output, target_class, object_to_validate, expected_behavior, valid):
     pl = pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
     pa = pytest.importorskip("pandera", reason="Pandera not installed")
 
     mod = compile_python(output)
     py_cls = getattr(mod, target_class)
 
-    logger.info(f"Validating {py_cls} against {object_to_validate} / {expected_behavior} / {valid}")
+    logger.info(
+        f"Validating {py_cls} against {object_to_validate} / {expected_behavior} / "
+        "{valid}\n\n{yaml.dump(schema)}\n\n{output}"
+    )
 
-    dataframe_to_validate = pl.DataFrame(object_to_validate)
+    polars_schema = {}
 
-    # iterate over columns and try to coerce to various date / time formats
-    # some tested formats are non-standard and not supported
-    for c in dataframe_to_validate.columns:
-        for expr in [pl.col(c).str.to_time(), pl.col(c).str.to_date(), pl.col(c).str.to_datetime()]:
-            try:
-                dataframe_to_validate = dataframe_to_validate.with_columns(expr)
-            except Exception as e:
-                logger.info(e)
+    for column_name, column in py_cls.to_schema().columns.items():
+        dtype = column.properties["dtype"]
+        polars_schema[column_name] = dtype.type
+
+    dataframe_to_validate = pl.DataFrame(object_to_validate, schema=polars_schema)
 
     if valid:
         py_cls.validate(dataframe_to_validate)
     else:
-        with pytest.raises(pa.errors.SchemaError):
-            py_cls.validate(dataframe_to_validate)
+        with pytest.raises(pa.errors.SchemaErrors):
+            py_cls.validate(dataframe_to_validate, lazy=True)
 
 
 def clean_null_terms(d):

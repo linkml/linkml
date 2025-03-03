@@ -23,49 +23,61 @@ default_prefix: ex
 
 classes:
   PanderaSyntheticTable:
+    description: A flat table with a reasonably complete assortment of datatypes.
     attributes:
       bool_column:
+        description: test boolean column
         range: boolean
         required: True
         #ifabsent: True
       integer_column:
+        description: test integer column with min/max values
         range: integer
         required: True
         minimum_value: 0
         maximum_value: 999
         #ifabsent: int(5)
       float_column:
+        description: test float column
         range: float
         required: True
         #ifabsent: float(2.3)
       string_column:
+        description: test string column
         range: string
         required: True
+        #pattern: "^(this)|(that)|(whatever)$"
         #ifabsent: string("whatever")
       date_column:
+        description: test date column
         range: date
         required: True
         #ifabsent: date("2020-01-31")
       datetime_column:
+        description: test datetime column
         range: datetime
         required: True
         #ifabsent: datetime("2020-01-31 03:23:57")
       enum_column:
+        description: test enum column
         range: SyntheticEnum
         required: True
       ontology_enum_column:
+        description: test enum column with ontology values
         range: SyntheticEnumOnt
         required: True
         #ifabsent: SyntheticEnumOnt(ANIMAL)
 
 enums:
   SyntheticEnum:
+    description: simple enum for tests
     permissible_values:
       ANIMAL:
       VEGETABLE:
       MINERAL:
 
   SyntheticEnumOnt:
+    description: ontology enum for tests
     permissible_values:
       fiction: ex:000001
       non fiction: ex:000002
@@ -144,7 +156,9 @@ def synthetic_schema(synthetic_flat_dataframe_model):
 
 @pytest.fixture(scope="module")
 def compiled_synthetic_schema_module(synthetic_schema):
-    return synthetic_schema.compile_pandera(compile_python_dataclasses=False)
+    COERCE = False  # harder to trigger some validation failures when coerce is on
+
+    return synthetic_schema.compile_pandera(compile_python_dataclasses=False, coerce=COERCE)
 
 
 def test_pandera_basic_class_based(synthetic_schema):
@@ -154,8 +168,6 @@ def test_pandera_basic_class_based(synthetic_schema):
     This test will check the generated python, but does not include a compilation step
     """
     code = synthetic_schema.generate_pandera()  # default is class-based
-
-    logger.info(f"\nGenerated Pandera model:\n{code}")
 
     classes = []
 
@@ -171,19 +183,14 @@ def test_pandera_basic_class_based(synthetic_schema):
     assert sorted(expected_classes) == sorted(classes)
 
 
-#
-# TODO: note that this is using series
-#       and this page doesn't? https://pandera.readthedocs.io/en/v0.20.1/polars.html
-#
 def test_dump_schema_code(synthetic_schema):
     code = synthetic_schema.generate_pandera()
+
+    logger.info(f"\nGenerated Pandera model:\n{code}")
 
     assert all(column in code for column in MODEL_COLUMNS)
 
 
-#
-# so cool
-#
 def test_dump_synthetic_df(big_synthetic_dataframe):
     print(big_synthetic_dataframe)
 
