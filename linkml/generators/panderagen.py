@@ -126,10 +126,10 @@ class PanderaGenerator(OOCodeGenerator):
 
             if ifabsent_match:
                 ifabsent_cast = ifabsent_match.group(MATCH_GROUP_TYPE_INDEX)
-                ifabsent_value = ifabsent_match.group(MATCH_GROUP_VALUE_INDEX).replace('"', "\\\"")
+                ifabsent_value = ifabsent_match.group(MATCH_GROUP_VALUE_INDEX).replace('"', '\\"')
 
                 if ifabsent_cast == "string":
-                    default_value = f"\"{ifabsent_value}\""
+                    default_value = f'"{ifabsent_value}"'
                 elif ifabsent_cast == "int":
                     default_value = str(int(ifabsent_value))
                 elif ifabsent_cast == "float":
@@ -213,7 +213,7 @@ class PanderaGenerator(OOCodeGenerator):
 
     def extract_permissible_text(self, pv):
         if isinstance(pv, str) or isinstance(pv, PermissibleValueText):
-            return pv.replace("'", "\\'").replace('"', "\\\"")
+            return pv.replace("'", "\\'").replace('"', '\\"')
         elif isinstance(pv, PermissibleValue):
             return pv.text.code
         else:
@@ -254,7 +254,7 @@ class PanderaGenerator(OOCodeGenerator):
                 ooclass.mixin = c.mixin
             if c.mixins:
                 ooclass.mixins = [(x) for x in c.mixins]
-            #if c.abstract:
+            # if c.abstract:
             #    ooclass.abstract = c.abstraccamelcased
             if c.is_a:
                 ooclass.is_a = self.get_class_name(c.is_a)
