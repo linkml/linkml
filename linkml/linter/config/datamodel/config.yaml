@@ -38,7 +38,7 @@ classes:
       configured by a configuration file. 
     attributes:
       no_empty_title:
-        range: RuleConfig
+        range: NoEmptyTitleConfig
         description: >-
           Disallow empty titles on schema elements. Autofix will transform the element's
           name into a title.
@@ -143,11 +143,11 @@ classes:
           Default: []
           All elements except the ones with names specified in this list will be checked
       exclude_type:
-        range: string
+        range: ExcludeTypeEnum
         multivalued: true
         description: >-
           Default: []
-          Elements of all types (class, slot, enum, etc.) except the types specified in this list will be checked 
+          Elements of all types (class_definition, slot_definition, enum_definition, etc.) except the types specified in this list will be checked
         
   StandardNamingConfig:
     description: >-
@@ -159,6 +159,12 @@ classes:
         description: >-
           Default: false
           If true, permissible values will be checked for snake_case, otherwise UPPER_SNAKE
+      exclude_type:
+        range: ExcludeTypeEnum
+        multivalued: true
+        description: >-
+          Default: []
+          Elements of all types (class_definition, slot_definition, enum_definition, etc.) except the types specified in this list will be checked 
 
   CanonicalPrefixesConfig:
     description: >-
@@ -173,6 +179,18 @@ classes:
           The list of context names which will be loaded by the `prefixmaps` library to do the 
           validation. The order of names is meaningful and will be preserved. See:  
           https://github.com/linkml/prefixmaps#usage
+
+  NoEmptyTitleConfig:
+    description: >-
+      Additional configuration options for the no_empty_title rule
+    is_a: RuleConfig
+    attributes:
+      exclude_type:
+        range: ExcludeTypeEnum
+        multivalued: true
+        description: >-
+          Default: []
+          Elements of all types (class_definition, slot_definition, enum_definition, etc.) except the types specified in this list will be checked 
 
 enums:
   ExtendableConfigs:
@@ -190,3 +208,11 @@ enums:
         description: A violation of a rule at this level is a minor issue that should be fixed
       error:
         description: A violation of a rule at this level is a major issue that must be fixed
+  ExcludeTypeEnum:
+    description: >-
+      The permissible values for the exclude_type slot
+    permissible_values:
+      class_definition: {}
+      enum_definition: {}
+      permissible_value: {}
+      slot_definition: {}
