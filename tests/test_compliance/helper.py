@@ -923,7 +923,7 @@ def check_data_pandera(schema, output, target_class, object_to_validate, expecte
 
     logger.info(
         f"Validating {py_cls} against {object_to_validate} / {expected_behavior} / "
-        "{valid}\n\n{yaml.dump(schema)}\n\n{output}"
+        f"{valid}\n\n{yaml.dump(schema)}\n\n{output}"
     )
 
     polars_schema = {}
@@ -932,12 +932,12 @@ def check_data_pandera(schema, output, target_class, object_to_validate, expecte
         dtype = column.properties["dtype"]
         polars_schema[column_name] = dtype.type
 
-    dataframe_to_validate = pl.DataFrame(object_to_validate, schema=polars_schema)
-
     if valid:
+        dataframe_to_validate = pl.DataFrame(object_to_validate, schema=polars_schema)
         py_cls.validate(dataframe_to_validate)
     else:
-        with pytest.raises(pa.errors.SchemaErrors):
+        with pytest.raises((pa.errors.SchemaErrors, ValueError)):
+            dataframe_to_validate = pl.DataFrame(object_to_validate, schema=polars_schema)
             py_cls.validate(dataframe_to_validate, lazy=True)
 
 

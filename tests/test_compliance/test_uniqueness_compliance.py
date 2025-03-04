@@ -3,6 +3,7 @@ import pytest
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
     OWL,
+    PANDERA_POLARS_CLASS,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SQL_DDL_SQLITE,
@@ -642,6 +643,8 @@ def test_nested_key(framework, is_local, data_name, objs, is_valid):
             expected_behavior = ValidationBehavior.INCOMPLETE
         if data_name == "t3_unique_per_container" and framework == PYTHON_DATACLASSES:
             expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data_name,

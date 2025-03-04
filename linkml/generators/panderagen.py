@@ -48,6 +48,8 @@ class PanderaGenerator(OOCodeGenerator):
     """
     Generates Pandera python classes from a LinkML schema.
 
+    Status: incompletely implemented
+
     Two styles are supported:
 
     - class-based
@@ -107,6 +109,9 @@ class PanderaGenerator(OOCodeGenerator):
 
     def ifabsent_default_value(self, slot: SlotDefinition) -> str:
         ifabsent_pattern = re.compile(r"^((string)|(int)|(float)|(date)|(datetime)|([A-Za-z0-9_]+))\((.*)\)$")
+        MATCH_GROUP_TYPE_INDEX = 1
+        MATCH_GROUP_VALUE_INDEX = 8
+
         ifabsent = slot.ifabsent
         default_value = None
 
@@ -120,11 +125,11 @@ class PanderaGenerator(OOCodeGenerator):
             ifabsent_match = ifabsent_pattern.match(ifabsent)
 
             if ifabsent_match:
-                ifabsent_cast = ifabsent_match.group(1)
-                ifabsent_value = ifabsent_match.group(8)
+                ifabsent_cast = ifabsent_match.group(MATCH_GROUP_TYPE_INDEX)
+                ifabsent_value = ifabsent_match.group(MATCH_GROUP_VALUE_INDEX).replace('"', "\\\"")
 
                 if ifabsent_cast == "string":
-                    default_value = f"{ifabsent_value}"
+                    default_value = f"\"{ifabsent_value}\""
                 elif ifabsent_cast == "int":
                     default_value = str(int(ifabsent_value))
                 elif ifabsent_cast == "float":
@@ -208,7 +213,7 @@ class PanderaGenerator(OOCodeGenerator):
 
     def extract_permissible_text(self, pv):
         if isinstance(pv, str) or isinstance(pv, PermissibleValueText):
-            return pv
+            return pv.replace("'", "\\'").replace('"', "\\\"")
         elif isinstance(pv, PermissibleValue):
             return pv.text.code
         else:
@@ -249,8 +254,8 @@ class PanderaGenerator(OOCodeGenerator):
                 ooclass.mixin = c.mixin
             if c.mixins:
                 ooclass.mixins = [(x) for x in c.mixins]
-            if c.abstract:
-                ooclass.abstract = c.abstraccamelcaset
+            #if c.abstract:
+            #    ooclass.abstract = c.abstraccamelcased
             if c.is_a:
                 ooclass.is_a = self.get_class_name(c.is_a)
                 parent_slots = sv.class_slots(c.is_a)

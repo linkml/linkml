@@ -91,7 +91,7 @@ def test_attributes(framework, description, object, is_valid):
                     "_mappings": {
                         PYDANTIC: "s1: Optional[str] = Field(default=None",
                         PYTHON_DATACLASSES: "s1: Optional[str] = None",
-                        PANDERA_POLARS_CLASS: "s1: Optional[str] = pla.Field()",
+                        PANDERA_POLARS_CLASS: "s1: Optional[str] = pla.Field(nullable=True, )",
                     }
                 },
                 SLOT_S2: {},
@@ -118,6 +118,9 @@ def test_attributes(framework, description, object, is_valid):
         },
     }
     schema = validated_schema(test_attributes, "attributes", framework, classes=classes, core_elements=["attributes"])
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework == PANDERA_POLARS_CLASS and description == "not all attributes need to be specified":
+        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         description.replace(" ", "_"),
@@ -125,6 +128,7 @@ def test_attributes(framework, description, object, is_valid):
         object,
         is_valid,
         target_class=CLASS_C,
+        expected_behavior=expected_behavior,
         description="pattern",
     )
 
@@ -214,6 +218,8 @@ def test_type_range(framework, linkml_type, example_value):
         if not is_valid:
             # SQLite effectively coerces everything and has no type checking
             expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         f"{type(example_value).__name__}-{example_value}",
@@ -297,6 +303,8 @@ def test_any_type(framework, example_value):
         pytest.skip("Decimal not supported by YAML - https://github.com/yaml/pyyaml/issues/255")
     if framework in [SQL_DDL_SQLITE, SQL_DDL_POSTGRES]:
         pytest.skip("TODO: add support in sqlgen")
+    if framework == PANDERA_POLARS_CLASS:
+        pytest.skip("any not supported in panderagen.")
     classes = {
         CLASS_ANY: {
             "class_uri": "linkml:Any",
@@ -369,6 +377,8 @@ def test_uri_types(framework, linkml_type, example_value, is_valid):
     }
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if not is_valid and framework in [PYDANTIC, JSON_SCHEMA]:
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
         expected_behavior = ValidationBehavior.INCOMPLETE
     schema = validated_schema(
         test_uri_types,
@@ -485,6 +495,8 @@ def test_date_types(framework, linkml_type, example_value, is_valid):
         else:
             # TODO: investigate this, hermit issue?
             expected_behavior = ValidationBehavior.FALSE_POSITIVE
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         ensafeify(f"times-{example_value}-{example_value}"),
@@ -649,6 +661,8 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         if not multivalued and isinstance(value, list):
             # RDF does not distinguish between singletons and single values
             expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data_name,
@@ -703,6 +717,8 @@ def test_identifier_is_required(framework, required_asserted, data_name, instanc
         core_elements=["identifier", "required"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data_name,
@@ -780,7 +796,7 @@ def test_non_standard_names(framework, class_name, safe_class_name, slot_name, s
     }
     exclude_rdf = False
     if slot_name.startswith("1"):
-        if framework in [PYTHON_DATACLASSES, PYDANTIC, SQL_DDL_SQLITE]:
+        if framework in [PYTHON_DATACLASSES, PYDANTIC, SQL_DDL_SQLITE, PANDERA_POLARS_CLASS]:
             expected_behavior = ValidationBehavior.INCOMPLETE
         exclude_rdf = True
     if class_name == "c" and framework in [JSON_SCHEMA, SHACL]:
@@ -854,11 +870,18 @@ def test_non_standard_num_names(framework, enum_name, pv_name):
         SLOT_S1: pv_name,
     }
     exclude_rdf = False
-    if "[" in enum_name and framework in [PYDANTIC, SQL_DDL_SQLITE, PYTHON_DATACLASSES, OWL, SHACL]:
+    if "[" in enum_name and framework in [
+        PYDANTIC,
+        SQL_DDL_SQLITE,
+        PYTHON_DATACLASSES,
+        OWL,
+        SHACL,
+        PANDERA_POLARS_CLASS,
+    ]:
         # TODO: need to escape []s
         expected_behavior = ValidationBehavior.INCOMPLETE
         exclude_rdf = True
-    if pv_name == " " and framework == PYDANTIC:
+    if pv_name == " " and framework in PYDANTIC:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,

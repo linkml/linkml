@@ -11,6 +11,7 @@ import pytest
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
     OWL,
+    PANDERA_POLARS_CLASS,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SHACL,
@@ -257,6 +258,8 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
     if framework in [SQL_DDL_SQLITE, SHACL] and not is_valid:
         # inlining has no cognate in relational and RDF
         implementation_status = ValidationBehavior.NOT_APPLICABLE
+    if framework == PANDERA_POLARS_CLASS:
+        implementation_status = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data,
@@ -374,6 +377,8 @@ def test_inlined_as_simple_dict(framework, name, attrs, data_name, values, is_va
         elif framework in [OWL, SHACL]:
             expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == PYDANTIC and data_name.startswith("expanded"):
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,

@@ -12,6 +12,7 @@ import rdflib
 
 from tests.test_compliance.helper import (
     JSONLD_CONTEXT,
+    PANDERA_POLARS_CLASS,
     SHACL,
     SQL_DDL_SQLITE,
     ValidationBehavior,
@@ -194,6 +195,8 @@ def test_import(
     if data_name == "conflict_s2":
         pytest.skip("Behavior TBD")
     expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data_name,
