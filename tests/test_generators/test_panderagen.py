@@ -129,21 +129,31 @@ def big_synthetic_dataframe(pl, np, N):
     return (
         pl.DataFrame(
             {
-                "bool_column": np.random.choice([True, False], size=N),
-                "integer_column": np.random.choice(range(100), size=N),
-                "float_column": np.random.choice([1.0, 2.0, 3.0], size=N),
+                "bool_column": pl.Series(np.random.choice([True, False], size=N), dtype=pl.Boolean),
+                "integer_column": pl.Series(np.random.choice(range(100), size=N), dtype=pl.Int64),
+                "float_column": pl.Series(np.random.choice([1.0, 2.0, 3.0], size=N), dtype=pl.Float64),
                 "string_column": np.random.choice(["this", "that"], size=N),
-                "date_column": np.random.choice(["2021-03-27", "2021-03-28"], size=N),
-                "datetime_column": np.random.choice(["2021-03-27 03:00", "2021-03-28 03:00"], size=N),
-                "enum_column": pl.Series(np.random.choice(["ANIMAL", "VEGETABLE", "MINERAL"], size=N), dtype=test_enum),
+                "date_column": pl.Series(
+                    np.random.choice(["2021-03-27", "2021-03-28"], size=N),
+                    dtype=pl.Date,
+                    strict=False
+                ),
+                "datetime_column": pl.Series(
+                    np.random.choice(["2021-03-27T03:00:00", "2021-03-28T03:00:00"], size=N),
+                    dtype=pl.Datetime,
+                    strict=False
+                ),
+                "enum_column": pl.Series(
+                    np.random.choice(["ANIMAL", "VEGETABLE", "MINERAL"], size=N),
+                    dtype=test_enum,
+                    strict=False
+                ),
                 "ontology_enum_column": pl.Series(
-                    np.random.choice(["fiction", "non fiction"], size=N), dtype=test_ont_enum
+                    np.random.choice(["fiction", "non fiction"], size=N),
+                    dtype=test_ont_enum,
+                    strict=False
                 )
             }
-        )
-        .with_columns(
-            pl.col("date_column").str.to_date(),
-            pl.col("datetime_column").str.to_datetime()
         )
     )
     # fmt: on
