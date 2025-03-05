@@ -6,6 +6,7 @@ from linkml_runtime.utils.formatutils import camelcase
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
     OWL,
+    PANDERA_POLARS_CLASS,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SHACL,
@@ -36,6 +37,8 @@ def test_typeof(framework, linkml_type, example_value):
     """
     if framework == SHACL:
         pytest.skip("TODO: shaclgen does not support typeof")
+    if framework == PANDERA_POLARS_CLASS:
+        pytest.skip("TODO: panderagen does not support typeof")
     metamodel = metamodel_schemaview()
     ext_type = camelcase(f"my_{linkml_type}")
     type_elt = metamodel.get_type(linkml_type)
