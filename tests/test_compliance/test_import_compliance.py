@@ -326,6 +326,8 @@ def test_import_metamodel(framework, valid):
     if framework == SQL_DDL_SQLITE:
         pytest.skip("sqla issue")
     expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     data_name = f"my_derived_schema_{valid}"
     instance = {
         "id": f"http://example.org/my-derived-schema-{valid}",
