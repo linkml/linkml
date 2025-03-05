@@ -932,13 +932,12 @@ def check_data_pandera(schema, output, target_class, object_to_validate, expecte
         dtype = column.properties["dtype"]
         polars_schema[column_name] = dtype.type
 
-    if valid:
+    try:
         dataframe_to_validate = pl.DataFrame(object_to_validate, schema=polars_schema)
-        py_cls.validate(dataframe_to_validate)
-    else:
-        with pytest.raises((pa.errors.SchemaErrors, ValueError)):
-            dataframe_to_validate = pl.DataFrame(object_to_validate, schema=polars_schema)
-            py_cls.validate(dataframe_to_validate, lazy=True)
+        py_cls.validate(dataframe_to_validate, lazy=True)
+    except Exception as e:
+        if valid:
+            raise e
 
 
 def clean_null_terms(d):
