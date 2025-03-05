@@ -916,7 +916,6 @@ def check_data(
 
 def check_data_pandera(schema, output, target_class, object_to_validate, expected_behavior, valid):
     pl = pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
-    pa = pytest.importorskip("pandera", reason="Pandera not installed")
 
     mod = compile_python(output)
     py_cls = getattr(mod, target_class)
