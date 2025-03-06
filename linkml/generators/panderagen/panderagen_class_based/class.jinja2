@@ -1,0 +1,20 @@
+{%- import 'slots.jinja2' as slot_macros -%}
+
+{%- macro render_class(cls) %}
+class {{cls.name}}(
+        {%- if cls.is_a -%}
+            {{ cls.is_a }}
+        {%- else -%}
+            pla.DataFrameModel
+        {%- endif -%}
+):
+    {%- if cls.source_class.description %}
+    """{{ cls.source_class.description }}"""
+    {% endif -%}
+    {%- if (cls.fields | length) == 0 %}
+    pass
+    {% endif -%}
+    {%- for field in cls.fields -%}
+        {{ slot_macros.render_slot(field) }}
+    {%- endfor %}
+{%- endmacro -%}

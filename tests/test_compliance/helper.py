@@ -917,19 +917,20 @@ def check_data(
 def check_data_pandera(schema, output, target_class, object_to_validate, expected_behavior, valid):
     pl = pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
 
-    mod = compile_python(output)
-    py_cls = getattr(mod, target_class)
-
     logger.info(
-        f"Validating {py_cls} against {object_to_validate} / {expected_behavior} / "
+        f"Validating {target_class} against {object_to_validate} / {expected_behavior} / "
         f"{valid}\n\n{yaml.dump(schema)}\n\n{output}"
     )
+
+    mod = compile_python(output)
+    py_cls = getattr(mod, target_class)
 
     polars_schema = {}
 
     for column_name, column in py_cls.to_schema().columns.items():
         dtype = column.properties["dtype"]
-        polars_schema[column_name] = dtype.type
+        if column_name in object_to_validate:
+            polars_schema[column_name] = dtype.type
 
     try:
         dataframe_to_validate = pl.DataFrame(object_to_validate, schema=polars_schema)

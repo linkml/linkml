@@ -3,6 +3,7 @@ import os
 import re
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import PurePosixPath
 from types import ModuleType
 from typing import List, Optional
 
@@ -20,10 +21,7 @@ from linkml.utils.generator import shared_arguments
 
 logger = logging.getLogger(__name__)
 
-default_template = """
-"""  # noqa: E501
 
-# several of these are stubbed in
 TYPEMAP = {
     "xsd:string": "str",
     "xsd:integer": "int",
@@ -34,7 +32,7 @@ TYPEMAP = {
     "xsd:date": "Date",
     "xsd:time": "Time",
     "xsd:anyURI": "str",
-    "xsd:decimal": "int",
+    "xsd:decimal": "float",
 }
 
 
@@ -56,10 +54,11 @@ class PanderaGenerator(OOCodeGenerator):
     - schema-based (not implemented)
     """
 
-    DEFAULT_TEMPLATE_PATH = "pandera.class_based.jinja2"
+    DEFAULT_TEMPLATE_PATH = "pandera.jinja2"
 
     # ClassVars
     generatorname = os.path.basename(__file__)
+    generatorstem = PurePosixPath(generatorname).stem
     generatorversion = "0.0.1"
     valid_formats = ["python"]
     file_extension = "py"
@@ -67,11 +66,13 @@ class PanderaGenerator(OOCodeGenerator):
 
     # ObjectVars
     template_file: Optional[str] = None
+    template_path: str = f"{generatorstem}_{TemplateEnum.CLASS_BASED.value}"
 
     gen_classvars: bool = True
     gen_slots: bool = True
     genmeta: bool = False
     emit_metadata: bool = True
+    coerce: bool = False
 
     def default_value_for_type(self, typ: str) -> str:
         """Allow underlying framework to handle default if not specified."""
@@ -96,14 +97,17 @@ class PanderaGenerator(OOCodeGenerator):
             unprocessed = [cn for cn in unprocessed if cn not in olist]
         return olist
 
-    # this is a very rough implementation based on javagen / oocodegen
-    def map_type(self, t: TypeDefinition, required: bool = False) -> str:
+    def map_type(self, t: TypeDefinition) -> str:
+        logger.info(f"type_map definition: {t}")
+
         if t.uri:
             # only return a Integer, Double Float when required == false
             typ = TYPEMAP.get(t.uri)
             return typ
         elif t.typeof:
-            return self.map_type(self.schemaview.get_type(t.typeof))
+            typ = self.map_type(self.schemaview.get_type(t.typeof))
+            logger.info(f"typ: {typ}")
+            return typ
         else:
             raise ValueError(f"{t} cannot be mapped to a type")
 
@@ -146,69 +150,35 @@ class PanderaGenerator(OOCodeGenerator):
 
         return default_value
 
-    # prefer loading jinja2 templates via the packageloader
     def load_template(self, template_filename):
-        jinja_env = Environment(loader=PackageLoader("linkml.generators", "panderagen"))
+        jinja_env = Environment(loader=PackageLoader("linkml.generators.panderagen", self.template_path))
         return jinja_env.get_template(template_filename)
 
-    # based on sqlagen, needs cleanup.
-    def compile_pandera(
-        self,
-        model_path=None,
-        template: TemplateEnum = TemplateEnum.CLASS_BASED,
-        coerce: bool = False,
-        **kwargs,
-    ) -> ModuleType:
+    def compile_pandera(self) -> ModuleType:
         """
         Generates and compiles Pandera model
-
-        - If template is CLASS_BASED, then the class-based Pandera is used
-        - If template is OBJECT_BASED then the object-based Pandera API is used
-
-        :param model_path:
-        :param template:
-        :param kwargs:
-        :return:
         """
+        pandera_code = self.serialize()
 
-        if model_path is None:
-            model_path = self.schema.name
+        return compile_python(pandera_code)
 
-        pandera_code = self.generate_pandera(coerce=coerce, **kwargs)
+    def serialize(self, rendered_module: Optional[OODocument] = None) -> str:
+        """
+        Serialize the schema to a Pandera module as a string
+        """
+        if rendered_module is not None:
+            module = rendered_module
+        else:
+            module = self.render()
 
-        return compile_python(pandera_code, package_path=model_path)
-
-    # Based on javagen
-    def generate_pandera(self, coerce=False, **kwargs):
         template_obj = self.load_template(PanderaGenerator.DEFAULT_TEMPLATE_PATH)
 
-        oodocs = self.create_documents()
-
         code = template_obj.render(
-            docs=oodocs,
+            doc=module,
             metamodel_version=self.schema.metamodel_version,
             model_version=self.schema.version,
-            coerce=coerce,
+            coerce=self.coerce,
         )
-
-        return code
-
-    # This was copied from javagen, which created multiple files.
-    # Would need cleanup for a multi-class python file.
-    def serialize(self, directory: str = None, **kwargs) -> str:
-        if directory is not None:
-            self.directory = directory
-        else:
-            directory = "."
-
-        code = self.generate_pandera()
-
-        os.makedirs(directory, exist_ok=True)
-        filename = "pandera.out.py"
-        path = os.path.join(directory, filename)
-        with open(path, "w", encoding="UTF-8") as stream:
-            stream.write(code)
-
         return code
 
     def extract_permissible_text(self, pv):
@@ -222,8 +192,7 @@ class PanderaGenerator(OOCodeGenerator):
     def get_enum_permissible_values(self, enum):
         return list(map(self.extract_permissible_text, enum.permissible_values or []))
 
-    ## This was copied over from OOCodeGen and is only a rough implementation
-    def create_documents(self) -> List[OODocument]:
+    def render(self) -> OODocument:
         """
         Implementation in progress
         :return:
@@ -231,16 +200,19 @@ class PanderaGenerator(OOCodeGenerator):
         DEFAULT_RANGE = "string"
         sv: SchemaView
         sv = self.schemaview
-        docs = []
+
+        module_name = camelcase(sv.schema.name)
+
+        oodoc = OODocument(name=module_name, package=self.package, source_schema=sv.schema)
 
         # this will need to take into account slot ranges as well.
         ordered_classes = [sv.get_class(cn, strict=True) for cn in self.order_classes_by_hierarchy(sv)]
 
+        classes = []
+
         for c in ordered_classes:
             cn = c.name
             safe_cn = camelcase(cn)
-            oodoc = OODocument(name=safe_cn, package=self.package, source_schema=sv.schema)
-            docs.append(oodoc)
             ooclass = OOClass(
                 name=safe_cn,
                 description=c.description,
@@ -248,8 +220,7 @@ class PanderaGenerator(OOCodeGenerator):
                 fields=[],
                 source_class=c,
             )
-            # currently hardcoded for java style, one class per doc
-            oodoc.classes = [ooclass]
+            classes.append(ooclass)
             if c.mixin:
                 ooclass.mixin = c.mixin
             if c.mixins:
@@ -269,12 +240,11 @@ class PanderaGenerator(OOCodeGenerator):
                 if range is None:
                     range = sv.schema.default_range
                 elif range in sv.all_classes():
-                    # TODO: account for declaring in order, then use real ranges
-                    range = "str"
                     # range = self.get_class_name(range)
+                    range = "str"
                 elif range in sv.all_types():
                     t = sv.get_type(range)
-                    range = self.map_type(t, slot.required)
+                    range = self.map_type(t)
                     if range is None:  # If mapping fails,
                         range = self.map_type(sv.all_types().get(DEFAULT_RANGE))
                 elif range in sv.all_enums():
@@ -286,7 +256,6 @@ class PanderaGenerator(OOCodeGenerator):
 
                 if slot.multivalued:
                     range = self.make_multivalued(range)
-                    # default_value = "List.of()"
 
                 default_value = self.ifabsent_default_value(slot)
 
@@ -300,7 +269,9 @@ class PanderaGenerator(OOCodeGenerator):
                     ooclass.fields.append(oofield)
                 ooclass.all_fields.append(oofield)
 
-        return docs
+        oodoc.classes = reversed(classes)
+
+        return oodoc
 
 
 @shared_arguments(PanderaGenerator)
@@ -316,20 +287,21 @@ class PanderaGenerator(OOCodeGenerator):
 @click.command(name="gen-pandera")
 def cli(
     yamlfile,
-    output_directory=None,
     package=None,
     template_file=None,
     slots=True,
     **args,
 ):
     """Generate Pandera classes to represent a LinkML model"""
-    PanderaGenerator(
+    gen = PanderaGenerator(
         yamlfile,
         package=package,
         template_file=template_file,
         gen_slots=slots,
         **args,
-    ).serialize(output_directory, **args)
+    )
+
+    print(gen.serialize())
 
 
 if __name__ == "__main__":

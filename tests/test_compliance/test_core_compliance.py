@@ -661,8 +661,6 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         if not multivalued and isinstance(value, list):
             # RDF does not distinguish between singletons and single values
             expected_behavior = ValidationBehavior.INCOMPLETE
-    if framework == PANDERA_POLARS_CLASS:
-        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data_name,
@@ -717,8 +715,8 @@ def test_identifier_is_required(framework, required_asserted, data_name, instanc
         core_elements=["identifier", "required"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework == PANDERA_POLARS_CLASS:
-        expected_behavior = ValidationBehavior.INCOMPLETE
+    # if framework == PANDERA_POLARS_CLASS:
+    #    expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data_name,

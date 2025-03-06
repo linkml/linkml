@@ -22,9 +22,22 @@ default_range: string
 default_prefix: ex
 
 classes:
+
+  ColumnType:
+    description: Nested in a column
+    attributes:
+      x:
+        range: integer
+      y:
+        range: integer
+
   PanderaSyntheticTable:
     description: A flat table with a reasonably complete assortment of datatypes.
     attributes:
+      identifier_column:
+        description: identifier
+        range: integer
+        required: True
       bool_column:
         description: test boolean column
         range: boolean
@@ -67,6 +80,15 @@ classes:
         range: SyntheticEnumOnt
         required: True
         #ifabsent: SyntheticEnumOnt(ANIMAL)
+      multivalued_column:
+        description: list form
+        range: integer
+        required: True
+        multivalued: True
+      #class_column:
+      #  description: test enum column with class value
+      #  range: ColumnType
+      #  required: true
 
 enums:
   SyntheticEnum:
@@ -85,6 +107,7 @@ enums:
 
 
 MODEL_COLUMNS = [
+    "identifier_column",
     "bool_column",
     "integer_column",
     "float_column",
@@ -93,6 +116,7 @@ MODEL_COLUMNS = [
     "datetime_column",
     "enum_column",
     "ontology_enum_column",
+    "multivalued_column",
 ]
 
 
@@ -126,9 +150,10 @@ def big_synthetic_dataframe(pl, np, N):
     test_ont_enum = pl.Enum(["fiction", "non fiction"])
 
     # fmt: off
-    return (
+    df = (
         pl.DataFrame(
             {
+                "identifier_column": pl.Series(np.arange(0, N), dtype=pl.Int64),
                 "bool_column": pl.Series(np.random.choice([True, False], size=N), dtype=pl.Boolean),
                 "integer_column": pl.Series(np.random.choice(range(100), size=N), dtype=pl.Int64),
                 "float_column": pl.Series(np.random.choice([1.0, 2.0, 3.0], size=N), dtype=pl.Float64),
@@ -152,11 +177,23 @@ def big_synthetic_dataframe(pl, np, N):
                     np.random.choice(["fiction", "non fiction"], size=N),
                     dtype=test_ont_enum,
                     strict=False
-                )
+                ),
+                "multivalued_column": [[1, 2, 3],] * N
+                #"class_column_x": pl.Series(values=np.random.choice([0, 1], size=N), dtype=pl.Int64),
+                #"class_column_y": pl.Series(values=np.random.choice([4, 5], size=N), dtype=pl.Int64)
             }
         )
+        # .with_columns(
+        #     pl.struct(
+        #         pl.col("class_column_x").alias("x"),
+        #         pl.col("class_column_y").alias("y")
+        #     ).alias("class_column")
+        # )
+        # .drop(["class_column_x", "class_column_y"])
     )
     # fmt: on
+
+    return df
 
 
 @pytest.fixture(scope="module")
@@ -166,9 +203,7 @@ def synthetic_schema(synthetic_flat_dataframe_model):
 
 @pytest.fixture(scope="module")
 def compiled_synthetic_schema_module(synthetic_schema):
-    COERCE = False  # harder to trigger some validation failures when coerce is on
-
-    return synthetic_schema.compile_pandera(compile_python_dataclasses=False, coerce=COERCE)
+    return synthetic_schema.compile_pandera()
 
 
 def test_pandera_basic_class_based(synthetic_schema):
@@ -177,7 +212,7 @@ def test_pandera_basic_class_based(synthetic_schema):
 
     This test will check the generated python, but does not include a compilation step
     """
-    code = synthetic_schema.generate_pandera()  # default is class-based
+    code = synthetic_schema.serialize()  # default is class-based
 
     classes = []
 
@@ -188,17 +223,22 @@ def test_pandera_basic_class_based(synthetic_schema):
         if match:
             classes.append(match.group(1))
 
-    expected_classes = ["PanderaSyntheticTable"]
+    expected_classes = ["ColumnType", "PanderaSyntheticTable"]
 
     assert sorted(expected_classes) == sorted(classes)
 
 
 def test_dump_schema_code(synthetic_schema):
-    code = synthetic_schema.generate_pandera()
+    code = synthetic_schema.serialize()
 
     logger.info(f"\nGenerated Pandera model:\n{code}")
 
     assert all(column in code for column in MODEL_COLUMNS)
+
+
+def test_get_metadata(compiled_synthetic_schema_module):
+    logger.info(compiled_synthetic_schema_module.PanderaSyntheticTable.get_metadata())
+#    logger.info(compiled_synthetic_schema_module.PanderaSyntheticTable.to_json_schema())
 
 
 def test_dump_synthetic_df(big_synthetic_dataframe):
