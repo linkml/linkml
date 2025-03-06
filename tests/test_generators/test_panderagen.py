@@ -238,6 +238,8 @@ def test_dump_schema_code(synthetic_schema):
 
 def test_get_metadata(compiled_synthetic_schema_module):
     logger.info(compiled_synthetic_schema_module.PanderaSyntheticTable.get_metadata())
+
+
 #    logger.info(compiled_synthetic_schema_module.PanderaSyntheticTable.to_json_schema())
 
 
