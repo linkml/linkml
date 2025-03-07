@@ -23,6 +23,10 @@ default_prefix: ex
 
 classes:
 
+  AnyType:
+    description: the magic class_uri makes this map to linkml Any or polars Object
+    class_uri: linkml:Any
+
   ColumnType:
     description: Nested in a column
     attributes:
@@ -85,6 +89,10 @@ classes:
         range: integer
         required: True
         multivalued: True
+      any_type_column:
+        description: needs to have type object
+        range: AnyType
+        required: True
       #class_column:
       #  description: test enum column with class value
       #  range: ColumnType
@@ -117,6 +125,7 @@ MODEL_COLUMNS = [
     "enum_column",
     "ontology_enum_column",
     "multivalued_column",
+    "any_type_column",
 ]
 
 
@@ -135,7 +144,7 @@ def pl():
 @pytest.fixture(scope="module")
 def pandera():
     """The pandera package is optional, so use fixtures and importorskip to only run tests when it's installed"""
-    return pytest.importorskip("pandera", reason="Pandera not installed")
+    return pytest.importorskip("pandera.polars", reason="Pandera not installed")
 
 
 @pytest.fixture(scope="module")
@@ -178,7 +187,8 @@ def big_synthetic_dataframe(pl, np, N):
                     dtype=test_ont_enum,
                     strict=False
                 ),
-                "multivalued_column": [[1, 2, 3],] * N
+                "multivalued_column": [[1, 2, 3],] * N,
+                "any_type_column": pl.Series([1,] * N, dtype=pl.Object),
                 #"class_column_x": pl.Series(values=np.random.choice([0, 1], size=N), dtype=pl.Int64),
                 #"class_column_y": pl.Series(values=np.random.choice([4, 5], size=N), dtype=pl.Int64)
             }
@@ -223,7 +233,7 @@ def test_pandera_basic_class_based(synthetic_schema):
         if match:
             classes.append(match.group(1))
 
-    expected_classes = ["ColumnType", "PanderaSyntheticTable"]
+    expected_classes = ["AnyType", "ColumnType", "PanderaSyntheticTable"]
 
     assert sorted(expected_classes) == sorted(classes)
 

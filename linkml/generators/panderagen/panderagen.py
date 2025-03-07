@@ -31,7 +31,7 @@ TYPEMAP = {
     "xsd:dateTime": "DateTime",
     "xsd:date": "Date",
     "xsd:time": "Time",
-    "xsd:anyURI": "str",
+    "xsd:anyURI": "Object",
     "xsd:decimal": "float",
 }
 
@@ -240,8 +240,12 @@ class PanderaGenerator(OOCodeGenerator):
                 if range is None:
                     range = sv.schema.default_range
                 elif range in sv.all_classes():
-                    # range = self.get_class_name(range)
-                    range = "str"
+                    range_info = sv.all_classes().get(range)
+
+                    if range_info["class_uri"] == "linkml:Any":
+                        range = "Object"
+                    else:
+                        range = "str"
                 elif range in sv.all_types():
                     t = sv.get_type(range)
                     range = self.map_type(t)

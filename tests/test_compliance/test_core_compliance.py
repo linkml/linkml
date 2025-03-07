@@ -119,8 +119,6 @@ def test_attributes(framework, description, object, is_valid):
     }
     schema = validated_schema(test_attributes, "attributes", framework, classes=classes, core_elements=["attributes"])
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework == PANDERA_POLARS_CLASS and description == "not all attributes need to be specified":
-        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         description.replace(" ", "_"),
@@ -218,8 +216,6 @@ def test_type_range(framework, linkml_type, example_value):
         if not is_valid:
             # SQLite effectively coerces everything and has no type checking
             expected_behavior = ValidationBehavior.INCOMPLETE
-    if framework == PANDERA_POLARS_CLASS:
-        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         f"{type(example_value).__name__}-{example_value}",
@@ -303,8 +299,6 @@ def test_any_type(framework, example_value):
         pytest.skip("Decimal not supported by YAML - https://github.com/yaml/pyyaml/issues/255")
     if framework in [SQL_DDL_SQLITE, SQL_DDL_POSTGRES]:
         pytest.skip("TODO: add support in sqlgen")
-    if framework == PANDERA_POLARS_CLASS:
-        pytest.skip("any not supported in panderagen.")
     classes = {
         CLASS_ANY: {
             "class_uri": "linkml:Any",
@@ -315,7 +309,7 @@ def test_any_type(framework, example_value):
                     "range": "Any",
                     "_mappings": {
                         # PYDANTIC: f"{SLOT_S1}: Optional[Any]",
-                        # PYTHON_DATACLASSES: f"{SLOT_S1}: Optional[Any]",
+                        PYTHON_DATACLASSES: f"{SLOT_S1}: Optional[Object]",
                     },
                 },
             }
