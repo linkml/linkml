@@ -31,7 +31,7 @@ TYPEMAP = {
     "xsd:dateTime": "DateTime",
     "xsd:date": "Date",
     "xsd:time": "Time",
-    "xsd:anyURI": "Object",
+    "xsd:anyURI": "str" "",
     "xsd:decimal": "float",
 }
 

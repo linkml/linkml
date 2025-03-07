@@ -118,7 +118,6 @@ def test_attributes(framework, description, object, is_valid):
         },
     }
     schema = validated_schema(test_attributes, "attributes", framework, classes=classes, core_elements=["attributes"])
-    expected_behavior = ValidationBehavior.IMPLEMENTS
     check_data(
         schema,
         description.replace(" ", "_"),
@@ -126,7 +125,6 @@ def test_attributes(framework, description, object, is_valid):
         object,
         is_valid,
         target_class=CLASS_C,
-        expected_behavior=expected_behavior,
         description="pattern",
     )
 
@@ -309,7 +307,8 @@ def test_any_type(framework, example_value):
                     "range": "Any",
                     "_mappings": {
                         # PYDANTIC: f"{SLOT_S1}: Optional[Any]",
-                        PYTHON_DATACLASSES: f"{SLOT_S1}: Optional[Object]",
+                        # PYTHON_DATACLASSES: f"{SLOT_S1}: Optional[Any]",
+                        PANDERA_POLARS_CLASS: f"{SLOT_S1}: Optional[Object]"
                     },
                 },
             }
@@ -371,8 +370,6 @@ def test_uri_types(framework, linkml_type, example_value, is_valid):
     }
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if not is_valid and framework in [PYDANTIC, JSON_SCHEMA]:
-        expected_behavior = ValidationBehavior.INCOMPLETE
-    if framework == PANDERA_POLARS_CLASS:
         expected_behavior = ValidationBehavior.INCOMPLETE
     schema = validated_schema(
         test_uri_types,
@@ -467,6 +464,9 @@ def test_date_types(framework, linkml_type, example_value, is_valid):
             expected_behavior = ValidationBehavior.INCOMPLETE
         if linkml_type == "date" and is_valid is False and example_value.startswith("2021"):
             expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
+        if linkml_type == "datetime" and is_valid and "T" in example_value:
+            expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == JSON_SCHEMA:
         # RFC3339 requires either Z or time zone offset
         if (
@@ -489,8 +489,6 @@ def test_date_types(framework, linkml_type, example_value, is_valid):
         else:
             # TODO: investigate this, hermit issue?
             expected_behavior = ValidationBehavior.FALSE_POSITIVE
-    if framework == PANDERA_POLARS_CLASS:
-        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         ensafeify(f"times-{example_value}-{example_value}"),
@@ -709,8 +707,6 @@ def test_identifier_is_required(framework, required_asserted, data_name, instanc
         core_elements=["identifier", "required"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    # if framework == PANDERA_POLARS_CLASS:
-    #    expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data_name,

@@ -933,7 +933,7 @@ def check_data_pandera(schema, output, target_class, object_to_validate, expecte
             polars_schema[column_name] = dtype.type
 
     try:
-        dataframe_to_validate = pl.DataFrame(object_to_validate, schema=polars_schema)
+        dataframe_to_validate = pl.DataFrame(object_to_validate, schema=polars_schema, strict=False)
         py_cls.validate(dataframe_to_validate, lazy=True)
     except Exception as e:
         if valid:
