@@ -1,0 +1,38 @@
+id: https://example.org/namespacing/
+name: namespacing
+prefixes:
+  - schema: http://schema.org/
+  - s4city: https://saref.etsi.org/saref4city/
+  - s4ehaw: https://saref.etsi.org/saref4ehaw/
+  - linkml: https://w3id.org/linkml/
+  - ex: https://example.org/namespacing/
+imports:
+  - linkml:types
+
+default_prefix: ex
+default_range: string
+
+classes:
+  SchemaEvent:
+    class_uri: schema:Event
+    slots:
+      - schema_location
+
+  SarefEvent:
+    class_uri: s4city:Event
+    slots:
+      - saref_location
+      - rendezvous_location
+      - something_else
+
+slots:
+  schema_location:
+    slot_uri: schema:location
+
+  saref_location:
+    slot_uri: https://saref.etsi.org/saref4ehaw/hasLocation
+
+  rendezvous_location:
+    slot_uri: https://saref.etsi.org/saref4auto/RendezvousLocation
+
+  something_else:

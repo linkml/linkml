@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Union
 
@@ -473,3 +474,33 @@ def assert_dict_subset(subset: dict, full: dict, path=""):
             assert_dict_subset(subset[key], full[key], new_path)
         else:
             assert full[key] == subset[key], f"in path {new_path}"
+
+
+@pytest.mark.parametrize("use_curies", [True, False])
+def test_use_uris(caplog, input_path, use_curies):
+    schema = input_path("multiple-ontologies.yaml")
+    generator = JsonSchemaGenerator(schema, mergeimports=True, use_curies=use_curies)
+    generated = json.loads(generator.serialize())
+    if use_curies:
+        assert "schema:Event" in generated["$defs"]
+        assert "schema:location" in generated["$defs"]["schema:Event"]["properties"]
+        assert "s4city:Event" in generated["$defs"]
+        assert "s4ehaw:hasLocation" in generated["$defs"]["s4city:Event"]["properties"]
+        assert "ex:something_else" in generated["$defs"]["s4city:Event"]["properties"]
+
+        expected_warning = False
+        for log_record in caplog.records:
+            if (
+                log_record.levelname == "WARNING"
+                and re.match(".*https://saref.etsi.org/saref4auto/RendezvousLocation.*", log_record.message) is not None
+            ):
+                expected_warning = True
+        assert expected_warning
+
+        assert "SchemaEvent" not in generated["$defs"]
+        assert "schema_location" not in generated["$defs"]["schema:Event"]["properties"]
+    else:
+        assert "SchemaEvent" in generated["$defs"]
+        assert "schema_location" in generated["$defs"]["SchemaEvent"]["properties"]
+        assert "SarefEvent" in generated["$defs"]
+        assert "saref_location" in generated["$defs"]["SarefEvent"]["properties"]
