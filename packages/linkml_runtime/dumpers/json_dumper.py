@@ -1,4 +1,5 @@
 import json
+from datetime import datetime, date
 from decimal import Decimal
 from typing import Dict, Union
 from pydantic import BaseModel
@@ -55,6 +56,8 @@ class JSONDumper(Dumper):
                 return remove_empty_items(o, hide_protected_keys=True)
             elif isinstance(o, Decimal):
                 # https://stackoverflow.com/questions/1960516/python-json-serialize-a-decimal-object
+                return str(o)
+            elif isinstance(o, (datetime, date)):
                 return str(o)
             else:
                 return json.JSONDecoder().decode(o)
