@@ -63,7 +63,7 @@ SCHEMA_NAME = str
 FRAMEWORK = str  ## pydantic, java, etc
 
 PYDANTIC_ROOT_CLASS = "ConfiguredBaseModel"
-PANDERA_ROOT_CLASS = "pla.DataFrameModel"
+PANDERA_ROOT_CLASS = "pla.DataFrameModel, _LinkmlPanderaValidator"
 PYTHON_DATACLASSES_ROOT_CLASS = "YAMLRoot"
 PYDANTIC = "pydantic"
 PYDANTIC_STRICT = "pydantic_strict"  ## TODO: https://docs.pydantic.dev/latest/usage/types/strict_types/

@@ -40,6 +40,7 @@ classes:
     attributes:
       identifier_column:
         description: identifier
+        identifier: True
         range: integer
         required: True
       bool_column:
@@ -85,6 +86,12 @@ classes:
         required: True
         #ifabsent: SyntheticEnumOnt(ANIMAL)
       multivalued_column:
+        description: one-to-many form
+        range: integer
+        required: True
+        multivalued: True
+        inlined_as_list: True
+      multivalued_one_many_column:
         description: list form
         range: integer
         required: True
@@ -93,6 +100,12 @@ classes:
         description: needs to have type object
         range: AnyType
         required: True
+      cardinality_column:
+        description: check cardinality
+        range: integer
+        required: true
+        minimum_cardinality: 1
+        maximum_cardinality: 1
       #class_column:
       #  description: test enum column with class value
       #  range: ColumnType
@@ -125,7 +138,9 @@ MODEL_COLUMNS = [
     "enum_column",
     "ontology_enum_column",
     "multivalued_column",
+    "multivalued_one_many_column",
     "any_type_column",
+    "cardinality_column",
 ]
 
 
@@ -188,7 +203,9 @@ def big_synthetic_dataframe(pl, np, N):
                     strict=False
                 ),
                 "multivalued_column": [[1, 2, 3],] * N,
+                "multivalued_one_many_column": pl.Series(np.random.choice(range(100), size=N), dtype=pl.Int64),
                 "any_type_column": pl.Series([1,] * N, dtype=pl.Object),
+                "cardinality_column": pl.Series(np.arange(1, N+1), dtype=pl.Int64)
                 #"class_column_x": pl.Series(values=np.random.choice([0, 1], size=N), dtype=pl.Int64),
                 #"class_column_y": pl.Series(values=np.random.choice([4, 5], size=N), dtype=pl.Int64)
             }
@@ -284,6 +301,27 @@ def test_pandera_validation_error_ge(pl, pandera, compiled_synthetic_schema_modu
     assert "DATAFRAME_CHECK" in str(e.value)
     assert "less_than_or_equal_to(999)" in str(e.value)
     assert "'column': 'integer_column'" in str(e)
+
+
+def test_pandera_validation_error_cardinality(pl, pandera, compiled_synthetic_schema_module, big_synthetic_dataframe):
+    """
+    tests ge range validation error
+    """
+    # fmt: off
+    bad_cardinality_dataframe = (
+        big_synthetic_dataframe
+        .with_columns(
+            pl.lit(1000, pl.Int64).alias("cardinality_column")
+        )
+    )
+    # fmt: on
+
+    with pytest.raises(pandera.errors.SchemaErrors) as e:
+        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(bad_cardinality_dataframe, lazy=True)
+
+    assert "DATAFRAME_CHECK" in str(e.value)
+    assert "check_cardinality_cardinality_column" in str(e.value)
+    assert "'column': 'cardinality_column'" in str(e)
 
 
 @pytest.mark.parametrize("bad_column", MODEL_COLUMNS)

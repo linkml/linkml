@@ -15,7 +15,6 @@ from linkml.reporting.model import RDF, RDFS
 from tests.test_compliance.helper import (
     JSONLD_CONTEXT,
     OWL,
-    PANDERA_POLARS_CLASS,
     PYDANTIC,
     PYTHON_DATACLASSES,
     ValidationBehavior,
@@ -150,8 +149,6 @@ def test_alias(framework, class_uri, slot_uri, slot_alias, type_uri, data_name, 
         core_elements=["alias", "class_uri", "slot_uri"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework in [PANDERA_POLARS_CLASS]:
-        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data_name,
@@ -231,8 +228,6 @@ def test_enum_alias(framework, enum_uri, pv_meaning, data_name, instance, is_val
         core_elements=["alias", "class_uri", "slot_uri"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework in [PANDERA_POLARS_CLASS]:
-        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data_name,

@@ -2129,6 +2129,37 @@ testing = ["beautifulsoup4", "coverage[toml]", "defusedxml", "pytest (>=8,<9)", 
 testing-docutils = ["pygments", "pytest (>=8,<9)", "pytest-param-files (>=0.6.0,<0.7.0)"]
 
 [[package]]
+name = "narwhals"
+version = "1.30.0"
+description = "Extremely lightweight compatibility layer between dataframe libraries"
+optional = true
+python-versions = ">=3.8"
+groups = ["main"]
+markers = "extra == \"pandera-polars-lts\""
+files = [
+    {file = "narwhals-1.30.0-py3-none-any.whl", hash = "sha256:443aa0a1abfae89bc65a6b888a7e310a03d1818bfb2ccd61c150199a5f954c17"},
+    {file = "narwhals-1.30.0.tar.gz", hash = "sha256:0c50cc67a5404da501302882838ec17dce51703d22cd8ad89162d6f60ea0bb19"},
+]
+
+[package.extras]
+core = ["duckdb", "pandas", "polars", "pyarrow", "pyarrow-stubs"]
+cudf = ["cudf (>=24.10.0)"]
+dask = ["dask[dataframe] (>=2024.8)"]
+dev = ["covdefaults", "hypothesis", "mypy (>=1.15.0,<1.16.0)", "pandas-stubs", "pre-commit", "pyright", "pytest", "pytest-cov", "pytest-env", "pytest-randomly", "typing-extensions"]
+docs = ["black", "duckdb", "jinja2", "markdown-exec[ansi]", "mkdocs", "mkdocs-autorefs", "mkdocs-material", "mkdocstrings-python (>=1.16)", "mkdocstrings[python]", "pandas", "polars (>=1.0.0)", "pyarrow"]
+duckdb = ["duckdb (>=1.0)"]
+extra = ["scikit-learn"]
+ibis = ["ibis-framework (>=6.0.0)", "packaging", "pyarrow-hotfix", "rich"]
+modin = ["modin"]
+pandas = ["pandas (>=0.25.3)"]
+polars = ["polars (>=0.20.3)"]
+pyarrow = ["pyarrow (>=11.0.0)"]
+pyspark = ["pyspark (>=3.5.0)"]
+sqlframe = ["sqlframe (>=3.22.0)"]
+tests = ["covdefaults", "hypothesis", "pytest", "pytest-cov", "pytest-env", "pytest-randomly", "typing-extensions"]
+typing = ["mypy (>=1.15.0,<1.16.0)", "pandas-stubs", "pyright", "typing-extensions"]
+
+[[package]]
 name = "nbclient"
 version = "0.10.1"
 description = "A client library for executing notebooks. Formerly nbconvert's ExecutePreprocessor."
@@ -5127,11 +5158,11 @@ type = ["pytest-mypy"]
 [extras]
 black = ["black"]
 numpydantic = ["numpydantic"]
-pandera-polars-lts = ["pandera", "polars-lts-cpu"]
+pandera-polars-lts = ["narwhals", "pandera", "polars-lts-cpu"]
 shacl = ["pyshacl"]
 tests = ["black", "numpydantic", "pyshacl"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.8.1"
-content-hash = "7959634df33ee59423796e7f8c5a57bc886272b765424ff1dcc37dd67557771c"
+content-hash = "7784dbad76a76e71a05fe75a88c604190f211d416ab149a8918e1da93ffc427a"

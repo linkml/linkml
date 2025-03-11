@@ -54,7 +54,8 @@ class PanderaGenerator(OOCodeGenerator):
     - schema-based (not implemented)
     """
 
-    DEFAULT_TEMPLATE_PATH = "pandera.jinja2"
+    DEFAULT_TEMPLATE_PATH = "panderagen_class_based"
+    DEFAULT_TEMPLATE_FILE = "pandera.jinja2"
 
     # ClassVars
     generatorname = os.path.basename(__file__)
@@ -66,7 +67,7 @@ class PanderaGenerator(OOCodeGenerator):
 
     # ObjectVars
     template_file: Optional[str] = None
-    template_path: str = f"{generatorstem}_{TemplateEnum.CLASS_BASED.value}"
+    template_path: str = DEFAULT_TEMPLATE_PATH
 
     gen_classvars: bool = True
     gen_slots: bool = True
@@ -171,7 +172,14 @@ class PanderaGenerator(OOCodeGenerator):
         else:
             module = self.render()
 
-        template_obj = self.load_template(PanderaGenerator.DEFAULT_TEMPLATE_PATH)
+        if self.template_path is None:
+            self.template_path = PanderaGenerator.DEFAULT_TEMPLATE_PATH
+
+        if self.template_file is None:
+            self.template_file = PanderaGenerator.DEFAULT_TEMPLATE_FILE
+        template_file = self.template_file
+
+        template_obj = self.load_template(template_file)
 
         code = template_obj.render(
             doc=module,
@@ -192,12 +200,55 @@ class PanderaGenerator(OOCodeGenerator):
     def get_enum_permissible_values(self, enum):
         return list(map(self.extract_permissible_text, enum.permissible_values or []))
 
+    def handle_slot(self, cn: str, sn: str):
+        safe_sn = self.get_slot_name(sn)
+        slot = self.schemaview.induced_slot(sn, cn)
+        range = slot.range
+
+        if slot.alias is not None:
+            safe_sn = self.get_slot_name(slot.alias)
+
+        if range is None:
+            range = self.schema.default_range  # need to figure this out, set at the beginning?
+            if range is None:
+                range = "str"
+        elif range in self.schemaview.all_classes():
+            range_info = self.schemaview.all_classes().get(range)
+
+            if range_info["class_uri"] == "linkml:Any":
+                range = "Object"
+            else:
+                range = "str"
+        elif range in self.schemaview.all_types():
+            t = self.schemaview.get_type(range)
+            range = self.map_type(t)
+        elif range in self.schemaview.all_enums():
+            enum_definition = self.schemaview.all_enums().get(range)
+            range = "Enum"
+            slot.annotations["permissible_values"] = self.get_enum_permissible_values(enum_definition)
+        else:
+            raise Exception(f"Unknown range {range}")
+
+        if slot.multivalued:
+            if slot.inlined_as_list:
+                range = self.make_multivalued(range)
+            else:
+                pass
+
+        default_value = self.ifabsent_default_value(slot)
+
+        return OOField(
+            name=safe_sn,
+            source_slot=slot,
+            range=range,
+            default_value=default_value,
+        )
+
     def render(self) -> OODocument:
         """
         Implementation in progress
         :return:
         """
-        DEFAULT_RANGE = "string"
         sv: SchemaView
         sv = self.schemaview
 
@@ -233,42 +284,7 @@ class PanderaGenerator(OOCodeGenerator):
             else:
                 parent_slots = []
             for sn in sv.class_slots(cn):
-                safe_sn = self.get_slot_name(sn)
-                slot = sv.induced_slot(sn, cn)
-                range = slot.range
-
-                if range is None:
-                    range = sv.schema.default_range
-                elif range in sv.all_classes():
-                    range_info = sv.all_classes().get(range)
-
-                    if range_info["class_uri"] == "linkml:Any":
-                        range = "Object"
-                    else:
-                        range = "str"
-                elif range in sv.all_types():
-                    t = sv.get_type(range)
-                    range = self.map_type(t)
-                    if range is None:  # If mapping fails,
-                        range = self.map_type(sv.all_types().get(DEFAULT_RANGE))
-                elif range in sv.all_enums():
-                    enum_definition = sv.all_enums().get(range)
-                    range = "Enum"
-                    slot.annotations["permissible_values"] = self.get_enum_permissible_values(enum_definition)
-                else:
-                    raise Exception(f"Unknown range {range}")
-
-                if slot.multivalued:
-                    range = self.make_multivalued(range)
-
-                default_value = self.ifabsent_default_value(slot)
-
-                oofield = OOField(
-                    name=safe_sn,
-                    source_slot=slot,
-                    range=range,
-                    default_value=default_value,
-                )
+                oofield = self.handle_slot(cn, sn)
                 if sn not in parent_slots:
                     ooclass.fields.append(oofield)
                 ooclass.all_fields.append(oofield)
@@ -279,19 +295,15 @@ class PanderaGenerator(OOCodeGenerator):
 
 
 @shared_arguments(PanderaGenerator)
-@click.option(
-    "--output-directory",
-    default="output",
-    show_default=True,
-    help="Output directory for individually generated class files",
-)
 @click.option("--package", help="Package name where relevant for generated class files")
+@click.option("--template-path", help="Optional jinja2 template directory within module")
 @click.option("--template-file", help="Optional jinja2 template to use for class generation")
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="gen-pandera")
 def cli(
     yamlfile,
     package=None,
+    template_path=None,
     template_file=None,
     slots=True,
     **args,
@@ -300,6 +312,7 @@ def cli(
     gen = PanderaGenerator(
         yamlfile,
         package=package,
+        template_path=template_path,
         template_file=template_file,
         gen_slots=slots,
         **args,

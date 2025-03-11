@@ -1,20 +1,26 @@
 {%- import 'slots.jinja2' as slot_macros -%}
+{%- import 'custom_checks.jinja2' as custom_checks -%}
 
 {%- macro render_class(cls) %}
 class {{cls.name}}(
         {%- if cls.is_a -%}
             {{ cls.is_a }}
         {%- else -%}
-            pla.DataFrameModel
+            pla.DataFrameModel, _LinkmlPanderaValidator
         {%- endif -%}
 ):
     {%- if cls.source_class.description %}
     """{{ cls.source_class.description }}"""
     {% endif -%}
+    {{ slot_macros.id_slot_name_class_variable(cls) }}
     {%- if (cls.fields | length) == 0 %}
     pass
     {% endif -%}
     {%- for field in cls.fields -%}
         {{ slot_macros.render_slot(field) }}
+    {%- endfor -%}
+    {%- for field in cls.fields -%}
+        {{ custom_checks.render_custom_check(field) }}
     {%- endfor %}
-{%- endmacro -%}
+
+{% endmacro -%}

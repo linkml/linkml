@@ -3,6 +3,7 @@
   Details at https://pandera.readthedocs.io/en/stable/dataframe_models.html
 -#}
 import pandera.polars as pla
+from pandera.api.polars.types import PolarsData
 from typing import Optional, List, Dict
 from pandera.typing import (
     Index,
@@ -16,3 +17,4 @@ from pandera.engines.polars_engine import (
     Enum,
     Object
 )
+import narwhals as nw
