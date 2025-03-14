@@ -1,5 +1,5 @@
 # Auto generated from config.yaml by pythongen.py version: 0.0.1
-# Generation date: 2025-03-04T11:01:40
+# Generation date: 2025-03-14T15:50:00
 # Schema: linter-config
 #
 # id: https://w3id.org/linkml/linter/config
@@ -368,7 +368,10 @@ class ExcludeTypeEnum(EnumDefinitionImpl):
     """
     The permissible values for the exclude_type slot
     """
+    class_definition = PermissibleValue(text="class_definition")
     enum_definition = PermissibleValue(text="enum_definition")
+    permissible_value = PermissibleValue(text="permissible_value")
+    slot_definition = PermissibleValue(text="slot_definition")
 
     _defn = EnumDefinition(
         name="ExcludeTypeEnum",
