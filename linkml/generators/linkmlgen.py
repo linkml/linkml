@@ -114,8 +114,16 @@ def cli(
 ):
     # You can use the `--materialize` / `--no-materialize` for control
     # over both attribute and pattern materialization.
-    materialize_attributes = bool(materialize)
-    materialize_patterns = bool(materialize)
+
+    # If the user did not explicitly specify materialize_attributes,
+    # fall back to the umbrella materialize flag.
+    if materialize_attributes is None:
+        materialize_attributes = materialize
+
+    # If the user did not explicitly specify materialize_patterns,
+    # fall back to the umbrella materialize flag.
+    if materialize_patterns is None:
+        materialize_patterns = materialize
 
     gen = LinkmlGenerator(
         yamlfile,
