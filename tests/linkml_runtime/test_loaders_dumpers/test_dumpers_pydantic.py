@@ -5,6 +5,7 @@ import yaml
 from linkml_runtime.dumpers import yaml_dumper, json_dumper
 from tests.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
 from tests.test_loaders_dumpers.models.books_normalized_pydantic import Book, BookSeries, Author
+from tests.test_loaders_dumpers.models.kitchen_sink_pydantic import BirthEvent, Person
 from linkml_runtime.utils.formatutils import remove_empty_items
 
 
@@ -51,3 +52,35 @@ class PydanticDumpersTestCase(LoaderDumperTestCase):
                 'inStock' not in data['books'][i].keys()
                 'creator' not in data['books'][i].keys()
             self.assertEqual(data, remove_empty_items(self.bookseries.model_dump()))
+  
+
+class PydanticDumpersDateTestCase(LoaderDumperTestCase):
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        """ Generate an example with a date for testing purposes """
+        LoaderDumperTestCase.setUpClass()
+        b1 = BirthEvent(started_at_time="2021-01-01", ended_at_time="2021-01-02")
+        
+        cls.person = Person(
+            id="P01", 
+            name='John Doe', 
+            has_birth_event=b1
+        )
+
+    def test_yaml_dumper(self):
+        """ Test the yaml emitter """
+        # with open(self.env.input_path('kitchen_sink_person_01.yaml'), 'w', encoding='utf-8') as f:
+        #     # write the yaml file
+        #     f.write(yaml_dumper.dumps(self.person))
+        # with open(self.env.input_path('kitchen_sink_person_01.json'), 'w', encoding='utf-8') as f:
+        #     # write the json file
+        #     f.write(json_dumper.dumps(self.person, inject_type=False))
+
+        self.dump_test('kitchen_sink_person_01.yaml', lambda out_fname: yaml_dumper.dump(self.person, out_fname))
+        self.dumps_test('kitchen_sink_person_01.yaml', lambda: yaml_dumper.dumps(self.person))
+
+    def test_json_dumper(self):
+        """ Test the json emitter """
+        self.dump_test('kitchen_sink_person_01.json', lambda out_fname: json_dumper.dump(self.person, out_fname))
+        self.dumps_test('kitchen_sink_person_01.json', lambda: json_dumper.dumps(self.person))
