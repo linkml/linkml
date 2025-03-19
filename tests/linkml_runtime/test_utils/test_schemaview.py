@@ -472,6 +472,10 @@ def test_imports(view):
     assert view.get_uri('TestClass') == 'core:TestClass'
     assert view.get_uri('TestClass', expand=True) == 'https://w3id.org/linkml/tests/core/TestClass'
 
+    assert view.get_uri('TestClass', expand=True, use_element_type=True) == 'https://w3id.org/linkml/tests/core/class/TestClass'
+    assert view.get_uri('TestClass', use_element_type=True) == 'core:class/TestClass'
+    assert view.get_uri('name', use_element_type=True) == 'core:slot/name'
+
     assert view.get_uri('string') == 'xsd:string'
 
     # dynamic enums
