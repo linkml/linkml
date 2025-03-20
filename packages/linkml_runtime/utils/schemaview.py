@@ -9,6 +9,7 @@ from collections import defaultdict, deque
 from pathlib import Path, PurePath
 from typing import Mapping, Optional, Tuple, TypeVar
 import warnings
+from urllib.parse import urlparse
 
 from linkml_runtime.utils.namespaces import Namespaces
 from deprecated.classic import deprecated
@@ -18,7 +19,6 @@ from linkml_runtime.utils.pattern import PatternResolver
 from linkml_runtime.linkml_model.meta import *
 from linkml_runtime.exceptions import OrderingError
 from enum import Enum
-from urllib.parse import urlparse
 
 logger = logging.getLogger(__name__)
 
@@ -107,18 +107,32 @@ def is_absolute_path(path: str) -> bool:
     drive, tail = os.path.splitdrive(norm_path)
     return bool(drive and tail)
 
-def resolve_import(sn: str, i: str) -> str:
-    if is_absolute_path(i):
-        return i
-    if urlparse(i).scheme:
-        return i
+#  WINDOWS:
+#     # This cannot be simplified. os.path.normpath() must be called before .as_posix()
+#     i = PurePath(os.path.normpath(PurePath(sn).parent / i)).as_posix()
+#     # i = resolve_import(sn, i)
+# else:
+#     # i = resolve_import(sn, i)
+#     i = os.path.normpath(str(Path(sn).parent / i))
+
+def _resolve_import(source_sch: str, imported_sch: str) -> str:
+    if os.path.isabs(imported_sch):
+        # Absolute import paths are not modified
+        return imported_sch
+    if urlparse(imported_sch).scheme:
+        # File with URL schemes are not modified
+        return imported_sch
+    
+    if WINDOWS:
+        path = PurePath(os.path.normpath(PurePath(source_sch).parent / imported_sch)).as_posix()
     else:
-        path = os.path.normpath(str(Path(sn).parent / i))
-        if i.startswith(".") and not path.startswith("."):
-            # Above condition handles cases where both sn and i are relative paths, and path is not already relative
-            return f"./{path}"
-        else:
-            return path
+        path = os.path.normpath(str(Path(source_sch).parent / imported_sch))
+
+    if imported_sch.startswith(".") and not path.startswith("."):
+        # Above condition handles cases where both source schema and imported schema are relative paths: these should remain relative
+        return f"./{path}"
+
+    return path
 
 
 @dataclass
@@ -305,10 +319,21 @@ class SchemaView(object):
                     # no self imports ;)
                     if i == sn:
                         continue
-                    else:
-                        temp = i
-                        i = resolve_import(sn, i)
-                    _ = sn, temp, i
+
+                    # resolve relative imports relative to the importing schema, rather than the
+                    # origin schema. Imports can be a URI or Curie, and imports from the same
+                    # directory don't require a ./, so if the current (sn) import is a relative
+                    # path, and the target import doesn't have : (as in a curie or a URI)
+                    # we prepend the relative path. This WILL make the key in the `schema_map` not
+                    # equal to the literal text specified in the importing schema, but this is
+                    # essential to sensible deduplication: eg. for
+                    # - main.yaml (imports ./types.yaml, ./subdir/subschema.yaml)
+                    # - types.yaml
+                    # - subdir/subschema.yaml (imports ./types.yaml)
+                    # - subdir/types.yaml
+                    # we should treat the two `types.yaml` as separate schemas from the POV of the
+                    # origin schema.
+                    i = _resolve_import(sn, i)
                     todo.append(i)
 
             # add item to closure
