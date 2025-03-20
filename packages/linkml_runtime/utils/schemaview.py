@@ -107,6 +107,14 @@ def is_absolute_path(path: str) -> bool:
     drive, tail = os.path.splitdrive(norm_path)
     return bool(drive and tail)
 
+#  WINDOWS:
+#     # This cannot be simplified. os.path.normpath() must be called before .as_posix()
+#     i = PurePath(os.path.normpath(PurePath(sn).parent / i)).as_posix()
+#     # i = resolve_import(sn, i)
+# else:
+#     # i = resolve_import(sn, i)
+#     i = os.path.normpath(str(Path(sn).parent / i))
+
 def _resolve_import(source_sch: str, imported_sch: str) -> str:
     if os.path.isabs(imported_sch):
         # Absolute import paths are not modified
