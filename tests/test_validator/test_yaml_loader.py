@@ -1,6 +1,6 @@
 import pytest
 
-from linkml.validator.loaders import YamlLoader
+from linkml.validator.loaders import YAMLLoader
 
 
 def test_single_document_object(tmp_file_factory):
@@ -12,7 +12,7 @@ b: two
 """,
     )
 
-    loader = YamlLoader(yaml_path)
+    loader = YAMLLoader(yaml_path)
     instances = loader.iter_instances()
     assert next(instances) == {"a": 1, "b": "two"}
     with pytest.raises(StopIteration):
@@ -30,7 +30,7 @@ def test_single_document_array(tmp_file_factory):
 """,
     )
 
-    loader = YamlLoader(yaml_path)
+    loader = YAMLLoader(yaml_path)
     instances = loader.iter_instances()
     assert next(instances) == {"a": 1, "b": "two"}
     assert next(instances) == {"a": 3, "b": "four"}
@@ -52,7 +52,7 @@ b: two
 """,
     )
 
-    loader = YamlLoader(yaml_path)
+    loader = YAMLLoader(yaml_path)
     instances = loader.iter_instances()
     assert next(instances) == {"a": 1, "b": "two"}
     assert next(instances) == {"a": 3, "b": "four"}
