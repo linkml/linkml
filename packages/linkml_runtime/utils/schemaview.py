@@ -1074,7 +1074,7 @@ class SchemaView(object):
             e = self.get_subset(element, imports=imports)
         return e
 
-    def get_uri(self, element: Union[ElementName, Element], imports=True, expand=False, native=False) -> str:
+    def get_uri(self, element: Union[ElementName, Element], imports=True, expand=False, native=False, use_element_type=False) -> str:
         """
         Return the CURIE or URI for a schema element. If the schema defines a specific URI, this is
         used, otherwise this is constructed from the default prefix combined with the element name
@@ -1086,7 +1086,7 @@ class SchemaView(object):
         :return: URI or CURIE as a string
         """
         e = self.get_element(element, imports=imports)
-
+        e_name = e.name
         if isinstance(e, ClassDefinition):
             uri = e.class_uri
             e_name = camelcase(e.name)
@@ -1106,7 +1106,12 @@ class SchemaView(object):
             else:
                 schema = self.schema_map[self.in_schema(e.name)]
             pfx = schema.default_prefix
-            uri = f'{pfx}:{e_name}'
+            if use_element_type:
+                e_type = e.class_name.split("_",1)[0]  # for example "class_definition"
+                e_type_path = f"{e_type}/" 
+            else:
+                e_type_path = ""
+            uri = f'{pfx}:{e_type_path}{e_name}'
         if expand:
             return self.expand_curie(uri)
         else:
