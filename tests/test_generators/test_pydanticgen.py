@@ -1492,7 +1492,7 @@ def test_arrays_anyshape_json_schema(dtype, expected):
 
 def test_arrays_anyshape_strict():
     """
-    Sctirct validation should not attempt to coerce, even when possible
+    Strict validation should not attempt to coerce, even when possible
     """
 
     class MyStrictModel(BaseModel):
