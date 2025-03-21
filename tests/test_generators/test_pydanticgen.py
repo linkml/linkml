@@ -1424,8 +1424,13 @@ def test_arrays_anyshape():
     arr = np.ones((2, 4, 5, 3, 2), dtype=int)
     _ = MyModel(array=arr.tolist())
 
-    # Coercion is allowed when not specifying strict
+    # Coercion that is impossible (floats with a fractional part) fails
     arr = np.random.random((2, 5, 3))
+    with pytest.raises(ValidationError):
+        _ = MyModel(array=arr.tolist())
+
+    # Coercion that is possible (floats without fractional part) succeeds
+    arr = np.ones((2, 5, 3), dtype=float)
     _ = MyModel(array=arr.tolist())
 
 
@@ -1482,13 +1487,12 @@ def test_arrays_anyshape_json_schema(dtype, expected):
     assert "anyOf" in schema["$defs"][array_ref]["items"]
     anyOf = schema["$defs"][array_ref]["items"]["anyOf"]
     assert anyOf[0:-1] == expected
-    assert anyOf[-1] == {"items": {"$ref": f"#/$defs/{array_ref}"}, "type": "array"}
+    assert anyOf[-1] == {"$ref": f"#/$defs/{array_ref}"}
 
 
-@pytest.mark.xfail()
 def test_arrays_anyshape_strict():
     """
-    CURRENTLY FAILING: see https://github.com/pydantic/pydantic/issues/11224
+    Sctirct validation should not attempt to coerce, even when possible
     """
 
     class MyStrictModel(BaseModel):
@@ -1696,10 +1700,7 @@ def test_generate_array_dtype_class(array_representation, array_dtype):
     # validates
     instance = cls(array=array)
     # and preserves object
-    if ArrayRepresentation.LIST in array_representation:
-        assert isinstance(next(next(next(instance.array))), target_cls)
-    else:
-        assert isinstance(instance.array[0][0][0], target_cls)
+    assert isinstance(instance.array[0][0][0], target_cls)
 
 
 @pytest.mark.parametrize(

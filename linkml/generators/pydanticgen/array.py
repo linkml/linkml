@@ -1,6 +1,5 @@
 import sys
 from abc import ABC, abstractmethod
-from collections.abc import Iterable
 from enum import Enum
 from typing import (
     ClassVar,
@@ -38,14 +37,13 @@ class ArrayRepresentation(Enum):
 _BOUNDED_ARRAY_FIELDS = ("exact_number_dimensions", "minimum_number_dimensions", "maximum_number_dimensions")
 
 _T = TypeVar("_T")
-AnyShapeArray = TypeAliasType("AnyShapeArray", Iterable[Union[_T, Iterable["AnyShapeArray[_T]"]]], type_params=(_T,))
+AnyShapeArray = TypeAliasType("AnyShapeArray", list[Union[_T, "AnyShapeArray[_T]"]], type_params=(_T,))
 
 _AnyShapeArrayImports = (
     Imports()
     + Import(
         module="typing",
         objects=[
-            ObjectImport(name="Iterable"),
             ObjectImport(name="TypeVar"),
             ObjectImport(name="Union"),
         ],
@@ -62,7 +60,7 @@ _AnyShapeArrayImports = (
 _AnyShapeArrayInjects = [
     '_T = TypeVar("_T")',
     """AnyShapeArray = TypeAliasType(
-    "AnyShapeArray", Iterable[Union[_T, Iterable["AnyShapeArray[_T]"]]], type_params=(_T,)
+    "AnyShapeArray", list[Union[_T, "AnyShapeArray[_T]"]], type_params=(_T,)
 )""",
 ]
 
