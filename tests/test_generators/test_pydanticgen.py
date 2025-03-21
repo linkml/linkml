@@ -1581,11 +1581,6 @@ class TestCase:
     def expectation(self, array_representation: list[ArrayRepresentation]):
         if self.type == "pass":
             return does_not_raise()
-        elif self.type in ("fail-dtype", "fail-scalar") and ArrayRepresentation.LIST in array_representation:
-            pytest.xfail(
-                "Pydantic cant apply strict validation with type annotations at the moment, see:"
-                "https://github.com/pydantic/pydantic/issues/11224"
-            )
         else:
             return pytest.raises(ValidationError)
 
@@ -1615,7 +1610,7 @@ def test_generate_array_anyshape(case, array_representation, array_anyshape):
     "case",
     [
         TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
-        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=float)),
+        TestCase(type="fail-dtype", array=np.random.default_rng().random((2, 3, 4), dtype=float)),
         TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
     ],
 )
