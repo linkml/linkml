@@ -681,7 +681,7 @@ In LinkML, there is no explicit support for punning. However, we can simulate th
 ### Example Scenario: "Author" as a Class and Property
 Let’s imagine a scenario where we define an "Author" both as a class (representing a person or entity who writes books) and as a property (representing the relationship between a book and its author).
 
-##### In OWL
+#### In OWL
 This could look like:
 
 ```turtle
@@ -694,7 +694,7 @@ This could look like:
 Here, `:Author` is a class representing authors, and `:author` is an object property linking books to authors.
 
 
-##### In LinkML
+#### In LinkML
 We don't directly support this kind of punning. However, we can simulate it by reusing the name "author" for both the class and the slot. Below are two approaches to achieving this:
 
 * Approach 1: Using `uriorcurie` for Class Reference
