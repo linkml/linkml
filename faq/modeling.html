@@ -596,8 +596,8 @@ occupation ontology, any body part from an anatomical ontology.</p>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ontology namespace</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">synonyms</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secondary ids</span>
-<span class="w">  </span><span class="w w-Error">  </span><span class="nt">id_prefixes</span><span class="p">:</span>
-<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO</span>
+<span class="w">     </span><span class="nt">id_prefixes</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO</span>
 
 
 <span class="nt">slots</span><span class="p">:</span>
@@ -941,6 +941,113 @@ will need to answer:</p>
 </ul>
 <p>Other more advanced constructs are also possible to allow you to treat relationships as first-class entities.</p>
 </section>
+<section id="can-linkml-handle-punning">
+<h2>Can LinkML handle punning?<a class="headerlink" href="#can-linkml-handle-punning" title="Permalink to this heading">#</a></h2>
+<section id="punning-in-owl">
+<h3>Punning in OWL<a class="headerlink" href="#punning-in-owl" title="Permalink to this heading">#</a></h3>
+<p>In OWL, punning refers to the practice of using the same entity name in different roles—sometimes as a class and sometimes as an individual. This flexibility allows an entity to be treated as both a class (concept) and an individual (instance), depending on the context in which it is used. However, this can lead to ambiguities if not handled carefully.</p>
+</section>
+<section id="punning-in-linkml">
+<h3>Punning in LinkML<a class="headerlink" href="#punning-in-linkml" title="Permalink to this heading">#</a></h3>
+<p>In LinkML, there is no explicit support for punning. However, we can simulate this behavior by using the same name for both classes and slots, with the understanding that this might introduce ambiguity. Below is an example where we “pun” the name of a class and a slot, replicating a common OWL punning scenario where the entity serves both as a class and a property.</p>
+</section>
+<section id="example-scenario-author-as-a-class-and-property">
+<h3>Example Scenario: “Author” as a Class and Property<a class="headerlink" href="#example-scenario-author-as-a-class-and-property" title="Permalink to this heading">#</a></h3>
+<p>Let’s imagine a scenario where we define an “Author” both as a class (representing a person or entity who writes books) and as a property (representing the relationship between a book and its author).</p>
+<section id="in-owl">
+<h4>In OWL<a class="headerlink" href="#in-owl" title="Permalink to this heading">#</a></h4>
+<p>This could look like:</p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="nt">Author</span> <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">Class</span> <span class="p">.</span>
+<span class="p">:</span><span class="nt">author</span> <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">ObjectProperty</span> <span class="p">;</span>
+    <span class="nn">rdfs</span><span class="p">:</span><span class="nt">label</span> <span class="s">&quot;author&quot;</span> <span class="p">;</span>
+    <span class="nn">rdfs</span><span class="p">:</span><span class="nt">range</span> <span class="p">:</span><span class="nt">Author</span> <span class="p">;</span>
+    <span class="nn">skos</span><span class="p">:</span><span class="nt">inScheme</span> <span class="nv">&lt;https://example.org/schema&gt;</span> <span class="p">.</span>
+</pre></div>
+</div>
+<p>Here, <code class="docutils literal notranslate"><span class="pre">:Author</span></code> is a class representing authors, and <code class="docutils literal notranslate"><span class="pre">:author</span></code> is an object property linking books to authors.</p>
+</section>
+<section id="in-linkml">
+<h4>In LinkML<a class="headerlink" href="#in-linkml" title="Permalink to this heading">#</a></h4>
+<p>We don’t directly support this kind of punning. However, we can simulate it by reusing the name “author” for both the class and the slot. Below are two approaches to achieving this:</p>
+<ul class="simple">
+<li><p>Approach 1: Using <code class="docutils literal notranslate"><span class="pre">uriorcurie</span></code> for Class Reference</p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Author</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name</span>
+<span class="w">  </span><span class="nt">Book</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">author</span><span class="w">  </span><span class="c1"># Reference to the &quot;Author&quot; class</span>
+<span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">author</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span><span class="w">  </span><span class="c1"># This points to the URI of the &quot;Author&quot; class</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>In this example, the <code class="docutils literal notranslate"><span class="pre">author</span></code> slot in the <code class="docutils literal notranslate"><span class="pre">Book</span></code> class refers to an identifier of the <code class="docutils literal notranslate"><span class="pre">Author</span></code> class. The <code class="docutils literal notranslate"><span class="pre">range:</span> <span class="pre">uriorcurie</span></code> indicates that this slot is expected to hold an identifier (CURIE) for an author.</p>
+<ul class="simple">
+<li><p>Approach 2: Using Direct Class Reference</p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Author</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name</span>
+<span class="w">  </span><span class="nt">Book</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">author</span><span class="w">  </span><span class="c1"># Use &quot;author&quot; slot in the Book class</span>
+<span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">author</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Author</span><span class="w">  </span><span class="c1"># Direct reference to the Author class</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>In this example, we reference the <code class="docutils literal notranslate"><span class="pre">Author</span></code> class directly in the range of the <code class="docutils literal notranslate"><span class="pre">author</span></code> slot for the <code class="docutils literal notranslate"><span class="pre">Book</span></code> class. While this introduces potential ambiguity (because <code class="docutils literal notranslate"><span class="pre">author</span></code> is both a slot and a class name), it works if we’re careful with the context in which it’s used.</p>
+</section>
+</section>
+<section id="potential-pitfalls">
+<h3>Potential Pitfalls<a class="headerlink" href="#potential-pitfalls" title="Permalink to this heading">#</a></h3>
+<p>While this mimics punning, there are some caveats to keep in mind:</p>
+<section id="ambiguity">
+<h4>Ambiguity<a class="headerlink" href="#ambiguity" title="Permalink to this heading">#</a></h4>
+<p>If a class and a slot share the same name, it can lead to confusion. In the above example, the term “author” could be interpreted either as a class or as a property, depending on context.</p>
+</section>
+<section id="best-practices-warning">
+<h4>Best Practices Warning<a class="headerlink" href="#best-practices-warning" title="Permalink to this heading">#</a></h4>
+<p>Many LinkML generators will issue warnings when you have overlapping class and slot names, as it’s generally considered a bad practice. For instance:</p>
+<div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="n">WARNING</span><span class="p">:</span><span class="n">linkml</span><span class="p">.</span><span class="na">utils</span><span class="p">.</span><span class="na">generator</span><span class="p">:</span><span class="n">Overlapping</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">names</span><span class="p">:</span><span class="w"> </span><span class="n">author</span>
+</pre></div>
+</div>
+</section>
+<section id="serialization">
+<h4>Serialization<a class="headerlink" href="#serialization" title="Permalink to this heading">#</a></h4>
+<p>Despite the potential issues with overlapping names, the LinkML-to-OWL serialization will correctly generate an object property and a class with the same name:</p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="nn">test</span><span class="p">:</span><span class="nt">author</span> <span class="kt">a</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">ObjectProperty</span> <span class="p">;</span>
+    <span class="nn">rdfs</span><span class="p">:</span><span class="nt">label</span> <span class="s">&quot;author&quot;</span> <span class="p">;</span>
+    <span class="nn">rdfs</span><span class="p">:</span><span class="nt">range</span> <span class="nn">test</span><span class="p">:</span><span class="nt">author</span> <span class="p">;</span>
+    <span class="nn">skos</span><span class="p">:</span><span class="nt">inScheme</span> <span class="nv">&lt;https://w3id.org/test/test-model&gt;</span> <span class="p">.</span>
+
+<span class="nn">test</span><span class="p">:</span><span class="nt">author</span> <span class="kt">a</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">Class</span> <span class="p">;</span>
+    <span class="nn">rdfs</span><span class="p">:</span><span class="nt">label</span> <span class="s">&quot;author&quot;</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>This serialization may work fine in OWL, but the model could be harder to read or reason about, especially when debugging or collaborating across teams.</p>
+</section>
+</section>
+<section id="final-considerations">
+<h3>Final Considerations<a class="headerlink" href="#final-considerations" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Clarity and Readability: If punning is crucial for your model, it’s important to document your reasoning and ensure all stakeholders understand the use of shared names. In LinkML, using different names for classes and slots, even if slightly different (e.g., <code class="docutils literal notranslate"><span class="pre">AuthorClass</span></code> and <code class="docutils literal notranslate"><span class="pre">AuthorSlot</span></code>), might help to avoid confusion.</p></li>
+<li><p>Tools and Validation: Be mindful of validation warnings that arise from naming overlaps. If you must use the same name, you may want to ensure that the generators or tools you use can handle this without generating errors or ambiguous interpretations.</p></li>
+</ul>
+</section>
+</section>
 </section>
 
         </article>
@@ -1028,6 +1135,23 @@ will need to answer:</p>
 <li><a class="reference internal" href="#what-are-id-prefixes-used-for">What are id_prefixes used for?</a></li>
 <li><a class="reference internal" href="#when-is-it-important-to-have-mappings">When is it important to have mappings?</a></li>
 <li><a class="reference internal" href="#how-do-i-represent-relationships-in-linkml">How do I represent relationships in LinkML?</a></li>
+<li><a class="reference internal" href="#can-linkml-handle-punning">Can LinkML handle punning?</a><ul>
+<li><a class="reference internal" href="#punning-in-owl">Punning in OWL</a></li>
+<li><a class="reference internal" href="#punning-in-linkml">Punning in LinkML</a></li>
+<li><a class="reference internal" href="#example-scenario-author-as-a-class-and-property">Example Scenario: “Author” as a Class and Property</a><ul>
+<li><a class="reference internal" href="#in-owl">In OWL</a></li>
+<li><a class="reference internal" href="#in-linkml">In LinkML</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#potential-pitfalls">Potential Pitfalls</a><ul>
+<li><a class="reference internal" href="#ambiguity">Ambiguity</a></li>
+<li><a class="reference internal" href="#best-practices-warning">Best Practices Warning</a></li>
+<li><a class="reference internal" href="#serialization">Serialization</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#final-considerations">Final Considerations</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
