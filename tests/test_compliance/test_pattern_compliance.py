@@ -9,6 +9,7 @@ import pytest
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
     OWL,
+    PANDERA_POLARS_CLASS,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SHACL,
@@ -81,6 +82,8 @@ def test_pattern(framework, range, schema_name, pattern, data_name, value):
         if not is_valid:
             implementation_status = ValidationBehavior.INCOMPLETE
     if range == "integer" and not is_valid and framework in [PYDANTIC, JSON_SCHEMA]:
+        implementation_status = ValidationBehavior.INCOMPLETE
+    if range == "integer" and framework == PANDERA_POLARS_CLASS:
         implementation_status = ValidationBehavior.INCOMPLETE
     if framework == OWL:
         pytest.skip("Hermit reasoning over xsd regular expressions is broken")

@@ -1,0 +1,14 @@
+{%- macro render_custom_check(field) -%}
+    {%- with slot = field.source_slot -%}
+        {%- if slot.minimum_cardinality or slot.maximum_cardinality %}
+    @pla.check("{{ field.name }}")
+    def check_cardinality_{{ field.name }}(cls, data: PolarsData):
+        return cls._check_cardinality(
+            data.lazyframe,
+            data.key,
+            min_cardinality={{ slot.minimum_cardinality }},
+            max_cardinality={{ slot.maximum_cardinality }}
+        )
+        {%- endif -%}
+    {%- endwith -%}
+{%- endmacro -%}
