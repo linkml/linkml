@@ -14,8 +14,8 @@ def test_pythongenerator_loads_poly(schema_str, data_str):
     json_data = json.loads(data_str)
     print(json_data)
     cont = mod.Container(**json_data)
-    assert 1 == len([x for x in cont.things if type(x) == mod.Person])
-    assert 1 == len([x for x in cont.things if type(x) == mod.Organisation])
+    assert 1 == len([x for x in cont.things if type(x) is mod.Person])
+    assert 1 == len([x for x in cont.things if type(x) is mod.Organisation])
 
 
 def test_type_hierarchy(type_hierarchy_schema_str):
@@ -38,7 +38,7 @@ def test_class_instantiation_without_designator(schema_str):
     named = mod.NamedThing(full_name="banana", id=3)
     assert person.height == 80
     assert organisation.number_of_employees == 70
-    assert type(named) == mod.NamedThing
+    assert type(named) is mod.NamedThing
     assert named.thingtype == "x:NamedThing"
     # TODO
     # assert person.thingtype == "http://testbreaker/not-the-uri-you-expect"

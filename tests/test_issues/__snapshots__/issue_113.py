@@ -33,7 +33,6 @@ from linkml_runtime.linkml_model.meta import (
     PvFormulaOptions
 )
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.formatutils import (
     camelcase,
@@ -62,9 +61,6 @@ from linkml_runtime.linkml_model.types import String
 metamodel_version = "1.7.0"
 version = None
 
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
-
 # Namespaces
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 DEFAULT_ = CurieNamespace('', 'https://microbiomedata/schema/')
@@ -77,7 +73,7 @@ DEFAULT_ = CurieNamespace('', 'https://microbiomedata/schema/')
 
 
 class NamedThing(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://microbiomedata/schema/NamedThing")
     class_class_curie: ClassVar[str] = None
@@ -87,7 +83,7 @@ class NamedThing(YAMLRoot):
 
 @dataclass(repr=False)
 class TestClass(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://microbiomedata/schema/TestClass")
     class_class_curie: ClassVar[str] = None
@@ -97,7 +93,7 @@ class TestClass(YAMLRoot):
     test_attribute_1: Optional[str] = None
     test_attribute_2: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.test_attribute_1 is not None and not isinstance(self.test_attribute_1, str):
             self.test_attribute_1 = str(self.test_attribute_1)
 

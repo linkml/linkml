@@ -45,7 +45,6 @@ from linkml_runtime.linkml_model.meta import (
     PvFormulaOptions
 )
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.formatutils import (
     camelcase,
@@ -74,9 +73,6 @@ from linkml_runtime.utils.metamodelcore import Bool, Decimal, XSDDate
 
 metamodel_version = "1.7.0"
 version = None
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 A = CurieNamespace('A', 'http://example.org/activities/')
@@ -158,7 +154,7 @@ class AgentId(extended_str):
 
 @dataclass(repr=False)
 class AnyOfSimpleType(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["AnyOfSimpleType"]
     class_class_curie: ClassVar[str] = "ks:AnyOfSimpleType"
@@ -167,7 +163,7 @@ class AnyOfSimpleType(YAMLRoot):
 
     attribute1: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.attribute1 is not None and not isinstance(self.attribute1, str):
             self.attribute1 = str(self.attribute1)
 
@@ -176,7 +172,7 @@ class AnyOfSimpleType(YAMLRoot):
 
 @dataclass(repr=False)
 class AnyOfClasses(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["AnyOfClasses"]
     class_class_curie: ClassVar[str] = "ks:AnyOfClasses"
@@ -185,7 +181,7 @@ class AnyOfClasses(YAMLRoot):
 
     attribute2: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.attribute2 is not None and not isinstance(self.attribute2, str):
             self.attribute2 = str(self.attribute2)
 
@@ -194,7 +190,7 @@ class AnyOfClasses(YAMLRoot):
 
 @dataclass(repr=False)
 class AnyOfEnums(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["AnyOfEnums"]
     class_class_curie: ClassVar[str] = "ks:AnyOfEnums"
@@ -203,7 +199,7 @@ class AnyOfEnums(YAMLRoot):
 
     attribute3: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.attribute3 is not None and not isinstance(self.attribute3, str):
             self.attribute3 = str(self.attribute3)
 
@@ -212,7 +208,7 @@ class AnyOfEnums(YAMLRoot):
 
 @dataclass(repr=False)
 class AnyOfMix(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["AnyOfMix"]
     class_class_curie: ClassVar[str] = "ks:AnyOfMix"
@@ -221,7 +217,7 @@ class AnyOfMix(YAMLRoot):
 
     attribute4: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.attribute4 is not None and not isinstance(self.attribute4, str):
             self.attribute4 = str(self.attribute4)
 
@@ -230,7 +226,7 @@ class AnyOfMix(YAMLRoot):
 
 @dataclass(repr=False)
 class EqualsString(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["EqualsString"]
     class_class_curie: ClassVar[str] = "ks:EqualsString"
@@ -239,7 +235,7 @@ class EqualsString(YAMLRoot):
 
     attribute5: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.attribute5 is not None and not isinstance(self.attribute5, str):
             self.attribute5 = str(self.attribute5)
 
@@ -248,7 +244,7 @@ class EqualsString(YAMLRoot):
 
 @dataclass(repr=False)
 class EqualsStringIn(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["EqualsStringIn"]
     class_class_curie: ClassVar[str] = "ks:EqualsStringIn"
@@ -257,7 +253,7 @@ class EqualsStringIn(YAMLRoot):
 
     attribute6: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.attribute6 is not None and not isinstance(self.attribute6, str):
             self.attribute6 = str(self.attribute6)
 
@@ -266,16 +262,16 @@ class EqualsStringIn(YAMLRoot):
 
 @dataclass(repr=False)
 class HasAliases(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["HasAliases"]
     class_class_curie: ClassVar[str] = "ks:HasAliases"
     class_name: ClassVar[str] = "HasAliases"
     class_model_uri: ClassVar[URIRef] = KS.HasAliases
 
-    aliases: Optional[Union[str, List[str]]] = empty_list()
+    aliases: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if not isinstance(self.aliases, list):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
@@ -285,7 +281,7 @@ class HasAliases(YAMLRoot):
 
 @dataclass(repr=False)
 class Friend(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["Friend"]
     class_class_curie: ClassVar[str] = "ks:Friend"
@@ -294,7 +290,7 @@ class Friend(YAMLRoot):
 
     name: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.name is not None and not isinstance(self.name, str):
             self.name = str(self.name)
 
@@ -306,7 +302,7 @@ class Person(YAMLRoot):
     """
     A person, living or dead
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["Person"]
     class_class_curie: ClassVar[str] = "ks:Person"
@@ -315,18 +311,18 @@ class Person(YAMLRoot):
 
     id: Union[str, PersonId] = None
     name: Optional[str] = None
-    has_employment_history: Optional[Union[Union[dict, "EmploymentEvent"], List[Union[dict, "EmploymentEvent"]]]] = empty_list()
-    has_familial_relationships: Optional[Union[Union[dict, "FamilialRelationship"], List[Union[dict, "FamilialRelationship"]]]] = empty_list()
-    has_medical_history: Optional[Union[Union[dict, "MedicalEvent"], List[Union[dict, "MedicalEvent"]]]] = empty_list()
+    has_employment_history: Optional[Union[Union[dict, "EmploymentEvent"], list[Union[dict, "EmploymentEvent"]]]] = empty_list()
+    has_familial_relationships: Optional[Union[Union[dict, "FamilialRelationship"], list[Union[dict, "FamilialRelationship"]]]] = empty_list()
+    has_medical_history: Optional[Union[Union[dict, "MedicalEvent"], list[Union[dict, "MedicalEvent"]]]] = empty_list()
     age_in_years: Optional[int] = None
-    addresses: Optional[Union[Union[dict, "Address"], List[Union[dict, "Address"]]]] = empty_list()
+    addresses: Optional[Union[Union[dict, "Address"], list[Union[dict, "Address"]]]] = empty_list()
     has_birth_event: Optional[Union[dict, "BirthEvent"]] = None
     species_name: Optional[str] = None
     stomach_count: Optional[int] = None
     is_living: Optional[Union[str, "LifeStatusEnum"]] = None
-    aliases: Optional[Union[str, List[str]]] = empty_list()
+    aliases: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, PersonId):
@@ -387,7 +383,7 @@ class Organization(YAMLRoot):
     * a
     * list
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["Organization"]
     class_class_curie: ClassVar[str] = "ks:Organization"
@@ -396,9 +392,9 @@ class Organization(YAMLRoot):
 
     id: Union[str, OrganizationId] = None
     name: Optional[str] = None
-    aliases: Optional[Union[str, List[str]]] = empty_list()
+    aliases: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, OrganizationId):
@@ -416,7 +412,7 @@ class Organization(YAMLRoot):
 
 @dataclass(repr=False)
 class Place(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["Place"]
     class_class_curie: ClassVar[str] = "ks:Place"
@@ -425,9 +421,9 @@ class Place(YAMLRoot):
 
     id: Union[str, PlaceId] = None
     name: Optional[str] = None
-    aliases: Optional[Union[str, List[str]]] = empty_list()
+    aliases: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, PlaceId):
@@ -445,7 +441,7 @@ class Place(YAMLRoot):
 
 @dataclass(repr=False)
 class Address(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["Address"]
     class_class_curie: ClassVar[str] = "ks:Address"
@@ -456,7 +452,7 @@ class Address(YAMLRoot):
     city: Optional[str] = None
     altitude: Optional[Decimal] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.street is not None and not isinstance(self.street, str):
             self.street = str(self.street)
 
@@ -471,7 +467,7 @@ class Address(YAMLRoot):
 
 @dataclass(repr=False)
 class Concept(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["Concept"]
     class_class_curie: ClassVar[str] = "ks:Concept"
@@ -482,7 +478,7 @@ class Concept(YAMLRoot):
     name: Optional[str] = None
     in_code_system: Optional[Union[str, CodeSystemId]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, ConceptId):
@@ -499,7 +495,7 @@ class Concept(YAMLRoot):
 
 @dataclass(repr=False)
 class DiagnosisConcept(Concept):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["DiagnosisConcept"]
     class_class_curie: ClassVar[str] = "ks:DiagnosisConcept"
@@ -508,7 +504,7 @@ class DiagnosisConcept(Concept):
 
     id: Union[str, DiagnosisConceptId] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, DiagnosisConceptId):
@@ -519,7 +515,7 @@ class DiagnosisConcept(Concept):
 
 @dataclass(repr=False)
 class ProcedureConcept(Concept):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["ProcedureConcept"]
     class_class_curie: ClassVar[str] = "ks:ProcedureConcept"
@@ -528,7 +524,7 @@ class ProcedureConcept(Concept):
 
     id: Union[str, ProcedureConceptId] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, ProcedureConceptId):
@@ -539,7 +535,7 @@ class ProcedureConcept(Concept):
 
 @dataclass(repr=False)
 class Event(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["Event"]
     class_class_curie: ClassVar[str] = "ks:Event"
@@ -551,7 +547,7 @@ class Event(YAMLRoot):
     is_current: Optional[Union[bool, Bool]] = None
     metadata: Optional[Union[dict, "AnyObject"]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.started_at_time is not None and not isinstance(self.started_at_time, XSDDate):
             self.started_at_time = XSDDate(self.started_at_time)
 
@@ -566,7 +562,7 @@ class Event(YAMLRoot):
 
 @dataclass(repr=False)
 class Relationship(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["Relationship"]
     class_class_curie: ClassVar[str] = "ks:Relationship"
@@ -579,7 +575,7 @@ class Relationship(YAMLRoot):
     type: Optional[str] = None
     cordialness: Optional[Union[str, "CordialnessEnum"]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.started_at_time is not None and not isinstance(self.started_at_time, XSDDate):
             self.started_at_time = XSDDate(self.started_at_time)
 
@@ -600,7 +596,7 @@ class Relationship(YAMLRoot):
 
 @dataclass(repr=False)
 class FamilialRelationship(Relationship):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["FamilialRelationship"]
     class_class_curie: ClassVar[str] = "ks:FamilialRelationship"
@@ -611,7 +607,7 @@ class FamilialRelationship(Relationship):
     related_to: Union[str, PersonId] = None
     cordialness: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.type):
             self.MissingRequiredField("type")
         if not isinstance(self.type, FamilialRelationshipType):
@@ -633,7 +629,7 @@ class FamilialRelationship(Relationship):
 
 @dataclass(repr=False)
 class BirthEvent(Event):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["BirthEvent"]
     class_class_curie: ClassVar[str] = "ks:BirthEvent"
@@ -642,7 +638,7 @@ class BirthEvent(Event):
 
     in_location: Optional[Union[str, PlaceId]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.in_location is not None and not isinstance(self.in_location, PlaceId):
             self.in_location = PlaceId(self.in_location)
 
@@ -651,7 +647,7 @@ class BirthEvent(Event):
 
 @dataclass(repr=False)
 class EmploymentEvent(Event):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["EmploymentEvent"]
     class_class_curie: ClassVar[str] = "ks:EmploymentEvent"
@@ -661,7 +657,7 @@ class EmploymentEvent(Event):
     employed_at: Optional[Union[str, CompanyId]] = None
     type: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.employed_at is not None and not isinstance(self.employed_at, CompanyId):
             self.employed_at = CompanyId(self.employed_at)
 
@@ -673,7 +669,7 @@ class EmploymentEvent(Event):
 
 @dataclass(repr=False)
 class MedicalEvent(Event):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["MedicalEvent"]
     class_class_curie: ClassVar[str] = "ks:MedicalEvent"
@@ -684,7 +680,7 @@ class MedicalEvent(Event):
     diagnosis: Optional[Union[dict, DiagnosisConcept]] = None
     procedure: Optional[Union[dict, ProcedureConcept]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.in_location is not None and not isinstance(self.in_location, PlaceId):
             self.in_location = PlaceId(self.in_location)
 
@@ -699,7 +695,7 @@ class MedicalEvent(Event):
 
 @dataclass(repr=False)
 class WithLocation(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["WithLocation"]
     class_class_curie: ClassVar[str] = "ks:WithLocation"
@@ -708,7 +704,7 @@ class WithLocation(YAMLRoot):
 
     in_location: Optional[Union[str, PlaceId]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.in_location is not None and not isinstance(self.in_location, PlaceId):
             self.in_location = PlaceId(self.in_location)
 
@@ -717,7 +713,7 @@ class WithLocation(YAMLRoot):
 
 @dataclass(repr=False)
 class MarriageEvent(Event):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["MarriageEvent"]
     class_class_curie: ClassVar[str] = "ks:MarriageEvent"
@@ -727,7 +723,7 @@ class MarriageEvent(Event):
     married_to: Optional[Union[str, PersonId]] = None
     in_location: Optional[Union[str, PlaceId]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.married_to is not None and not isinstance(self.married_to, PersonId):
             self.married_to = PersonId(self.married_to)
 
@@ -739,7 +735,7 @@ class MarriageEvent(Event):
 
 @dataclass(repr=False)
 class Company(Organization):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["Company"]
     class_class_curie: ClassVar[str] = "ks:Company"
@@ -749,7 +745,7 @@ class Company(Organization):
     id: Union[str, CompanyId] = None
     ceo: Optional[Union[str, PersonId]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, CompanyId):
@@ -763,7 +759,7 @@ class Company(Organization):
 
 @dataclass(repr=False)
 class CodeSystem(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["CodeSystem"]
     class_class_curie: ClassVar[str] = "ks:CodeSystem"
@@ -773,7 +769,7 @@ class CodeSystem(YAMLRoot):
     id: Union[str, CodeSystemId] = None
     name: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, CodeSystemId):
@@ -787,7 +783,7 @@ class CodeSystem(YAMLRoot):
 
 @dataclass(repr=False)
 class Dataset(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["Dataset"]
     class_class_curie: ClassVar[str] = "ks:Dataset"
@@ -795,12 +791,12 @@ class Dataset(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = KS.Dataset
 
     metadata: Optional[Union[dict, "AnyObject"]] = None
-    persons: Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]] = empty_dict()
-    companies: Optional[Union[Dict[Union[str, CompanyId], Union[dict, Company]], List[Union[dict, Company]]]] = empty_dict()
-    activities: Optional[Union[Dict[Union[str, ActivityId], Union[dict, "Activity"]], List[Union[dict, "Activity"]]]] = empty_dict()
-    code_systems: Optional[Union[Dict[Union[str, CodeSystemId], Union[dict, CodeSystem]], List[Union[dict, CodeSystem]]]] = empty_dict()
+    persons: Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]] = empty_dict()
+    companies: Optional[Union[dict[Union[str, CompanyId], Union[dict, Company]], list[Union[dict, Company]]]] = empty_dict()
+    activities: Optional[Union[dict[Union[str, ActivityId], Union[dict, "Activity"]], list[Union[dict, "Activity"]]]] = empty_dict()
+    code_systems: Optional[Union[dict[Union[str, CodeSystemId], Union[dict, CodeSystem]], list[Union[dict, CodeSystem]]]] = empty_dict()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         self._normalize_inlined_as_list(slot_name="persons", slot_type=Person, key_name="id", keyed=True)
 
         self._normalize_inlined_as_list(slot_name="companies", slot_type=Company, key_name="id", keyed=True)
@@ -814,7 +810,7 @@ class Dataset(YAMLRoot):
 
 @dataclass(repr=False)
 class FakeClass(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["FakeClass"]
     class_class_curie: ClassVar[str] = "ks:FakeClass"
@@ -823,7 +819,7 @@ class FakeClass(YAMLRoot):
 
     test_attribute: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.test_attribute is not None and not isinstance(self.test_attribute, str):
             self.test_attribute = str(self.test_attribute)
 
@@ -832,7 +828,7 @@ class FakeClass(YAMLRoot):
 
 @dataclass(repr=False)
 class ClassWithSpaces(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["ClassWithSpaces"]
     class_class_curie: ClassVar[str] = "ks:ClassWithSpaces"
@@ -841,7 +837,7 @@ class ClassWithSpaces(YAMLRoot):
 
     slot_with_space_1: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.slot_with_space_1 is not None and not isinstance(self.slot_with_space_1, str):
             self.slot_with_space_1 = str(self.slot_with_space_1)
 
@@ -850,7 +846,7 @@ class ClassWithSpaces(YAMLRoot):
 
 @dataclass(repr=False)
 class SubclassTest(ClassWithSpaces):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["SubclassTest"]
     class_class_curie: ClassVar[str] = "ks:SubclassTest"
@@ -859,7 +855,7 @@ class SubclassTest(ClassWithSpaces):
 
     slot_with_space_2: Optional[Union[dict, ClassWithSpaces]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.slot_with_space_2 is not None and not isinstance(self.slot_with_space_2, ClassWithSpaces):
             self.slot_with_space_2 = ClassWithSpaces(**as_dict(self.slot_with_space_2))
 
@@ -867,7 +863,7 @@ class SubclassTest(ClassWithSpaces):
 
 
 class SubSubClass2(SubclassTest):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["SubSubClass2"]
     class_class_curie: ClassVar[str] = "ks:SubSubClass2"
@@ -879,7 +875,7 @@ class TubSubClass1(SubclassTest):
     """
     Same depth as Sub sub class 1
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["TubSubClass1"]
     class_class_curie: ClassVar[str] = "ks:TubSubClass1"
@@ -894,7 +890,7 @@ class Activity(YAMLRoot):
     """
     a provence-generating activity
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = CORE["Activity"]
     class_class_curie: ClassVar[str] = "core:Activity"
@@ -909,7 +905,7 @@ class Activity(YAMLRoot):
     used: Optional[str] = None
     description: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, ActivityId):
@@ -941,7 +937,7 @@ class Agent(YAMLRoot):
     """
     a provence-generating agent
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = PROV["Agent"]
     class_class_curie: ClassVar[str] = "prov:Agent"
@@ -952,7 +948,7 @@ class Agent(YAMLRoot):
     acted_on_behalf_of: Optional[Union[str, AgentId]] = None
     was_informed_by: Optional[Union[str, ActivityId]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, AgentId):
@@ -1068,16 +1064,16 @@ slots.is_current = Slot(uri=KS.is_current, name="is current", curie=KS.curie('is
                    model_uri=KS.is_current, domain=None, range=Optional[Union[bool, Bool]])
 
 slots.has_employment_history = Slot(uri=KS.has_employment_history, name="has employment history", curie=KS.curie('has_employment_history'),
-                   model_uri=KS.has_employment_history, domain=None, range=Optional[Union[Union[dict, EmploymentEvent], List[Union[dict, EmploymentEvent]]]])
+                   model_uri=KS.has_employment_history, domain=None, range=Optional[Union[Union[dict, EmploymentEvent], list[Union[dict, EmploymentEvent]]]])
 
 slots.has_marriage_history = Slot(uri=KS.has_marriage_history, name="has marriage history", curie=KS.curie('has_marriage_history'),
-                   model_uri=KS.has_marriage_history, domain=None, range=Optional[Union[Union[dict, MarriageEvent], List[Union[dict, MarriageEvent]]]])
+                   model_uri=KS.has_marriage_history, domain=None, range=Optional[Union[Union[dict, MarriageEvent], list[Union[dict, MarriageEvent]]]])
 
 slots.has_medical_history = Slot(uri=KS.has_medical_history, name="has medical history", curie=KS.curie('has_medical_history'),
-                   model_uri=KS.has_medical_history, domain=None, range=Optional[Union[Union[dict, MedicalEvent], List[Union[dict, MedicalEvent]]]])
+                   model_uri=KS.has_medical_history, domain=None, range=Optional[Union[Union[dict, MedicalEvent], list[Union[dict, MedicalEvent]]]])
 
 slots.has_familial_relationships = Slot(uri=KS.has_familial_relationships, name="has familial relationships", curie=KS.curie('has_familial_relationships'),
-                   model_uri=KS.has_familial_relationships, domain=None, range=Optional[Union[Union[dict, FamilialRelationship], List[Union[dict, FamilialRelationship]]]])
+                   model_uri=KS.has_familial_relationships, domain=None, range=Optional[Union[Union[dict, FamilialRelationship], list[Union[dict, FamilialRelationship]]]])
 
 slots.married_to = Slot(uri=KS.married_to, name="married to", curie=KS.curie('married_to'),
                    model_uri=KS.married_to, domain=None, range=Optional[Union[str, PersonId]])
@@ -1092,7 +1088,7 @@ slots.procedure = Slot(uri=KS.procedure, name="procedure", curie=KS.curie('proce
                    model_uri=KS.procedure, domain=None, range=Optional[Union[dict, ProcedureConcept]])
 
 slots.addresses = Slot(uri=KS.addresses, name="addresses", curie=KS.curie('addresses'),
-                   model_uri=KS.addresses, domain=None, range=Optional[Union[Union[dict, Address], List[Union[dict, Address]]]])
+                   model_uri=KS.addresses, domain=None, range=Optional[Union[Union[dict, Address], list[Union[dict, Address]]]])
 
 slots.age_in_years = Slot(uri=KS.age_in_years, name="age in years", curie=KS.curie('age_in_years'),
                    model_uri=KS.age_in_years, domain=None, range=Optional[int])
@@ -1177,10 +1173,10 @@ slots.used = Slot(uri=PROV.used, name="used", curie=PROV.curie('used'),
                    model_uri=KS.used, domain=Activity, range=Optional[str])
 
 slots.activity_set = Slot(uri=CORE.activity_set, name="activity set", curie=CORE.curie('activity_set'),
-                   model_uri=KS.activity_set, domain=None, range=Optional[Union[Dict[Union[str, ActivityId], Union[dict, Activity]], List[Union[dict, Activity]]]])
+                   model_uri=KS.activity_set, domain=None, range=Optional[Union[dict[Union[str, ActivityId], Union[dict, Activity]], list[Union[dict, Activity]]]])
 
 slots.agent_set = Slot(uri=CORE.agent_set, name="agent set", curie=CORE.curie('agent_set'),
-                   model_uri=KS.agent_set, domain=None, range=Optional[Union[Dict[Union[str, AgentId], Union[dict, Agent]], List[Union[dict, Agent]]]])
+                   model_uri=KS.agent_set, domain=None, range=Optional[Union[dict[Union[str, AgentId], Union[dict, Agent]], list[Union[dict, Agent]]]])
 
 slots.anyOfSimpleType__attribute1 = Slot(uri=KS.attribute1, name="anyOfSimpleType__attribute1", curie=KS.curie('attribute1'),
                    model_uri=KS.anyOfSimpleType__attribute1, domain=None, range=Optional[str])
@@ -1201,7 +1197,7 @@ slots.equalsStringIn__attribute6 = Slot(uri=KS.attribute6, name="equalsStringIn_
                    model_uri=KS.equalsStringIn__attribute6, domain=None, range=Optional[str])
 
 slots.hasAliases__aliases = Slot(uri=SKOS.altLabel, name="hasAliases__aliases", curie=SKOS.curie('altLabel'),
-                   model_uri=KS.hasAliases__aliases, domain=None, range=Optional[Union[str, List[str]]])
+                   model_uri=KS.hasAliases__aliases, domain=None, range=Optional[Union[str, list[str]]])
 
 slots.person__is_living = Slot(uri=KS.is_living, name="person__is_living", curie=KS.curie('is_living'),
                    model_uri=KS.person__is_living, domain=None, range=Optional[Union[str, "LifeStatusEnum"]])
@@ -1210,16 +1206,16 @@ slots.company__ceo = Slot(uri=SCHEMA.ceo, name="company__ceo", curie=SCHEMA.curi
                    model_uri=KS.company__ceo, domain=None, range=Optional[Union[str, PersonId]])
 
 slots.dataset__persons = Slot(uri=KS.persons, name="dataset__persons", curie=KS.curie('persons'),
-                   model_uri=KS.dataset__persons, domain=None, range=Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]])
+                   model_uri=KS.dataset__persons, domain=None, range=Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]])
 
 slots.dataset__companies = Slot(uri=KS.companies, name="dataset__companies", curie=KS.curie('companies'),
-                   model_uri=KS.dataset__companies, domain=None, range=Optional[Union[Dict[Union[str, CompanyId], Union[dict, Company]], List[Union[dict, Company]]]])
+                   model_uri=KS.dataset__companies, domain=None, range=Optional[Union[dict[Union[str, CompanyId], Union[dict, Company]], list[Union[dict, Company]]]])
 
 slots.dataset__activities = Slot(uri=KS.activities, name="dataset__activities", curie=KS.curie('activities'),
-                   model_uri=KS.dataset__activities, domain=None, range=Optional[Union[Dict[Union[str, ActivityId], Union[dict, Activity]], List[Union[dict, Activity]]]])
+                   model_uri=KS.dataset__activities, domain=None, range=Optional[Union[dict[Union[str, ActivityId], Union[dict, Activity]], list[Union[dict, Activity]]]])
 
 slots.dataset__code_systems = Slot(uri=KS.code_systems, name="dataset__code_systems", curie=KS.curie('code_systems'),
-                   model_uri=KS.dataset__code_systems, domain=None, range=Optional[Union[Dict[Union[str, CodeSystemId], Union[dict, CodeSystem]], List[Union[dict, CodeSystem]]]])
+                   model_uri=KS.dataset__code_systems, domain=None, range=Optional[Union[dict[Union[str, CodeSystemId], Union[dict, CodeSystem]], list[Union[dict, CodeSystem]]]])
 
 slots.fakeClass__test_attribute = Slot(uri=KS.test_attribute, name="fakeClass__test_attribute", curie=KS.curie('test_attribute'),
                    model_uri=KS.fakeClass__test_attribute, domain=None, range=Optional[str])

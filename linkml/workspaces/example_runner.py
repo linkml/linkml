@@ -5,11 +5,12 @@ import json
 import logging
 import os
 import sys
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from io import StringIO
 from pathlib import Path
 from types import ModuleType
-from typing import Any, List, Mapping, Optional, TextIO, Union
+from typing import Any, Optional, TextIO, Union
 
 import click
 import yaml
@@ -34,9 +35,9 @@ class SummaryDocument:
 
     text: StringIO = field(default_factory=lambda: StringIO())
 
-    inputs: List[str] = field(default_factory=list)
+    inputs: list[str] = field(default_factory=list)
 
-    outputs: List[str] = field(default_factory=list)
+    outputs: list[str] = field(default_factory=list)
 
     def add(self, *lines: str):
         for line in lines:
@@ -58,7 +59,7 @@ class ExampleRunner:
     input_directory: Optional[Path] = None
     """Directory in which positive instance examples are found."""
 
-    input_formats: Optional[List[str]] = field(default_factory=lambda: ["yaml"])
+    input_formats: Optional[list[str]] = field(default_factory=lambda: ["yaml"])
 
     counter_example_input_directory: Optional[Path] = None
     """Directory in which negative instance examples are found. These are expected to fail."""
@@ -66,7 +67,7 @@ class ExampleRunner:
     output_directory: Optional[Path] = None
     """Directory where processed examples are written to."""
 
-    output_formats: Optional[List[str]] = field(default_factory=lambda: ["yaml", "json", "ttl"])
+    output_formats: Optional[list[str]] = field(default_factory=lambda: ["yaml", "json", "ttl"])
 
     schemaview: Optional[SchemaView] = None
     """View over schema which all examples adhere to."""
@@ -139,7 +140,7 @@ class ExampleRunner:
             self.process_examples_from_list(input_examples, fmt, False)
             self.process_examples_from_list(input_counter_examples, fmt, True)
 
-    def example_source_inputs(self, class_name: str = None) -> List[str]:
+    def example_source_inputs(self, class_name: str = None) -> list[str]:
         """
         Get the list of example source inputs.
 
