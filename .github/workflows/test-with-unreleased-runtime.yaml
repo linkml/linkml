@@ -6,11 +6,11 @@ on:
   workflow_dispatch:
     inputs:
       upstream_repo:
-        description: "Upstream linkml-runtime repository to test against"
+        description: "Upstream linkml-runtime repository to test with."
         required: true
         default: "linkml/linkml-runtime"
       upstream_branch:
-        description: "Upstream linkml-runtime branch to test against"
+        description: "Upstream linkml-runtime branch to test with."
         required: true
         default: "main"
 
