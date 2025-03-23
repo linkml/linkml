@@ -7,7 +7,6 @@ import click
 from jinja2 import Template
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
-    ClassDefinitionName,
     Element,
     SlotDefinition,
     SlotDefinitionName,
@@ -21,18 +20,33 @@ from linkml.utils.generator import shared_arguments
 
 logger = logging.getLogger(__name__)
 
-# Mapping from LinkML base types to Zod validator expressions
+# Mapping from LinkML base types to Zod validator expressions.
+# Updated "XSDDate" to use the preprocessor "dateFromString"
 zod_type_map = {
     "str": "z.string()",
     "int": "z.number()",
     "Bool": "z.boolean()",
     "float": "z.number()",
-    "XSDDate": "z.date()",
+    "XSDDate": "dateFromString",
 }
 
-# Jinja2 template to generate Zod schemas
+# Updated Jinja2 template to generate both Zod schemas and TypeScript types using z.infer.
+# Added a definition for dateFromString to preprocess date strings.
 zod_template = """
 import { z } from "zod";
+
+const dateFromString = z.preprocess((val) => {
+    if (typeof val === "string" || val instanceof Date) return new Date(val);
+}, z.date());
+
+{% for e in view.all_enums().values() %}
+{%- if e.description %}
+/** {{ e.description }} */
+{%- endif %}
+export const {{ gen.name(e) }}Enum = z.enum([{{ gen.enum_values(e) }}]);
+export type {{ gen.name(e) }} = z.infer<typeof {{ gen.name(e) }}Enum>;
+
+{% endfor %}
 
 {% for c in view.all_classes().values() %}
 {%- if c.description %}
@@ -44,6 +58,8 @@ export const {{ gen.name(c) }}Schema = z.object({
     {{ gen.name(s) }}: {{ gen.zod_type(s) }}{{ "," if not loop.last }}
 {%- endfor %}
 });
+export type {{ gen.name(c) }} = z.infer<typeof {{ gen.name(c) }}Schema>;
+
 {% endfor %}
 """
 
@@ -51,8 +67,9 @@ export const {{ gen.name(c) }}Schema = z.object({
 @dataclass
 class ZodGenerator(OOCodeGenerator):
     """
-    Generates Zod schemas from a LinkML schema
+    Generates Zod schemas and corresponding TypeScript types from a LinkML schema.
     """
+
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.0"
     valid_formats = ["text"]
@@ -62,7 +79,7 @@ class ZodGenerator(OOCodeGenerator):
     include_induced_slots: bool = False
 
     def serialize(self, output: Optional[str] = None) -> str:
-        """Serialize a LinkML schema to Zod types"""
+        """Serialize a LinkML schema to Zod types and TypeScript interfaces"""
         sv: SchemaView = self.schemaview
         template_obj = Template(zod_template)
         out_str = template_obj.render(
@@ -78,7 +95,7 @@ class ZodGenerator(OOCodeGenerator):
     def name(element: Element) -> str:
         """
         Returns the canonical name for an element.
-        For slots, returns the underscored name; for classes, returns the camelcased name.
+        For slots, returns the underscored name; for classes and enums, returns the camelcased name.
         """
         alias = element.name
         if isinstance(element, SlotDefinition) and element.alias:
@@ -87,6 +104,14 @@ class ZodGenerator(OOCodeGenerator):
             return underscore(alias)
         else:
             return camelcase(alias)
+
+    def enum_values(self, enum_obj) -> str:
+        """
+        Returns a comma-separated list of enum values in double quotes,
+        suitable for inclusion in a z.enum declaration.
+        """
+        values = list(enum_obj.permissible_values.keys())
+        return ", ".join(f'"{v}"' for v in values)
 
     def zod_type(self, slot: SlotDefinition) -> str:
         """
@@ -98,7 +123,6 @@ class ZodGenerator(OOCodeGenerator):
         """
         sv = self.schemaview
         r = slot.range
-        # If the range is a class, reference its schema using lazy evaluation
         if r in sv.all_classes():
             type_name = self.name(sv.get_class(r))
             base = f"z.lazy(() => {type_name}Schema)"
@@ -118,15 +142,12 @@ class ZodGenerator(OOCodeGenerator):
         else:
             base = "z.string()"
         if not slot.required:
-            base = f"{base}.optional()"
+            base = f"{base}.optional().nullable()"
         return base
 
     def required_slots(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
-        return [
-            s for s in self.schemaview.class_slots(cls.name)
-            if self.schemaview.induced_slot(s, cls.name).required
-        ]
-    
+        return [s for s in self.schemaview.class_slots(cls.name) if self.schemaview.induced_slot(s, cls.name).required]
+
     def default_value_for_type(self, typ: str) -> str:
         pass
 
@@ -137,9 +158,10 @@ class ZodGenerator(OOCodeGenerator):
 @click.option("--output", type=click.Path(dir_okay=False))
 @click.command()
 def cli(yamlfile, include_induced_slots=False, output=None, **args):
-    """Generate Zod schemas from a LinkML model.
+    """Generate Zod schemas and TypeScript interfaces from a LinkML model.
 
-    This generator produces a set of Zod schemas that you can use for runtime validation in TypeScript.
+    This generator produces a set of Zod schemas and associated TypeScript types (using z.infer)
+    for runtime validation in TypeScript.
     """
     gen = ZodGenerator(yamlfile, include_induced_slots=include_induced_slots, **args)
     serialized = gen.serialize(output=output)
