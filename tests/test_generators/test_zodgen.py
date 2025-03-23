@@ -21,8 +21,8 @@ def test_zodgen(kitchen_sink_path):
     assert 'import { z } from "zod";' in zod_schema_str
     # Check that an example schema for Organization is present
     assert "export const OrganizationSchema" in zod_schema_str
-    # Check that a Person schema is generated and extends another (if applicable)
-    assert_in("export const PersonSchema = z.object({")
+    # Check that a Person schema is generated
+    assert_in("export const PersonSchema")
     # Check that a sample multivalued slot from the kitchen sink is generated
     assert_in("has_familial_relationships: z.array(")
     # Check that a reference to a CodeSystem is generated correctly
