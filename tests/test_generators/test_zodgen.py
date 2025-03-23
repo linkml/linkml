@@ -91,3 +91,40 @@ def test_cli_no_print_with_output_zod(kitchen_sink_path, tmp_path):
         result = runner.invoke(cli, [kitchen_sink_path, "--output", str(output_path)])
         assert result.exit_code == 0
         mock_print.assert_not_called()
+
+def test_enums():
+    enum_schema = """
+id: unit_test
+name: unit_test
+
+prefixes:
+  ex: https://example.org/
+default_prefix: ex
+
+enums:
+  TestEnum:
+    permissible_values:
+      123:
+      +:
+      This & that, plus maybe a 🎩:
+      Ohio:
+classes:
+  Dummy:
+    attributes:
+      test_value:
+        range: TestEnum
+"""
+
+    gen = ZodGenerator(schema=enum_schema)
+    output = gen.serialize()
+
+    # Check if z.enum is generated correctly with sanitized keys
+    assert "z.enum([" in output
+    assert '"123"' in output
+    assert '"+"' in output
+    assert '"This & that, plus maybe a 🎩"' in output
+    assert '"Ohio"' in output
+
+    # Ensure the DummySchema uses the enum
+    assert "test_value" in output
+    assert "TestEnum" in output or "TestEnumSchema" in output
