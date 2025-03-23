@@ -30,9 +30,16 @@ zod_type_map = {
     "XSDDate": "z.date()",
 }
 
-# Jinja2 template to generate Zod schemas
+# Updated Jinja2 template to generate Zod schemas including enums
 zod_template = """
 import { z } from "zod";
+
+{% for e in view.all_enums().values() %}
+{%- if e.description %}
+/** {{ e.description }} */
+{%- endif %}
+export const {{ gen.name(e) }} = z.enum([{{ gen.enum_values(e) }}]);
+{% endfor %}
 
 {% for c in view.all_classes().values() %}
 {%- if c.description %}
@@ -47,11 +54,11 @@ export const {{ gen.name(c) }}Schema = z.object({
 {% endfor %}
 """
 
-
 @dataclass
 class ZodGenerator(OOCodeGenerator):
     """
-    Generates Zod schemas from a LinkML schema
+    Generates Zod schemas from a LinkML schema.
+    Includes generation for enums.
     """
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.0"
@@ -78,7 +85,7 @@ class ZodGenerator(OOCodeGenerator):
     def name(element: Element) -> str:
         """
         Returns the canonical name for an element.
-        For slots, returns the underscored name; for classes, returns the camelcased name.
+        For slots, returns the underscored name; for classes and enums, returns the camelcased name.
         """
         alias = element.name
         if isinstance(element, SlotDefinition) and element.alias:
@@ -87,6 +94,15 @@ class ZodGenerator(OOCodeGenerator):
             return underscore(alias)
         else:
             return camelcase(alias)
+
+    def enum_values(self, enum_obj) -> str:
+        """
+        Returns a comma-separated list of enum values in double quotes,
+        suitable for inclusion in a z.enum declaration.
+        """
+        # Assumes `enum_obj.permissible_values` is a dict whose keys are the allowed literal values.
+        values = list(enum_obj.permissible_values.keys())
+        return ", ".join(f'"{v}"' for v in values)
 
     def zod_type(self, slot: SlotDefinition) -> str:
         """
