@@ -91,17 +91,17 @@ class ZodGenerator(OOCodeGenerator):
     def zod_type(self, slot: SlotDefinition) -> str:
         """
         Returns a Zod type expression corresponding to a slot's range.
-        For classes, it references the generated schema.
+        For classes, it references the generated schema via z.lazy() to allow for circular references.
         For built-in types, it maps using zod_type_map.
         If a slot is multivalued, wraps the type in z.array(...).
         Appends .optional() if the slot is not required.
         """
         sv = self.schemaview
         r = slot.range
-        # If the range is a class, reference its schema
+        # If the range is a class, reference its schema using lazy evaluation
         if r in sv.all_classes():
             type_name = self.name(sv.get_class(r))
-            base = f"{type_name}Schema"  # reference to another generated schema
+            base = f"z.lazy(() => {type_name}Schema)"
             if slot.multivalued:
                 base = f"z.array({base})"
         elif r in sv.all_types():
@@ -126,6 +126,9 @@ class ZodGenerator(OOCodeGenerator):
             s for s in self.schemaview.class_slots(cls.name)
             if self.schemaview.induced_slot(s, cls.name).required
         ]
+    
+    def default_value_for_type(self, typ: str) -> str:
+        pass
 
 
 @shared_arguments(ZodGenerator)
