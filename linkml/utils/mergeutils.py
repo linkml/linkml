@@ -1,7 +1,10 @@
 import dataclasses
 import logging
+import os
 from copy import deepcopy
+from pathlib import Path
 from typing import Dict, List, Optional, Union, cast
+from urllib.parse import urlparse
 
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
@@ -17,9 +20,6 @@ from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.yamlutils import extended_str
 from rdflib import URIRef
-from pathlib import Path
-import os
-from urllib.parse import urlparse
 
 logger = logging.getLogger(__name__)
 
