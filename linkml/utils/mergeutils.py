@@ -238,9 +238,7 @@ def merge_enums(
 
 
 def resolve_merged_imports(
-    target: SchemaDefinition,
-    mergee: SchemaDefinition,
-    imported_from: Optional[str] = None
+    target: SchemaDefinition, mergee: SchemaDefinition, imported_from: Optional[str] = None
 ) -> None:
     """Merge the imports in source into target
 
