@@ -80,7 +80,7 @@ jobs:
         shell: bash
         run: |
           echo "upstream_branch=${{ inputs.upstream_branch }}" >> "$GITHUB_ENV"
-          echo "upstream_repo=${{ inputs.upstream_repo }}" >> $GITHUB_ENV"
+          echo "upstream_repo=${{ inputs.upstream_repo }}" >> "$GITHUB_ENV"
 
       - name: checkout upstream
         uses: actions/checkout@v4
