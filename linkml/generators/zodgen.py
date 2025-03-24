@@ -31,6 +31,7 @@ zod_type_map = {
 }
 
 # Updated Jinja2 template to generate both Zod schemas and TypeScript types using z.infer
+# For enums, we now export the runtime value as <EnumName>Enum and the type as <EnumName>.
 zod_template = """
 import { z } from "zod";
 
@@ -38,8 +39,8 @@ import { z } from "zod";
 {%- if e.description %}
 /** {{ e.description }} */
 {%- endif %}
-export const {{ gen.name(e) }} = z.enum([{{ gen.enum_values(e) }}]);
-export type {{ gen.name(e) }} = z.infer<typeof {{ gen.name(e) }}>;
+export const {{ gen.name(e) }}Enum = z.enum([{{ gen.enum_values(e) }}]);
+export type {{ gen.name(e) }} = z.infer<typeof {{ gen.name(e) }}Enum>;
 
 {% endfor %}
 
