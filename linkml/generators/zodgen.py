@@ -21,19 +21,24 @@ from linkml.utils.generator import shared_arguments
 
 logger = logging.getLogger(__name__)
 
-# Mapping from LinkML base types to Zod validator expressions
+# Mapping from LinkML base types to Zod validator expressions.
+# Updated "XSDDate" to use the preprocessor "dateFromString"
 zod_type_map = {
     "str": "z.string()",
     "int": "z.number()",
     "Bool": "z.boolean()",
     "float": "z.number()",
-    "XSDDate": "z.date()",
+    "XSDDate": "dateFromString",
 }
 
-# Updated Jinja2 template to generate both Zod schemas and TypeScript types using z.infer
-# For enums, we now export the runtime value as <EnumName>Enum and the type as <EnumName>.
+# Updated Jinja2 template to generate both Zod schemas and TypeScript types using z.infer.
+# Added a definition for dateFromString to preprocess date strings.
 zod_template = """
 import { z } from "zod";
+
+const dateFromString = z.preprocess((val) => {
+    if (typeof val === "string" || val instanceof Date) return new Date(val);
+}, z.date());
 
 {% for e in view.all_enums().values() %}
 {%- if e.description %}
