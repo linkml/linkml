@@ -1121,13 +1121,18 @@ class SchemaView:
                     raise ValueError(f'Cannot find {e.from_schema} in schema_map')
             else:
                 schema = self.schema_map[self.in_schema(e.name)]
-            pfx = schema.default_prefix
             if use_element_type:
                 e_type = e.class_name.split("_",1)[0]  # for example "class_definition"
                 e_type_path = f"{e_type}/" 
             else:
                 e_type_path = ""
-            uri = f'{pfx}:{e_type_path}{e_name}'
+            pfx = schema.default_prefix
+            # To construct the uri we have to find out if the schema has a default_prefix 
+            # or if a pseudo "prefix" was derived from the schema id.
+            if pfx == sfx(str(schema.id)):  # no prefix defined in schema
+                uri = f'{pfx}{e_type_path}{e_name}'
+            else:
+                uri = f'{pfx}:{e_type_path}{e_name}'
         if expand:
             return self.expand_curie(uri)
         else:
