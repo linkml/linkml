@@ -30,7 +30,7 @@ zod_type_map = {
     "XSDDate": "z.date()",
 }
 
-# Updated Jinja2 template to generate Zod schemas including enums
+# Updated Jinja2 template to generate both Zod schemas and TypeScript types using z.infer
 zod_template = """
 import { z } from "zod";
 
@@ -39,6 +39,8 @@ import { z } from "zod";
 /** {{ e.description }} */
 {%- endif %}
 export const {{ gen.name(e) }} = z.enum([{{ gen.enum_values(e) }}]);
+export type {{ gen.name(e) }} = z.infer<typeof {{ gen.name(e) }}>;
+
 {% endfor %}
 
 {% for c in view.all_classes().values() %}
@@ -51,14 +53,15 @@ export const {{ gen.name(c) }}Schema = z.object({
     {{ gen.name(s) }}: {{ gen.zod_type(s) }}{{ "," if not loop.last }}
 {%- endfor %}
 });
+export type {{ gen.name(c) }} = z.infer<typeof {{ gen.name(c) }}Schema>;
+
 {% endfor %}
 """
 
 @dataclass
 class ZodGenerator(OOCodeGenerator):
     """
-    Generates Zod schemas from a LinkML schema.
-    Includes generation for enums.
+    Generates Zod schemas and corresponding TypeScript types from a LinkML schema.
     """
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.0"
@@ -69,7 +72,7 @@ class ZodGenerator(OOCodeGenerator):
     include_induced_slots: bool = False
 
     def serialize(self, output: Optional[str] = None) -> str:
-        """Serialize a LinkML schema to Zod types"""
+        """Serialize a LinkML schema to Zod types and TypeScript interfaces"""
         sv: SchemaView = self.schemaview
         template_obj = Template(zod_template)
         out_str = template_obj.render(
@@ -100,7 +103,6 @@ class ZodGenerator(OOCodeGenerator):
         Returns a comma-separated list of enum values in double quotes,
         suitable for inclusion in a z.enum declaration.
         """
-        # Assumes `enum_obj.permissible_values` is a dict whose keys are the allowed literal values.
         values = list(enum_obj.permissible_values.keys())
         return ", ".join(f'"{v}"' for v in values)
 
@@ -114,7 +116,6 @@ class ZodGenerator(OOCodeGenerator):
         """
         sv = self.schemaview
         r = slot.range
-        # If the range is a class, reference its schema using lazy evaluation
         if r in sv.all_classes():
             type_name = self.name(sv.get_class(r))
             base = f"z.lazy(() => {type_name}Schema)"
@@ -153,9 +154,10 @@ class ZodGenerator(OOCodeGenerator):
 @click.option("--output", type=click.Path(dir_okay=False))
 @click.command()
 def cli(yamlfile, include_induced_slots=False, output=None, **args):
-    """Generate Zod schemas from a LinkML model.
+    """Generate Zod schemas and TypeScript interfaces from a LinkML model.
 
-    This generator produces a set of Zod schemas that you can use for runtime validation in TypeScript.
+    This generator produces a set of Zod schemas and associated TypeScript types (using z.infer)
+    for runtime validation in TypeScript.
     """
     gen = ZodGenerator(yamlfile, include_induced_slots=include_induced_slots, **args)
     serialized = gen.serialize(output=output)
