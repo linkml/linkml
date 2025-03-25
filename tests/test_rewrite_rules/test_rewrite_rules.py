@@ -1,22 +1,27 @@
+import logging
 import os
 from dataclasses import dataclass
 from typing import List, Optional, Set, Tuple, Union
+from urllib.parse import urljoin
 
 import pytest
 import requests
+from linkml_runtime.linkml_model.linkml_files import GITHUB_IO_BASE, LINKML_URL_BASE
 from rdflib import Namespace, URIRef
 
 from tests import SKIP_REWRITE_RULES, SKIP_REWRITE_RULES_REASON
 
+logger = logging.getLogger(__name__)
+
+
 # see README.md
-W3ID_SERVER = "https://w3id.org/"
+W3ID_SERVER = urljoin(LINKML_URL_BASE, "/")
 DEFAULT_SERVER = W3ID_SERVER
 # DEFAULT_SERVER = "http://localhost:8091/"
 # SKIP_REWRITE_RULES = False
 
 # Taken from Firefox network.http.accept.default
 default_header = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
-github_io = "https://linkml.github.io/"
 
 
 @dataclass
@@ -29,14 +34,14 @@ class TestEntry:
 
 def build_test_entry_set(input_url: Namespace, model: str) -> List[TestEntry]:
     return [
-        TestEntry(input_url, f"linkml-model/docs/{model}"),
-        TestEntry(input_url, f"linkml-model/linkml_model/model/schema/{model}.yaml", "text/yaml"),
-        TestEntry(input_url, f"linkml-model/linkml_model/rdf/{model}.ttl", "text/turtle"),
-        TestEntry(input_url, f"linkml-model/linkml_model/json/{model}.json", "application/json"),
-        TestEntry(input_url, f"linkml-model/linkml_model/shex/{model}.shex", "text/shex"),
-        TestEntry(input_url[".context.jsonld"], f"linkml-model/linkml_model/jsonld/{model}.context.jsonld"),
-        TestEntry(input_url[".owl"], f"linkml-model/linkml_model/owl/{model}.owl.ttl"),
-        TestEntry(input_url["/"], f"linkml-model/{model}/"),
+        TestEntry(input_url, f"docs/{model}"),
+        TestEntry(input_url, f"linkml_model/model/schema/{model}.yaml", "text/yaml"),
+        TestEntry(input_url, f"linkml_model/rdf/{model}.ttl", "text/turtle"),
+        TestEntry(input_url, f"linkml_model/json/{model}.json", "application/json"),
+        TestEntry(input_url, f"linkml_model/shex/{model}.shex", "text/shex"),
+        TestEntry(input_url[".context.jsonld"], f"linkml_model/jsonld/{model}.context.jsonld"),
+        TestEntry(input_url[".owl"], f"linkml_model/owl/{model}.owl.ttl"),
+        TestEntry(input_url["/"], f"{model}/"),
     ]
 
 
@@ -61,32 +66,32 @@ def generate_fixture_lists():
     meta_entries += build_test_entry_set(annotations, "annotations")
 
     vocab_entries: List[TestEntry] = [
-        TestEntry(type_["index"], "linkml-model/docs/type/index"),
-        TestEntry(type_.Element, "linkml-model/linkml_model/model/schema/type/Element.yaml/Element.yaml", "text/yaml"),
-        TestEntry(type_.Element, "linkml-model/linkml_model/rdf/type/Element.ttl/Element.ttl", "text/turtle"),
-        TestEntry(type_.slots, "linkml-model/linkml_model/json/type/slots.json/slots.json", "application/json"),
-        TestEntry(mapping["index"], "linkml-model/docs/mapping/index"),
+        TestEntry(type_["index"], "docs/type/index"),
+        TestEntry(type_.Element, "linkml_model/model/schema/type/Element.yaml/Element.yaml", "text/yaml"),
+        TestEntry(type_.Element, "linkml_model/rdf/type/Element.ttl/Element.ttl", "text/turtle"),
+        TestEntry(type_.slots, "linkml_model/json/type/slots.json/slots.json", "application/json"),
+        TestEntry(mapping["index"], "docs/mapping/index"),
     ]
 
     meta_model_entries: List[TestEntry] = [
-        TestEntry(metas, "linkml-model/docs/meta"),
-        TestEntry(metas, "linkml-model/linkml_model/model/schema/meta.yaml", "text/yaml"),
-        TestEntry(metas, "linkml-model/linkml_model/rdf/meta.ttl", "text/turtle"),
-        TestEntry(metas, "linkml-model/linkml_model/json/meta.json", "application/json"),
-        TestEntry(metas, "linkml-model/linkml_model/shex/meta.shex", "text/shex"),
-        TestEntry(metas[".owl"], "linkml-model/linkml_model/owl/meta.owl.ttl"),
-        TestEntry(metas[".foo"], "linkml-model/meta.foo"),
-        TestEntry(linkml + "context.jsonld", "linkml-model/linkml_model/jsonld/context.jsonld"),
-        TestEntry(linkml + "contextn.jsonld", "linkml-model/contextn.jsonld"),
+        TestEntry(metas, "docs/meta"),
+        TestEntry(metas, "linkml_model/model/schema/meta.yaml", "text/yaml"),
+        TestEntry(metas, "linkml_model/rdf/meta.ttl", "text/turtle"),
+        TestEntry(metas, "linkml_model/json/meta.json", "application/json"),
+        TestEntry(metas, "linkml_model/shex/meta.shex", "text/shex"),
+        TestEntry(metas[".owl"], "linkml_model/owl/meta.owl.ttl"),
+        TestEntry(metas[".foo"], "meta.foo"),
+        TestEntry(linkml + "context.jsonld", "linkml_model/jsonld/context.jsonld"),
+        TestEntry(linkml + "contextn.jsonld", "contextn.jsonld"),
     ]
     meta_vocab_entries: List[TestEntry] = [
-        TestEntry(meta.Element, "linkml-model/docs/meta/Element"),
-        TestEntry(meta.slot, "linkml-model/docs/meta/slot"),
-        TestEntry(meta.Element, "linkml-model/linkml_model/model/schema/meta/Element.yaml/Element.yaml", "text/yaml"),
-        TestEntry(meta.Element, "linkml-model/linkml_model/rdf/meta/Element.ttl/Element.ttl", "text/turtle"),
-        TestEntry(meta.Element, "linkml-model/linkml_model/json/meta/Element.json/Element.json", "application/json"),
-        TestEntry(meta.Element, "linkml-model/linkml_model/shex/meta/Element.shex/Element.shex", "text/shex"),
-        TestEntry(meta.Element, "linkml-model/meta/Element", "text/foo"),
+        TestEntry(meta.Element, "docs/meta/Element"),
+        TestEntry(meta.slot, "docs/meta/slot"),
+        TestEntry(meta.Element, "linkml_model/model/schema/meta/Element.yaml/Element.yaml", "text/yaml"),
+        TestEntry(meta.Element, "linkml_model/rdf/meta/Element.ttl/Element.ttl", "text/turtle"),
+        TestEntry(meta.Element, "linkml_model/json/meta/Element.json/Element.json", "application/json"),
+        TestEntry(meta.Element, "linkml_model/shex/meta/Element.shex/Element.shex", "text/shex"),
+        TestEntry(meta.Element, "meta/Element", "text/foo"),
     ]
 
     return {
@@ -127,7 +132,7 @@ fixture_lists = generate_fixture_lists()
 )
 def test_rewrite_rules(entries: List[TestEntry], results, fail_on_error) -> None:
     def test_it(e: TestEntry, accept_header: str) -> bool:
-        expected = github_io + e.expected_url
+        expected = urljoin(GITHUB_IO_BASE, e.expected_url)
         resp = requests.head(e.input_url, headers={"accept": accept_header}, verify=False)
 
         # w3id.org uses a 301 to go from http: to https:
@@ -147,7 +152,7 @@ def test_rewrite_rules(entries: List[TestEntry], results, fail_on_error) -> None
             record_results(results, e.input_url, accept_header, actual)
             return True
         elif expected != actual:
-            print(f"{e.input_url} ({accept_header}):\n expected {expected} - got {actual}")
+            logger.info(f"{e.input_url} ({accept_header}):\n expected {expected} - got {actual}")
             return False
         record_results(results, e.input_url, accept_header, actual)
         return True
