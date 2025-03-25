@@ -42,7 +42,11 @@ def test_imports(input_path, snapshot):
 def test_imports_relative(input_path):
     loader = SchemaLoader(input_path("relative_import_test/main.yaml"))
     loader.resolve()
-    assert loader.schema.imports == ['./child/index', 'child/grandchild/index', 'child/grandchild/greatgrandchild/index']
+    assert loader.schema.imports == [
+        "./child/index",
+        "child/grandchild/index",
+        "child/grandchild/greatgrandchild/index",
+    ]
 
 
 @pytest.mark.skip(reason="Re-enable this once we get fully migrated")
