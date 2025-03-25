@@ -902,6 +902,29 @@ this domain.</p>
 <p>To see examples, Biolink uses id_prefixes extensively. For example, the <a class="reference external" href="https://biolink.github.io/biolink-model/docs/MolecularEntity">MolecularEntity</a> class shows that identifiers for this class can be drawn from PubChem, CHEBI, DrugBank, etc.</p>
 <p>For more, see <a class="reference external" href="https://linkml.io/linkml/schemas/uris-and-mappings.html">URIs and Mappings</a></p>
 </section>
+<section id="how-to-use-the-alias-metamodel-construct">
+<h2>How to use the <code class="docutils literal notranslate"><span class="pre">alias</span></code> metamodel construct?<a class="headerlink" href="#how-to-use-the-alias-metamodel-construct" title="Permalink to this heading">#</a></h2>
+<p>The <a class="reference external" href="https://linkml.io/linkml-model/latest/docs/alias/">alias</a> construct from the metamodel is an element that can be asserted on slot definitions in the schema. If <em>alias</em> is asserted on a slot and the slot is asserted on a class then, we would need to use the alias name to refer to the slot in the instance file (CSV/TSV, YAML, JSON, etc.).</p>
+<p>For example:</p>
+<p>Snippet of schema file:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Sample</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">altitude</span>
+<span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">altitude_in_meters</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">alias</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">alt_in_m</span>
+<span class="w">    </span><span class="nt">unit</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">ucum_code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">m</span>
+</pre></div>
+</div>
+<p>Instance file (as YAML):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EX-123</span>
+<span class="w">  </span><span class="nt">alt_in_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+</pre></div>
+</div>
+</section>
 <section id="when-is-it-important-to-have-mappings">
 <h2>When is it important to have mappings?<a class="headerlink" href="#when-is-it-important-to-have-mappings" title="Permalink to this heading">#</a></h2>
 <p>Any element in a LinkML schema can have any number of <em>mappings</em> associated with it</p>
@@ -1133,6 +1156,7 @@ will need to answer:</p>
 <li><a class="reference internal" href="#what-is-the-prefixes-section-at-the-start-of-a-schema">What is the prefixes section at the start of a schema?</a></li>
 <li><a class="reference internal" href="#is-there-a-standard-registry-of-prefixes">Is there a standard registry of prefixes?</a></li>
 <li><a class="reference internal" href="#what-are-id-prefixes-used-for">What are id_prefixes used for?</a></li>
+<li><a class="reference internal" href="#how-to-use-the-alias-metamodel-construct">How to use the <code class="docutils literal notranslate"><span class="pre">alias</span></code> metamodel construct?</a></li>
 <li><a class="reference internal" href="#when-is-it-important-to-have-mappings">When is it important to have mappings?</a></li>
 <li><a class="reference internal" href="#how-do-i-represent-relationships-in-linkml">How do I represent relationships in LinkML?</a></li>
 <li><a class="reference internal" href="#can-linkml-handle-punning">Can LinkML handle punning?</a><ul>
