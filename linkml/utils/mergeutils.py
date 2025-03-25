@@ -269,7 +269,7 @@ def resolve_merged_imports(
         # Adjust relative imports to be relative to the importing file
         elif imp.startswith("."):
             if imported_from is None:
-                Warning(f"Cannot resolve relative import: {imp}")
+                logger.warning(f"Cannot resolve relative import: {imp}")
                 target.imports.append(imp)
             else:
                 resolved_imp = os.path.normpath(str(Path(imported_from).parent / Path(imp)))
