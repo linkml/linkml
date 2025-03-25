@@ -1,5 +1,6 @@
-from linkml.validator.validator import Validator
 from linkml_runtime.loaders import yaml_loader
+
+from linkml.validator.validator import Validator
 from tests.test_generators.test_pythongen import make_python
 
 
