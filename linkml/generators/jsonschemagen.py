@@ -237,6 +237,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     valid_formats = ["json"]
     uses_schemaloader = False
     file_extension = "schema.json"
+    materialize_patterns: bool = False
 
     # @deprecated("Use top_class")
     topClass: Optional[str] = None
@@ -690,6 +691,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         return self.top_level_schema
 
     def serialize(self, **kwargs) -> str:
+        if self.materialize_patterns:
+            logger.info("Materializing patterns in the schema before serialization")
+            self.schemaview.materialize_patterns()
+
         return self.generate().to_json(sort_keys=True, indent=self.indent if self.indent > 0 else None)
 
 
@@ -751,6 +756,12 @@ Specify from which slot are JSON Schema 'title' annotations generated.
 Include LinkML Schema outside of imports mechanism.  Helpful in including deprecated classes and slots in a separate
 YAML, and including it when necessary but not by default (e.g. in documentation or for backwards compatibility)
 """,
+)
+@click.option(
+    "--materialize-patterns/--no-materialize-patterns",
+    default=True,  # Default set to True
+    show_default=True,
+    help="If set, patterns will be materialized in the generated JSON Schema.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):

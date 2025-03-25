@@ -233,6 +233,15 @@ slots:
     range: ProcedureConcept
     inlined: true
 
+  # Note: It's not recommended to tweak other slots willy-nilly because
+  # it might break other tests. So we're adding a dummy slot here called
+  # deprecation_test_slot to check if the slot documentation page will
+  # have a banner called "DEPRECATED".
+  deprecation_test_slot:
+    deprecated: >- 
+      This is a dummy slot that we are deprecating for testing purposes. 
+      Deprecated on 3/24/2025.
+
   ended_at_time:
     slot_uri: prov:endedAtTime
     range: date
