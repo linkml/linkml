@@ -10,6 +10,7 @@ from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from sqlalchemy import Column, ForeignKey, MetaData, Table, UniqueConstraint, create_mock_engine
 from sqlalchemy.types import Boolean, Date, DateTime, Enum, Float, Integer, Text, Time
+from sqlalchemy.dialects.oracle import VARCHAR2
 
 from linkml._version import __version__
 from linkml.transformers.relmodel_transformer import ForeignKeyPolicy, RelationalModelTransformer
@@ -28,6 +29,7 @@ class SqlNamingPolicy(Enum):
 # TODO: move this up
 METAMODEL_TYPE_TO_BASE = {
     "string": "str",
+    "VARCHAR2": "VARCHAR2",
     "integer": "int",
     "boolean": "Bool",
     "float": "float",
@@ -46,6 +48,7 @@ METAMODEL_TYPE_TO_BASE = {
 RANGEMAP = {
     "str": Text(),
     "string": Text(),
+    "VARCHAR2": VARCHAR2(256),
     "NCName": Text(),
     "URIorCURIE": Text(),
     "int": Integer(),
@@ -139,6 +142,8 @@ class SQLTableGenerator(Generator):
     rename_foreign_keys: bool = False
     direct_mapping: bool = False
     relative_slot_num: bool = False
+    maximum_length_oracle: int = 256
+
 
     def serialize(self, **kwargs) -> str:
         return self.generate_ddl(**kwargs)
@@ -244,7 +249,9 @@ class SQLTableGenerator(Generator):
         # then simply use the schema that is provided to the SQLTableGenerator() object
         if not schema:
             schema = SchemaLoader(data=self.schema).resolve()
-
+        # Adding a condition to see if a given item is within the oracle dialect, in which case we should generate of type VARCHAR2
+        if range in ['str', 'String', 'VARCHAR2','VARCHAR'] and self.dialect=='oracle':
+            return VARCHAR2(self.maximum_length_oracle)
         if range in schema.classes:
             # FK type should be the same as the identifier of the foreign key
             fk = SchemaView(schema).get_identifier_slot(range)
@@ -310,6 +317,12 @@ class SQLTableGenerator(Generator):
     default=True,
     show_default=True,
     help="Emit FK declarations",
+)
+@click.option(
+    "--maximum_length_oracle",
+    default=256,
+    show_default=True,
+    help="Maximum lengeth of varchar based arguments for oracle dialects",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(

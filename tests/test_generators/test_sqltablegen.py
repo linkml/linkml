@@ -6,6 +6,7 @@ from linkml_runtime.linkml_model.meta import SlotDefinition
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
 from sqlalchemy.sql.sqltypes import Enum, Integer, Text
+from sqlalchemy.dialects.oracle import VARCHAR2
 
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.utils.schema_builder import SchemaBuilder
@@ -121,6 +122,10 @@ def test_generate_ddl(schema):
 def test_get_sql_range(schema):
     """Test case for the get_sql_range() method."""
     gen = SQLTableGenerator(schema)
+    # Test case to enable Varchar2 usage
+    gen_oracle = SQLTableGenerator(schema)
+    gen_oracle.dialect = 'oracle'
+    gen_oracle.maximum_length_oracle = 256
 
     # loader = SchemaLoader(data=SCHEMA)
     # schema_def_str = loader.resolve()
@@ -165,10 +170,14 @@ def test_get_sql_range(schema):
     # foreign key slot type
     actual_4_output = gen.get_sql_range(case_4_slot)
 
+    # Slot range for oracle dialect type
+    varchar_output = gen_oracle.get_sql_range(case_1_slot)
+
     assert isinstance(actual_1_output, Text)
     assert isinstance(actual_2_output, Enum)
     assert isinstance(actual_3_output, Text)
     assert isinstance(actual_4_output, Integer)
+    assert isinstance(varchar_output, VARCHAR2(256))
 
 
 def test_get_foreign_key(schema):
