@@ -239,7 +239,6 @@ slots:
 """
     gen = PydanticGenerator(schema_str, package=PACKAGE, metadata_mode=MetadataMode.NONE)
     code = gen.serialize()
-    print(code)
     assert "things: Optional[Dict[str, Union[List[str], Thing]]] = Field(default=None)" in code
 
 
