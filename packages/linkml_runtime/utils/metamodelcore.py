@@ -7,7 +7,6 @@ import sys
 from typing import Union, Optional
 from urllib.parse import urlparse
 
-import isodate
 from rdflib import Literal, BNode, URIRef
 from rdflib.namespace import is_ncname
 from rdflib.term import Identifier as rdflib_Identifier
@@ -18,6 +17,9 @@ from linkml_runtime.utils.strictness import is_strict
 from linkml_runtime.utils.uri_validator import validate_uri
 from linkml_runtime.utils.uri_validator import validate_uri_reference
 from linkml_runtime.utils.uri_validator import validate_curie
+
+if sys.version_info < (3, 11):
+    import isodate
 
 # Reference Decimal to make sure it stays in the imports
 _z = Decimal(1)
