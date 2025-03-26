@@ -88,7 +88,7 @@ class SampleClass(ParentClass):
     slot_1: Optional[Union[str, "SampleEnum"]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.slot_1 is not None and not isinstance(self.slot_1, SampleEnum):
+        if self.slot_1 is not None and self.slot_1 not in SampleEnum:
             self.slot_1 = SampleEnum(self.slot_1)
 
         super().__post_init__(**kwargs)

@@ -363,7 +363,7 @@ class Person(YAMLRoot):
         if self.stomach_count is not None and not isinstance(self.stomach_count, int):
             self.stomach_count = int(self.stomach_count)
 
-        if self.is_living is not None and not isinstance(self.is_living, LifeStatusEnum):
+        if self.is_living is not None and self.is_living not in LifeStatusEnum:
             self.is_living = LifeStatusEnum(self.is_living)
 
         if not isinstance(self.aliases, list):
@@ -592,7 +592,7 @@ class Relationship(YAMLRoot):
         if self.type is not None and not isinstance(self.type, str):
             self.type = str(self.type)
 
-        if self.cordialness is not None and not isinstance(self.cordialness, CordialnessEnum):
+        if self.cordialness is not None and self.cordialness not in CordialnessEnum:
             self.cordialness = CordialnessEnum(self.cordialness)
 
         super().__post_init__(**kwargs)
@@ -625,7 +625,7 @@ class FamilialRelationship(Relationship):
         if self.cordialness is not None and not isinstance(self.cordialness, str):
             self.cordialness = str(self.cordialness)
 
-        if self.cordialness is not None and not isinstance(self.cordialness, CordialnessEnum):
+        if self.cordialness is not None and self.cordialness not in CordialnessEnum:
             self.cordialness = CordialnessEnum(self.cordialness)
 
         super().__post_init__(**kwargs)

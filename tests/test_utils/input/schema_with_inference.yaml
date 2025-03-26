@@ -51,6 +51,7 @@ slots:
   age_category:
     range: AgeEnum
     equals_expression: "case( ({age_in_years} < 2, 'infant'), ({age_in_years} < 18, 'juvenile'), ({age_in_years} > 18, 'adult') )"
+    ifabsent: AgeEnum(infant)
   prohibited:
     equals_expression: "__import__('os').listdir()"
   street:
