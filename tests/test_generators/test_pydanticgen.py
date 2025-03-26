@@ -202,6 +202,47 @@ slots:
     assert "not_inlined_things: Optional[List[str]] = Field(default=None" in code
 
 
+def test_simpledict_with_list_value():
+    schema_str = """
+id: test_schema
+name: test_info
+description: just testing
+default_range: string
+prefixes:
+  linkml: https://w3id.org/linkml/
+  schema: http://schema.org/
+
+imports:
+  - linkml:types
+
+classes:
+    A:
+        slots:
+            - things
+    Thing:
+        slots:
+            - key
+            - values
+slots:
+    key:
+        range: string
+        identifier: true
+    values: 
+        range: string
+        multivalued: true
+        inlined_as_list: true
+    things:
+        range: Thing
+        multivalued: true
+        inlined: true
+
+"""
+    gen = PydanticGenerator(schema_str, package=PACKAGE, metadata_mode=MetadataMode.NONE)
+    code = gen.serialize()
+    print(code)
+    assert "things: Optional[Dict[str, Union[List[str], Thing]]] = Field(default=None)" in code
+
+
 @pytest.mark.parametrize(
     "range,multivalued,inlined,inlined_as_list,B_has_identifier,expected,notes",
     [
