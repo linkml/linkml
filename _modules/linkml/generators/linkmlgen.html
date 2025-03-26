@@ -460,8 +460,16 @@
 <span class="p">):</span>
     <span class="c1"># You can use the `--materialize` / `--no-materialize` for control</span>
     <span class="c1"># over both attribute and pattern materialization.</span>
-    <span class="n">materialize_attributes</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">materialize</span><span class="p">)</span>
-    <span class="n">materialize_patterns</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">materialize</span><span class="p">)</span>
+
+    <span class="c1"># If the user did not explicitly specify materialize_attributes,</span>
+    <span class="c1"># fall back to the umbrella materialize flag.</span>
+    <span class="k">if</span> <span class="n">materialize_attributes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">materialize_attributes</span> <span class="o">=</span> <span class="n">materialize</span>
+
+    <span class="c1"># If the user did not explicitly specify materialize_patterns,</span>
+    <span class="c1"># fall back to the umbrella materialize flag.</span>
+    <span class="k">if</span> <span class="n">materialize_patterns</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">materialize_patterns</span> <span class="o">=</span> <span class="n">materialize</span>
 
     <span class="n">gen</span> <span class="o">=</span> <span class="n">LinkmlGenerator</span><span class="p">(</span>
         <span class="n">yamlfile</span><span class="p">,</span>
