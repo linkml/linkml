@@ -120,6 +120,7 @@ def test_cli_no_print_with_output(kitchen_sink_path, tmp_path):
         assert result.exit_code == 0
         mock_print.assert_not_called()
 
+
 def test_simpledict_with_list_value():
     schema_str = """
 id: test_schema
