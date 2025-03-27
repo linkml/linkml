@@ -7,27 +7,19 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
-import sys
-import re
-from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
+from jsonasobj2 import as_dict
+from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
-from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
 
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
+from linkml_runtime.utils.metamodelcore import empty_list, empty_dict
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from rdflib import Namespace, URIRef
+from rdflib import URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.linkml_model.types import Float, Integer, String
 
 metamodel_version = "1.7.0"
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 EXAMPLE = CurieNamespace('example', 'https://w3id.org/example')
@@ -56,7 +48,7 @@ class CountryName(extended_str):
 
 @dataclass
 class CreativeWork(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EXAMPLE.CreativeWork
     class_class_curie: ClassVar[str] = "example:CreativeWork"
@@ -65,12 +57,12 @@ class CreativeWork(YAMLRoot):
 
     id: Union[str, CreativeWorkId] = None
     name: Optional[str] = None
-    genres: Optional[Union[Union[str, "GenreEnum"], List[Union[str, "GenreEnum"]]]] = empty_list()
+    genres: Optional[Union[Union[str, "GenreEnum"], list[Union[str, "GenreEnum"]]]] = empty_list()
     creator: Optional[Union[dict, "Author"]] = None
     summary: Optional[str] = None
-    reviews: Optional[Union[Union[dict, "Review"], List[Union[dict, "Review"]]]] = empty_list()
+    reviews: Optional[Union[Union[dict, "Review"], list[Union[dict, "Review"]]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, CreativeWorkId):
@@ -102,7 +94,7 @@ class CreativeWork(YAMLRoot):
 
 @dataclass
 class Book(CreativeWork):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EXAMPLE.Book
     class_class_curie: ClassVar[str] = "example:Book"
@@ -113,7 +105,7 @@ class Book(CreativeWork):
     price: Optional[float] = None
     inStock: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, BookId):
@@ -130,7 +122,7 @@ class Book(CreativeWork):
 
 @dataclass
 class BookSeries(CreativeWork):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EXAMPLE.BookSeries
     class_class_curie: ClassVar[str] = "example:BookSeries"
@@ -138,11 +130,11 @@ class BookSeries(CreativeWork):
     class_model_uri: ClassVar[URIRef] = EXAMPLE.BookSeries
 
     id: Union[str, BookSeriesId] = None
-    books: Optional[Union[Dict[Union[str, BookId], Union[dict, Book]], List[Union[dict, Book]]]] = empty_dict()
-    genres: Optional[Union[Union[str, "GenreEnum"], List[Union[str, "GenreEnum"]]]] = empty_list()
+    books: Optional[Union[dict[Union[str, BookId], Union[dict, Book]], list[Union[dict, Book]]]] = empty_dict()
+    genres: Optional[Union[Union[str, "GenreEnum"], list[Union[str, "GenreEnum"]]]] = empty_list()
     price: Optional[float] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, BookSeriesId):
@@ -162,7 +154,7 @@ class BookSeries(CreativeWork):
 
 @dataclass
 class Author(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EXAMPLE.Author
     class_class_curie: ClassVar[str] = "example:Author"
@@ -170,10 +162,10 @@ class Author(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = EXAMPLE.Author
 
     name: Optional[str] = None
-    genres: Optional[Union[Union[str, "GenreEnum"], List[Union[str, "GenreEnum"]]]] = empty_list()
+    genres: Optional[Union[Union[str, "GenreEnum"], list[Union[str, "GenreEnum"]]]] = empty_list()
     from_country: Optional[Union[str, CountryName]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.name is not None and not isinstance(self.name, str):
             self.name = str(self.name)
 
@@ -189,16 +181,16 @@ class Author(YAMLRoot):
 
 @dataclass
 class Shop(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EXAMPLE.Shop
     class_class_curie: ClassVar[str] = "example:Shop"
     class_name: ClassVar[str] = "shop"
     class_model_uri: ClassVar[URIRef] = EXAMPLE.Shop
 
-    all_book_series: Optional[Union[Dict[Union[str, BookSeriesId], Union[dict, BookSeries]], List[Union[dict, BookSeries]]]] = empty_dict()
+    all_book_series: Optional[Union[dict[Union[str, BookSeriesId], Union[dict, BookSeries]], list[Union[dict, BookSeries]]]] = empty_dict()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         self._normalize_inlined_as_list(slot_name="all_book_series", slot_type=BookSeries, key_name="id", keyed=True)
 
         super().__post_init__(**kwargs)
@@ -206,7 +198,7 @@ class Shop(YAMLRoot):
 
 @dataclass
 class Country(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EXAMPLE.Country
     class_class_curie: ClassVar[str] = "example:Country"
@@ -215,7 +207,7 @@ class Country(YAMLRoot):
 
     name: Union[str, CountryName] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.name):
             self.MissingRequiredField("name")
         if not isinstance(self.name, CountryName):
@@ -226,7 +218,7 @@ class Country(YAMLRoot):
 
 @dataclass
 class Review(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EXAMPLE.Review
     class_class_curie: ClassVar[str] = "example:Review"
@@ -237,7 +229,7 @@ class Review(YAMLRoot):
     rating: Optional[int] = None
     review_text: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.creator is not None and not isinstance(self.creator, Author):
             self.creator = Author(**as_dict(self.creator))
 
@@ -271,7 +263,7 @@ slots.id = Slot(uri=EXAMPLE.id, name="id", curie=EXAMPLE.curie('id'),
                    model_uri=EXAMPLE.id, domain=None, range=URIRef)
 
 slots.book_category = Slot(uri=EXAMPLE.book_category, name="book_category", curie=EXAMPLE.curie('book_category'),
-                   model_uri=EXAMPLE.book_category, domain=None, range=Optional[Union[str, List[str]]])
+                   model_uri=EXAMPLE.book_category, domain=None, range=Optional[Union[str, list[str]]])
 
 slots.name = Slot(uri=EXAMPLE.name, name="name", curie=EXAMPLE.curie('name'),
                    model_uri=EXAMPLE.name, domain=None, range=Optional[str])
@@ -286,22 +278,22 @@ slots.creator = Slot(uri=EXAMPLE.creator, name="creator", curie=EXAMPLE.curie('c
                    model_uri=EXAMPLE.creator, domain=None, range=Optional[Union[dict, Author]])
 
 slots.genres = Slot(uri=EXAMPLE.genres, name="genres", curie=EXAMPLE.curie('genres'),
-                   model_uri=EXAMPLE.genres, domain=None, range=Optional[Union[Union[str, "GenreEnum"], List[Union[str, "GenreEnum"]]]])
+                   model_uri=EXAMPLE.genres, domain=None, range=Optional[Union[Union[str, "GenreEnum"], list[Union[str, "GenreEnum"]]]])
 
 slots.from_country = Slot(uri=EXAMPLE.from_country, name="from_country", curie=EXAMPLE.curie('from_country'),
                    model_uri=EXAMPLE.from_country, domain=None, range=Optional[Union[str, CountryName]])
 
 slots.books = Slot(uri=EXAMPLE.books, name="books", curie=EXAMPLE.curie('books'),
-                   model_uri=EXAMPLE.books, domain=None, range=Optional[Union[Dict[Union[str, BookId], Union[dict, Book]], List[Union[dict, Book]]]])
+                   model_uri=EXAMPLE.books, domain=None, range=Optional[Union[dict[Union[str, BookId], Union[dict, Book]], list[Union[dict, Book]]]])
 
 slots.all_book_series = Slot(uri=EXAMPLE.all_book_series, name="all_book_series", curie=EXAMPLE.curie('all_book_series'),
-                   model_uri=EXAMPLE.all_book_series, domain=None, range=Optional[Union[Dict[Union[str, BookSeriesId], Union[dict, BookSeries]], List[Union[dict, BookSeries]]]])
+                   model_uri=EXAMPLE.all_book_series, domain=None, range=Optional[Union[dict[Union[str, BookSeriesId], Union[dict, BookSeries]], list[Union[dict, BookSeries]]]])
 
 slots.summary = Slot(uri=EXAMPLE.summary, name="summary", curie=EXAMPLE.curie('summary'),
                    model_uri=EXAMPLE.summary, domain=None, range=Optional[str])
 
 slots.reviews = Slot(uri=EXAMPLE.reviews, name="reviews", curie=EXAMPLE.curie('reviews'),
-                   model_uri=EXAMPLE.reviews, domain=None, range=Optional[Union[Union[dict, Review], List[Union[dict, Review]]]])
+                   model_uri=EXAMPLE.reviews, domain=None, range=Optional[Union[Union[dict, Review], list[Union[dict, Review]]]])
 
 slots.rating = Slot(uri=EXAMPLE.rating, name="rating", curie=EXAMPLE.curie('rating'),
                    model_uri=EXAMPLE.rating, domain=None, range=Optional[int])

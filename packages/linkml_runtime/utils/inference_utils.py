@@ -1,7 +1,7 @@
 import logging
 from dataclasses import field, dataclass
 from enum import Enum
-from typing import Union, Optional, Any, Dict, Callable
+from typing import Union, Optional, Any, Callable
 from jsonasobj2 import JsonObj, items
 
 from linkml_runtime import SchemaView
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 RESOLVE_FUNC = Callable[[str, Any], Any]
 
-def obj_as_dict_nonrecursive(obj: YAMLRoot, resolve_function: RESOLVE_FUNC = None) -> Dict[str, Any]:
+def obj_as_dict_nonrecursive(obj: YAMLRoot, resolve_function: RESOLVE_FUNC = None) -> dict[str, Any]:
     """
     Translates an object into a dict, for the purposes of input into formatted strings
 

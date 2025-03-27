@@ -6,28 +6,18 @@
 # description: Units datamodel
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
-import re
-from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
+from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
 
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from rdflib import Namespace, URIRef
+from linkml_runtime.utils.metamodelcore import empty_list
+from linkml_runtime.utils.yamlutils import YAMLRoot
+from rdflib import URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from .types import String, Uriorcurie
 from linkml_runtime.utils.metamodelcore import URIorCURIE
 
 metamodel_version = "1.7.0"
 version = None
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 IAO = CurieNamespace('IAO', 'http://purl.obolibrary.org/obo/IAO_')
@@ -53,7 +43,7 @@ class UnitOfMeasure(YAMLRoot):
     A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other
     quantities the same kind (more generally of equivalent dimension).
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = QUDT["Unit"]
     class_class_curie: ClassVar[str] = "qudt:Unit"
@@ -63,13 +53,13 @@ class UnitOfMeasure(YAMLRoot):
     symbol: Optional[str] = None
     abbreviation: Optional[str] = None
     descriptive_name: Optional[str] = None
-    exact_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    exact_mappings: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
     ucum_code: Optional[str] = None
     derivation: Optional[str] = None
     has_quantity_kind: Optional[Union[str, URIorCURIE]] = None
     iec61360code: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.symbol is not None and not isinstance(self.symbol, str):
             self.symbol = str(self.symbol)
 

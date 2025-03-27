@@ -3,6 +3,10 @@ from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.schemaview import SchemaView
 from rdflib import RDF, RDFS, SKOS, XSD, OWL
 
+__all__ = [
+    "SchemaView",
+]
+
 # use importlib.metadata to read the version provided
 # by the package during installation. Do not hardcode
 # the version in the code

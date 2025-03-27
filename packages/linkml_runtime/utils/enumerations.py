@@ -1,5 +1,5 @@
 from dataclasses import fields
-from typing import Union, Optional, Type
+from typing import Union, Optional
 
 from linkml_runtime.utils.metamodelcore import Curie
 from linkml_runtime.utils.yamlutils import YAMLRoot
@@ -28,7 +28,7 @@ class EnumDefinitionMeta(type):
         return item in cls.__dict__
 
 
-def isinstance_dt(cls: Type, inst: str) -> bool:
+def isinstance_dt(cls: type, inst: str) -> bool:
     """ Duck typing isinstance to prevent recursion errors """
     return inst in [c.__name__ for c in type(cls).mro()]
 

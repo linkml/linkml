@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List, Dict
 
 import pytest
 
@@ -9,7 +8,7 @@ from linkml_runtime.utils.eval_utils import eval_expr
 @dataclass
 class Person:
     name: str = None
-    aliases: List[str] = None
+    aliases: list[str] = None
     address: "Address" = None
 
 
@@ -21,8 +20,8 @@ class Address:
 @dataclass
 class Container:
     name: str = None
-    persons: List[Person] = None
-    person_index: Dict[str, Person] = None
+    persons: list[Person] = None
+    person_index: dict[str, Person] = None
 
 
 def test_eval_expressions():

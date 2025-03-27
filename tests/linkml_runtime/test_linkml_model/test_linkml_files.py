@@ -3,12 +3,9 @@ import requests
 from pathlib import Path
 from itertools import product
 from urllib.parse import urlparse
+from importlib.util import find_spec
 
-try:
-    import requests_cache
-    HAVE_REQUESTS_CACHE = True
-except ImportError:
-    HAVE_REQUESTS_CACHE = False
+HAVE_REQUESTS_CACHE = bool(find_spec("requests_cache"))
 
 from linkml_runtime.linkml_model.linkml_files import (
     Source,

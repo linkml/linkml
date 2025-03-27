@@ -13,7 +13,8 @@ from dataclasses import dataclass, field
 import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Optional, List, Tuple, Union, Iterator, TextIO
+from typing import Any, Optional, Union, TextIO
+from collections.abc import Iterator
 
 import click
 import yaml
@@ -93,7 +94,7 @@ def _is_list_of_lists(x: Any) -> bool:
     return x and isinstance(x, list) and isinstance(x[0], list)
 
 
-def linearize_nested_lists(nested_list: List, is_row_ordered=True):
+def linearize_nested_lists(nested_list: list, is_row_ordered=True):
     """
     Returns a linear sequence of elements corresponding to a nested list array representation
 
@@ -151,7 +152,7 @@ class CollectionForm(Enum):
     ListOfLists = "ListOfLists"
 
 
-COLLECTION_FORM_NORMALIZATION = Tuple[CollectionForm, CollectionForm]
+COLLECTION_FORM_NORMALIZATION = tuple[CollectionForm, CollectionForm]
 COLLECTION_FORM_ANNOTATION_KEY = "collection_form"
 
 
@@ -180,10 +181,10 @@ class Report:
     configuration: ValidationConfiguration = None
     """Customization of reporting."""
 
-    results: List[ValidationResult] = field(default_factory=lambda: [])
+    results: list[ValidationResult] = field(default_factory=lambda: [])
     """All results, including normalized"""
 
-    normalizations: List[Normalization] = field(default_factory=lambda: [])
+    normalizations: list[Normalization] = field(default_factory=lambda: [])
     """All normalizations and repairs applied"""
 
     def combine(self, other: "Report") -> "Report":
@@ -250,32 +251,32 @@ class Report:
     def _is_error(self, result: ValidationResult) -> bool:
         return result.type != ConstraintType(ConstraintType.RecommendedConstraint)
 
-    def errors(self) -> List[ValidationResult]:
+    def errors(self) -> list[ValidationResult]:
         """
         Return a list of all results that are not normalized and do not have ERROR severity
         """
         # TODO: use severity
         return [r for r in self.results_excluding_normalized() if self._is_error(r)]
 
-    def warnings(self) -> List[ValidationResult]:
+    def warnings(self) -> list[ValidationResult]:
         """
         Return a list of all results that are not normalized and do not have ERROR severity
         """
         # TODO: use severity
         return [r for r in self.results_excluding_normalized() if not self._is_error(r)]
 
-    def results_excluding_normalized(self) -> List[ValidationResult]:
+    def results_excluding_normalized(self) -> list[ValidationResult]:
         return [r for r in self.results if not r.normalized]
 
-    def unrepaired_problem_types(self) -> List[ConstraintType]:
+    def unrepaired_problem_types(self) -> list[ConstraintType]:
         return [r.type for r in self.results_excluding_normalized()]
 
-    def normalized_results(self) -> List[ValidationResult]:
+    def normalized_results(self) -> list[ValidationResult]:
         return [r for r in self.results if r.normalized]
 
     def collection_form_normalizations(
         self,
-    ) -> Iterator[Tuple[CollectionForm, CollectionForm]]:
+    ) -> Iterator[tuple[CollectionForm, CollectionForm]]:
         for norm in self.normalizations:
             if isinstance(norm, CollectionFormNormalization):
                 yield norm.input_form, norm.output_form

@@ -8,14 +8,14 @@ import ast
 import operator as op
 
 # supported operators
-from typing import Tuple, List, Any
+from typing import Any
 
 operators = {ast.Add: op.add, ast.Sub: op.sub, ast.Mult: op.mul,
              ast.Div: op.truediv, ast.Pow: op.pow, ast.BitXor: op.xor,
              ast.USub: op.neg}
 compare_operators = {ast.Eq: op.eq, ast.Lt: op.lt, ast.LtE: op.le, ast.Gt: op.gt, ast.GtE: op.ge}
 
-def eval_conditional(*conds: List[Tuple[bool, Any]]) -> Any:
+def eval_conditional(*conds: list[tuple[bool, Any]]) -> Any:
     """
     Evaluate a collection of expression,value tuples, returing the first value whose expression is true
 
@@ -111,9 +111,6 @@ def eval_(node, bindings=None, distribute=True):
         else:
             return node.value
     elif isinstance(node, ast.Constant):
-        return node.value
-    elif isinstance(node, ast.NameConstant):
-        # can be removed when python 3.7 is no longer supported
         return node.value
     elif isinstance(node, ast.Name):
         return bindings.get(node.id)

@@ -1,9 +1,8 @@
-import os
 import unittest
 import json
 import yaml
 
-from linkml_runtime.loaders import json_loader, yaml_loader
+from linkml_runtime.loaders import json_loader
 from linkml_runtime.dumpers import json_dumper, yaml_dumper
 from tests.test_loaders_dumpers.models.enum_model import Organism, StateEnum
 

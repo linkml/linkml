@@ -1,10 +1,9 @@
 import json
-from typing import Dict
 
 from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
-def as_simple_dict(element: YAMLRoot) -> Dict:
+def as_simple_dict(element: YAMLRoot) -> dict:
     """
     Returns the representation of element as a python dictionary
 

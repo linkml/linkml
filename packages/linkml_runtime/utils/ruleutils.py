@@ -1,10 +1,8 @@
 import logging
 from dataclasses import dataclass
-from typing import Set, List, Union
 
-from linkml_runtime.utils.schemaview import SchemaView, CLASS_NAME
-from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, Expression, \
-    ClassExpression, ClassDefinitionName, ClassRule, AnonymousClassExpression, SlotExpression, SlotDefinitionName
+from linkml_runtime.utils.schemaview import SchemaView
+from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, ClassExpression, ClassDefinitionName, ClassRule, AnonymousClassExpression, SlotExpression, SlotDefinitionName
 
 logger = logging.getLogger(__name__)
 
@@ -36,13 +34,13 @@ class DisjunctiveNormalFormClassExpression:
     """
     A boolean combination of class expressions in Disjunctive Normal Form
     """
-    operands: List[ClassExpressionConjunction]
+    operands: list[ClassExpressionConjunction]
 
     def __str__(self):
         return ' OR '.join([str(op) for op in self.operands])
 
 
-def get_range_as_disjunction(slot: SlotExpression) ->  Set[ClassDefinitionName]:
+def get_range_as_disjunction(slot: SlotExpression) ->  set[ClassDefinitionName]:
     """
     translate the range of a slot as defined by both range expressions and direct
     named class ranges to a disjunctive expression
@@ -74,7 +72,7 @@ def get_range_as_disjunction(slot: SlotExpression) ->  Set[ClassDefinitionName]:
         return conjs[0]
 
 
-def get_disjunction(cx: ClassExpression) -> Set[ClassDefinitionName]:
+def get_disjunction(cx: ClassExpression) -> set[ClassDefinitionName]:
     disj = set()
     if cx.is_a:
         disj.add(cx.is_a)
@@ -85,7 +83,7 @@ def get_disjunction(cx: ClassExpression) -> Set[ClassDefinitionName]:
 
 
 def subclass_to_rules(view: SchemaView, child: ClassDefinitionName, parent: ClassDefinitionName,
-                      type_designator_slot: SlotDefinitionName = None) -> List[ClassRule]:
+                      type_designator_slot: SlotDefinitionName = None) -> list[ClassRule]:
     """
     rolls up child class to parent class, turning class-specific slot_usages into rules
     :param view:

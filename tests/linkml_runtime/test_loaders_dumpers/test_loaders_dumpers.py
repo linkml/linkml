@@ -5,8 +5,7 @@ import logging
 from decimal import Decimal
 
 import yaml
-from rdflib import Graph, Literal, URIRef
-from rdflib.namespace import RDF, SKOS, XSD
+from rdflib import Graph
 from rdflib import Namespace
 
 from linkml_runtime.loaders import json_loader
@@ -15,7 +14,7 @@ from linkml_runtime.loaders import yaml_loader
 from linkml_runtime.loaders import rdflib_loader
 from linkml_runtime.utils.schemaview import SchemaView
 from tests.test_loaders_dumpers import INPUT_DIR, OUTPUT_DIR
-from tests.test_loaders_dumpers.models.personinfo import Container, Person, Address, Organization, OrganizationType
+from tests.test_loaders_dumpers.models.personinfo import Container, Person
 from tests.test_loaders_dumpers.models.node_object import NodeObject, Triple
 
 logger = logging.getLogger(__name__)

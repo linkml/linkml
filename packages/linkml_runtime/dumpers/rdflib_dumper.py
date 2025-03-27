@@ -1,7 +1,6 @@
 import logging
 import urllib
-from abc import abstractmethod
-from typing import Optional, Any, Dict, Union
+from typing import Optional, Any, Union
 from pydantic import BaseModel
 
 from curies import Converter
@@ -31,7 +30,7 @@ class RDFLibDumper(Dumper):
         self,
         element: Union[BaseModel, YAMLRoot],
         schemaview: SchemaView,
-        prefix_map: Union[Dict[str, str], Converter, None] = None,
+        prefix_map: Union[dict[str, str], Converter, None] = None,
     ) -> Graph:
         """
         Dumps from element to an rdflib Graph,
@@ -154,7 +153,7 @@ class RDFLibDumper(Dumper):
         to_file: str,
         schemaview: SchemaView = None,
         fmt: str = 'turtle',
-        prefix_map: Union[Dict[str, str], Converter, None] = None,
+        prefix_map: Union[dict[str, str], Converter, None] = None,
         **args,
     ) -> None:
         """
@@ -174,7 +173,7 @@ class RDFLibDumper(Dumper):
         element: Union[BaseModel, YAMLRoot],
         schemaview: SchemaView = None,
         fmt: Optional[str] = 'turtle',
-        prefix_map: Union[Dict[str, str], Converter, None] = None,
+        prefix_map: Union[dict[str, str], Converter, None] = None,
     ) -> str:
         """
         Convert element into an RDF graph guided by the schema

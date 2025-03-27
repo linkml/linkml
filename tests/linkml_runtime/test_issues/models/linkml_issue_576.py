@@ -7,29 +7,19 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
-import sys
-import re
-from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
+from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
-from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
 
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from rdflib import Namespace, URIRef
+from linkml_runtime.utils.metamodelcore import empty_list, empty_dict
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
+from rdflib import URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.linkml_model.types import String, Uriorcurie
+from linkml_runtime.linkml_model.types import String
 from linkml_runtime.utils.metamodelcore import URIorCURIE
 
 metamodel_version = "1.7.0"
 version = None
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 EX = CurieNamespace('ex', 'https://example.org/')
@@ -64,7 +54,7 @@ class OrganizationId(Code):
 
 @dataclass
 class Person(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = SCHEMA.Person
     class_class_curie: ClassVar[str] = "schema:Person"
@@ -73,9 +63,9 @@ class Person(YAMLRoot):
 
     id: Union[str, PersonId] = None
     name: Optional[str] = None
-    friends: Optional[Union[Union[str, PersonId], List[Union[str, PersonId]]]] = empty_list()
+    friends: Optional[Union[Union[str, PersonId], list[Union[str, PersonId]]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, PersonId):
@@ -93,7 +83,7 @@ class Person(YAMLRoot):
 
 @dataclass
 class Pet(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = PERSONINFO.Pet
     class_class_curie: ClassVar[str] = "personinfo:Pet"
@@ -104,7 +94,7 @@ class Pet(YAMLRoot):
     name: Optional[str] = None
     owner: Optional[Union[str, PersonId]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, PetId):
@@ -121,7 +111,7 @@ class Pet(YAMLRoot):
 
 @dataclass
 class Organization(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = SCHEMA.Organization
     class_class_curie: ClassVar[str] = "schema:Organization"
@@ -130,9 +120,9 @@ class Organization(YAMLRoot):
 
     id: Union[str, OrganizationId] = None
     name: Optional[str] = None
-    part_of: Optional[Union[Union[str, OrganizationId], List[Union[str, OrganizationId]]]] = empty_list()
+    part_of: Optional[Union[Union[str, OrganizationId], list[Union[str, OrganizationId]]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, OrganizationId):
@@ -150,7 +140,7 @@ class Organization(YAMLRoot):
 
 @dataclass
 class Dataset(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = PERSONINFO.Dataset
     class_class_curie: ClassVar[str] = "personinfo:Dataset"
@@ -158,11 +148,11 @@ class Dataset(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = PERSONINFO.Dataset
 
     source: Optional[Union[str, URIorCURIE]] = None
-    persons: Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]] = empty_dict()
-    organizations: Optional[Union[Dict[Union[str, OrganizationId], Union[dict, Organization]], List[Union[dict, Organization]]]] = empty_dict()
-    pets: Optional[Union[Dict[Union[str, PetId], Union[dict, Pet]], List[Union[dict, Pet]]]] = empty_dict()
+    persons: Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]] = empty_dict()
+    organizations: Optional[Union[dict[Union[str, OrganizationId], Union[dict, Organization]], list[Union[dict, Organization]]]] = empty_dict()
+    pets: Optional[Union[dict[Union[str, PetId], Union[dict, Pet]], list[Union[dict, Pet]]]] = empty_dict()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.source is not None and not isinstance(self.source, URIorCURIE):
             self.source = URIorCURIE(self.source)
 
@@ -189,7 +179,7 @@ slots.person__name = Slot(uri=SCHEMA.name, name="person__name", curie=SCHEMA.cur
                    model_uri=PERSONINFO.person__name, domain=None, range=Optional[str])
 
 slots.person__friends = Slot(uri=PERSONINFO.friends, name="person__friends", curie=PERSONINFO.curie('friends'),
-                   model_uri=PERSONINFO.person__friends, domain=None, range=Optional[Union[Union[str, PersonId], List[Union[str, PersonId]]]])
+                   model_uri=PERSONINFO.person__friends, domain=None, range=Optional[Union[Union[str, PersonId], list[Union[str, PersonId]]]])
 
 slots.pet__id = Slot(uri=PERSONINFO.id, name="pet__id", curie=PERSONINFO.curie('id'),
                    model_uri=PERSONINFO.pet__id, domain=None, range=URIRef)
@@ -207,16 +197,16 @@ slots.organization__name = Slot(uri=SCHEMA.name, name="organization__name", curi
                    model_uri=PERSONINFO.organization__name, domain=None, range=Optional[str])
 
 slots.organization__part_of = Slot(uri=PERSONINFO.part_of, name="organization__part_of", curie=PERSONINFO.curie('part_of'),
-                   model_uri=PERSONINFO.organization__part_of, domain=None, range=Optional[Union[Union[str, OrganizationId], List[Union[str, OrganizationId]]]])
+                   model_uri=PERSONINFO.organization__part_of, domain=None, range=Optional[Union[Union[str, OrganizationId], list[Union[str, OrganizationId]]]])
 
 slots.dataset__source = Slot(uri=PERSONINFO.source, name="dataset__source", curie=PERSONINFO.curie('source'),
                    model_uri=PERSONINFO.dataset__source, domain=None, range=Optional[Union[str, URIorCURIE]])
 
 slots.dataset__persons = Slot(uri=PERSONINFO.persons, name="dataset__persons", curie=PERSONINFO.curie('persons'),
-                   model_uri=PERSONINFO.dataset__persons, domain=None, range=Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]])
+                   model_uri=PERSONINFO.dataset__persons, domain=None, range=Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]])
 
 slots.dataset__organizations = Slot(uri=PERSONINFO.organizations, name="dataset__organizations", curie=PERSONINFO.curie('organizations'),
-                   model_uri=PERSONINFO.dataset__organizations, domain=None, range=Optional[Union[Dict[Union[str, OrganizationId], Union[dict, Organization]], List[Union[dict, Organization]]]])
+                   model_uri=PERSONINFO.dataset__organizations, domain=None, range=Optional[Union[dict[Union[str, OrganizationId], Union[dict, Organization]], list[Union[dict, Organization]]]])
 
 slots.dataset__pets = Slot(uri=PERSONINFO.pets, name="dataset__pets", curie=PERSONINFO.curie('pets'),
-                   model_uri=PERSONINFO.dataset__pets, domain=None, range=Optional[Union[Dict[Union[str, PetId], Union[dict, Pet]], List[Union[dict, Pet]]]])
+                   model_uri=PERSONINFO.dataset__pets, domain=None, range=Optional[Union[dict[Union[str, PetId], Union[dict, Pet]], list[Union[dict, Pet]]]])

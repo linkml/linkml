@@ -4,12 +4,11 @@ Packaging for working with LinkML distributions
 import logging
 import pkgutil
 from pathlib import PurePath
-from typing import List, Type
 
 logger = logging.getLogger(__name__)
 
 
-def get_default_paths(file_type: str) -> List[PurePath]:
+def get_default_paths(file_type: str) -> list[PurePath]:
     """
     Return candidate relative paths for a file type
 
@@ -45,7 +44,7 @@ def get_default_paths(file_type: str) -> List[PurePath]:
     logger.debug(f"Paths to search: {paths}")
     return paths
 
-def get_packaged_file_as_str(package: str, file_type: str, rel_paths: List[PurePath]=[], encoding="utf-8") -> str:
+def get_packaged_file_as_str(package: str, file_type: str, rel_paths: list[PurePath]=[], encoding="utf-8") -> str:
     """
     Retrieve the value of a data file distributed alongside a python package
 

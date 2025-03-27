@@ -1,4 +1,3 @@
-import sys
 from unittest import TestCase
 
 import yaml.constructor

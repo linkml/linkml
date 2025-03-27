@@ -1,7 +1,7 @@
 import json
 from datetime import datetime, date
 from decimal import Decimal
-from typing import Dict, Union
+from typing import Union
 from pydantic import BaseModel
 
 from deprecated.classic import deprecated
@@ -31,7 +31,7 @@ class JSONDumper(Dumper):
             * A list containing elements of any type named above
         """
         if isinstance(element, BaseModel):
-            element = element.dict()
+            element = element.model_dump()
         super().dump(element, to_file, contexts=contexts, **kwargs)
 
     def dumps(self, element: Union[BaseModel, YAMLRoot], contexts: CONTEXTS_PARAM_TYPE = None, inject_type=True) -> str:
@@ -51,7 +51,7 @@ class JSONDumper(Dumper):
 
         def default(o):
             if isinstance(o, BaseModel):
-                return remove_empty_items(o.dict(), hide_protected_keys=True)
+                return remove_empty_items(o.model_dump(), hide_protected_keys=True)
             if isinstance(o, YAMLRoot):
                 return remove_empty_items(o, hide_protected_keys=True)
             elif isinstance(o, Decimal):
@@ -62,7 +62,7 @@ class JSONDumper(Dumper):
             else:
                 return json.JSONDecoder().decode(o)
         if isinstance(element, BaseModel):
-            element = element.dict()
+            element = element.model_dump()
         return json.dumps(as_json_object(element, contexts, inject_type=inject_type),
                           default=default,
                           ensure_ascii=False,
@@ -70,7 +70,7 @@ class JSONDumper(Dumper):
 
     @staticmethod
     @deprecated("Use `utils/formatutils/remove_empty_items` instead")
-    def remove_empty_items(obj: Dict) -> Dict:
+    def remove_empty_items(obj: dict) -> dict:
         """
         Remove empty items from obj
         :param obj:

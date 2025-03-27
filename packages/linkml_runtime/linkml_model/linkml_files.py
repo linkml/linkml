@@ -1,6 +1,6 @@
 from pathlib import Path
 from enum import Enum, auto
-from typing import Dict, Optional, Union, NamedTuple
+from typing import Optional, Union, NamedTuple
 from urllib.parse import urljoin
 from dataclasses import dataclass
 
@@ -87,7 +87,7 @@ class _Path:
     YAML = FormatPath((Path("model") / "schema").as_posix(),"yaml" )
 
     @classmethod
-    def items(cls) -> Dict[str, FormatPath]:
+    def items(cls) -> dict[str, FormatPath]:
         return {k:v for k,v in cls.__dict__.items() if not k.startswith('_')}
 
     @classmethod

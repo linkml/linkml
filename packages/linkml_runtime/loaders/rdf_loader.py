@@ -1,4 +1,5 @@
-from typing import Union, TextIO, Optional, Type, List
+from typing import Union, TextIO, Optional
+
 from hbreader import FileInfo
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE
@@ -14,11 +15,11 @@ RDF_MIME_TYPES = "application/x-turtle;q=0.9, application/rdf+n3;q=0.8, applicat
 
 class RDFLoader(Loader):
 
-    def load_any(self, *args, **kwargs) -> Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]:
+    def load_any(self, *args, **kwargs) -> Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]:
         return self.load(*args, **kwargs)
 
 
-    def load(self, source: Union[str, TextIO, Graph], target_class: Type[Union[BaseModel, YAMLRoot]], *, base_dir: Optional[str] = None,
+    def load(self, source: Union[str, TextIO, Graph], target_class: type[Union[BaseModel, YAMLRoot]], *, base_dir: Optional[str] = None,
              contexts: CONTEXTS_PARAM_TYPE = None, fmt: Optional[str] = 'turtle',
              metadata: Optional[FileInfo] = None) -> Union[BaseModel, YAMLRoot]:
         """

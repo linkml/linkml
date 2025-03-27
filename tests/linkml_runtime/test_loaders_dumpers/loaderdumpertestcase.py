@@ -1,5 +1,5 @@
 import os
-from typing import Callable, Type, Optional, List, Union
+from typing import Callable, Optional, Union
 from urllib.parse import urlparse
 
 from hbreader import FileInfo, hbread
@@ -45,7 +45,7 @@ class LoaderDumperTestCase(TestEnvironmentTestCase):
 
         return self.env.eval_single_file(expected_file, actual, comparator=comparator)
 
-    def loader_test(self, filename: str, model: Union[Type[YAMLRoot], Type[BaseModel]], loader: Loader) -> None:
+    def loader_test(self, filename: str, model: Union[type[YAMLRoot], type[BaseModel]], loader: Loader) -> None:
         """
         Test the various permutations of the supplied loader using the input file 'filename' -- both load and loads
 
@@ -88,7 +88,7 @@ class LoaderDumperTestCase(TestEnvironmentTestCase):
         self.env.eval_single_file(expected_yaml, yaml_dumper.dumps(python_obj))
 
     @staticmethod
-    def check_context_servers(possible_server: List[str]) -> Optional[str]:
+    def check_context_servers(possible_server: list[str]) -> Optional[str]:
         """
         Work down possible servers to see whether any of them are actually available
         :param possible_server: Ordered list of servers to check

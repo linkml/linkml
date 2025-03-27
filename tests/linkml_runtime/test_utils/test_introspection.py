@@ -1,6 +1,4 @@
-import os
 import unittest
-import logging
 
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.utils.introspection import package_schemaview, object_class_definition

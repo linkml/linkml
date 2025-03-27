@@ -26,11 +26,11 @@ classifiers = [
     "Intended Audience :: Healthcare Industry",
     "License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 
 packages = [
@@ -47,7 +47,7 @@ comparefiles = "linkml_runtime.utils.comparefiles:cli"
 linkml-normalize = "linkml_runtime.processing.referencevalidator:cli"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.8.1"
 click = "*"
 deprecated = "*"
 hbreader = "*"
@@ -61,6 +61,24 @@ requests = "*"
 prefixmaps = ">=0.1.4"
 curies = ">=0.5.4"
 pydantic = ">=1.10.2, <3.0.0"
+isodate = "^0.7.2"
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
+select = [
+    "F401",
+    "UP"
+]
+ignore = [
+    # Until 3.9 is dropped
+    "UP007",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["F401"] # unused imports
 
 [tool.poetry.dev-dependencies]
 coverage = "^6.2"

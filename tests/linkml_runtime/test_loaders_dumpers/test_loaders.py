@@ -1,6 +1,6 @@
 import os
 import unittest
-from typing import Union, TextIO, Type, Optional
+from typing import Union, TextIO, Optional
 from pathlib import Path
 from hbreader import FileInfo
 
@@ -59,12 +59,12 @@ class LoadersUnitTest(LoaderDumperTestCase):
         fmt = 'turtle'
 
         class RDFLoaderWrapper(RDFLoader):
-            def load(self, source: Union[str, dict, TextIO], target_class: Type[YAMLRoot], *,
+            def load(self, source: Union[str, dict, TextIO], target_class: type[YAMLRoot], *,
                      base_dir: Optional[str] = None, metadata: Optional[FileInfo] = None, **_) -> YAMLRoot:
                 return rdf_loader.load(source, target_class, base_dir=LoadersUnitTest.env.indir, fmt=fmt,
                                        metadata=metadata, contexts=contexts)
 
-            def loads(self, source: str, target_class: Type[YAMLRoot], *, metadata: Optional[FileInfo] = None, **_) \
+            def loads(self, source: str, target_class: type[YAMLRoot], *, metadata: Optional[FileInfo] = None, **_) \
                     -> YAMLRoot:
                 return rdf_loader.loads(source, target_class, contexts=contexts, fmt=fmt, metadata=metadata)
 

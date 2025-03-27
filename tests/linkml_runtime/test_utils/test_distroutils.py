@@ -1,8 +1,5 @@
-import os
 import unittest
-import logging
 
-from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.utils.distroutils import get_jsonschema_string, get_schema_string
 
 

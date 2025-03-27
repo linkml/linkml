@@ -1,9 +1,7 @@
 import os
 import unittest
-import logging
 
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinitionName
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.ruleutils import subclass_to_rules, get_range_as_disjunction
