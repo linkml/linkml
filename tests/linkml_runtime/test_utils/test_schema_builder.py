@@ -4,9 +4,15 @@ from dataclasses import fields
 import pytest
 
 from linkml_runtime.utils.schema_builder import SchemaBuilder
-from linkml_runtime.linkml_model import ClassDefinition, SlotDefinition
+from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    SlotDefinition,
+    EnumDefinition,
+    PermissibleValue,
+)
 
 
+# === Tests for `SchemaBuilder.add_class` ===
 @pytest.mark.parametrize("replace_if_present", [True, False])
 def test_add_existing_class(replace_if_present):
     """
@@ -144,3 +150,117 @@ def test_add_class_with_extra_kwargs(
         added_class = builder.schema.classes[class_name]
 
         assert added_class == expected_added_class
+
+
+# === Tests for `SchemaBuilder.add_class` end ===
+
+
+# === Tests for `SchemaBuilder.add_enum` ===
+@pytest.mark.parametrize(
+    ("enum_def", "permissible_values", "expected_added_enum"),
+    [
+        (EnumDefinition(name="Color"), [], EnumDefinition(name="Color")),
+        # invalid permissible values
+        (EnumDefinition(name="Color"), ["RED", 3], EnumDefinition(name="Color")),
+        (
+            EnumDefinition(name="Color"),
+            ["RED", "BLUE"],
+            EnumDefinition(
+                name="Color",
+                permissible_values=[PermissibleValue("RED"), PermissibleValue("BLUE")],
+            ),
+        ),
+        (
+            EnumDefinition(name="Color", permissible_values=[PermissibleValue("RED")]),
+            [PermissibleValue("RED", description="A bright color"), "B"],
+            EnumDefinition(
+                name="Color",
+                permissible_values=[
+                    PermissibleValue("RED", description="A bright color"),
+                    PermissibleValue("B"),
+                ],
+            ),
+        ),
+    ],
+)
+def test_add_enum_with_extra_permissible_values(
+    enum_def: EnumDefinition,
+    permissible_values: List[Union[str, PermissibleValue]],
+    expected_added_enum: Optional[EnumDefinition],
+):
+    """
+    Test adding an enum with extra, overriding, permissible values
+    """
+    builder = SchemaBuilder()
+
+    if any(not isinstance(pv, (str, PermissibleValue)) for pv in permissible_values):
+        with pytest.raises(TypeError, match="permissible value must be"):
+            builder.add_enum(enum_def, permissible_values=permissible_values)
+    else:
+        builder.add_enum(enum_def, permissible_values=permissible_values)
+        assert builder.schema.enums[enum_def.name] == expected_added_enum
+
+
+# === Tests for `SchemaBuilder.add_enum` ===
+@pytest.mark.parametrize(
+    ("enum_def", "extra_kwargs", "expected_added_enum"),
+    [
+        ("Color", {}, EnumDefinition(name="Color")),
+        (42, {}, None),  # Invalid type for `enum_def`
+        (
+            "Color",
+            {"description": "What meets the eyes"},
+            EnumDefinition(name="Color", description="What meets the eyes"),
+        ),
+        (
+            {"name": "Color", "description": "It's obvious"},
+            {"description": "What meets the eyes"},
+            EnumDefinition(name="Color", description="What meets the eyes"),
+        ),
+        (
+            EnumDefinition("Color"),
+            {"description": "What meets the eyes"},
+            EnumDefinition(name="Color"),
+        ),
+        (
+            "Color",
+            {"description": "What meets the eyes", "ijk": True},  # Invalid extra kwarg
+            None,
+        ),
+    ],
+)
+def test_add_enum_with_extra_kwargs(
+    enum_def: Union[EnumDefinition, dict, str],
+    extra_kwargs: Dict[str, Any],
+    expected_added_enum: Optional[EnumDefinition],
+):
+    """
+    Test adding an enum with extra kwargs
+    """
+    enum_meta_slots = {f.name for f in fields(EnumDefinition)}
+
+    builder = SchemaBuilder()
+
+    if not isinstance(enum_def, (str, dict, EnumDefinition)):
+        with pytest.raises(TypeError, match="enum_def must be"):
+            builder.add_enum(enum_def, **extra_kwargs)
+    elif extra_kwargs.keys() - enum_meta_slots:
+        # Handle the case of extra kwargs include a key that is not a meta slot of
+        # `EnumDefinition`
+        with pytest.raises(ValueError):
+            builder.add_enum(enum_def, **extra_kwargs)
+    else:
+        builder.add_enum(enum_def, **extra_kwargs)
+
+        if isinstance(enum_def, str):
+            enum_name = enum_def
+        elif isinstance(enum_def, dict):
+            enum_name = enum_def["name"]
+        else:
+            enum_name = enum_def.name
+
+        added_enum = builder.schema.enums[enum_name]
+
+        assert added_enum == expected_added_enum
+
+# === Tests for `SchemaBuilder.add_enum` end ===

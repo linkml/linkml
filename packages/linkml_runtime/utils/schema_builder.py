@@ -166,25 +166,50 @@ class SchemaBuilder:
         """
         Adds an enum to the schema
 
-        :param enum_def:
-        :param permissible_values:
-        :param replace_if_present:
-        :param kwargs:
+        :param enum_def: The base specification of the enum to be added
+        :param permissible_values: Additional, or overriding, permissible values
+            of the enum to be added
+        :param replace_if_present: Whether to replace the enum if it already exists in
+            the schema by name
+        :param kwargs: Additional `EnumDefinition` properties to be set as part of the
+            enum to be added
         :return: builder
         :raises ValueError: if enum already exists and replace_if_present=False
         """
-        if not isinstance(enum_def, EnumDefinition):
+        if permissible_values is None:
+            permissible_values = []
+
+        if isinstance(enum_def, str):
             enum_def = EnumDefinition(enum_def, **kwargs)
-        if isinstance(enum_def, dict):
+        elif isinstance(enum_def, dict):
             enum_def = EnumDefinition(**{**enum_def, **kwargs})
+        else:
+            # Ensure that `enum_def` is a `EnumDefinition` object
+            if not isinstance(enum_def, EnumDefinition):
+                msg = (
+                    f"enum_def must be a `str`, `dict`, or `EnumDefinition`, "
+                    f"not {type(enum_def)!r}"
+                )
+                raise TypeError(msg)
+
         if enum_def.name in self.schema.enums and not replace_if_present:
             raise ValueError(f"Enum {enum_def.name} already exists")
+
+        # Attach the enum definition to the schema
         self.schema.enums[enum_def.name] = enum_def
-        if permissible_values is not None:
-            for pv in permissible_values:
-                if isinstance(pv, str):
-                    pv = PermissibleValue(text=pv)
-                    enum_def.permissible_values[pv.text] = pv
+
+        for pv in permissible_values:
+            if isinstance(pv, str):
+                pv = PermissibleValue(text=pv)
+            elif not isinstance(pv, PermissibleValue):
+                msg = (
+                    f"A permissible value must be a `str` or "
+                    f"a `PermissibleValue` object, not {type(pv)}"
+                )
+                raise TypeError(msg)
+
+            enum_def.permissible_values[pv.text] = pv
+
         return self
 
     def add_prefix(self, prefix: str, url: str, replace_if_present = False) -> "SchemaBuilder":
