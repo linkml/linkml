@@ -32,7 +32,9 @@
             {{- enum_macros.enum_parameter(slot) -}}
         )
         {%- if slot.description %}
-    """{{ slot.description }}"""
+    """
+    {{ slot.description }}
+    """
         {% endif -%}
     {%- endwith -%}
 {%- endmacro %}

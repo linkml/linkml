@@ -30,6 +30,9 @@ classes:
   ColumnType:
     description: Nested in a column
     attributes:
+      id:
+        identifier: True
+        range: string
       x:
         range: integer
       y:
@@ -106,10 +109,16 @@ classes:
         required: true
         minimum_cardinality: 1
         maximum_cardinality: 1
-      #class_column:
-      #  description: test enum column with class value
-      #  range: ColumnType
-      #  required: true
+      class_column:
+        description: test column with another class id
+        range: ColumnType
+        required: true
+      inlined_class_column:
+        description: test column with another class inlined as a struct
+        range: ColumnType
+        required: True
+        inlined_as_list: True
+
 
 enums:
   SyntheticEnum:
@@ -205,18 +214,17 @@ def big_synthetic_dataframe(pl, np, N):
                 "multivalued_column": [[1, 2, 3],] * N,
                 "multivalued_one_many_column": pl.Series(np.random.choice(range(100), size=N), dtype=pl.Int64),
                 "any_type_column": pl.Series([1,] * N, dtype=pl.Object),
-                "cardinality_column": pl.Series(np.arange(1, N+1), dtype=pl.Int64)
-                #"class_column_x": pl.Series(values=np.random.choice([0, 1], size=N), dtype=pl.Int64),
-                #"class_column_y": pl.Series(values=np.random.choice([4, 5], size=N), dtype=pl.Int64)
+                "cardinality_column": pl.Series(np.arange(1, N+1), dtype=pl.Int64),
+                "class_column": pl.Series(np.arange(0, N), dtype=pl.Int64).cast(pl.Utf8),
             }
         )
-        # .with_columns(
-        #     pl.struct(
-        #         pl.col("class_column_x").alias("x"),
-        #         pl.col("class_column_y").alias("y")
-        #     ).alias("class_column")
-        # )
-        # .drop(["class_column_x", "class_column_y"])
+        .with_columns(
+            pl.struct(
+                pl.Series(values=np.random.choice([0, 1], size=N), dtype=pl.Int64).cast(pl.Utf8).alias("id"),
+                pl.Series(values=np.random.choice([0, 1], size=N), dtype=pl.Int64).alias("x"),
+                pl.Series(values=np.random.choice([0, 1], size=N), dtype=pl.Int64).alias("y")
+            ).alias("inlined_class_column"),
+        )
     )
     # fmt: on
 

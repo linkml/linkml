@@ -12,7 +12,7 @@ from collections import defaultdict
 from copy import copy, deepcopy
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Tuple, Type, Union
+from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Tuple, Type, Union, get_origin
 
 import linkml_runtime
 import pydantic
@@ -914,6 +914,32 @@ def check_data(
         )
 
 
+def generate_polars_schema(pl, mod, py_cls, object_to_validate) -> dict:
+    """Creates a nested PolaRS schema suitable for loading the object_to_validate.
+    Optional columns that are not present in the data are omitted.
+    This approach is only suitable to enable the test fixtures.
+    """
+    polars_schema = {}
+
+    for column_name, column in py_cls.to_schema().columns.items():
+        dtype = column.properties["dtype"]
+        annotation_info, field_info = py_cls.__fields__[column_name]
+        required = column.properties["required"]
+        is_list = get_origin(annotation_info.raw_annotation) == list
+
+        if required or column_name in object_to_validate:
+            if dtype.type == pl.Struct:
+                nested_py_cls = getattr(mod, py_cls._NESTED_RANGES[column_name])
+                nested = pl.Struct(generate_polars_schema(pl, mod, nested_py_cls, object_to_validate[column_name]))
+                if is_list:
+                    nested = pl.List(nested)
+                polars_schema[column_name] = nested
+            else:
+                polars_schema[column_name] = dtype.type
+
+    return polars_schema
+
+
 def check_data_pandera(schema, output, target_class, object_to_validate, expected_behavior, valid):
     pl = pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
 
@@ -925,12 +951,7 @@ def check_data_pandera(schema, output, target_class, object_to_validate, expecte
     mod = compile_python(output)
     py_cls = getattr(mod, target_class)
 
-    polars_schema = {}
-
-    for column_name, column in py_cls.to_schema().columns.items():
-        dtype = column.properties["dtype"]
-        if column_name in object_to_validate:
-            polars_schema[column_name] = dtype.type
+    polars_schema = generate_polars_schema(pl, mod, py_cls, object_to_validate)
 
     try:
         dataframe_to_validate = pl.DataFrame(object_to_validate, schema=polars_schema, strict=False)

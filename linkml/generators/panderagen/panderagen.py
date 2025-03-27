@@ -22,23 +22,25 @@ from linkml.utils.generator import shared_arguments
 logger = logging.getLogger(__name__)
 
 
+# keys are template_path
 TYPEMAP = {
-    "xsd:string": "str",
-    "xsd:integer": "int",
-    "xsd:float": "float",
-    "xsd:double": "float",
-    "xsd:boolean": "bool",
-    "xsd:dateTime": "DateTime",
-    "xsd:date": "Date",
-    "xsd:time": "Time",
-    "xsd:anyURI": "str" "",
-    "xsd:decimal": "float",
+    "panderagen_class_based": {
+        "xsd:string": "str",
+        "xsd:integer": "int",
+        "xsd:float": "float",
+        "xsd:double": "float",
+        "xsd:boolean": "bool",
+        "xsd:dateTime": "DateTime",
+        "xsd:date": "Date",
+        "xsd:time": "Time",
+        "xsd:anyURI": "str",
+        "xsd:decimal": "float",
+    },
 }
 
 
 class TemplateEnum(Enum):
-    CLASS_BASED = "class_based"
-    OBJECT_BASED = "object_based"
+    CLASS_BASED = "panderagen_class_based"
 
 
 @dataclass
@@ -98,16 +100,21 @@ class PanderaGenerator(OOCodeGenerator):
             unprocessed = [cn for cn in unprocessed if cn not in olist]
         return olist
 
+    def uri_type_map(self, xsd_uri: str, template: str = None):
+        if template is None:
+            template = self.template_path
+
+        return TYPEMAP[template].get(xsd_uri)
+
     def map_type(self, t: TypeDefinition) -> str:
         logger.info(f"type_map definition: {t}")
 
         if t.uri:
             # only return a Integer, Double Float when required == false
-            typ = TYPEMAP.get(t.uri)
+            typ = self.uri_type_map(t.uri)
             return typ
         elif t.typeof:
             typ = self.map_type(self.schemaview.get_type(t.typeof))
-            logger.info(f"typ: {typ}")
             return typ
         else:
             raise ValueError(f"{t} cannot be mapped to a type")
@@ -167,13 +174,13 @@ class PanderaGenerator(OOCodeGenerator):
         """
         Serialize the schema to a Pandera module as a string
         """
+        if self.template_path is None:
+            self.template_path = PanderaGenerator.DEFAULT_TEMPLATE_PATH
+
         if rendered_module is not None:
             module = rendered_module
         else:
             module = self.render()
-
-        if self.template_path is None:
-            self.template_path = PanderaGenerator.DEFAULT_TEMPLATE_PATH
 
         if self.template_file is None:
             self.template_file = PanderaGenerator.DEFAULT_TEMPLATE_FILE
@@ -186,6 +193,8 @@ class PanderaGenerator(OOCodeGenerator):
             metamodel_version=self.schema.metamodel_version,
             model_version=self.schema.version,
             coerce=self.coerce,
+            type_map=TYPEMAP,
+            template_path=self.template_path,
         )
         return code
 
@@ -217,10 +226,13 @@ class PanderaGenerator(OOCodeGenerator):
 
             if range_info["class_uri"] == "linkml:Any":
                 range = "Object"
+            elif slot.inlined or slot.inlined_as_list:
+                slot.annotations["reference_class"] = self.get_class_name(range)
+                range = "Struct"
             else:
-                range = "str"
+                range = f"ID_TYPES['{self.get_class_name(range)}']"
         elif range in self.schemaview.all_types():
-            t = self.schemaview.get_type(range)
+            t = self.schemaview.all_types().get(range)
             range = self.map_type(t)
         elif range in self.schemaview.all_enums():
             enum_definition = self.schemaview.all_enums().get(range)
@@ -230,10 +242,8 @@ class PanderaGenerator(OOCodeGenerator):
             raise Exception(f"Unknown range {range}")
 
         if slot.multivalued:
-            if slot.inlined_as_list:
+            if slot.inlined_as_list and range != "Struct":
                 range = self.make_multivalued(range)
-            else:
-                pass
 
         default_value = self.ifabsent_default_value(slot)
 
@@ -289,7 +299,7 @@ class PanderaGenerator(OOCodeGenerator):
                     ooclass.fields.append(oofield)
                 ooclass.all_fields.append(oofield)
 
-        oodoc.classes = reversed(classes)
+        oodoc.classes = classes
 
         return oodoc
 
@@ -308,6 +318,9 @@ def cli(
     slots=True,
     **args,
 ):
+    if template_path not in TYPEMAP:
+        raise Exception(f"Template {template_path} not supported")
+
     """Generate Pandera classes to represent a LinkML model"""
     gen = PanderaGenerator(
         yamlfile,

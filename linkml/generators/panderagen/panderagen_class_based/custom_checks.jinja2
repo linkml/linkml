@@ -10,5 +10,10 @@
             max_cardinality={{ slot.maximum_cardinality }}
         )
         {%- endif -%}
+        {%- if slot.annotations['reference_class'] %}
+    @pla.check("{{ field.name }}")
+    def check_nested_struct_{{ field.name }}(cls, data: PolarsData):
+        return cls._check_nested_struct({{ slot.annotations['reference_class'] }}, data)
+        {%- endif -%}
     {%- endwith -%}
 {%- endmacro -%}

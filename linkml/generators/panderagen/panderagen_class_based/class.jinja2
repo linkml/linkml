@@ -10,7 +10,9 @@ class {{cls.name}}(
         {%- endif -%}
 ):
     {%- if cls.source_class.description %}
-    """{{ cls.source_class.description }}"""
+    """
+    {{ cls.source_class.description }}
+    """
     {% endif -%}
     {{ slot_macros.id_slot_name_class_variable(cls) }}
     {%- if (cls.fields | length) == 0 %}
@@ -22,5 +24,13 @@ class {{cls.name}}(
     {%- for field in cls.fields -%}
         {{ custom_checks.render_custom_check(field) }}
     {%- endfor %}
-
+    _NESTED_RANGES = {
+    {%- for field in cls.fields -%}
+        {%- with slot = field.source_slot -%}
+            {%- if slot.annotations['reference_class'] %}
+        "{{ field.name }}": "{{ slot.annotations['reference_class'] }}",
+{% endif -%}
+        {%- endwith -%}
+    {%- endfor %}
+    }
 {% endmacro -%}

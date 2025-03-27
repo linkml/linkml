@@ -23,3 +23,16 @@ class _LinkmlPanderaValidator:
         )
 
         return df
+
+    @classmethod
+    def _check_nested_struct(cls, pandera_model: pla.DataFrameModel, data: PolarsData):
+        """Use this in a custom check. Pass the nested model as pandera_model.
+        """
+        try:
+            unnested_column = data.lazyframe.select(data.key).unnest(data.key)
+        except Exception as e:
+            unnested_column = data.lazyframe.collect().select(pl.col(data.key).explode()).lazy().unnest(data.key)
+
+        pandera_model.validate(unnested_column)
+
+        return True

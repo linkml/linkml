@@ -5,6 +5,13 @@
 
 {{ mixins }}
 
+# These are all str for now
+ID_TYPES = {
+{%- for cls in doc.classes %}
+    "{{ cls.name }}": "str",
+{%- endfor %}
+}
+
 {% if metamodel_version %}# metamodel_version: {{metamodel_version}}{% endif %}
 {% if model_version %}# version: {{model_version}}{% endif %}
 {%- for cls in doc.classes -%}
