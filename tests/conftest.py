@@ -268,6 +268,7 @@ def _monkeypatch_pyshex():
             "Pyshex has been updated, remove this monkeypatch:\n"
             "- remove this function\n"
             "- remove the call to `_monkeypatch_pyshex in `pytest_sessionstart`\n"
+            "- remove the skipif mark on test_notebooks/test_nodebooks.py:test_redo_notebook\n"
         )
     typing_io = ModuleType("io")
     typing_io.TextIO = TextIO
