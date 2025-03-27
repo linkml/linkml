@@ -197,9 +197,25 @@ slots:
         """
     gen = PydanticGenerator(schema_str, package=PACKAGE)
     code = gen.serialize()
-    assert "inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default=None" in code
-    assert "inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default=None" in code
-    assert "not_inlined_things: Optional[List[str]] = Field(default=None" in code
+    module = compile_python(code, PACKAGE)
+
+    # test optional params
+    _ = module.A()
+    _ = module.B()
+    _ = module.C()
+
+    # test structure as expected
+    a = module.A(id="a")
+    b = module.B(id="b")
+    _ = module.C(id="c", inlined_things={"a": a}, inlined_as_list_things=[a, b], not_inlined_things=["a", "b"])
+
+    # test that unexpected types are rejected
+    with pytest.raises(ValidationError):
+        _ = module.C(id="c", inlined_things=["a"])
+    with pytest.raises(ValidationError):
+        _ = module.C(id="c", inlined_as_list_things={"a": a})
+    with pytest.raises(ValidationError):
+        _ = module.C(id="c", not_inlined_things={"a": a})
 
 
 def test_simpledict_with_list_value():
@@ -239,7 +255,22 @@ slots:
 """
     gen = PydanticGenerator(schema_str, package=PACKAGE, metadata_mode=MetadataMode.NONE)
     code = gen.serialize()
-    assert "things: Optional[Dict[str, Union[List[str], Thing]]] = Field(default=None)" in code
+    # assert "things: Optional[Dict[str, Union[List[str], Thing]]] = Field(default=None)" in code
+
+    module = compile_python(code)
+    A = module.A
+    thing = module.Thing(key="a", values=["b", "c"])
+    # param is optional
+    _ = A()
+    # accepts class range
+    _ = A(things={"a": thing})
+    # accepts list slot in class range
+    _ = A(things={"a": thing.values})
+    # rejects singular values
+    with pytest.raises(ValidationError):
+        _ = A(things=thing)
+    with pytest.raises(ValidationError):
+        _ = A(things={"a": thing.values[0]})
 
 
 @pytest.mark.parametrize(
