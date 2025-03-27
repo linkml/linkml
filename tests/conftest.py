@@ -253,6 +253,27 @@ def pytest_sessionstart(session: pytest.Session):
     if session.config.getoption("--generate-snapshots"):
         tests.DEFAULT_MISMATCH_ACTION = "MismatchAction.Ignore"
 
+    _monkeypatch_pyshex()
+
+
+def _monkeypatch_pyshex():
+    import sys
+    import typing
+    from importlib.metadata import version
+    from types import ModuleType
+    from typing import TextIO
+
+    if version("pyshexc") != "0.9.1":
+        raise RuntimeError(
+            "Pyshex has been updated, remove this monkeypatch:\n"
+            "- remove this function\n"
+            "- remove the call to `_monkeypatch_pyshex in `pytest_sessionstart`\n"
+        )
+    typing_io = ModuleType("io")
+    typing_io.TextIO = TextIO
+    typing.io = typing_io
+    sys.modules["typing.io"] = typing_io
+
 
 def pytest_assertrepr_compare(config, op, left, right):
     if op == "==" and isinstance(right, Snapshot):
