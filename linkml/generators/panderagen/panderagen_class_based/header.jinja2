@@ -1,0 +1,24 @@
+{#-
+  Jinja2 Template for a Pandera class-based model
+  Details at https://pandera.readthedocs.io/en/stable/dataframe_models.html
+-#}
+import pandera.polars as pla
+from pandera.api.polars.types import PolarsData
+import polars as pl
+from typing import Optional, List, Dict
+
+from pandera.typing import (
+    Index,
+    DataFrame,
+    Series
+)
+from pandera.engines.polars_engine import (
+    DateTime,
+    Date,
+    Time,
+    Enum,
+    # List, # see https://pandera.readthedocs.io/en/latest/polars.html
+    Struct,
+    Object
+)
+import narwhals as nw

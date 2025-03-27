@@ -3,6 +3,7 @@ import pytest
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
     OWL,
+    PANDERA_POLARS_CLASS,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SQL_DDL_SQLITE,
@@ -198,6 +199,8 @@ def test_unique_keys(framework, description, objects, is_valid, is_valid_if_null
     )
     obj = {"entities": [{SLOT_S1: s1, SLOT_S2: s2, SLOT_S3: s3} for s1, s2, s3 in objects]}
     expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     if not is_valid:
         if framework == SQL_DDL_SQLITE:
             # SQLite and most RDBMSs treats nulls as inequal
@@ -379,6 +382,8 @@ def test_inlined_unique_keys(framework, schema_name, d_has_id, s1def, s2def, ddl
         if d_is_top_level:
             obj["d_entities"] = [D_INST_1, D_INST_2]
         expected_behavior = ValidationBehavior.IMPLEMENTS
+        if framework == PANDERA_POLARS_CLASS:
+            expected_behavior = ValidationBehavior.INCOMPLETE
         if not is_valid:
             if framework == SQL_DDL_SQLITE:
                 # SQLite and most RDBMSs treats nulls as inequal
@@ -642,6 +647,8 @@ def test_nested_key(framework, is_local, data_name, objs, is_valid):
             expected_behavior = ValidationBehavior.INCOMPLETE
         if data_name == "t3_unique_per_container" and framework == PYTHON_DATACLASSES:
             expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data_name,

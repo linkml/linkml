@@ -1,0 +1,19 @@
+{%- macro render_custom_check(field) -%}
+    {%- with slot = field.source_slot -%}
+        {%- if slot.minimum_cardinality or slot.maximum_cardinality %}
+    @pla.check("{{ field.name }}")
+    def check_cardinality_{{ field.name }}(cls, data: PolarsData):
+        return cls._check_cardinality(
+            data.lazyframe,
+            data.key,
+            min_cardinality={{ slot.minimum_cardinality }},
+            max_cardinality={{ slot.maximum_cardinality }}
+        )
+        {%- endif -%}
+        {%- if slot.annotations['reference_class'] %}
+    @pla.check("{{ field.name }}")
+    def check_nested_struct_{{ field.name }}(cls, data: PolarsData):
+        return cls._check_nested_struct({{ slot.annotations['reference_class'] }}, data)
+        {%- endif -%}
+    {%- endwith -%}
+{%- endmacro -%}
