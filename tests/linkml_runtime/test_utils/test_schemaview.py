@@ -22,6 +22,8 @@ SCHEMA_WITH_IMPORTS = Path(INPUT_DIR) / 'kitchen_sink.yaml'
 SCHEMA_WITH_STRUCTURED_PATTERNS = Path(INPUT_DIR) / "pattern-example.yaml"
 SCHEMA_IMPORT_TREE = Path(INPUT_DIR) / 'imports' / 'main.yaml'
 SCHEMA_RELATIVE_IMPORT_TREE = Path(INPUT_DIR) / 'imports_relative' / 'L0_0' / 'L1_0_0' / 'main.yaml'
+SCHEMA_RELATIVE_IMPORT_TREE2 = Path(INPUT_DIR) / 'imports_relative' / 'L0_2' / 'main.yaml'
+
 
 yaml_loader = YAMLLoader()
 IS_CURRENT = 'is current'
@@ -552,6 +554,11 @@ def test_imports_relative():
     assert 'L110Index' in classes
     assert 'L2100Index' in classes
     assert 'L2101Index' in classes
+
+def test_imports_relative_load():
+    """Relative imports from relative imports should load without FileNotFoundError."""
+    sv = SchemaView(SCHEMA_RELATIVE_IMPORT_TREE2)
+    sv.imports_closure(imports=True)
 
 
 def test_direct_remote_imports():

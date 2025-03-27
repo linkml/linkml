@@ -10,6 +10,7 @@ from pathlib import Path, PurePath
 from typing import Optional, TypeVar
 from collections.abc import Mapping
 import warnings
+from urllib.parse import urlparse
 
 from linkml_runtime.utils.namespaces import Namespaces
 from deprecated.classic import deprecated
@@ -106,6 +107,25 @@ def is_absolute_path(path: str) -> bool:
         return False
     drive, tail = os.path.splitdrive(norm_path)
     return bool(drive and tail)
+
+def _resolve_import(source_sch: str, imported_sch: str) -> str:
+    if os.path.isabs(imported_sch):
+        # Absolute import paths are not modified
+        return imported_sch
+    if urlparse(imported_sch).scheme:
+        # File with URL schemes are not modified
+        return imported_sch
+    
+    if WINDOWS:
+        path = PurePath(os.path.normpath(PurePath(source_sch).parent / imported_sch)).as_posix()
+    else:
+        path = os.path.normpath(str(Path(source_sch).parent / imported_sch))
+
+    if imported_sch.startswith(".") and not path.startswith("."):
+        # Above condition handles cases where both source schema and imported schema are relative paths: these should remain relative
+        return f"./{path}"
+
+    return path
 
 
 @dataclass
@@ -306,12 +326,7 @@ class SchemaView:
                     # - subdir/types.yaml
                     # we should treat the two `types.yaml` as separate schemas from the POV of the
                     # origin schema.
-                    if sn.startswith('.') and ':' not in i:
-                        if WINDOWS:
-                            # This cannot be simplified. os.path.normpath() must be called before .as_posix()
-                            i = PurePath(os.path.normpath(PurePath(sn).parent / i)).as_posix()
-                        else:
-                            i = os.path.normpath(str(Path(sn).parent / i))
+                    i = _resolve_import(sn, i)
                     todo.append(i)
 
             # add item to closure
