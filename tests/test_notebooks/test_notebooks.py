@@ -1,7 +1,7 @@
 import os
 import sys
-from io import StringIO
 from importlib.metadata import version
+from io import StringIO
 
 import nbformat
 import pytest
@@ -34,7 +34,7 @@ def force_rewrite_comparator(expected: str, actual: str) -> str:
 @pytest.mark.skipif(
     version("pyshexc") == "0.9.1",
     reason="notebooks execute in their own environment, so we can't monkeypatch pyshexc's python3.13 incompatibility "
-           "without ruining the notebook"
+    "without ruining the notebook",
 )
 @pytest.mark.parametrize(
     "nbname",
