@@ -185,7 +185,7 @@ def test_add_class_with_extra_kwargs(
 )
 def test_add_enum_with_extra_permissible_values(
     enum_def: EnumDefinition,
-    permissible_values: List[Union[str, PermissibleValue]],
+    permissible_values: list[Union[str, PermissibleValue]],
     expected_added_enum: Optional[EnumDefinition],
 ):
     """
@@ -231,7 +231,7 @@ def test_add_enum_with_extra_permissible_values(
 )
 def test_add_enum_with_extra_kwargs(
     enum_def: Union[EnumDefinition, dict, str],
-    extra_kwargs: Dict[str, Any],
+    extra_kwargs: dict[str, Any],
     expected_added_enum: Optional[EnumDefinition],
 ):
     """
