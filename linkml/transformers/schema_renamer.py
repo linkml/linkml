@@ -1,6 +1,6 @@
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, Type
+from typing import Any, Callable
 
 import click
 from jsonasobj2 import as_dict
@@ -35,7 +35,7 @@ class SchemaRenamer:
     Renames schema elements
     """
 
-    rename_function_map: Dict[Type, Callable] = field(default_factory=lambda: {})
+    rename_function_map: dict[type, Callable] = field(default_factory=lambda: {})
     schema: SchemaDefinition = None
 
     def rename_elements(self, schema: SchemaDefinition) -> SchemaDefinition:

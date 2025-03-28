@@ -25,6 +25,7 @@ def python_types(input_path) -> ModuleType:
     return mod
 
 
+@pytest.mark.pythongen
 def test_python_types_snapshot(input_path, snapshot):
     generated = PythonGenerator(
         Path(input_path("python_generation")) / "python_types.yaml", mergeimports=False
@@ -32,6 +33,7 @@ def test_python_types_snapshot(input_path, snapshot):
     assert generated == snapshot(Path("python_generation") / "python_types.py")
 
 
+@pytest.mark.pythongen
 @pytest.mark.strcmp
 @pytest.mark.parametrize(
     "cls_name,args,argv,expected,err",
@@ -148,6 +150,7 @@ def test_python_types(cls_name, args, argv, expected, err, python_types):
         assert str(inst) == expected
 
 
+@pytest.mark.pythongen
 @pytest.mark.no_asserts
 def test_python_complex_ranges(input_path, snapshot):
     """description"""
@@ -158,6 +161,7 @@ def test_python_complex_ranges(input_path, snapshot):
     assert generated == snapshot(Path("python_generation") / "python_complex_ranges.py")
 
 
+@pytest.mark.pythongen
 @pytest.mark.no_asserts
 def test_python_lists_and_keys(input_path, snapshot):
     """description"""

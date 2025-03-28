@@ -98,8 +98,8 @@ def test_array(framework, description, ndim, object, is_valid):
     :return:
     """
     expected_range = {
-        1: "List[float]",
-        3: "List[List[List[float]]]",
+        1: "list[float]",
+        3: "list[list[list[float]]]",
     }
     classes = {
         CLASS_C: {

@@ -1,5 +1,6 @@
 import os
-from typing import Any, Iterator, Optional
+from collections.abc import Iterator
+from typing import Any, Optional
 
 import rdflib
 from linkml_runtime.dumpers import rdflib_dumper

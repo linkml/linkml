@@ -1,7 +1,8 @@
 import csv
 import re
 from abc import ABC, abstractmethod
-from typing import Iterator, Optional
+from collections.abc import Iterator
+from typing import Optional
 
 from linkml.validator.loaders.loader import Loader
 

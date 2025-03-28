@@ -2,7 +2,6 @@ import json
 import os
 import warnings
 from dataclasses import dataclass
-from typing import List
 
 import click
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
@@ -62,8 +61,8 @@ class TerminusdbGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
-    classes: List = None
-    raw_additions: List = None
+    classes: list = None
+    raw_additions: list = None
     clswq: str = None
 
     def __post_init__(self):

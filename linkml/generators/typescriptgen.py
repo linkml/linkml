@@ -1,7 +1,7 @@
 import logging
 import os
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Optional
 
 import click
 from jinja2 import Template
@@ -252,7 +252,7 @@ class TypescriptGenerator(OOCodeGenerator):
             return "null"
 
     @staticmethod
-    def parents(cls: ClassDefinition) -> List[ClassDefinitionName]:
+    def parents(cls: ClassDefinition) -> list[ClassDefinitionName]:
         if cls.is_a:
             parents = [cls.is_a]
         else:
@@ -262,7 +262,7 @@ class TypescriptGenerator(OOCodeGenerator):
     def default_value_for_type(self, typ: str) -> str:
         pass
 
-    def required_slots(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
+    def required_slots(self, cls: ClassDefinition) -> list[SlotDefinitionName]:
         return [s for s in self.schemaview.class_slots(cls.name) if self.schemaview.induced_slot(s, cls.name).required]
 
 

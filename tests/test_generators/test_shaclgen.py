@@ -1,5 +1,5 @@
 from collections import Counter
-from typing import Any, List, Tuple
+from typing import Any
 
 import rdflib
 from rdflib import RDF, SH, Literal, URIRef
@@ -257,7 +257,7 @@ def do_test(shaclstr, expected, expected_any_of, expected_equals_string):
 
 
 def assert_equals_string(
-    expected: List[Tuple[rdflib.term.URIRef, List[Tuple[rdflib.term.URIRef, rdflib.term.URIRef]]]], triples: List
+    expected: list[tuple[rdflib.term.URIRef, list[tuple[rdflib.term.URIRef, rdflib.term.URIRef]]]], triples: list
 ) -> None:
     for ex in expected:
         found = False
@@ -280,7 +280,7 @@ def assert_equals_string(
 
 
 def assert_any_of(
-    expected: List[Tuple[rdflib.term.URIRef, List[Tuple[rdflib.term.URIRef, rdflib.term.URIRef]]]], triples: List
+    expected: list[tuple[rdflib.term.URIRef, list[tuple[rdflib.term.URIRef, rdflib.term.URIRef]]]], triples: list
 ) -> None:
     for ex in expected:
         found = False
@@ -302,7 +302,7 @@ def assert_any_of(
 
 
 def assert_equals(
-    expected: List[Tuple[rdflib.term.URIRef, List[Tuple[rdflib.term.URIRef, rdflib.term.URIRef]]]], triples: List
+    expected: list[tuple[rdflib.term.URIRef, list[tuple[rdflib.term.URIRef, rdflib.term.URIRef]]]], triples: list
 ) -> None:
     for ex in expected:
         found = False
@@ -323,7 +323,7 @@ def assert_equals(
             assert False
 
 
-def _get_data_type(blank_node: rdflib.term.BNode, triples: List) -> List[rdflib.term.URIRef]:
+def _get_data_type(blank_node: rdflib.term.BNode, triples: list) -> list[rdflib.term.URIRef]:
     """
     Any of refers a list of nodes, which are either
      - rdflib.term.URIRef('http://www.w3.org/ns/shacl#in') for enumerations
