@@ -197,8 +197,8 @@ class TypescriptGenerator(OOCodeGenerator):
             rc_ref = self.classref(rc)
             rc_name = self.name(rc)
             id_slot = self.get_identifier_or_key_slot(r)
-            value_slot = self.get_value_slot(r, id_slot)
-            value_range = self.range(value_slot)
+            value_slot = self.get_value_slot(r, id_slot)                            
+            value_range = self.range(value_slot) if value_slot else None
             if slot.multivalued:
                 if not id_slot or slot.inlined:
                     if slot.inlined_as_list or not id_slot:

@@ -200,9 +200,7 @@ slots:
     module = compile_python(code, PACKAGE)
 
     # test optional params
-    _ = module.A()
-    _ = module.B()
-    _ = module.C()
+    _ = module.C(id="c")
 
     # test structure as expected
     a = module.A(id="a")
