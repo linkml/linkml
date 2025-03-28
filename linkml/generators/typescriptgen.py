@@ -183,6 +183,12 @@ class TypescriptGenerator(OOCodeGenerator):
                     return s
             return None
 
+    def get_value_slot(self, cn: ClassDefinitionName, id_slot: Optional[SlotDefinition]) -> Optional[SlotDefinition]:
+        sv = self.schemaview
+        slots_without_id_slot = [s for s in sv.class_induced_slots(cn) if s != id_slot]
+        if id_slot is not None and len(slots_without_id_slot) == 1:
+            return slots_without_id_slot[0]
+
     def range(self, slot: SlotDefinition) -> str:
         sv = self.schemaview
         r = slot.range
@@ -191,12 +197,17 @@ class TypescriptGenerator(OOCodeGenerator):
             rc_ref = self.classref(rc)
             rc_name = self.name(rc)
             id_slot = self.get_identifier_or_key_slot(r)
+            value_slot = self.get_value_slot(r, id_slot)
+            value_range = self.range(value_slot) if value_slot else None
             if slot.multivalued:
                 if not id_slot or slot.inlined:
                     if slot.inlined_as_list or not id_slot:
                         return f"{rc_name}[]"
                     else:
-                        return f"{{[index: {rc_ref}]: {rc_name} }}"
+                        if not value_slot:
+                            return f"{{[index: {rc_ref}]: {rc_name} }}"
+                        else:
+                            return f"{{[index: {rc_ref}]: {value_range} }}"
                 else:
                     return f"{rc_ref}[]"
             else:

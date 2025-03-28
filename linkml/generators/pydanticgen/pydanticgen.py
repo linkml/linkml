@@ -759,7 +759,11 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                             value_slot = non_id_slots[0]
                             value_slot_range_type = self.schemaview.get_type(value_slot.range)
                             if value_slot_range_type is not None:
-                                return _get_pyrange(value_slot_range_type, self.schemaview)
+                                value_slot_pyrange = _get_pyrange(value_slot_range_type, self.schemaview)
+                                if not value_slot.multivalued:
+                                    return value_slot_pyrange
+                                else:
+                                    return f"List[{value_slot_pyrange}]"
         return None
 
     def _template_environment(self) -> Environment:
