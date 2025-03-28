@@ -1,5 +1,6 @@
 from typing import Callable
 
+import pytest
 from linkml_runtime.dumpers import json_dumper, rdf_dumper, yaml_dumper
 from linkml_runtime.utils.compile_python import compile_python
 
@@ -7,6 +8,7 @@ from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.pythongen import PythonGenerator
 
 
+@pytest.mark.pythongen
 def test_issue_368(input_path, snapshot, tmp_path):
     """Make sure that types are generated as part of the output"""
     output = PythonGenerator(input_path("issue_368_imports.yaml"), mergeimports=False).serialize()

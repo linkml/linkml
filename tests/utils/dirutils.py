@@ -14,7 +14,7 @@ def make_and_clear_directory(dirbase: str) -> None:
     safety_file = os.path.join(dirbase, "generated")
     if os.path.exists(dirbase):
         if not os.path.exists(safety_file):
-            raise FileNotFoundError("'generated' guard file not found in {}".format(safety_file))
+            raise FileNotFoundError(f"'generated' guard file not found in {safety_file}")
         shutil.rmtree(dirbase)
     os.makedirs(dirbase)
     with open(os.path.join(dirbase, "generated"), "w") as f:
