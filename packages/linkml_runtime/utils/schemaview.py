@@ -15,7 +15,7 @@ from urllib.parse import urlparse
 from linkml_runtime.utils.namespaces import Namespaces
 from deprecated.classic import deprecated
 from linkml_runtime.utils.context_utils import parse_import_map, map_import
-from linkml_runtime.utils.formatutils import is_empty, underscore, camelcase
+from linkml_runtime.utils.formatutils import camelcase, is_empty, sfx, underscore
 from linkml_runtime.utils.pattern import PatternResolver
 from linkml_runtime.linkml_model.meta import *
 from linkml_runtime.exceptions import OrderingError

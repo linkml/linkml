@@ -488,6 +488,7 @@ def test_imports(view):
     height = view.get_slot('height_in_m')
     assert height.unit.ucum_code == "m"
 
+
 def test_imports_from_schemaview(view):
     """view should by default dynamically include imports chain"""
     view2 = SchemaView(view.schema)
