@@ -15,7 +15,6 @@ from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOClass, OOCodeGenerator, OODocument
-from linkml.utils.generator import shared_arguments
 
 from .class_generator_mixin import ClassGeneratorMixin
 from .enum_generator_mixin import EnumGeneratorMixin
@@ -52,10 +51,9 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
 
     Status: incompletely implemented
 
-    Two styles are supported:
+    One styles is supported:
 
-    - class-based
-    - schema-based (not implemented)
+    - panderagen_class_based
     """
 
     DEFAULT_TEMPLATE_PATH = "panderagen_class_based"
@@ -145,8 +143,7 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
 
     def render(self) -> OODocument:
         """
-        Implementation in progress
-        :return:
+        Create a data structure ready to pass to the serialization templates.
         """
         sv: SchemaView = self.schemaview
 
@@ -187,7 +184,6 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
         return oodoc
 
 
-@shared_arguments(PanderaGenerator)
 @click.option("--package", help="Package name where relevant for generated class files")
 @click.option("--template-path", help="Optional jinja2 template directory within module")
 @click.option("--template-file", help="Optional jinja2 template to use for class generation")
@@ -201,7 +197,7 @@ def cli(
     slots=True,
     **args,
 ):
-    if template_path not in TYPEMAP:
+    if template_path is not None and template_path not in TYPEMAP:
         raise Exception(f"Template {template_path} not supported")
 
     """Generate Pandera classes to represent a LinkML model"""
