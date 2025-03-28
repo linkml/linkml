@@ -4,6 +4,7 @@ import pytest
 
 from tests.test_compliance.helper import (
     OWL,
+    PANDERA_POLARS_CLASS,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SHACL,
@@ -121,6 +122,8 @@ def test_array(framework, description, ndim, object, is_valid):
         pytest.skip("Not implemented yet")
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if framework != PYDANTIC and not is_valid:
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework in [PANDERA_POLARS_CLASS]:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
