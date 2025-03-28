@@ -247,7 +247,7 @@ def test_add_enum_with_extra_kwargs(
     elif extra_kwargs.keys() - enum_meta_slots:
         # Handle the case of extra kwargs include a key that is not a meta slot of
         # `EnumDefinition`
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             builder.add_enum(enum_def, **extra_kwargs)
     else:
         builder.add_enum(enum_def, **extra_kwargs)
