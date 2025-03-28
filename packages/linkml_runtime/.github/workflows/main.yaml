@@ -4,7 +4,12 @@
 
 name: Build and test linkml-runtime
 
-on: [pull_request]
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
