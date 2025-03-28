@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "linkml"
-version = "1.8.7.post35.dev0+5f69fb03"
+version = "0.0.0"
 description = "Linked Open Data Modeling Language"
 authors = [
     "Chris Mungall <cjmungall@lbl.gov>",
@@ -42,7 +42,7 @@ packages = [
 ]
 
 [tool.poetry-dynamic-versioning]
-enable = false
+enable = true
 vcs = "git"
 style = "pep440"
 
@@ -107,7 +107,7 @@ jinja2 = ">= 3.1.0"
 jsonasobj2 = "==1.*,>=1.0.0,>=1.0.3"
 jsonschema = {extras = ["format"], version = ">=4.0.0"}
 linkml-dataops = "*"
-linkml-runtime = "^1.8.1"
+linkml-runtime = "^1.9.0-rc1"
 openpyxl = "*"
 parse = "*"
 prefixcommons = ">=0.1.7"
