@@ -1493,7 +1493,6 @@ def test_arrays_anyshape_json_schema(dtype, expected):
 
     anyOf = schema["$defs"][array_ref]["items"]["anyOf"]
     assert anyOf[0:-1] == expected
-<<<<<<< HEAD
 
     last_item = anyOf[-1]
 
