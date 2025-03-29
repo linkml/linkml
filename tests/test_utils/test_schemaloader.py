@@ -39,6 +39,11 @@ def test_imports(input_path, snapshot):
     assert loader.synopsis.errors() == []
 
 
+def test_imports_relative(input_path):
+    loader = SchemaLoader(input_path("relative_import_test/main.yaml"))
+    loader.resolve()
+
+
 @pytest.mark.skip(reason="Re-enable this once we get fully migrated")
 def test_error_paths(input_path):
     """Test various loader error situations"""

@@ -42,6 +42,7 @@ from linkml.generators.terminusdbgen import cli as gen_terminusdb
 from linkml.generators.typescriptgen import cli as gen_typescript
 from linkml.generators.yamlgen import cli as gen_yaml
 from linkml.generators.yumlgen import cli as gen_yuml
+from linkml.generators.zodgen import cli as gen_zod
 from linkml.linter.cli import main as linkml_lint
 from linkml.utils.converter import cli as linkml_convert
 from linkml.utils.execute_tutorial import cli as run_tutorial
@@ -127,6 +128,7 @@ generate.add_command(gen_excel, name="excel")
 generate.add_command(gen_sssom, name="sssom")
 generate.add_command(gen_linkml, name="linkml")
 generate.add_command(gen_dbml, name="dbml")
+generate.add_command(gen_zod, name="zod")
 
 # Dev helpers
 dev.add_command(run_tutorial, name="tutorial")
