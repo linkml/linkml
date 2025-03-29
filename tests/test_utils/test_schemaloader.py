@@ -45,7 +45,7 @@ def test_imports_relative(input_path):
     loader.resolve()
     normalized_imports = [Path(p).as_posix() for p in loader.schema.imports]
     assert normalized_imports == [
-        "./child/index",
+        "child/index",
         "child/grandchild/index",
         "child/grandchild/greatgrandchild/index",
     ]
