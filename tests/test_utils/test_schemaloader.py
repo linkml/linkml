@@ -1,5 +1,6 @@
 import logging
 from io import StringIO
+from pathlib import Path
 
 import pytest
 from jsonasobj2 import as_json
@@ -42,7 +43,8 @@ def test_imports(input_path, snapshot):
 def test_imports_relative(input_path):
     loader = SchemaLoader(input_path("relative_import_test/main.yaml"))
     loader.resolve()
-    assert loader.schema.imports == [
+    normalized_imports = [Path(p).as_posix() for p in loader.schema.imports]
+    assert normalized_imports == [
         "./child/index",
         "child/grandchild/index",
         "child/grandchild/greatgrandchild/index",
