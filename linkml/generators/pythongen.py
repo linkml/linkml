@@ -205,12 +205,6 @@ class PythonGenerator(Generator):
                 ],
             )
             + Import(
-                module="linkml_runtime.utils.dataclass_extensions_376",
-                objects=[
-                    ObjectImport(name="dataclasses_init_fn_with_kwargs"),
-                ],
-            )
-            + Import(
                 module="linkml_runtime.utils.formatutils",
                 objects=[
                     ObjectImport(name="camelcase"),
@@ -264,9 +258,6 @@ class PythonGenerator(Generator):
 
 metamodel_version = "{self.schema.metamodel_version}"
 version = {'"' + self.schema.version + '"' if self.schema.version else None}
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 {self.gen_namespaces()}
