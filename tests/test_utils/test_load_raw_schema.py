@@ -116,12 +116,15 @@ def test_load_text(input_path):
         )
 
 
-@pytest.mark.parametrize("filename", [
-    "typeerror1.yaml",
-    "typeerror2.yaml",
-    "typeerror3.yaml",
-    "typeerror4.yaml",
-])
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "typeerror1.yaml",
+        "typeerror2.yaml",
+        "typeerror3.yaml",
+        "typeerror4.yaml",
+    ],
+)
 def test_representation_errors(filename, input_path):
     """Test that malformed schemas raise an exception, if appropriate."""
     fn = input_path(filename)
