@@ -1,6 +1,7 @@
 import pytest
 
 from tests.test_compliance.helper import (
+    PANDERA_POLARS_CLASS,
     SHACL,
     ValidationBehavior,
     check_data,
@@ -122,6 +123,8 @@ def test_jsonpointer(framework, data_name, data, invalid_reason):
         core_elements=["jsonpointer"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     is_valid = invalid_reason is None
     if not is_valid:
         # validation behavior is not yet implemented for ANY framework.
