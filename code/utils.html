@@ -1174,6 +1174,22 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="linkml.utils.mergeutils.resolve_merged_imports">
+<span class="sig-prename descclassname"><span class="pre">linkml.utils.mergeutils.</span></span><span class="sig-name descname"><span class="pre">resolve_merged_imports</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="metamodel.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergee</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="metamodel.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">imported_from</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/linkml/utils/mergeutils.html#resolve_merged_imports"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.mergeutils.resolve_merged_imports" title="Permalink to this definition">#</a></dt>
+<dd><p>Merge the imports in source into target</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> – Containing schema</p></li>
+<li><p><strong>mergee</strong> – mergee</p></li>
+<li><p><strong>imported_from</strong> – file that the mergee was imported from</p></li>
+<li><p><strong>at_end</strong> – True means add mergee to the end.  False to the front</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="linkml.utils.mergeutils.set_from_schema">
 <span class="sig-prename descclassname"><span class="pre">linkml.utils.mergeutils.</span></span><span class="sig-name descname"><span class="pre">set_from_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="metamodel.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/linkml/utils/mergeutils.html#set_from_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.mergeutils.set_from_schema" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
@@ -1897,6 +1913,7 @@ content and load a SchemaSynopsis entry</p>
 <li><a class="reference internal" href="#linkml.utils.mergeutils.merge_namespaces"><code class="docutils literal notranslate"><span class="pre">merge_namespaces()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.mergeutils.merge_schemas"><code class="docutils literal notranslate"><span class="pre">merge_schemas()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.mergeutils.merge_slots"><code class="docutils literal notranslate"><span class="pre">merge_slots()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.mergeutils.resolve_merged_imports"><code class="docutils literal notranslate"><span class="pre">resolve_merged_imports()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.mergeutils.set_from_schema"><code class="docutils literal notranslate"><span class="pre">set_from_schema()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.mergeutils.slot_usage_name"><code class="docutils literal notranslate"><span class="pre">slot_usage_name()</span></code></a></li>
 </ul>

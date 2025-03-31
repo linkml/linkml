@@ -346,8 +346,11 @@
           <h1>Source code for linkml.utils.mergeutils</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">urlparse</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ClassDefinition</span><span class="p">,</span>
@@ -379,7 +382,7 @@
     <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">license</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">target</span><span class="o">.</span><span class="n">license</span> <span class="o">=</span> <span class="n">mergee</span><span class="o">.</span><span class="n">license</span>
 
-    <span class="n">target</span><span class="o">.</span><span class="n">imports</span> <span class="o">+=</span> <span class="p">[</span><span class="n">imp</span> <span class="k">for</span> <span class="n">imp</span> <span class="ow">in</span> <span class="n">mergee</span><span class="o">.</span><span class="n">imports</span> <span class="k">if</span> <span class="n">imp</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">imports</span><span class="p">]</span>
+    <span class="n">resolve_merged_imports</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">mergee</span><span class="p">,</span> <span class="n">imported_from</span><span class="p">)</span>
     <span class="n">set_from_schema</span><span class="p">(</span><span class="n">mergee</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">namespaces</span><span class="p">:</span>
@@ -578,6 +581,49 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># TODO: Finish enumeration merge code</span>
     <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="resolve_merged_imports"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.mergeutils.resolve_merged_imports">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">resolve_merged_imports</span><span class="p">(</span>
+    <span class="n">target</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">mergee</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">imported_from</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Merge the imports in source into target</span>
+
+<span class="sd">    :param target: Containing schema</span>
+<span class="sd">    :param mergee: mergee</span>
+<span class="sd">    :param imported_from: file that the mergee was imported from</span>
+<span class="sd">    :param at_end: True means add mergee to the end.  False to the front</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">imp</span> <span class="ow">in</span> <span class="n">mergee</span><span class="o">.</span><span class="n">imports</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">imp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># Skip if already imported</span>
+        <span class="k">if</span> <span class="n">imp</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">imports</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># Leave as-is if the import has a scheme (e.g. http://)</span>
+        <span class="k">elif</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">imp</span><span class="p">)</span><span class="o">.</span><span class="n">scheme</span><span class="p">:</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">imports</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">imp</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># Leave as-is if the import is an absolute path</span>
+        <span class="k">elif</span> <span class="n">Path</span><span class="p">(</span><span class="n">imp</span><span class="p">)</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">():</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">imports</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">imp</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># Adjust relative imports to be relative to the importing file</span>
+        <span class="k">elif</span> <span class="n">imp</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">imported_from</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot resolve relative import: </span><span class="si">{</span><span class="n">imp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">target</span><span class="o">.</span><span class="n">imports</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">imp</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">resolved_imp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">imported_from</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="n">Path</span><span class="p">(</span><span class="n">imp</span><span class="p">)))</span>
+                <span class="n">target</span><span class="o">.</span><span class="n">imports</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resolved_imp</span><span class="p">)</span>
+
+        <span class="c1"># By default, add the import as-is</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">imports</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">imp</span><span class="p">)</span></div>
 </pre></div>
         </article>
       </div>
