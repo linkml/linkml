@@ -14,7 +14,7 @@ if sys.version_info >= (3, 13):
 
 # Emit deprecation warning in all other Python versions
 warnings.warn(
-    "The LinkML dataclass extension monkeypatch is deprecated and will be removed in a future release.\n"
+    "The LinkML dataclass extension is deprecated and will be removed in a future release.\n"
     "Consider upgrading to LinkML >=1.9.0 or switching to Pydantic.",
     DeprecationWarning,
     stacklevel=2
