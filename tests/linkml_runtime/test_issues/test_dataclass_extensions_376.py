@@ -43,7 +43,12 @@ def test_kwargs_passed_to_post_init():
 
 
 @pytest.mark.skipif(sys.version_info < (3, 13), reason="This test only applies to Python 3.13+")
-def test_patch_fails_on_python_3_13_plus():
-    """Ensure the patch raises a RuntimeError on Python 3.13+"""
-    with pytest.raises(RuntimeError, match="no longer compatible with Python 3.13 or newer"):
-        importlib.import_module("linkml_runtime.utils.dataclass_extensions_376")
+def test_patch_module_is_ignored_on_python_3_13_plus():
+    """Ensure the patch module is importable and emits a DeprecationWarning on Python 3.13+"""
+    with pytest.warns(DeprecationWarning, match="deprecated and will be removed in a future release"):
+        import importlib.util
+
+        spec = importlib.util.find_spec("linkml_runtime.utils.dataclass_extensions_376")
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+
