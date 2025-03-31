@@ -1,14 +1,14 @@
 import sys
-import unittest
+import pytest
 from dataclasses import dataclass
 from typing import Optional
-import pytest
+import importlib
 
 # Only import the LinkML patch module on supported Python versions
 # Python 3.13+ removed dataclasses._create_fn, which breaks this patch.
-# The test will be skipped on versions > 3.13.0.
 if sys.version_info < (3, 13):
     import linkml_runtime.utils.dataclass_extensions_376 as dc_tweak
+
     DC_IN = dc_tweak.DC_CREATE_FN
 else:
     dc_tweak = None
@@ -16,8 +16,8 @@ else:
 
 
 @pytest.mark.skipif(sys.version_info >= (3, 13), reason="LinkML dataclass patch no longer supported in Python 3.13+")
-class DataclassExtensionsTestCase(unittest.TestCase):
-    """Test the dataclass_extensions_376 module with Python <3.13"""
+def test_kwargs_passed_to_post_init():
+    """Test that kwargs are passed to __post_init__ in patched dataclass"""
 
     @dataclass
     class TestClass:
@@ -30,17 +30,20 @@ class DataclassExtensionsTestCase(unittest.TestCase):
                 first_arg = unknown_args[0]
                 raise ValueError(f"Unknown argument: {first_arg} = {repr(kwargs[first_arg])}")
 
-    def test_kwargs_passed_to_post_init(self):
-        self.TestClass(a=1, b="test")
+    # No extra kwargs – should not raise
+    TestClass(a=1, b="test")
 
-        with self.assertRaises(ValueError) as e:
-            self.TestClass(a=1, b="test", c="unknown")
-        self.assertEqual("Unknown argument: c = 'unknown'", str(e.exception))
+    # One unknown kwarg – should raise
+    with pytest.raises(ValueError, match="Unknown argument: c = 'unknown'"):
+        TestClass(a=1, b="test", c="unknown")
 
-        with self.assertRaises(ValueError) as e:
-            self.TestClass(a=1, b="test", c="unknown", z="also_unknown")
-        self.assertEqual("Unknown argument: c = 'unknown'", str(e.exception))
+    # Multiple unknown kwargs – should raise, first alphabetically
+    with pytest.raises(ValueError, match="Unknown argument: c = 'unknown'"):
+        TestClass(a=1, b="test", c="unknown", z="also_unknown")
 
 
-if __name__ == '__main__':
-    unittest.main()
+@pytest.mark.skipif(sys.version_info < (3, 13), reason="This test only applies to Python 3.13+")
+def test_patch_fails_on_python_3_13_plus():
+    """Ensure the patch raises a RuntimeError on Python 3.13+"""
+    with pytest.raises(RuntimeError, match="no longer compatible with Python 3.13 or newer"):
+        importlib.import_module("linkml_runtime.utils.dataclass_extensions_376")
