@@ -6,7 +6,34 @@ import dataclasses
 # and then on to the __post_init__ function that can deal with them accordingly
 
 # Beware that there is no promise that signature of the create function will remain consistent
-loc_fn = dataclasses._create_fn
+
+def _create_fn(name, args, body, *, globals=None, locals=None,
+               return_type=MISSING):
+    # Note that we mutate locals when exec() is called.  Caller
+    # beware!  The only callers are internal to this module, so no
+    # worries about external callers.
+    if locals is None:
+        locals = {}
+    if 'BUILTINS' not in locals:
+        locals['BUILTINS'] = builtins
+    return_annotation = ''
+    if return_type is not MISSING:
+        locals['_return_type'] = return_type
+        return_annotation = '->_return_type'
+    args = ','.join(args)
+    body = '\n'.join(f'  {b}' for b in body)
+
+    # Compute the text of the entire function.
+    txt = f' def {name}({args}){return_annotation}:\n{body}'
+
+    local_vars = ', '.join(locals.keys())
+    txt = f"def __create_fn__({local_vars}):\n{txt}\n return {name}"
+    ns = {}
+    exec(txt, globals, ns)
+    return ns['__create_fn__'](**locals)
+
+
+loc_fn = _create_fn()
 
 
 def dc_create_fn(name, args, body, *_posargs, **_kwargs):
