@@ -1,57 +1,38 @@
+import sys
 import dataclasses
-#
-# The dataclass library builds a rigid `__init__` function that doesn't allow any unrecognized named parameters
-#
-# The purpose of this extension is to enhance the library to allow additional keyword arguments to passed in
-# and then on to the __post_init__ function that can deal with them accordingly
+import warnings
 
-# Beware that there is no promise that signature of the create function will remain consistent
+# Raise helpful error in unsupported Python versions
+if sys.version_info >= (3, 13):
+    raise RuntimeError(
+        "The LinkML dataclass_extensions_376 is no longer compatible with Python 3.13 or newer.\n\n"
+        "Python 3.13 removed _create_fn), which this extension relies on.\n\n"
+        "To resolve this:\n"
+        "  • Upgrade your LinkML schema and code to use LinkML >= 1.9.0, which no longer requires this patch\n"
+        "  • Or migrate to Pydantic models for runtime dataclass behavior\n\n"
+    )
 
-def _create_fn(name, args, body, *, globals=None, locals=None,
-               return_type=MISSING):
-    # Note that we mutate locals when exec() is called.  Caller
-    # beware!  The only callers are internal to this module, so no
-    # worries about external callers.
-    if locals is None:
-        locals = {}
-    if 'BUILTINS' not in locals:
-        locals['BUILTINS'] = builtins
-    return_annotation = ''
-    if return_type is not MISSING:
-        locals['_return_type'] = return_type
-        return_annotation = '->_return_type'
-    args = ','.join(args)
-    body = '\n'.join(f'  {b}' for b in body)
+# Emit deprecation warning in all other Python versions
+warnings.warn(
+    "The LinkML dataclass extension monkeypatch is deprecated and will be removed in a future release.\n"
+    "Consider upgrading to LinkML >=1.9.0 or switching to Pydantic.",
+    DeprecationWarning,
+    stacklevel=2
+)
 
-    # Compute the text of the entire function.
-    txt = f' def {name}({args}){return_annotation}:\n{body}'
+# Patch _create_fn if it still exists
+if hasattr(dataclasses, "_create_fn"):
+    loc_fn = dataclasses._create_fn
 
-    local_vars = ', '.join(locals.keys())
-    txt = f"def __create_fn__({local_vars}):\n{txt}\n return {name}"
-    ns = {}
-    exec(txt, globals, ns)
-    return ns['__create_fn__'](**locals)
+    def dc_create_fn(name, args, body, *_posargs, **_kwargs):
+        if name == '__init__' and dataclasses._POST_INIT_NAME in body[-1]:
+            pi_parms = body[-1].rsplit(')', 1)[0]
+            body[-1] = pi_parms + ('' if pi_parms[-1] == '(' else ',') + ' **_kwargs)'
+            return loc_fn(name, list(args) + ["**_kwargs"], body, *_posargs, **_kwargs)
+        else:
+            return loc_fn(name, args, body, *_posargs, **_kwargs)
 
+    dataclasses._create_fn = dc_create_fn
+    dataclasses_init_fn_with_kwargs = dataclasses._init_fn
+    DC_CREATE_FN = True
 
-loc_fn = _create_fn()
-
-
-def dc_create_fn(name, args, body, *_posargs, **_kwargs):
-    # If overriding the initializer and using a post init
-    if name == '__init__' and dataclasses._POST_INIT_NAME in body[-1]:
-        # Then insert the kwargs into the both the call and the post init
-        pi_parms = body[-1].rsplit(')', 1)[0]
-        body[-1] = pi_parms + ('' if pi_parms[-1] == '(' else ',') + ' **_kwargs)'
-        return loc_fn(name, list(args) + ["**_kwargs"], body, *_posargs, **_kwargs)
-    else:
-        return loc_fn(name, args, body, *_posargs, **_kwargs)
-
-
-dataclasses._create_fn = dc_create_fn
-
-# The following line is here solely to be backwards compatible.
-dataclasses_init_fn_with_kwargs = dataclasses._init_fn
-
-# The following line can be used to make certain that the import of the new create function doesn't get
-# discarded as being potentially unused
-DC_CREATE_FN = True
