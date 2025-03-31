@@ -78,5 +78,5 @@ def test_not_a_valid_schema():
     try:
         validate(instance, schema)
         assert False, "Expected an exception due to invalid schema, but none was raised"
-    except Exception as e:
-        assert isinstance(e, Exception)
+    except Exception:
+        pass  # This is expected
