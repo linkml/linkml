@@ -1,0 +1,16 @@
+id: stepchild
+name: stepchild
+title: stepchild
+description: |
+  Child class that imports files in the same directory as itself without consistently using `./` in the link notation.
+imports:
+  - linkml:types
+  - one
+  - two
+  - ./three
+classes:
+  StepChild:
+    attributes:
+      value:
+        range: string
+        ifabsent: "StepChild"
