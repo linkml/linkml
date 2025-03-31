@@ -130,9 +130,6 @@ def test_representation_errors(filename, input_path):
     fn = input_path(filename)
     try:
         SchemaLoader(fn)
-        # Log for tracking, not failure:
-        print(f"[INFO] {filename}: No exception raised (may be expected)")
     except Exception as e:
         # If exception raised, log it and optionally check message
-        print(f"[INFO] {filename}: Raised {type(e).__name__} -> {e}")
         assert isinstance(e, Exception)
