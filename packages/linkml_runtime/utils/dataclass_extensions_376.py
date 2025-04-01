@@ -1,5 +1,6 @@
 import sys
 import warnings
+import dataclasses
 
 warnings.warn(
     "The LinkML dataclass extension patch is deprecated and will be removed in a future release.\n"
@@ -10,5 +11,5 @@ warnings.warn(
     stacklevel=2
 )
 
-dataclasses_init_fn_with_kwargs = None
+dataclasses_init_fn_with_kwargs = dataclasses._init_fn
 DC_CREATE_FN = False
