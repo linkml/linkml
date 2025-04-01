@@ -29,7 +29,7 @@ from rdflib import URIRef
 
 import linkml
 from linkml._version import __version__
-from linkml.generators.pydanticgen.template import Import, Imports, ObjectImport
+from linkml.generators.pydanticgen.template import ConditionalImport, Import, Imports, ObjectImport
 from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
 
@@ -205,10 +205,17 @@ class PythonGenerator(Generator):
                 ],
             )
             + Import(
+                module="linkml_runtime",
+                objects=[ObjectImport(name="__version__", alias="__linkml_runtime_version__")],
+            )
+            + Import(
+                module="packaging",
+                objects=[ObjectImport(name="version", alias="packaging_version")],
+            )
+            + ConditionalImport(
                 module="linkml_runtime.utils.dataclass_extensions_376",
-                objects=[
-                    ObjectImport(name="dataclasses_init_fn_with_kwargs"),
-                ],
+                objects=[ObjectImport(name="dataclasses_init_fn_with_kwargs")],
+                condition="packaging_version.parse(__linkml_runtime_version__) < packaging_version.parse('1.9.0')",
             )
             + Import(
                 module="linkml_runtime.utils.formatutils",
@@ -265,8 +272,9 @@ class PythonGenerator(Generator):
 metamodel_version = "{self.schema.metamodel_version}"
 version = {'"' + self.schema.version + '"' if self.schema.version else None}
 
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
+# Overwrite dataclasses _init_fn to add **kwargs in __init__ (only in linkml_runtime < 1.9.0)
+if packaging_version.parse(__linkml_runtime_version__) < packaging_version.parse('1.9.0'):
+    dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 {self.gen_namespaces()}

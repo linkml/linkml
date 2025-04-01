@@ -430,7 +430,7 @@ class ConditionalImport(Import):
 
     template: ClassVar[str] = "conditional_import.py.jinja"
     condition: str
-    alternative: Import
+    alternative: Optional[Import] = None
 
     @computed_field
     def group(self) -> Literal["conditional"]:
@@ -441,7 +441,8 @@ class ConditionalImport(Import):
         :meth:`.Import.sort` called for self and :attr:`.alternative`
         """
         super(ConditionalImport, self).sort()
-        self.alternative.sort()
+        if self.alternative:
+            self.alternative.sort()
 
 
 class Imports(PydanticTemplateModel):
