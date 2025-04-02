@@ -206,7 +206,7 @@ DEPRECATIONS = (
     Deprecation(
         name="pydanticgen-v1",
         deprecated_in=SemVer.from_str("1.7.5"),
-        removed_in=SemVer.from_str("1.8.0"),
+        removed_in=SemVer.from_str("1.10.0"),
         message="Support for generating Pydantic v1.*.* models with pydanticgen is deprecated",
         recommendation="Migrate any existing models to Pydantic v2",
         issue=1925,
@@ -214,7 +214,7 @@ DEPRECATIONS = (
     Deprecation(
         name="pydantic-v1",
         deprecated_in=SemVer.from_str("1.7.5"),
-        removed_in=SemVer.from_str("1.9.0"),
+        removed_in=SemVer.from_str("1.10.0"),
         message=(
             "LinkML will set a dependency of pydantic>=2 and become incompatible "
             "with packages with pydantic<2 as a runtime dependency"
@@ -225,7 +225,7 @@ DEPRECATIONS = (
     Deprecation(
         name="validators",
         deprecated_in=SemVer.from_str("1.8.6"),
-        removed_in=SemVer.from_str("1.9.0"),
+        removed_in=SemVer.from_str("1.10.0"),
         message=(
             "linkml.validators and linkml.utils.validation are the older versions "
             "of linkml.validator and have unmaintained, duplicated functionality"

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "linkml"
-version = "1.9.0rc1.post13.dev0+cde93199"
+version = "0.0.0"
 description = "Linked Open Data Modeling Language"
 authors = [
     "Chris Mungall <cjmungall@lbl.gov>",
@@ -42,7 +42,7 @@ packages = [
 ]
 
 [tool.poetry-dynamic-versioning]
-enable = false
+enable = true
 vcs = "git"
 style = "pep440"
 
@@ -125,7 +125,6 @@ pyshacl = { version = "^0.25.0", optional = true }
 black = { version=">=24.0.0", optional = true }
 typing-extensions = { version=">=4.6.0", python="<3.12" }
 numpydantic = { version=">=1.6.1", python = ">=3.9", optional = true}
-jsonpatch = "^1.33"
 
 [tool.poetry.group.dev.dependencies]
 chardet = "*"
@@ -151,7 +150,7 @@ numpy = [
 requests-cache = "^1.2.0"
 mock = "^5.1.0"
 testcontainers = "3.7.1"
-
+jsonpatch = "^1.33"
 [tool.poetry.extras]
 black = ["black"]
 numpydantic = ["numpydantic"]
