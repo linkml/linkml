@@ -7,7 +7,6 @@ import click
 from jinja2 import Template
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
-    ClassDefinitionName,
     Element,
     SlotDefinition,
     SlotDefinitionName,
@@ -64,11 +63,13 @@ export type {{ gen.name(c) }} = z.infer<typeof {{ gen.name(c) }}Schema>;
 {% endfor %}
 """
 
+
 @dataclass
 class ZodGenerator(OOCodeGenerator):
     """
     Generates Zod schemas and corresponding TypeScript types from a LinkML schema.
     """
+
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.0"
     valid_formats = ["text"]
@@ -141,15 +142,12 @@ class ZodGenerator(OOCodeGenerator):
         else:
             base = "z.string()"
         if not slot.required:
-            base = f"{base}.optional()"
+            base = f"{base}.optional().nullable()"
         return base
 
     def required_slots(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
-        return [
-            s for s in self.schemaview.class_slots(cls.name)
-            if self.schemaview.induced_slot(s, cls.name).required
-        ]
-    
+        return [s for s in self.schemaview.class_slots(cls.name) if self.schemaview.induced_slot(s, cls.name).required]
+
     def default_value_for_type(self, typ: str) -> str:
         pass
 
