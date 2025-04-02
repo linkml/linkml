@@ -1487,7 +1487,7 @@ def test_arrays_anyshape_json_schema(dtype, expected):
 
     # Either we have a direct reference to array_ref or a reference to AnyShapeArray___T_
     items_ref = last_item["items"]["$ref"]
-    assert items_ref == f"#/$defs/{array_ref}" or items_ref == "#/$defs/AnyShapeArray___T_"
+    assert items_ref == f"#/$defs/{array_ref}"
 
 
 @pytest.mark.xfail()
