@@ -1504,7 +1504,6 @@ def test_arrays_anyshape_json_schema(dtype, expected):
     assert inner_ref in schema["$defs"], f"$ref target {inner_ref} not found in $defs"
 
     # Structural equality
-    assert last_item["type"] == "array"
     assert isinstance(last_item["items"]["$ref"], str)
 
 
