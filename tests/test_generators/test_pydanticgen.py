@@ -1490,7 +1490,7 @@ def test_arrays_anyshape_json_schema(dtype, expected):
 
     last_item = anyOf[-1]
 
-    # Structural checks instead of exact-name matching
+    # Structural checks
     assert last_item.get("type") == "array", f"Expected type 'array', got: {last_item.get('type')}"
     assert "items" in last_item, f"Missing 'items' key in: {last_item}"
     assert "$ref" in last_item["items"], f"Missing '$ref' in items: {last_item['items']}"
@@ -1504,7 +1504,7 @@ def test_arrays_anyshape_json_schema(dtype, expected):
     # AnyShapeArray___T_ == 3.10
     assert inner_ref in schema["$defs"], f"$ref target {inner_ref} not found in $defs"
 
-    # Structural equality (optional)
+    # Structural equality
     assert last_item["type"] == "array"
     assert isinstance(last_item["items"]["$ref"], str)
 
