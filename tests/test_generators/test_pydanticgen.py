@@ -48,7 +48,6 @@ from linkml.utils.exceptions import ValidationError as ArrayValidationError
 from linkml.utils.schema_builder import SchemaBuilder
 
 from .conftest import MyInjectedClass
-from pprint import pprint
 
 PACKAGE = "kitchen_sink"
 pytestmark = pytest.mark.pydanticgen
@@ -1507,6 +1506,7 @@ def test_arrays_anyshape_json_schema(dtype, expected):
     # Structural equality
     assert last_item["type"] == "array"
     assert isinstance(last_item["items"]["$ref"], str)
+
 
 @pytest.mark.xfail()
 def test_arrays_anyshape_strict():
