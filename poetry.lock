@@ -1755,35 +1755,31 @@ files = [
 
 [[package]]
 name = "linkml-runtime"
-version = "0.0.0"
+version = "1.9.1rc1"
 description = "Runtime environment for LinkML, the Linked open data modeling language"
 optional = false
-python-versions = "^3.8.1"
+python-versions = "<4.0.0,>=3.8.1"
 groups = ["main"]
-files = []
-develop = false
+files = [
+    {file = "linkml_runtime-1.9.1rc1-py3-none-any.whl", hash = "sha256:22a25e0e4ff7a5ea9d14a8b0e5ff3989f6fa85bbdbd566032e21f8ab96658237"},
+    {file = "linkml_runtime-1.9.1rc1.tar.gz", hash = "sha256:77564bb3d707203b0c141c2d79efff8c62de1a98088bb1ba59d56f412a5ceb9c"},
+]
 
 [package.dependencies]
 click = "*"
 curies = ">=0.5.4"
 deprecated = "*"
 hbreader = "*"
-isodate = "^0.7.2"
+isodate = ">=0.7.2,<0.8.0"
 json-flattener = ">=0.1.9"
-jsonasobj2 = "==1.*,>=1.0.0,>=1.0.4"
+jsonasobj2 = ">=1.0.4,<2.dev0"
 jsonschema = ">=3.2.0"
 prefixcommons = ">=0.1.12"
 prefixmaps = ">=0.1.4"
-pydantic = ">=1.10.2, <3.0.0"
+pydantic = ">=1.10.2,<3.0.0"
 pyyaml = "*"
 rdflib = ">=6.0.0"
 requests = "*"
-
-[package.source]
-type = "git"
-url = "https://github.com/linkml/linkml-runtime.git"
-reference = "restore-dataclass_extensions_376"
-resolved_reference = "ea110a06a57902fe3f5a287affacbfc8be02385c"
 
 [[package]]
 name = "markdown-it-py"
@@ -4561,4 +4557,4 @@ tests = ["black", "numpydantic", "pyshacl"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9.0"
-content-hash = "1765f4b19e38f96ec2ad294d57b3134ec207c630a290e95808ec5ca30ac714b5"
+content-hash = "34a5cf91ba84a50bfe42ecc86c9887d14d9bc5cfa857c8bbdaa0a2a43cc5a1ae"
