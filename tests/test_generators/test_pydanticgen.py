@@ -1467,7 +1467,11 @@ def test_arrays_anyshape_union():
 
 @pytest.mark.parametrize(
     "dtype,expected",
-    ((None, [{}]), (int, [{"type": "integer"}]), (Union[int, float], [{"type": "integer"}, {"type": "number"}])),
+    (
+        (None, [{}]),
+        (int, [{"type": "integer"}]),
+        (Union[int, float], [{"type": "integer"}, {"type": "number"}]),
+    ),
 )
 def test_arrays_anyshape_json_schema(dtype, expected):
     if dtype is None:
@@ -1483,11 +1487,30 @@ def test_arrays_anyshape_json_schema(dtype, expected):
 
     schema = MyModel.model_json_schema()
     array_ref = schema["properties"]["array"]["$ref"].split("/")[-1]
-    assert "AnyShapeArray" in array_ref
+
+    assert "AnyShapeArray" in array_ref, f"Unexpected array ref: {array_ref}"
     assert "anyOf" in schema["$defs"][array_ref]["items"]
+
     anyOf = schema["$defs"][array_ref]["items"]["anyOf"]
     assert anyOf[0:-1] == expected
-    assert anyOf[-1] == {"$ref": f"#/$defs/{array_ref}"}
+    last_item = anyOf[-1]
+
+    # Structural checks
+    assert last_item.get("type") == "array", f"Expected type 'array', got: {last_item.get('type')}"
+    assert "items" in last_item, f"Missing 'items' key in: {last_item}"
+    assert "$ref" in last_item["items"], f"Missing '$ref' in items: {last_item['items']}"
+
+    ref = last_item["items"]["$ref"]
+    assert ref.startswith("#/$defs/"), f"Unexpected $ref format: {ref}"
+    inner_ref = ref.split("/")[-1]
+
+    # check that we are referentially intact, even if internal name varies between python versions, e.g.
+    # AnyShapeArray_Union_int__float__ > 3.10, < 3.10
+    # AnyShapeArray___T_ == 3.10
+    assert inner_ref in schema["$defs"], f"$ref target {inner_ref} not found in $defs"
+
+    # Structural equality
+    assert isinstance(last_item["items"]["$ref"], str)
 
 
 def test_arrays_anyshape_strict():
