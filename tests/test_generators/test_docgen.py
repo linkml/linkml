@@ -682,6 +682,14 @@ def test_hierarchical_class_view(kitchen_sink_path, tmp_path):
 
     assert_mdfile_contains(tmp_path / "index.md", "MarriageEvent", after="EmploymentEvent")
 
+    # check that the URIs for classes and slots contain the element type
+    assert_mdfile_contains(
+        tmp_path / "Activity.md", "[ks:class/Activity](https://w3id.org/linkml/tests/kitchen_sink/class/Activity)"
+    )
+    assert_mdfile_contains(
+        tmp_path / "activities.md", "[ks:slot/activities](https://w3id.org/linkml/tests/kitchen_sink/slot/activities)"
+    )
+
 
 def test_uml_diagram_er(kitchen_sink_path, tmp_path):
     gen = DocGenerator(
