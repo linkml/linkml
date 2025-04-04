@@ -115,6 +115,7 @@ def test_load_text(input_path):
             "schema1",
         )
 
+
 @pytest.mark.parametrize(
     "filename",
     [

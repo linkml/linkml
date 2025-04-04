@@ -3,8 +3,9 @@ import logging
 import os
 from copy import deepcopy
 from pathlib import Path
-from urllib.parse import urlparse
 from typing import Optional, Union, cast
+from urllib.parse import urlparse
+
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     Element,
