@@ -18,6 +18,7 @@ from linkml_runtime.linkml_model.meta import (
     TypeDefinitionName,
 )
 from linkml_runtime.utils.metamodelcore import empty_dict
+from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.yamlutils import TypedNode
 from rdflib import URIRef
 
@@ -34,6 +35,7 @@ ClassOrSlotName = Union[ClassDefinitionName, TypeDefinitionName]
 @dataclass
 class SchemaSynopsis:
     schema: SchemaDefinition = field(repr=False, compare=False)
+    namespaces: Namespaces = field(repr=False, compare=False)
 
     # References by type -- set by add_ref
     typerefs: Dict[TypeDefinitionName, References] = empty_dict()  # Type name to all references
@@ -201,7 +203,7 @@ class SchemaSynopsis:
         :param v: element definition
         :return:
         """
-        if k != v.name:
+        if k != v.name and str(self.namespaces.uri_for(k)) != v.definition_uri:
             raise ValueError("{typ} name mismatch: {k} != {v.name}")  # should never happen
         for subset in v.in_subset:
             self.add_ref(typ, k, SubsetType, subset)

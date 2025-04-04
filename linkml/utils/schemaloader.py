@@ -45,6 +45,7 @@ class SchemaLoader:
         emit_metadata: Optional[bool] = True,
         source_file_date: Optional[str] = None,
         source_file_size: Optional[int] = None,
+        namespaced: Optional[bool] = False,
     ) -> None:
         """Constructor - load and process a YAML or pre-processed schema
 
@@ -69,6 +70,7 @@ class SchemaLoader:
                 merge_modules=mergeimports,
                 source_file_date=source_file_date,
                 source_file_size=source_file_size,
+                namespaced=namespaced,
             )
         # Map from URI to source and version tuple
         self.loaded: OrderedDict[str, Tuple[str, str]] = {
@@ -85,6 +87,7 @@ class SchemaLoader:
         self.schema_defaults: Dict[str, str] = {}  # Map from schema URI to default namespace
         self.merge_modules = mergeimports
         self.emit_metadata = emit_metadata
+        self.namespaced = namespaced
 
     def resolve(self) -> SchemaDefinition:
         """Reconcile a loaded schema, applying is_a, mixins, apply_to's and other such things.  Also validate the
@@ -150,6 +153,7 @@ class SchemaLoader:
                     imp,
                     self.namespaces,
                     merge_imports=self.merge_modules,
+                    namespaced=self.namespaced,
                 )
                 self.schema_defaults[import_schemadefinition.id] = import_schemadefinition.default_prefix
 
@@ -604,7 +608,7 @@ class SchemaLoader:
                 else:
                     tree_root = cls.name
 
-        self.synopsis = SchemaSynopsis(self.schema)
+        self.synopsis = SchemaSynopsis(self.schema, self.namespaces)
         errs = self.synopsis.errors()
         if errs:
             print("Warning: The following errors were encountered in the schema")
@@ -619,7 +623,7 @@ class SchemaLoader:
     def validate_item_names(self, typ: str, names: List[str]) -> None:
         # TODO: add a more rigorous syntax check for item names
         for name in names:
-            if ":" in name:
+            if ":" in name and not self.namespaced:
                 raise self.raise_value_error(f'{typ}: "{name}" - ":" not allowed in identifier', name)
 
     def merge_enum(self, enum: EnumDefinition, merged_enums: List[EnumDefinitionName]) -> None:

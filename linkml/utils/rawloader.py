@@ -37,6 +37,7 @@ def load_raw_schema(
     base_dir: Optional[str] = None,
     merge_modules: Optional[bool] = True,
     emit_metadata: Optional[bool] = True,
+    namespaced: Optional[bool] = True,
 ) -> SchemaDefinition:
     """Load and flatten SchemaDefinition from a file name, a URL or a block of text
 

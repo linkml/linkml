@@ -180,6 +180,9 @@ class Generator(metaclass=abc.ABCMeta):
     include: Optional[Union[str, Path, SchemaDefinition]] = None
     """If set, include extra schema outside of the imports mechanism"""
 
+    namespaced: bool = False
+    """True means separate namespaces, false all elements merged into same namespace"""
+
     def __post_init__(self) -> None:
         if not self.logger:
             self.logger = logger
@@ -250,6 +253,7 @@ class Generator(metaclass=abc.ABCMeta):
                 emit_metadata=self.metadata,
                 source_file_date=self.source_file_date,
                 source_file_size=self.source_file_size,
+                namespaced=self.namespaced,
             )
             loader.resolve()
             self.schema = loader.schema

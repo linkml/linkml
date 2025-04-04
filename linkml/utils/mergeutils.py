@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     Element,
+    ElementName,
     EnumDefinition,
     SchemaDefinition,
     SlotDefinition,
@@ -24,12 +25,27 @@ from rdflib import URIRef
 logger = logging.getLogger(__name__)
 
 
+class ConflictingUri(ValueError):
+    """Exception raised for conflicting URIs on merge.
+
+    This exception gives a chance to catch it and resolve the conflict to
+    get a successful merge accomplished.
+
+    Attributes:
+      message -- explanation of the Error
+    """
+    def __init__(self, message) -> None:
+        self.message = message
+        super().__init__(self.message)
+
+
 def merge_schemas(
     target: SchemaDefinition,
     mergee: SchemaDefinition,
     imported_from: Optional[str] = None,
     namespaces: Optional[Namespaces] = None,
     merge_imports: bool = True,
+    namespaced: bool = False,
 ) -> None:
     """Merge mergee into target"""
     assert target.name is not None, "Schema name must be supplied"
@@ -54,11 +70,17 @@ def merge_schemas(
             imported_from_uri = imported_from
         else:
             imported_from_uri = namespaces.uri_for(imported_from)
-    merge_dicts(target.classes, mergee.classes, imported_from, imported_from_uri, merge_imports)
-    merge_dicts(target.slots, mergee.slots, imported_from, imported_from_uri, merge_imports)
-    merge_dicts(target.types, mergee.types, imported_from, imported_from_uri, merge_imports)
-    merge_dicts(target.subsets, mergee.subsets, imported_from, imported_from_uri, merge_imports)
-    merge_dicts(target.enums, mergee.enums, imported_from, imported_from_uri, merge_imports)
+    for element_type in ["classes", "slots", "types", "subsets", "enums"]:
+        try:
+            merge_dicts(getattr(target, element_type), getattr(mergee, element_type), imported_from, imported_from_uri, merge_imports)
+        except ConflictingUri:
+            if namespaced:
+                resolve_uri_conflict(target, mergee, imported_from, namespaces, merge_imports)
+                merge_dicts(getattr(target, element_type), getattr(mergee, element_type), imported_from, imported_from_uri, merge_imports)
+            else:
+                raise
+        except Exception:
+            raise
 
 
 def merge_namespaces(target: SchemaDefinition, mergee: SchemaDefinition, namespaces) -> None:
@@ -136,7 +158,7 @@ def merge_dicts(
 ) -> None:
     for k, v in source.items():
         if k in target and source[k].from_schema != target[k].from_schema:
-            raise ValueError(f"Conflicting URIs ({source[k].from_schema}, {target[k].from_schema}) for item: {k}")
+            raise ConflictingUri(f"Conflicting URIs ({source[k].from_schema}, {target[k].from_schema}) for item: {k}")
         target[k] = deepcopy(v)
         # currently all imports closures are merged into main schema, EXCEPT
         # internal linkml types, which are considered separate
@@ -278,3 +300,41 @@ def resolve_merged_imports(
         # By default, add the import as-is
         else:
             target.imports.append(imp)
+
+def resolve_uri_conflict(
+    target: SchemaDefinition,
+    source: SchemaDefinition,
+    imported_from: Optional[str] = None,
+    namespaces: Optional[Namespaces] = None,
+    merge_imports: bool = True,
+) -> None:
+    if namespaces is None:
+        raise Exception(f"Expecting {target.id} to have namespaces!")
+    for schema in [source, target]:
+        if hasattr(schema, "classes"):
+            class_renames = []
+            for class_key in schema.classes.keys():
+                prefixed_class_key = ElementName(namespaces.uri_or_curie_for(schema.default_prefix, str(class_key)))
+                class_renames.append((class_key, prefixed_class_key))
+            for old_class_key, new_class_key in class_renames:
+                schema.classes[new_class_key] = schema.classes.pop(old_class_key)
+            prefix_class_refs(schema, namespaces)
+
+
+def prefix_class_refs(
+    schema: SchemaDefinition,
+    namespaces: Optional[Namespaces] = None,
+) -> None:
+    for class_definition in schema.classes.values():
+        if hasattr(class_definition, "attributes"):
+            for attribute in class_definition.attributes.values():
+                if hasattr(attribute, "range") and attribute.range and ":" not in attribute.range:
+                    attribute.range = ElementName(namespaces.uri_or_curie_for(schema.default_prefix, str(attribute.range)))
+                if hasattr(attribute, "domain") and attribute.domain and ":" not in attribute.domain:
+                    attribute.domain = ElementName(namespaces.uri_or_curie_for(schema.default_prefix, str(attribute.domain)))
+    if hasattr(schema, "slots"):
+        for slot in schema.slots.values():
+            if hasattr(slot, "range") and slot.range and ":" not in slot.range:
+                slot.range = ElementName(namespaces.uri_or_curie_for(schema.default_prefix, str(slot.range)))
+            if hasattr(slot, "domain") and slot.domain and ":" not in slot.domain:
+                slot.domain = ElementName(namespaces.uri_or_curie_for(schema.default_prefix, str(slot.domain)))
