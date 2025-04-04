@@ -1961,14 +1961,14 @@ files = [
 
 [[package]]
 name = "linkml-runtime"
-version = "1.9.0rc1"
+version = "1.8.3"
 description = "Runtime environment for LinkML, the Linked open data modeling language"
 optional = false
-python-versions = "<4.0.0,>=3.8.1"
+python-versions = "<4.0,>=3.8"
 groups = ["main"]
 files = [
-    {file = "linkml_runtime-1.9.0rc1-py3-none-any.whl", hash = "sha256:f656ac366eb3fe07b0d29a59e74d3b09272162a67736b9dd3a365a31d3c67647"},
-    {file = "linkml_runtime-1.9.0rc1.tar.gz", hash = "sha256:1aa5f2c1a3e3b254128c77a986ebc7bb41ccbea039820dcd9deec633a5f1ca56"},
+    {file = "linkml_runtime-1.8.3-py3-none-any.whl", hash = "sha256:0750920f1348fffa903d99e7b5834ce425a2a538285aff9068dbd96d05caabd1"},
+    {file = "linkml_runtime-1.8.3.tar.gz", hash = "sha256:5b7f682eef54aaf0a59c50eeacdb11463b43b124a044caf496cde59936ac05c8"},
 ]
 
 [package.dependencies]
@@ -1976,7 +1976,6 @@ click = "*"
 curies = ">=0.5.4"
 deprecated = "*"
 hbreader = "*"
-isodate = ">=0.7.2,<0.8.0"
 json-flattener = ">=0.1.9"
 jsonasobj2 = ">=1.0.4,<2.dev0"
 jsonschema = ">=3.2.0"
@@ -4848,4 +4847,4 @@ tests = ["black", "numpydantic", "pyshacl"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9.0"
-content-hash = "337f917357eb28e398aa3444437b8b15350391914f9c0d0056aeeb1bba2e863b"
+content-hash = "9b7b9cf262cf6c3ab5c050a02e1fecdf289048c045ed57caf7a5afca6a313e10"

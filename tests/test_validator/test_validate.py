@@ -75,7 +75,6 @@ def test_not_a_valid_schema():
     """Ensure that schema validation fails for a structurally invalid schema"""
     instance = {}
     schema = {"foo": "bar"}
-
     try:
         validate(instance, schema)
         assert False, "Expected an exception due to invalid schema, but none was raised"
