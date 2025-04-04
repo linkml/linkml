@@ -118,7 +118,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install poetry
-        run: pipx install poetry
+        run: pipx install poetry==1.*
+
+      - name: Check Poetry version
+        run: poetry --version
 
       - name: Install dynamic versioning plugin
         run: poetry self add "poetry-dynamic-versioning[plugin]"
