@@ -1467,7 +1467,11 @@ def test_arrays_anyshape_union():
 
 @pytest.mark.parametrize(
     "dtype,expected",
-    ((None, [{}]), (int, [{"type": "integer"}]), (Union[int, float], [{"type": "integer"}, {"type": "number"}])),
+    (
+        (None, [{}]),
+        (int, [{"type": "integer"}]),
+        (Union[int, float], [{"type": "integer"}, {"type": "number"}]),
+    ),
 )
 def test_arrays_anyshape_json_schema(dtype, expected):
     if dtype is None:
@@ -1483,8 +1487,10 @@ def test_arrays_anyshape_json_schema(dtype, expected):
 
     schema = MyModel.model_json_schema()
     array_ref = schema["properties"]["array"]["$ref"].split("/")[-1]
-    assert "AnyShapeArray" in array_ref
+
+    assert "AnyShapeArray" in array_ref, f"Unexpected array ref: {array_ref}"
     assert "anyOf" in schema["$defs"][array_ref]["items"]
+
     anyOf = schema["$defs"][array_ref]["items"]["anyOf"]
     assert anyOf[0:-1] == expected
     assert anyOf[-1] == {"$ref": f"#/$defs/{array_ref}"}
