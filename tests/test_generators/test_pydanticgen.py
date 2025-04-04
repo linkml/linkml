@@ -1475,9 +1475,12 @@ def test_arrays_anyshape_union():
 )
 def test_arrays_anyshape_json_schema(dtype, expected):
     if dtype is None:
+
         class MyModel(BaseModel):
             array: AnyShapeArray
+
     else:
+
         class MyModel(BaseModel):
             array: AnyShapeArray[dtype]
             dummy: Optional[AnyShapeArray[str]] = None
@@ -1491,7 +1494,7 @@ def test_arrays_anyshape_json_schema(dtype, expected):
     anyOf = schema["$defs"][array_ref]["items"]["anyOf"]
 
     # Check that the expected primitive types match the beginning of `anyOf`
-    assert anyOf[0:len(expected)] == expected
+    assert anyOf[0 : len(expected)] == expected
 
     last_item = anyOf[len(expected)]
 
@@ -1501,7 +1504,9 @@ def test_arrays_anyshape_json_schema(dtype, expected):
     elif "$ref" in last_item:
         ref_key = last_item["$ref"].split("/")[-1]
         ref_def = schema["$defs"][ref_key]
-        assert ref_def.get("type") == "array", f"Expected type 'array' in $ref {last_item['$ref']}, got: {ref_def.get('type')}"
+        assert (
+            ref_def.get("type") == "array"
+        ), f"Expected type 'array' in $ref {last_item['$ref']}, got: {ref_def.get('type')}"
     else:
         pytest.fail(f"Neither 'type' nor '$ref' present in last item: {last_item}")
 
