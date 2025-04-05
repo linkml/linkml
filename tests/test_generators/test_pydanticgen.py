@@ -1494,21 +1494,9 @@ def test_arrays_anyshape_json_schema(dtype, expected):
     anyOf = schema["$defs"][array_ref]["items"]["anyOf"]
 
     # Check that the expected primitive types match the beginning of `anyOf`
-    assert anyOf[0 : len(expected)] == expected
-
-    last_item = anyOf[len(expected)]
-
-    # Allow for either inlined array or reference
-    if "type" in last_item:
-        assert last_item["type"] == "array", f"Expected type 'array', got: {last_item['type']}"
-    elif "$ref" in last_item:
-        ref_key = last_item["$ref"].split("/")[-1]
-        ref_def = schema["$defs"][ref_key]
-        assert (
-            ref_def.get("type") == "array"
-        ), f"Expected type 'array' in $ref {last_item['$ref']}, got: {ref_def.get('type')}"
-    else:
-        pytest.fail(f"Neither 'type' nor '$ref' present in last item: {last_item}")
+    assert anyOf[0:-1] == expected
+    # Check that the final type is a self-referential array
+    assert anyOf[-1] == {"$ref": f"#/$defs/{array_ref}"}
 
 
 def test_arrays_anyshape_strict():
