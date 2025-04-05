@@ -472,27 +472,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         pyslot = PydanticAttribute(**slot_args)
         pyslot = self.include_metadata(pyslot, slot)
 
-        slot_ranges = []
-        # Confirm that the original slot range (ignoring the default that comes in from
-        # induced_slot) isn't in addition to setting any_of
-        any_of_ranges = [a.range if a.range else slot.range for a in slot.any_of]
-        if any_of_ranges:
-            # list comprehension here is pulling ranges from within AnonymousSlotExpression
-            slot_ranges.extend(any_of_ranges)
-        else:
-            slot_ranges.append(slot.range)
-
-        pyranges = [self.generate_python_range(slot_range, slot, cls) for slot_range in slot_ranges]
-
-        pyranges = list(set(pyranges))  # remove duplicates
-        pyranges.sort()
-
-        if len(pyranges) == 1:
-            pyrange = pyranges[0]
-        elif len(pyranges) > 1:
-            pyrange = f"Union[{', '.join(pyranges)}]"
-        else:
-            raise Exception(f"Could not generate python range for {cls.name}.{slot.name}")
+        pyrange, slot_ranges = self.generate_slot_range(slot, cls)
 
         pyslot.range = pyrange
 
@@ -519,7 +499,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             else:
                 simple_dict_value = None
                 if len(slot_ranges) == 1:
-                    simple_dict_value = self._inline_as_simple_dict_with_value(slot)
+                    simple_dict_value = self._inline_as_simple_dict_with_value(slot, cls)
                 if simple_dict_value:
                     # simple_dict_value might be the range of the identifier of a class when range is a class,
                     # so we specify either that identifier or the range itself
@@ -531,6 +511,31 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         if not (slot.required or slot.identifier or slot.key) and not slot.designates_type:
             result.attribute.range = f"Optional[{result.attribute.range}]"
         return result
+
+    def generate_slot_range(self, slot, cls):
+        slot_ranges = []
+        # Confirm that the original slot range (ignoring the default that comes in from
+        # induced_slot) isn't in addition to setting any_of
+        any_of_ranges = [a.range if a.range else slot.range for a in slot.any_of]
+        if any_of_ranges:
+            # list comprehension here is pulling ranges from within AnonymousSlotExpression
+            slot_ranges.extend(any_of_ranges)
+        else:
+            slot_ranges.append(slot.range)
+
+        pyranges = [self.generate_python_range(slot_range, slot, cls) for slot_range in slot_ranges]
+
+        pyranges = list(set(pyranges))  # remove duplicates
+        pyranges.sort()
+
+        if len(pyranges) == 1:
+            pyrange = pyranges[0]
+        elif len(pyranges) > 1:
+            pyrange = f"Union[{', '.join(pyranges)}]"
+        else:
+            raise Exception(f"Could not generate python range for {cls.name}.{slot.name}")
+
+        return pyrange, slot_ranges
 
     @property
     def predefined_slot_values(self) -> Dict[str, Dict[str, str]]:
@@ -726,7 +731,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         injected_classes = [textwrap.dedent(c) for c in injected_classes]
         return injected_classes
 
-    def _inline_as_simple_dict_with_value(self, slot_def: SlotDefinition) -> Optional[str]:
+    def _inline_as_simple_dict_with_value(self, slot_def: SlotDefinition, cls_def) -> Optional[str]:
         """
         Determine if a slot should be inlined as a simple dict with a value.
 
@@ -759,7 +764,10 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                             value_slot = non_id_slots[0]
                             value_slot_range_type = self.schemaview.get_type(value_slot.range)
                             if value_slot_range_type is not None:
-                                value_slot_pyrange = _get_pyrange(value_slot_range_type, self.schemaview)
+                                value_slot_pyrange, _ = self.generate_slot_range(
+                                    value_slot,
+                                    cls_def
+                                )
                                 if not value_slot.multivalued:
                                     return value_slot_pyrange
                                 else:
