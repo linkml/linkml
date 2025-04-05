@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Set
 
 from linkml_runtime.linkml_model.meta import (
     ClassDefinitionName,
@@ -33,11 +32,11 @@ class References:
     Summary of references to a given class. The reference class is the key to the dictionary carrying classrefs
     """
 
-    classrefs: Set[ClassDefinitionName] = empty_set()  # Refs of type class
-    slotrefs: Set[SlotDefinitionName] = empty_set()  # Refs of type slot
-    typerefs: Set[TypeDefinitionName] = empty_set()  # Refs of type type
-    subsetrefs: Set[SubsetDefinitionName] = empty_set()  # Refs of type subset
-    enumrefs: Set[EnumDefinitionName] = empty_set()  # Refs of type enum
+    classrefs: set[ClassDefinitionName] = empty_set()  # Refs of type class
+    slotrefs: set[SlotDefinitionName] = empty_set()  # Refs of type slot
+    typerefs: set[TypeDefinitionName] = empty_set()  # Refs of type type
+    subsetrefs: set[SubsetDefinitionName] = empty_set()  # Refs of type subset
+    enumrefs: set[EnumDefinitionName] = empty_set()  # Refs of type enum
 
     def addref(self, fromtype: RefType, fromname: ElementName) -> None:
         if fromtype is ClassType:

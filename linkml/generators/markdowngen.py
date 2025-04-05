@@ -1,7 +1,7 @@
 import os
 import re
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional, Set, Union
+from typing import Any, Callable, Optional, Union
 
 import click
 from jsonasobj2 import JsonObj, values
@@ -44,20 +44,20 @@ class MarkdownGenerator(Generator):
     # ObjectVars
     directory: Optional[str] = None
     image_directory: Optional[str] = None
-    classes: Set[ClassDefinitionName] = None
+    classes: set[ClassDefinitionName] = None
     image_dir: bool = False
     index_file: str = "index.md"
     noimages: bool = False
     noyuml: bool = False
     no_types_dir: bool = False
     warn_on_exist: bool = False
-    gen_classes: Optional[Set[ClassDefinitionName]] = None
+    gen_classes: Optional[set[ClassDefinitionName]] = None
     gen_classes_neighborhood: Optional[References] = None
 
     def visit_schema(
         self,
         directory: str = None,
-        classes: Set[ClassDefinitionName] = None,
+        classes: set[ClassDefinitionName] = None,
         image_dir: bool = False,
         index_file: str = "index.md",
         noimages: bool = False,
@@ -267,10 +267,8 @@ class MarkdownGenerator(Generator):
 
             items.append(self.header(2, "Domain and Range"))
             items.append(
-                (
-                    f"{self.class_link(slot.domain)} &#8594;{self.predicate_cardinality(slot)} "
-                    f"{self.class_type_link(slot.range)}"
-                )
+                f"{self.class_link(slot.domain)} &#8594;{self.predicate_cardinality(slot)} "
+                f"{self.class_type_link(slot.range)}"
             )
 
             items.append(self.header(2, "Parents"))
@@ -374,7 +372,7 @@ class MarkdownGenerator(Generator):
 
         def prop_list(
             title: str,
-            entries: Union[List, Dict],
+            entries: Union[list, dict],
             formatter: Optional[Callable[[Element], str]] = None,
         ) -> Optional[str]:
             if formatter is None:
@@ -457,7 +455,7 @@ class MarkdownGenerator(Generator):
         #       - related mappings
         #       - deprecated element has exact replacement
         #       - deprecated element has possible replacement
-        if type(obj) == EnumDefinition:
+        if type(obj) is EnumDefinition:
             items.insert(0, enum_list("Permissible Values", obj))
             items.insert(1, "\n")
 

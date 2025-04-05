@@ -33,7 +33,6 @@ from linkml_runtime.linkml_model.meta import (
     PvFormulaOptions
 )
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.formatutils import (
     camelcase,
@@ -62,9 +61,6 @@ from linkml_runtime.linkml_model.types import Float, Integer, String
 metamodel_version = "1.7.0"
 version = None
 
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
-
 # Namespaces
 EX = CurieNamespace('ex', 'https://w3id.org/linkml/examples/personinfo/')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
@@ -80,7 +76,7 @@ DEFAULT_ = EX
 
 @dataclass(repr=False)
 class Thing(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EX["Thing"]
     class_class_curie: ClassVar[str] = "ex:Thing"
@@ -90,7 +86,7 @@ class Thing(YAMLRoot):
     id: Optional[str] = None
     full_name: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.id is not None and not isinstance(self.id, str):
             self.id = str(self.id)
 
@@ -102,19 +98,19 @@ class Thing(YAMLRoot):
 
 @dataclass(repr=False)
 class Person(Thing):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = SDO["Person"]
     class_class_curie: ClassVar[str] = "sdo:Person"
     class_name: ClassVar[str] = "Person"
     class_model_uri: ClassVar[URIRef] = EX.Person
 
-    aliases: Optional[Union[str, List[str]]] = empty_list()
+    aliases: Optional[Union[str, list[str]]] = empty_list()
     phone: Optional[str] = None
     age: Optional[int] = None
-    parent: Optional[Union[Union[dict, "Person"], List[Union[dict, "Person"]]]] = empty_list()
+    parent: Optional[Union[Union[dict, "Person"], list[Union[dict, "Person"]]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if not isinstance(self.aliases, list):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
@@ -134,7 +130,7 @@ class Person(Thing):
 
 @dataclass(repr=False)
 class Organization(Thing):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EX["Organization"]
     class_class_curie: ClassVar[str] = "ex:Organization"
@@ -142,9 +138,9 @@ class Organization(Thing):
     class_model_uri: ClassVar[URIRef] = EX.Organization
 
     full_name: Optional[str] = None
-    parent: Optional[Union[Union[dict, "Organization"], List[Union[dict, "Organization"]]]] = empty_list()
+    parent: Optional[Union[Union[dict, "Organization"], list[Union[dict, "Organization"]]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.full_name is not None and not isinstance(self.full_name, str):
             self.full_name = str(self.full_name)
 
@@ -157,7 +153,7 @@ class Organization(Thing):
 
 @dataclass(repr=False)
 class GeoObject(Thing):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EX["GeoObject"]
     class_class_curie: ClassVar[str] = "ex:GeoObject"
@@ -167,7 +163,7 @@ class GeoObject(Thing):
     aliases: Optional[str] = None
     age: Optional[Union[dict, "GeoAge"]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.aliases is not None and not isinstance(self.aliases, str):
             self.aliases = str(self.aliases)
 
@@ -179,7 +175,7 @@ class GeoObject(Thing):
 
 @dataclass(repr=False)
 class GeoAge(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EX["GeoAge"]
     class_class_curie: ClassVar[str] = "ex:GeoAge"
@@ -189,7 +185,7 @@ class GeoAge(YAMLRoot):
     unit: Optional[str] = None
     value: Optional[float] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.unit is not None and not isinstance(self.unit, str):
             self.unit = str(self.unit)
 
@@ -213,10 +209,10 @@ slots.full_name = Slot(uri=EX.full_name, name="full_name", curie=EX.curie('full_
                    model_uri=EX.full_name, domain=None, range=Optional[str])
 
 slots.parent = Slot(uri=EX.parent, name="parent", curie=EX.curie('parent'),
-                   model_uri=EX.parent, domain=None, range=Optional[Union[Union[dict, Thing], List[Union[dict, Thing]]]])
+                   model_uri=EX.parent, domain=None, range=Optional[Union[Union[dict, Thing], list[Union[dict, Thing]]]])
 
 slots.person__aliases = Slot(uri=EX.aliases, name="person__aliases", curie=EX.curie('aliases'),
-                   model_uri=EX.person__aliases, domain=None, range=Optional[Union[str, List[str]]])
+                   model_uri=EX.person__aliases, domain=None, range=Optional[Union[str, list[str]]])
 
 slots.person__phone = Slot(uri=EX.phone, name="person__phone", curie=EX.curie('phone'),
                    model_uri=EX.person__phone, domain=None, range=Optional[str])
@@ -237,10 +233,10 @@ slots.geoAge__value = Slot(uri=EX.value, name="geoAge__value", curie=EX.curie('v
                    model_uri=EX.geoAge__value, domain=None, range=Optional[float])
 
 slots.Person_parent = Slot(uri=EX.parent, name="Person_parent", curie=EX.curie('parent'),
-                   model_uri=EX.Person_parent, domain=Person, range=Optional[Union[Union[dict, "Person"], List[Union[dict, "Person"]]]])
+                   model_uri=EX.Person_parent, domain=Person, range=Optional[Union[Union[dict, "Person"], list[Union[dict, "Person"]]]])
 
 slots.Organization_full_name = Slot(uri=EX.full_name, name="Organization_full_name", curie=EX.curie('full_name'),
                    model_uri=EX.Organization_full_name, domain=Organization, range=Optional[str])
 
 slots.Organization_parent = Slot(uri=EX.parent, name="Organization_parent", curie=EX.curie('parent'),
-                   model_uri=EX.Organization_parent, domain=Organization, range=Optional[Union[Union[dict, "Organization"], List[Union[dict, "Organization"]]]])
+                   model_uri=EX.Organization_parent, domain=Organization, range=Optional[Union[Union[dict, "Organization"], list[Union[dict, "Organization"]]]])

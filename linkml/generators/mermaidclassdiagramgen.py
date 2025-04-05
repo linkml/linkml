@@ -3,7 +3,7 @@ import logging
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 import click
 from jinja2 import Environment, FileSystemLoader
@@ -33,7 +33,7 @@ class MermaidClassDiagramGenerator(Generator):
 
     directory: Optional[str] = None  # output directory with generated markdown files
     template_file: Optional[str] = None  # custom/default jinja template for class diagrams
-    classes: List[str] = field(default_factory=list)  # optional subset of classes
+    classes: list[str] = field(default_factory=list)  # optional subset of classes
 
     def __post_init__(self):
         super().__post_init__()

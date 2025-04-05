@@ -8,6 +8,7 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.yamlgen import YAMLGenerator
 
 
+@pytest.mark.pythongen
 @pytest.mark.no_asserts
 def test_evidence(input_path, snapshot):
     """Test evidence enumeration"""
@@ -18,6 +19,7 @@ def test_evidence(input_path, snapshot):
     assert generated == snapshot(Path("enumeration") / "evidence.py")
 
 
+@pytest.mark.yamlgen
 @pytest.mark.parametrize(
     "file,error",
     [
@@ -43,6 +45,7 @@ def test_enum_errors(file, error, input_path):
         ).serialize(validateonly=True)
 
 
+@pytest.mark.yamlgen
 @pytest.mark.parametrize(
     "file,warnings",
     [
@@ -68,6 +71,7 @@ def test_enum_warns(file, warnings, input_path, caplog):
         assert any([msg in logmsg.message for logmsg in caplog.records])
 
 
+@pytest.mark.yamlgen
 @pytest.mark.xfail
 def test_enum_valueerror(input_path):
     """Make sure that the link to the error is included in the output"""
@@ -79,6 +83,8 @@ def test_enum_valueerror(input_path):
         ).serialize(validateonly=True)
 
 
+@pytest.mark.pythongen
+@pytest.mark.yamlgen
 @pytest.mark.no_asserts
 def test_enum_alternatives(input_path, snapshot):
     """test various variants on enum constraints"""
@@ -91,6 +97,7 @@ def test_enum_alternatives(input_path, snapshot):
     assert generated_python[0] == snapshot(Path("enumeration") / "alternatives.py")
 
 
+@pytest.mark.pythongen
 def test_notebook_model_1(input_path, snapshot):
     schema_path = Path(input_path("enumeration")) / "notebook_model_1.yaml"
     python_path = Path("enumeration") / "notebook_model_1.py"
@@ -114,6 +121,7 @@ def test_notebook_model_1(input_path, snapshot):
     assert x.position.code.description == "bottom"
 
 
+@pytest.mark.pythongen
 @pytest.mark.no_asserts
 def test_notebook_model_2(input_path, snapshot):
     schema_path = Path(input_path("enumeration")) / "notebook_model_2.yaml"
@@ -130,6 +138,7 @@ def test_notebook_model_2(input_path, snapshot):
     )
 
 
+@pytest.mark.pythongen
 @pytest.mark.no_asserts
 def test_notebook_model_3(input_path, snapshot):
     schema_path = Path(input_path("enumeration")) / "notebook_model_3.yaml"
@@ -144,6 +153,7 @@ def test_notebook_model_3(input_path, snapshot):
     module.FavoriteColor("Donald", module.Colors["4"])
 
 
+@pytest.mark.pythongen
 @pytest.mark.no_asserts
 def test_notebook_model_4(input_path, snapshot):
     schema_path = Path(input_path("enumeration")) / "notebook_model_4.yaml"

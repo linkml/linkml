@@ -1,6 +1,5 @@
 from pathlib import Path
 from types import ModuleType
-from typing import Dict
 
 import pytest
 
@@ -8,7 +7,7 @@ from linkml.generators import PydanticGenerator, PythonGenerator
 
 
 @pytest.fixture(scope="module")
-def person(input_path) -> Dict[str, Path]:
+def person(input_path) -> dict[str, Path]:
     return {
         "schema": input_path("personinfo.yaml"),
         "data": input_path("personinfo_data01.yaml"),
@@ -16,7 +15,7 @@ def person(input_path) -> Dict[str, Path]:
 
 
 @pytest.fixture(scope="function")
-def tmp_outputs(tmp_path) -> Dict[str, Path]:
+def tmp_outputs(tmp_path) -> dict[str, Path]:
     return {"db": tmp_path / "tmp.db", "tsv": tmp_path / "tmp.tsv", "data": tmp_path / "tmp.yaml"}
 
 
