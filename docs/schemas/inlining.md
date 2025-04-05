@@ -194,6 +194,61 @@ on a collection of classes is as follows:
     - There is exactly one additional non-key slot (this forms the "primary" value)
     - If there are multiple candidates for the primary value, if exactly one is `required`, it is used.
 
+Example:
+
+```yaml
+classes:
+  Prefix:
+    slots:
+      prefix_reference:
+        range: string
+        required: true
+      prefix:
+        range: string
+        identifier: true
+        required: true
+```
+
+
+## Inlining as a dictionary of lists
+To represent a data structure that is a dictionary where one key maps to a collection of values (sometimes referred to as a multimap, or `Dict[str,List[str]])` in Python typing) you can follow the simple dictionary pattern above, but the set the non-identifier slot of the SimpleDict to be multivalued. 
+
+Example schema definition:
+
+```yaml
+classes:
+  ThingCollection:
+    slots:
+      - things
+  Thing:
+    slots:
+        - key
+        - values
+slots:
+  key:
+    range: string
+    identifier: true
+  values: 
+    range: string
+    multivalued: true
+  things:
+    range: Thing
+    multivalued: true
+    inlined: true
+```
+
+Example data:
+
+```yaml 
+things:
+  my_things:
+    - picnic blanket
+    - sandwich
+  your_things:
+    - lemonade
+    - chips
+```
+
 ## Inlining with non-JSON serializations
 
 The concept of inlining only makes sense with JSON-like tree-oriented data serializations:

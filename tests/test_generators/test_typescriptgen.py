@@ -119,3 +119,44 @@ def test_cli_no_print_with_output(kitchen_sink_path, tmp_path):
         result = runner.invoke(cli, [kitchen_sink_path, "--output", tmp_path / "kitchen_sink.ts"])
         assert result.exit_code == 0
         mock_print.assert_not_called()
+
+
+def test_simpledict_with_list_value():
+    schema_str = """
+id: test_schema
+name: test_info
+description: just testing
+default_range: string
+prefixes:
+  linkml: https://w3id.org/linkml/
+  schema: http://schema.org/
+
+imports:
+  - linkml:types
+
+classes:
+    A:
+        slots:
+            - things
+    Thing:
+        slots:
+            - key
+            - values
+slots:
+    key:
+        range: string
+        identifier: true
+    values: 
+        range: string
+        multivalued: true
+        inlined_as_list: true
+    things:
+        range: Thing
+        multivalued: true
+        inlined: true
+
+"""
+    gen = TypescriptGenerator(schema_str)
+    code = gen.serialize()
+    print(code)
+    assert "things?: {[index: ThingKey]: string[] }" in code
