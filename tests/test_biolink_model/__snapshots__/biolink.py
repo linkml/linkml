@@ -1412,7 +1412,7 @@ class PredicateMapping(YAMLRoot):
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
 
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
+        if self.object_direction_qualifier is not None and self.object_direction_qualifier not in DirectionQualifierEnum:
             self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self.object_form_or_variant_qualifier is not None and not isinstance(self.object_form_or_variant_qualifier, str):
@@ -7515,10 +7515,10 @@ class ReactionToParticipantAssociation(ChemicalToChemicalAssociation):
         if self.stoichiometry is not None and not isinstance(self.stoichiometry, int):
             self.stoichiometry = int(self.stoichiometry)
 
-        if self.reaction_direction is not None and not isinstance(self.reaction_direction, ReactionDirectionEnum):
+        if self.reaction_direction is not None and self.reaction_direction not in ReactionDirectionEnum:
             self.reaction_direction = ReactionDirectionEnum(self.reaction_direction)
 
-        if self.reaction_side is not None and not isinstance(self.reaction_side, ReactionSideEnum):
+        if self.reaction_side is not None and self.reaction_side not in ReactionSideEnum:
             self.reaction_side = ReactionSideEnum(self.reaction_side)
 
         super().__post_init__(**kwargs)
@@ -7680,7 +7680,7 @@ class ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation(Associati
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
-        if self.FDA_adverse_event_level is not None and not isinstance(self.FDA_adverse_event_level, FDAIDAAdverseEventEnum):
+        if self.FDA_adverse_event_level is not None and self.FDA_adverse_event_level not in FDAIDAAdverseEventEnum:
             self.FDA_adverse_event_level = FDAIDAAdverseEventEnum(self.FDA_adverse_event_level)
 
         super().__post_init__(**kwargs)
@@ -7941,22 +7941,22 @@ class ChemicalGeneInteractionAssociation(Association):
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
-        if self.subject_form_or_variant_qualifier is not None and not isinstance(self.subject_form_or_variant_qualifier, ChemicalOrGeneOrGeneProductFormOrVariantEnum):
+        if self.subject_form_or_variant_qualifier is not None and self.subject_form_or_variant_qualifier not in ChemicalOrGeneOrGeneProductFormOrVariantEnum:
             self.subject_form_or_variant_qualifier = ChemicalOrGeneOrGeneProductFormOrVariantEnum(self.subject_form_or_variant_qualifier)
 
-        if self.subject_part_qualifier is not None and not isinstance(self.subject_part_qualifier, GeneOrGeneProductOrChemicalPartQualifierEnum):
+        if self.subject_part_qualifier is not None and self.subject_part_qualifier not in GeneOrGeneProductOrChemicalPartQualifierEnum:
             self.subject_part_qualifier = GeneOrGeneProductOrChemicalPartQualifierEnum(self.subject_part_qualifier)
 
-        if self.subject_derivative_qualifier is not None and not isinstance(self.subject_derivative_qualifier, ChemicalEntityDerivativeEnum):
+        if self.subject_derivative_qualifier is not None and self.subject_derivative_qualifier not in ChemicalEntityDerivativeEnum:
             self.subject_derivative_qualifier = ChemicalEntityDerivativeEnum(self.subject_derivative_qualifier)
 
         if self.subject_context_qualifier is not None and not isinstance(self.subject_context_qualifier, AnatomicalEntityId):
             self.subject_context_qualifier = AnatomicalEntityId(self.subject_context_qualifier)
 
-        if self.object_form_or_variant_qualifier is not None and not isinstance(self.object_form_or_variant_qualifier, ChemicalOrGeneOrGeneProductFormOrVariantEnum):
+        if self.object_form_or_variant_qualifier is not None and self.object_form_or_variant_qualifier not in ChemicalOrGeneOrGeneProductFormOrVariantEnum:
             self.object_form_or_variant_qualifier = ChemicalOrGeneOrGeneProductFormOrVariantEnum(self.object_form_or_variant_qualifier)
 
-        if self.object_part_qualifier is not None and not isinstance(self.object_part_qualifier, GeneOrGeneProductOrChemicalPartQualifierEnum):
+        if self.object_part_qualifier is not None and self.object_part_qualifier not in GeneOrGeneProductOrChemicalPartQualifierEnum:
             self.object_part_qualifier = GeneOrGeneProductOrChemicalPartQualifierEnum(self.object_part_qualifier)
 
         if self.object_context_qualifier is not None and not isinstance(self.object_context_qualifier, AnatomicalEntityId):
@@ -8025,37 +8025,37 @@ class ChemicalAffectsGeneAssociation(Association):
         if not isinstance(self.object, GeneOrGeneProduct):
             self.object = GeneOrGeneProduct(**as_dict(self.object))
 
-        if self.subject_form_or_variant_qualifier is not None and not isinstance(self.subject_form_or_variant_qualifier, ChemicalOrGeneOrGeneProductFormOrVariantEnum):
+        if self.subject_form_or_variant_qualifier is not None and self.subject_form_or_variant_qualifier not in ChemicalOrGeneOrGeneProductFormOrVariantEnum:
             self.subject_form_or_variant_qualifier = ChemicalOrGeneOrGeneProductFormOrVariantEnum(self.subject_form_or_variant_qualifier)
 
-        if self.subject_part_qualifier is not None and not isinstance(self.subject_part_qualifier, GeneOrGeneProductOrChemicalPartQualifierEnum):
+        if self.subject_part_qualifier is not None and self.subject_part_qualifier not in GeneOrGeneProductOrChemicalPartQualifierEnum:
             self.subject_part_qualifier = GeneOrGeneProductOrChemicalPartQualifierEnum(self.subject_part_qualifier)
 
-        if self.subject_derivative_qualifier is not None and not isinstance(self.subject_derivative_qualifier, ChemicalEntityDerivativeEnum):
+        if self.subject_derivative_qualifier is not None and self.subject_derivative_qualifier not in ChemicalEntityDerivativeEnum:
             self.subject_derivative_qualifier = ChemicalEntityDerivativeEnum(self.subject_derivative_qualifier)
 
-        if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, GeneOrGeneProductOrChemicalPartQualifierEnum):
+        if self.subject_aspect_qualifier is not None and self.subject_aspect_qualifier not in GeneOrGeneProductOrChemicalPartQualifierEnum:
             self.subject_aspect_qualifier = GeneOrGeneProductOrChemicalPartQualifierEnum(self.subject_aspect_qualifier)
 
         if self.subject_context_qualifier is not None and not isinstance(self.subject_context_qualifier, AnatomicalEntityId):
             self.subject_context_qualifier = AnatomicalEntityId(self.subject_context_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
+        if self.subject_direction_qualifier is not None and self.subject_direction_qualifier not in DirectionQualifierEnum:
             self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
 
-        if self.object_form_or_variant_qualifier is not None and not isinstance(self.object_form_or_variant_qualifier, ChemicalOrGeneOrGeneProductFormOrVariantEnum):
+        if self.object_form_or_variant_qualifier is not None and self.object_form_or_variant_qualifier not in ChemicalOrGeneOrGeneProductFormOrVariantEnum:
             self.object_form_or_variant_qualifier = ChemicalOrGeneOrGeneProductFormOrVariantEnum(self.object_form_or_variant_qualifier)
 
-        if self.object_part_qualifier is not None and not isinstance(self.object_part_qualifier, GeneOrGeneProductOrChemicalPartQualifierEnum):
+        if self.object_part_qualifier is not None and self.object_part_qualifier not in GeneOrGeneProductOrChemicalPartQualifierEnum:
             self.object_part_qualifier = GeneOrGeneProductOrChemicalPartQualifierEnum(self.object_part_qualifier)
 
-        if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, GeneOrGeneProductOrChemicalPartQualifierEnum):
+        if self.object_aspect_qualifier is not None and self.object_aspect_qualifier not in GeneOrGeneProductOrChemicalPartQualifierEnum:
             self.object_aspect_qualifier = GeneOrGeneProductOrChemicalPartQualifierEnum(self.object_aspect_qualifier)
 
         if self.object_context_qualifier is not None and not isinstance(self.object_context_qualifier, AnatomicalEntityId):
             self.object_context_qualifier = AnatomicalEntityId(self.object_context_qualifier)
 
-        if self.causal_mechanism_qualifier is not None and not isinstance(self.causal_mechanism_qualifier, CausalMechanismQualifierEnum):
+        if self.causal_mechanism_qualifier is not None and self.causal_mechanism_qualifier not in CausalMechanismQualifierEnum:
             self.causal_mechanism_qualifier = CausalMechanismQualifierEnum(self.causal_mechanism_qualifier)
 
         if self.anatomical_context_qualifier is not None and not isinstance(self.anatomical_context_qualifier, AnatomicalEntityId):
@@ -8064,7 +8064,7 @@ class ChemicalAffectsGeneAssociation(Association):
         if self.qualified_predicate is not None and not isinstance(self.qualified_predicate, str):
             self.qualified_predicate = str(self.qualified_predicate)
 
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
+        if self.object_direction_qualifier is not None and self.object_direction_qualifier not in DirectionQualifierEnum:
             self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self.species_context_qualifier is not None and not isinstance(self.species_context_qualifier, OrganismTaxonId):
@@ -10192,7 +10192,7 @@ class EntityToDiseaseAssociation(Association):
         if not isinstance(self.id, EntityToDiseaseAssociationId):
             self.id = EntityToDiseaseAssociationId(self.id)
 
-        if self.FDA_approval_status is not None and not isinstance(self.FDA_approval_status, FDAApprovalStatusEnum):
+        if self.FDA_approval_status is not None and self.FDA_approval_status not in FDAApprovalStatusEnum:
             self.FDA_approval_status = FDAApprovalStatusEnum(self.FDA_approval_status)
 
         super().__post_init__(**kwargs)
@@ -10222,7 +10222,7 @@ class EntityToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.id, EntityToPhenotypicFeatureAssociationId):
             self.id = EntityToPhenotypicFeatureAssociationId(self.id)
 
-        if self.FDA_approval_status is not None and not isinstance(self.FDA_approval_status, FDAApprovalStatusEnum):
+        if self.FDA_approval_status is not None and self.FDA_approval_status not in FDAApprovalStatusEnum:
             self.FDA_approval_status = FDAApprovalStatusEnum(self.FDA_approval_status)
 
         super().__post_init__(**kwargs)
@@ -10310,13 +10310,13 @@ class GenomicSequenceLocalization(SequenceAssociation):
         if self.end_interbase_coordinate is not None and not isinstance(self.end_interbase_coordinate, int):
             self.end_interbase_coordinate = int(self.end_interbase_coordinate)
 
-        if self.genome_build is not None and not isinstance(self.genome_build, StrandEnum):
+        if self.genome_build is not None and self.genome_build not in StrandEnum:
             self.genome_build = StrandEnum(self.genome_build)
 
-        if self.strand is not None and not isinstance(self.strand, StrandEnum):
+        if self.strand is not None and self.strand not in StrandEnum:
             self.strand = StrandEnum(self.strand)
 
-        if self.phase is not None and not isinstance(self.phase, PhaseEnum):
+        if self.phase is not None and self.phase not in PhaseEnum:
             self.phase = PhaseEnum(self.phase)
 
         super().__post_init__(**kwargs)
@@ -10525,7 +10525,7 @@ class ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation(Association):
         if not isinstance(self.object, GeneOrGeneProduct):
             self.object = GeneOrGeneProduct(**as_dict(self.object))
 
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
+        if self.object_direction_qualifier is not None and self.object_direction_qualifier not in DirectionQualifierEnum:
             self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         super().__post_init__(**kwargs)

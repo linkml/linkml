@@ -932,7 +932,7 @@ class AnonymousEnumExpression(YAMLRoot):
         if self.code_set_version is not None and not isinstance(self.code_set_version, str):
             self.code_set_version = str(self.code_set_version)
 
-        if self.pv_formula is not None and not isinstance(self.pv_formula, PvFormulaOptions):
+        if self.pv_formula is not None and self.pv_formula not in PvFormulaOptions:
             self.pv_formula = PvFormulaOptions(self.pv_formula)
 
         self._normalize_inlined_as_dict(slot_name="permissible_values", slot_type=PermissibleValue, key_name="text", keyed=True)
@@ -1006,7 +1006,7 @@ class EnumDefinition(Definition):
         if self.code_set_version is not None and not isinstance(self.code_set_version, str):
             self.code_set_version = str(self.code_set_version)
 
-        if self.pv_formula is not None and not isinstance(self.pv_formula, PvFormulaOptions):
+        if self.pv_formula is not None and self.pv_formula not in PvFormulaOptions:
             self.pv_formula = PvFormulaOptions(self.pv_formula)
 
         self._normalize_inlined_as_dict(slot_name="permissible_values", slot_type=PermissibleValue, key_name="text", keyed=True)
@@ -1092,13 +1092,13 @@ class EnumBinding(YAMLRoot):
         if self.range is not None and not isinstance(self.range, EnumDefinitionName):
             self.range = EnumDefinitionName(self.range)
 
-        if self.obligation_level is not None and not isinstance(self.obligation_level, ObligationLevelEnum):
+        if self.obligation_level is not None and self.obligation_level not in ObligationLevelEnum:
             self.obligation_level = ObligationLevelEnum(self.obligation_level)
 
         if self.binds_value_of is not None and not isinstance(self.binds_value_of, str):
             self.binds_value_of = str(self.binds_value_of)
 
-        if self.pv_formula is not None and not isinstance(self.pv_formula, PvFormulaOptions):
+        if self.pv_formula is not None and self.pv_formula not in PvFormulaOptions:
             self.pv_formula = PvFormulaOptions(self.pv_formula)
 
         self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=True)
@@ -1349,7 +1349,7 @@ class StructuredAlias(YAMLRoot):
         if not isinstance(self.literal_form, str):
             self.literal_form = str(self.literal_form)
 
-        if self.predicate is not None and not isinstance(self.predicate, AliasPredicateEnum):
+        if self.predicate is not None and self.predicate not in AliasPredicateEnum:
             self.predicate = AliasPredicateEnum(self.predicate)
 
         if not isinstance(self.categories, list):
@@ -1590,7 +1590,7 @@ class EnumExpression(Expression):
         if self.code_set_version is not None and not isinstance(self.code_set_version, str):
             self.code_set_version = str(self.code_set_version)
 
-        if self.pv_formula is not None and not isinstance(self.pv_formula, PvFormulaOptions):
+        if self.pv_formula is not None and self.pv_formula not in PvFormulaOptions:
             self.pv_formula = PvFormulaOptions(self.pv_formula)
 
         self._normalize_inlined_as_dict(slot_name="permissible_values", slot_type=PermissibleValue, key_name="text", keyed=True)
@@ -2077,7 +2077,7 @@ class SlotExpression(Expression):
         if self.implicit_prefix is not None and not isinstance(self.implicit_prefix, str):
             self.implicit_prefix = str(self.implicit_prefix)
 
-        if self.value_presence is not None and not isinstance(self.value_presence, PresenceEnum):
+        if self.value_presence is not None and self.value_presence not in PresenceEnum:
             self.value_presence = PresenceEnum(self.value_presence)
 
         if self.equals_string is not None and not isinstance(self.equals_string, str):
@@ -2207,7 +2207,7 @@ class AnonymousSlotExpression(AnonymousExpression):
         if self.implicit_prefix is not None and not isinstance(self.implicit_prefix, str):
             self.implicit_prefix = str(self.implicit_prefix)
 
-        if self.value_presence is not None and not isinstance(self.value_presence, PresenceEnum):
+        if self.value_presence is not None and self.value_presence not in PresenceEnum:
             self.value_presence = PresenceEnum(self.value_presence)
 
         if self.equals_string is not None and not isinstance(self.equals_string, str):
@@ -2438,7 +2438,7 @@ class SlotDefinition(Definition):
         if self.usage_slot_name is not None and not isinstance(self.usage_slot_name, str):
             self.usage_slot_name = str(self.usage_slot_name)
 
-        if self.relational_role is not None and not isinstance(self.relational_role, RelationalRoleEnum):
+        if self.relational_role is not None and self.relational_role not in RelationalRoleEnum:
             self.relational_role = RelationalRoleEnum(self.relational_role)
 
         if self.slot_group is not None and not isinstance(self.slot_group, SlotDefinitionName):
@@ -2516,7 +2516,7 @@ class SlotDefinition(Definition):
         if self.implicit_prefix is not None and not isinstance(self.implicit_prefix, str):
             self.implicit_prefix = str(self.implicit_prefix)
 
-        if self.value_presence is not None and not isinstance(self.value_presence, PresenceEnum):
+        if self.value_presence is not None and self.value_presence not in PresenceEnum:
             self.value_presence = PresenceEnum(self.value_presence)
 
         if self.equals_string is not None and not isinstance(self.equals_string, str):
