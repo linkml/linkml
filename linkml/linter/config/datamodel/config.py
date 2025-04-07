@@ -1,5 +1,5 @@
 # Auto generated from config.yaml by pythongen.py version: 0.0.1
-# Generation date: 2025-04-07T16:17:30
+# Generation date: 2025-04-07T17:57:08
 # Schema: linter-config
 #
 # id: https://w3id.org/linkml/linter/config
@@ -273,6 +273,8 @@ class StandardNamingConfig(RuleConfig):
     level: Union[str, "RuleLevel"] = None
     permissible_values_upper_case: Optional[Union[bool, Bool]] = None
     exclude_type: Optional[Union[Union[str, "MetamodelElementTypeEnum"], List[Union[str, "MetamodelElementTypeEnum"]]]] = empty_list()
+    class_pattern: Optional[str] = None
+    slot_pattern: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.permissible_values_upper_case is not None and not isinstance(self.permissible_values_upper_case, Bool):
@@ -281,6 +283,12 @@ class StandardNamingConfig(RuleConfig):
         if not isinstance(self.exclude_type, list):
             self.exclude_type = [self.exclude_type] if self.exclude_type is not None else []
         self.exclude_type = [v if isinstance(v, MetamodelElementTypeEnum) else MetamodelElementTypeEnum(v) for v in self.exclude_type]
+
+        if self.class_pattern is not None and not isinstance(self.class_pattern, str):
+            self.class_pattern = str(self.class_pattern)
+
+        if self.slot_pattern is not None and not isinstance(self.slot_pattern, str):
+            self.slot_pattern = str(self.slot_pattern)
 
         super().__post_init__(**kwargs)
 
@@ -444,6 +452,12 @@ slots.standardNamingConfig__permissible_values_upper_case = Slot(uri=LINTCFG.per
 
 slots.standardNamingConfig__exclude_type = Slot(uri=LINTCFG.exclude_type, name="standardNamingConfig__exclude_type", curie=LINTCFG.curie('exclude_type'),
                    model_uri=LINTCFG.standardNamingConfig__exclude_type, domain=None, range=Optional[Union[Union[str, "MetamodelElementTypeEnum"], List[Union[str, "MetamodelElementTypeEnum"]]]])
+
+slots.standardNamingConfig__class_pattern = Slot(uri=LINTCFG.class_pattern, name="standardNamingConfig__class_pattern", curie=LINTCFG.curie('class_pattern'),
+                   model_uri=LINTCFG.standardNamingConfig__class_pattern, domain=None, range=Optional[str])
+
+slots.standardNamingConfig__slot_pattern = Slot(uri=LINTCFG.slot_pattern, name="standardNamingConfig__slot_pattern", curie=LINTCFG.curie('slot_pattern'),
+                   model_uri=LINTCFG.standardNamingConfig__slot_pattern, domain=None, range=Optional[str])
 
 slots.canonicalPrefixesConfig__prefixmaps_contexts = Slot(uri=LINTCFG.prefixmaps_contexts, name="canonicalPrefixesConfig__prefixmaps_contexts", curie=LINTCFG.curie('prefixmaps_contexts'),
                    model_uri=LINTCFG.canonicalPrefixesConfig__prefixmaps_contexts, domain=None, range=Optional[Union[str, List[str]]])

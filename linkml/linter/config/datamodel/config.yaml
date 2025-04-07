@@ -164,7 +164,19 @@ classes:
         multivalued: true
         description: >-
           Default: []
-          Elements of all types (ClassDefinition, SlotDefinition, EnumDefinition, PermissibleValue, etc.) except the types specified in this list will be checked 
+          Elements of all types (ClassDefinition, SlotDefinition, EnumDefinition, PermissibleValue, etc.) except the types specified in this list will be checked
+      class_pattern:
+        range: string
+        required: false
+        description: >
+          If specified, permissible format pattern for classes can be provided either as one of the following:
+          snake, uppersnake, camel, uppercamel, kebab or as regular expression (e.g. "[a-z][_a-z0-9]+" for snake case)
+      slot_pattern:
+        range: string
+        required: false
+        description: >
+          If specified, permissible format pattern for classes can be provided either as one of the following:
+          snake, uppersnake, camel, uppercamel, kebab or as regular expression (e.g. "[a-z][_a-z0-9]+" for snake case)
 
   CanonicalPrefixesConfig:
     description: >-
