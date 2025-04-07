@@ -1,11 +1,10 @@
 import yaml
 
-from linkml.linter.config.datamodel.config import RuleLevel
 from linkml.linter.linter import Linter
 from linkml.utils.schema_builder import SchemaBuilder
 
 
-def test_rule_level_error():
+def test_class_empty_title_forbidden():
     config = yaml.safe_load(
         """
 rules:
@@ -13,128 +12,461 @@ rules:
     level: error
 """
     )
+
     builder = SchemaBuilder()
     builder.add_class("MyClass")
-    builder.add_slot("my slot")
-    builder.add_enum("my_enum")
 
     linter = Linter(config)
     report = list(linter.lint(builder.schema))
 
     messages = [p.message for p in report]
-    levels = {str(p.level) for p in report}
-    rule_names = {p.rule_name for p in report}
 
-    assert len(messages) == 3
-    assert any("MyClass" in m for m in messages)
-    assert any("my slot" in m for m in messages)
-    assert any("my_enum" in m for m in messages)
+    # print("\n")
+    # for m in messages:
+    #     print(m)
 
-    assert len(levels) == 1
-    assert levels.pop() == RuleLevel.error.text
-
-    assert len(rule_names) == 1
-    assert rule_names.pop() == "no_empty_title"
+    assert len(messages) == 1
+    assert any("Class 'MyClass' has no title" in m for m in messages)
 
 
-def test_rule_level_warning():
+def test_class_empty_title_allowed():
     config = yaml.safe_load(
         """
 rules:
   no_empty_title:
-    level: warning
+    level: error
+    exclude_type:
+      - class_definition
 """
     )
+
     builder = SchemaBuilder()
     builder.add_class("MyClass")
-    builder.add_slot("my slot")
-    builder.add_enum("my_enum")
 
     linter = Linter(config)
     report = list(linter.lint(builder.schema))
 
     messages = [p.message for p in report]
-    levels = {str(p.level) for p in report}
-    rule_names = {p.rule_name for p in report}
 
-    assert len(messages) == 3
-    assert any("MyClass" in m for m in messages)
-    assert any("my slot" in m for m in messages)
-    assert any("my_enum" in m for m in messages)
-
-    assert len(levels) == 1
-    assert levels.pop() == RuleLevel.warning.text
-
-    assert len(rule_names) == 1
-    assert rule_names.pop() == "no_empty_title"
+    assert len(messages) == 0
 
 
-def test_rule_level_disabled():
+def test_slot_empty_title_forbidden():
     config = yaml.safe_load(
         """
 rules:
   no_empty_title:
-    level: disabled
+    level: error
 """
     )
+
     builder = SchemaBuilder()
-    builder.add_class("MyClass")
-    builder.add_slot("my slot")
-    builder.add_enum("my_enum")
+    builder.add_slot("my_slot")
 
     linter = Linter(config)
     report = list(linter.lint(builder.schema))
 
-    assert len(report) == 0
+    messages = [p.message for p in report]
+
+    assert len(messages) == 1
+    assert any("Slot 'my_slot' has no title" in m for m in messages)
 
 
-def test_no_extends():
+def test_slot_empty_title_allowed():
     config = yaml.safe_load(
         """
 rules:
-  canonical_prefixes:
-    level: error
-    prefixmaps_contexts:
-      - obo
-      - prefixcc
   no_empty_title:
-    level: warning
+    level: error
+    exclude_type:
+      - slot_definition
 """
     )
+
+    builder = SchemaBuilder()
+    builder.add_slot("my_slot")
+
     linter = Linter(config)
+    report = list(linter.lint(builder.schema))
 
-    # the level is changed by the custom rules
-    assert str(linter.config.rules.canonical_prefixes.level) == RuleLevel.error.text
-    assert linter.config.rules.canonical_prefixes.prefixmaps_contexts == ["obo", "prefixcc"]
+    messages = [p.message for p in report]
 
-    assert str(linter.config.rules.tree_root_class.level) == RuleLevel.disabled.text
+    assert len(messages) == 0
 
 
-def test_extends_recommended():
+def test_enum_empty_title_forbidden():
     config = yaml.safe_load(
         """
-extends: recommended
 rules:
-  canonical_prefixes:
-    level: error
-    prefixmaps_contexts:
-      - obo
-      - prefixcc
   no_empty_title:
-    level: warning
+    level: error
 """
     )
+
+    builder = SchemaBuilder()
+    builder.add_enum("MyEnum")
+
     linter = Linter(config)
+    report = list(linter.lint(builder.schema))
 
-    # this rule is in the recommended set, the level is changed by the custom rules
-    assert str(linter.config.rules.canonical_prefixes.level) == RuleLevel.error.text
-    assert linter.config.rules.canonical_prefixes.prefixmaps_contexts == ["obo", "prefixcc"]
+    messages = [p.message for p in report]
 
-    # this should come directly from the recommended set with no customization
-    assert str(linter.config.rules.no_xsd_int_type.level) == RuleLevel.error.text
+    assert len(messages) == 1
+    assert any("Enum 'MyEnum' has no title" in m for m in messages)
 
-    # this is in the custom rules but not in the recommended set
-    assert str(linter.config.rules.no_empty_title.level) == RuleLevel.warning.text
 
-    # this is not in the recommended or custom rules and should come from the default
-    assert str(linter.config.rules.tree_root_class.level) == RuleLevel.disabled.text
+def test_enum_empty_title_allowed():
+    config = yaml.safe_load(
+        """
+rules:
+  no_empty_title:
+    level: error
+    exclude_type:
+      - enum_definition
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_enum("MyEnum")
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    assert len(messages) == 0
+
+
+# todo PVs are not checked for titles yet
+
+
+def test_class_missing_recommendeds_forbidden():
+    config = yaml.safe_load(
+        """
+rules:
+  recommended:
+    level: error
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_class("MyClass")
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    assert len(messages) == 1
+    assert any("'MyClass' does not have recommended slot 'description'" in m for m in messages)
+
+
+def test_class_missing_recommendeds_allowed():
+    config = yaml.safe_load(
+        """
+rules:
+  recommended:
+    level: error
+    exclude_type:
+      - class_definition
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_class("MyClass")
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    assert len(messages) == 0
+
+
+def test_slot_missing_recommendeds_forbidden():
+    config = yaml.safe_load(
+        """
+rules:
+  recommended:
+    level: error
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_slot("my_slot")
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    print("\n")
+    for m in messages:
+        print(m)
+
+    assert len(messages) == 1
+    assert any("Slot 'my_slot' does not have recommended slot 'description'" in m for m in messages)
+
+
+def test_slot_missing_recommendeds_allowed():
+    config = yaml.safe_load(
+        """
+rules:
+  recommended:
+    level: error
+    exclude_type:
+      - slot_definition
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_slot("my_slot")
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    assert len(messages) == 0
+
+
+def test_enum_missing_recommendeds_forbidden():
+    config = yaml.safe_load(
+        """
+rules:
+  recommended:
+    level: error
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_enum("MyEnum")
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    assert len(messages) == 1
+    assert any("Enum 'MyEnum' does not have recommended slot 'description'" in m for m in messages)
+
+
+def test_enum_missing_recommendeds_allowed():
+    config = yaml.safe_load(
+        """
+rules:
+  recommended:
+    level: error
+    exclude_type:
+      - enum_definition
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_enum("MyEnum")
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    assert len(messages) == 0
+
+
+# todo PVs are not checked for recommended fields yet
+
+
+def test_class_default_non_standard_name_forbidden():
+    config = yaml.safe_load(
+        """
+rules:
+  standard_naming:
+    level: error
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_class("my class")
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    print("\n")
+    for m in messages:
+        print(m)
+
+    assert len(messages) == 1
+    assert any("Class has name 'my class'" in m for m in messages)
+
+
+def test_class_default_non_standard_name_allowed():
+    config = yaml.safe_load(
+        """
+rules:
+  standard_naming:
+    level: error
+    exclude_type:
+      - class_definition
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_class("my class")
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    print("\n")
+    for m in messages:
+        print(m)
+
+    assert len(messages) == 0
+
+
+def test_slot_default_non_standard_name_forbidden():
+    config = yaml.safe_load(
+        """
+rules:
+  standard_naming:
+    level: error
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_slot("my slot")
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    print("\n")
+    for m in messages:
+        print(m)
+
+    assert len(messages) == 1
+    assert any("Slot has name 'my slot'" in m for m in messages)
+
+
+def test_slot_default_non_standard_name_allowed():
+    config = yaml.safe_load(
+        """
+rules:
+  standard_naming:
+    level: error
+    exclude_type:
+      - slot_definition
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_slot("my slot")
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    print("\n")
+    for m in messages:
+        print(m)
+
+    assert len(messages) == 0
+
+
+def test_enum_default_non_standard_name_forbidden():
+    config = yaml.safe_load(
+        """
+rules:
+  standard_naming:
+    level: error
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_enum("my enum")
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    print("\n")
+    for m in messages:
+        print(m)
+
+    assert len(messages) == 1
+    assert any("Enum has name 'my enum'" in m for m in messages)
+
+
+def test_enum_default_non_standard_name_allowed():
+    config = yaml.safe_load(
+        """
+rules:
+  standard_naming:
+    level: error
+    exclude_type:
+      - enum_definition
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_enum("my enum")
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    print("\n")
+    for m in messages:
+        print(m)
+
+    assert len(messages) == 0
+
+
+def test_pv_default_non_standard_name_forbidden():
+    config = yaml.safe_load(
+        """
+rules:
+  standard_naming:
+    level: error
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_enum("MyEnum", permissible_values=["pv 1"])
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    assert len(messages) == 1
+    assert any("Permissible value of Enum 'MyEnum' has name 'pv 1'" in m for m in messages)
+
+
+def test_pv_default_non_standard_name_allowed():
+    config = yaml.safe_load(
+        """
+rules:
+  standard_naming:
+    level: error
+    exclude_type:
+      - permissible_value
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_enum("MyEnum", permissible_values=["pv 1"])
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    assert len(messages) == 0

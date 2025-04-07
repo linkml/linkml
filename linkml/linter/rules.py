@@ -55,10 +55,15 @@ class LinterRule(ABC):
 class NoEmptyTitleRule(LinterRule):
     id = "no_empty_title"
 
+    # todo PVs are not checked for titles yet
+
     def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
-        excluded_types = getattr(self.config, "exclude_type", [])
+        excluded_types = [t.text if hasattr(t, "text") else str(t) for t in getattr(self.config, "exclude_type", [])]
+        # print("\n")
+        # print(f"Excluded types: {excluded_types}")
         for e in schema_view.all_elements(imports=False).values():
             element_type_name = type(e).class_name
+            # print(f"Element type name: {element_type_name}")
             if element_type_name in excluded_types:
                 continue
             if fix and e.title is None:
@@ -108,12 +113,14 @@ def _get_recommended_metamodel_slots() -> List[str]:
 class RecommendedRule(LinterRule):
     id = "recommended"
 
+    # todo PVs are not checked for recommended fields yet
+
     def __init__(self, config: RecommendedRuleConfig) -> None:
         self.config = config
 
     def check(self, schema_view: SchemaView, fix: bool = False):
         recommended_meta_slots = _get_recommended_metamodel_slots()
-        excluded_types = getattr(self.config, "exclude_type", [])
+        excluded_types = [t.text if hasattr(t, "text") else str(t) for t in getattr(self.config, "exclude_type", [])]
         for element_name, element_definition in schema_view.all_elements(imports=False).items():
             element_type_name = type(element_definition).class_name
             if self.config.include and element_name not in self.config.include:
@@ -223,14 +230,8 @@ class StandardNamingRule(LinterRule):
     def __init__(self, config: StandardNamingConfig) -> None:
         self.config = config
 
-    # excluded_types = getattr(self.config, "exclude_type", [])
-    #         for e in schema_view.all_elements(imports=False).values():
-    #             element_type_name = type(element_definition).class_name
-    #             if element_type_name in excluded_types:
-    #                 continue
-
     def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
-        excluded_types = getattr(self.config, "exclude_type", [])
+        excluded_types = [t.text if hasattr(t, "text") else str(t) for t in getattr(self.config, "exclude_type", [])]
         class_pattern = (
             self.PATTERNS["uppercamel"]
             if not self.config.class_pattern
@@ -247,23 +248,23 @@ class StandardNamingRule(LinterRule):
             self.PATTERNS["uppersnake"] if self.config.permissible_values_upper_case else self.PATTERNS["snake"]
         )
 
-        if "ClassDefinition" not in excluded_types:
+        if "class_definition" not in excluded_types:
             for class_name in schema_view.all_classes(imports=False).keys():
                 if class_pattern.fullmatch(class_name) is None:
                     yield LinterProblem(f"Class has name '{class_name}'")
 
-        if "SlotDefinition" not in excluded_types:
+        if "slot_definition" not in excluded_types:
             for slot_name in schema_view.all_slots(imports=False).keys():
                 if slot_pattern.fullmatch(slot_name) is None:
                     yield LinterProblem(f"Slot has name '{slot_name}'")
 
         for enum_name, enum_definition in schema_view.all_enums(imports=False).items():
 
-            if "EnumDefinition" not in excluded_types:
+            if "enum_definition" not in excluded_types:
                 if enum_pattern.fullmatch(enum_name) is None:
                     yield LinterProblem(f"Enum has name '{enum_name}'")
 
-            if "PermissibleValue" not in excluded_types:
+            if "permissible_value" not in excluded_types:
                 for permissible_value_name in enum_definition.permissible_values.keys():
                     if permissible_value_pattern.fullmatch(permissible_value_name) is None:
                         yield LinterProblem(
