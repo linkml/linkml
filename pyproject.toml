@@ -254,9 +254,7 @@ target-version = "py38"
 # These templates can have long lines
 "linkml/generators/sqlalchemy/sqlalchemy_declarative_template.py" = ["E501"]
 "linkml/generators/sqlalchemy/sqlalchemy_imperative_template.py" = ["E501"]
-"linkml/linter/config/datamodel/config.py" = ["E501"]
-"linkml/linter/config/datamodel/config.py" = ["F401"]
-"linkml/linter/config/datamodel/config.py" = ["I001"]
+"linkml/linter/config/datamodel/config.py" = ["E501", "F401", "I001"]
 
 # Notebooks can have unsorted imports
 "tests/test_notebooks/input/*" = ["E402"]
