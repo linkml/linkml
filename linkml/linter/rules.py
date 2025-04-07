@@ -56,7 +56,7 @@ class NoEmptyTitleRule(LinterRule):
     id = "no_empty_title"
 
     def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
-        excluded_types = self.config["exclude_type"]
+        excluded_types = getattr(self.config, "exclude_type", [])
         for e in schema_view.all_elements(imports=False).values():
             element_type_name = type(e).class_name
             if element_type_name in excluded_types:
@@ -113,7 +113,7 @@ class RecommendedRule(LinterRule):
 
     def check(self, schema_view: SchemaView, fix: bool = False):
         recommended_meta_slots = _get_recommended_metamodel_slots()
-        excluded_types = self.config["exclude_type"]
+        excluded_types = getattr(self.config, "exclude_type", [])
         for element_name, element_definition in schema_view.all_elements(imports=False).items():
             element_type_name = type(element_definition).class_name
             if self.config.include and element_name not in self.config.include:
@@ -223,14 +223,14 @@ class StandardNamingRule(LinterRule):
     def __init__(self, config: StandardNamingConfig) -> None:
         self.config = config
 
-    # excluded_types = self.config["exclude_type"]
+    # excluded_types = getattr(self.config, "exclude_type", [])
     #         for e in schema_view.all_elements(imports=False).values():
     #             element_type_name = type(element_definition).class_name
     #             if element_type_name in excluded_types:
     #                 continue
 
     def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
-        excluded_types = self.config["exclude_type"]
+        excluded_types = getattr(self.config, "exclude_type", [])
         class_pattern = (
             self.PATTERNS["uppercamel"]
             if not self.config.class_pattern
