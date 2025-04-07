@@ -147,7 +147,7 @@ classes:
         multivalued: true
         description: >-
           Default: []
-          Elements of all types (class_definition, slot_definition, enum_definition, etc.) except the types specified in this list will be checked
+          Elements of all types (ClassDefinition, SlotDefinition, EnumDefinition, PermissibleValue, etc.) except the types specified in this list will be checked
 
   StandardNamingConfig:
     description: >-
@@ -164,7 +164,7 @@ classes:
         multivalued: true
         description: >-
           Default: []
-          Elements of all types (class_definition, slot_definition, enum_definition, etc.) except the types specified in this list will be checked 
+          Elements of all types (ClassDefinition, SlotDefinition, EnumDefinition, PermissibleValue, etc.) except the types specified in this list will be checked 
 
   CanonicalPrefixesConfig:
     description: >-
@@ -190,7 +190,7 @@ classes:
         multivalued: true
         description: >-
           Default: []
-          Elements of all types (class_definition, slot_definition, enum_definition, etc.) except the types specified in this list will be checked 
+          Elements of all types (ClassDefinition, SlotDefinition, EnumDefinition, PermissibleValue, etc.) except the types specified in this list will be checked 
 
 enums:
   ExtendableConfigs:
@@ -214,7 +214,19 @@ enums:
     comments:
       - Was ExcludeTypeEnum. Switching to a name that could be used in other contexts.
     permissible_values:
-      class_definition: { }
-      enum_definition: { }
-      permissible_value: { }
-      slot_definition: { }
+      ClassDefinition:
+        meaning: linkml:ClassDefinition
+        comments:
+          - was class_definition
+      EnumDefinition:
+        meaning: linkml:EnumDefinition
+        comments:
+          - was enum_definition
+      PermissibleValue:
+        meaning: linkml:PermissibleValue
+        comments:
+          - was permissible_value
+      SlotDefinition:
+        comments:
+          - change to linkml:SlotDefinition
+          - was slot_definition

@@ -247,23 +247,23 @@ class StandardNamingRule(LinterRule):
             self.PATTERNS["uppersnake"] if self.config.permissible_values_upper_case else self.PATTERNS["snake"]
         )
 
-        if "class_definition" not in excluded_types:
+        if "ClassDefinition" not in excluded_types:
             for class_name in schema_view.all_classes(imports=False).keys():
                 if class_pattern.fullmatch(class_name) is None:
                     yield LinterProblem(f"Class has name '{class_name}'")
 
-        if "slot_definition" not in excluded_types:
+        if "SlotDefinition" not in excluded_types:
             for slot_name in schema_view.all_slots(imports=False).keys():
                 if slot_pattern.fullmatch(slot_name) is None:
                     yield LinterProblem(f"Slot has name '{slot_name}'")
 
         for enum_name, enum_definition in schema_view.all_enums(imports=False).items():
 
-            if "enum_definition" not in excluded_types:
+            if "EnumDefinition" not in excluded_types:
                 if enum_pattern.fullmatch(enum_name) is None:
                     yield LinterProblem(f"Enum has name '{enum_name}'")
 
-            if "permissible_value" not in excluded_types:
+            if "PermissibleValue" not in excluded_types:
                 for permissible_value_name in enum_definition.permissible_values.keys():
                     if permissible_value_pattern.fullmatch(permissible_value_name) is None:
                         yield LinterProblem(

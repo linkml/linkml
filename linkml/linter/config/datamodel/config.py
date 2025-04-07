@@ -1,5 +1,5 @@
 # Auto generated from config.yaml by pythongen.py version: 0.0.1
-# Generation date: 2025-04-07T11:42:23
+# Generation date: 2025-04-07T11:52:55
 # Schema: linter-config
 #
 # id: https://w3id.org/linkml/linter/config
@@ -368,10 +368,16 @@ class MetamodelElementTypeEnum(EnumDefinitionImpl):
     """
     The permissible values for the exclude_type slot
     """
-    class_definition = PermissibleValue(text="class_definition")
-    enum_definition = PermissibleValue(text="enum_definition")
-    permissible_value = PermissibleValue(text="permissible_value")
-    slot_definition = PermissibleValue(text="slot_definition")
+    ClassDefinition = PermissibleValue(
+        text="ClassDefinition",
+        meaning=LINKML["ClassDefinition"])
+    EnumDefinition = PermissibleValue(
+        text="EnumDefinition",
+        meaning=LINKML["EnumDefinition"])
+    PermissibleValue = PermissibleValue(
+        text="PermissibleValue",
+        meaning=LINKML["PermissibleValue"])
+    SlotDefinition = PermissibleValue(text="SlotDefinition")
 
     _defn = EnumDefinition(
         name="MetamodelElementTypeEnum",
