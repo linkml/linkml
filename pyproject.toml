@@ -198,6 +198,7 @@ force-exclude = '''
   | docs
   | examples
   | notebooks
+  | linkml/linter/config/datamodel
 )/
 '''
 
