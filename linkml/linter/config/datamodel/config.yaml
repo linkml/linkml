@@ -143,12 +143,12 @@ classes:
           Default: []
           All elements except the ones with names specified in this list will be checked
       exclude_type:
-        range: ExcludeTypeEnum
+        range: MetamodelElementTypeEnum
         multivalued: true
         description: >-
           Default: []
           Elements of all types (class_definition, slot_definition, enum_definition, etc.) except the types specified in this list will be checked
-        
+
   StandardNamingConfig:
     description: >-
       Additional configuration options for the `standard_naming` rule
@@ -160,7 +160,7 @@ classes:
           Default: false
           If true, permissible values will be checked for snake_case, otherwise UPPER_SNAKE
       exclude_type:
-        range: ExcludeTypeEnum
+        range: MetamodelElementTypeEnum
         multivalued: true
         description: >-
           Default: []
@@ -186,7 +186,7 @@ classes:
     is_a: RuleConfig
     attributes:
       exclude_type:
-        range: ExcludeTypeEnum
+        range: MetamodelElementTypeEnum
         multivalued: true
         description: >-
           Default: []
@@ -208,11 +208,13 @@ enums:
         description: A violation of a rule at this level is a minor issue that should be fixed
       error:
         description: A violation of a rule at this level is a major issue that must be fixed
-  ExcludeTypeEnum:
+  MetamodelElementTypeEnum:
     description: >-
       The permissible values for the exclude_type slot
+    comments:
+      - Was ExcludeTypeEnum. Switching to a name that could be used in other contexts.
     permissible_values:
-      class_definition: {}
-      enum_definition: {}
-      permissible_value: {}
-      slot_definition: {}
+      class_definition: { }
+      enum_definition: { }
+      permissible_value: { }
+      slot_definition: { }

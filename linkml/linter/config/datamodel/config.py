@@ -1,5 +1,5 @@
 # Auto generated from config.yaml by pythongen.py version: 0.0.1
-# Generation date: 2025-03-14T15:50:00
+# Generation date: 2025-04-07T11:42:23
 # Schema: linter-config
 #
 # id: https://w3id.org/linkml/linter/config
@@ -240,7 +240,7 @@ class RecommendedRuleConfig(RuleConfig):
     level: Union[str, "RuleLevel"] = None
     include: Optional[Union[str, List[str]]] = empty_list()
     exclude: Optional[Union[str, List[str]]] = empty_list()
-    exclude_type: Optional[Union[Union[str, "ExcludeTypeEnum"], List[Union[str, "ExcludeTypeEnum"]]]] = empty_list()
+    exclude_type: Optional[Union[Union[str, "MetamodelElementTypeEnum"], List[Union[str, "MetamodelElementTypeEnum"]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if not isinstance(self.include, list):
@@ -253,7 +253,7 @@ class RecommendedRuleConfig(RuleConfig):
 
         if not isinstance(self.exclude_type, list):
             self.exclude_type = [self.exclude_type] if self.exclude_type is not None else []
-        self.exclude_type = [v if isinstance(v, ExcludeTypeEnum) else ExcludeTypeEnum(v) for v in self.exclude_type]
+        self.exclude_type = [v if isinstance(v, MetamodelElementTypeEnum) else MetamodelElementTypeEnum(v) for v in self.exclude_type]
 
         super().__post_init__(**kwargs)
 
@@ -272,7 +272,7 @@ class StandardNamingConfig(RuleConfig):
 
     level: Union[str, "RuleLevel"] = None
     permissible_values_upper_case: Optional[Union[bool, Bool]] = None
-    exclude_type: Optional[Union[Union[str, "ExcludeTypeEnum"], List[Union[str, "ExcludeTypeEnum"]]]] = empty_list()
+    exclude_type: Optional[Union[Union[str, "MetamodelElementTypeEnum"], List[Union[str, "MetamodelElementTypeEnum"]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.permissible_values_upper_case is not None and not isinstance(self.permissible_values_upper_case, Bool):
@@ -280,7 +280,7 @@ class StandardNamingConfig(RuleConfig):
 
         if not isinstance(self.exclude_type, list):
             self.exclude_type = [self.exclude_type] if self.exclude_type is not None else []
-        self.exclude_type = [v if isinstance(v, ExcludeTypeEnum) else ExcludeTypeEnum(v) for v in self.exclude_type]
+        self.exclude_type = [v if isinstance(v, MetamodelElementTypeEnum) else MetamodelElementTypeEnum(v) for v in self.exclude_type]
 
         super().__post_init__(**kwargs)
 
@@ -321,12 +321,12 @@ class NoEmptyTitleConfig(RuleConfig):
     class_model_uri: ClassVar[URIRef] = LINTCFG.NoEmptyTitleConfig
 
     level: Union[str, "RuleLevel"] = None
-    exclude_type: Optional[Union[Union[str, "ExcludeTypeEnum"], List[Union[str, "ExcludeTypeEnum"]]]] = empty_list()
+    exclude_type: Optional[Union[Union[str, "MetamodelElementTypeEnum"], List[Union[str, "MetamodelElementTypeEnum"]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if not isinstance(self.exclude_type, list):
             self.exclude_type = [self.exclude_type] if self.exclude_type is not None else []
-        self.exclude_type = [v if isinstance(v, ExcludeTypeEnum) else ExcludeTypeEnum(v) for v in self.exclude_type]
+        self.exclude_type = [v if isinstance(v, MetamodelElementTypeEnum) else MetamodelElementTypeEnum(v) for v in self.exclude_type]
 
         super().__post_init__(**kwargs)
 
@@ -364,7 +364,7 @@ class RuleLevel(EnumDefinitionImpl):
         description="The permissible values for the `level` option of all rules",
     )
 
-class ExcludeTypeEnum(EnumDefinitionImpl):
+class MetamodelElementTypeEnum(EnumDefinitionImpl):
     """
     The permissible values for the exclude_type slot
     """
@@ -374,7 +374,7 @@ class ExcludeTypeEnum(EnumDefinitionImpl):
     slot_definition = PermissibleValue(text="slot_definition")
 
     _defn = EnumDefinition(
-        name="ExcludeTypeEnum",
+        name="MetamodelElementTypeEnum",
         description="The permissible values for the exclude_type slot",
     )
 
@@ -431,16 +431,16 @@ slots.recommendedRuleConfig__exclude = Slot(uri=LINTCFG.exclude, name="recommend
                    model_uri=LINTCFG.recommendedRuleConfig__exclude, domain=None, range=Optional[Union[str, List[str]]])
 
 slots.recommendedRuleConfig__exclude_type = Slot(uri=LINTCFG.exclude_type, name="recommendedRuleConfig__exclude_type", curie=LINTCFG.curie('exclude_type'),
-                   model_uri=LINTCFG.recommendedRuleConfig__exclude_type, domain=None, range=Optional[Union[Union[str, "ExcludeTypeEnum"], List[Union[str, "ExcludeTypeEnum"]]]])
+                   model_uri=LINTCFG.recommendedRuleConfig__exclude_type, domain=None, range=Optional[Union[Union[str, "MetamodelElementTypeEnum"], List[Union[str, "MetamodelElementTypeEnum"]]]])
 
 slots.standardNamingConfig__permissible_values_upper_case = Slot(uri=LINTCFG.permissible_values_upper_case, name="standardNamingConfig__permissible_values_upper_case", curie=LINTCFG.curie('permissible_values_upper_case'),
                    model_uri=LINTCFG.standardNamingConfig__permissible_values_upper_case, domain=None, range=Optional[Union[bool, Bool]])
 
 slots.standardNamingConfig__exclude_type = Slot(uri=LINTCFG.exclude_type, name="standardNamingConfig__exclude_type", curie=LINTCFG.curie('exclude_type'),
-                   model_uri=LINTCFG.standardNamingConfig__exclude_type, domain=None, range=Optional[Union[Union[str, "ExcludeTypeEnum"], List[Union[str, "ExcludeTypeEnum"]]]])
+                   model_uri=LINTCFG.standardNamingConfig__exclude_type, domain=None, range=Optional[Union[Union[str, "MetamodelElementTypeEnum"], List[Union[str, "MetamodelElementTypeEnum"]]]])
 
 slots.canonicalPrefixesConfig__prefixmaps_contexts = Slot(uri=LINTCFG.prefixmaps_contexts, name="canonicalPrefixesConfig__prefixmaps_contexts", curie=LINTCFG.curie('prefixmaps_contexts'),
                    model_uri=LINTCFG.canonicalPrefixesConfig__prefixmaps_contexts, domain=None, range=Optional[Union[str, List[str]]])
 
 slots.noEmptyTitleConfig__exclude_type = Slot(uri=LINTCFG.exclude_type, name="noEmptyTitleConfig__exclude_type", curie=LINTCFG.curie('exclude_type'),
-                   model_uri=LINTCFG.noEmptyTitleConfig__exclude_type, domain=None, range=Optional[Union[Union[str, "ExcludeTypeEnum"], List[Union[str, "ExcludeTypeEnum"]]]])
+                   model_uri=LINTCFG.noEmptyTitleConfig__exclude_type, domain=None, range=Optional[Union[Union[str, "MetamodelElementTypeEnum"], List[Union[str, "MetamodelElementTypeEnum"]]]])
