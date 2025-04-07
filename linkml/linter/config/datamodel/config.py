@@ -1,5 +1,5 @@
 # Auto generated from config.yaml by pythongen.py version: 0.0.1
-# Generation date: 2025-04-07T11:52:55
+# Generation date: 2025-04-07T16:17:30
 # Schema: linter-config
 #
 # id: https://w3id.org/linkml/linter/config
@@ -7,18 +7,58 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
+import re
 from dataclasses import dataclass
-from typing import Any, ClassVar, Dict, List, Optional, Union
+from datetime import (
+    date,
+    datetime,
+    time
+)
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    List,
+    Optional,
+    Union
+)
 
-from jsonasobj2 import as_dict
-from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
+from jsonasobj2 import (
+    JsonObj,
+    as_dict
+)
+from linkml_runtime.linkml_model.meta import (
+    EnumDefinition,
+    PermissibleValue,
+    PvFormulaOptions
+)
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.metamodelcore import Bool, empty_list
+from linkml_runtime.utils.formatutils import (
+    camelcase,
+    sfx,
+    underscore
+)
+from linkml_runtime.utils.metamodelcore import (
+    bnode,
+    empty_dict,
+    empty_list
+)
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import YAMLRoot
-from rdflib import URIRef
+from linkml_runtime.utils.yamlutils import (
+    YAMLRoot,
+    extended_float,
+    extended_int,
+    extended_str
+)
+from rdflib import (
+    Namespace,
+    URIRef
+)
+
+from linkml_runtime.linkml_model.types import Boolean, String
+from linkml_runtime.utils.metamodelcore import Bool
 
 metamodel_version = "1.7.0"
 version = None
@@ -328,16 +368,16 @@ class MetamodelElementTypeEnum(EnumDefinitionImpl):
     """
     The permissible values for the exclude_type slot
     """
-    ClassDefinition = PermissibleValue(
-        text="ClassDefinition",
+    class_definition = PermissibleValue(
+        text="class_definition",
         meaning=LINKML["ClassDefinition"])
-    EnumDefinition = PermissibleValue(
-        text="EnumDefinition",
+    enum_definition = PermissibleValue(
+        text="enum_definition",
         meaning=LINKML["EnumDefinition"])
-    PermissibleValue = PermissibleValue(
-        text="PermissibleValue",
+    permissible_value = PermissibleValue(
+        text="permissible_value",
         meaning=LINKML["PermissibleValue"])
-    SlotDefinition = PermissibleValue(text="SlotDefinition")
+    slot_definition = PermissibleValue(text="slot_definition")
 
     _defn = EnumDefinition(
         name="MetamodelElementTypeEnum",
