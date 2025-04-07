@@ -214,19 +214,19 @@ enums:
     comments:
       - Was ExcludeTypeEnum. Switching to a name that could be used in other contexts.
     permissible_values:
-      ClassDefinition:
+      class_definition:
         meaning: linkml:ClassDefinition
         comments:
           - was class_definition
-      EnumDefinition:
+      enum_definition:
         meaning: linkml:EnumDefinition
         comments:
           - was enum_definition
-      PermissibleValue:
+      permissible_value:
         meaning: linkml:PermissibleValue
         comments:
           - was permissible_value
-      SlotDefinition:
+      slot_definition:
         comments:
           - change to linkml:SlotDefinition
           - was slot_definition
