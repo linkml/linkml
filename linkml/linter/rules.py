@@ -58,7 +58,7 @@ class NoEmptyTitleRule(LinterRule):
     def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
         excluded_types = self.config['exclude_type']
         for e in schema_view.all_elements(imports=False).values():
-            element_type_name = type(element_definition).class_name
+            element_type_name = type(e).class_name
             if element_type_name in excluded_types:
                 continue
             if fix and e.title is None:
