@@ -123,9 +123,9 @@ def test_get_sql_range(schema):
     """Test case for the get_sql_range() method."""
     gen = SQLTableGenerator(schema)
     # Test case to enable Varchar2 usage
-    gen_oracle = SQLTableGenerator(schema)
-    gen_oracle.dialect = 'oracle'
-    gen_oracle.maximum_length_oracle = 256
+    #gen_oracle = SQLTableGenerator(schema)
+    #gen_oracle.dialect = 'oracle'
+    #gen_oracle.maximum_length_oracle = 256
 
     # loader = SchemaLoader(data=SCHEMA)
     # schema_def_str = loader.resolve()
@@ -171,13 +171,43 @@ def test_get_sql_range(schema):
     actual_4_output = gen.get_sql_range(case_4_slot)
 
     # Slot range for oracle dialect type
-    varchar_output = gen_oracle.get_sql_range(case_1_slot)
+    #varchar_output = gen_oracle.get_sql_range(case_1_slot)
 
     assert isinstance(actual_1_output, Text)
     assert isinstance(actual_2_output, Enum)
     assert isinstance(actual_3_output, Text)
     assert isinstance(actual_4_output, Integer)
-    assert isinstance(varchar_output, VARCHAR2(256))
+    #assert isinstance(varchar_output, VARCHAR2())
+
+def test_varchar_sql_range(schema, capsys):
+    """Test case for the get_sql_range() method for Varchar."""
+        # Test case to enable Varchar2 usage
+    gen_oracle = SQLTableGenerator(schema)
+    gen_oracle.dialect = 'oracle'
+    
+    assert gen_oracle.dialect == 'oracle'
+    assert gen_oracle.maximum_length_oracle == 4096
+
+    gen_oracle.maximum_length_oracle = 256
+    assert gen_oracle.maximum_length_oracle == 256
+    string_1_slot = SlotDefinition(name="string_column", range='string')
+    string_2_slot = SlotDefinition(name="varchar_column", range='VARCHAR2(128)')
+    
+    string_1_output = gen_oracle.get_sql_range(string_1_slot)
+    with capsys.disabled():
+        print(str(string_1_output))
+    assert isinstance(string_1_output, VARCHAR2)
+
+    string_2_output = gen_oracle.get_sql_range(string_2_slot)
+    with capsys.disabled():
+        print(str(string_2_output))
+    assert isinstance(string_2_output, VARCHAR2)
+
+
+    ddl = gen_oracle.generate_ddl()
+    with capsys.disabled():
+        print(ddl)
+    assert ddl
 
 
 def test_get_foreign_key(schema):

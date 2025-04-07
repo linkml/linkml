@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from dataclasses import dataclass
 from typing import Optional
 
@@ -48,7 +49,7 @@ METAMODEL_TYPE_TO_BASE = {
 RANGEMAP = {
     "str": Text(),
     "string": Text(),
-    "VARCHAR2": VARCHAR2(256),
+    "VARCHAR2": VARCHAR2(),
     "NCName": Text(),
     "URIorCURIE": Text(),
     "int": Integer(),
@@ -142,7 +143,7 @@ class SQLTableGenerator(Generator):
     rename_foreign_keys: bool = False
     direct_mapping: bool = False
     relative_slot_num: bool = False
-    maximum_length_oracle: int = 256
+    maximum_length_oracle: int = 4096
 
 
     def serialize(self, **kwargs) -> str:
@@ -244,13 +245,20 @@ class SQLTableGenerator(Generator):
         returns a SQL Alchemy column type
         """
         range = slot.range
-
+        varchar_regex = re.compile('VARCHAR([0-9]+)')
+        varchar2_regex = re.compile('VARCHAR2([0-9]+)')
         # if no SchemaDefinition is explicitly provided as an argument
         # then simply use the schema that is provided to the SQLTableGenerator() object
         if not schema:
             schema = SchemaLoader(data=self.schema).resolve()
+        if (re.match(varchar_regex,range) or re.match(varchar2_regex,range)) and self.dialect=='oracle':
+            string_length = int(re.findall("[0-9]+",re.findall('\([0-9]+\)', range)[0])[0])
+            if string_length > 4096:
+                logger.error(f"RANGE EXCEEDS MAXIMUM ORACLE VARCHAR LENGTH: {range} for {slot.name} = {slot.range}")
+                return Text()
+            return VARCHAR2(string_length)
         # Adding a condition to see if a given item is within the oracle dialect, in which case we should generate of type VARCHAR2
-        if range in ['str', 'String', 'VARCHAR2','VARCHAR'] and self.dialect=='oracle':
+        if range in ['str', 'string', 'String', 'VARCHAR2','VARCHAR', 'VARCHAR2([0-9]+)', 'VARCHAR[0-9]+'] and self.dialect=='oracle':
             return VARCHAR2(self.maximum_length_oracle)
         if range in schema.classes:
             # FK type should be the same as the identifier of the foreign key
@@ -320,7 +328,7 @@ class SQLTableGenerator(Generator):
 )
 @click.option(
     "--maximum_length_oracle",
-    default=256,
+    default=4096,
     show_default=True,
     help="Maximum lengeth of varchar based arguments for oracle dialects",
 )
