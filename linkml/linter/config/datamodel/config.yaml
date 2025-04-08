@@ -175,7 +175,7 @@ classes:
         range: string
         required: false
         description: >
-          If specified, permissible format pattern for classes can be provided either as one of the following:
+          If specified, permissible format pattern for slots can be provided either as one of the following:
           snake, uppersnake, camel, uppercamel, kebab or as regular expression (e.g. "[a-z][_a-z0-9]+" for snake case)
 
   CanonicalPrefixesConfig:
