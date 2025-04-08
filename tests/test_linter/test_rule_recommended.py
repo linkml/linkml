@@ -1,9 +1,7 @@
-import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import ClassDefinition, EnumDefinition, SlotDefinition
 
 from linkml.linter.config.datamodel.config import RecommendedRuleConfig, RuleLevel
-from linkml.linter.linter import Linter
 from linkml.linter.rules import RecommendedRule
 from linkml.utils.schema_builder import SchemaBuilder
 
@@ -77,69 +75,51 @@ def test_exclude():
 
 
 def test_class_violation_allowed():
-    config = yaml.safe_load(
-        """
-rules:
-  recommended:
-    level: error
-    exclude_type:
-      - class_definition
-"""
+    config = RecommendedRuleConfig(
+        level=RuleLevel.error.text,
+        exclude_type=["class_definition"],
     )
 
     builder = SchemaBuilder()
     builder.add_class("MyClass")
 
-    linter = Linter(config)
-    report = list(linter.lint(builder.schema))
+    rule = RecommendedRule(config)
 
-    messages = [p.message for p in report]
+    problems = list(rule.check(SchemaView(builder.schema)))
 
-    assert len(messages) == 0
+    assert len(problems) == 0
 
 
 def test_slot_violation_allowed():
-    config = yaml.safe_load(
-        """
-rules:
-  recommended:
-    level: error
-    exclude_type:
-      - slot_definition
-"""
+    config = RecommendedRuleConfig(
+        level=RuleLevel.error.text,
+        exclude_type=["slot_definition"],
     )
 
     builder = SchemaBuilder()
     builder.add_slot("my_slot")
 
-    linter = Linter(config)
-    report = list(linter.lint(builder.schema))
+    rule = RecommendedRule(config)
 
-    messages = [p.message for p in report]
+    problems = list(rule.check(SchemaView(builder.schema)))
 
-    assert len(messages) == 0
+    assert len(problems) == 0
 
 
 def test_enum_violation_allowed():
-    config = yaml.safe_load(
-        """
-rules:
-  recommended:
-    level: error
-    exclude_type:
-      - enum_definition
-"""
+    config = RecommendedRuleConfig(
+        level=RuleLevel.error.text,
+        exclude_type=["enum_definition"],
     )
 
     builder = SchemaBuilder()
     builder.add_enum("MyEnum")
 
-    linter = Linter(config)
-    report = list(linter.lint(builder.schema))
+    rule = RecommendedRule(config)
 
-    messages = [p.message for p in report]
+    problems = list(rule.check(SchemaView(builder.schema)))
 
-    assert len(messages) == 0
+    assert len(problems) == 0
 
 
 # todo PVs are not checked for recommended fields yet

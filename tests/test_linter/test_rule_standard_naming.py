@@ -1,9 +1,7 @@
 import pytest
-import yaml
 from linkml_runtime import SchemaView
 
 from linkml.linter.config.datamodel.config import RuleLevel, StandardNamingConfig
-from linkml.linter.linter import Linter
 from linkml.linter.rules import StandardNamingRule
 from linkml.utils.schema_builder import SchemaBuilder
 
@@ -118,100 +116,67 @@ def test_standard_naming_class_pattern(schema_view):
 
 
 def test_class_violation_allowed():
-    config = yaml.safe_load(
-        """
-rules:
-  standard_naming:
-    level: error
-    exclude_type:
-      - class_definition
-"""
+    config = StandardNamingConfig(
+        level=RuleLevel.error.text,
+        exclude_type=["class_definition"],
     )
 
     builder = SchemaBuilder()
     builder.add_class("my class")
 
-    linter = Linter(config)
-    report = list(linter.lint(builder.schema))
-
-    messages = [p.message for p in report]
+    rule = StandardNamingRule(config)
 
     print("\n")
-    for m in messages:
-        print(m)
+    print(rule.config)
 
-    assert len(messages) == 0
+    problems = list(rule.check(SchemaView(builder.schema)))
+
+    assert len(problems) == 0
 
 
 def test_slot_violation_allowed():
-    config = yaml.safe_load(
-        """
-rules:
-  standard_naming:
-    level: error
-    exclude_type:
-      - slot_definition
-"""
+    config = StandardNamingConfig(
+        level=RuleLevel.error.text,
+        exclude_type=["slot_definition"],
     )
 
     builder = SchemaBuilder()
     builder.add_slot("my slot")
 
-    linter = Linter(config)
-    report = list(linter.lint(builder.schema))
+    rule = StandardNamingRule(config)
 
-    messages = [p.message for p in report]
+    problems = list(rule.check(SchemaView(builder.schema)))
 
-    print("\n")
-    for m in messages:
-        print(m)
-
-    assert len(messages) == 0
+    assert len(problems) == 0
 
 
 def test_enum_violation_allowed():
-    config = yaml.safe_load(
-        """
-rules:
-  standard_naming:
-    level: error
-    exclude_type:
-      - enum_definition
-"""
+    config = StandardNamingConfig(
+        level=RuleLevel.error.text,
+        exclude_type=["enum_definition"],
     )
 
     builder = SchemaBuilder()
     builder.add_enum("my enum")
 
-    linter = Linter(config)
-    report = list(linter.lint(builder.schema))
+    rule = StandardNamingRule(config)
 
-    messages = [p.message for p in report]
+    problems = list(rule.check(SchemaView(builder.schema)))
 
-    print("\n")
-    for m in messages:
-        print(m)
-
-    assert len(messages) == 0
+    assert len(problems) == 0
 
 
 def test_pv_violation_allowed():
-    config = yaml.safe_load(
-        """
-rules:
-  standard_naming:
-    level: error
-    exclude_type:
-      - permissible_value
-"""
+    config = StandardNamingConfig(
+        level=RuleLevel.error.text,
+        exclude_type=["permissible_value"],
     )
 
     builder = SchemaBuilder()
     builder.add_enum("MyEnum", permissible_values=["pv 1"])
 
-    linter = Linter(config)
-    report = list(linter.lint(builder.schema))
+    rule = StandardNamingRule(config)
 
-    messages = [p.message for p in report]
+    problems = list(rule.check(SchemaView(builder.schema)))
 
-    assert len(messages) == 0
+    assert len(problems) == 0
