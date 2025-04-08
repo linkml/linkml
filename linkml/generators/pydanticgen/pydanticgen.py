@@ -491,7 +491,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         elif slot.multivalued:
             # Determine the inlining mode using our helper
             inlining_mode = self._determine_inlining_mode(slot, slot_ranges)
-            
+
             if inlining_mode == SlotInliningMode.LIST:
                 result.attribute.range = f"List[{pyrange}]"
             elif inlining_mode == SlotInliningMode.DICT:
@@ -499,19 +499,19 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                 result.attribute.range = f"Dict[{collection_key}, {pyrange}]"
             elif inlining_mode == SlotInliningMode.SIMPLEDICT:
                 value_slot, value_slot_pyrange = self._determine_simple_dict_value_slot(slot, cls)
-                
+
                 # Create a ClassRange model that will be rendered by the template
                 result.attribute.range = ClassRange(
                     cls=pyrange,
                     inlining_mode=SlotInliningMode.SIMPLEDICT,
-                    value_slot=value_slot.model_dump() if hasattr(value_slot, 'model_dump') else value_slot.__dict__,
+                    value_slot=value_slot.model_dump() if hasattr(value_slot, "model_dump") else value_slot.__dict__,
                     value_slot_range=value_slot_pyrange,
-                    value_slot_multivalued=value_slot.multivalued
+                    value_slot_multivalued=value_slot.multivalued,
                 )
-                    
+
         else:
             result.attribute.range = pyrange
-            
+
         if not (slot.required or slot.identifier or slot.key) and not slot.designates_type:
             # If we already have a ClassRange, we need to wrap the final rendered string
             if isinstance(result.attribute.range, ClassRange):
@@ -519,7 +519,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                 pass
             else:
                 result.attribute.range = f"Optional[{result.attribute.range}]"
-                
+
         return result
 
     def generate_slot_range(self, slot, cls):
@@ -744,40 +744,42 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     def _determine_inlining_mode(self, slot_def: SlotDefinition, slot_ranges: List[str]) -> SlotInliningMode:
         """
         Determine the inlining mode for a multivalued slot.
-        
+
         :param slot_def: SlotDefinition
         :param slot_ranges: List of slot range names
         :return: The inlining mode as a SlotInliningMode enum value
         """
         if slot_def.inlined is False or slot_def.inlined_as_list is True:
             return SlotInliningMode.LIST
-        
+
         # Check if eligible for simpledict mode
         if len(slot_ranges) == 1 and slot_ranges[0] in self.schemaview.all_classes():
             value_slot, _ = self._determine_simple_dict_value_slot(slot_def, None)
             if value_slot is not None:
                 return SlotInliningMode.SIMPLEDICT
-        
+
         # If we have a collection key, use dict mode, otherwise default to list
         collection_key = self.generate_collection_key(slot_ranges, slot_def, None)
         return SlotInliningMode.DICT if collection_key is not None else SlotInliningMode.LIST
-    
-    def _determine_simple_dict_value_slot(self, slot_def: SlotDefinition, cls_def) -> Tuple[Optional[SlotDefinition], Optional[str]]:
+
+    def _determine_simple_dict_value_slot(
+        self, slot_def: SlotDefinition, cls_def
+    ) -> Tuple[Optional[SlotDefinition], Optional[str]]:
         """
         Determine if a slot should be inlined as a simple dict and return the value slot if applicable.
-        
+
         For example, if we have a class such as Prefix, with two slots prefix and expansion,
         then an inlined list of prefixes can be serialized as:
-        
+
         .. code-block:: yaml
-        
+
             prefixes:
                 prefix1: expansion1
                 prefix2: expansion2
                 ...
-        
+
         Provided that the prefix slot is the identifier slot for the Prefix class.
-        
+
         :param slot_def: SlotDefinition
         :param cls_def: ClassDefinition of the class containing the slot
         :return: Tuple of (value_slot, value_slot_range) if simple dict eligible, otherwise (None, None)
@@ -798,7 +800,9 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                                 else:
                                     # When called during mode determination, we may not have a cls_def
                                     if value_slot_range_type:
-                                        value_slot_pyrange = value_slot_range_type.base or value_slot_range_type.repr or value_slot.range
+                                        value_slot_pyrange = (
+                                            value_slot_range_type.base or value_slot_range_type.repr or value_slot.range
+                                        )
                                     else:
                                         value_slot_pyrange = value_slot.range
                                 return value_slot, value_slot_pyrange
@@ -807,19 +811,19 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     def _inline_as_simple_dict_with_value(self, slot_def: SlotDefinition, cls_def) -> Optional[str]:
         """
         Determine if a slot should be inlined as a simple dict with a value.
-        
+
         For example, if we have a class such as Prefix, with two slots prefix and expansion,
         then an inlined list of prefixes can be serialized as:
-        
+
         .. code-block:: yaml
-        
+
             prefixes:
                 prefix1: expansion1
                 prefix2: expansion2
                 ...
-        
+
         Provided that the prefix slot is the identifier slot for the Prefix class.
-        
+
         :param slot_def: SlotDefinition
         :param cls_def: ClassDefinition of the class containing the slot
         :return: The Python range string for the value slot if eligible, otherwise None

@@ -1,6 +1,6 @@
 import sys
-from importlib.util import find_spec
 from enum import Enum
+from importlib.util import find_spec
 from typing import Any, ClassVar, Dict, Generator, List, Literal, Optional, Tuple, Union, get_args
 
 from jinja2 import Environment, PackageLoader
@@ -15,9 +15,11 @@ class SlotInliningMode(str, Enum):
     """
     Enumeration of different modes for inlining collections.
     """
+
     LIST = "list"
     DICT = "dict"
     SIMPLEDICT = "simpledict"
+
 
 try:
     if find_spec("black") is not None:
@@ -174,9 +176,9 @@ class ClassRange(PydanticTemplateModel):
     A model for representing a range that's a class, with additional information
     about how it should be inlined.
     """
-    
+
     template: ClassVar[str] = "class_range.py.jinja"
-    
+
     cls: str
     inlining_mode: Optional[SlotInliningMode] = None
     value_slot: Optional[dict] = None
