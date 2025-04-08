@@ -92,9 +92,9 @@ class SQLTableGenerator(Generator):
 
     When SQLAlchemy bindings are created, a backref mapping is added
 
-    If the range of the slot is an enum or type, then a new linktable is created, and a backref added
+    If the range of the slot is an enum or type, then a new link table is created, and a backref added
 
-    E.g. if a class User has a multivalues slot alias whose range is a string,
+    E.g. if a class User has a multivalued slot alias whose range is a string,
     then create a table user_aliases, with two columns (1) alias [a string] and (2) a backref to user
 
     Each mapped slot C.S has a range R

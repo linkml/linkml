@@ -66,14 +66,21 @@ def assert_mdfile_contains(
 
 def test_latex_generation(kitchen_sink_path, tmp_path):
     """Tests minimal latex generation"""
-    gen = DocGenerator(kitchen_sink_path, mergeimports=True, no_types_dir=True, format="latex")
+    gen = DocGenerator(
+        kitchen_sink_path, mergeimports=True, no_types_dir=True, format="latex"
+    )
     gen.serialize(directory=str(tmp_path))
 
 
 def test_docgen_includes(kitchen_sink_path, input_path, tmp_path):
     """Tests basic document generator functionality"""
     deprecated_specification = str(input_path("deprecation.yaml"))
-    gen = DocGenerator(kitchen_sink_path, mergeimports=True, no_types_dir=True, include=deprecated_specification)
+    gen = DocGenerator(
+        kitchen_sink_path,
+        mergeimports=True,
+        no_types_dir=True,
+        include=deprecated_specification,
+    )
     gen.serialize(directory=str(tmp_path))
     assert_mdfile_contains(tmp_path / "index.md", "C1", after="## Classes")
 
@@ -81,13 +88,22 @@ def test_docgen_includes(kitchen_sink_path, input_path, tmp_path):
 def test_docgen(kitchen_sink_path, input_path, tmp_path):
     """Tests basic document generator functionality"""
     example_dir = str(input_path("examples"))
-    gen = DocGenerator(kitchen_sink_path, mergeimports=True, no_types_dir=True, example_directory=example_dir)
+    gen = DocGenerator(
+        kitchen_sink_path,
+        mergeimports=True,
+        no_types_dir=True,
+        example_directory=example_dir,
+    )
     blobs = gen.example_object_blobs("Person")
     assert len(blobs) > 0
     gen.serialize(directory=str(tmp_path))
     # test class docs
-    assert_mdfile_contains(tmp_path / "Organization.md", "Organization", after="Inheritance")
-    assert_mdfile_contains(tmp_path / "Organization.md", "[aliases](aliases.md)", after="Slots")
+    assert_mdfile_contains(
+        tmp_path / "Organization.md", "Organization", after="Inheritance"
+    )
+    assert_mdfile_contains(
+        tmp_path / "Organization.md", "[aliases](aliases.md)", after="Slots"
+    )
     assert_mdfile_contains(
         tmp_path / "Organization.md",
         "URI: [ks:Organization](https://w3id.org/linkml/tests/kitchen_sink/Organization)",
@@ -98,9 +114,16 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
         "from_schema: https://w3id.org/linkml/tests/kitchen_sink",
         after="Class: Organization",
     )
-    assert_mdfile_contains(tmp_path / "Organization.md", "slot_uri: skos:altLabel", after="Induced")
+    assert_mdfile_contains(
+        tmp_path / "Organization.md", "slot_uri: skos:altLabel", after="Induced"
+    )
     # test truncating newlines
-    assert_mdfile_contains(tmp_path / "index.md", "An organization", after="## Classes", followed_by=["## Slots"])
+    assert_mdfile_contains(
+        tmp_path / "index.md",
+        "An organization",
+        after="## Classes",
+        followed_by=["## Slots"],
+    )
     # this should be truncated
     assert_mdfile_does_not_contain(tmp_path / "index.md", "Markdown headers")
     # test mermaid
@@ -188,7 +211,9 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
         "[EmploymentEventType](EmploymentEventType.md)",
         after="Enumerations",
     )
-    assert_mdfile_contains(tmp_path / "index.md", "a provence-generating activity", after="Classes")
+    assert_mdfile_contains(
+        tmp_path / "index.md", "a provence-generating activity", after="Classes"
+    )
     # test default ordering (currently name)
     assert_mdfile_contains(
         tmp_path / "index.md",
@@ -212,24 +237,32 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
         followed_by=["## Identifier and Mapping Information", "### Schema Source"],
     )
 
-    assert_mdfile_contains(tmp_path / "SubsetB.md", "## Slots in subset", after="### Schema Source")
+    assert_mdfile_contains(
+        tmp_path / "SubsetB.md", "## Slots in subset", after="### Schema Source"
+    )
 
     assert_mdfile_does_not_contain(tmp_path / "SubsetB.md", "## Classes in subset")
 
     assert_mdfile_does_not_contain(tmp_path / "SubsetB.md", "## Enumerations in subset")
 
     # test internal links
-    assert_mdfile_contains(tmp_path / "ceo.md", "Range: [Person](Person.md)", after="Properties")
+    assert_mdfile_contains(
+        tmp_path / "ceo.md", "Range: [Person](Person.md)", after="Properties"
+    )
     # TODO: external links
 
     # test slot hierarchy
-    assert_mdfile_contains(tmp_path / "tree_slot_B.md", "tree_slot_C", after="tree_slot_B")
+    assert_mdfile_contains(
+        tmp_path / "tree_slot_B.md", "tree_slot_C", after="tree_slot_B"
+    )
 
     # test mixin page
     assert_mdfile_contains(tmp_path / "mixin_slot_I.md", "## Mixin Usage")
 
     # test that mixin page is hyperlinked
-    assert_mdfile_contains(tmp_path / "tree_slot_C.md", "[mixin_slot_I](mixin_slot_I.md)")
+    assert_mdfile_contains(
+        tmp_path / "tree_slot_C.md", "[mixin_slot_I](mixin_slot_I.md)"
+    )
 
     # test see_also hyperlinking
     assert_mdfile_contains(
@@ -237,10 +270,16 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
         "[https://en.wikipedia.org/wiki/Person](https://en.wikipedia.org/wiki/Person)",
         after="## See Also",
     )
-    assert_mdfile_contains(tmp_path / "Person.md", "[schema:Person](http://schema.org/Person)", after="## See Also")
+    assert_mdfile_contains(
+        tmp_path / "Person.md",
+        "[schema:Person](http://schema.org/Person)",
+        after="## See Also",
+    )
 
     # test that Aliases is showing from common metadata
-    assert_mdfile_contains(tmp_path / "EmploymentEventType.md", "* HR code", after="## Aliases")
+    assert_mdfile_contains(
+        tmp_path / "EmploymentEventType.md", "* HR code", after="## Aliases"
+    )
 
     # test that slots for enums are being rendered
     assert_mdfile_contains(
@@ -275,7 +314,9 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
     )
     assert_mdfile_contains(
         tmp_path / "FamilialRelationship.md",
-        ("| [related_to](related_to.md) | 1 <br/> [Person](Person.md) |  | [Relationship](Relationship.md) |"),
+        (
+            "| [related_to](related_to.md) | 1 <br/> [Person](Person.md) |  | [Relationship](Relationship.md) |"
+        ),
         after="## Slots",
     )
     # test inheritance column
@@ -286,7 +327,9 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
     )
     assert_mdfile_contains(
         tmp_path / "Person.md",
-        ("| [aliases](aliases.md) | * <br/> [String](String.md) |  | [HasAliases](HasAliases.md) |"),
+        (
+            "| [aliases](aliases.md) | * <br/> [String](String.md) |  | [HasAliases](HasAliases.md) |"
+        ),
         after="## Slots",
     )
     # Examples
@@ -296,9 +339,13 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
         after="## Examples",
     )
     # Minimum Value showing up even if value is 0
-    assert_mdfile_contains(tmp_path / "age_in_years.md", "Minimum Value: 0", after="## Properties")
+    assert_mdfile_contains(
+        tmp_path / "age_in_years.md", "Minimum Value: 0", after="## Properties"
+    )
     # Maximum Value
-    assert_mdfile_contains(tmp_path / "age_in_years.md", "Maximum Value: 999", after="## Properties")
+    assert_mdfile_contains(
+        tmp_path / "age_in_years.md", "Maximum Value: 999", after="## Properties"
+    )
     #
     assert_mdfile_contains(
         tmp_path / "species_name.md",
@@ -308,10 +355,18 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
 
     # test that slots with ranges modified using any_of have union/cup
     # separated ranges
-    assert_mdfile_contains(tmp_path / "EmploymentEvent.md", "[CordialnessEnum](CordialnessEnum.md)", after="## Slots")
-    assert_mdfile_contains(tmp_path / "EmploymentEvent.md", "&nbsp;or&nbsp;<br />", after="## Slots")
     assert_mdfile_contains(
-        tmp_path / "EmploymentEvent.md", "[EmploymentEventType](EmploymentEventType.md)", after="## Slots"
+        tmp_path / "EmploymentEvent.md",
+        "[CordialnessEnum](CordialnessEnum.md)",
+        after="## Slots",
+    )
+    assert_mdfile_contains(
+        tmp_path / "EmploymentEvent.md", "&nbsp;or&nbsp;<br />", after="## Slots"
+    )
+    assert_mdfile_contains(
+        tmp_path / "EmploymentEvent.md",
+        "[EmploymentEventType](EmploymentEventType.md)",
+        after="## Slots",
     )
 
     # checks correctness of the YAML representation of source schema
@@ -323,12 +378,76 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
     assert len(set(domain_of_species_name)) == len(domain_of_species_name)
 
 
+def test_docgen_multiline_description_hierarchical_view(tmp_path) -> None:
+    """Ensure that having a multiline description does not break the hierarchical table view."""
+    test_schema = """
+id: unit_test
+name: unit_test
+
+prefixes:
+  ex: https://example.org/
+default_prefix: ex
+
+classes:
+  no_description:
+  single_line:
+    description: A single line description. Easy!
+  multi_line:
+    description:
+        Why restrict yourself to a single line
+
+        when there are so many
+
+        other lines available for your description?
+  multi_line_preserve_whitespace:
+    description: |
+        Multi Line Madness is a bit like
+
+                Multi Level Marketing
+        (at least initially)
+        but involves more lines
+
+
+        and a lot more madness
+"""
+    gen = DocGenerator(
+        str(test_schema), mergeimports=True, hierarchical_class_view=True
+    )
+    gen.serialize(directory=str(tmp_path))
+
+    # these lines are generated if the description is not enshortened
+    forbidden = [
+        "| [MultiLine](MultiLine.md) | Why restrict yourself to a single line\n",
+        "when there are so many\n",
+        "other lines available for your description? |\n",
+        "| [MultiLinePreserveWhitespace](MultiLinePreserveWhitespace.md) | Multi Line Madness is a bit like\n",
+        "        Multi Level Marketing\n",
+        "and a lot more madness\n",
+    ]
+
+    for f in forbidden:
+        assert_mdfile_does_not_contain(tmp_path / "index.md", f)
+
+    # the class index should contain these lines
+    ix = [
+        "| [MultiLine](MultiLine.md) | Why restrict yourself to a single line |\n",
+        "| [MultiLinePreserveWhitespace](MultiLinePreserveWhitespace.md) | Multi Line Madness is a bit like |\n",
+        "| [NoDescription](NoDescription.md) |  |\n",
+        "| [SingleLine](SingleLine.md) | A single line description |\n",
+    ]
+
+    for line in ix:
+        assert_mdfile_contains(tmp_path / "index.md", line)
+
+
 def test_docgen_no_mergeimports(kitchen_sink_path, tmp_path):
     """Tests when imported schemas are not folded into main schema"""
     gen = DocGenerator(kitchen_sink_path, mergeimports=False, no_types_dir=True)
     gen.serialize(directory=str(tmp_path))
 
-    assert_mdfile_contains(tmp_path / "index.md", "| [Address](Address.md) |  |", after="## Classes")
+    assert_mdfile_contains(
+        tmp_path / "index.md", "| [Address](Address.md) |  |", after="## Classes"
+    )
 
     assert_mdfile_does_not_contain(
         tmp_path / "index.md",
@@ -366,7 +485,9 @@ def test_docgen_no_mergeimports(kitchen_sink_path, tmp_path):
 
 def test_docgen_rank_ordering(kitchen_sink_path, tmp_path):
     """Tests overriding default order"""
-    gen = DocGenerator(kitchen_sink_path, mergeimports=True, no_types_dir=True, sort_by="rank")
+    gen = DocGenerator(
+        kitchen_sink_path, mergeimports=True, no_types_dir=True, sort_by="rank"
+    )
     gen.serialize(directory=str(tmp_path))
     # test rank ordering
     assert_mdfile_contains(
@@ -395,7 +516,9 @@ def test_docgen_rank_ordering(kitchen_sink_path, tmp_path):
 def test_gen_metamodel(tmp_path):
     """Tests generation of docs for metamodel"""
     metamodel_sv = package_schemaview("linkml_runtime.linkml_model.meta")
-    gen = DocGenerator(metamodel_sv.schema, mergeimports=True, no_types_dir=True, genmeta=True)
+    gen = DocGenerator(
+        metamodel_sv.schema, mergeimports=True, no_types_dir=True, genmeta=True
+    )
     gen.serialize(directory=str(tmp_path))
     assert_mdfile_contains(
         tmp_path / "index.md",
@@ -424,7 +547,9 @@ def test_myst_dialect(kitchen_sink_path, tmp_path):
 
     See <https://github.com/linkml/linkml/issues/835>_
     """
-    gen = DocGenerator(kitchen_sink_path, mergeimports=True, no_types_dir=True, dialect="myst")
+    gen = DocGenerator(
+        kitchen_sink_path, mergeimports=True, no_types_dir=True, dialect="myst"
+    )
     gen.serialize(directory=str(tmp_path))
     assert_mdfile_contains(
         tmp_path / "Organization.md",
@@ -440,7 +565,12 @@ def test_custom_directory(kitchen_sink_path, input_path, tmp_path):
     these act as overrides, if no template is found the default is used
     """
     tdir = input_path("docgen_md_templates")
-    gen = DocGenerator(kitchen_sink_path, mergeimports=True, no_types_dir=True, template_directory=str(tdir))
+    gen = DocGenerator(
+        kitchen_sink_path,
+        mergeimports=True,
+        no_types_dir=True,
+        template_directory=str(tdir),
+    )
     gen.serialize(directory=str(tmp_path))
     # assert_mdfile_contains('Organization.md', 'Organization', after='Inheritance')
     assert_mdfile_contains(tmp_path / "Organization.md", "FAKE TEMPLATE")
@@ -500,10 +630,18 @@ def test_class_hierarchy_as_tuples(kitchen_sink_path, input_path):
     # Sub sub class 2 is_a subclass test is_a class with spaces
     # tub sub class 1 is_a subclass test is_a class with spaces
 
-    parent_order = actual_result.index([(dep, cls) for dep, cls in actual_result if cls == "class with spaces"][0])
-    sub_class_order = actual_result.index([(dep, cls) for dep, cls in actual_result if cls == "subclass test"][0])
-    sub_sub_class_order = actual_result.index([(dep, cls) for dep, cls in actual_result if cls == "Sub sub class 2"][0])
-    tub_sub_class_order = actual_result.index([(dep, cls) for dep, cls in actual_result if cls == "tub sub class 1"][0])
+    parent_order = actual_result.index(
+        [(dep, cls) for dep, cls in actual_result if cls == "class with spaces"][0]
+    )
+    sub_class_order = actual_result.index(
+        [(dep, cls) for dep, cls in actual_result if cls == "subclass test"][0]
+    )
+    sub_sub_class_order = actual_result.index(
+        [(dep, cls) for dep, cls in actual_result if cls == "Sub sub class 2"][0]
+    )
+    tub_sub_class_order = actual_result.index(
+        [(dep, cls) for dep, cls in actual_result if cls == "tub sub class 1"][0]
+    )
 
     assert tub_sub_class_order > sub_sub_class_order
     assert sub_sub_class_order > sub_class_order
@@ -615,7 +753,9 @@ def test_class_slots_inheritance(kitchen_sink_path):
     test_slot = sv.get_slot("started at time")
 
     expected_result = ["Event"]
-    actual_result = gen.get_slot_inherited_from(class_name=test_class.name, slot_name=test_slot.name)
+    actual_result = gen.get_slot_inherited_from(
+        class_name=test_class.name, slot_name=test_slot.name
+    )
 
     assert expected_result == actual_result
 
@@ -637,7 +777,9 @@ def test_use_slot_uris(kitchen_sink_path, input_path, tmp_path):
 
     # check label and link of documents in inheritance tree
     # A.md
-    assert_mdfile_contains(tmp_path / "A.md", "[tree_slot_B](B.md)", after="**tree_slot_A**")
+    assert_mdfile_contains(
+        tmp_path / "A.md", "[tree_slot_B](B.md)", after="**tree_slot_A**"
+    )
 
     # B.md
     assert_mdfile_contains(
@@ -670,7 +812,9 @@ def test_use_class_uris(kitchen_sink_path, input_path, tmp_path):
 
 def test_hierarchical_class_view(kitchen_sink_path, tmp_path):
     """Test to check if class table view on index page follows hierarchical view"""
-    gen = DocGenerator(kitchen_sink_path, mergeimports=True, hierarchical_class_view=True)
+    gen = DocGenerator(
+        kitchen_sink_path, mergeimports=True, hierarchical_class_view=True
+    )
 
     gen.serialize(directory=str(tmp_path))
 
@@ -680,7 +824,9 @@ def test_hierarchical_class_view(kitchen_sink_path, tmp_path):
 
     assert_mdfile_contains(tmp_path / "index.md", "EmploymentEvent", after="BirthEvent")
 
-    assert_mdfile_contains(tmp_path / "index.md", "MarriageEvent", after="EmploymentEvent")
+    assert_mdfile_contains(
+        tmp_path / "index.md", "MarriageEvent", after="EmploymentEvent"
+    )
 
 
 def test_uml_diagram_er(kitchen_sink_path, tmp_path):
@@ -740,7 +886,12 @@ def test_uml_diagram_classr(kitchen_sink_path, tmp_path):
     assert_mdfile_contains(
         tmp_path / "Person.md",
         "# Class: Person",
-        followed_by=["```puml", "@startuml", 'class "Person" [[{A person, living or dead}]] {', "@enduml"],
+        followed_by=[
+            "```puml",
+            "@startuml",
+            'class "Person" [[{A person, living or dead}]] {',
+            "@enduml",
+        ],
     )
 
 
