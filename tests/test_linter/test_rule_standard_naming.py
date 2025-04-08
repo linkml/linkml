@@ -1,7 +1,9 @@
 import pytest
+import yaml
 from linkml_runtime import SchemaView
 
 from linkml.linter.config.datamodel.config import RuleLevel, StandardNamingConfig
+from linkml.linter.linter import Linter
 from linkml.linter.rules import StandardNamingRule
 from linkml.utils.schema_builder import SchemaBuilder
 
@@ -113,3 +115,103 @@ def test_standard_naming_class_pattern(schema_view):
     assert "Permissible value of Enum 'GoodEnumUpperPV' has name 'GREAT_UPPER_PV'" in messages
     assert "Permissible value of Enum 'GoodEnumBadUpperPV' has name 'GOOD_UPPER_PV'" in messages
     assert "Enum has name 'bad_enum'" in messages
+
+
+def test_class_violation_allowed():
+    config = yaml.safe_load(
+        """
+rules:
+  standard_naming:
+    level: error
+    exclude_type:
+      - class_definition
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_class("my class")
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    print("\n")
+    for m in messages:
+        print(m)
+
+    assert len(messages) == 0
+
+
+def test_slot_violation_allowed():
+    config = yaml.safe_load(
+        """
+rules:
+  standard_naming:
+    level: error
+    exclude_type:
+      - slot_definition
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_slot("my slot")
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    print("\n")
+    for m in messages:
+        print(m)
+
+    assert len(messages) == 0
+
+
+def test_enum_violation_allowed():
+    config = yaml.safe_load(
+        """
+rules:
+  standard_naming:
+    level: error
+    exclude_type:
+      - enum_definition
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_enum("my enum")
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    print("\n")
+    for m in messages:
+        print(m)
+
+    assert len(messages) == 0
+
+
+def test_pv_violation_allowed():
+    config = yaml.safe_load(
+        """
+rules:
+  standard_naming:
+    level: error
+    exclude_type:
+      - permissible_value
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_enum("MyEnum", permissible_values=["pv 1"])
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    assert len(messages) == 0

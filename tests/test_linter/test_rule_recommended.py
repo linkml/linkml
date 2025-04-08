@@ -1,7 +1,9 @@
+import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import ClassDefinition, EnumDefinition, SlotDefinition
 
 from linkml.linter.config.datamodel.config import RecommendedRuleConfig, RuleLevel
+from linkml.linter.linter import Linter
 from linkml.linter.rules import RecommendedRule
 from linkml.utils.schema_builder import SchemaBuilder
 
@@ -72,3 +74,72 @@ def test_exclude():
     messages = [p.message for p in problems]
     assert "Class 'MyClass' does not have recommended slot 'description'" in messages
     assert "Enum 'MyEnum' does not have recommended slot 'description'" in messages
+
+
+def test_class_violation_allowed():
+    config = yaml.safe_load(
+        """
+rules:
+  recommended:
+    level: error
+    exclude_type:
+      - class_definition
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_class("MyClass")
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    assert len(messages) == 0
+
+
+def test_slot_violation_allowed():
+    config = yaml.safe_load(
+        """
+rules:
+  recommended:
+    level: error
+    exclude_type:
+      - slot_definition
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_slot("my_slot")
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    assert len(messages) == 0
+
+
+def test_enum_violation_allowed():
+    config = yaml.safe_load(
+        """
+rules:
+  recommended:
+    level: error
+    exclude_type:
+      - enum_definition
+"""
+    )
+
+    builder = SchemaBuilder()
+    builder.add_enum("MyEnum")
+
+    linter = Linter(config)
+    report = list(linter.lint(builder.schema))
+
+    messages = [p.message for p in report]
+
+    assert len(messages) == 0
+
+
+# todo PVs are not checked for recommended fields yet
