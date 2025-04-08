@@ -223,22 +223,12 @@ enums:
   MetamodelElementTypeEnum:
     description: >-
       The permissible values for the exclude_type slot
-    comments:
-      - Was ExcludeTypeEnum. Switching to a name that could be used in other contexts.
     permissible_values:
       class_definition:
         meaning: linkml:ClassDefinition
-        comments:
-          - was class_definition
       enum_definition:
         meaning: linkml:EnumDefinition
-        comments:
-          - was enum_definition
       permissible_value:
         meaning: linkml:PermissibleValue
-        comments:
-          - was permissible_value
       slot_definition:
-        comments:
-          - change to linkml:SlotDefinition
-          - was slot_definition
+        meaning: linkml:SlotDefinition
