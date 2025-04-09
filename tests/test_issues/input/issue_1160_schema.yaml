@@ -1,0 +1,170 @@
+id: https://w3id.org/microbiomedata/cleanroom-schema
+name: cleanroom-schema
+title: cleanroom-schema
+description: |-
+  Cleanroom reboot of NMDC schema
+license: MIT
+see_also:
+  - https://microbiomedata.github.io/cleanroom-schema
+  - https://github.com/microbiomedata/nmdc-schema/issues/518
+
+prefixes:
+  GOLD: http://identifiers.org/gold/
+  OBI: https://purl.obolibrary.org/obo/OBI_
+  cleanroom_schema: https://example.com/cleanroom-schema/
+  linkml: https://w3id.org/linkml/
+  rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+  schema: https://schema.org/
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+default_prefix: cleanroom_schema
+default_range: string
+
+comments:
+  - how will data be collected (DataHarmonizer?)
+  - how will data be displayed?
+
+imports:
+  - linkml:types
+
+classes:
+
+  NamedThing:
+    description: >-
+      A generic grouping for any identifiable entity
+    slots:
+      - id
+      - name
+      - description
+    class_uri: schema:Thing
+
+  MaterialEntity:
+    aliases:
+      - Material
+      - Physical entity
+    is_a: NamedThing
+    title: Material Entity
+
+  Biosample:
+    is_a: MaterialEntity
+    title: Biosample
+    slots:
+      - collected_from
+
+  AnalyticalSample:
+    is_a: MaterialEntity
+    title: Analytical Sample
+
+  Site:
+    is_a: MaterialEntity
+    title: Site
+    comments:
+      - BCO sample collection site ?
+
+  FieldResearchSite:
+    aliases:
+      - research plot
+    description: A site, outside of a laboratory, from which biosamples may be collected.
+    is_a: Site
+    #    is_a: NamedThing
+    title: Field Research Site
+    comments:
+      - Provides grouping of biosamples at level that's more specific than belonging
+        to the same study
+      - be very clear that this could be part of a larger site
+      - In Bioscales, one might say that rhizosphere soil and bulk soil from around
+        the same plant were obtained at the same site. In this case, the site would
+        correspond to one tree.
+      - "might correspond to GOLD's identifier on a page like https://gold.jgi.doe.gov/biosample?id=Gb0305833"
+
+  PlannedProcess:
+    class_uri: OBI:0000011
+    is_a: NamedThing
+    title: Planned Process
+    slots:
+      - has_inputs
+      - has_outputs
+      - participating_agent
+
+  CollectingBiosamplesFromSite:
+    is_a: PlannedProcess
+    title: Collecting Biosamples From Site
+    slots:
+      - has_inputs
+      - has_outputs
+    comments:
+      - "this illustrates implementing a Biosample relation with a process class"
+    slot_usage:
+      has_inputs:
+        range: Site
+        #        range: NamedThing
+        required: true
+      has_outputs:
+        range: Biosample
+        required: true
+
+  Agent:
+    is_a: NamedThing
+
+  DataListCollection:
+    tree_root: true
+    description: >-
+      A datastructure that can contain lists of instances from any selected classes in the schema
+    attributes:
+      biosample_list:
+        inlined_as_list: true
+        multivalued: true
+        range: Biosample
+      frs_list:
+        inlined_as_list: true
+        multivalued: true
+        range: FieldResearchSite
+      cbfs_list:
+        inlined_as_list: true
+        multivalued: true
+        range: CollectingBiosamplesFromSite
+      nt_list:
+        inlined_as_list: true
+        multivalued: true
+        range: NamedThing
+
+
+slots:
+  id:
+    description: A unique identifier for a thing
+    identifier: true
+    range: uriorcurie
+
+  name:
+    description: A human-readable name for a thing
+
+  description:
+    description: A human-readable description for a thing
+
+  type:
+    description: The type of a thing. Should be a local class name or an ontology class from a local enumeration
+    comments:
+      - try designates_type (but wouldn't work for enumerated ontology classes)
+      - be conservative about assigning rdf:type as the slot uri
+
+  collected_from:
+    description: The Site from which a Biosample was collected
+    domain: Biosample
+    range: FieldResearchSite
+    comments:
+      - this illustrates implementing a Biosample relation with a (binary) slot
+    todos:
+      - add an OBO slot_uri ?
+
+  has_inputs:
+    multivalued: true
+    range: NamedThing
+
+  has_outputs:
+    multivalued: true
+    range: NamedThing
+
+  participating_agent:
+    range: Agent
+
+enums: { }
