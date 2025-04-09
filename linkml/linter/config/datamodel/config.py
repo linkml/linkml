@@ -21,7 +21,6 @@ from typing import (
     Optional,
     Union
 )
-from typing import Any, ClassVar, Optional, Union
 
 from jsonasobj2 import (
     JsonObj,
