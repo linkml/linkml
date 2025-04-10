@@ -143,7 +143,7 @@ class SQLTableGenerator(Generator):
     rename_foreign_keys: bool = False
     direct_mapping: bool = False
     relative_slot_num: bool = False
-    maximum_length_oracle: int = 4096
+    default_length_oracle: int = 4096
 
 
     def serialize(self, **kwargs) -> str:
@@ -245,21 +245,21 @@ class SQLTableGenerator(Generator):
         returns a SQL Alchemy column type
         """
         range = slot.range
-        varchar_regex = re.compile('VARCHAR([0-9]+)')
-        varchar2_regex = re.compile('VARCHAR2([0-9]+)')
+        varchar_regex = "VARCHAR([0-9]+)"
+        varchar2_regex = "VARCHAR2([0-9]+)"
         # if no SchemaDefinition is explicitly provided as an argument
         # then simply use the schema that is provided to the SQLTableGenerator() object
         if not schema:
             schema = SchemaLoader(data=self.schema).resolve()
-        if (re.match(varchar_regex,range) or re.match(varchar2_regex,range)) and self.dialect=='oracle':
+        if (re.search(varchar_regex,range) or re.search(varchar2_regex,range)) and self.dialect=='oracle':
             string_length = int(re.findall("[0-9]+",re.findall('\([0-9]+\)', range)[0])[0])
             if string_length > 4096:
-                logger.error(f"RANGE EXCEEDS MAXIMUM ORACLE VARCHAR LENGTH: {range} for {slot.name} = {slot.range}")
+                logger.info(f"WARNING: RANGE EXCEEDS MAXIMUM ORACLE VARCHAR LENGTH, CLOB TYPE WILL BE RETURNED: {range} for {slot.name} = {slot.range}, maximum length set to 4096")
                 return Text()
             return VARCHAR2(string_length)
         # Adding a condition to see if a given item is within the oracle dialect, in which case we should generate of type VARCHAR2
         if range in ['str', 'string', 'String', 'VARCHAR2','VARCHAR', 'VARCHAR2([0-9]+)', 'VARCHAR[0-9]+'] and self.dialect=='oracle':
-            return VARCHAR2(self.maximum_length_oracle)
+            return VARCHAR2(self.default_length_oracle)
         if range in schema.classes:
             # FK type should be the same as the identifier of the foreign key
             fk = SchemaView(schema).get_identifier_slot(range)
@@ -327,10 +327,10 @@ class SQLTableGenerator(Generator):
     help="Emit FK declarations",
 )
 @click.option(
-    "--maximum_length_oracle",
+    "--default_length_oracle",
     default=4096,
     show_default=True,
-    help="Maximum lengeth of varchar based arguments for oracle dialects",
+    help="Default length of varchar based arguments for oracle dialects",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(

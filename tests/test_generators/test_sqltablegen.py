@@ -186,28 +186,43 @@ def test_varchar_sql_range(schema, capsys):
     gen_oracle.dialect = 'oracle'
     
     assert gen_oracle.dialect == 'oracle'
-    assert gen_oracle.maximum_length_oracle == 4096
+    assert gen_oracle.default_length_oracle == 4096
 
-    gen_oracle.maximum_length_oracle = 256
-    assert gen_oracle.maximum_length_oracle == 256
+    gen_oracle.default_length_oracle = 256
+    assert gen_oracle.default_length_oracle == 256
     string_1_slot = SlotDefinition(name="string_column", range='string')
-    string_2_slot = SlotDefinition(name="varchar_column", range='VARCHAR2(128)')
-    
+    string_2_slot = SlotDefinition(name="varchar_column", range='VARCHAR')
+    string_3_slot = SlotDefinition(name="varchar2_length_column", range='VARCHAR2(128)')
+    string_4_slot = SlotDefinition(name="clob_column", range='VARCHAR2(4097)')
+
     string_1_output = gen_oracle.get_sql_range(string_1_slot)
-    with capsys.disabled():
-        print(str(string_1_output))
     assert isinstance(string_1_output, VARCHAR2)
 
     string_2_output = gen_oracle.get_sql_range(string_2_slot)
-    with capsys.disabled():
-        print(str(string_2_output))
     assert isinstance(string_2_output, VARCHAR2)
 
+    string_3_output = gen_oracle.get_sql_range(string_3_slot)
+    assert isinstance(string_3_output, VARCHAR2)
 
-    ddl = gen_oracle.generate_ddl()
+    string_4_output = gen_oracle.get_sql_range(string_4_slot)
+    assert isinstance(string_4_output, Text)
+
+    #testing the ddl generation of varchars
+
+    b = SchemaBuilder()
+    slots = [string_1_slot, string_2_slot, string_3_slot, string_4_slot]
+    b.add_class(DUMMY_CLASS, slots, description="My dummy class")
+
+    gen_oracle2 = SQLTableGenerator(b.schema, dialect='oracle')
+    gen_oracle2.default_length_oracle = 256
+    ddl = gen_oracle2.generate_ddl()
     with capsys.disabled():
         print(ddl)
     assert ddl
+    assert 'string_column VARCHAR2(256 CHAR)' in ddl
+    assert 'varchar_column VARCHAR2(256 CHAR)' in ddl
+    assert 'varchar2_length_column VARCHAR2(128 CHAR)' in ddl
+    assert 'clob column CLOB' in ddl
 
 
 def test_get_foreign_key(schema):
