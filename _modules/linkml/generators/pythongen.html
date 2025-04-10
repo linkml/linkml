@@ -348,11 +348,12 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModuleType</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
@@ -551,12 +552,6 @@
                 <span class="p">],</span>
             <span class="p">)</span>
             <span class="o">+</span> <span class="n">Import</span><span class="p">(</span>
-                <span class="n">module</span><span class="o">=</span><span class="s2">&quot;linkml_runtime.utils.dataclass_extensions_376&quot;</span><span class="p">,</span>
-                <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
-                    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;dataclasses_init_fn_with_kwargs&quot;</span><span class="p">),</span>
-                <span class="p">],</span>
-            <span class="p">)</span>
-            <span class="o">+</span> <span class="n">Import</span><span class="p">(</span>
                 <span class="n">module</span><span class="o">=</span><span class="s2">&quot;linkml_runtime.utils.formatutils&quot;</span><span class="p">,</span>
                 <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
                     <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;camelcase&quot;</span><span class="p">),</span>
@@ -611,9 +606,6 @@
 <span class="s2">metamodel_version = &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span><span class="si">}</span><span class="s2">&quot;</span>
 <span class="s2">version = </span><span class="si">{</span><span class="s1">&#39;&quot;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&quot;&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span>
 
-<span class="s2"># Overwrite dataclasses _init_fn to add **kwargs in __init__</span>
-<span class="s2">dataclasses._init_fn = dataclasses_init_fn_with_kwargs</span>
-
 <span class="s2"># Namespaces</span>
 <span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_namespaces</span><span class="p">()</span><span class="si">}</span>
 
@@ -638,7 +630,7 @@
         <span class="n">list_ents</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;from </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> import </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_import_list</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">list_ents</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">gen_import_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gen_import_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a list of types to import</span>
 
@@ -648,7 +640,7 @@
         <span class="k">class</span><span class="w"> </span><span class="nc">ImportList</span><span class="p">:</span>
             <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_location</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">schema_location</span> <span class="o">=</span> <span class="n">schema_location</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
 
             <span class="k">def</span><span class="w"> </span><span class="nf">add_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">imported_from</span><span class="p">:</span>
@@ -670,7 +662,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">innerself</span><span class="o">.</span><span class="n">v</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;. &quot;</span> <span class="o">+</span> <span class="n">path</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
-            <span class="k">def</span><span class="w"> </span><span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
                 <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="o">.</span><span class="n">keys</span><span class="p">())}</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">add_type_ref</span><span class="p">(</span><span class="n">typ</span><span class="p">:</span> <span class="n">TypeDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -861,7 +853,7 @@
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inherited</span><span class="p">:</span>
                 <span class="n">inherited_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="k">else</span> <span class="n">slotname</span><span class="p">)</span>
         <span class="n">inherited_slots_str</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">underscore</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">inherited_slots</span><span class="p">])</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">_inherited_slots: ClassVar[List[str]] = [</span><span class="si">{</span><span class="n">inherited_slots_str</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">_inherited_slots: ClassVar[list[str]] = [</span><span class="si">{</span><span class="n">inherited_slots_str</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">gen_class_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_classvars</span><span class="p">:</span>
@@ -984,7 +976,7 @@
         <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span>
         <span class="bp">cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">],</span>
         <span class="n">positional_allowed</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the range type including initializers, etc.</span>
 <span class="sd">        Generate a class variable declaration for the supplied slot.  Note: the positional_allowed attribute works,</span>
@@ -1009,33 +1001,33 @@
             <span class="k">if</span> <span class="n">num_elements</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
                     <span class="k">return</span> <span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Union[List[</span><span class="si">{</span><span class="n">base_key</span><span class="si">}</span><span class="s2">], Dict[</span><span class="si">{</span><span class="n">base_key</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">]]&quot;</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">&quot;Union[list[</span><span class="si">{</span><span class="n">base_key</span><span class="si">}</span><span class="s2">], dict[</span><span class="si">{</span><span class="n">base_key</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">]]&quot;</span><span class="p">,</span>
                         <span class="n">dflt</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">return</span> <span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Optional[Union[List[</span><span class="si">{</span><span class="n">base_key</span><span class="si">}</span><span class="s2">], Dict[</span><span class="si">{</span><span class="n">base_key</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">]]]&quot;</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">&quot;Optional[Union[list[</span><span class="si">{</span><span class="n">base_key</span><span class="si">}</span><span class="s2">], dict[</span><span class="si">{</span><span class="n">base_key</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">]]]&quot;</span><span class="p">,</span>
                         <span class="n">dflt</span><span class="p">,</span>
                     <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
                     <span class="k">return</span> <span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Union[Dict[</span><span class="si">{</span><span class="n">base_key</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">], List[</span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">]]&quot;</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">&quot;Union[dict[</span><span class="si">{</span><span class="n">base_key</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">], list[</span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">]]&quot;</span><span class="p">,</span>
                         <span class="n">dflt</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">return</span> <span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Optional[Union[Dict[</span><span class="si">{</span><span class="n">base_key</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">], List[</span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">]]]&quot;</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">&quot;Optional[Union[dict[</span><span class="si">{</span><span class="n">base_key</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">], list[</span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">]]]&quot;</span><span class="p">,</span>
                         <span class="n">dflt</span><span class="p">,</span>
                     <span class="p">)</span>
 
         <span class="c1"># All other cases</span>
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
-                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Union[</span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">, List[</span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">]]&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span> <span class="k">if</span> <span class="n">positional_allowed</span> <span class="k">else</span> <span class="s2">&quot;None&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Union[</span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">, list[</span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">]]&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span> <span class="k">if</span> <span class="n">positional_allowed</span> <span class="k">else</span> <span class="s2">&quot;None&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Optional[Union[</span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">, List[</span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">]]]&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;Optional[Union[</span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">, list[</span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">]]]&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;empty_list()&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
@@ -1043,7 +1035,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Optional[</span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">,</span> <span class="s2">&quot;None&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">class_reference_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">class_reference_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the type of slot referencing a class</span>
 
@@ -1065,7 +1057,7 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_class_reference</span><span class="p">(</span><span class="n">rangelist</span><span class="p">)),</span> <span class="n">prox_type</span><span class="p">,</span> <span class="n">prox_type_name</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">gen_class_reference</span><span class="p">(</span><span class="n">rangelist</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gen_class_reference</span><span class="p">(</span><span class="n">rangelist</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a basic or a union type depending on the number of elements in range list</span>
 
@@ -1112,7 +1104,7 @@
         <span class="k">return</span> <span class="p">(</span>
             <span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):</span>
+<span class="s2">    def __post_init__(self, *_: str, **kwargs: Any):</span>
 <span class="s2">        </span><span class="si">{</span><span class="n">post_inits_line</span><span class="si">}</span>
 <span class="s2">        super().__post_init__(**kwargs)</span>
 <span class="s2">        </span><span class="si">{</span><span class="n">post_inits_post_super_line</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span>
@@ -1123,7 +1115,7 @@
 
     <span class="c1"># sort classes such that if C is a child of P then C appears after P in the list</span>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_sort_classes</span><span class="p">(</span><span class="n">clist</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sort_classes</span><span class="p">(</span><span class="n">clist</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]:</span>
         <span class="n">clist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">clist</span><span class="p">)</span>
         <span class="n">slist</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># sorted</span>
         <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">clist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -1171,7 +1163,7 @@
 <span class="sd">        :param cls: class to generate constructor for</span>
 <span class="sd">        :return: python constructor</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">rlines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">rlines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">designators</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_slots</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">designates_type</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">designators</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">descendants</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">class_descendants</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
@@ -1226,7 +1218,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">gen_postinit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate python post init rules for slot in class&quot;&quot;&quot;</span>
-        <span class="n">rlines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">rlines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_class_unconstrained</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">]):</span>
@@ -1364,7 +1356,7 @@
                 <span class="k">if</span> <span class="n">first_hit_only</span><span class="p">:</span>
                     <span class="k">break</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">primary_keys_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">primary_keys_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the primary key for cls.</span>
 
 <span class="sd">        Note: At the moment we return at most one entry.  At some point, keys will be expanded to support</span>
@@ -1414,7 +1406,7 @@
                 <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Occurs before</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">python_uri_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uriorcurie</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">python_uri_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uriorcurie</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the python form of uriorcurie</span>
 <span class="sd">        :param uriorcurie:</span>
 <span class="sd">        :return: URI and CURIE form</span>

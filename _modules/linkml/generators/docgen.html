@@ -347,11 +347,12 @@
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">importlib.util</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Iterator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">FileSystemLoader</span><span class="p">,</span> <span class="n">Template</span>
@@ -481,7 +482,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;markdown dialect (e.g MyST, Python)&quot;&quot;&quot;</span>
     <span class="n">sort_by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span>
     <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">template_mappings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">template_mappings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;directory in which to write documents&quot;&quot;&quot;</span>
 
@@ -808,7 +809,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">e</span><span class="o">.</span><span class="n">name</span></div>
 
-<div class="viewcode-block" id="DocGenerator.links"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.links">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">links</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DefinitionName</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="DocGenerator.links"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.links">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">links</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DefinitionName</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Render list of element documentation pages as hyperlinks.</span>
 
 <span class="sd">        :param e_list: list of elements</span>
@@ -867,7 +868,7 @@
         <span class="n">mixins</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">descriptions</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">focus</span><span class="p">:</span> <span class="n">DefinitionName</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
         <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">is_a</span><span class="p">:</span>
             <span class="n">pre</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="p">(</span>
@@ -1027,7 +1028,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;mermaid&quot;</span></div>
 
-<div class="viewcode-block" id="DocGenerator.mermaid_diagram"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.mermaid_diagram">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">mermaid_diagram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="DocGenerator.mermaid_diagram"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.mermaid_diagram">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">mermaid_diagram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Render a mermaid diagram for a set of classes</span>
 
@@ -1096,8 +1097,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">elts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span>
         <span class="n">_ensure_ranked</span><span class="p">(</span><span class="n">elts</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">elts</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="n">e</span></div>
+        <span class="k">yield from</span> <span class="n">elts</span></div>
 
 <div class="viewcode-block" id="DocGenerator.all_class_objects"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.all_class_objects">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">all_class_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1108,8 +1108,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">elts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">render_imports</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
         <span class="n">_ensure_ranked</span><span class="p">(</span><span class="n">elts</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">elts</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="n">e</span></div>
+        <span class="k">yield from</span> <span class="n">elts</span></div>
 
 <div class="viewcode-block" id="DocGenerator.all_slot_objects"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.all_slot_objects">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">all_slot_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1120,8 +1119,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">elts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">render_imports</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
         <span class="n">_ensure_ranked</span><span class="p">(</span><span class="n">elts</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">elts</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="n">e</span></div>
+        <span class="k">yield from</span> <span class="n">elts</span></div>
 
 <div class="viewcode-block" id="DocGenerator.all_type_objects"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.all_type_objects">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">all_type_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">TypeDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1132,10 +1130,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">elts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_types</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">render_imports</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
         <span class="n">_ensure_ranked</span><span class="p">(</span><span class="n">elts</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">elts</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="n">e</span></div>
+        <span class="k">yield from</span> <span class="n">elts</span></div>
 
-<div class="viewcode-block" id="DocGenerator.all_type_object_names"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.all_type_object_names">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">all_type_object_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TypeDefinitionName</span><span class="p">]:</span>
+<div class="viewcode-block" id="DocGenerator.all_type_object_names"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.all_type_object_names">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">all_type_object_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TypeDefinitionName</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_type_objects</span><span class="p">())]</span></div>
 
 <div class="viewcode-block" id="DocGenerator.all_enum_objects"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.all_enum_objects">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">all_enum_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">EnumDefinition</span><span class="p">]:</span>
@@ -1147,8 +1144,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">elts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_enums</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">render_imports</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
         <span class="n">_ensure_ranked</span><span class="p">(</span><span class="n">elts</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">elts</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="n">e</span></div>
+        <span class="k">yield from</span> <span class="n">elts</span></div>
 
 <div class="viewcode-block" id="DocGenerator.all_subset_objects"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.all_subset_objects">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">all_subset_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">SubsetDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1159,10 +1155,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">elts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_subsets</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">render_imports</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
         <span class="n">_ensure_ranked</span><span class="p">(</span><span class="n">elts</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">elts</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="n">e</span></div>
+        <span class="k">yield from</span> <span class="n">elts</span></div>
 
-<div class="viewcode-block" id="DocGenerator.class_hierarchy_as_tuples"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.class_hierarchy_as_tuples">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">class_hierarchy_as_tuples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">]]:</span>
+<div class="viewcode-block" id="DocGenerator.class_hierarchy_as_tuples"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.class_hierarchy_as_tuples">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">class_hierarchy_as_tuples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a hierarchical representation of all classes in the schema</span>
 
@@ -1226,7 +1221,7 @@
         <span class="k">return</span> <span class="n">slot</span></div>
 
 <div class="viewcode-block" id="DocGenerator.get_direct_slot_names"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.get_direct_slot_names">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_direct_slot_names</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_direct_slot_names</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fetch list of all own attributes of a class, i.e.,</span>
 <span class="sd">        all slot names of slots that belong to the domain of a class.</span>
 
@@ -1235,7 +1230,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="DocGenerator.get_direct_slots"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.get_direct_slots">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_direct_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
+<div class="viewcode-block" id="DocGenerator.get_direct_slots"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.get_direct_slots">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_direct_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fetch list of all own attributes of a class, i.e.,</span>
 <span class="sd">        all slots that belong to the domain of a class.</span>
 
@@ -1246,7 +1241,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">inject_slot_info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">sn</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">))</span> <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_direct_slot_names</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="p">]</span></div>
 
-<div class="viewcode-block" id="DocGenerator.get_indirect_slots"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.get_indirect_slots">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_indirect_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
+<div class="viewcode-block" id="DocGenerator.get_indirect_slots"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.get_indirect_slots">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_indirect_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fetch list of all inherited attributes of a class, i.e.,</span>
 <span class="sd">        all slots that belong to the domain of a class.</span>
 
@@ -1263,7 +1258,7 @@
 
 <div class="viewcode-block" id="DocGenerator.get_slot_inherited_from"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.get_slot_inherited_from">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_slot_inherited_from</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">SlotDefinitionName</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the name of the class that a given slot is inherited from.</span>
 
 <span class="sd">        :param class_name: name of the class whose slot we are checking</span>
@@ -1275,7 +1270,7 @@
         <span class="n">ancestors</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_ancestors</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">induced_slot</span><span class="o">.</span><span class="n">domain_of</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">ancestors</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="DocGenerator.get_mixin_inherited_slots"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.get_mixin_inherited_slots">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_mixin_inherited_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<div class="viewcode-block" id="DocGenerator.get_mixin_inherited_slots"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.get_mixin_inherited_slots">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_mixin_inherited_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fetch list of all slots acquired through mixing.</span>
 
 <span class="sd">        :param cls: class for which we want to determine the mixed in slots</span>
@@ -1290,7 +1285,7 @@
 
         <span class="k">return</span> <span class="n">mixed_in_slots</span></div>
 
-<div class="viewcode-block" id="DocGenerator.example_object_blobs"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.example_object_blobs">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">example_object_blobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<div class="viewcode-block" id="DocGenerator.example_object_blobs"><a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.example_object_blobs">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">example_object_blobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fetch list of all examples of a class.</span>
 
 <span class="sd">        :param class_name: class for which we want to determine the examples</span>

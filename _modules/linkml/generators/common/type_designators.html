@@ -344,9 +344,7 @@
         </div>
         <article role="main">
           <h1>Source code for linkml.generators.common.type_designators</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.schemaview</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
 
 
@@ -368,7 +366,7 @@
 
 <div class="viewcode-block" id="get_accepted_type_designator_values"><a class="viewcode-back" href="../../../../generators/common/type_designators.html#linkml.generators.common.type_designators.get_accepted_type_designator_values">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_accepted_type_designator_values</span><span class="p">(</span>
     <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">type_designator_slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">class_def</span><span class="p">:</span> <span class="n">ClassDefinition</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    returns the accepted values for a type designator field for a given class, depending on its range</span>
 <span class="sd">    this implements the logic described in https://github.com/linkml/linkml/issues/945:</span>

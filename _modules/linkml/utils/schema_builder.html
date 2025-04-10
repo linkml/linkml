@@ -345,7 +345,7 @@
         <article role="main">
           <h1>Source code for linkml.utils.schema_builder</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ClassDefinition</span><span class="p">,</span>
@@ -405,9 +405,9 @@
 
 <div class="viewcode-block" id="SchemaBuilder.add_class"><a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder.add_class">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_class</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="bp">cls</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-        <span class="n">slots</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">slot_usage</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="bp">cls</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">slots</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">slot_usage</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">replace_if_present</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">use_attributes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -471,7 +471,7 @@
 
 <div class="viewcode-block" id="SchemaBuilder.add_slot"><a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder.add_slot">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_slot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">slot</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">slot</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
         <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">replace_if_present</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -513,7 +513,7 @@
 <div class="viewcode-block" id="SchemaBuilder.add_enum"><a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder.add_enum">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_enum</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">enum_def</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">EnumDefinition</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-        <span class="n">permissible_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">permissible_values</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">replace_if_present</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SchemaBuilder&quot;</span><span class="p">:</span>
@@ -578,7 +578,7 @@
 
 <div class="viewcode-block" id="SchemaBuilder.add_type"><a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder.add_type">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_type</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="nb">type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TypeDefinition</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TypeDefinition</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
         <span class="n">typeof</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">replace_if_present</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -608,7 +608,7 @@
             <span class="nb">setattr</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="SchemaBuilder.as_dict"><a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder.as_dict">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<div class="viewcode-block" id="SchemaBuilder.as_dict"><a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder.as_dict">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the schema as a dictionary.</span>
 

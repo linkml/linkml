@@ -354,7 +354,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModuleType</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChoiceLoader</span><span class="p">,</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">FileSystemLoader</span><span class="p">,</span> <span class="n">Template</span>
@@ -428,9 +428,7 @@
         <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
             <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Any&quot;</span><span class="p">),</span>
             <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ClassVar&quot;</span><span class="p">),</span>
-            <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;List&quot;</span><span class="p">),</span>
             <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Literal&quot;</span><span class="p">),</span>
-            <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Dict&quot;</span><span class="p">),</span>
             <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Optional&quot;</span><span class="p">),</span>
             <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Union&quot;</span><span class="p">),</span>
         <span class="p">],</span>
@@ -529,7 +527,7 @@
     <span class="n">file_extension</span> <span class="o">=</span> <span class="s2">&quot;py&quot;</span>
 
     <span class="c1"># ObjectVars</span>
-    <span class="n">array_representations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ArrayRepresentation</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="n">ArrayRepresentation</span><span class="o">.</span><span class="n">LIST</span><span class="p">])</span>
+    <span class="n">array_representations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ArrayRepresentation</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="n">ArrayRepresentation</span><span class="o">.</span><span class="n">LIST</span><span class="p">])</span>
     <span class="n">black</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    If black is present in the environment, format the serialized code with it</span>
@@ -545,7 +543,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">extra_fields</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;allow&quot;</span><span class="p">,</span> <span class="s2">&quot;forbid&quot;</span><span class="p">,</span> <span class="s2">&quot;ignore&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;forbid&quot;</span>
     <span class="n">gen_mixin_inheritance</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">injected_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">injected_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A list/tuple of classes to inject into the generated module.</span>
 
@@ -554,7 +552,7 @@
 <span class="sd">    source file (ie. the module they are contained in needs a ``__file__`` attr,</span>
 <span class="sd">    see: :func:`inspect.getsource` )</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">injected_fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">injected_fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A list/tuple of field strings to inject into the base class.</span>
 
@@ -567,7 +565,7 @@
 <span class="sd">        )</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">imports</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Import</span><span class="p">],</span> <span class="n">Imports</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">imports</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Import</span><span class="p">],</span> <span class="n">Imports</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Additional imports to inject into generated module.</span>
 
@@ -699,8 +697,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Substitute CamelCase and non-word characters with _&quot;&quot;&quot;</span>
 
     <span class="c1"># Private attributes</span>
-    <span class="n">_predefined_slot_values</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">_class_bases</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_predefined_slot_values</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_class_bases</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
@@ -718,7 +716,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error compiling generated python code: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">e</span></div>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]]]:</span>
         <span class="n">all_classes</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">:</span>
@@ -730,8 +728,8 @@
 
 <div class="viewcode-block" id="PydanticGenerator.sort_classes"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.sort_classes">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sort_classes</span><span class="p">(</span>
-        <span class="n">clist</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">],</span> <span class="n">imported</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]:</span>
+        <span class="n">clist</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">],</span> <span class="n">imported</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        sort classes such that if C is a child of P then C appears after P in the list</span>
 
@@ -861,7 +859,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">collection_key</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">or</span> <span class="n">collection_key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;List[</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">]&quot;</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;list[</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">]&quot;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">simple_dict_value</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">slot_ranges</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -871,15 +869,15 @@
                     <span class="c1"># so we specify either that identifier or the range itself</span>
                     <span class="k">if</span> <span class="n">simple_dict_value</span> <span class="o">!=</span> <span class="n">result</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">range</span><span class="p">:</span>
                         <span class="n">simple_dict_value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Union[</span><span class="si">{</span><span class="n">simple_dict_value</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">]&quot;</span>
-                    <span class="n">result</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Dict[str, </span><span class="si">{</span><span class="n">simple_dict_value</span><span class="si">}</span><span class="s2">]&quot;</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;dict[str, </span><span class="si">{</span><span class="n">simple_dict_value</span><span class="si">}</span><span class="s2">]&quot;</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">result</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Dict[</span><span class="si">{</span><span class="n">collection_key</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">]&quot;</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;dict[</span><span class="si">{</span><span class="n">collection_key</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">]&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">required</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">key</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">designates_type</span><span class="p">:</span>
             <span class="n">result</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Optional[</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">]&quot;</span>
         <span class="k">return</span> <span class="n">result</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">predefined_slot_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predefined_slot_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Dictionary of dictionaries with predefined slot values for each class</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -909,7 +907,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predefined_slot_values</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">class_bases</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">class_bases</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate the inheritance list for each class from is_a plus mixins</span>
 <span class="sd">        :return:</span>
@@ -1028,7 +1026,7 @@
 
 <div class="viewcode-block" id="PydanticGenerator.generate_collection_key"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.generate_collection_key">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">generate_collection_key</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">slot_ranges</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">slot_ranges</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">slot_def</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span>
         <span class="n">class_def</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -1043,7 +1041,7 @@
 <span class="sd">        :param slot_ranges: list of python range values</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">collection_keys</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">collection_keys</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">slot_ranges</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -1061,7 +1059,7 @@
             <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">collection_keys</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_clean_injected_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">injected_classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_clean_injected_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">injected_classes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get source, deduplicate, and dedent injected classes&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">injected_classes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -1115,7 +1113,7 @@
             <span class="n">env</span><span class="o">.</span><span class="n">loader</span> <span class="o">=</span> <span class="n">loader</span>
         <span class="k">return</span> <span class="n">env</span>
 
-<div class="viewcode-block" id="PydanticGenerator.get_array_representations_range"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.get_array_representations_range">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_array_representations_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="nb">range</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotResult</span><span class="p">]:</span>
+<div class="viewcode-block" id="PydanticGenerator.get_array_representations_range"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.get_array_representations_range">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_array_representations_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="nb">range</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SlotResult</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate the python range for array representations</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1374,7 +1372,7 @@
         <span class="n">split_context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">split_mode</span><span class="p">:</span> <span class="n">SplitMode</span> <span class="o">=</span> <span class="n">SplitMode</span><span class="o">.</span><span class="n">AUTO</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SplitResult</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SplitResult</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a schema that imports from other schema as a set of python modules that</span>
 <span class="sd">        import from one another, rather than generating all imported classes in a single schema.</span>
@@ -1465,7 +1463,7 @@
         <span class="k">return</span> <span class="n">results</span></div></div>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_subclasses</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_subclasses</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">())</span><span class="o">.</span><span class="n">union</span><span class="p">([</span><span class="n">s</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">_subclasses</span><span class="p">(</span><span class="n">c</span><span class="p">)])</span>
 
 
@@ -1483,7 +1481,7 @@
     <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="o">*</span><span class="n">dir_pieces</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_ensure_inits</span><span class="p">(</span><span class="n">paths</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_ensure_inits</span><span class="p">(</span><span class="n">paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;For a set of paths, find the common root and it and all the subdirectories have an __init__.py&quot;&quot;&quot;</span>
     <span class="c1"># if there is only one file, there is no relative importing to be done</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
@@ -1569,10 +1567,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate pydantic classes to represent a LinkML model&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">template_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="s2">&quot;Passing a single template_file is deprecated. Pass a directory of template files instead. &quot;</span>
-                <span class="s2">&quot;See help string for --template-dir&quot;</span>
-            <span class="p">)</span>
+            <span class="s2">&quot;Passing a single template_file is deprecated. Pass a directory of template files instead. &quot;</span>
+            <span class="s2">&quot;See help string for --template-dir&quot;</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">template_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
