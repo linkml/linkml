@@ -216,8 +216,6 @@ def test_varchar_sql_range(schema, capsys):
     gen_oracle2 = SQLTableGenerator(b.schema, dialect='oracle')
     gen_oracle2.default_length_oracle = 256
     ddl = gen_oracle2.generate_ddl()
-    with capsys.disabled():
-        print(ddl)
     assert ddl
     assert 'string_column VARCHAR2(256 CHAR)' in ddl
     assert 'varchar_column VARCHAR2(256 CHAR)' in ddl
