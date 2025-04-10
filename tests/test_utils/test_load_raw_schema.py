@@ -130,6 +130,7 @@ def test_representation_errors(filename, input_path):
     fn = input_path(filename)
     try:
         SchemaLoader(fn)
+        assert False, "Expected an exception due to malformed schema"
     except Exception as e:
         # If exception raised, log it and optionally check message
         assert isinstance(e, Exception)

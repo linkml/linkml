@@ -57,9 +57,10 @@ See logictools.py for the symbolic reasoning engine.
 """
 
 import logging
+from collections.abc import Iterator
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Iterator, List, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper
@@ -340,7 +341,7 @@ class LogicalModelTransformer(ModelTransformer):
     a lack of range assignment.
     """
 
-    reason_over_metamodel_slots: Optional[List[str]] = None
+    reason_over_metamodel_slots: Optional[list[str]] = None
     """
     If set, only reason over the specified metamodel slots.
     """
@@ -407,10 +408,10 @@ class LogicalModelTransformer(ModelTransformer):
         self,
         target_schema: SchemaDefinition,
         target_class_name: ClassDefinitionName,
-        ancestors: List[ClassDefinitionName],
+        ancestors: list[ClassDefinitionName],
     ):
         anc_classes = [self.schemaview.get_class(ancestor) for ancestor in ancestors]
-        attributes: Dict[SlotDefinitionName, SlotDefinition] = {}
+        attributes: dict[SlotDefinitionName, SlotDefinition] = {}
         for ancestor_class in anc_classes:
             top_level_slots = [(s, target_schema.slots[s]) for s in ancestor_class.slots]
             for slot_name, slot_expr in (
@@ -543,7 +544,7 @@ class LogicalModelTransformer(ModelTransformer):
         elif isinstance(expr, logictools.Not):
             self._simplify_member_ofs(expr.operand)
 
-    def _remove_redundant(self, elements: List[str]) -> List[str]:
+    def _remove_redundant(self, elements: list[str]) -> list[str]:
         sv = self.schemaview
         redundant = set()
         if not self.preserve_class_mixins:
@@ -568,7 +569,7 @@ class LogicalModelTransformer(ModelTransformer):
                 logger.warning(f"Unknown class {x} in {elements}")
         return [x for x in elements if x not in redundant]
 
-    def _type_descendants(self, type_name: str, imports=True, reflexive=True, depth_first=True) -> List[str]:
+    def _type_descendants(self, type_name: str, imports=True, reflexive=True, depth_first=True) -> list[str]:
         # TODO: move this to schemaview
         sv = self.schemaview
         from linkml_runtime.utils.schemaview import _closure
@@ -584,7 +585,7 @@ class LogicalModelTransformer(ModelTransformer):
             depth_first=depth_first,
         )
 
-    def _enum_descendants(self, enum_name: str, imports=True, reflexive=True, depth_first=True) -> List[str]:
+    def _enum_descendants(self, enum_name: str, imports=True, reflexive=True, depth_first=True) -> list[str]:
         # TODO: move this to schemaview
         sv = self.schemaview
         from linkml_runtime.utils.schemaview import _closure
@@ -754,7 +755,7 @@ class LogicalModelTransformer(ModelTransformer):
         self,
         attribute: Union[SlotDefinition, AnonymousSlotExpression],
         root_slot: SlotDefinition = None,
-        stack: List = None,
+        stack: list = None,
     ) -> str:
         # Note: in future versions of the metamodel, multivalued may move to the expression
         if stack is None:

@@ -20,10 +20,11 @@ import logging
 import os
 import re
 import sys
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import Callable, ClassVar, Dict, List, Mapping, Optional, Set, TextIO, Type, Union, cast
+from typing import Callable, ClassVar, Optional, TextIO, Union, cast
 
 import click
 from click import Argument, Command, Option
@@ -103,7 +104,7 @@ class Generator(metaclass=abc.ABCMeta):
     requires_metamodel: ClassVar[bool] = True
     """Generator queries an instance of the metamodel"""
 
-    valid_formats: ClassVar[List[str]] = []
+    valid_formats: ClassVar[list[str]] = []
     """Allowed formats - first format is default"""
 
     visit_all_class_slots: ClassVar[bool] = False
@@ -162,13 +163,13 @@ class Generator(metaclass=abc.ABCMeta):
     """Working directory or base URL of sources.
     Setting this is necessary for correct retrieval of relative imports."""
 
-    metamodel_name_map: Dict[str, str] = None
+    metamodel_name_map: dict[str, str] = None
     """Allows mapping of names of metamodel elements such as slot, etc"""
 
     importmap: Optional[Union[str, Optional[Mapping[str, str]]]] = None
     """File name of import mapping file -- maps import name/uri to target"""
 
-    emit_prefixes: Set[str] = field(default_factory=lambda: set())
+    emit_prefixes: set[str] = field(default_factory=lambda: set())
     """Prefixes to emit, for RDF-based generators"""
 
     metamodel: SchemaLoader = None
@@ -416,7 +417,7 @@ class Generator(metaclass=abc.ABCMeta):
     # =============================
     # Helper methods
     # =============================
-    def own_slots(self, cls: Union[ClassDefinitionName, ClassDefinition]) -> List[SlotDefinition]:
+    def own_slots(self, cls: Union[ClassDefinitionName, ClassDefinition]) -> list[SlotDefinition]:
         """Return the list of slots owned the class definition.  An "own slot" is any ``cls`` slot that does not appear
         in the class is_a parent.  Own_slots include:
 
@@ -442,7 +443,7 @@ class Generator(metaclass=abc.ABCMeta):
                 seen.add(sname_base)
         return sorted(rval, key=lambda s: s.name) if self.sort_class_slots else rval
 
-    def own_slot_names(self, cls: Union[ClassDefinitionName, ClassDefinition]) -> List[SlotDefinitionName]:
+    def own_slot_names(self, cls: Union[ClassDefinitionName, ClassDefinition]) -> list[SlotDefinitionName]:
         return [slot.name for slot in self.own_slots(cls)]
 
     def all_slots(
@@ -450,8 +451,8 @@ class Generator(metaclass=abc.ABCMeta):
         cls: Union[ClassDefinitionName, ClassDefinition],
         *,
         cls_slots_first: bool = False,
-        seen: Optional[Set[ClassDefinitionName]] = None,
-    ) -> List[SlotDefinition]:
+        seen: Optional[set[ClassDefinitionName]] = None,
+    ) -> list[SlotDefinition]:
         """Return all slots that are part of the class definition.  This includes all is_a, mixin and apply_to slots
         but does NOT include slot_usage targets.  If class B has a slot_usage entry for slot "s", only the slot
         definition for the redefined slot will be included, not its base.  Slots are added in the order they appear
@@ -499,7 +500,7 @@ class Generator(metaclass=abc.ABCMeta):
             )
         )
 
-    def ancestors(self, element: Union[ClassDefinition, SlotDefinition]) -> List[ElementName]:
+    def ancestors(self, element: Union[ClassDefinition, SlotDefinition]) -> list[ElementName]:
         """Return an ordered list of ancestor names for the supplied slot or class
 
         @param element: Slot or class name or definition
@@ -507,7 +508,7 @@ class Generator(metaclass=abc.ABCMeta):
         """
         return [element.name] + ([] if element.is_a is None else self.ancestors(self.parent(element)))
 
-    def neighborhood(self, elements: Union[str, ElementName, List[ElementName]]) -> References:
+    def neighborhood(self, elements: Union[str, ElementName, list[ElementName]]) -> References:
         """Return a list of all slots, classes and types that touch any element in elements, including the element
         itself
 
@@ -581,7 +582,7 @@ class Generator(metaclass=abc.ABCMeta):
 
         return touches
 
-    def range_type_path(self, typ: TypeDefinition) -> List[str]:
+    def range_type_path(self, typ: TypeDefinition) -> list[str]:
         """
         Return a formatted list of range types from the base up
 
@@ -618,14 +619,14 @@ class Generator(metaclass=abc.ABCMeta):
         return None
 
     @staticmethod
-    def enum_identifier_path(enum_or_enumname: Union[str, EnumDefinition]) -> List[str]:
+    def enum_identifier_path(enum_or_enumname: Union[str, EnumDefinition]) -> list[str]:
         """Return an enum_identifier path"""
         return [
             "str",
             camelcase(enum_or_enumname.name if isinstance(enum_or_enumname, EnumDefinition) else enum_or_enumname),
         ]
 
-    def class_identifier_path(self, cls_or_clsname: Union[str, ClassDefinition], force_non_key: bool) -> List[str]:
+    def class_identifier_path(self, cls_or_clsname: Union[str, ClassDefinition], force_non_key: bool) -> list[str]:
         """
         Return the path closure to a class identifier if the class has a key and force_non_key is false otherwise
         return a dictionary closure.
@@ -657,7 +658,7 @@ class Generator(metaclass=abc.ABCMeta):
                 return self.class_identifier_path(cls.is_a, False) + [pathname]
         return self.slot_range_path(identifier_slot) + [pathname]
 
-    def slot_range_path(self, slot_or_name: Union[str, SlotDefinition]) -> List[str]:
+    def slot_range_path(self, slot_or_name: Union[str, SlotDefinition]) -> list[str]:
         """
         Return an ordered list of slot ranges from distal to proximal
 
@@ -796,7 +797,7 @@ class Generator(metaclass=abc.ABCMeta):
             return self.schema.prefixes[PrefixPrefixPrefix(self.schema.default_prefix)].prefix_reference
 
     # TODO: add lru cache once we get identity into the classes
-    def domain_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
+    def domain_slots(self, cls: ClassDefinition) -> list[SlotDefinition]:
         """Return all slots in the class definition that are owned by the class"""
         domain_slots = []
         for slot_name in cls.slots:
@@ -912,7 +913,7 @@ class Generator(metaclass=abc.ABCMeta):
         return cls.class_uri == "linkml:Any"
 
 
-def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:
+def shared_arguments(g: type[Generator]) -> Callable[[Command], Command]:
     def verbosity_callback(ctx, param, verbose):
         if verbose >= 2:
             logging.basicConfig(level=logging.DEBUG, force=True)
