@@ -32,6 +32,7 @@ from linkml.generators.pydanticgen import includes
 from linkml.generators.pydanticgen.array import ArrayRangeGenerator, ArrayRepresentation
 from linkml.generators.pydanticgen.build import ClassResult, SlotResult, SplitResult
 from linkml.generators.pydanticgen.template import (
+    ClassRange,
     Import,
     Imports,
     ObjectImport,
@@ -40,6 +41,7 @@ from linkml.generators.pydanticgen.template import (
     PydanticClass,
     PydanticModule,
     PydanticTemplateModel,
+    SlotInliningMode,
 )
 from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
 from linkml.utils import deprecation_warning
@@ -472,6 +474,55 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         pyslot = PydanticAttribute(**slot_args)
         pyslot = self.include_metadata(pyslot, slot)
 
+        pyrange, slot_ranges = self.generate_slot_range(slot, cls)
+
+        imports = self._get_imports(slot) if self.split else None
+        result = SlotResult(attribute=pyslot, source=slot, imports=imports)
+
+        if slot.array is not None:
+            results = self.get_array_representations_range(slot, pyrange)
+            if len(results) == 1:
+                result.attribute.range = results[0].range
+            else:
+                result.attribute.range = f"Union[{', '.join([res.range for res in results])}]"
+            for res in results:
+                result = result.merge(res)
+
+        elif slot.multivalued:
+            # Determine the inlining mode using our helper
+            inlining_mode = self._determine_inlining_mode(slot, slot_ranges)
+
+            if inlining_mode == SlotInliningMode.LIST:
+                result.attribute.range = f"List[{pyrange}]"
+            elif inlining_mode == SlotInliningMode.DICT:
+                collection_key = self.generate_collection_key(slot_ranges, slot, cls)
+                result.attribute.range = f"Dict[{collection_key}, {pyrange}]"
+            elif inlining_mode == SlotInliningMode.SIMPLEDICT:
+                value_slot, value_slot_pyrange = self._determine_simple_dict_value_slot(slot, cls)
+
+                # Create a ClassRange model that will be rendered by the template
+                result.attribute.range = ClassRange(
+                    cls=pyrange,
+                    inlining_mode=SlotInliningMode.SIMPLEDICT,
+                    value_slot=value_slot.model_dump() if hasattr(value_slot, "model_dump") else value_slot.__dict__,
+                    value_slot_range=value_slot_pyrange,
+                    value_slot_multivalued=value_slot.multivalued,
+                )
+
+        else:
+            result.attribute.range = pyrange
+
+        if not (slot.required or slot.identifier or slot.key) and not slot.designates_type:
+            # If we already have a ClassRange, we need to wrap the final rendered string
+            if isinstance(result.attribute.range, ClassRange):
+                # We'll let the template handle this
+                pass
+            else:
+                result.attribute.range = f"Optional[{result.attribute.range}]"
+
+        return result
+
+    def generate_slot_range(self, slot, cls):
         slot_ranges = []
         # Confirm that the original slot range (ignoring the default that comes in from
         # induced_slot) isn't in addition to setting any_of
@@ -494,43 +545,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         else:
             raise Exception(f"Could not generate python range for {cls.name}.{slot.name}")
 
-        pyslot.range = pyrange
-
-        imports = self._get_imports(slot) if self.split else None
-
-        result = SlotResult(attribute=pyslot, source=slot, imports=imports)
-
-        if slot.array is not None:
-            results = self.get_array_representations_range(slot, result.attribute.range)
-            if len(results) == 1:
-                result.attribute.range = results[0].range
-            else:
-                result.attribute.range = f"Union[{', '.join([res.range for res in results])}]"
-            for res in results:
-                result = result.merge(res)
-
-        elif slot.multivalued:
-            if slot.inlined or slot.inlined_as_list:
-                collection_key = self.generate_collection_key(slot_ranges, slot, cls)
-            else:
-                collection_key = None
-            if slot.inlined is False or collection_key is None or slot.inlined_as_list is True:
-                result.attribute.range = f"List[{result.attribute.range}]"
-            else:
-                simple_dict_value = None
-                if len(slot_ranges) == 1:
-                    simple_dict_value = self._inline_as_simple_dict_with_value(slot)
-                if simple_dict_value:
-                    # simple_dict_value might be the range of the identifier of a class when range is a class,
-                    # so we specify either that identifier or the range itself
-                    if simple_dict_value != result.attribute.range:
-                        simple_dict_value = f"Union[{simple_dict_value}, {result.attribute.range}]"
-                    result.attribute.range = f"Dict[str, {simple_dict_value}]"
-                else:
-                    result.attribute.range = f"Dict[{collection_key}, {result.attribute.range}]"
-        if not (slot.required or slot.identifier or slot.key) and not slot.designates_type:
-            result.attribute.range = f"Optional[{result.attribute.range}]"
-        return result
+        return pyrange, slot_ranges
 
     @property
     def predefined_slot_values(self) -> Dict[str, Dict[str, str]]:
@@ -726,7 +741,74 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         injected_classes = [textwrap.dedent(c) for c in injected_classes]
         return injected_classes
 
-    def _inline_as_simple_dict_with_value(self, slot_def: SlotDefinition) -> Optional[str]:
+    def _determine_inlining_mode(self, slot_def: SlotDefinition, slot_ranges: List[str]) -> SlotInliningMode:
+        """
+        Determine the inlining mode for a multivalued slot.
+
+        :param slot_def: SlotDefinition
+        :param slot_ranges: List of slot range names
+        :return: The inlining mode as a SlotInliningMode enum value
+        """
+        if slot_def.inlined is False or slot_def.inlined_as_list is True:
+            return SlotInliningMode.LIST
+
+        # Check if eligible for simpledict mode
+        if len(slot_ranges) == 1 and slot_ranges[0] in self.schemaview.all_classes():
+            value_slot, _ = self._determine_simple_dict_value_slot(slot_def, None)
+            if value_slot is not None:
+                return SlotInliningMode.SIMPLEDICT
+
+        # If we have a collection key, use dict mode, otherwise default to list
+        collection_key = self.generate_collection_key(slot_ranges, slot_def, None)
+        return SlotInliningMode.DICT if collection_key is not None else SlotInliningMode.LIST
+
+    def _determine_simple_dict_value_slot(
+        self, slot_def: SlotDefinition, cls_def
+    ) -> Tuple[Optional[SlotDefinition], Optional[str]]:
+        """
+        Determine if a slot should be inlined as a simple dict and return the value slot if applicable.
+
+        For example, if we have a class such as Prefix, with two slots prefix and expansion,
+        then an inlined list of prefixes can be serialized as:
+
+        .. code-block:: yaml
+
+            prefixes:
+                prefix1: expansion1
+                prefix2: expansion2
+                ...
+
+        Provided that the prefix slot is the identifier slot for the Prefix class.
+
+        :param slot_def: SlotDefinition
+        :param cls_def: ClassDefinition of the class containing the slot
+        :return: Tuple of (value_slot, value_slot_range) if simple dict eligible, otherwise (None, None)
+        """
+        if slot_def.inlined and not slot_def.inlined_as_list:
+            if slot_def.range in self.schemaview.all_classes():
+                id_slot = self.schemaview.get_identifier_slot(slot_def.range, use_key=True)
+                if id_slot is not None:
+                    range_cls_slots = self.schemaview.class_induced_slots(slot_def.range)
+                    if len(range_cls_slots) == 2:
+                        non_id_slots = [slot for slot in range_cls_slots if slot.name != id_slot.name]
+                        if len(non_id_slots) == 1:
+                            value_slot = non_id_slots[0]
+                            value_slot_range_type = self.schemaview.get_type(value_slot.range)
+                            if value_slot_range_type is not None:
+                                if cls_def:
+                                    value_slot_pyrange, _ = self.generate_slot_range(value_slot, cls_def)
+                                else:
+                                    # When called during mode determination, we may not have a cls_def
+                                    if value_slot_range_type:
+                                        value_slot_pyrange = (
+                                            value_slot_range_type.base or value_slot_range_type.repr or value_slot.range
+                                        )
+                                    else:
+                                        value_slot_pyrange = value_slot.range
+                                return value_slot, value_slot_pyrange
+        return None, None
+
+    def _inline_as_simple_dict_with_value(self, slot_def: SlotDefinition, cls_def) -> Optional[str]:
         """
         Determine if a slot should be inlined as a simple dict with a value.
 
@@ -742,24 +824,16 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
         Provided that the prefix slot is the identifier slot for the Prefix class.
 
-        TODO: move this to SchemaView
-
         :param slot_def: SlotDefinition
-        :param sv: SchemaView
-        :return: str
+        :param cls_def: ClassDefinition of the class containing the slot
+        :return: The Python range string for the value slot if eligible, otherwise None
         """
-        if slot_def.inlined and not slot_def.inlined_as_list:
-            if slot_def.range in self.schemaview.all_classes():
-                id_slot = self.schemaview.get_identifier_slot(slot_def.range, use_key=True)
-                if id_slot is not None:
-                    range_cls_slots = self.schemaview.class_induced_slots(slot_def.range)
-                    if len(range_cls_slots) == 2:
-                        non_id_slots = [slot for slot in range_cls_slots if slot.name != id_slot.name]
-                        if len(non_id_slots) == 1:
-                            value_slot = non_id_slots[0]
-                            value_slot_range_type = self.schemaview.get_type(value_slot.range)
-                            if value_slot_range_type is not None:
-                                return _get_pyrange(value_slot_range_type, self.schemaview)
+        value_slot, value_slot_pyrange = self._determine_simple_dict_value_slot(slot_def, cls_def)
+        if value_slot and value_slot_pyrange:
+            if not value_slot.multivalued:
+                return value_slot_pyrange
+            else:
+                return f"List[{value_slot_pyrange}]"
         return None
 
     def _template_environment(self) -> Environment:

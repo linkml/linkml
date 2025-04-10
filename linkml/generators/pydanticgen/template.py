@@ -1,4 +1,5 @@
 import sys
+from enum import Enum
 from importlib.util import find_spec
 from typing import Any, ClassVar, Dict, Generator, List, Literal, Optional, Tuple, Union, get_args
 
@@ -8,6 +9,17 @@ from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml.generators.common.template import TemplateModel
 from linkml.utils.deprecation import deprecation_warning
+
+
+class SlotInliningMode(str, Enum):
+    """
+    Enumeration of different modes for inlining collections.
+    """
+
+    LIST = "list"
+    DICT = "dict"
+    SIMPLEDICT = "simpledict"
+
 
 try:
     if find_spec("black") is not None:
@@ -159,6 +171,21 @@ class PydanticBaseModel(PydanticTemplateModel):
     """
 
 
+class ClassRange(PydanticTemplateModel):
+    """
+    A model for representing a range that's a class, with additional information
+    about how it should be inlined.
+    """
+
+    template: ClassVar[str] = "class_range.py.jinja"
+
+    cls: str
+    inlining_mode: Optional[SlotInliningMode] = None
+    value_slot: Optional[dict] = None
+    value_slot_range: Optional[str] = None
+    value_slot_multivalued: Optional[bool] = None
+
+
 class PydanticAttribute(PydanticTemplateModel):
     """
     Reduced version of SlotDefinition that carries all and only the information
@@ -174,7 +201,7 @@ class PydanticAttribute(PydanticTemplateModel):
     key: bool = False
     predefined: Optional[str] = None
     """Fixed string to use in body of field"""
-    range: Optional[str] = None
+    range: Optional[Union[str, ClassRange]] = None
     """Type annotation used for model field"""
     title: Optional[str] = None
     description: Optional[str] = None
