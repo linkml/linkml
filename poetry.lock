@@ -1755,14 +1755,14 @@ files = [
 
 [[package]]
 name = "linkml-runtime"
-version = "1.9.1rc1"
+version = "1.9.1"
 description = "Runtime environment for LinkML, the Linked open data modeling language"
 optional = false
 python-versions = "<4.0.0,>=3.8.1"
 groups = ["main"]
 files = [
-    {file = "linkml_runtime-1.9.1rc1-py3-none-any.whl", hash = "sha256:22a25e0e4ff7a5ea9d14a8b0e5ff3989f6fa85bbdbd566032e21f8ab96658237"},
-    {file = "linkml_runtime-1.9.1rc1.tar.gz", hash = "sha256:77564bb3d707203b0c141c2d79efff8c62de1a98088bb1ba59d56f412a5ceb9c"},
+    {file = "linkml_runtime-1.9.1-py3-none-any.whl", hash = "sha256:0eb6db453f2de854512b4b83a8f137d703226a62363094537ae44e58184f0186"},
+    {file = "linkml_runtime-1.9.1.tar.gz", hash = "sha256:cb98fa7d584f46a72277db579dc37099bcabc865747287560eedc766bf7b43d2"},
 ]
 
 [package.dependencies]
@@ -4557,4 +4557,4 @@ tests = ["black", "numpydantic", "pyshacl"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9.0"
-content-hash = "34a5cf91ba84a50bfe42ecc86c9887d14d9bc5cfa857c8bbdaa0a2a43cc5a1ae"
+content-hash = "6b932ebf85dd9a8ab64245a3fbda5d6fe6080d4705ae3aa98e253ddaae9e052e"
