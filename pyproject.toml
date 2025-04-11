@@ -106,7 +106,6 @@ isodate = ">=0.6.0"
 jinja2 = ">= 3.1.0"
 jsonasobj2 = "==1.*,>=1.0.0,>=1.0.3"
 jsonschema = {extras = ["format"], version = ">=4.0.0"}
-linkml-dataops = "*"
 linkml-runtime = "^1.8.1"
 openpyxl = "*"
 parse = "*"
@@ -151,7 +150,7 @@ numpy = [
 requests-cache = "^1.2.0"
 mock = "^5.1.0"
 testcontainers = "3.7.1"
-
+jsonpatch = "^1.33"
 [tool.poetry.extras]
 black = ["black"]
 numpydantic = ["numpydantic"]
@@ -198,6 +197,7 @@ force-exclude = '''
   | docs
   | examples
   | notebooks
+  | linkml/linter/config/datamodel
 )/
 '''
 
@@ -253,6 +253,7 @@ target-version = "py38"
 # These templates can have long lines
 "linkml/generators/sqlalchemy/sqlalchemy_declarative_template.py" = ["E501"]
 "linkml/generators/sqlalchemy/sqlalchemy_imperative_template.py" = ["E501"]
+"linkml/linter/config/datamodel/config.py" = ["E501", "F401", "I001"]
 
 # Notebooks can have unsorted imports
 "tests/test_notebooks/input/*" = ["E402"]
