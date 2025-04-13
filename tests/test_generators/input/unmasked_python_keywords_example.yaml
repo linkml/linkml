@@ -1,0 +1,29 @@
+id: https://w3id.org/linkml/tests/unmasked_python_keywords_example
+name: unmasked_python_keywords_example
+title: Unmasked Python keywords example
+description: |-
+  Sample schema containing Python keywords as slot name and enum
+  value.
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  ex: https://example.org/
+default_prefix: ex
+
+classes:
+  Translation:
+    slots:
+      - from
+      - to
+
+slots:
+  from:
+    range: LanguageEnum
+  to:
+    range: LanguageEnum
+
+enums:
+  LanguageEnum:
+    permissible_values:
+      del:
+      eng:
