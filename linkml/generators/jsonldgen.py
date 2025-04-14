@@ -3,7 +3,7 @@
 import os
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import Any, List, Optional, Union
+from typing import Any, Optional, Union
 
 import click
 from jsonasobj2 import as_json, items, loads
@@ -54,7 +54,7 @@ class JSONLDGenerator(Generator):
     original_schema: SchemaDefinition = None
     """See https://github.com/linkml/linkml/issues/871"""
 
-    context: Optional[Union[str, List[str]]] = field(default_factory=list)
+    context: Optional[Union[str, list[str]]] = field(default_factory=list)
     """Path to a JSONLD context file"""
 
     def __post_init__(self) -> None:
