@@ -136,6 +136,8 @@ enums:
       value2:
         title: label2
       value3:
+      value4:
+        title: label 4
     """
     sv = SchemaView(unit_test_schema)
     gen = PydanticGenerator(schema=unit_test_schema)
@@ -146,6 +148,50 @@ enums:
     assert enum["values"]["label1"]["value"] == "value1"
     assert enum["values"]["label2"]["value"] == "value2"
     assert enum["values"]["value3"]["value"] == "value3"
+    assert enum["values"]["label_4"]["value"] == "value4"
+
+
+def test_pydantic_enum_descriptions():
+    unit_test_schema = """
+id: unit_test
+name: unit_test
+
+prefixes:
+  ex: https://example.org/
+default_prefix: ex
+
+enums:
+  TestEnum:
+    permissible_values:
+      no_description:
+      single_line:
+        description: A single line description. Easy!
+      multi_line:
+        description:
+          Sometimes
+
+            one line
+
+                isn't enough
+
+          for a "description".
+      multi_line_preserve_whitespace:
+        description: |
+          Multi
+
+                    Line
+
+          Madness!
+"""
+    sv = SchemaView(unit_test_schema)
+    gen = PydanticGenerator(schema=unit_test_schema)
+    enums = gen.generate_enums(sv.all_enums())
+    assert "TestEnum" in enums
+    enum = enums["TestEnum"]
+    assert enum["values"]["no_description"]["description"] is None
+    assert enum["values"]["single_line"]["description"] == "A single line description. Easy!"
+    assert enum["values"]["multi_line"]["description"] == 'Sometimes\none line\nisn\'t enough\nfor a "description".'
+    assert enum["values"]["multi_line_preserve_whitespace"]["description"] == "Multi\n\n          Line\n\nMadness!\n"
 
 
 def test_pydantic_any_of():
