@@ -82,6 +82,7 @@ jobs:
           poetry run coverage run -m pytest --with-slow --with-network
           poetry run coverage xml
           poetry run coverage report -m
+        shell: bash
       - name: Upload coverage report
         if: github.repository == 'linkml/linkml'
         uses: codecov/codecov-action@v4
