@@ -148,8 +148,6 @@ jobs:
 
       - name: Install pipx and Poetry with dynamic versioning plugin
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install pipx
           pipx ensurepath
           pipx install poetry==1.*
           pipx inject poetry poetry-dynamic-versioning
