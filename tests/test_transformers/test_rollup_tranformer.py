@@ -10,6 +10,7 @@ from linkml.utils.schema_builder import SchemaBuilder
 THIS_DIR = Path(__file__).parent
 OUTPUT_DIR = THIS_DIR / "output"
 
+
 class TestRollupTransformer(unittest.TestCase):
 
     def test_flatten_simple(self):
@@ -24,13 +25,13 @@ class TestRollupTransformer(unittest.TestCase):
         sb.add_class(
             "GeneticAssociation",
             slots={"gene_variant": {"range": "str"}, "inheritance_mode": {"range": "str"}},
-            is_a="Association"
+            is_a="Association",
         )
         # Descendant 2: ChemicalAssociation adds chemical-specific slots.
         sb.add_class(
             "ChemicalAssociation",
             slots={"drug_dosage": {"range": "float"}, "concentration": {"range": "float"}},
-            is_a="Association"
+            is_a="Association",
         )
         sb.add_slot("id", identifier=True, replace_if_present=True, range="str")
         sb.add_slot("subject", replace_if_present=True, range="str")
@@ -45,9 +46,7 @@ class TestRollupTransformer(unittest.TestCase):
         sb.add_defaults()
         schema = sb.schema
         config = FlattenTransformerConfiguration(
-            preserve_class_designator=True,
-            class_designator_slot="category",
-            include_all_classes=False
+            preserve_class_designator=True, class_designator_slot="category", include_all_classes=False
         )
         transformer = RollupTransformer(target_class="Association", config=config)
         transformer.set_schema(schema)
@@ -56,8 +55,15 @@ class TestRollupTransformer(unittest.TestCase):
         # In the flattened schema, the target class should have rolled up slots from both descendants.
         assoc = flattened_schema.classes["Association"]
         expected_slots = {
-            "id", "subject", "predicate", "object", "category",
-            "gene_variant", "inheritance_mode", "drug_dosage", "concentration"
+            "id",
+            "subject",
+            "predicate",
+            "object",
+            "category",
+            "gene_variant",
+            "inheritance_mode",
+            "drug_dosage",
+            "concentration",
         }
         assert set(assoc.slots) == expected_slots
 
@@ -125,10 +131,7 @@ class TestRollupTransformer(unittest.TestCase):
         sb.add_class("BaseEntity", slots=["id"])
 
         # Class that inherits from base and uses mixin
-        sb.add_class("Person",
-                     is_a="BaseEntity",
-                     mixins=["Metadata"],
-                     slots=["name"])
+        sb.add_class("Person", is_a="BaseEntity", mixins=["Metadata"], slots=["name"])
 
         for slot in ["id", "created_at", "updated_at", "name"]:
             sb.add_slot(slot, replace_if_present=True, range="str")
@@ -153,22 +156,19 @@ class TestRollupTransformer(unittest.TestCase):
 
         sb.add_slot("id", replace_if_present=True, range="str")
         sb.add_slot("gene", replace_if_present=True, range="str")
-        sb.add_slot("category", replace_if_present=True,range="str",
-                    description="Indicates the specific type of association")
+        sb.add_slot(
+            "category", replace_if_present=True, range="str", description="Indicates the specific type of association"
+        )
 
         # Transform with preserve_class_designator=True
-        config = FlattenTransformerConfiguration(
-            preserve_class_designator=True,
-            class_designator_slot="category"
-        )
+        config = FlattenTransformerConfiguration(preserve_class_designator=True, class_designator_slot="category")
         transformer = RollupTransformer(target_class="Association", config=config)
         transformer.set_schema(sb.schema)
         flattened_schema = transformer.transform()
 
         # Verify designator slot is preserved and description maintained
         category_slot = flattened_schema.slots["category"]
-        self.assertEqual("Indicates the specific type of association",
-                         category_slot.description)
+        self.assertEqual("Indicates the specific type of association", category_slot.description)
 
     def test_conflicting_slot_ranges(self):
         """Test handling of conflicting slot ranges in inherited classes."""
@@ -201,7 +201,7 @@ class TestRollupTransformer(unittest.TestCase):
         sb.add_slot("value", replace_if_present=True, range="string")
 
         # Union type slot
-        sb.add_slot("special_value",replace_if_present=True, range="string")
+        sb.add_slot("special_value", replace_if_present=True, range="string")
         sb.schema.slots["special_value"].multivalued = True
 
         transformer = RollupTransformer(target_class="Association")

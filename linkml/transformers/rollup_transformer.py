@@ -33,6 +33,7 @@ class FlattenTransformerConfiguration:
             and non-descendants are kept.
         include_mixins: If True, includes properties from mixins in the flattened class.
     """
+
     preserve_class_designator: bool = True
     class_designator_slot: Optional[str] = "category"
     include_all_classes: bool = False
@@ -49,9 +50,9 @@ class RollupTransformer(ModelTransformer):
     """
 
     def __init__(
-            self,
-            target_class: str,
-            config: Optional[FlattenTransformerConfiguration] = None,
+        self,
+        target_class: str,
+        config: Optional[FlattenTransformerConfiguration] = None,
     ):
         super().__init__()
         self.target_class = target_class
