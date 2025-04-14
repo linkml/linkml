@@ -1,3 +1,7 @@
+# Built from:
+# https://docs.github.com/en/actions/guides/building-and-testing-python
+# https://github.com/snok/install-poetry#workflows-and-tips
+
 name: Build and test linkml
 
 on:
@@ -36,6 +40,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        # Test on Windows with only the oldest and newest Python versions
         exclude:
           - os: windows-latest
             python-version: "3.10"
@@ -43,6 +48,7 @@ jobs:
             python-version: "3.11"
           - os: windows-latest
             python-version: "3.12"
+    # See https://github.com/snok/install-poetry#running-on-windows
     defaults:
       run:
         shell: bash
@@ -149,10 +155,3 @@ jobs:
 
       - name: Build source and wheel archives
         run: poetry build
-
-      - name: Upload to TestPyPI
-        uses: pypa/gh-action-pypi-publish@v1.5.0
-        with:
-          user: __token__
-          password: ${{ secrets.test_pypi_password }}
-          repository-url: https://test.pypi.org/legacy/
