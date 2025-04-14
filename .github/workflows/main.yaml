@@ -133,7 +133,7 @@ jobs:
           fail_ci_if_error: true
 
   test_build_package:
-    name: Build Package and Upload to TestPyPI
+    name: Test Build Package
     needs:
       - test
     runs-on: ubuntu-latest
