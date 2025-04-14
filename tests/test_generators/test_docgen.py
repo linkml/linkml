@@ -354,9 +354,7 @@ classes:
 
         and a lot more madness
 """
-    gen = DocGenerator(
-        str(test_schema), mergeimports=True, hierarchical_class_view=True
-    )
+    gen = DocGenerator(str(test_schema), mergeimports=True, hierarchical_class_view=True)
     gen.serialize(directory=str(tmp_path))
 
     # these lines are generated if the description is not enshortened
