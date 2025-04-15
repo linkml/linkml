@@ -178,7 +178,7 @@ class JSONLDGenerator(Generator):
             # TODO: The _visit function above alters the schema in situ
             # force some context_kwargs
             context_kwargs["metadata"] = False
-            add_prefixes = ContextGenerator(self.original_schema, **context_kwargs).serialize()
+            add_prefixes = ContextGenerator(self.original_schema, prefixes=True, **context_kwargs).serialize()
             add_prefixes_json = loads(add_prefixes)
             metamodel_ctx = self.metamodel_context or METAMODEL_CONTEXT_URI
             context = [metamodel_ctx, add_prefixes_json["@context"]]
