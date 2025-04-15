@@ -7,7 +7,9 @@ class {{ name }}(str{% if values %}, Enum{% endif %}):
 {% if values %}
     {% for pv in values.values() -%}
         {% if pv.description %}
-    """{{pv.description}}"""
+    """
+    {{ pv.description | indent(width=4) }}
+    """
         {% endif %}
     {{pv.label}} = "{{pv.value}}"
     {% endfor %}
