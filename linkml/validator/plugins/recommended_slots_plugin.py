@@ -30,15 +30,15 @@ class RecommendedSlotsPlugin(ValidationPlugin):
                     )
                 slot_range_class = context.schema_view.get_class(slot_def.range)
                 if slot_range_class is not None and slot_value is not None:
-                    location += [slot_def.name]
+                    slot_location = location + [slot_def.name]
                     if slot_def.multivalued:
                         if slot_def.inlined and isinstance(slot_value, dict):
                             for k, v in slot_value.items():
-                                yield from _do_process(v, slot_range_class.name, location + [k])
+                                yield from _do_process(v, slot_range_class.name, slot_location + [k])
                         elif slot_def.inlined_as_list and isinstance(slot_value, list):
                             for i, v in enumerate(slot_value):
-                                yield from _do_process(v, slot_range_class.name, location + [str(i)])
+                                yield from _do_process(v, slot_range_class.name, slot_location + [str(i)])
                     else:
-                        yield from _do_process(instance[slot_def.name], slot_range_class.name, location)
+                        yield from _do_process(instance[slot_def.name], slot_range_class.name, slot_location)
 
         yield from _do_process(instance, context.target_class)
