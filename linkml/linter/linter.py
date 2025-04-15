@@ -1,9 +1,10 @@
 import inspect
+from collections.abc import Iterable
 from copy import deepcopy
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, Iterable, Union
+from typing import Any, Union
 
 import jsonschema
 import yaml
@@ -29,7 +30,7 @@ class LinterProblem:
 
 
 @lru_cache
-def get_named_config(name: str) -> Dict[str, Any]:
+def get_named_config(name: str) -> dict[str, Any]:
     config_path = str(Path(__file__).parent / f"config/{name}.yaml")
     with open(config_path) as config_file:
         return yaml.safe_load(config_file)
@@ -67,7 +68,7 @@ def _format_path(path):
 
 
 class Linter:
-    def __init__(self, config: Dict[str, Any] = {}) -> None:
+    def __init__(self, config: dict[str, Any] = {}) -> None:
         default_config = deepcopy(get_named_config("default"))
         merged_config = config
         if config.get("extends") == ExtendableConfigs.recommended.text:

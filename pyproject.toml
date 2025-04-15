@@ -97,7 +97,7 @@ gen-mermaid-class-diagram = "linkml.generators.mermaidclassdiagramgen:cli"
 linkml-schema-fixer = "linkml.utils.schema_fixer:main"
 
 [tool.poetry.dependencies]
-python = "^3.8.1"
+python = "^3.9.0"
 antlr4-python3-runtime = "<4.10,==4.*,>=4.9.0"
 click = ">=7.0"
 graphviz = ">=0.10.1"
@@ -106,7 +106,7 @@ isodate = ">=0.6.0"
 jinja2 = ">= 3.1.0"
 jsonasobj2 = "==1.*,>=1.0.0,>=1.0.3"
 jsonschema = {extras = ["format"], version = ">=4.0.0"}
-linkml-runtime = "^1.8.1"
+linkml-runtime = "^1.9.1"
 openpyxl = "*"
 parse = "*"
 prefixcommons = ">=0.1.7"
@@ -124,7 +124,7 @@ watchdog = ">=0.9.0"
 pyshacl = { version = "^0.25.0", optional = true }
 black = { version=">=24.0.0", optional = true }
 typing-extensions = { version=">=4.6.0", python="<3.12" }
-numpydantic = { version=">=1.6.1", python = ">=3.9", optional = true}
+numpydantic = { version=">=1.6.1", optional = true}
 
 [tool.poetry.group.dev.dependencies]
 chardet = "*"
@@ -151,6 +151,7 @@ requests-cache = "^1.2.0"
 mock = "^5.1.0"
 testcontainers = "3.7.1"
 jsonpatch = "^1.33"
+
 [tool.poetry.extras]
 black = ["black"]
 numpydantic = ["numpydantic"]
@@ -186,7 +187,7 @@ quiet-level = 3
 
 [tool.black]
 line-length = 120
-target-version = ["py38", "py39", "py310", "py311"]
+target-version = ["py39", "py310", "py311", "py312", "py313"]
 force-exclude = '''
 /(
   # default exclude
@@ -222,11 +223,14 @@ markers = [
   "jsonschemagen: Tests for Json Schema generator",
   "shaclgen: Tests for shacl generator",
   "shexgen: Tests for shex generator",
+  "jsonldgen: Test for JSON-LD generator",
   "jsonldcontextgen: Test for JSON-LD context generator",
   "rdfgen: Tests for the RDFGenerator",
+  "sqlalchemygen: Tests for SQL Alchemy generator",
   "sqlddlgen: Tests for SQL DDL generator",
   "sqlddlpostgresgen: Tests for SQL DDL postgres generator",
   "owlgen: Tests for OWL generator",
+  "yamlgen: Tests for the YAML generator"
 ]
 
 [tool.ruff]
@@ -245,9 +249,10 @@ select = [
   "E",  # pycodestyle errors
   "F",  # Pyflakes
   "I",  # isort
+  "UP", # pyupgrade
 ]
-# Assume Python 3.8
-target-version = "py38"
+# Assume Python 3.9
+target-version = "py39"
 
 [tool.ruff.per-file-ignores]
 # These templates can have long lines

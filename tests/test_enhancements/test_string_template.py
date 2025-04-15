@@ -7,6 +7,7 @@ from linkml_runtime.utils.yamlutils import from_yaml
 from linkml.generators.pythongen import PythonGenerator
 
 
+@pytest.mark.pythongen
 @pytest.mark.xfail
 def test_template_basics(input_path, snapshot):
     """Test the basics of a string template"""

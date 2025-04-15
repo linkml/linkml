@@ -2,7 +2,7 @@ import abc
 import re
 import sys
 from abc import ABC
-from typing import Any, Optional, Type, Union
+from typing import Any, Optional, Union
 
 if sys.version_info < (3, 10):
     from typing_extensions import TypeAlias
@@ -39,25 +39,25 @@ from linkml_runtime.linkml_model.types import (
 )
 
 TYPES_TYPE: TypeAlias = Union[
-    Type[Boolean],
-    Type[Curie],
-    Type[Date],
-    Type[DateOrDatetime],
-    Type[Datetime],
-    Type[Decimal],
-    Type[Double],
-    Type[Float],
-    Type[Integer],
-    Type[Jsonpath],
-    Type[Jsonpointer],
-    Type[Ncname],
-    Type[Nodeidentifier],
-    Type[Objectidentifier],
-    Type[Sparqlpath],
-    Type[String],
-    Type[Time],
-    Type[Uri],
-    Type[Uriorcurie],
+    type[Boolean],
+    type[Curie],
+    type[Date],
+    type[DateOrDatetime],
+    type[Datetime],
+    type[Decimal],
+    type[Double],
+    type[Float],
+    type[Integer],
+    type[Jsonpath],
+    type[Jsonpointer],
+    type[Ncname],
+    type[Nodeidentifier],
+    type[Objectidentifier],
+    type[Sparqlpath],
+    type[String],
+    type[Time],
+    type[Uri],
+    type[Uriorcurie],
 ]
 
 TYPES = [
