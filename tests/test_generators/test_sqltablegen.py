@@ -117,6 +117,17 @@ def test_generate_ddl(schema):
     for expected in expected_tables:
         assert expected in tables
 
+def test_abstract_class(schema, capsys):
+    with capsys.disabled():
+        print("hello")
+        b = SchemaBuilder()
+    slots = ["full name", "description"]
+    b.add_class(DUMMY_CLASS, slots)
+    b.add_defaults()
+    gen = SQLTableGenerator(b.schema)
+    ddl = gen.generate_ddl()
+    assert ddl
+
 
 def test_get_sql_range(schema):
     """Test case for the get_sql_range() method."""
