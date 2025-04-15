@@ -49,6 +49,7 @@ jobs:
         with:
           context: .
           platforms: linux/amd64,linux/arm64/v8
-          push: ${{ github.event_name != 'pull_request' }}
+          # test that we can build the docker image, but only push to dockerhub on release
+          push: ${{ github.event_name == 'release' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
