@@ -57,6 +57,12 @@ class JSONLDGenerator(Generator):
     context: str = None
     """Path to a JSONLD context file"""
 
+    model: Optional[bool] = False
+    """Flag to emit context for prefixes"""
+
+    prefixes: Optional[bool] = False
+    """Emit context for model elements"""
+
     def __post_init__(self) -> None:
         self.original_schema = deepcopy(self.schema)
         super().__post_init__()
@@ -162,7 +168,9 @@ class JSONLDGenerator(Generator):
             # model_context = self.schema.source_file.replace('.yaml', '.prefixes.context.jsonld')
             # context = [METAMODEL_CONTEXT_URI, f'file://./{model_context}']
             # TODO: The _visit function above alters the schema in situ
-            add_prefixes = ContextGenerator(self.original_schema, model=False, metadata=False).serialize()
+            add_prefixes = ContextGenerator(
+                self.original_schema, model=self.model, prefixes=self.prefixes, metadata=False
+            ).serialize()
             add_prefixes_json = loads(add_prefixes)
             context = [METAMODEL_CONTEXT_URI, add_prefixes_json["@context"]]
         elif isinstance(context, str):  # Some of the older code doesn't do multiple contexts
@@ -195,6 +203,18 @@ class JSONLDGenerator(Generator):
     "--context",
     multiple=True,
     help=f"JSONLD context file (default: {METAMODEL_CONTEXT_URI} and <model>.prefixes.context.jsonld)",
+)
+@click.option(
+    "--prefixes/--no-prefixes",
+    default=False,
+    show_default=True,
+    help="Emit context for prefixes (default=--prefixes)",
+)
+@click.option(
+    "--model/--no-model",
+    default=False,
+    show_default=True,
+    help="Emit context for model elements (default=--model)",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
