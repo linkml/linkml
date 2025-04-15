@@ -150,7 +150,7 @@ jobs:
         run: |
           pipx ensurepath
           pipx install poetry==1.*
-          pipx inject poetry poetry-dynamic-versioning
+          pipx inject poetry "poetry-dynamic-versioning[plugin]"
 
       - name: Build source and wheel archives
         run: poetry build
