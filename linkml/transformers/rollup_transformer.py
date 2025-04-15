@@ -77,24 +77,10 @@ class RollupTransformer(ModelTransformer):
 
         schema_copy = copy.deepcopy(self.source_schema)
         view = SchemaView(schema_copy)
-
-        self._identify_descendants(view)
+        descendants = view.class_descendants(self.target_class, imports=True, mixins=True, reflexive=False, is_a=True)
+        self._descendant_classes = set(descendants)
         self._collect_slots(view)
         return self._create_flattened_schema(schema_copy, view)
-
-    def _identify_descendants(self, view: SchemaView) -> None:
-        """Identify all descendant classes of the target class."""
-        direct_children = set(view.get_children(self.target_class))
-        all_descendants = set()
-        pending = list(direct_children)
-        # BFS - avoid recursion
-        while pending:
-            current = pending.pop()
-            if current not in all_descendants:
-                all_descendants.add(current)
-                children = view.get_children(current)
-                pending.extend(children)
-        self._descendant_classes = all_descendants
 
     def _collect_slots(self, view: SchemaView) -> None:
         """
