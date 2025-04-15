@@ -145,7 +145,6 @@ class SQLTableGenerator(Generator):
     relative_slot_num: bool = False
     default_length_oracle: int = 4096
 
-
     def serialize(self, **kwargs) -> str:
         return self.generate_ddl(**kwargs)
 
@@ -251,14 +250,19 @@ class SQLTableGenerator(Generator):
         # then simply use the schema that is provided to the SQLTableGenerator() object
         if not schema:
             schema = SchemaLoader(data=self.schema).resolve()
-        if (re.search(varchar_regex,range) or re.search(varchar2_regex,range)) and self.dialect=='oracle':
-            string_length = int(re.findall("[0-9]+",re.findall('\([0-9]+\)', range)[0])[0])
+        if (re.search(varchar_regex, range) or re.search(varchar2_regex, range)) and self.dialect == "oracle":
+            string_length = int(re.findall("[0-9]+", re.findall("\([0-9]+\)", range)[0])[0])
             if string_length > 4096:
-                logger.info(f"WARNING: RANGE EXCEEDS MAXIMUM ORACLE VARCHAR LENGTH, CLOB TYPE WILL BE RETURNED: {range} for {slot.name} = {slot.range}, maximum length set to 4096")
+                logger.info(
+                    f"WARNING: RANGE EXCEEDS MAXIMUM ORACLE VARCHAR LENGTH, CLOB TYPE WILL BE RETURNED: {range} for {slot.name} = {slot.range}, maximum length set to 4096"
+                )
                 return Text()
             return VARCHAR2(string_length)
         # Adding a condition to see if a given item is within the oracle dialect, in which case we should generate of type VARCHAR2
-        if range in ['str', 'string', 'String', 'VARCHAR2','VARCHAR', 'VARCHAR2([0-9]+)', 'VARCHAR[0-9]+'] and self.dialect=='oracle':
+        if (
+            range in ["str", "string", "String", "VARCHAR2", "VARCHAR", "VARCHAR2([0-9]+)", "VARCHAR[0-9]+"]
+            and self.dialect == "oracle"
+        ):
             return VARCHAR2(self.default_length_oracle)
         if range in schema.classes:
             # FK type should be the same as the identifier of the foreign key
