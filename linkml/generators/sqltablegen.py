@@ -242,27 +242,25 @@ class SQLTableGenerator(Generator):
         returns a SQL Alchemy column type
         """
         range = slot.range
-        varchar_regex = "VARCHAR([0-9]+)"
-        varchar2_regex = "VARCHAR2([0-9]+)"
         # if no SchemaDefinition is explicitly provided as an argument
         # then simply use the schema that is provided to the SQLTableGenerator() object
         if not schema:
             schema = SchemaLoader(data=self.schema).resolve()
-        if (re.search(varchar_regex, range) or re.search(varchar2_regex, range)) and self.dialect == "oracle":
-            string_length = int(re.findall("[0-9]+", re.findall("\([0-9]+\)", range)[0])[0])
-            if string_length > 4096:
-                logger.info(
-                    f"WARNING: RANGE EXCEEDS MAXIMUM ORACLE VARCHAR LENGTH, \
-                    CLOB TYPE WILL BE RETURNED: {range} for {slot.name} = {slot.range}"
-                )
-                return Text()
-            return VARCHAR2(string_length)
-        # Checks if a given item is within the oracle dialect, in which case type VARCHAR2 should be returned
-        if (
-            range in ["str", "string", "String", "VARCHAR2", "VARCHAR", "VARCHAR2([0-9]+)", "VARCHAR[0-9]+"]
-            and self.dialect == "oracle"
-        ):
-            return VARCHAR2(self.default_length_oracle)
+        if self.dialect == "oracle:":
+            varchar_regex = "VARCHAR([0-9]+)"
+            varchar2_regex = "VARCHAR2([0-9]+)"
+            if (re.search(varchar_regex, range) or re.search(varchar2_regex, range)) and self.dialect == "oracle":
+                string_length = int(re.findall("[0-9]+", re.findall("\([0-9]+\)", range)[0])[0])
+                if string_length > 4096:
+                    logger.info(
+                        f"WARNING: RANGE EXCEEDS MAXIMUM ORACLE VARCHAR LENGTH, \
+                        CLOB TYPE WILL BE RETURNED: {range} for {slot.name} = {slot.range}"
+                    )
+                    return Text()
+                return VARCHAR2(string_length)
+            # Checks if a given item is within the oracle dialect, in which case type VARCHAR2 should be returned
+            if range in ["str", "string", "String", "VARCHAR2", "VARCHAR", "VARCHAR2([0-9]+)", "VARCHAR[0-9]+"]:
+                return VARCHAR2(self.default_length_oracle)
         if range in schema.classes:
             # FK type should be the same as the identifier of the foreign key
             fk = SchemaView(schema).get_identifier_slot(range)
