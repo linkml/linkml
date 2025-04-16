@@ -6,7 +6,7 @@ https://yuml.me/diagram/scruffy/class/samples
 
 import os
 from dataclasses import dataclass
-from typing import Callable, List, Optional, Set, cast
+from typing import Callable, Optional, cast
 
 import click
 import requests
@@ -39,22 +39,22 @@ class YumlGenerator(Generator):
     valid_formats = ["yuml", "png", "pdf", "jpg", "json", "svg"]
     visit_all_class_slots = False
 
-    referenced: Optional[Set[ClassDefinitionName]] = None  # List of classes that have to be emitted
-    generated: Optional[Set[ClassDefinitionName]] = None  # List of classes that have been emitted
-    box_generated: Optional[Set[ClassDefinitionName]] = None  # Class boxes that have been emitted
-    associations_generated: Optional[Set[ClassDefinitionName]] = None  # Classes with associations generated
-    focus_classes: Optional[Set[ClassDefinitionName]] = None  # Classes to be completely filled
-    gen_classes: Optional[Set[ClassDefinitionName]] = None  # Classes to be generated
+    referenced: Optional[set[ClassDefinitionName]] = None  # List of classes that have to be emitted
+    generated: Optional[set[ClassDefinitionName]] = None  # List of classes that have been emitted
+    box_generated: Optional[set[ClassDefinitionName]] = None  # Class boxes that have been emitted
+    associations_generated: Optional[set[ClassDefinitionName]] = None  # Classes with associations generated
+    focus_classes: Optional[set[ClassDefinitionName]] = None  # Classes to be completely filled
+    gen_classes: Optional[set[ClassDefinitionName]] = None  # Classes to be generated
     output_file_name: Optional[str] = None  # Location of output file if directory used
 
-    classes: Set[ClassDefinitionName] = None
+    classes: set[ClassDefinitionName] = None
     directory: Optional[str] = None
     diagram_name: Optional[str] = None
     load_image: bool = True
 
     def visit_schema(
         self,
-        classes: Set[ClassDefinitionName] = None,
+        classes: set[ClassDefinitionName] = None,
         directory: Optional[str] = None,
         diagram_name: Optional[str] = None,
         load_image: bool = True,
@@ -75,7 +75,7 @@ class YumlGenerator(Generator):
             self.gen_classes = self.synopsis.roots.classrefs
         self.referenced = self.gen_classes
         self.generated = set()
-        yumlclassdef: List[str] = []
+        yumlclassdef: list[str] = []
         while self.referenced.difference(self.generated):
             cn = sorted(list(self.referenced.difference(self.generated)), reverse=True)[0]
             self.generated.add(cn)
@@ -115,7 +115,7 @@ class YumlGenerator(Generator):
         @param cn:
         @return:
         """
-        slot_defs: List[str] = []
+        slot_defs: list[str] = []
         if cn not in self.box_generated and (not self.focus_classes or cn in self.focus_classes):
             cls = self.schema.classes[cn]
             for slot in self.filtered_cls_slots(cn, all_slots=True, filtr=lambda s: s.range not in self.schema.classes):
@@ -142,7 +142,7 @@ class YumlGenerator(Generator):
 
         # NOTE: YUML diagrams draw in the opposite order in which they are created, so we work from bottom to top and
         # from right to left
-        assocs: List[str] = []
+        assocs: list[str] = []
         if cn not in self.associations_generated and (not self.focus_classes or cn in self.focus_classes):
             cls = self.schema.classes[cn]
 
@@ -222,7 +222,7 @@ class YumlGenerator(Generator):
         cn: ClassDefinitionName,
         all_slots: bool = True,
         filtr: Callable[[SlotDefinition], bool] = lambda: True,
-    ) -> List[SlotDefinition]:
+    ) -> list[SlotDefinition]:
         """Return the set of slots associated with the class that meet the filter criteria.  Slots will be returned
         in defining order, with class slots returned last
 

@@ -3,7 +3,7 @@ import os
 from collections import defaultdict
 from dataclasses import dataclass
 from types import ModuleType
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 import click
 from jinja2 import Template
@@ -180,7 +180,7 @@ class SQLAlchemyGenerator(Generator):
 
     # TODO: move this
     @staticmethod
-    def order_classes_by_hierarchy(sv: SchemaView) -> List[ClassDefinitionName]:
+    def order_classes_by_hierarchy(sv: SchemaView) -> list[ClassDefinitionName]:
         olist = sv.class_roots()
         unprocessed = [cn for cn in sv.all_classes() if cn not in olist]
         while len(unprocessed) > 0:

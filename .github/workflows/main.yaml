@@ -7,10 +7,10 @@ name: Build and test linkml
 on:
   push:
     branches:
-    - main
+      - main
   pull_request:
     branches:
-    - main
+      - main
   workflow_dispatch:
 
 jobs:
@@ -22,7 +22,7 @@ jobs:
         run: pipx install poetry==1.*
       - uses: actions/setup-python@v5
         with:
-          python-version: 3.12  # Adjust Python version as needed
+          python-version: 3.13
       - name: Check pyproject.toml and poetry.lock
         run: poetry check
       - name: Install tox
@@ -39,76 +39,50 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        # Test on Windows with only the oldest and newest Python versions
         exclude:
-          # Test on Windows with only the oldest and newest Python versions
-          - os: windows-latest
-            python-version: "3.9"
           - os: windows-latest
             python-version: "3.10"
           - os: windows-latest
             python-version: "3.11"
-
+          - os: windows-latest
+            python-version: "3.12"
     # See https://github.com/snok/install-poetry#running-on-windows
     defaults:
       run:
         shell: bash
-
     runs-on: ${{ matrix.os }}
-
     steps:
-      #----------------------------------------------
-      #       check-out repo and set-up python
-      #----------------------------------------------
       - name: Check out repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Ensure tags if not run from main repo
         if: github.repository != 'linkml/linkml'
         run: |
           git remote add upstream https://github.com/linkml/linkml
           git fetch upstream --tags
-
       - name: Install poetry
-        run: pipx install poetry
-
+        run: pipx install poetry==1.*
       - name: Install dynamic versioning plugin
         run: poetry self add "poetry-dynamic-versioning[plugin]"
-
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'poetry'
-
-      #----------------------------------------------
-      # install dependencies
-      #----------------------------------------------
       - name: Install dependencies
         run: poetry install --no-interaction --all-extras
-
-      #----------------------------------------------
-      #         setup and install graphviz
-      #----------------------------------------------
       - name: Setup Graphviz
         uses: ts-graphviz/setup-graphviz@v1
-
-      #----------------------------------------------
-      #              coverage report
-      #----------------------------------------------
       - name: Generate coverage results
         run: |
           poetry run coverage run -m pytest --with-slow --with-network
           poetry run coverage xml
           poetry run coverage report -m
         shell: bash
-
-      #----------------------------------------------
-      #           upload coverage results
-      #----------------------------------------------
       - name: Upload coverage report
         if: github.repository == 'linkml/linkml'
         uses: codecov/codecov-action@v4
@@ -124,7 +98,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest ]
-        python-version: [ "3.8", "3.12" ]
+        python-version: [ "3.9", "3.13" ]
     needs:
       - quality-checks
     runs-on: ${{ matrix.os }}
@@ -135,7 +109,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Install poetry
-        run: pipx install poetry
+        run: pipx install poetry==1.*
       - name: Set up Python
         uses: actions/setup-python@v5
         id: setup-python
@@ -149,7 +123,6 @@ jobs:
           poetry run coverage run -m pytest --with-slow --with-biolink -m slow -n auto
           poetry run coverage xml
           poetry run coverage report -m
-        shell: bash
       - name: Upload coverage report
         if: github.repository == 'linkml/linkml'
         uses: codecov/codecov-action@v4
@@ -158,3 +131,28 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: coverage.xml
           fail_ci_if_error: true
+
+  test_build_package:
+    name: Test Build Package
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.13
+
+      - name: Install pipx and Poetry with dynamic versioning plugin
+        run: |
+          pipx ensurepath
+          pipx install poetry==1.*
+          pipx inject poetry "poetry-dynamic-versioning[plugin]"
+
+      - name: Build source and wheel archives
+        run: poetry build

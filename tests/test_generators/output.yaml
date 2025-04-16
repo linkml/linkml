@@ -1,0 +1,9 @@
+name: EquipmentSchema
+description: ''
+id: equipment_schema
+prefixes:
+  equipment_schema: https://example.org/equipment_schema/
+  linkml: https://w3id.org/linkml/
+  xsd: http://www.w3.org/2001/XMLSchema#
+default_prefix: equipment_schema
+default_range: string
