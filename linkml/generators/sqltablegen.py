@@ -30,7 +30,6 @@ class SqlNamingPolicy(Enum):
 # TODO: move this up
 METAMODEL_TYPE_TO_BASE = {
     "string": "str",
-    "VARCHAR2": "VARCHAR2",
     "integer": "int",
     "boolean": "Bool",
     "float": "float",
@@ -49,7 +48,6 @@ METAMODEL_TYPE_TO_BASE = {
 RANGEMAP = {
     "str": Text(),
     "string": Text(),
-    "VARCHAR2": VARCHAR2(),
     "NCName": Text(),
     "URIorCURIE": Text(),
     "int": Integer(),

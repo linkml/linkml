@@ -221,7 +221,7 @@ def test_varchar_sql_range(schema, capsys):
     assert "string_column VARCHAR2(256 CHAR)" in ddl
     assert "varchar_column VARCHAR2(256 CHAR)" in ddl
     assert "varchar2_length_column VARCHAR2(128 CHAR)" in ddl
-    assert "clob column CLOB" in ddl
+    assert "clob_column CLOB" in ddl
 
 
 def test_get_foreign_key(schema):
