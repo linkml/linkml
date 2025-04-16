@@ -10,8 +10,8 @@ from linkml_runtime.linkml_model import SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from sqlalchemy import Column, ForeignKey, MetaData, Table, UniqueConstraint, create_mock_engine
-from sqlalchemy.types import Boolean, Date, DateTime, Enum, Float, Integer, Text, Time
 from sqlalchemy.dialects.oracle import VARCHAR2
+from sqlalchemy.types import Boolean, Date, DateTime, Enum, Float, Integer, Text, Time
 
 from linkml._version import __version__
 from linkml.transformers.relmodel_transformer import ForeignKeyPolicy, RelationalModelTransformer
@@ -254,11 +254,12 @@ class SQLTableGenerator(Generator):
             string_length = int(re.findall("[0-9]+", re.findall("\([0-9]+\)", range)[0])[0])
             if string_length > 4096:
                 logger.info(
-                    f"WARNING: RANGE EXCEEDS MAXIMUM ORACLE VARCHAR LENGTH, CLOB TYPE WILL BE RETURNED: {range} for {slot.name} = {slot.range}, maximum length set to 4096"
+                    f"WARNING: RANGE EXCEEDS MAXIMUM ORACLE VARCHAR LENGTH, \
+                    CLOB TYPE WILL BE RETURNED: {range} for {slot.name} = {slot.range}"
                 )
                 return Text()
             return VARCHAR2(string_length)
-        # Adding a condition to see if a given item is within the oracle dialect, in which case we should generate of type VARCHAR2
+        # Checks if a given item is within the oracle dialect, in which case type VARCHAR2 should be returned
         if (
             range in ["str", "string", "String", "VARCHAR2", "VARCHAR", "VARCHAR2([0-9]+)", "VARCHAR[0-9]+"]
             and self.dialect == "oracle"

@@ -5,8 +5,8 @@ import pytest
 from linkml_runtime.linkml_model.meta import SlotDefinition
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
-from sqlalchemy.sql.sqltypes import Enum, Integer, Text
 from sqlalchemy.dialects.oracle import VARCHAR2
+from sqlalchemy.sql.sqltypes import Enum, Integer, Text
 
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.utils.schema_builder import SchemaBuilder
@@ -123,9 +123,9 @@ def test_get_sql_range(schema):
     """Test case for the get_sql_range() method."""
     gen = SQLTableGenerator(schema)
     # Test case to enable Varchar2 usage
-    #gen_oracle = SQLTableGenerator(schema)
-    #gen_oracle.dialect = 'oracle'
-    #gen_oracle.maximum_length_oracle = 256
+    # gen_oracle = SQLTableGenerator(schema)
+    # gen_oracle.dialect = 'oracle'
+    # gen_oracle.maximum_length_oracle = 256
 
     # loader = SchemaLoader(data=SCHEMA)
     # schema_def_str = loader.resolve()
@@ -171,29 +171,30 @@ def test_get_sql_range(schema):
     actual_4_output = gen.get_sql_range(case_4_slot)
 
     # Slot range for oracle dialect type
-    #varchar_output = gen_oracle.get_sql_range(case_1_slot)
+    # varchar_output = gen_oracle.get_sql_range(case_1_slot)
 
     assert isinstance(actual_1_output, Text)
     assert isinstance(actual_2_output, Enum)
     assert isinstance(actual_3_output, Text)
     assert isinstance(actual_4_output, Integer)
-    #assert isinstance(varchar_output, VARCHAR2())
+    # assert isinstance(varchar_output, VARCHAR2())
+
 
 def test_varchar_sql_range(schema, capsys):
     """Test case for the get_sql_range() method for Varchar."""
-        # Test case to enable Varchar2 usage
+    # Test case to enable Varchar2 usage
     gen_oracle = SQLTableGenerator(schema)
-    gen_oracle.dialect = 'oracle'
-    
-    assert gen_oracle.dialect == 'oracle'
+    gen_oracle.dialect = "oracle"
+
+    assert gen_oracle.dialect == "oracle"
     assert gen_oracle.default_length_oracle == 4096
 
     gen_oracle.default_length_oracle = 256
     assert gen_oracle.default_length_oracle == 256
-    string_1_slot = SlotDefinition(name="string_column", range='string')
-    string_2_slot = SlotDefinition(name="varchar_column", range='VARCHAR')
-    string_3_slot = SlotDefinition(name="varchar2_length_column", range='VARCHAR2(128)')
-    string_4_slot = SlotDefinition(name="clob_column", range='VARCHAR2(4097)')
+    string_1_slot = SlotDefinition(name="string_column", range="string")
+    string_2_slot = SlotDefinition(name="varchar_column", range="VARCHAR")
+    string_3_slot = SlotDefinition(name="varchar2_length_column", range="VARCHAR2(128)")
+    string_4_slot = SlotDefinition(name="clob_column", range="VARCHAR2(4097)")
 
     string_1_output = gen_oracle.get_sql_range(string_1_slot)
     assert isinstance(string_1_output, VARCHAR2)
@@ -207,20 +208,20 @@ def test_varchar_sql_range(schema, capsys):
     string_4_output = gen_oracle.get_sql_range(string_4_slot)
     assert isinstance(string_4_output, Text)
 
-    #testing the ddl generation of varchars
+    # testing the ddl generation of varchars
 
     b = SchemaBuilder()
     slots = [string_1_slot, string_2_slot, string_3_slot, string_4_slot]
     b.add_class(DUMMY_CLASS, slots, description="My dummy class")
 
-    gen_oracle2 = SQLTableGenerator(b.schema, dialect='oracle')
+    gen_oracle2 = SQLTableGenerator(b.schema, dialect="oracle")
     gen_oracle2.default_length_oracle = 256
     ddl = gen_oracle2.generate_ddl()
     assert ddl
-    assert 'string_column VARCHAR2(256 CHAR)' in ddl
-    assert 'varchar_column VARCHAR2(256 CHAR)' in ddl
-    assert 'varchar2_length_column VARCHAR2(128 CHAR)' in ddl
-    assert 'clob column CLOB' in ddl
+    assert "string_column VARCHAR2(256 CHAR)" in ddl
+    assert "varchar_column VARCHAR2(256 CHAR)" in ddl
+    assert "varchar2_length_column VARCHAR2(128 CHAR)" in ddl
+    assert "clob column CLOB" in ddl
 
 
 def test_get_foreign_key(schema):
