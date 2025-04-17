@@ -23,25 +23,27 @@ flag_combinations = [
 def test_jsonld_context_integration(kitchen_sink_path, snapshot_path):
     jsonld_context = ContextGenerator(kitchen_sink_path).serialize()
 
-    CompareJsonldContext.compare_with_snapshot(jsonld_context, snapshot_path("kitchen_sink.jsonld"))
+    CompareJsonldContext.compare_with_snapshot(jsonld_context, snapshot_path("kitchen_sink.context.jsonld"))
 
 
 def test_no_default_namespace_prefix(input_path, snapshot_path):
     jsonld_context = ContextGenerator(str(input_path("jsonld_context_no_default_namespace_prefix.yaml"))).serialize()
 
-    CompareJsonldContext.compare_with_snapshot(jsonld_context, snapshot_path("no_default_namespace_prefix.jsonld"))
+    CompareJsonldContext.compare_with_snapshot(
+        jsonld_context, snapshot_path("no_default_namespace_prefix.context.jsonld")
+    )
 
 
 def test_class_uri_prefix(input_path, snapshot_path):
     jsonld_context = ContextGenerator(str(input_path("jsonld_context_class_uri_prefix.yaml"))).serialize()
 
-    CompareJsonldContext.compare_with_snapshot(jsonld_context, snapshot_path("class_uri_prefix.jsonld"))
+    CompareJsonldContext.compare_with_snapshot(jsonld_context, snapshot_path("class_uri_prefix.context.jsonld"))
 
 
 def test_inlined_external_types(input_path, snapshot_path):
     jsonld_context = ContextGenerator(str(input_path("jsonld_context_inlined_external_types.yaml"))).serialize()
 
-    CompareJsonldContext.compare_with_snapshot(jsonld_context, snapshot_path("context_inlined_external_types.jsonld"))
+    CompareJsonldContext.compare_with_snapshot(jsonld_context, snapshot_path("inlined_external_types.context.jsonld"))
 
 
 @pytest.mark.parametrize(
