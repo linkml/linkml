@@ -11,7 +11,7 @@ on:
       - "main"
   release:
     types:
-      - created
+      - "created"
 
 jobs:
   docker:
