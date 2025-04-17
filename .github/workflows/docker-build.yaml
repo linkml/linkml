@@ -9,11 +9,16 @@ on:
   pull_request:
     branches:
       - "main"
+  release:
+    types:
+      - created
 
 jobs:
   docker:
+    name: Build and (conditionally) Push Docker Image
     if: github.repository == 'linkml/linkml'
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,13 +26,12 @@ jobs:
           fetch-depth: 0
 
       - name: Docker metadata
-        uses: docker/metadata-action@v4
         id: meta
+        uses: docker/metadata-action@v4
         with:
           images: linkml/linkml
           tags: |
             type=ref,event=branch
-            type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
 
@@ -37,8 +41,9 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      # Only login and push if this is a release
       - name: Login to DockerHub
-        if: github.event_name != 'pull_request'
+        if: github.event_name == 'release'
         uses: docker/login-action@v2
         with:
           username: cjmungall
