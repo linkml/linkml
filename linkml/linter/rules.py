@@ -1,7 +1,8 @@
 import re
 from abc import ABC, abstractmethod
-from functools import lru_cache
-from typing import Callable, Iterable, List
+from collections.abc import Iterable
+from functools import cache
+from typing import Callable
 
 from linkml_runtime.linkml_model import ClassDefinition, ClassDefinitionName, Element, SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView
@@ -95,8 +96,8 @@ class PermissibleValuesFormatRule(LinterRule):
                     yield LinterProblem(f"{self.format_element(enum_def)} has permissible value '{value}'")
 
 
-@lru_cache(maxsize=None)
-def _get_recommended_metamodel_slots() -> List[str]:
+@cache
+def _get_recommended_metamodel_slots() -> list[str]:
     meta_schema_view = SchemaView(LOCAL_METAMODEL_YAML_FILE)
     recommended_meta_slots = []
     for class_name in meta_schema_view.all_classes(imports=False).keys():
@@ -165,7 +166,7 @@ class TreeRootClassRule(LinterRule):
         must_have_identifier=False,
         slot_name_func: Callable = None,
         convert_camel_case=False,
-    ) -> List[SlotDefinition]:
+    ) -> list[SlotDefinition]:
         """
         Adds index slots to a container pointing at all top-level classes
 
