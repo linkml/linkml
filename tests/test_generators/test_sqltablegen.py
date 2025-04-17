@@ -127,6 +127,8 @@ def test_abstract_class(schema, capsys):
     gen = SQLTableGenerator(b.schema)
     ddl = gen.generate_ddl()
     assert ddl
+    with capsys.disabled():
+        print(ddl)
 
 
 def test_get_sql_range(schema):
