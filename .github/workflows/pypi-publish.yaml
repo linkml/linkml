@@ -1,38 +1,70 @@
 name: Publish Python Package
+# Upload to PyPI is triggered by creating & publishing a release in GitHub UI
 
 on:
   release:
-    types: [created]
+    types: [published]
 
 jobs:
-  build-n-publish:
-    name: Build and publish Python 🐍 distributions 📦 to PyPI
+  build:
+    name: Build Python 🐍 distributions 📦 for publishing to PyPI
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v3
+    - uses: actions/checkout@v4.2
+      # By default the ref (branch, tag or SHA) that triggered the workflow,
+      # is checked out. So the version tag is available for dynamic versioning
+      # and the option "with: fetch-depth: 0" is not needed here.
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+    - name: Set up Python
+      uses: actions/setup-python@v5.5
+      with:
+        python-version: 3.13
+
+    - name: Install Poetry
+      run: |
+        pipx install poetry
+        pipx inject poetry poetry-dynamic-versioning
+
+    - name: Build source and wheel archives
+      run: |
+        poetry build
+        # Check if correct tag is available
+        git describe --tags --abbrev=0
+
+    - name: Store built distribution
+      uses: actions/upload-artifact@v4.6
+      with:
+        name: distribution-files
+        path: dist/
+
+  pypi-publish:
+    name: Build and publish Python 🐍 package 📦 to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    # Next 5 lines prepare for trusted publishing: https://docs.pypi.org/trusted-publishers/adding-a-publisher/
+    # environment:
+    #   name: pypi-release
+    #   url: https://pypi.org/p/linkml-runtime
+    # permissions:
+    #   id-token: write  # this permission is mandatory for trusted publishing
+    steps:
+      - name: Download built distribution
+        uses: actions/download-artifact@v4.2
         with:
-          python-version: "3.13"
+          name: distribution-files
+          path: dist
 
-      - name: Install pipx and Poetry with dynamic versioning plugin
-        run: |
-          pipx ensurepath
-          pipx install poetry==1.*
-          pipx inject poetry poetry-dynamic-versioning
-
-      - name: Verify Poetry and plugin
-        run: |
-          poetry --version
-          poetry self show plugins
-
-      - name: Build source and wheel archives
-        run: poetry build
-
-      - name: Publish distribution 📦 to PyPI
-        uses: pypa/gh-action-pypi-publish@v1.5.0
+      - name: Publish package 📦 to PyPI
+        if: github.event_name == 'release'
+        uses: pypa/gh-action-pypi-publish@v1.12
         with:
           user: __token__
           password: ${{ secrets.pypi_password }}
+          # verbose: true
+        
+# Used actions: (updates managed by dependabot)
+# - https://github.com/actions/checkout
+# - https://github.com/actions/setup-python
+# - https://github.com/actions/upload-artifact
+# - https://github.com/actions/download-artifact
+# - https://github.com/pypa/gh-action-pypi-publish/

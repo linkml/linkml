@@ -27,11 +27,10 @@ jobs:
           git remote add upstream https://github.com/linkml/linkml
           git fetch upstream --tags
 
-      - name: Install Poetry 1.x
-        run: pipx install poetry==1.*
-
-      - name: Install dynamic versioning plugin
-        run: poetry self add "poetry-dynamic-versioning[plugin]"
+      - name: Install poetry
+        run: |
+          pipx install poetry
+          pipx inject poetry poetry-dynamic-versioning
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
