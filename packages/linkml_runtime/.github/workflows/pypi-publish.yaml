@@ -29,8 +29,6 @@ jobs:
     - name: Build source and wheel archives
       run: |
         poetry build
-        # Check if correct tag is available
-        git describe --tags --abbrev=0
 
     - name: Store built distribution
       uses: actions/upload-artifact@v4.6
