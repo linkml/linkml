@@ -18,7 +18,9 @@ jobs:
         python-version: 3.12
 
     - name: Install Poetry
-      run: pipx install poetry
+      run: |
+        pipx install poetry
+        pipx inject poetry poetry-dynamic-versioning
 
     - name: Install dependencies
       run: poetry install --no-interaction
