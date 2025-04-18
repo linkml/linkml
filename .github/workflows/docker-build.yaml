@@ -29,6 +29,7 @@ jobs:
           images: linkml/linkml
           tags: |
             type=ref,event=branch
+            type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
 
@@ -36,6 +37,8 @@ jobs:
         run: |
           echo "Docker tags to be used:"
           echo "${{ steps.meta.outputs.tags }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Ref: ${{ github.ref }}"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
