@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4.2
+      # By default the ref (branch, tag or SHA) that triggered the workflow,
+      # is checked out. So the version tag is available for dynamic versioning
+      # and the option "with: fetch-depth: 0" is not needed here.
 
     - name: Set up Python
       uses: actions/setup-python@v5.5
@@ -22,13 +25,11 @@ jobs:
         pipx install poetry
         pipx inject poetry poetry-dynamic-versioning
 
-    - name: Install dependencies
-      run: poetry install --no-interaction
-
     - name: Build source and wheel archives
       run: |
-        poetry version $(git describe --tags --abbrev=0)
         poetry build
+        # Check if correct tag is available
+        git describe --tags --abbrev=0
 
     - name: Store built distribution
       uses: actions/upload-artifact@v4.6
