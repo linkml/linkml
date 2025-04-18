@@ -3,7 +3,8 @@ name: Publish Python Package
 
 on:
   release:
-    types: [published]
+    # Trigger the workflow only for real releases but no for draft releases
+    types: [created]
 
 jobs:
   build:
