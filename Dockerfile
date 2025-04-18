@@ -10,9 +10,7 @@ ENV PYTHONFAULTHANDLER=1 \
   POETRY_VERSION=2.1.1
 
 # Install Poetry
-RUN pip install pipx
-RUN pipx install "poetry==$POETRY_VERSION"
-RUN pipx inject poetry poetry-dynamic-versioning
+RUN pip install "poetry==$POETRY_VERSION"
 
 WORKDIR /code
 
