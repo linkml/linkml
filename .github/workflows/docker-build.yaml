@@ -9,9 +9,6 @@ on:
   pull_request:
     branches:
       - "main"
-  release:
-    types:
-      - "created"
 
 jobs:
   docker:
@@ -35,15 +32,19 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
 
+      - name: Log Docker tags
+        run: |
+          echo "Docker tags to be used:"
+          echo "${{ steps.meta.outputs.tags }}"
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # Only login and push if this is a release
       - name: Login to DockerHub
-        if: github.event_name == 'release'
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: docker/login-action@v2
         with:
           username: cjmungall
@@ -54,7 +55,6 @@ jobs:
         with:
           context: .
           platforms: linux/amd64,linux/arm64/v8
-          # test that we can build the docker image, but only push to dockerhub on release
-          push: ${{ github.event_name == 'release' }}
+          push: ${{ startsWith(github.ref, 'refs/tags/v') }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
