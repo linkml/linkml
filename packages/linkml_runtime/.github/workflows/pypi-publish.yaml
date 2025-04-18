@@ -3,7 +3,7 @@ name: Publish Python Package
 
 on:
   release:
-    # Trigger the workflow only for real releases but no for draft releases
+    # Trigger the workflow only for real releases but not for draft releases
     types: [created]
 
 jobs:
@@ -12,14 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4.2
-      # By default the ref (branch, tag or SHA) that triggered the workflow,
-      # is checked out. So the version tag is available for dynamic versioning
-      # and the option "with: fetch-depth: 0" is not needed here.
+      with:
+        # Checkout the code including tags required for dynamic versioning
+        fetch-depth: 0
 
     - name: Set up Python
       uses: actions/setup-python@v5.5
       with:
-        python-version: 3.12
+        python-version: 3.13
 
     - name: Install Poetry
       run: |
@@ -59,13 +59,5 @@ jobs:
         if: github.event_name == 'release'
         uses: pypa/gh-action-pypi-publish@v1.12
         with:
-          user: __token__
           password: ${{ secrets.pypi_password }}
           # verbose: true
-        
-# Used actions: (updates managed by dependabot)
-# - https://github.com/actions/checkout
-# - https://github.com/actions/setup-python
-# - https://github.com/actions/upload-artifact
-# - https://github.com/actions/download-artifact
-# - https://github.com/pypa/gh-action-pypi-publish/

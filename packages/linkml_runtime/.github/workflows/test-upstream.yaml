@@ -94,8 +94,6 @@ jobs:
       - name: checkout linkml-runtime
         uses: actions/checkout@v4.2
         with:
-          # don't specify repository like this or else we won't get pull request branches correctly
-          # repository: linkml/linkml-runtime
           path: linkml-runtime
           fetch-depth: 0
 
@@ -125,7 +123,7 @@ jobs:
 
       - name: Load cached venv
         id: cached-poetry-dependencies
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57
+        uses: actions/cache@v4.2.3
         with:
           path: linkml/.venv
           key: venv-${{ matrix.python-version }}-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
