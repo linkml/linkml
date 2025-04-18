@@ -12,9 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4.2
-      # By default the ref (branch, tag or SHA) that triggered the workflow,
-      # is checked out. So the version tag is available for dynamic versioning
-      # and the option "with: fetch-depth: 0" is not needed here.
+      with:
+        # Checkout the code including tags required for dynamic versioning
+        fetch-depth: 0
 
     - name: Set up Python
       uses: actions/setup-python@v5.5
@@ -45,7 +45,7 @@ jobs:
     # Next 5 lines prepare for trusted publishing: https://docs.pypi.org/trusted-publishers/adding-a-publisher/
     # environment:
     #   name: pypi-release
-    #   url: https://pypi.org/p/linkml-runtime
+    #   url: https://pypi.org/p/linkml
     # permissions:
     #   id-token: write  # this permission is mandatory for trusted publishing
     steps:
@@ -59,13 +59,5 @@ jobs:
         if: github.event_name == 'release'
         uses: pypa/gh-action-pypi-publish@v1.12
         with:
-          user: __token__
           password: ${{ secrets.pypi_password }}
           # verbose: true
-        
-# Used actions: (updates managed by dependabot)
-# - https://github.com/actions/checkout
-# - https://github.com/actions/setup-python
-# - https://github.com/actions/upload-artifact
-# - https://github.com/actions/download-artifact
-# - https://github.com/pypa/gh-action-pypi-publish/
