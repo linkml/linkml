@@ -12,8 +12,10 @@ on:
 
 jobs:
   docker:
+    name: Build and (conditionally) Push Docker Image
     if: github.repository == 'linkml/linkml'
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,8 +23,8 @@ jobs:
           fetch-depth: 0
 
       - name: Docker metadata
-        uses: docker/metadata-action@v4
         id: meta
+        uses: docker/metadata-action@v4
         with:
           images: linkml/linkml
           tags: |
@@ -31,6 +33,13 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
 
+      - name: Log Docker tags
+        run: |
+          echo "Docker tags to be used:"
+          echo "${{ steps.meta.outputs.tags }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Ref: ${{ github.ref }}"
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
@@ -38,7 +47,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Login to DockerHub
-        if: github.event_name != 'pull_request'
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: docker/login-action@v2
         with:
           username: cjmungall
@@ -49,7 +58,6 @@ jobs:
         with:
           context: .
           platforms: linux/amd64,linux/arm64/v8
-          # test that we can build the docker image, but only push to dockerhub on release
-          push: ${{ github.event_name == 'release' }}
+          push: ${{ startsWith(github.ref, 'refs/tags/v') }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
