@@ -230,7 +230,7 @@ class SQLTableGenerator(Generator):
                         continue
                     sql_uc = UniqueConstraint(*sql_names)
                     cols.append(sql_uc)
-            if not c.abstract:    
+            if not c.abstract:
                 Table(sql_name(cn), schema_metadata, *cols, comment=str(c.description))
         schema_metadata.create_all(engine)
         return ddl_str
