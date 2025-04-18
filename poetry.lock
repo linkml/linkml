@@ -3102,7 +3102,6 @@ optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "PyTrie-0.4.0-py3-none-any.whl", hash = "sha256:f687c224ee8c66cda8e8628a903011b692635ffbb08d4b39c5f92b18eb78c950"},
     {file = "PyTrie-0.4.0.tar.gz", hash = "sha256:8f4488f402d3465993fb6b6efa09866849ed8cda7903b50647b7d0342b805379"},
 ]
 
@@ -4556,5 +4555,5 @@ tests = ["black", "numpydantic", "pyshacl"]
 
 [metadata]
 lock-version = "2.1"
-python-versions = "^3.9.0"
-content-hash = "6b932ebf85dd9a8ab64245a3fbda5d6fe6080d4705ae3aa98e253ddaae9e052e"
+python-versions = "^3.9"
+content-hash = "ffc572127e2ec1555261ac641580041a40c39dc8d93be28a2672115b569fa0c8"

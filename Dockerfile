@@ -7,11 +7,10 @@ ENV PYTHONFAULTHANDLER=1 \
   PIP_NO_CACHE_DIR=off \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
   PIP_DEFAULT_TIMEOUT=100 \
-  POETRY_VERSION=1.6.0
+  POETRY_VERSION=2.1.1
 
 # Install Poetry
 RUN pip install "poetry==$POETRY_VERSION"
-RUN poetry self add "poetry-dynamic-versioning[plugin]"
 
 WORKDIR /code
 
