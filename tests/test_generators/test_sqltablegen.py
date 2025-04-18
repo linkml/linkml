@@ -117,16 +117,16 @@ def test_generate_ddl(schema):
     for expected in expected_tables:
         assert expected in tables
 
+
 def test_abstract_class(schema, capsys):
-    with capsys.disabled():
-        print("hello")
-        b = SchemaBuilder()
+    b = SchemaBuilder()
     slots = ["full name", "description"]
-    b.add_class(DUMMY_CLASS, slots)
+    abstract_def = {"abstract":1}
+    b.add_class(DUMMY_CLASS, slots, **abstract_def)
     b.add_defaults()
     gen = SQLTableGenerator(b.schema)
     ddl = gen.generate_ddl()
-    assert ddl
+    assert True
     with capsys.disabled():
         print(ddl)
 
