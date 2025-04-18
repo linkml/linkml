@@ -18,8 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install Poetry 1.x
-        run: pipx install poetry==1.*
+      - name: Install Poetry
+        run: |
+          pipx install poetry
+          pipx inject poetry poetry-dynamic-versioning
       - uses: actions/setup-python@v5
         with:
           python-version: 3.13
@@ -52,21 +54,26 @@ jobs:
     defaults:
       run:
         shell: bash
+
     runs-on: ${{ matrix.os }}
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: Ensure tags if not run from main repo
         if: github.repository != 'linkml/linkml'
         run: |
           git remote add upstream https://github.com/linkml/linkml
           git fetch upstream --tags
+
       - name: Install poetry
-        run: pipx install poetry==1.*
-      - name: Install dynamic versioning plugin
-        run: poetry self add "poetry-dynamic-versioning[plugin]"
+        run: |
+          pipx install poetry
+          pipx inject poetry poetry-dynamic-versioning
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         id: setup-python
@@ -109,7 +116,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Install poetry
-        run: pipx install poetry==1.*
+        run: |
+          pipx install poetry
+          pipx inject poetry poetry-dynamic-versioning
       - name: Set up Python
         uses: actions/setup-python@v5
         id: setup-python
@@ -119,6 +128,8 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction --all-extras
       - name: Generate coverage results
+        # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668 
+        shell: bash      
         run: |
           poetry run coverage run -m pytest --with-slow --with-biolink -m slow -n auto
           poetry run coverage xml
@@ -148,11 +159,10 @@ jobs:
         with:
           python-version: 3.13
 
-      - name: Install pipx and Poetry with dynamic versioning plugin
+      - name: Install poetry
         run: |
-          pipx ensurepath
-          pipx install poetry==1.*
-          pipx inject poetry "poetry-dynamic-versioning[plugin]"
+          pipx install poetry
+          pipx inject poetry poetry-dynamic-versioning
 
       - name: Build source and wheel archives
         run: poetry build

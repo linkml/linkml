@@ -18,7 +18,8 @@ jobs:
       with:
         python-version: "3.13"
     - name: Install Poetry
-      uses: snok/install-poetry@v1
+      run: |
+        pipx install poetry
     - name: Show current deps
       shell: bash
       run: |
