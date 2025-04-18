@@ -322,6 +322,66 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
     assert len(set(domain_of_species_name)) == len(domain_of_species_name)
 
 
+def test_docgen_multiline_description_hierarchical_view(tmp_path) -> None:
+    """Ensure that having a multiline description does not break the hierarchical table view."""
+    test_schema = """
+id: unit_test
+name: unit_test
+
+prefixes:
+  ex: https://example.org/
+default_prefix: ex
+
+classes:
+  no_description:
+  single_line:
+    description: A single line description. Easy!
+  multi_line:
+    description:
+        Why restrict yourself to a single line
+
+        when there are so many
+
+        other lines available for your description?
+  multi_line_preserve_whitespace:
+    description: |
+        Multi Line Madness is a bit like
+
+                Multi Level Marketing
+        (at least initially)
+        but involves more lines
+
+
+        and a lot more madness
+"""
+    gen = DocGenerator(str(test_schema), mergeimports=True, hierarchical_class_view=True)
+    gen.serialize(directory=str(tmp_path))
+
+    # these lines are generated if the description is not enshortened
+    forbidden = [
+        "| [MultiLine](MultiLine.md) | Why restrict yourself to a single line\n",
+        "when there are so many\n",
+        "other lines available for your description? |\n",
+        "| [MultiLinePreserveWhitespace](MultiLinePreserveWhitespace.md) | Multi Line Madness is a bit like\n",
+        "        Multi Level Marketing\n",
+        "and a lot more madness\n",
+    ]
+
+    for f in forbidden:
+        assert_mdfile_does_not_contain(tmp_path / "index.md", f)
+
+    # the class index should contain these lines
+    ix = [
+        "| [MultiLine](MultiLine.md) | Why restrict yourself to a single line |\n",
+        "| [MultiLinePreserveWhitespace](MultiLinePreserveWhitespace.md) | Multi Line Madness is a bit like |\n",
+        "| [NoDescription](NoDescription.md) |  |\n",
+        "| [SingleLine](SingleLine.md) | A single line description |\n",
+    ]
+
+    for line in ix:
+        assert_mdfile_contains(tmp_path / "index.md", line)
+
+
 def test_docgen_no_mergeimports(kitchen_sink_path, tmp_path):
     """Tests when imported schemas are not folded into main schema"""
     gen = DocGenerator(kitchen_sink_path, mergeimports=False, no_types_dir=True)
