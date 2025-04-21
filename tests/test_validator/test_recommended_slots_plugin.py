@@ -112,7 +112,7 @@ def test_missing_recommended_inlined(validation_context):
 
 
 def test_incorrect_type_in_multivalued_slot(validation_context):
-    """Data with an incorrect type in a multivalued slot should not yield results.
+    """Data with non-inlined multivalued slot with class as range should not yield results.
 
     Type checking is not the responsibility of this plugin. But we want to make
     sure that the implementation of this plugin doesn't implicitly assume it will
