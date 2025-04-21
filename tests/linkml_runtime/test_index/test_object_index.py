@@ -5,7 +5,7 @@ from linkml_runtime import SchemaView
 from linkml_runtime.loaders import yaml_loader
 import tests.test_index.model.container_test as src_dm
 from linkml_runtime.index.object_index import ObjectIndex, ProxyObject
-from linkml_runtime.utils.inference_utils import infer_all_slot_values, infer_slot_value, Config
+from linkml_runtime.utils.inference_utils import infer_slot_value, Config
 from tests.test_index import INPUT_DIR
 
 SCHEMA = os.path.join(INPUT_DIR, 'container_test.yaml')

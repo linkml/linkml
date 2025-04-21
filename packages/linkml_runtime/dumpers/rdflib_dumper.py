@@ -1,9 +1,9 @@
 import logging
 import urllib
-from abc import abstractmethod
-from typing import Optional, Any, Dict, Union
+from typing import Optional, Any, Union
 from pydantic import BaseModel
 
+from curies import Converter
 from rdflib import Graph, URIRef, XSD
 from rdflib.term import Node, BNode, Literal
 from rdflib.namespace import RDF
@@ -13,6 +13,8 @@ from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView, ElementName, PermissibleValue, PermissibleValueText
 from linkml_runtime.utils.yamlutils import YAMLRoot
+
+logger = logging.getLogger(__name__)
 
 
 class RDFLibDumper(Dumper):
@@ -24,7 +26,12 @@ class RDFLibDumper(Dumper):
     This requires a SchemaView object
 
     """
-    def as_rdf_graph(self, element: Union[BaseModel, YAMLRoot], schemaview: SchemaView, prefix_map: Dict[str, str] = None) -> Graph:
+    def as_rdf_graph(
+        self,
+        element: Union[BaseModel, YAMLRoot],
+        schemaview: SchemaView,
+        prefix_map: Union[dict[str, str], Converter, None] = None,
+    ) -> Graph:
         """
         Dumps from element to an rdflib Graph,
         following a schema
@@ -35,27 +42,30 @@ class RDFLibDumper(Dumper):
         :return:
         """
         g = Graph()
-        logging.debug(f'PREFIXMAP={prefix_map}')
+        if isinstance(prefix_map, Converter):
+            # TODO replace with `prefix_map = prefix_map.bimap` after making minimum requirement on python 3.8
+            prefix_map = {record.prefix: record.uri_prefix for record in prefix_map.records}
+        logger.debug(f'PREFIXMAP={prefix_map}')
+        namespaces = schemaview.namespaces()
         if prefix_map:
             for k, v in prefix_map.items():
                 if k == "@base":
-                    schemaview.namespaces()._base = v
+                    namespaces._base = v
                 else:
-                    schemaview.namespaces()[k] = v
+                    namespaces[k] = v
                     g.namespace_manager.bind(k, URIRef(v))
-            for prefix in schemaview.namespaces():
-                g.bind(prefix, URIRef(schemaview.namespaces()[prefix]))
-        else:
-            for prefix in schemaview.namespaces():
-                g.bind(prefix, URIRef(schemaview.namespaces()[prefix]))
+
+        for prefix in namespaces:
+            g.bind(prefix, URIRef(namespaces[prefix]))
         # user can pass in base in prefixmap using '_base'. This gets set
         # in namespaces as a plain dict assignment - explicitly call the setter
         # to set the underlying "@base"
-        if "_base" in schemaview.namespaces():
-            schemaview.namespaces()._base = schemaview.namespaces()["_base"]
-            g.base = schemaview.namespaces()._base
-        if schemaview.namespaces()._base:
-            g.base = schemaview.namespaces()._base
+        if "_base" in namespaces:
+            namespaces._base = namespaces["_base"]
+
+        if namespaces._base:
+            g.base = namespaces._base
+
         self.inject_triples(element, schemaview, g)
         return g
 
@@ -71,7 +81,7 @@ class RDFLibDumper(Dumper):
         """
         namespaces = schemaview.namespaces()
         slot_name_map = schemaview.slot_name_mappings()
-        logging.debug(f'CONVERT: {element} // {type(element)} // {target_type}')
+        logger.debug(f'CONVERT: {element} // {type(element)} // {target_type}')
         if target_type in schemaview.all_enums():
             if isinstance(element, PermissibleValueText):
                 e = schemaview.get_enum(target_type)
@@ -96,7 +106,7 @@ class RDFLibDumper(Dumper):
                         namespaces["xsd"] = XSD
                     return Literal(element, datatype=namespaces.uri_for(dt_uri))
             else:
-                logging.warning(f'No datatype specified for : {t.name}, using plain Literal')
+                logger.warning(f'No datatype specified for : {t.name}, using plain Literal')
                 return Literal(element)
         element_vars = {k: v for k, v in vars(element).items() if not k.startswith('_')}
         if len(element_vars) == 0:
@@ -125,7 +135,7 @@ class RDFLibDumper(Dumper):
                 if k in slot_name_map:
                     k = slot_name_map[k].name
                 else:
-                    logging.error(f'Slot {k} not in name map')
+                    logger.error(f'Slot {k} not in name map')
                 slot = schemaview.induced_slot(k, cn)
                 if not slot.identifier:
                     slot_uri = URIRef(schemaview.get_uri(slot, expand=True))
@@ -137,10 +147,15 @@ class RDFLibDumper(Dumper):
             graph.add((element_uri, RDF.type, URIRef(schemaview.get_uri(cn, expand=True))))
         return element_uri
 
-    def dump(self, element: Union[BaseModel, YAMLRoot],
-             to_file: str,
-             schemaview: SchemaView = None,
-             fmt: str = 'turtle', prefix_map: Dict[str, str] = None, **args) -> None:
+    def dump(
+        self,
+        element: Union[BaseModel, YAMLRoot],
+        to_file: str,
+        schemaview: SchemaView = None,
+        fmt: str = 'turtle',
+        prefix_map: Union[dict[str, str], Converter, None] = None,
+        **args,
+    ) -> None:
         """
         Write element as rdf to to_file
 
@@ -153,8 +168,13 @@ class RDFLibDumper(Dumper):
         """
         super().dump(element, to_file, schemaview=schemaview, fmt=fmt, prefix_map=prefix_map)
 
-    def dumps(self, element: Union[BaseModel, YAMLRoot], schemaview: SchemaView = None,
-              fmt: Optional[str] = 'turtle', prefix_map: Dict[str, str] = None) -> str:
+    def dumps(
+        self,
+        element: Union[BaseModel, YAMLRoot],
+        schemaview: SchemaView = None,
+        fmt: Optional[str] = 'turtle',
+        prefix_map: Union[dict[str, str], Converter, None] = None,
+    ) -> str:
         """
         Convert element into an RDF graph guided by the schema
 

@@ -1,9 +1,8 @@
 import re
 from decimal import Decimal
-from numbers import Number
-from typing import List, Any, Union
+from typing import Any
 
-from jsonasobj2 import JsonObj, as_dict, is_list, is_dict, items, as_json_obj
+from jsonasobj2 import JsonObj, as_dict, is_list, is_dict, items
 
 ws_pattern = re.compile(r'\s+')
 us_pattern = re.compile(r'_+')
@@ -69,7 +68,7 @@ def uri_for(prefix: str, suffix: str) -> str:
         return prefix + ':' + suffix
 
 
-def split_line(txt: str, split_len: int = split_col) -> List[str]:
+def split_line(txt: str, split_len: int = split_col) -> list[str]:
     # TODO: consider replacing by textwrap.fill function, but note that its behavior is a bit different
     out_lines = []
     words = txt.split()

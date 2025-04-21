@@ -1,6 +1,6 @@
 import os
 from io import StringIO
-from typing import Union, TextIO, Optional, Dict, Type, List
+from typing import Union, TextIO, Optional
 
 import yaml
 from hbreader import FileInfo
@@ -8,6 +8,7 @@ from hbreader import FileInfo
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.yamlutils import YAMLRoot, DupCheckYamlLoader
 from pydantic import BaseModel
+
 
 class YAMLLoader(Loader):
     """
@@ -18,7 +19,7 @@ class YAMLLoader(Loader):
                      source: Union[str, dict, TextIO], 
                      *, 
                      base_dir: Optional[str] = None,
-                     metadata: Optional[FileInfo] = None) -> Union[dict, List[dict]]:
+                     metadata: Optional[FileInfo] = None) -> Union[dict, list[dict]]:
         if metadata is None:
             metadata = FileInfo()
         if base_dir and not metadata.base_path:
@@ -34,13 +35,13 @@ class YAMLLoader(Loader):
 
     def load_any(self,
                  source: Union[str, dict, TextIO],
-                 target_class: Union[Type[YAMLRoot],Type[BaseModel]],
+                 target_class: Union[type[YAMLRoot], type[BaseModel]],
                  *, base_dir: Optional[str] = None,
-                 metadata: Optional[FileInfo] = None, **_) -> Union[YAMLRoot, List[YAMLRoot]]:
+                 metadata: Optional[FileInfo] = None, **_) -> Union[YAMLRoot, list[YAMLRoot]]:
         data_as_dict = self.load_as_dict(source, base_dir=base_dir, metadata=metadata)
         return self._construct_target_class(data_as_dict, target_class)
 
-    def loads_any(self, source: str, target_class: Type[Union[BaseModel, YAMLRoot]], *, metadata: Optional[FileInfo] = None, **_) -> Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]:
+    def loads_any(self, source: str, target_class: type[Union[BaseModel, YAMLRoot]], *, metadata: Optional[FileInfo] = None, **_) -> Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]:
         """
         Load source as a string
         @param source: source

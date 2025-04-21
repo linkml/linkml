@@ -142,7 +142,7 @@
             skos:mappingRelation qudt:hasQuantityKind ;
             linkml:comments "Potential ontologies include but are not limited to PATO, NCIT, OBOE, qudt.quantityKind" ;
             linkml:definition_uri "https://w3id.org/linkml/has_quantity_kind" ;
-            linkml:description "Concept in a vocabulary or ontology that denotes the kind of quanity being measured, e.g. length" ;
+            linkml:description "Concept in a vocabulary or ontology that denotes the kind of quantity being measured, e.g. length" ;
             linkml:domain_of "UnitOfMeasure" ;
             linkml:from_schema "https://w3id.org/linkml/units" ;
             linkml:name "has_quantity_kind" ;
@@ -410,7 +410,7 @@
             linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI" ],
         [ a linkml:TypeDefinition ;
             linkml:base "ElementIdentifier" ;
-            linkml:comments "Used for inheritence and type checking" ;
+            linkml:comments "Used for inheritance and type checking" ;
             linkml:definition_uri "https://w3id.org/linkml/Objectidentifier" ;
             linkml:description "A URI or CURIE that represents an object in the model." ;
             linkml:from_schema "https://w3id.org/linkml/types" ;

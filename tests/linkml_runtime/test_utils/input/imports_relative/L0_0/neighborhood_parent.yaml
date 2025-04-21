@@ -1,0 +1,11 @@
+id: neighborhood_parent
+name: neighborhood_parent
+title: neighborhood_parent
+description: parent of same-directory import
+classes:
+  Neighborhood_Parent:
+    description: "Keeps the cul-de-sac fed and scolds the speeding traffic"
+    attributes:
+      value:
+        range: string
+        ifabsent: "Neighborhood_Parent"

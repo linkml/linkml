@@ -1,11 +1,11 @@
-from dataclasses import dataclass, field
-from typing import Dict, List, Union, Optional
+from dataclasses import dataclass, fields
+from typing import Union, Optional
 
 from linkml_runtime.linkml_model import (ClassDefinition, EnumDefinition,
                                          PermissibleValue, Prefix,
                                          SchemaDefinition, SlotDefinition,
                                          TypeDefinition)
-from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schema_as_dict import schema_as_dict
 
 
@@ -16,7 +16,7 @@ class SchemaBuilder:
 
     Example:
 
-        >>> from linkml.utils.schema_builder import SchemaBuilder
+        >>> from linkml_runtime.utils.schema_builder import SchemaBuilder
         >>> sb = SchemaBuilder('test-schema')
         >>> sb.add_class('Person', slots=['name', 'age'])
         >>> sb.add_class('Organization', slots=['name', 'employees'])
@@ -54,29 +54,50 @@ class SchemaBuilder:
 
     def add_class(
         self,
-        cls: Union[ClassDefinition, Dict, str],
-        slots: List[Union[str, SlotDefinition]] = None,
-        slot_usage: Dict[str, SlotDefinition] = None,
-        replace_if_present=False,
-        use_attributes=False,
+        cls: Union[ClassDefinition, dict, str],
+        slots: list[Union[str, SlotDefinition]] = None,
+        slot_usage: dict[str, SlotDefinition] = None,
+        replace_if_present: bool = False,
+        use_attributes: bool = False,
         **kwargs,
     ) -> "SchemaBuilder":
         """
         Adds a class to the schema.
 
         :param cls: name, dict object, or ClassDefinition object to add
-        :param slots: slot of slot names or slot objects.
-        :param slot_usage: slots keyed by slot name
+        :param slots: list of slot names or slot objects. This must be a list of
+            `SlotDefinition` objects if `use_attributes=True`
+        :param slot_usage: slots keyed by slot name (ignored if `use_attributes=True`)
         :param replace_if_present: if True, replace existing class if present
+        :param use_attributes: Whether to specify the given slots as an inline
+            definition of slots, attributes, in the class definition
         :param kwargs: additional ClassDefinition properties
         :return: builder
         :raises ValueError: if class already exists and replace_if_present=False
         """
+        if slots is None:
+            slots = []
+        if slot_usage is None:
+            slot_usage = {}
+
         if isinstance(cls, str):
             cls = ClassDefinition(cls, **kwargs)
-        if isinstance(cls, dict):
+        elif isinstance(cls, dict):
             cls = ClassDefinition(**{**cls, **kwargs})
-        if cls.name is self.schema.classes and not replace_if_present:
+        else:
+            # Ensure that `cls` is a `ClassDefinition` object
+            if not isinstance(cls, ClassDefinition):
+                msg = (
+                    f"cls must be a string, dict, or ClassDefinition, "
+                    f"not {type(cls)!r}"
+                )
+                raise TypeError(msg)
+
+            cls_as_dict = {f.name: getattr(cls, f.name) for f in fields(cls)}
+
+            cls = ClassDefinition(**{**cls_as_dict, **kwargs})
+
+        if cls.name in self.schema.classes and not replace_if_present:
             raise ValueError(f"Class {cls.name} already exists")
         self.schema.classes[cls.name] = cls
         if use_attributes:
@@ -88,22 +109,18 @@ class SchemaBuilder:
                         f"If use_attributes=True then slots must be SlotDefinitions"
                     )
         else:
-            if slots is not None:
-                for s in slots:
-                    cls.slots.append(s.name if isinstance(s, SlotDefinition) else s)
-                    if isinstance(s, str) and s in self.schema.slots:
-                        # top-level slot already exists
-                        continue
-                    self.add_slot(s, replace_if_present=replace_if_present)
-            if slot_usage:
-                for k, v in slot_usage.items():
-                    cls.slot_usage[k] = v
-        for k, v in kwargs.items():
-            setattr(cls, k, v)
+            for s in slots:
+                cls.slots.append(s.name if isinstance(s, SlotDefinition) else s)
+                if isinstance(s, str) and s in self.schema.slots:
+                    # top-level slot already exists
+                    continue
+                self.add_slot(s, replace_if_present=replace_if_present)
+            for k, v in slot_usage.items():
+                cls.slot_usage[k] = v
         return self
 
     def add_slot(
-        self, slot: Union[SlotDefinition, Dict, str], class_name: str = None, replace_if_present=False, **kwargs
+        self, slot: Union[SlotDefinition, dict, str], class_name: str = None, replace_if_present=False, **kwargs
     ) -> "SchemaBuilder":
         """
         Adds the slot to the schema.
@@ -142,32 +159,57 @@ class SchemaBuilder:
     def add_enum(
         self,
         enum_def: Union[EnumDefinition, dict, str],
-        permissible_values: List[Union[str, PermissibleValue]] = None,
+        permissible_values: list[Union[str, PermissibleValue]] = None,
         replace_if_present=False,
         **kwargs,
     ) -> "SchemaBuilder":
         """
         Adds an enum to the schema
 
-        :param enum_def:
-        :param permissible_values:
-        :param replace_if_present:
-        :param kwargs:
+        :param enum_def: The base specification of the enum to be added
+        :param permissible_values: Additional, or overriding, permissible values
+            of the enum to be added
+        :param replace_if_present: Whether to replace the enum if it already exists in
+            the schema by name
+        :param kwargs: Additional `EnumDefinition` properties to be set as part of the
+            enum to be added
         :return: builder
         :raises ValueError: if enum already exists and replace_if_present=False
         """
-        if not isinstance(enum_def, EnumDefinition):
+        if permissible_values is None:
+            permissible_values = []
+
+        if isinstance(enum_def, str):
             enum_def = EnumDefinition(enum_def, **kwargs)
-        if isinstance(enum_def, dict):
+        elif isinstance(enum_def, dict):
             enum_def = EnumDefinition(**{**enum_def, **kwargs})
+        else:
+            # Ensure that `enum_def` is a `EnumDefinition` object
+            if not isinstance(enum_def, EnumDefinition):
+                msg = (
+                    f"enum_def must be a `str`, `dict`, or `EnumDefinition`, "
+                    f"not {type(enum_def)!r}"
+                )
+                raise TypeError(msg)
+
         if enum_def.name in self.schema.enums and not replace_if_present:
             raise ValueError(f"Enum {enum_def.name} already exists")
+
+        # Attach the enum definition to the schema
         self.schema.enums[enum_def.name] = enum_def
-        if permissible_values is not None:
-            for pv in permissible_values:
-                if isinstance(pv, str):
-                    pv = PermissibleValue(text=pv)
-                    enum_def.permissible_values[pv.text] = pv
+
+        for pv in permissible_values:
+            if isinstance(pv, str):
+                pv = PermissibleValue(text=pv)
+            elif not isinstance(pv, PermissibleValue):
+                msg = (
+                    f"A permissible value must be a `str` or "
+                    f"a `PermissibleValue` object, not {type(pv)}"
+                )
+                raise TypeError(msg)
+
+            enum_def.permissible_values[pv.text] = pv
+
         return self
 
     def add_prefix(self, prefix: str, url: str, replace_if_present = False) -> "SchemaBuilder":
@@ -217,7 +259,7 @@ class SchemaBuilder:
 
     def add_type(
             self,
-            type: Union[TypeDefinition, Dict, str],
+            type: Union[TypeDefinition, dict, str],
             typeof: str = None,
             uri: str = None,
             replace_if_present=False,
@@ -247,7 +289,7 @@ class SchemaBuilder:
             setattr(type, k, v)
         return self
 
-    def as_dict(self) -> Dict:
+    def as_dict(self) -> dict:
         """
         Returns the schema as a dictionary.
 

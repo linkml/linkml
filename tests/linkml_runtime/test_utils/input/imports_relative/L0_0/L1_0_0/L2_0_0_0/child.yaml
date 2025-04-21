@@ -1,0 +1,15 @@
+id: child
+name: child
+title: child
+description: |
+  Child class that shares the same name and ID as another child and should *not* be deduplicated, 
+  but imports the dupe schema which *should* be deduplicated
+imports:
+  - linkml:types
+  - ../../L1_0_1/dupe
+classes:
+  Child1:
+    attributes:
+      value:
+        range: string
+        ifabsent: "Child1"

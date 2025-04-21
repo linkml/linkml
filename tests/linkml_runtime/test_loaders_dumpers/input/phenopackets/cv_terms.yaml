@@ -110,7 +110,7 @@ enums:
     reachable_from:
       source_ontology: bioregistry:uo
       source_nodes:
-        - UO:0000000 ! unit
+        - UO:0000000
       is_direct: false
       include_self: false
       relationship_types:

@@ -130,7 +130,7 @@
                "type": "array"
             },
             "has_quantity_kind": {
-               "description": "Concept in a vocabulary or ontology that denotes the kind of quanity being measured, e.g. length",
+               "description": "Concept in a vocabulary or ontology that denotes the kind of quantity being measured, e.g. length",
                "type": "string"
             },
             "iec61360code": {

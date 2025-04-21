@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 from io import StringIO
 from pathlib import Path
-from typing import Optional, Any, List, Union
+from typing import Optional, Any, Union
 
 import yaml
 
@@ -69,12 +69,12 @@ class MarkdownDocument:
     def w(self, text: str):
         self.writer.write(text)
 
-    def th(self, cols: List[str]):
+    def th(self, cols: list[str]):
         self.w("\n")
         self.tr(cols)
         self.tr(["---" for _ in cols])
 
-    def tr(self, cols: List[str]):
+    def tr(self, cols: list[str]):
         self.w(f"|{'|'.join([str(c) for c in cols])}|\n")
 
     def __repr__(self) -> str:
@@ -99,7 +99,7 @@ def _add_core_schema_elements(
 METASLOTS = ["range", "multivalued", "inlined", "inlined_as_list"]
 
 
-def _slot_metaslot_values(slot: SlotDefinition) -> List[Any]:
+def _slot_metaslot_values(slot: SlotDefinition) -> list[Any]:
     return [
         slot.range or "string",
         slot.multivalued or False,
@@ -1062,7 +1062,7 @@ class ReferenceValidatorTestCase(unittest.TestCase):
             "uriorcurie": [
                 ("X:1", [], [], "X:1"),
                 ("http://example.org", [], [], "http://example.org"),
-                ("", [], [ConstraintType.TypeConstraint], ""),
+                ("", [], [], ""),
                 ("a b", [], [ConstraintType.TypeConstraint], "a b"),
                 (None, [], [], None),
             ],

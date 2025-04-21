@@ -1,0 +1,164 @@
+name: Test with upstream linkml
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      upstream_repo:
+        description: "Upstream linkml repository to test against"
+        required: true
+        default: "linkml/linkml"
+      upstream_branch:
+        description: "Upstream linkml branch to test against"
+        required: true
+        default: "main"
+
+jobs:
+  test_upstream:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+        python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
+        exclude:
+          - os: windows-latest
+            python-version: "3.10"
+          - os: windows-latest
+            python-version: "3.11"
+          - os: windows-latest
+            python-version: "3.12"
+    runs-on: ${{ matrix.os }}
+    env:
+      POETRY_VIRTUALENVS_IN_PROJECT: true
+
+    steps:
+      - name: Get upstream branch and repo from first lines of PR Body
+        if: github.event_name == 'pull_request'
+        shell: bash
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          set +e
+          set +o pipefail
+          
+          UPSTREAM_BRANCH=$( \
+            echo "$PR_BODY" | \
+            head -2 | \
+            grep upstream_branch | \
+            cut -d ":" -f 2 | \
+            awk '{$1=$1};1' \
+          )
+          echo "Got upstream branch:"
+          echo $UPSTREAM_BRANCH
+          
+          if [[ -z "$UPSTREAM_BRANCH" ]]; then
+            echo "Using main as default"
+            UPSTREAM_BRANCH="main"
+          fi
+          
+          UPSTREAM_REPO=$( \
+            echo "$PR_BODY" | \
+            head -2 | \
+            grep upstream_repo | \
+            cut -d ":" -f 2 | \
+            awk '{$1=$1};1' \
+          )
+          echo "Got upstream repo:"
+          echo $UPSTREAM_REPO
+          
+          if [[ -z "$UPSTREAM_REPO" ]]; then
+            echo "Using linkml/linkml as default"
+            UPSTREAM_REPO="linkml/linkml"
+          fi
+
+          echo "upstream_branch=$UPSTREAM_BRANCH" >> "$GITHUB_ENV"
+          echo "upstream_repo=$UPSTREAM_REPO" >> "$GITHUB_ENV"
+
+      - name: Get upstream branch from workflow dispatch
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          echo "upstream_branch=${{ inputs.upstream_branch }}" >> "$GITHUB_ENV"
+          echo "upstream_repo=${{ inputs.upstream_repo }}" >> "$GITHUB_ENV"
+
+      - name: checkout upstream
+        uses: actions/checkout@v4
+        with:
+          repository: "${{ env.upstream_repo }}"
+          path: linkml
+          ref: "${{ env.upstream_branch }}"
+          fetch-depth: 0
+
+      - name: checkout linkml-runtime
+        uses: actions/checkout@v4
+        with:
+          # don't specify repository like this or else we won't get pull request branches correctly
+          # repository: linkml/linkml-runtime
+          path: linkml-runtime
+          fetch-depth: 0
+
+      - name: Ensure tags for linkml upstream if a different one than linkml/linkml is specified
+        if: "${{ env.upstream_repo != 'linkml/linkml' }}"
+        working-directory: linkml
+        run: |
+          git remote add upstream https://github.com/linkml/linkml
+          git fetch upstream --tags
+
+      - name: Ensure tags for linkml-runtime if not run from main repo
+        if: github.repository != 'linkml/linkml-runtime'
+        working-directory: linkml-runtime
+        run: |
+          git remote add upstream https://github.com/linkml/linkml-runtime
+          git fetch upstream --tags
+
+      - name: set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install poetry
+        run: pipx install poetry==1.*
+
+      - name: Check Poetry version
+        run: poetry --version
+
+      - name: Install dynamic versioning plugin
+        run: poetry self add "poetry-dynamic-versioning[plugin]"
+
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: linkml/.venv
+          key: venv-${{ matrix.python-version }}-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
+      # make extra sure we're removing any old version of linkml-runtime that exists
+      - name: uninstall potentially cached linkml-runtime
+        working-directory: linkml
+        run: poetry run pip uninstall -y linkml-runtime
+
+      # we are not using linkml-runtime's lockfile, but simulating what will happen
+      # when we merge this and update linkml's lockfile
+      - name: add linkml-runtime to lockfile
+        working-directory: linkml
+        run: poetry add ../linkml-runtime
+
+      # note that we run the installation step always, even if we restore a venv,
+      # the cache will restore the old version of linkml-runtime, but the lockfile
+      # will only store the directory dependency (and thus will reinstall it)
+      # the cache will still speedup the rest of the installation
+      - name: install linkml
+        working-directory: linkml
+        run: poetry install --no-interaction -E tests
+
+      - name: print linkml-runtime version
+        working-directory: linkml
+        run: poetry run python -c 'import linkml_runtime; from importlib.metadata import version; print(linkml_runtime.__file__); print(version("linkml_runtime"))'
+
+      - name: run tests
+        working-directory: linkml
+        run: poetry run python -m pytest --with-slow
+
+
+

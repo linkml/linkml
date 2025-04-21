@@ -1,9 +1,11 @@
 import logging
-from json_flattener import KeyConfig, GlobalConfig, Serializer
+from json_flattener import KeyConfig, Serializer
 from json_flattener.flattener import CONFIGMAP
-from linkml_runtime.linkml_model.meta import SlotDefinitionName, SchemaDefinition, \
-    SlotDefinition, ClassDefinition, ClassDefinitionName
+from linkml_runtime.linkml_model.meta import SlotDefinitionName, ClassDefinitionName
 from linkml_runtime.utils.schemaview import SchemaView
+
+logger = logging.getLogger(__name__)
+
 
 def get_configmap(schemaview: SchemaView, index_slot: SlotDefinitionName) -> CONFIGMAP:
     """
@@ -28,9 +30,9 @@ def get_configmap(schemaview: SchemaView, index_slot: SlotDefinitionName) -> CON
                     cm[sn] = config
             return cm
         else:
-            logging.warning(f'Index slot range not to class: {slot.range}')
+            logger.warning(f'Index slot range not to class: {slot.range}')
     else:
-        logging.warning(f'Index slot or schema not specified')
+        logger.warning(f'Index slot or schema not specified')
     return {}
 
 def _get_key_config(schemaview: SchemaView, tgt_cls: ClassDefinitionName, sn: SlotDefinitionName, sep='_'):

@@ -6,41 +6,26 @@
 # description: A datamodel for data validation results.
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
-import sys
-import re
-from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
+from jsonasobj2 import as_dict
+from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
 from linkml_runtime.linkml_model.meta import (
     EnumDefinition,
     PermissibleValue,
-    PvFormulaOptions,
 )
 
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
+from linkml_runtime.utils.metamodelcore import empty_list, empty_dict
 from linkml_runtime.utils.yamlutils import (
     YAMLRoot,
-    extended_str,
-    extended_float,
-    extended_int,
 )
-from linkml_runtime.utils.dataclass_extensions_376 import (
-    dataclasses_init_fn_with_kwargs,
-)
-from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from rdflib import Namespace, URIRef
+from rdflib import URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.linkml_model.types import Boolean, Integer, String, Uriorcurie
 from linkml_runtime.utils.metamodelcore import Bool, URIorCURIE
 
 metamodel_version = "1.7.0"
 version = None
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
@@ -73,7 +58,7 @@ class TypeSeverityKeyValueType(URIorCURIE):
 
 @dataclass
 class ConstraintCheck(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = VM.ConstraintCheck
     class_class_curie: ClassVar[str] = "vm:ConstraintCheck"
@@ -82,7 +67,7 @@ class ConstraintCheck(YAMLRoot):
 
     id: Union[str, ConstraintCheckId] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, ConstraintCheckId):
@@ -93,7 +78,7 @@ class ConstraintCheck(YAMLRoot):
 
 @dataclass
 class Node(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = VM.Node
     class_class_curie: ClassVar[str] = "vm:Node"
@@ -102,7 +87,7 @@ class Node(YAMLRoot):
 
     id: Union[str, NodeId] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, NodeId):
@@ -117,7 +102,7 @@ class ValidationConfiguration(YAMLRoot):
     Configuration parameters for execution of a validation report
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = VM.ValidationConfiguration
     class_class_curie: ClassVar[str] = "vm:ValidationConfiguration"
@@ -127,15 +112,15 @@ class ValidationConfiguration(YAMLRoot):
     max_number_results_per_type: Optional[int] = None
     type_severity_map: Optional[
         Union[
-            Dict[
+            dict[
                 Union[str, TypeSeverityKeyValueType],
                 Union[dict, "TypeSeverityKeyValue"],
             ],
-            List[Union[dict, "TypeSeverityKeyValue"]],
+            list[Union[dict, "TypeSeverityKeyValue"]],
         ]
     ] = empty_dict()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.max_number_results_per_type is not None and not isinstance(
             self.max_number_results_per_type, int
         ):
@@ -157,7 +142,7 @@ class RepairConfiguration(YAMLRoot):
     Configuration parameters for execution of validation repairs
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = VM.RepairConfiguration
     class_class_curie: ClassVar[str] = "vm:RepairConfiguration"
@@ -167,7 +152,7 @@ class RepairConfiguration(YAMLRoot):
     validation_configuration: Optional[Union[dict, ValidationConfiguration]] = None
     dry_run: Optional[Union[bool, Bool]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.validation_configuration is not None and not isinstance(
             self.validation_configuration, ValidationConfiguration
         ):
@@ -187,7 +172,7 @@ class TypeSeverityKeyValue(YAMLRoot):
     key-value pair that maps a validation result type to a severity setting, for overriding default severity
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = VM.TypeSeverityKeyValue
     class_class_curie: ClassVar[str] = "vm:TypeSeverityKeyValue"
@@ -197,7 +182,7 @@ class TypeSeverityKeyValue(YAMLRoot):
     type: Union[str, TypeSeverityKeyValueType] = None
     severity: Optional[Union[str, "SeverityType"]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.type):
             self.MissingRequiredField("type")
         if not isinstance(self.type, TypeSeverityKeyValueType):
@@ -215,7 +200,7 @@ class Report(YAMLRoot):
     A report object that is a holder to multiple report results
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = VM.Report
     class_class_curie: ClassVar[str] = "vm:Report"
@@ -223,10 +208,10 @@ class Report(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = VM.Report
 
     results: Optional[
-        Union[Union[dict, "Result"], List[Union[dict, "Result"]]]
+        Union[Union[dict, "Result"], list[Union[dict, "Result"]]]
     ] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if not isinstance(self.results, list):
             self.results = [self.results] if self.results is not None else []
         self.results = [
@@ -242,7 +227,7 @@ class ValidationReport(Report):
     A report that consists of validation results
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = SH.ValidationReport
     class_class_curie: ClassVar[str] = "sh:ValidationReport"
@@ -250,10 +235,10 @@ class ValidationReport(Report):
     class_model_uri: ClassVar[URIRef] = VM.ValidationReport
 
     results: Optional[
-        Union[Union[dict, "ValidationResult"], List[Union[dict, "ValidationResult"]]]
+        Union[Union[dict, "ValidationResult"], list[Union[dict, "ValidationResult"]]]
     ] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if not isinstance(self.results, list):
             self.results = [self.results] if self.results is not None else []
         self.results = [
@@ -270,7 +255,7 @@ class RepairReport(Report):
     A report that consists of repair operation results
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = VM.RepairReport
     class_class_curie: ClassVar[str] = "vm:RepairReport"
@@ -278,10 +263,10 @@ class RepairReport(Report):
     class_model_uri: ClassVar[URIRef] = VM.RepairReport
 
     results: Optional[
-        Union[Union[dict, "RepairOperation"], List[Union[dict, "RepairOperation"]]]
+        Union[Union[dict, "RepairOperation"], list[Union[dict, "RepairOperation"]]]
     ] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if not isinstance(self.results, list):
             self.results = [self.results] if self.results is not None else []
         self.results = [
@@ -297,7 +282,7 @@ class Result(YAMLRoot):
     Abstract base class for any individual report result
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = VM.Result
     class_class_curie: ClassVar[str] = "vm:Result"
@@ -311,7 +296,7 @@ class ValidationResult(Result):
     An individual result arising from validation of a data instance using a particular rule
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = SH.ValidationResult
     class_class_curie: ClassVar[str] = "sh:ValidationResult"
@@ -333,7 +318,7 @@ class ValidationResult(Result):
     source_column_number: Optional[int] = None
     source_location: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.type):
             self.MissingRequiredField("type")
         if not isinstance(self.type, ConstraintType):
@@ -393,7 +378,7 @@ class RepairOperation(Result):
     The result of performing an individual repair
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = VM.RepairOperation
     class_class_curie: ClassVar[str] = "vm:RepairOperation"
@@ -405,7 +390,7 @@ class RepairOperation(Result):
     successful: Optional[Union[bool, Bool]] = None
     info: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.repairs is not None and not isinstance(self.repairs, ValidationResult):
             self.repairs = ValidationResult(**as_dict(self.repairs))
 
@@ -649,7 +634,7 @@ slots.results = Slot(
     curie=SH.curie("result"),
     model_uri=VM.results,
     domain=None,
-    range=Optional[Union[Union[dict, Result], List[Union[dict, Result]]]],
+    range=Optional[Union[Union[dict, Result], list[Union[dict, Result]]]],
 )
 
 slots.normalized = Slot(
@@ -732,10 +717,10 @@ slots.validationConfiguration__type_severity_map = Slot(
     domain=None,
     range=Optional[
         Union[
-            Dict[
+            dict[
                 Union[str, TypeSeverityKeyValueType], Union[dict, TypeSeverityKeyValue]
             ],
-            List[Union[dict, TypeSeverityKeyValue]],
+            list[Union[dict, TypeSeverityKeyValue]],
         ]
     ],
 )
@@ -819,7 +804,7 @@ slots.ValidationReport_results = Slot(
     model_uri=VM.ValidationReport_results,
     domain=ValidationReport,
     range=Optional[
-        Union[Union[dict, "ValidationResult"], List[Union[dict, "ValidationResult"]]]
+        Union[Union[dict, "ValidationResult"], list[Union[dict, "ValidationResult"]]]
     ],
 )
 
@@ -830,6 +815,6 @@ slots.RepairReport_results = Slot(
     model_uri=VM.RepairReport_results,
     domain=RepairReport,
     range=Optional[
-        Union[Union[dict, "RepairOperation"], List[Union[dict, "RepairOperation"]]]
+        Union[Union[dict, "RepairOperation"], list[Union[dict, "RepairOperation"]]]
     ],
 )

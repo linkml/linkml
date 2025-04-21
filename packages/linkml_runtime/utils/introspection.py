@@ -1,9 +1,8 @@
-import logging
 import sys
 from functools import lru_cache
 from pathlib import Path
 from types import ModuleType
-from typing import List, Type, Union
+from typing import Union
 
 from linkml_runtime.linkml_model import ClassDefinition
 from linkml_runtime.utils.distroutils import get_schema_string
@@ -26,7 +25,7 @@ def package_schema_path(package: Union[str, ModuleType]) -> Path:
             return path
 
 
-@lru_cache()
+@lru_cache
 def package_schemaview(package: str, **kwargs) -> SchemaView:
     """
     Returns the corresponding SchemaView for a package

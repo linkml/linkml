@@ -10,11 +10,14 @@ This package provides:
 """
 import logging
 import inspect
-from typing import Mapping, Any, Optional, Tuple, List, Iterator, Union
+from typing import Any, Union
+from collections.abc import Mapping, Iterator
 
 from linkml_runtime import SchemaView
 from linkml_runtime.utils import eval_utils
 from linkml_runtime.utils.yamlutils import YAMLRoot
+
+logger = logging.getLogger(__name__)
 
 
 class ObjectIndex:
@@ -52,8 +55,8 @@ class ObjectIndex:
         self._schemaview = schemaview
         self._class_map = schemaview.class_name_mappings()
         self._source_object_cache: Mapping[str, Any] = {}
-        self._proxy_object_cache: Mapping[str, "ProxyObject"] = {}
-        self._child_to_parent: Mapping[str, List[Tuple[str, str]]] = {}
+        self._proxy_object_cache: Mapping[str, ProxyObject] = {}
+        self._child_to_parent: Mapping[str, list[tuple[str, str]]] = {}
         self._index(obj)
 
     def _index(self, obj: Any, parent_key=None, parent=None):
@@ -110,7 +113,7 @@ class ObjectIndex:
         else:
             return ProxyObject(obj, _db=self)
 
-    def _key(self, obj: Any) -> Tuple[Union[str, YAMLRoot], str]:
+    def _key(self, obj: Any) -> tuple[Union[str, YAMLRoot], str]:
         """
         Returns primary key value for this object.
 
@@ -257,12 +260,12 @@ class ProxyObject:
                 module = inspect.getmodule(self._shadowed)
                 cls_dict = dict(inspect.getmembers(module, inspect.isclass))
                 if in_range not in cls_dict:
-                    logging.warning(f"Class {in_range} not found in {module}, classes: {cls_dict}")
+                    logger.warning(f"Class {in_range} not found in {module}, classes: {cls_dict}")
                     return obj
                 cls = cls_dict[in_range]
                 return cls(obj)
         return obj
 
-    def _attributes(self) -> List[str]:
+    def _attributes(self) -> list[str]:
         return list(vars(self._shadowed).keys())
 

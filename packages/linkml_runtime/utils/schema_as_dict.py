@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional
+from typing import Any, Optional
 
 import yaml
 
@@ -42,14 +42,14 @@ def _remove_names(obj: Any, parent: Optional[str]) -> Any:
     :return:
     """
     if isinstance(obj, dict):
-        return {k: _remove_names(v, k) for k, v in obj.items() if k != 'name' or parent is None or parent == 'slots'}
+        return {k: _remove_names(v, k) for k, v in obj.items() if k != 'name' or parent is None or parent in ['slots', 'slot_usage', 'attributes']}
     elif isinstance(obj, list):
         return [_remove_names(x, parent) for x in obj]
     else:
         return obj
 
 
-def schema_as_dict(schema: SchemaDefinition) -> Dict:
+def schema_as_dict(schema: SchemaDefinition) -> dict:
     """
     Translates a SchemaDefinition object into a python dictionary, removing redundant elements
 

@@ -174,7 +174,7 @@
       "definition_uri": "https://w3id.org/linkml/Objectidentifier",
       "description": "A URI or CURIE that represents an object in the model.",
       "comments": [
-        "Used for inheritence and type checking"
+        "Used for inheritance and type checking"
       ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
@@ -243,7 +243,7 @@
     {
       "name": "has_quantity_kind",
       "definition_uri": "https://w3id.org/linkml/has_quantity_kind",
-      "description": "Concept in a vocabulary or ontology that denotes the kind of quanity being measured, e.g. length",
+      "description": "Concept in a vocabulary or ontology that denotes the kind of quantity being measured, e.g. length",
       "comments": [
         "Potential ontologies include but are not limited to PATO, NCIT, OBOE, qudt.quantityKind"
       ],

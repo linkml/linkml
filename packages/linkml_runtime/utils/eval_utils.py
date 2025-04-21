@@ -8,16 +8,21 @@ import ast
 import operator as op
 
 # supported operators
-from typing import Tuple, List, Any
+from typing import Any
 
 operators = {ast.Add: op.add, ast.Sub: op.sub, ast.Mult: op.mul,
              ast.Div: op.truediv, ast.Pow: op.pow, ast.BitXor: op.xor,
              ast.USub: op.neg}
 compare_operators = {ast.Eq: op.eq, ast.Lt: op.lt, ast.LtE: op.le, ast.Gt: op.gt, ast.GtE: op.ge}
 
-def eval_conditional(*conds: List[Tuple[bool, Any]]) -> Any:
+def eval_conditional(*conds: list[tuple[bool, Any]]) -> Any:
     """
-    >>> cond(x < 25 : 'low', x > 25 : 'high', True: 'low')
+    Evaluate a collection of expression,value tuples, returing the first value whose expression is true
+
+    >>> x= 40
+    >>> eval_conditional((x < 25, 'low'),  (x > 25, 'high'), (True, 'low'))
+    'high'
+
     :param subj:
     :return:
     """
@@ -26,6 +31,7 @@ def eval_conditional(*conds: List[Tuple[bool, Any]]) -> Any:
             return val
 
 
+# (takes_list, func)
 funcs = {'max': (True, max),
          'min': (True, min),
          'len': (True, len),
@@ -38,7 +44,7 @@ class UnsetValueException(Exception):
     pass
 
 
-def eval_expr(expr: str, **kwargs) -> Any:
+def eval_expr(expr: str, _distribute=True, **kwargs) -> Any:
     """
     Evaluates a given expression, with restricted syntax
 
@@ -58,10 +64,9 @@ def eval_expr(expr: str, **kwargs) -> Any:
 
     Nulls:
 
-    - If a variable is enclosed in {}s then entire expression will eval to None if variable is unset
+    - If a variable is enclosed in {}s then entire expression will eval to None if any variable is unset
 
-    >>> eval_expr('{x} + {y}', x=None, y=2)
-    None
+    >>> assert eval_expr('{x} + {y}', x=None, y=2) is None
 
     Functions:
 
@@ -78,6 +83,9 @@ def eval_expr(expr: str, **kwargs) -> Any:
     - Similarly `strlen(container.persons.name)` will return a list whose members are the lengths of all names
 
     :param expr: expression to evaluate
+    :param _distribute: if True, distribute operations over collections and return array
+    :param kwargs: variables to substitute
+    :return: result of evaluation
     """
     #if kwargs:
     #    expr = expr.format(**kwargs)
@@ -86,16 +94,15 @@ def eval_expr(expr: str, **kwargs) -> Any:
         return None
     else:
         try:
-            return eval_(ast.parse(expr, mode='eval').body, kwargs)
+            return eval_(ast.parse(expr, mode='eval').body, kwargs, distribute=_distribute)
         except UnsetValueException:
             return None
 
 
 
-
-
-
-def eval_(node, bindings={}):
+def eval_(node, bindings=None, distribute=True):
+    if bindings is None:
+        bindings = {}
     if isinstance(node, ast.Num):
         return node.n
     elif isinstance(node, ast.Str):
@@ -104,9 +111,6 @@ def eval_(node, bindings={}):
         else:
             return node.value
     elif isinstance(node, ast.Constant):
-        return node.value
-    elif isinstance(node, ast.NameConstant):
-        # can be removed when python 3.7 is no longer supported
         return node.value
     elif isinstance(node, ast.Name):
         return bindings.get(node.id)
@@ -122,7 +126,7 @@ def eval_(node, bindings={}):
         # e.g. for person.name, this returns the val of person
         v = eval_(node.value, bindings)
         # lookup attribute, potentially distributing the results over collections
-        def _get(obj: Any, k: str, recurse=True) -> Any:
+        def _get(obj: Any, k: str, recurse=distribute) -> Any:
             if isinstance(obj, dict):
                 # dicts are treated as collections; distribute results
                 if recurse:

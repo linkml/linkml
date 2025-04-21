@@ -1,7 +1,6 @@
 import os
 import sys
-from dataclasses import dataclass
-from typing import Optional, List
+from typing import Optional
 
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
@@ -44,7 +43,7 @@ class MismatchLog:
             return '\n'.join(rval) + '\n'
 
     def __init__(self) -> None:
-        self.entries: List[MismatchLog.MismatchLogEntry] = list()
+        self.entries: list[MismatchLog.MismatchLogEntry] = list()
 
     def log(self, file_or_directory: str, message: Optional[str] = None) -> None:
         self.entries.append(MismatchLog.MismatchLogEntry(file_or_directory, message))

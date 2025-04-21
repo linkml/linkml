@@ -1,15 +1,16 @@
-import json
 import os
 import unittest
 import logging
 from pathlib import Path
 
+from curies import Converter
 from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import RDF, SKOS, XSD
 from rdflib import Namespace
 
 from linkml_runtime import MappingError, DataNotFoundError
 from linkml_runtime.dumpers import rdflib_dumper, yaml_dumper
+from linkml_runtime.linkml_model import Prefix
 from linkml_runtime.loaders import yaml_loader
 from linkml_runtime.loaders import rdflib_loader
 from linkml_runtime.utils.schemaview import SchemaView
@@ -19,6 +20,9 @@ from tests.test_loaders_dumpers.models.node_object import NodeObject, Triple
 from tests.test_loaders_dumpers.models.phenopackets import PhenotypicFeature, OntologyClass, Phenopacket, MetaData, \
     Resource
 
+logger = logging.getLogger(__name__)
+
+
 SCHEMA = os.path.join(INPUT_DIR, 'personinfo.yaml')
 DATA = os.path.join(INPUT_DIR, 'example_personinfo_data.yaml')
 DATA_TTL = os.path.join(INPUT_DIR, 'example_personinfo_data.ttl')
@@ -26,7 +30,7 @@ OUT = os.path.join(OUTPUT_DIR, 'example_personinfo_data.ttl')
 DATA_ROUNDTRIP = os.path.join(OUTPUT_DIR, 'example_personinfo_data.roundtrip-rdf.yaml')
 UNMAPPED_ROUNDTRIP = os.path.join(OUTPUT_DIR, 'example_personinfo_data.unmapped-preds.yaml')
 
-prefix_map = {
+PREFIX_MAP = {
     'CODE': 'http://example.org/code/',
     'ROR': 'http://example.org/ror/',
     'P': 'http://example.org/P/',
@@ -105,12 +109,14 @@ SYMP = Namespace('http://purl.obolibrary.org/obo/SYMP_')
 WD = Namespace('http://www.wikidata.org/entity/')
 
 class RdfLibDumperTestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        self.prefix_map = PREFIX_MAP
 
     def test_rdflib_dumper(self):
         view = SchemaView(SCHEMA)
         container = yaml_loader.load(DATA, target_class=Container)
         self._check_objs(view, container)
-        rdflib_dumper.dump(container, schemaview=view, to_file=OUT, prefix_map=prefix_map)
+        rdflib_dumper.dump(container, schemaview=view, to_file=OUT, prefix_map=self.prefix_map)
         g = Graph()
         g.parse(OUT, format='ttl')
 
@@ -134,7 +140,7 @@ class RdfLibDumperTestCase(unittest.TestCase):
         self.assertIn((container, INFO.organizations, ROR['2']), g)
         self.assertIn((container, INFO.persons, P['001']), g)
         self.assertIn((container, INFO.persons, P['002']), g)
-        container: Container = rdflib_loader.load(OUT, target_class=Container, schemaview=view, prefix_map=prefix_map)
+        container: Container = rdflib_loader.load(OUT, target_class=Container, schemaview=view, prefix_map=self.prefix_map)
         self._check_objs(view, container)
         #print(yaml_dumper.dumps(container))
         #person = next(p for p in container.persons if p.id == 'P:002')
@@ -148,7 +154,7 @@ class RdfLibDumperTestCase(unittest.TestCase):
         assert org1type2.meaning
         org1 = Organization('ROR:1', categories=[org1type1, org1type2])
         print(org1.categories)
-        g = rdflib_dumper.as_rdf_graph(org1, schemaview=view, prefix_map=prefix_map)
+        g = rdflib_dumper.as_rdf_graph(org1, schemaview=view, prefix_map=self.prefix_map)
         print(g)
         cats = list(g.objects(ROR['1'], INFO['categories']))
         print(cats)
@@ -160,7 +166,7 @@ class RdfLibDumperTestCase(unittest.TestCase):
         print(catsx)
         self.assertCountEqual([org1type1, org1type2], catsx)
 
-    def test_undeclared_prefix(self):
+    def test_undeclared_prefix_raises_error(self):
         view = SchemaView(SCHEMA)
         org1 = Organization('foo')  # not a CURIE or URI
         with self.assertRaises(Exception) as context:
@@ -168,12 +174,19 @@ class RdfLibDumperTestCase(unittest.TestCase):
         org1 = Organization('http://example.org/foo/o1')
         rdflib_dumper.as_rdf_graph(org1, schemaview=view)
 
+    def test_base_prefix(self):
+        view = SchemaView(SCHEMA)
+        view.schema.prefixes["_base"] = Prefix("_base", "http://example.org/")
+        org1 = Organization('foo')  # not a CURIE or URI
+        g = rdflib_dumper.as_rdf_graph(org1, schemaview=view)
+        assert (URIRef('http://example.org/foo'), RDF.type, SDO.Organization) in g
+
     def test_rdflib_loader(self):
         """
         tests loading from an RDF graph
         """
         view = SchemaView(SCHEMA)
-        container: Container = rdflib_loader.load(DATA_TTL, target_class=Container, schemaview=view, prefix_map=prefix_map)
+        container: Container = rdflib_loader.load(DATA_TTL, target_class=Container, schemaview=view, prefix_map=self.prefix_map)
         self._check_objs(view, container)
         yaml_dumper.dump(container, to_file=DATA_ROUNDTRIP)
 
@@ -186,10 +199,10 @@ class RdfLibDumperTestCase(unittest.TestCase):
         # default behavior is to raise error on unmapped predicates
         with self.assertRaises(MappingError) as context:
             rdflib_loader.loads(unmapped_predicates_test_ttl, target_class=Person,
-                                schemaview=view, prefix_map=prefix_map)
+                                schemaview=view, prefix_map=self.prefix_map)
         # called can explicitly allow unmapped predicates to be dropped
         person: Person = rdflib_loader.loads(unmapped_predicates_test_ttl, target_class=Person,
-                                                   schemaview=view, prefix_map=prefix_map,
+                                                   schemaview=view, prefix_map=self.prefix_map,
                                                    ignore_unmapped_predicates=True)
         self.assertEqual(person.id, 'P:001')
         self.assertEqual(person.age_in_years, 33)
@@ -204,7 +217,7 @@ class RdfLibDumperTestCase(unittest.TestCase):
         view = SchemaView(SCHEMA)
         # default behavior is to raise error on unmapped predicates
         person = rdflib_loader.loads(enum_union_type_test_ttl, target_class=Person,
-                                schemaview=view, prefix_map=prefix_map)
+                                schemaview=view, prefix_map=self.prefix_map)
         self.assertEqual(person.id, 'P:001')
         self.assertEqual(person.age_in_years, 33)
         yaml_dumper.dump(person, to_file=UNMAPPED_ROUNDTRIP)
@@ -225,11 +238,11 @@ class RdfLibDumperTestCase(unittest.TestCase):
         # default behavior is to raise error on unmapped predicates
         with self.assertRaises(DataNotFoundError) as context:
             rdflib_loader.loads(unmapped_type_test_ttl, target_class=Person,
-                                schemaview=view, prefix_map=prefix_map)
+                                schemaview=view, prefix_map=self.prefix_map)
         graph = Graph()
         graph.parse(data=unmapped_type_test_ttl, format='ttl')
         objs = rdflib_loader.from_rdf_graph(graph, target_class=Person,
-                                     schemaview=view, prefix_map=prefix_map)
+                                     schemaview=view, prefix_map=self.prefix_map)
         self.assertEqual(len(objs), 0)
 
     def test_blank_node(self):
@@ -238,7 +251,7 @@ class RdfLibDumperTestCase(unittest.TestCase):
         """
         view = SchemaView(SCHEMA)
         address: Address = rdflib_loader.loads(blank_node_test_ttl, target_class=Address,
-                                             schemaview=view, prefix_map=prefix_map,
+                                             schemaview=view, prefix_map=self.prefix_map,
                                              ignore_unmapped_predicates=True)
         self.assertEqual(address.city, 'foo city')
         ttl = rdflib_dumper.dumps(address, schemaview=view)
@@ -315,7 +328,7 @@ class RdfLibDumperTestCase(unittest.TestCase):
             assert x.subject is None
             assert x.predicate is not None
             assert x.object is not None
-            logging.info(f'  x={x}')
+            logger.info(f'  x={x}')
         # ranges that are objects are contracted
         assert Triple(subject=None, predicate='rdfs:subClassOf', object='owl:Thing') in obj.statements
         assert Triple(subject=None, predicate='rdfs:subClassOf', object='NCBITaxon:1') in obj.statements
@@ -327,7 +340,7 @@ class RdfLibDumperTestCase(unittest.TestCase):
                                          cast_literals=False,
                                          allow_unprocessed_triples=False,
                                          prefix_map=taxon_prefix_map)
-            logging.error(f'Passed unexpectedly: there are known to be unreachable triples')
+            logger.error(f'Passed unexpectedly: there are known to be unreachable triples')
         # removing complex range, object has a range of string
         view.schema.slots['object'].exactly_one_of = []
         view.set_modified()
@@ -342,7 +355,7 @@ class RdfLibDumperTestCase(unittest.TestCase):
                                          cast_literals=False,
                                          allow_unprocessed_triples=True,
                                          prefix_map=taxon_prefix_map)
-            logging.error(f'Passed unexpectedly: rdf:object is known to have a mix of literals and nodes')
+            logger.error(f'Passed unexpectedly: rdf:object is known to have a mix of literals and nodes')
 
     def test_phenopackets(self):
         view = SchemaView(str(Path(INPUT_DIR) / "phenopackets"/ "phenopackets.yaml"))
@@ -368,7 +381,7 @@ class RdfLibDumperTestCase(unittest.TestCase):
             pkt = Phenopacket(id='id with spaces',
                               metaData=MetaData(resources=[Resource(id='id with spaces')]),
                               phenotypicFeatures=[pf])
-            ttl = rdflib_dumper.dumps(pkt, view, prefix_map=prefix_map)
+            ttl = rdflib_dumper.dumps(pkt, view, prefix_map=self.prefix_map)
             g = Graph()
             g.parse(data=ttl, format='ttl')
             self.assertIn(Literal(test_label), list(g.objects(URIRef(expected_uri))),
@@ -380,6 +393,12 @@ class RdfLibDumperTestCase(unittest.TestCase):
 
 
 
+class RDFLibConverterDumperTestCase(RdfLibDumperTestCase):
+    """A test case that uses a :class:`curies.Converter` for testing loading and dumping with RDFLib."""
+
+    def setUp(self) -> None:
+        """Set up the test case using a :class:`curies.Converter` instead of a simple prefix map."""
+        self.prefix_map = Converter.from_prefix_map(PREFIX_MAP)
 
 
 

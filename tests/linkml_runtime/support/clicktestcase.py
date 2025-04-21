@@ -1,7 +1,7 @@
 import os
 import shlex
 import unittest
-from typing import Union, List, Optional, Callable
+from typing import Union, Optional, Callable
 from warnings import warn
 
 from tests.support.dirutils import make_and_clear_directory
@@ -86,7 +86,7 @@ class ClickTestCase(TestEnvironmentTestCase):
             print(nw[offset:offset+view+view])
 
     def do_test(self,
-                args: Union[str, List[str]],
+                args: Union[str, list[str]],
                 testFileOrDirectory: Optional[str] = None,
                 *,
                 expected_error: type(Exception) = None,

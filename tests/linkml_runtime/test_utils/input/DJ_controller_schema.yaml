@@ -1,0 +1,59 @@
+id: DJControllerSchema
+name: DJControllerSchema
+title: LinkML schema for my DJ controller
+imports:
+- linkml:types
+classes:
+  DJController:
+    slots:
+    - jog_wheels
+    - tempo
+    - volume_faders
+    - crossfaders
+    slot_usage:
+      tempo:
+        examples:
+        - value: 120.0
+        - value: 144.0
+        - value: 126.8
+        - value: 102.6
+slots:
+  jog_wheels:
+    description: The number of jog wheels on the DJ controller
+    range: integer
+    examples:
+    - value: 2
+    annotations:
+      expected_value: an integer between 0 and 4
+    in_subset: decks
+  tempo:
+    description: The tempo of the track (in BPM)
+    range: float
+    examples:
+    - value: 120.0
+    - value: 144.0
+    annotations:
+      expected_value: a number between 0 and 200
+      preferred_unit: BPM
+    in_subset: decks
+  volume_faders:
+    description: The number of volume faders on the DJ controller
+    range: integer
+    examples:
+    - value: 4
+    annotations:
+      expected_value: an integer between 0 and 8
+    in_subset: mixer
+  crossfaders:
+    description: The number of crossfaders on the DJ controller
+    range: integer
+    examples:
+    - value: 1
+    annotations:
+      expected_value: an integer between 0 and 2
+    in_subset: mixer
+subsets:
+  decks:
+    description: A subset that represents the components in the deck portion of a DJ controller
+  mixer:
+    description: A subset that represents the components in the mixer portion of a DJ controller

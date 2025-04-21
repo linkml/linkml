@@ -23,14 +23,12 @@ description: |-
 
   * [MinimalSubset](https://w3id.org/linkml/MinimalSubset)
   * [BasicSubset](https://w3id.org/linkml/BasicSubset)
-  * [BasicSubset](https://w3id.org/linkml/BasicSubset)
 
   For canonical reference documentation on any metamodel construct,
   refer to the official URI for each construct, e.g.
   [https://w3id.org/linkml/is_a](https://w3id.org/linkml/is_a)
 
 license: https://creativecommons.org/publicdomain/zero/1.0/
-version: 2.0.0
 
 prefixes:
   linkml: https://w3id.org/linkml/
@@ -49,6 +47,8 @@ prefixes:
   prov: http://www.w3.org/ns/prov#
   vann: https://vocab.org/vann/
   qudt: http://qudt.org/schema/qudt/
+  cdisc: http://rdf.cdisc.org/mms#
+  SIO: http://semanticscience.org/resource/SIO_
 
 default_prefix: linkml
 default_range: string
@@ -124,9 +124,9 @@ subsets:
     description: |-
       A profile that includes all the metamodel elements whose semantics can be expressed in OWL
 
-#==================================
-# Slots                           #
-#==================================
+# ==================================
+# Slots                            #
+# ==================================
 slots:
 
   # -----------------------------------
@@ -185,6 +185,13 @@ slots:
       into the schema for the implementing element. However, the referenced schema may be used to check
       conformance of the implementing element.
     multivalued: true
+
+  instantiates:
+    domain: element
+    range: uriorcurie
+    description: >-
+      An element in another schema which this element instantiates.
+    multivalued: true
       
   categories:
     range: uriorcurie
@@ -233,11 +240,18 @@ slots:
       - If identifiers are treated as CURIEs, then the CURIE must start with one of the indicated prefixes followed by `:` (_should_ start if the list is open)
       - If identifiers are treated as URIs, then the URI string must start with the expanded for of the prefix (_should_ start if the list is open)
     see_also:
-      - https://github.com/linkml/linkml/issues/194
       - https://github.com/linkml/linkml-model/issues/28
     in_subset:
       - SpecificationSubset
       - BasicSubset
+
+  id_prefixes_are_closed:
+    domain: element
+    range: boolean
+    description: >-
+      If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.
+    see_also:
+      - https://github.com/linkml/linkml/issues/194
 
   description:
     rank: 5
@@ -450,13 +464,21 @@ slots:
     description: >-
       The relationship between an element and its alias.
 
+  alias_contexts:
+    alias: contexts
+    domain: structured_alias
+    range: uri
+    multivalued: true
+    description: >-
+      The context in which an alias should be applied
+
   in_language:
     slot_uri: schema:inLanguage
     range: string
     description: >-
       the primary language used in the sources
     comments:
-      -  Recommended to use a string from IETF BCP 47
+      - Recommended to use a string from IETF BCP 47
     conforms_to: https://www.rfc-editor.org/rfc/bcp/bcp47.txt
 
   source:
@@ -488,7 +510,6 @@ slots:
   # --------------------------------------------------------------
   is_a:
     rank: 11
-    domain: definition
     range: definition
     abstract: true
     description: >-
@@ -532,13 +553,12 @@ slots:
     rank: 13
     aliases:
       - traits
-    domain: definition
     multivalued: true
     range: definition
     description: >-
       A collection of secondary parent classes or slots from which inheritable metaslots are propagated from.
     comments:
-      - mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance
+      - mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance
     see_also:
       - https://en.wikipedia.org/wiki/Mixin
     in_subset:
@@ -567,7 +587,7 @@ slots:
       Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term
       while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration
       in that in an enumeration, the values of the enumeration are listed directly in the model itself.
-      Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an
+      Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an
       enumerated list of possible values in every serialization of the model.
     status: testing
 
@@ -604,7 +624,6 @@ slots:
       - BasicSubset
 
   pv_formula:
-    domain: enum_expression
     range: pv_formula_options
     description: >-
       Defines the specific formula to be used to generate the permissible values.
@@ -627,6 +646,8 @@ slots:
     in_subset:
       - SpecificationSubset
       - BasicSubset
+    exact_mappings:
+      - cdisc:PermissibleValue
 
   enum_uri:
     aliases:
@@ -953,7 +974,7 @@ slots:
 
   source_file:
     domain: schema_definition
-    readonly: suppplied by the schema loader
+    readonly: supplied by the schema loader
     description: name, uri or description of the source of the schema
     in_subset:
       - BasicSubset
@@ -1409,6 +1430,56 @@ slots:
       - BasicSubset
       - ObjectOrientedProfile
 
+  array:
+    domain: slot_definition
+    range: array_expression
+    inherited: true
+    description: coerces the value of the slot into an array and defines the dimensions of that array
+    status: testing
+
+  dimensions:
+    aliases:
+      - axes
+    description: definitions of each axis in the array
+    domain: array_expression
+    range: dimension_expression
+    multivalued: true
+    list_elements_ordered: true
+    status: testing
+
+  minimum_number_dimensions:
+    description: minimum number of dimensions in the array
+    domain: array_expression
+    range: integer
+    status: testing
+    # minimum_value: 1
+    comments:
+      - minimum_cardinality cannot be greater than maximum_cardinality
+
+  maximum_number_dimensions:
+    description: maximum number of dimensions in the array, or False if explicitly no maximum.
+      If this is unset, and an explicit list of dimensions are passed using dimensions, then this is interpreted
+      as a closed list and the maximum_number_dimensions is the length of the dimensions list, unless this
+      value is set to False
+    domain: array_expression
+    range: Anything
+    any_of:
+      - range: integer
+        # minimum_value: 1
+      - range: boolean
+    status: testing
+    comments:
+      - maximum_number_dimensions cannot be less than minimum_number_dimensions
+
+  exact_number_dimensions:
+    description: exact number of dimensions in the array
+    domain: array_expression
+    range: integer
+    status: testing
+    # minimum_value: 1
+    comments:
+      - if exact_number_dimensions is set, then minimum_number_dimensions and maximum_number_dimensions must be unset or have the same value
+
   inherited:
     domain: slot_definition
     range: boolean
@@ -1432,9 +1503,8 @@ slots:
     domain: slot_definition
     range: string
     inherited: true
-    description:  |-
-      function that provides a default value for the slot.  Possible values for this slot are defined in
-      linkml.utils.ifabsent_functions.default_library:
+    description: >-
+      function that provides a default value for the slot.
         * [Tt]rue -- boolean True
         * [Ff]alse -- boolean False
         * bnode -- blank node identifier
@@ -1446,6 +1516,7 @@ slots:
         * slot_uri -- URI for the slot
         * slot_curie -- CURIE for the slot
         * string(value) -- string value
+        * EnumName(PermissibleValue) -- enum value
     close_mappings:
       - sh:defaultValue
     in_subset:
@@ -1477,7 +1548,7 @@ slots:
     domain: slot_definition
     range: presence_enum
     inherited: true
-    description: if true then a value must be present (for lists there must be at least one value). If false then a value must be absent (for lists, must be empty)
+    description: if PRESENT then a value must be present (for lists there must be at least one value). If ABSENT then a value must be absent (for lists, must be empty)
     comments:
       - if set to true this has the same effect as required=true. In contrast, required=false allows a value to be present
     status: unstable
@@ -1510,23 +1581,37 @@ slots:
     in_subset:
       - SpecificationSubset
 
+  exact_cardinality:
+    is_a: list_value_specification_constant
+    range: integer
+    inherited: true
+    description: the exact number of entries for a multivalued slot
+    in_subset:
+      - SpecificationSubset
+    comments:
+      - if exact_cardinality is set, then minimum_cardinalty and maximum_cardinality must be unset or have the same value
+
   minimum_cardinality:
     is_a: list_value_specification_constant
     range: integer
     inherited: true
     description: the minimum number of entries for a multivalued slot
-    status: testing
     in_subset:
       - SpecificationSubset
+    # minimum_value: 0
+    comments:
+      - minimum_cardinality cannot be greater than maximum_cardinality
 
   maximum_cardinality:
     is_a: list_value_specification_constant
     range: integer
     inherited: true
     description: the maximum number of entries for a multivalued slot
-    status: testing
     in_subset:
       - SpecificationSubset
+    comments:
+      - maximum_cardinality cannot be less than minimum_cardinality
+    # minimum_value: 0
 
   equals_string_in:
     is_a: list_value_specification_constant
@@ -1628,6 +1713,7 @@ slots:
       - BasicSubset
     see_also:
       - "https://w3id.org/linkml/docs/specification/06mapping/#collection-forms"
+      - https://linkml.io/linkml/schemas/inlining.html
 
   inlined_as_list:
     rank: 27
@@ -1650,6 +1736,7 @@ slots:
       - BasicSubset
     see_also:
       - "https://w3id.org/linkml/docs/specification/06mapping/#collection-forms"
+      - https://linkml.io/linkml/schemas/inlining.html
 
   inlined_as_simple_dict:
     rank: 28
@@ -1788,6 +1875,7 @@ slots:
     multivalued: true
     exact_mappings:
       - schema:domainIncludes
+      - SIO:000011
 
   is_usage_slot:
     domain: slot_definition
@@ -1807,7 +1895,7 @@ slots:
     range: slot_definition
     description: >-
       Ontology property which this slot is a subproperty of.  Note: setting this property on a slot
-      does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values
+      does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values
       in every serialization of the model.
     examples:
       - value: RO:HOM0000001
@@ -1927,8 +2015,10 @@ slots:
     aliases:
       - low value
     domain: slot_definition
-    range: integer
-    description: for slots with ranges of type number, the value must be equal to or higher than this
+    range: Anything
+    description: For ordinal ranges, the value must be equal to or higher than this
+    notes:
+      - Range to be refined to an "Ordinal" metaclass - see https://github.com/linkml/linkml/issues/1384#issuecomment-1892721142
     inherited: true
     in_subset:
       - SpecificationSubset
@@ -1938,8 +2028,10 @@ slots:
     aliases:
       - high value
     domain: slot_definition
-    range: integer
-    description: for slots with ranges of type number, the value must be equal to or lowe than this
+    range: Anything
+    description: For ordinal ranges, the value must be equal to or lower than this
+    notes:
+      - Range to be refined to an "Ordinal" metaclass - see https://github.com/linkml/linkml/issues/1384#issuecomment-1892721142
     inherited: true
     in_subset:
       - SpecificationSubset
@@ -1955,7 +2047,7 @@ slots:
   partial_match:
     domain: pattern_expression
     range: boolean
-    description: if true then the pattern must match the whole string, as if enclosed in ^...$
+    description: if not true then the pattern must match the whole string, as if enclosed in ^...$
     in_subset:
       - SpecificationSubset
 
@@ -2011,6 +2103,63 @@ slots:
     in_subset:
       - SpecificationSubset
 
+  bindings:
+    domain: element
+    range: enum_binding
+    multivalued: true
+    inlined: true
+    status: testing
+    description: >-
+      A collection of enum bindings that specify how a slot can be bound to a permissible value
+      from an enumeration.
+
+      LinkML provides enums to allow string values to be restricted to one of a set of permissible
+      values (specified statically or dynamically).
+
+      Enum bindings allow enums to be bound to any object, including complex nested objects. For
+      example, given a (generic) class Concept with slots id and label, it may be desirable to restrict the
+      values the id takes on in a given context. For example, a HumanSample class may have a slot for
+      representing sample site, with a range of concept, but the values of that slot may be restricted to
+      concepts from a particular branch of an anatomy ontology.
+    in_subset:
+      - SpecificationSubset
+
+  binds_value_of:
+    domain: enum_binding
+    range: string
+    description: >-
+      A path to a slot that is being bound to a permissible value from an enumeration.
+    in_subset:
+      - SpecificationSubset
+
+  obligation_level:
+    range: obligation_level_enum
+    description: >-
+      The level of obligation or recommendation strength for a metadata element
+    in_subset:
+      - SpecificationSubset
+
+  type_mappings:
+    range: type_mapping
+    description: >-
+      A collection of type mappings that specify how a slot's range should be mapped or
+      serialized in different frameworks
+    multivalued: true
+      
+  framework_key:
+    range: string
+    alias: framework
+    key: true
+    description: >-
+      The name of a format that can be used to serialize LinkML data.
+      The string value should be a code from the LinkML frameworks vocabulary,
+      but this is not strictly enforced
+    
+  mapped_type:
+    range: type_definition
+    alias: type
+    description: >-
+      type to coerce to
 
   # -----------------------------------
   # Slots for type definition
@@ -2036,7 +2185,7 @@ slots:
     inherited: true
     comments:
       - every root type must have a base
-      - the base is inherited by child types but may be overriden.  Base compatibility is not checked.
+      - the base is inherited by child types but may be overridden.  Base compatibility is not checked.
     in_subset:
       - SpecificationSubset
       - BasicSubset
@@ -2066,7 +2215,7 @@ slots:
       - BasicSubset
 
   # -----------------------------------
-  # Slots for alt descripion
+  # Slots for alt description
   # -----------------------------------
   alt_description_text:
     domain: alt_description
@@ -2288,7 +2437,7 @@ slots:
     description: the slot to traverse
     range: slot_definition
   path_rule:
-    description: a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts
+    description: a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments
     domain: slot_definition
     range: path_expression
 
@@ -2325,9 +2474,9 @@ slots:
       - in the context of property graphs, this should be used on edge classes to indicate which slots represent the input and output nodes
 
 
-#==================================
-# Classes                         #
-#==================================
+# ==================================
+# Classes                          #
+# ==================================
 classes:
 
   Anything:
@@ -2362,11 +2511,14 @@ classes:
       - narrow mappings
       - broad mappings
       - created_by
+      - contributors
       - created_on
       - last_updated_on
       - modified_by
       - status
       - rank
+      - categories
+      - keywords
     in_subset:
       - BasicSubset
 
@@ -2384,10 +2536,12 @@ classes:
     slots:
       - name
       - id_prefixes
+      - id_prefixes_are_closed
       - definition_uri
       - local_names
       - conforms_to
       - implements
+      - instantiates
     see_also:
       - https://en.wikipedia.org/wiki/Data_element
     in_subset:
@@ -2428,8 +2582,7 @@ classes:
       - generation_date
       - slot_names_unique
       - settings
-      - categories
-      - keywords
+      - bindings
     see_also:
       - https://en.wikipedia.org/wiki/Data_dictionary
     close_mappings:
@@ -2555,11 +2708,15 @@ classes:
     rank: 5
     aliases:
       - enum
+      - enumeration
+      - semantic enumeration
       - value set
       - term set
       - concept set
+      - code set
       - Terminology Value Set
       - answer list
+      - value domain
     description: an element whose instances must be drawn from a specified set of permissible values
     is_a: definition
     mixins:
@@ -2567,6 +2724,7 @@ classes:
     exact_mappings:
       - qb:HierarchicalCodeList
       - NCIT:C113497
+      - cdisc:ValueDomain
     close_mappings:
       - skos:ConceptScheme
     in_subset:
@@ -2578,8 +2736,28 @@ classes:
     slots:
       - enum_uri
 
+  enum_binding:
+    description: >-
+      A binding of a slot or a class to a permissible value from an enumeration.
+    slots:
+      - range
+      - obligation_level
+      - binds_value_of
+      - pv_formula
+    slot_usage:
+      range:
+        range: enum_definition
+    in_subset:
+      - SpecificationSubset
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+
   match_query:
-    description: A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts
+    description: >-
+      A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that 
+      matches on properties of the external concepts.
     slots:
       - identifier_pattern
       - source_ontology
@@ -2587,7 +2765,9 @@ classes:
       - SpecificationSubset
 
   reachability_query:
-    description: A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types
+    description: >-
+      A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a 
+      set of source nodes to a set of descendants or ancestors over a set of relationship types.
     slots:
       - source_ontology
       - source_nodes
@@ -2612,6 +2792,7 @@ classes:
       - literal_form
       - alias_predicate
       - categories
+      - alias_contexts
     slot_usage:
       categories:
         description: >-
@@ -2673,8 +2854,10 @@ classes:
       - range
       - range_expression
       - enum_range
+      - bindings
       - required
       - recommended
+      - multivalued
       - inlined
       - inlined_as_list
       - minimum_value
@@ -2688,6 +2871,7 @@ classes:
       - equals_string_in
       - equals_number
       - equals_expression
+      - exact_cardinality
       - minimum_cardinality
       - maximum_cardinality
       - has_member
@@ -2731,7 +2915,7 @@ classes:
       - singular_name
       - domain
       - slot_uri
-      - multivalued
+      - array
       - inherited
       - readonly
       - ifabsent
@@ -2765,6 +2949,7 @@ classes:
       - disjoint_with
       - children_are_mutually_disjoint
       - union_of
+      - type_mappings
     slot_usage:
       is_a:
         range: slot_definition
@@ -2890,6 +3075,32 @@ classes:
     in_subset:
       - SpecificationSubset
 
+  array_expression:
+    description: defines the dimensions of an array
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+    slots:
+      - exact_number_dimensions
+      - minimum_number_dimensions
+      - maximum_number_dimensions
+      - dimensions
+    status: testing
+
+  dimension_expression:
+    description: defines one of the dimensions of an array
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+    slots:
+      - alias
+      - maximum_cardinality
+      - minimum_cardinality
+      - exact_cardinality
+    status: testing
+
   pattern_expression:
     description: a regular expression pattern used to evaluate conformance of a string
     mixins:
@@ -2977,6 +3188,10 @@ classes:
       - description
       - meaning
       - unit
+      - instantiates
+      - implements
+      - is_a
+      - mixins
     in_subset:
       - SpecificationSubset
       - BasicSubset
@@ -2997,9 +3212,23 @@ classes:
       - BasicSubset
       - RelationalModelProfile
 
-#==================================
-# Enumerations                    #
-#==================================
+  type_mapping:
+    rank: 21
+    description: Represents how a slot or type can be serialized to a format.
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+    slots:
+      - framework_key
+      - mapped_type
+      - string_serialization
+    in_subset:
+      - SpecificationSubset
+
+# ==================================
+# Enumerations                     #
+# ==================================
 enums:
   pv_formula_options:
     rank: 1
@@ -3014,6 +3243,8 @@ enums:
         description: The permissible values are the set of code URIs in the code set
       FHIR_CODING:
         description: The permissible values are the set of FHIR coding elements derived from the code set
+      LABEL:
+        description: The permissible values are the set of human readable labels in the code set
     in_subset:
       - SpecificationSubset
       - BasicSubset
@@ -3063,3 +3294,28 @@ enums:
         meaning: skos:broaderMatch
       NARROW_SYNONYM:
         meaning: skos:narrowerMatch
+
+  obligation_level_enum:
+    rank: 10
+    description: >-
+      The level of obligation or recommendation strength for a metadata element
+    permissible_values:
+      REQUIRED:
+        description: >-
+          The metadata element is required to be present in the model
+      RECOMMENDED:
+        aliases:
+          - ENCOURAGED
+        description: >-
+          The metadata element is recommended to be present in the model
+      OPTIONAL:
+        description: >-
+          The metadata element is optional to be present in the model
+      EXAMPLE:
+        description: >-
+          The metadata element is an example of how to use the model
+      DISCOURAGED:
+        description: >-
+          The metadata element is allowed but discouraged to be present in the model
+    in_subset:
+      - SpecificationSubset

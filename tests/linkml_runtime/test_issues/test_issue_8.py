@@ -1,5 +1,4 @@
 import unittest
-from typing import Type
 
 from linkml_runtime.linkml_model import SchemaDefinition, SlotDefinition, ClassDefinition
 from linkml_runtime.loaders import yaml_loader
@@ -7,7 +6,7 @@ from linkml_runtime.utils.yamlutils import YAMLRoot
 from tests.test_issues.environment import env
 
 
-def override(cls: Type[YAMLRoot]):
+def override(cls: type[YAMLRoot]):
     orig = cls.MissingRequiredField
     def mrf(self, field_name: str) -> None:
         if isinstance(self, SchemaDefinition) and field_name == "name" and self.id:

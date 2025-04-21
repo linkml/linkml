@@ -1,7 +1,5 @@
-import logging
 import unittest
 from copy import deepcopy
-from typing import List, Tuple
 from unittest import TestCase
 
 from linkml_runtime.linkml_model import SchemaDefinition, ClassDefinition, SlotDefinition, EnumDefinition, TypeDefinition, Prefix, \
@@ -22,12 +20,12 @@ EXPECTED = {
 
 
 def make_schema(name: str,
-                prefixes: List[Prefix] = None,
-                classes: List[ClassDefinition] = None,
-                slots: List[SlotDefinition] = None,
-                enums: List[EnumDefinition] = None,
-                types: List[TypeDefinition] = None,
-                subsets: List[SubsetDefinition] = None,
+                prefixes: list[Prefix] = None,
+                classes: list[ClassDefinition] = None,
+                slots: list[SlotDefinition] = None,
+                enums: list[EnumDefinition] = None,
+                types: list[TypeDefinition] = None,
+                subsets: list[SubsetDefinition] = None,
                 ) -> SchemaDefinition:
     """
     Make a schema with the given elements
@@ -148,7 +146,7 @@ class Issue1143TestCase(TestCase):
 
         for k, vs in EXPECTED.items():
             self.assertCountEqual(getattr(self.sv2.schema, k).keys(), vs, f'{k} keys not equal')
-    def _get_clobbered_field_val(self, element: str) -> Tuple[str, str]:
+    def _get_clobbered_field_val(self, element: str) -> tuple[str, str]:
         if element == 'prefixes':
             return 'prefix_reference', 'http://example.org/clobbered'
         else:
