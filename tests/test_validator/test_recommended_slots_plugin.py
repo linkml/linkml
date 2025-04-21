@@ -111,6 +111,29 @@ def test_missing_recommended_inlined(validation_context):
         next(result_iter)
 
 
+def test_incorrect_type_in_multivalued_slot(validation_context):
+    """Data with an incorrect type in a multivalued slot should not yield results.
+
+    Type checking is not the responsibility of this plugin. But we want to make
+    sure that the implementation of this plugin doesn't implicitly assume it will
+    always get correct types."""
+
+    plugin = RecommendedSlotsPlugin()
+    instance = {
+        "rec": "foo",
+        "rec_2": "foo",
+        "nested_inline": [
+            {"id": "a", "value1": "1"},
+            {"id": "b", "value1": "2"},
+            {"id": "c", "value2": "3"},
+        ],
+        "nested_inline_list": {"a": {"value1": "1"}, "b": {"value1": "2"}, "c": {"value2": "3"}},
+    }
+    result_iter = plugin.process(instance, validation_context)
+    with pytest.raises(StopIteration):
+        next(result_iter)
+
+
 def test_missing_recommended_inlined_as_list(validation_context):
     """Data missing a recommended slot on an object in an inlined list should yield a result"""
 
