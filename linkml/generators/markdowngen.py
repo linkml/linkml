@@ -18,9 +18,9 @@ from linkml_runtime.utils.formatutils import be, camelcase, underscore
 
 from linkml._version import __version__
 from linkml.generators.yumlgen import YumlGenerator
+from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.typereferences import References
-from linkml.utils.deprecation import deprecation_warning
 
 
 @dataclass
