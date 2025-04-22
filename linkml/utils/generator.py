@@ -166,6 +166,13 @@ class Generator(metaclass=abc.ABCMeta):
     metamodel_name_map: dict[str, str] = None
     """Allows mapping of names of metamodel elements such as slot, etc"""
 
+    deprecated: ClassVar[bool] = False
+    """True means this generator is deprecated"""
+
+    deprecation_name: ClassVar[Optional[str]] = None
+    """If set, this is the value of the name attribute of a Deprecation specified 
+    in the global DEPRECATIONS list."""
+
     importmap: Optional[Union[str, Optional[Mapping[str, str]]]] = None
     """File name of import mapping file -- maps import name/uri to target"""
 
@@ -190,6 +197,13 @@ class Generator(metaclass=abc.ABCMeta):
             self.format = self.valid_formats[0]
         if self.format not in self.valid_formats:
             raise ValueError(f"Unrecognized format: {format}; known={self.valid_formats}")
+        # a generator can be considered "deprecated" if:
+        # (a) the `deprecated` boolean flag has been set to True, and
+        # (b) the `deprecation_name` attribute has been set to a non-None value
+        if self.deprecated and self.deprecation_name:
+            from linkml.utils.deprecation import deprecation_warning
+
+            deprecation_warning(self.deprecation_name)
         # legacy: all generators should use "mergeimports"
         # self.merge_imports = self.mergeimports
         if not self.metadata:
