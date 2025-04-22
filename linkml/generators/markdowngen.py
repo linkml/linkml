@@ -514,9 +514,7 @@ class MarkdownGenerator(Generator):
             else (
                 underscore(obj.name)
                 if isinstance(obj, SlotDefinition)
-                else underscore(obj.name)
-                if isinstance(obj, EnumDefinition)
-                else camelcase(obj.name)
+                else underscore(obj.name) if isinstance(obj, EnumDefinition) else camelcase(obj.name)
             )
         )
         subdir = "/types" if isinstance(obj, TypeDefinition) and not self.no_types_dir else ""
