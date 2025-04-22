@@ -25,18 +25,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-
-      #----------------------------------------------
-      #          install poetry
-      #----------------------------------------------
       - name: Install Poetry
         run: |
           pipx install poetry
           pipx inject poetry poetry-dynamic-versioning
 
-      #----------------------------------------------
-      #       check-out repo and set-up python
-      #----------------------------------------------
       - name: Check out repository
         uses: actions/checkout@v4.2
         with:
@@ -50,25 +43,13 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: 'poetry'
 
-      #----------------------------------------------
-      #    install your root project, if required
-      #----------------------------------------------
       - name: Install library
         run: poetry install --no-interaction
 
-      # this step we remove and rebuild the poetry.lock file to ensure that the tests that follow can be run
-      # with the latest dependencies
-
-      #----------------------------------------------
-      # Remove and Rebuild the poetry.lock File
-      #----------------------------------------------
-      - name: Remove poetry.lock (Unix)
-        if: runner.os != 'Windows'
-        run: rm -rf poetry.lock
-
-      - name: Remove poetry.lock (Windows)
-        if: runner.os == 'Windows'
-        run: Remove-Item poetry.lock -Force
+      - name: Regenerating poetry.lock file & install (sync) dependencies
+        run: |
+          poetry lock --regenerate
+          poetry sync
 
       - name: Run tests
         # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668
