@@ -181,17 +181,32 @@ enums:
 
                     Line
 
-          Madness!
+              Madness!
 """
+    INDENT = " " * 4
     sv = SchemaView(unit_test_schema)
     gen = PydanticGenerator(schema=unit_test_schema)
     enums = gen.generate_enums(sv.all_enums())
     assert "TestEnum" in enums
     enum = enums["TestEnum"]
     assert enum["values"]["no_description"]["description"] is None
-    assert enum["values"]["single_line"]["description"] == "A single line description. Easy!"
-    assert enum["values"]["multi_line"]["description"] == 'Sometimes\none line\nisn\'t enough\nfor a "description".'
-    assert enum["values"]["multi_line_preserve_whitespace"]["description"] == "Multi\n\n          Line\n\nMadness!\n"
+
+    DESCRIPTION = {
+        "single_line": ["A single line description. Easy!"],
+        "multi_line": ["Sometimes", "one line", "isn't enough", 'for a "description".'],
+        "multi_line_preserve_whitespace": ["Multi", "", f"{' ' * 10}Line", "", f"{INDENT}Madness!", ""],
+    }
+
+    for line_type in DESCRIPTION:
+        assert enum["values"][line_type]["description"] == "\n".join(DESCRIPTION[line_type])
+
+    gen_output = gen.serialize()
+    assert "\nclass TestEnum(str, Enum):\n" in gen_output
+    assert f'\n{INDENT}no_description = "no_description"\n' in gen_output
+    for line_type in DESCRIPTION:
+        # if the line doesn't have any content, there is no indent;
+        # otherwise, there is the standard 4-space indent
+        assert "\n".join([f"{INDENT}{line}" if len(line) > 0 else "" for line in DESCRIPTION[line_type]]) in gen_output
 
 
 def test_pydantic_any_of():
@@ -480,7 +495,7 @@ classes:
             _ = mod.A(my_slot=a_string)
 
 
-def test_multiline_module(input_path):
+def test_multiline_descriptions(input_path):
     """
     Ensure that multi-line enum descriptions and enums containing
     reserved characters are handled correctly
@@ -500,7 +515,6 @@ def test_multiline_module(input_path):
             "",
         ]
     )
-
     assert 'INTERNAL "REORGANIZATION"' in gen.schema.enums["EmploymentEventType"].permissible_values
 
 
@@ -2482,7 +2496,7 @@ def test_generate_split_pattern(input_path):
         assert an_import in imports, "Missed a necessary import when generating from a pattern"
     for an_import in shouldnt_have:
         assert an_import not in imports, (
-            "Got one of the imports with the default template " "instead of the supplied pattern"
+            "Got one of the imports with the default template instead of the supplied pattern"
         )
 
 
