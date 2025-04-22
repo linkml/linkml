@@ -20,6 +20,7 @@ from linkml._version import __version__
 from linkml.generators.yumlgen import YumlGenerator
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.typereferences import References
+from linkml.utils.deprecation import deprecation_warning
 
 
 @dataclass
@@ -31,7 +32,16 @@ class MarkdownGenerator(Generator):
     additionally, an index.md is generated that links everything together.
 
     The markdown is suitable for deployment as a MkDocs or Sphinx site
+
+    .. warning::
+        The MarkdownGenerator class is being deprecated in favor of DocGenerator which can
+        be found at the following path – `linkml/generators/docgen.py`. Going forward, DocGenerator
+        which can be invoked using the `gen-doc` command will be the preferred way to generate
+        Markdown documentation files for LinkML schemas.
     """
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
 
     # ClassVars
     generatorname = os.path.basename(__file__)
@@ -40,6 +50,8 @@ class MarkdownGenerator(Generator):
     valid_formats = ["md"]
     visit_all_class_slots = False
     uses_schemaloader = True
+    deprecated = True
+    deprecation_name = "gen-markdown"
 
     # ObjectVars
     directory: Optional[str] = None
@@ -63,6 +75,7 @@ class MarkdownGenerator(Generator):
         noimages: bool = False,
         **_,
     ) -> str:
+        deprecation_warning("gen-markdown")
         self.gen_classes = classes if classes else []
         for cls in self.gen_classes:
             if cls not in self.schema.classes:
@@ -136,6 +149,7 @@ class MarkdownGenerator(Generator):
         return out
 
     def visit_class(self, cls: ClassDefinition) -> str:
+        deprecation_warning("gen-markdown")
         # allow client to relabel metamodel
         mixin_local_name = self.get_metamodel_slot_name("Mixin")
         class_local_name = self.get_metamodel_slot_name("Class")
@@ -240,6 +254,7 @@ class MarkdownGenerator(Generator):
         return out
 
     def visit_type(self, typ: TypeDefinition) -> str:
+        deprecation_warning("gen-markdown")
         with open(self.exist_warning(self.dir_path(typ)), "w", encoding="UTF-8") as typefile:
             type_uri = typ.definition_uri
             type_curie = self.namespaces.curie_for(type_uri)
@@ -259,6 +274,7 @@ class MarkdownGenerator(Generator):
         return out
 
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> str:
+        deprecation_warning("gen-markdown")
         with open(self.exist_warning(self.dir_path(slot)), "w", encoding="UTF-8") as slotfile:
             items = []
             slot_curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(slot.name))
@@ -299,6 +315,7 @@ class MarkdownGenerator(Generator):
         return out
 
     def visit_enum(self, enum: EnumDefinition) -> str:
+        deprecation_warning("gen-markdown")
         with open(self.exist_warning(self.dir_path(enum)), "w", encoding="UTF-8") as enumfile:
             items = []
             enum_curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(enum.name))
@@ -311,6 +328,7 @@ class MarkdownGenerator(Generator):
         return out
 
     def visit_subset(self, subset: SubsetDefinition) -> str:
+        deprecation_warning("gen-markdown")
         with open(self.exist_warning(self.dir_path(subset)), "w", encoding="UTF-8") as subsetfile:
             items = []
             curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(subset.name))
@@ -496,7 +514,9 @@ class MarkdownGenerator(Generator):
             else (
                 underscore(obj.name)
                 if isinstance(obj, SlotDefinition)
-                else underscore(obj.name) if isinstance(obj, EnumDefinition) else camelcase(obj.name)
+                else underscore(obj.name)
+                if isinstance(obj, EnumDefinition)
+                else camelcase(obj.name)
             )
         )
         subdir = "/types" if isinstance(obj, TypeDefinition) and not self.no_types_dir else ""
@@ -799,7 +819,12 @@ def pad_heading(text: str) -> str:
 @click.option("--warnonexist", is_flag=True, help="Warn if output file already exists")
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, map_fields, dir, img, index_file, notypesdir, warnonexist, **kwargs):
-    """Generate markdown documentation of a LinkML model"""
+    """Generate markdown documentation of a LinkML model.
+
+    .. warning::
+        `gen-markdown` is deprecated. Please use `gen-doc` instead.
+    """
+    deprecation_warning("gen-markdown")
     gen = MarkdownGenerator(yamlfile, no_types_dir=notypesdir, warn_on_exist=warnonexist, **kwargs)
     if map_fields is not None:
         gen.metamodel_name_map = {}
