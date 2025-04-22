@@ -197,13 +197,28 @@ class Generator(metaclass=abc.ABCMeta):
             self.format = self.valid_formats[0]
         if self.format not in self.valid_formats:
             raise ValueError(f"Unrecognized format: {format}; known={self.valid_formats}")
-        # a generator can be considered "deprecated" if:
-        # (a) the `deprecated` boolean flag has been set to True, and
-        # (b) the `deprecation_name` attribute has been set to a non-None value
-        if self.deprecated and self.deprecation_name:
-            from linkml.utils.deprecation import deprecation_warning
 
+        # check if `deprecation_name` is in the global DEPRECATIONS list
+        # defined in linkml/utils/deprecation.py
+        if self.deprecation_name:
+            from linkml.utils.deprecation import DEPRECATIONS, deprecation_warning
+
+            # check if `deprecation_name` is in DEPRECATIONS
+            # log a warning message if we are using a `deprecation_name` other than
+            # anything defined in the global DEPRECATIONS list
+            if not any(d.name == self.deprecation_name for d in DEPRECATIONS):
+                self.logger.warning(f"Deprecation name '{self.deprecation_name}' not found in DEPRECATIONS list")
+
+            # ensure the `deprecated` flag is set if `deprecation_name` is provided
+            if not self.deprecated:
+                self.logger.warning(
+                    f"Setting deprecated=True for generator with deprecation_name='{self.deprecation_name}'"
+                )
+                self.deprecated = True
+
+            # issue the deprecation warning
             deprecation_warning(self.deprecation_name)
+
         # legacy: all generators should use "mergeimports"
         # self.merge_imports = self.mergeimports
         if not self.metadata:

@@ -18,7 +18,6 @@ from linkml_runtime.utils.formatutils import be, camelcase, underscore
 
 from linkml._version import __version__
 from linkml.generators.yumlgen import YumlGenerator
-from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.typereferences import References
 
@@ -75,7 +74,6 @@ class MarkdownGenerator(Generator):
         noimages: bool = False,
         **_,
     ) -> str:
-        deprecation_warning("gen-markdown")
         self.gen_classes = classes if classes else []
         for cls in self.gen_classes:
             if cls not in self.schema.classes:
@@ -149,7 +147,6 @@ class MarkdownGenerator(Generator):
         return out
 
     def visit_class(self, cls: ClassDefinition) -> str:
-        deprecation_warning("gen-markdown")
         # allow client to relabel metamodel
         mixin_local_name = self.get_metamodel_slot_name("Mixin")
         class_local_name = self.get_metamodel_slot_name("Class")
@@ -254,7 +251,6 @@ class MarkdownGenerator(Generator):
         return out
 
     def visit_type(self, typ: TypeDefinition) -> str:
-        deprecation_warning("gen-markdown")
         with open(self.exist_warning(self.dir_path(typ)), "w", encoding="UTF-8") as typefile:
             type_uri = typ.definition_uri
             type_curie = self.namespaces.curie_for(type_uri)
@@ -274,7 +270,6 @@ class MarkdownGenerator(Generator):
         return out
 
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> str:
-        deprecation_warning("gen-markdown")
         with open(self.exist_warning(self.dir_path(slot)), "w", encoding="UTF-8") as slotfile:
             items = []
             slot_curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(slot.name))
@@ -315,7 +310,6 @@ class MarkdownGenerator(Generator):
         return out
 
     def visit_enum(self, enum: EnumDefinition) -> str:
-        deprecation_warning("gen-markdown")
         with open(self.exist_warning(self.dir_path(enum)), "w", encoding="UTF-8") as enumfile:
             items = []
             enum_curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(enum.name))
@@ -328,7 +322,6 @@ class MarkdownGenerator(Generator):
         return out
 
     def visit_subset(self, subset: SubsetDefinition) -> str:
-        deprecation_warning("gen-markdown")
         with open(self.exist_warning(self.dir_path(subset)), "w", encoding="UTF-8") as subsetfile:
             items = []
             curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(subset.name))
@@ -822,7 +815,6 @@ def cli(yamlfile, map_fields, dir, img, index_file, notypesdir, warnonexist, **k
     .. warning::
         `gen-markdown` is deprecated. Please use `gen-doc` instead.
     """
-    deprecation_warning("gen-markdown")
     gen = MarkdownGenerator(yamlfile, no_types_dir=notypesdir, warn_on_exist=warnonexist, **kwargs)
     if map_fields is not None:
         gen.metamodel_name_map = {}
