@@ -345,8 +345,14 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-linkml.generators.csvgen">
-<span id="csv"></span><h1>CSV<a class="headerlink" href="#module-linkml.generators.csvgen" title="Permalink to this heading">#</a></h1>
+          <section id="csv">
+<h1>CSV<a class="headerlink" href="#csv" title="Permalink to this heading">#</a></h1>
+<p>This generator outputs the classes of the LinkML schema in CSV format. Each row contains the identifier, mappings and description of each class in the schema.</p>
+<p>This generator does not output a CSV that is configured based on the template. If fillable template spreadsheets are required, consider using [gen-excel](<a class="reference external" href="https://linkml.io/linkml/generators/excel.html">https://linkml.io/linkml/generators/excel.html</a>) or [DataHarmonizer](<a class="reference external" href="https://github.com/cidgoh/DataHarmonizer">https://github.com/cidgoh/DataHarmonizer</a>).</p>
+<section id="auto-generated-docs">
+<h2>Auto-generated docs<a class="headerlink" href="#auto-generated-docs" title="Permalink to this heading">#</a></h2>
+<section id="module-linkml.generators.csvgen">
+<span id="code"></span><h3>Code<a class="headerlink" href="#module-linkml.generators.csvgen" title="Permalink to this heading">#</a></h3>
 <p>Generate CSVs</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.csvgen.CsvGenerator">
@@ -432,6 +438,118 @@ and has largely been supplanted by schemasheets</p>
 </dd></dl>
 
 </section>
+<section id="command-line">
+<h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this heading">#</a></h3>
+<p><em>Note: The output from this command needs to be piped in order to create a CSV file.</em></p>
+<section id="gen-csv">
+<h4>gen-csv<a class="headerlink" href="#gen-csv" title="Permalink to this heading">#</a></h4>
+<p>Generate CSV/TSV file from LinkML model</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-csv<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-csv-V">
+<span id="cmdoption-gen-csv-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-csv-V" title="Permalink to this definition">#</a></dt>
+<dd><p>Show the version and exit.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-csv-r">
+<span id="cmdoption-gen-csv-root"></span><span class="sig-name descname"><span class="pre">-r</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--root</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;root&gt;</span></span><a class="headerlink" href="#cmdoption-gen-csv-r" title="Permalink to this definition">#</a></dt>
+<dd><p>Class(es) to transform</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-csv-f">
+<span id="cmdoption-gen-csv-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-csv-f" title="Permalink to this definition">#</a></dt>
+<dd><p>Output format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'csv'</span></code></p>
+</dd>
+<dt class="field-even">Options<span class="colon">:</span></dt>
+<dd class="field-even"><p>csv | tsv</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-csv-metadata">
+<span id="cmdoption-gen-csv-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-csv-metadata" title="Permalink to this definition">#</a></dt>
+<dd><p>Include metadata in output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-csv-useuris">
+<span id="cmdoption-gen-csv-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-csv-useuris" title="Permalink to this definition">#</a></dt>
+<dd><p>Use class and slot URIs over model uris</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-csv-im">
+<span id="cmdoption-gen-csv-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-csv-im" title="Permalink to this definition">#</a></dt>
+<dd><p>Import mapping file</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-csv-log_level">
+<span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-csv-log_level" title="Permalink to this definition">#</a></dt>
+<dd><p>Logging level</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'WARNING'</span></code></p>
+</dd>
+<dt class="field-even">Options<span class="colon">:</span></dt>
+<dd class="field-even"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-csv-v">
+<span id="cmdoption-gen-csv-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-csv-v" title="Permalink to this definition">#</a></dt>
+<dd><p>Verbosity. Takes precedence over –log_level.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-csv-mergeimports">
+<span id="cmdoption-gen-csv-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-csv-mergeimports" title="Permalink to this definition">#</a></dt>
+<dd><p>Merge imports into source file (default=mergeimports)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-csv-stacktrace">
+<span id="cmdoption-gen-csv-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-csv-stacktrace" title="Permalink to this definition">#</a></dt>
+<dd><p>Print a stack trace when an error occurs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-csv-arg-YAMLFILE">
+<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-csv-arg-YAMLFILE" title="Permalink to this definition">#</a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</section>
+</section>
+</section>
+</section>
 
         </article>
       </div>
@@ -489,6 +607,8 @@ and has largely been supplanted by schemasheets</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">CSV</a><ul>
+<li><a class="reference internal" href="#auto-generated-docs">Auto-generated docs</a><ul>
+<li><a class="reference internal" href="#module-linkml.generators.csvgen">Code</a><ul>
 <li><a class="reference internal" href="#linkml.generators.csvgen.CsvGenerator"><code class="docutils literal notranslate"><span class="pre">CsvGenerator</span></code></a><ul>
 <li><a class="reference internal" href="#linkml.generators.csvgen.CsvGenerator.closure"><code class="docutils literal notranslate"><span class="pre">CsvGenerator.closure</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.csvgen.CsvGenerator.end_schema"><code class="docutils literal notranslate"><span class="pre">CsvGenerator.end_schema()</span></code></a></li>
@@ -502,6 +622,14 @@ and has largely been supplanted by schemasheets</p>
 <li><a class="reference internal" href="#linkml.generators.csvgen.CsvGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">CsvGenerator.visit_class()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.csvgen.CsvGenerator.visit_schema"><code class="docutils literal notranslate"><span class="pre">CsvGenerator.visit_schema()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.csvgen.CsvGenerator.writer"><code class="docutils literal notranslate"><span class="pre">CsvGenerator.writer</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#command-line">Command Line</a><ul>
+<li><a class="reference internal" href="#gen-csv">gen-csv</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
