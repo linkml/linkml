@@ -220,10 +220,34 @@ def test_varchar_sql_range(schema, capsys):
     assert "varchar2_length_column VARCHAR2(128 CHAR)" in ddl
     assert "clob_column CLOB" in ddl
 
-    gen_sqlite = SQLTableGenerator(b.schema)
+    # Utilizing the default settings to ensure errors aren't thrown
+    gen_sqlite = SQLTableGenerator(schema)
 
     assert gen_sqlite.dialect == "sqlite"
-    ddl2 = gen_sqlite.generate_ddl()
+    sqlite_1_slot = SlotDefinition(name="string_column", range="string")
+    sqlite_2_slot = SlotDefinition(name="varchar_column", range="VARCHAR")
+    sqlite_3_slot = SlotDefinition(name="varchar2_length_column", range="VARCHAR2(128)")
+    sqlite_4_slot = SlotDefinition(name="clob_column", range="VARCHAR2(4097)")
+
+    # Verifying Text range for sqlite
+    sqlite_1_output = gen_sqlite.get_sql_range(sqlite_1_slot)
+    assert isinstance(sqlite_1_output, Text)
+
+    sqlite_2_output = gen_sqlite.get_sql_range(sqlite_2_slot)
+    assert isinstance(sqlite_2_output, Text)
+
+    sqlite_3_output = gen_sqlite.get_sql_range(sqlite_3_slot)
+    assert isinstance(sqlite_3_output, Text)
+
+    sqlite_4_output = gen_sqlite.get_sql_range(sqlite_4_slot)
+    assert isinstance(sqlite_4_output, Text)
+    
+    c = SchemaBuilder()
+    slots = [sqlite_1_slot, sqlite_2_slot, sqlite_3_slot, sqlite_4_slot]
+    c.add_class(DUMMY_CLASS, slots, description="My dummy class")
+    # The DDL should contain text type
+    gen_sqlite2 = SQLTableGenerator(c.schema)
+    ddl2 = gen_sqlite2.generate_ddl()
     assert ddl2
     assert "string_column TEXT" in ddl2
     assert "varchar_column TEXT" in ddl2
