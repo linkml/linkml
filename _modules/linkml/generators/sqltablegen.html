@@ -346,6 +346,7 @@
           <h1>Source code for linkml.generators.sqltablegen</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 
@@ -355,6 +356,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.schemaview</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">MetaData</span><span class="p">,</span> <span class="n">Table</span><span class="p">,</span> <span class="n">UniqueConstraint</span><span class="p">,</span> <span class="n">create_mock_engine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.dialects.oracle</span><span class="w"> </span><span class="kn">import</span> <span class="n">VARCHAR2</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Boolean</span><span class="p">,</span> <span class="n">Date</span><span class="p">,</span> <span class="n">DateTime</span><span class="p">,</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">Text</span><span class="p">,</span> <span class="n">Time</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
@@ -392,6 +394,7 @@
 <span class="n">RANGEMAP</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;str&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">(),</span>
     <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">(),</span>
+    <span class="s2">&quot;String&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">(),</span>
     <span class="s2">&quot;NCName&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">(),</span>
     <span class="s2">&quot;URIorCURIE&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">(),</span>
     <span class="s2">&quot;int&quot;</span><span class="p">:</span> <span class="n">Integer</span><span class="p">(),</span>
@@ -485,6 +488,7 @@
     <span class="n">rename_foreign_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">direct_mapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">relative_slot_num</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">default_length_oracle</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4096</span>
 
 <div class="viewcode-block" id="SQLTableGenerator.serialize"><a class="viewcode-back" href="../../../generators/sqltable.html#linkml.generators.sqltablegen.SQLTableGenerator.serialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_ddl</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -585,12 +589,25 @@
 <span class="sd">        returns a SQL Alchemy column type</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">range</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span>
-
         <span class="c1"># if no SchemaDefinition is explicitly provided as an argument</span>
         <span class="c1"># then simply use the schema that is provided to the SQLTableGenerator() object</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">schema</span><span class="p">:</span>
             <span class="n">schema</span> <span class="o">=</span> <span class="n">SchemaLoader</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
-
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialect</span> <span class="o">==</span> <span class="s2">&quot;oracle&quot;</span><span class="p">:</span>
+            <span class="n">varchar_regex</span> <span class="o">=</span> <span class="s2">&quot;VARCHAR([0-9]+)&quot;</span>
+            <span class="n">varchar2_regex</span> <span class="o">=</span> <span class="s2">&quot;VARCHAR2([0-9]+)&quot;</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">varchar_regex</span><span class="p">,</span> <span class="nb">range</span><span class="p">)</span> <span class="ow">or</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">varchar2_regex</span><span class="p">,</span> <span class="nb">range</span><span class="p">):</span>
+                <span class="n">string_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;[0-9]+&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;\([0-9]+\)&quot;</span><span class="p">,</span> <span class="nb">range</span><span class="p">)[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">string_length</span> <span class="o">&gt;</span> <span class="mi">4096</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;WARNING: RANGE EXCEEDS MAXIMUM ORACLE VARCHAR LENGTH, </span><span class="se">\</span>
+<span class="s2">                        CLOB TYPE WILL BE RETURNED: </span><span class="si">{</span><span class="nb">range</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span> <span class="n">Text</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">VARCHAR2</span><span class="p">(</span><span class="n">string_length</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">range</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;String&quot;</span><span class="p">,</span> <span class="s2">&quot;VARCHAR2&quot;</span><span class="p">,</span> <span class="s2">&quot;VARCHAR&quot;</span><span class="p">]:</span>
+                <span class="c1"># If a regex is not detected, string type data should still be represented as a VARCHAR2</span>
+                <span class="k">return</span> <span class="n">VARCHAR2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_length_oracle</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">range</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
             <span class="c1"># FK type should be the same as the identifier of the foreign key</span>
             <span class="n">fk</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="nb">range</span><span class="p">)</span>
@@ -656,6 +673,12 @@
     <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Emit FK declarations&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--default_length_oracle&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Default length of varchar based arguments for oracle dialects&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span>
