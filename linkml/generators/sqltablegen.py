@@ -48,6 +48,7 @@ METAMODEL_TYPE_TO_BASE = {
 RANGEMAP = {
     "str": Text(),
     "string": Text(),
+    "String": Text(),
     "NCName": Text(),
     "URIorCURIE": Text(),
     "int": Integer(),

@@ -241,7 +241,7 @@ def test_varchar_sql_range(schema, capsys):
 
     sqlite_4_output = gen_sqlite.get_sql_range(sqlite_4_slot)
     assert isinstance(sqlite_4_output, Text)
-    
+
     c = SchemaBuilder()
     slots = [sqlite_1_slot, sqlite_2_slot, sqlite_3_slot, sqlite_4_slot]
     c.add_class(DUMMY_CLASS, slots, description="My dummy class")
