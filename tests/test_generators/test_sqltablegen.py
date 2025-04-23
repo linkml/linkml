@@ -123,9 +123,6 @@ def test_get_sql_range(schema):
     """Test case for the get_sql_range() method."""
     gen = SQLTableGenerator(schema)
     # Test case to enable Varchar2 usage
-    # gen_oracle = SQLTableGenerator(schema)
-    # gen_oracle.dialect = 'oracle'
-    # gen_oracle.maximum_length_oracle = 256
 
     # loader = SchemaLoader(data=SCHEMA)
     # schema_def_str = loader.resolve()
@@ -222,6 +219,16 @@ def test_varchar_sql_range(schema, capsys):
     assert "varchar_column VARCHAR2(256 CHAR)" in ddl
     assert "varchar2_length_column VARCHAR2(128 CHAR)" in ddl
     assert "clob_column CLOB" in ddl
+
+    gen_sqlite = SQLTableGenerator(b.schema)
+
+    assert gen_sqlite.dialect == "sqlite"
+    ddl2 = gen_sqlite.generate_ddl()
+    assert ddl2
+    assert "string_column TEXT" in ddl2
+    assert "varchar_column TEXT" in ddl2
+    assert "varchar2_length_column TEXT" in ddl2
+    assert "clob_column TEXT" in ddl2
 
 
 def test_get_foreign_key(schema):
