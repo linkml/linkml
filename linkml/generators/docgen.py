@@ -385,7 +385,7 @@ class DocGenerator(Generator):
             # TODO: fix schema view to handle URIs for enums and subsets
             return self.name(element)
 
-        if self.hierarchical_class_view:
+        if self.subfolder_type_separation:
             return self.schemaview.get_uri(element, expand=expand, use_element_type=True)
 
         return self.schemaview.get_uri(element, expand=expand)
