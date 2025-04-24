@@ -190,7 +190,6 @@ class Generator(metaclass=abc.ABCMeta):
             self.format = self.valid_formats[0]
         if self.format not in self.valid_formats:
             raise ValueError(f"Unrecognized format: {format}; known={self.valid_formats}")
-
         # legacy: all generators should use "mergeimports"
         # self.merge_imports = self.mergeimports
         if not self.metadata:
