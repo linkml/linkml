@@ -166,13 +166,6 @@ class Generator(metaclass=abc.ABCMeta):
     metamodel_name_map: dict[str, str] = None
     """Allows mapping of names of metamodel elements such as slot, etc"""
 
-    deprecated: ClassVar[bool] = False
-    """True means this generator is deprecated"""
-
-    deprecation_name: ClassVar[Optional[str]] = None
-    """If set, this is the value of the name attribute of a Deprecation specified 
-    in the global DEPRECATIONS list."""
-
     importmap: Optional[Union[str, Optional[Mapping[str, str]]]] = None
     """File name of import mapping file -- maps import name/uri to target"""
 
@@ -197,27 +190,6 @@ class Generator(metaclass=abc.ABCMeta):
             self.format = self.valid_formats[0]
         if self.format not in self.valid_formats:
             raise ValueError(f"Unrecognized format: {format}; known={self.valid_formats}")
-
-        # check if `deprecation_name` is in the global DEPRECATIONS list
-        # defined in linkml/utils/deprecation.py
-        if self.deprecation_name:
-            from linkml.utils.deprecation import DEPRECATIONS, deprecation_warning
-
-            # check if `deprecation_name` is in DEPRECATIONS
-            # log a warning message if we are using a `deprecation_name` other than
-            # anything defined in the global DEPRECATIONS list
-            if not any(d.name == self.deprecation_name for d in DEPRECATIONS):
-                self.logger.warning(f"Deprecation name '{self.deprecation_name}' not found in DEPRECATIONS list")
-
-            # ensure the `deprecated` flag is set if `deprecation_name` is provided
-            if not self.deprecated:
-                self.logger.warning(
-                    f"Setting deprecated=True for generator with deprecation_name='{self.deprecation_name}'"
-                )
-                self.deprecated = True
-
-            # issue the deprecation warning
-            deprecation_warning(self.deprecation_name)
 
         # legacy: all generators should use "mergeimports"
         # self.merge_imports = self.mergeimports
