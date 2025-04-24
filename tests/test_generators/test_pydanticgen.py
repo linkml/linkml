@@ -2495,9 +2495,9 @@ def test_generate_split_pattern(input_path):
     for an_import in should_have:
         assert an_import in imports, "Missed a necessary import when generating from a pattern"
     for an_import in shouldnt_have:
-        assert an_import not in imports, (
-            "Got one of the imports with the default template instead of the supplied pattern"
-        )
+        assert (
+            an_import not in imports
+        ), "Got one of the imports with the default template instead of the supplied pattern"
 
 
 @pytest.mark.pydanticgen_split
