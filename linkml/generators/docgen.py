@@ -384,6 +384,10 @@ class DocGenerator(Generator):
         if isinstance(element, (EnumDefinition, SubsetDefinition)):
             # TODO: fix schema view to handle URIs for enums and subsets
             return self.name(element)
+
+        if self.subfolder_type_separation:
+            return self.schemaview.get_uri(element, expand=expand, use_element_type=True)
+
         return self.schemaview.get_uri(element, expand=expand)
 
     def uri_link(self, element: Union[Element, str]) -> str:
