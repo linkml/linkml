@@ -6,14 +6,15 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 import click
 from jinja2 import Environment, FileSystemLoader, Template
-from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.dumpers import json_dumper, yaml_dumper
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
+    ClassRule,
     Definition,
     DefinitionName,
     Element,
@@ -958,6 +959,76 @@ class DocGenerator(Generator):
             with open(input, encoding="utf-8") as f:
                 objs.append((stem, f.read()))
         return objs
+
+    def classrule_to_dict_view(self, rule: ClassRule) -> dict[str, Any]:
+        """This method can iterate over a ClassRule object asserted on the `rule`
+        slot of a class. This method will return a value that contains four pieces of
+        information about the rule – _title_, _preconditions_, _postconditions_,
+        and _elseconditions_. This return value will be read in the jinja template,
+        and appropriately formatted into a tablular view for users to be able to
+        glean details about asserted rules.
+
+        Note: This method removes the redundant "name" key which is asserted on some
+        classes in the Python representation of some classes from the metamodel.
+
+        :param rule: ClassRule object to be processed
+        :return: Dictionary with title and "sanitized" conditions
+        """
+
+        # below is an inner function to recursively remove "name" keys from a JSON object
+        # for example, if we had a rule asserted like below:
+        # rules:
+        #   - title: calibration_standard_if_rt
+        #   preconditions:
+        #      slot_conditions:
+        #           calibration_target:
+        #               equals_string: retention_index
+        # the JSON representation for this precondition would look like below:
+        # {
+        #   "slot_conditions": {
+        #       "name": "slot_conditions"
+        #       "calibration_target": {
+        #           "name": "calibration_target"
+        #           "equals_string": "retention_index",
+        #       },
+        #   }
+        # }
+        # the "name" keys are redundant and do not add any value in the user documentation
+        def remove_name_keys(obj):
+            if isinstance(obj, dict):
+                return {k: remove_name_keys(v) for k, v in obj.items() if k != "name"}
+            elif isinstance(obj, list):
+                return [remove_name_keys(item) for item in obj]
+            else:
+                return obj
+
+        # TODO: expand this list of ClassRule metaslots based on use case
+        classrule_as_dict = {
+            "title": rule.title or "",
+            "preconditions": None,
+            "postconditions": None,
+            "elseconditions": None,
+        }
+
+        for key in ["preconditions", "postconditions", "elseconditions"]:
+            condition_obj = getattr(rule, key, None)
+            if condition_obj:
+                json_obj = json_dumper.to_dict(condition_obj)
+                sanitzed_condition = remove_name_keys(json_obj)
+                classrule_as_dict[key] = sanitzed_condition
+
+        return classrule_as_dict
+
+    def process_class_rules(self, element: ClassDefinition) -> list[dict[str, Any]]:
+        """Apply classrule_to_dict_view() method to each rule asserted on the class.
+
+        :param element: LinkML class object with `rules` asserted on it
+        :return: List of class rules as dictionaries
+        """
+        if not element.rules:
+            return []
+
+        return [self.classrule_to_dict_view(rule) for rule in element.rules]
 
 
 @shared_arguments(DocGenerator)
