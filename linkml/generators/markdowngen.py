@@ -20,6 +20,7 @@ from linkml._version import __version__
 from linkml.generators.yumlgen import YumlGenerator
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.typereferences import References
+from linkml.utils.deprecation import deprecation_warning
 
 
 @dataclass
@@ -40,6 +41,7 @@ class MarkdownGenerator(Generator):
     """
 
     def __post_init__(self) -> None:
+        deprecation_warning("gen-markdown")
         super().__post_init__()
 
     # ClassVars
@@ -49,8 +51,6 @@ class MarkdownGenerator(Generator):
     valid_formats = ["md"]
     visit_all_class_slots = False
     uses_schemaloader = True
-    deprecated = True
-    deprecation_name = "gen-markdown"
 
     # ObjectVars
     directory: Optional[str] = None
@@ -815,6 +815,8 @@ def cli(yamlfile, map_fields, dir, img, index_file, notypesdir, warnonexist, **k
     .. warning::
         `gen-markdown` is deprecated. Please use `gen-doc` instead.
     """
+    deprecation_warning("gen-markdown")
+
     gen = MarkdownGenerator(yamlfile, no_types_dir=notypesdir, warn_on_exist=warnonexist, **kwargs)
     if map_fields is not None:
         gen.metamodel_name_map = {}
