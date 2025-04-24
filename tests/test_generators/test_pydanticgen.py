@@ -50,6 +50,7 @@ from linkml.utils.schema_builder import SchemaBuilder
 
 from .conftest import MyInjectedClass
 
+INDENT = " " * 4
 PACKAGE = "kitchen_sink"
 pytestmark = pytest.mark.pydanticgen
 
@@ -117,6 +118,16 @@ enums:
     assert enum["values"]["PLUS_SIGN"]["value"] == "+"
     assert enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]["value"] == "This & that, plus maybe a 🎩"
     assert enum["values"]["Ohio"]["value"] == "Ohio"
+    gen_output = gen.serialize()
+    expected_lines = [
+        "class TestEnum(str, Enum):",
+        f'{INDENT}number_123 = "123"',
+        f'{INDENT}PLUS_SIGN = "+"',
+        f'{INDENT}This_AMPERSAND_that_plus_maybe_a_TOP_HAT = "This & that, plus maybe a 🎩"',
+        f'{INDENT}Ohio = "Ohio"',
+    ]
+    for line in expected_lines:
+        assert f"\n{line}\n" in gen_output
 
 
 def test_pydantic_enum_titles():
@@ -149,6 +160,16 @@ enums:
     assert enum["values"]["label2"]["value"] == "value2"
     assert enum["values"]["value3"]["value"] == "value3"
     assert enum["values"]["label_4"]["value"] == "value4"
+    gen_output = gen.serialize()
+    expected_lines = [
+        "class TestEnum(str, Enum):",
+        f'{INDENT}label1 = "value1"',
+        f'{INDENT}label2 = "value2"',
+        f'{INDENT}value3 = "value3"',
+        f'{INDENT}label_4 = "value4"',
+    ]
+    for line in expected_lines:
+        assert f"\n{line}\n" in gen_output
 
 
 def test_pydantic_enum_descriptions():
@@ -183,7 +204,6 @@ enums:
 
               Madness!
 """
-    INDENT = " " * 4
     sv = SchemaView(unit_test_schema)
     gen = PydanticGenerator(schema=unit_test_schema)
     enums = gen.generate_enums(sv.all_enums())
@@ -206,7 +226,20 @@ enums:
     for line_type in DESCRIPTION:
         # if the line doesn't have any content, there is no indent;
         # otherwise, there is the standard 4-space indent
-        assert "\n".join([f"{INDENT}{line}" if len(line) > 0 else "" for line in DESCRIPTION[line_type]]) in gen_output
+        assert (
+            "\n".join(
+                [
+                    f"{INDENT}{line}" if len(line) > 0 else ""
+                    for line in [
+                        f'{line_type} = "{line_type}"',
+                        '"""',
+                        *DESCRIPTION[line_type],
+                        '"""',
+                    ]
+                ]
+            )
+            in gen_output
+        )
 
 
 def test_pydantic_any_of():
