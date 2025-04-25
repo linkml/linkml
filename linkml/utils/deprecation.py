@@ -243,7 +243,7 @@ DEPRECATIONS = (
             "de-facto generator for generating markdown documentation files (with "
             "embedded mermaid class diagrams) from a LinkML schema"
         ),
-        recommendation="Update to use gen-doc",
+        recommendation="Update to use `gen-doc`",
     ),
 )  # type: tuple[Deprecation, ...]
 

@@ -33,11 +33,17 @@ class MarkdownGenerator(Generator):
 
     The markdown is suitable for deployment as a MkDocs or Sphinx site
 
-    .. warning::
-        The MarkdownGenerator class is being deprecated in favor of DocGenerator which can
-        be found at the following path – `linkml/generators/docgen.py`. Going forward, DocGenerator
-        which can be invoked using the `gen-doc` command will be the preferred way to generate
-        Markdown documentation files for LinkML schemas.
+    .. admonition:: Deprecated
+        :class: warning
+
+            The MarkdownGenerator class is being deprecated in favor of DocGenerator which can
+            be found at the following path – `linkml/generators/docgen.py`. Going forward, DocGenerator
+            which can be invoked using the `gen-doc` command will be the preferred way to generate
+            Markdown documentation files for LinkML schemas.
+
+            .. deprecated:: v1.9.1
+
+            Recommendation: Update to use `gen-doc`
     """
 
     def __post_init__(self) -> None:
