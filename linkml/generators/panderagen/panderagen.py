@@ -188,13 +188,13 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
 @click.option("--template-path", help="Optional jinja2 template directory within module")
 @click.option("--template-file", help="Optional jinja2 template to use for class generation")
 @click.version_option(__version__, "-V", "--version")
+@click.argument("yamlfile")
 @click.command(name="gen-pandera")
 def cli(
     yamlfile,
     package=None,
     template_path=None,
     template_file=None,
-    slots=True,
     **args,
 ):
     if template_path is not None and template_path not in TYPEMAP:
@@ -206,7 +206,6 @@ def cli(
         package=package,
         template_path=template_path,
         template_file=template_file,
-        gen_slots=slots,
         **args,
     )
 

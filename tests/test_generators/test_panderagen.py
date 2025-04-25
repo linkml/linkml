@@ -1,11 +1,24 @@
 import logging
 import re
+from pathlib import Path
 
 import pytest
+from click.testing import CliRunner
 
-from linkml.generators.panderagen import PanderaGenerator
+from linkml.cli.main import linkml as linkml_cli
+from linkml.generators.panderagen import PanderaGenerator, cli
 
 logger = logging.getLogger(__name__)
+
+
+@pytest.fixture
+def test_inputs_dir():
+    return Path(__file__).parent / "input"
+
+
+@pytest.fixture
+def cli_runner():
+    return CliRunner()
 
 
 @pytest.fixture(scope="module")
@@ -296,3 +309,23 @@ def test_synthetic_dataframe_boolean_error(
 
     assert "COLUMN_NOT_IN_DATAFRAME" in str(e.value)
     assert f"column '{drop_column}' not in dataframe" in str(e.value)
+
+
+@pytest.mark.parametrize("target_class,schema", [("Organization", "organization")])
+def test_cli_simple(cli_runner, test_inputs_dir, target_class, schema):
+    schema_path = str(test_inputs_dir / f"{schema}.yaml")
+    result = cli_runner.invoke(cli, [schema_path])
+
+    assert result.exit_code == 0
+    assert f"class {target_class}(" in result.output
+
+
+@pytest.mark.parametrize("target_class,schema", [("Organization", "organization")])
+def test_linkml_subcommand_cli_simple(cli_runner, test_inputs_dir, target_class, schema):
+    schema_path = str(test_inputs_dir / f"{schema}.yaml")
+    result = cli_runner.invoke(linkml_cli, ["generate", "pandera", schema_path])
+
+    print(result.output)
+
+    assert result.exit_code == 0
+    assert f"class {target_class}(" in result.output
