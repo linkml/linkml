@@ -4,7 +4,6 @@ import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path, PurePath
-from typing import List
 
 import click
 
@@ -26,8 +25,8 @@ class Block:
     output: str = None
     error: str = None
     expected_fail: bool = None
-    prior_lines: List[str] = None
-    annotations: List[str] = None
+    prior_lines: list[str] = None
+    annotations: list[str] = None
 
     def is_file_block(self) -> bool:
         return self.title and "." in self.title
@@ -39,7 +38,7 @@ class Block:
         return self.category == "bash"
 
 
-def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
+def execute_blocks(directory: str, blocks: list[Block]) -> list[str]:
     """
     Execute the code blocks embedded in a tutorial
 
@@ -117,12 +116,12 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
     return errs
 
 
-def write_lines(lines: List[str]) -> None:
+def write_lines(lines: list[str]) -> None:
     for line in lines:
         print(f"+++ {line}")
 
 
-def parse_file_to_blocks(input) -> List[Block]:
+def parse_file_to_blocks(input) -> list[Block]:
     """
     Parses a markdown tutorial file to code blacks to be executed
 

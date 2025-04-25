@@ -2,13 +2,14 @@ import importlib
 import inspect
 import re
 import typing
+from collections.abc import Iterable, Sequence
 from contextlib import nullcontext as does_not_raise
 from dataclasses import dataclass
 from importlib.metadata import version
 from importlib.util import find_spec
 from pathlib import Path
 from types import GeneratorType, ModuleType
-from typing import ClassVar, Dict, Iterable, List, Literal, Optional, Type, Union
+from typing import ClassVar, Literal, Optional, Union
 
 import numpy as np
 import pytest
@@ -197,9 +198,9 @@ slots:
         """
     gen = PydanticGenerator(schema_str, package=PACKAGE)
     code = gen.serialize()
-    assert "inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default=None" in code
-    assert "inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default=None" in code
-    assert "not_inlined_things: Optional[List[str]] = Field(default=None" in code
+    assert "inlined_things: Optional[dict[str, Union[A, B]]] = Field(default=None" in code
+    assert "inlined_as_list_things: Optional[list[Union[A, B]]] = Field(default=None" in code
+    assert "not_inlined_things: Optional[list[str]] = Field(default=None" in code
 
 
 @pytest.mark.parametrize(
@@ -212,7 +213,7 @@ slots:
             False,
             False,
             True,
-            "Optional[List[str]]",
+            "Optional[list[str]]",
             "primitives are never inlined",
         ),
         # attempting to inline a type
@@ -223,7 +224,7 @@ slots:
             True,
             True,
             True,
-            "Optional[List[str]]",
+            "Optional[list[str]]",
             "primitives are never inlined, even if requested",
         ),
         # block 2: referenced element is a class
@@ -233,7 +234,7 @@ slots:
             False,
             False,
             False,
-            "Optional[List[B]]",
+            "Optional[list[B]]",
             "references to classes without identifiers ALWAYS inlined as list",
         ),
         (
@@ -242,7 +243,7 @@ slots:
             True,
             False,
             False,
-            "Optional[List[B]]",
+            "Optional[list[B]]",
             "references to classes without identifiers ALWAYS inlined as list",
         ),
         (
@@ -251,7 +252,7 @@ slots:
             True,
             True,
             False,
-            "Optional[List[B]]",
+            "Optional[list[B]]",
             "references to classes without identifiers ALWAYS inlined as list",
         ),
         (
@@ -260,7 +261,7 @@ slots:
             True,
             False,
             True,
-            "Optional[Dict[str, Union[str, B]]]",
+            "Optional[dict[str, Union[str, B]]]",
             "references to class with identifier inlined ONLY ON REQUEST, with dict as default",
         ),
         # TODO: fix the next two
@@ -270,20 +271,20 @@ slots:
             True,
             True,
             True,
-            "Optional[List[B]]",
+            "Optional[list[B]]",
             "references to class with identifier inlined as list ONLY ON REQUEST",
         ),
-        ("B", True, False, False, True, "Optional[List[str]]", ""),
+        ("B", True, False, False, True, "Optional[list[str]]", ""),
     ],
 )
 def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_identifier, expected, notes):
     # Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
     expected_default_factories = {
-        "Optional[List[str]]": "Field(default=None",
-        "Optional[List[B]]": "Field(default=None",
-        "Optional[Dict[str, B]]": "Field(default=None",
-        "Optional[Dict[str, str]]": "Field(default=None",
-        "Optional[Dict[str, Union[str, B]]]": "Field(default=None",
+        "Optional[list[str]]": "Field(default=None",
+        "Optional[list[B]]": "Field(default=None",
+        "Optional[dict[str, B]]": "Field(default=None",
+        "Optional[dict[str, str]]": "Field(default=None",
+        "Optional[dict[str, Union[str, B]]]": "Field(default=None",
     }
 
     sb = SchemaBuilder("test")
@@ -747,7 +748,7 @@ def test_pydantic_cardinality(value, required, minimium_cardinality, maximum_car
     field = cls.model_fields["cardinality_array"]
 
     assert field.is_required() == required
-    assert field.annotation == List[float] if required else Optional[List[float]]
+    assert field.annotation == list[float] if required else Optional[list[float]]
 
     # filter down the metadata to only min_length and max_length entries
     min_length = [entry.min_length for entry in field.metadata if getattr(entry, "min_length", None) is not None]
@@ -815,7 +816,7 @@ classes:
     code = gen.serialize()
 
     mod = compile_python(code)
-    assert mod.CardinalityArray.model_fields["minimum_cardinality_array"].annotation == List[float]
+    assert mod.CardinalityArray.model_fields["minimum_cardinality_array"].annotation == list[float]
     assert mod.CardinalityArray.model_fields["minimum_cardinality_array"].metadata[0].min_length == 1
     assert mod.CardinalityArray.model_fields["maximum_cardinality_array"].metadata[0].max_length == 10
     assert mod.CardinalityArray.model_fields["exact_cardinality_array"].metadata[0].min_length == 5
@@ -866,11 +867,11 @@ classes:
         (
             [
                 Import(
-                    module="typing",
-                    objects=[ObjectImport(name="Dict"), ObjectImport(name="List"), ObjectImport(name="Union")],
+                    module="collections.abc",
+                    objects=[ObjectImport(name="Iterable"), ObjectImport(name="Sequence")],
                 )
             ],
-            (("Dict", Dict), ("List", List), ("Union", Union)),
+            (("Iterable", Iterable), ("Sequence", Sequence)),
         ),
         ([Import(module="typing")], (("typing", typing),)),
         (
@@ -953,7 +954,7 @@ def test_inject_field(kitchen_sink_path, tmp_path, input_path, inject, name, typ
 def sample_class() -> PydanticClass:
     # no pattern makes no validators
     attr_1 = PydanticAttribute(name="attr_1", range="Union[str,int]", required=True)
-    attr_2 = PydanticAttribute(name="attr_2", range="List[float]")
+    attr_2 = PydanticAttribute(name="attr_2", range="list[float]")
     cls = PydanticClass(name="Sample", attributes={"attr_1": attr_1, "attr_2": attr_2})
     return cls
 
@@ -965,7 +966,7 @@ def test_attribute_field():
     attr = PydanticAttribute(name="attr")
     assert attr.model_dump()["field"] == "None"
 
-    predefined = "List[Union[str,int]]"
+    predefined = "list[Union[str,int]]"
     attr = PydanticAttribute(name="attr", predefined=predefined)
     assert attr.model_dump()["field"] == predefined
 
@@ -1351,7 +1352,7 @@ range: {{ range }}""",
 attr: attr_1
 range: Union[str,int]
 attr: attr_2
-range: List[float]"""
+range: list[float]"""
     )
 
 
@@ -1371,8 +1372,8 @@ def test_template_render():
 
     class TestTemplate(PydanticTemplateModel):
         template: ClassVar[str] = "test.jinja"
-        a_list: List[InnerTemplate] = [InnerTemplate(value=1), InnerTemplate(value=2)]
-        a_dict: Dict[str, InnerTemplate] = {"one": InnerTemplate(value="one"), "two": InnerTemplate(value="two")}
+        a_list: list[InnerTemplate] = [InnerTemplate(value=1), InnerTemplate(value=2)]
+        a_dict: dict[str, InnerTemplate] = {"one": InnerTemplate(value="one"), "two": InnerTemplate(value="two")}
         a_value: int = 1
         plain_model: PlainModel = PlainModel()
         recursive: Optional["TestTemplate"] = None
@@ -1423,8 +1424,13 @@ def test_arrays_anyshape():
     arr = np.ones((2, 4, 5, 3, 2), dtype=int)
     _ = MyModel(array=arr.tolist())
 
-    # Coercion is allowed when not specifying strict
+    # Coercion that is impossible (floats with a fractional part) fails
     arr = np.random.random((2, 5, 3))
+    with pytest.raises(ValidationError):
+        _ = MyModel(array=arr.tolist())
+
+    # Coercion that is possible (floats without fractional part) succeeds
+    arr = np.ones((2, 5, 3), dtype=float)
     _ = MyModel(array=arr.tolist())
 
 
@@ -1461,7 +1467,11 @@ def test_arrays_anyshape_union():
 
 @pytest.mark.parametrize(
     "dtype,expected",
-    ((None, [{}]), (int, [{"type": "integer"}]), (Union[int, float], [{"type": "integer"}, {"type": "number"}])),
+    (
+        (None, [{}]),
+        (int, [{"type": "integer"}]),
+        (Union[int, float], [{"type": "integer"}, {"type": "number"}]),
+    ),
 )
 def test_arrays_anyshape_json_schema(dtype, expected):
     if dtype is None:
@@ -1473,20 +1483,25 @@ def test_arrays_anyshape_json_schema(dtype, expected):
 
         class MyModel(BaseModel):
             array: AnyShapeArray[dtype]
+            dummy: Optional[AnyShapeArray[str]] = None
 
     schema = MyModel.model_json_schema()
     array_ref = schema["properties"]["array"]["$ref"].split("/")[-1]
-    assert "AnyShapeArray" in array_ref
+
+    assert "AnyShapeArray" in array_ref, f"Unexpected array ref: {array_ref}"
     assert "anyOf" in schema["$defs"][array_ref]["items"]
+
     anyOf = schema["$defs"][array_ref]["items"]["anyOf"]
+
+    # Check that the expected primitive types match the beginning of `anyOf`
     assert anyOf[0:-1] == expected
-    assert anyOf[-1] == {"items": {"$ref": f"#/$defs/{array_ref}"}, "type": "array"}
+    # Check that the final type is a self-referential array
+    assert anyOf[-1] == {"$ref": f"#/$defs/{array_ref}"}
 
 
-@pytest.mark.xfail()
 def test_arrays_anyshape_strict():
     """
-    CURRENTLY FAILING: see https://github.com/pydantic/pydantic/issues/11224
+    Strict validation should not attempt to coerce, even when possible
     """
 
     class MyStrictModel(BaseModel):
@@ -1559,7 +1574,7 @@ def array_validator_errors(input_path) -> ClassDefinition:
         pytest.param([ArrayRepresentation.NUMPYDANTIC], marks=pytest.mark.pydanticgen_npd, id="numpydantic"),
     ],
 )
-def array_representation(request) -> List[ArrayRepresentation]:
+def array_representation(request) -> list[ArrayRepresentation]:
     """
     Parameterized fixture to test each array representation
     """
@@ -1572,14 +1587,9 @@ class TestCase:
     type: Literal["pass", "fail-shape", "fail-dtype", "fail-scalar"]
     array: np.ndarray
 
-    def expectation(self, array_representation: List[ArrayRepresentation]):
+    def expectation(self, array_representation: list[ArrayRepresentation]):
         if self.type == "pass":
             return does_not_raise()
-        elif self.type in ("fail-dtype", "fail-scalar") and ArrayRepresentation.LIST in array_representation:
-            pytest.xfail(
-                "Pydantic cant apply strict validation with type annotations at the moment, see:"
-                "https://github.com/pydantic/pydantic/issues/11224"
-            )
         else:
             return pytest.raises(ValidationError)
 
@@ -1609,7 +1619,7 @@ def test_generate_array_anyshape(case, array_representation, array_anyshape):
     "case",
     [
         TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
-        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=float)),
+        TestCase(type="fail-dtype", array=np.random.default_rng().random((2, 3, 4), dtype=float)),
         TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
     ],
 )
@@ -1683,8 +1693,8 @@ def test_generate_array_dtype_class(array_representation, array_dtype):
 
     generated = PydanticGenerator(array_dtype, array_representations=array_representation, imports=imports).serialize()
     mod = compile_python(generated)
-    cls: Type[BaseModel] = getattr(mod, "ClassDtype")
-    target_cls: Type[BaseModel] = getattr(mod, "MyClass")
+    cls: type[BaseModel] = getattr(mod, "ClassDtype")
+    target_cls: type[BaseModel] = getattr(mod, "MyClass")
 
     array = np.full(shape=(2, 3, 4), fill_value=target_cls())
 
@@ -1694,10 +1704,7 @@ def test_generate_array_dtype_class(array_representation, array_dtype):
     # validates
     instance = cls(array=array)
     # and preserves object
-    if ArrayRepresentation.LIST in array_representation:
-        assert isinstance(next(next(next(instance.array))), target_cls)
-    else:
-        assert isinstance(instance.array[0][0][0], target_cls)
+    assert isinstance(instance.array[0][0][0], target_cls)
 
 
 @pytest.mark.parametrize(
@@ -2189,7 +2196,7 @@ def test_template_black(array_complex):
                 min_length=2,
                 max_length=5,
                 item_type=conlist(
-                    min_length=6, max_length=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]]
+                    min_length=6, max_length=6, item_type=Union[list[int], list[list[int]], list[list[list[int]]]]
                 ),
             ),
         ),
@@ -2228,7 +2235,7 @@ def test_template_noblack(array_complex, mock_black_import):
 
     assert (
         array_repr
-        == "array: Optional[conlist(max_length=5, item_type=conlist(min_length=2, item_type=conlist(min_length=2, max_length=5, item_type=conlist(min_length=6, max_length=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]]))))] = Field(default=None)"  # noqa: E501
+        == "array: Optional[conlist(max_length=5, item_type=conlist(min_length=2, item_type=conlist(min_length=2, max_length=5, item_type=conlist(min_length=6, max_length=6, item_type=Union[list[int], list[list[int]], list[list[list[int]]]]))))] = Field(default=None)"  # noqa: E501
     )
 
     # trying to render with black when we don't have it should raise a ValueError
@@ -2241,7 +2248,7 @@ def test_template_noblack(array_complex, mock_black_import):
 # --------------------------------------------------
 
 
-def _test_meta(linkml_meta, definition: Definition, model: Type[PydanticTemplateModel], mode: str):
+def _test_meta(linkml_meta, definition: Definition, model: type[PydanticTemplateModel], mode: str):
     def_clean = remove_empty_items(definition)
     for k, v in def_clean.items():
         if mode == "auto":

@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from dataclasses import dataclass
 from typing import Optional
 
@@ -9,6 +10,7 @@ from linkml_runtime.linkml_model import SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from sqlalchemy import Column, ForeignKey, MetaData, Table, UniqueConstraint, create_mock_engine
+from sqlalchemy.dialects.oracle import VARCHAR2
 from sqlalchemy.types import Boolean, Date, DateTime, Enum, Float, Integer, Text, Time
 
 from linkml._version import __version__
@@ -46,6 +48,7 @@ METAMODEL_TYPE_TO_BASE = {
 RANGEMAP = {
     "str": Text(),
     "string": Text(),
+    "String": Text(),
     "NCName": Text(),
     "URIorCURIE": Text(),
     "int": Integer(),
@@ -139,6 +142,7 @@ class SQLTableGenerator(Generator):
     rename_foreign_keys: bool = False
     direct_mapping: bool = False
     relative_slot_num: bool = False
+    default_length_oracle: int = 4096
 
     def serialize(self, **kwargs) -> str:
         return self.generate_ddl(**kwargs)
@@ -239,12 +243,25 @@ class SQLTableGenerator(Generator):
         returns a SQL Alchemy column type
         """
         range = slot.range
-
         # if no SchemaDefinition is explicitly provided as an argument
         # then simply use the schema that is provided to the SQLTableGenerator() object
         if not schema:
             schema = SchemaLoader(data=self.schema).resolve()
-
+        if self.dialect == "oracle":
+            varchar_regex = "VARCHAR([0-9]+)"
+            varchar2_regex = "VARCHAR2([0-9]+)"
+            if re.search(varchar_regex, range) or re.search(varchar2_regex, range):
+                string_length = int(re.findall("[0-9]+", re.findall("\([0-9]+\)", range)[0])[0])
+                if string_length > 4096:
+                    logger.info(
+                        f"WARNING: RANGE EXCEEDS MAXIMUM ORACLE VARCHAR LENGTH, \
+                        CLOB TYPE WILL BE RETURNED: {range} for {slot.name} = {slot.range}"
+                    )
+                    return Text()
+                return VARCHAR2(string_length)
+            if range in ["str", "string", "String", "VARCHAR2", "VARCHAR"]:
+                # If a regex is not detected, string type data should still be represented as a VARCHAR2
+                return VARCHAR2(self.default_length_oracle)
         if range in schema.classes:
             # FK type should be the same as the identifier of the foreign key
             fk = SchemaView(schema).get_identifier_slot(range)
@@ -310,6 +327,12 @@ class SQLTableGenerator(Generator):
     default=True,
     show_default=True,
     help="Emit FK declarations",
+)
+@click.option(
+    "--default_length_oracle",
+    default=4096,
+    show_default=True,
+    help="Default length of varchar based arguments for oracle dialects",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(

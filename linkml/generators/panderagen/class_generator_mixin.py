@@ -1,5 +1,3 @@
-from typing import List
-
 from linkml_runtime.linkml_model import ClassDefinitionName
 
 
@@ -7,7 +5,7 @@ class ClassGeneratorMixin:
     def ordered_classes(self):
         return [self.schemaview.get_class(cn, strict=True) for cn in self.order_classes_by_hierarchy()]
 
-    def order_classes_by_hierarchy(self) -> List[ClassDefinitionName]:
+    def order_classes_by_hierarchy(self) -> list[ClassDefinitionName]:
         sv = self.schemaview
         olist = sv.class_roots()
         unprocessed = [cn for cn in sv.all_classes() if cn not in olist]

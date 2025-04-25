@@ -14,8 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # note: this action will fail on python 3.8 - Could not import extension myst_nb (exception:
-        # No module named 'myst_nb')
         python-version: ["3.12"]
     steps:
       - name: Check out repository
