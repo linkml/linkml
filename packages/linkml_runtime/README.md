@@ -11,7 +11,7 @@ Runtime support for linkml generated data classes.
 
 ## About
 
-This python library provides runtime support for [LinkML](https://linkml.io/linkml/) datamodels.
+This Python library provides runtime support for [LinkML](https://linkml.io/linkml/) datamodels.
 
 See the [LinkML repo](https://github.com/linkml/linkml) for the [Python Dataclass Generator](https://linkml.io/linkml/generators/python.html) which will convert a schema into a Python object model. That model will have dependencies on functionality in this library.
 
