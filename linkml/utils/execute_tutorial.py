@@ -4,16 +4,16 @@ Command line usage example: `python -m linkml.utils.execute_tutorial -d /tmp/tut
 
 It requires that the code blocks have the following format:
 - A code block containing file contents that should be written to a file for testing should be preceded by a line
-  whose text is the file name (no spaces) and a colon.
+whose text is the file name (no spaces) and a colon.
 - A code block containing expected output should be preceded by a line whose text is a single word containing the
-  text "output" (case insensitive) and a colon.
+text "output" (case insensitive) and a colon.
 - A code block containing a command that is expected to fail should be preceded by a line that starts with
-  "<!-- fail" (case insensitive).
+"<!-- fail" (case insensitive).
 - A code block containing commands that should not be executed should be preceded by a line that starts with
-  "<!-- no_execute" (case insensitive).
+"<!-- no_execute" (case insensitive).
 - The code block starts with a line containing three backticks. It can then contain either the language name
-  (e.g., `bash`, `python`, etc.) or `{literalinclude}` followed by a file path. If using `{literalinclude}`,
-  the next line should contain the language tag (e.g., `:language: python`).
+(e.g., `bash`, `python`, etc.) or `{literalinclude}` followed by a file path. If using `{literalinclude}`,
+the next line should contain the language tag (e.g., `:language: python`).
 - The code block ends with a line containing three backticks.
 """
 
