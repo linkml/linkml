@@ -3,11 +3,17 @@ This module executes and evaluates code blocks in tutorial markdown files.
 Command line usage example: `python -m linkml.utils.execute_tutorial -d /tmp/tutorial/ docs/intro/tutorial01.md`
 
 It requires that the code blocks have the following format:
-- A code block containing file contents that should be written to a file for testing should be preceded by a line whose text is the file name (no spaces) and a colon.
-- A code block containing expected output should be preceded by a line whose text is a single word containing the text "output" (case insensitive) and a colon.
-- A code block containing a command that is expected to fail should be preceded by a line that starts with "<!-- fail" (case insensitive).
-- A code block containing commands that should not be executed should be preceded by a line that starts with "<!-- no_execute" (case insensitive).
-- The code block starts with a line containing three backticks. It can then contain either the language name (e.g., `bash`, `python`, etc.) or `{literalinclude}` followed by a file path. If using `{literalinclude}`, the next line should contain the language tag (e.g., `:language: python`).
+- A code block containing file contents that should be written to a file for testing should be preceded by a line
+  whose text is the file name (no spaces) and a colon.
+- A code block containing expected output should be preceded by a line whose text is a single word containing the
+  text "output" (case insensitive) and a colon.
+- A code block containing a command that is expected to fail should be preceded by a line that starts with
+  "<!-- fail" (case insensitive).
+- A code block containing commands that should not be executed should be preceded by a line that starts with
+  "<!-- no_execute" (case insensitive).
+- The code block starts with a line containing three backticks. It can then contain either the language name
+  (e.g., `bash`, `python`, etc.) or `{literalinclude}` followed by a file path. If using `{literalinclude}`,
+  the next line should contain the language tag (e.g., `:language: python`).
 - The code block ends with a line containing three backticks.
 """
 
@@ -195,14 +201,16 @@ def parse_file_to_blocks(input) -> list[Block]:
                         if lines and lines[0].strip() == '```':
                             lines = lines[1:]
                         else:
-                            logger.warning(f"Expected end of code block after literalinclude, but found: {lines[0].strip()}")
+                            logger.warning(
+                                f"Expected end of code block after literalinclude, but found: {lines[0].strip()}"
+                            )
 
                         # Convert relative path to absolute path
                         input_dir = Path(input).parent
                         abs_path = input_dir / file_path
 
                         try:
-                            with open(abs_path, 'r') as f:
+                            with open(abs_path) as f:
                                 file_content = f.read()
 
                             # Create a block for this file
