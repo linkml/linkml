@@ -17,7 +17,6 @@ It requires that the code blocks have the following format:
 - The code block ends with a line containing three backticks.
 """
 
-
 import logging
 import re
 import subprocess
@@ -192,13 +191,13 @@ def parse_file_to_blocks(input) -> list[Block]:
                         # Handle literalinclude directive
                         file_path = m.group(1).strip()
                         # Look ahead and extract language from the language tag
-                        language = 'yaml'  # Default to yaml if no language tag is found
-                        if lines and lines[0].strip().startswith(':language:'):
+                        language = "yaml"  # Default to yaml if no language tag is found
+                        if lines and lines[0].strip().startswith(":language:"):
                             language_line = lines[0].strip()
-                            language = language_line.split(':language:')[1].strip()
+                            language = language_line.split(":language:")[1].strip()
                             lines = lines[1:]
                         # Skip end of code block
-                        if lines and lines[0].strip() == '```':
+                        if lines and lines[0].strip() == "```":
                             lines = lines[1:]
                         else:
                             logger.warning(
