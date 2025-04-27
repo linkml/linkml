@@ -72,14 +72,14 @@ persons:
     age: 33
 ```
 
-Running the following command:
+Running the following command will result in errors printed to the console:
 
 <!-- FAIL -->
 ```bash
 linkml-validate -s personinfo.yaml bad-data.yaml
 ```
 
-Will result in:
+Output:
 
 ```text
 [ERROR] [bad-data.yaml/0] '1-800-kryptonite' does not match '^[\\d\\(\\)\\-]+$' in /persons/0/phone
@@ -108,7 +108,7 @@ persons:
 linkml-validate -s personinfo.yaml better-data.yaml
 ```
 
-Will result in:
+Output:
 
 ```text
 [ERROR] [better-data.yaml/0] '1-800-kryptonite' does not match '^[\\d\\(\\)\\-]+$' in /persons/0/phone
@@ -137,6 +137,7 @@ gen-json-schema personinfo.yaml --top-class Container > personinfo.schema.json
 
 You can then use the `jsonschema` command that comes with the python library (any jsonschema validator will do here)
 
+<!-- Note: this will actually fail when executed because 'bad-data.json' does not exist. -->
 <!-- FAIL -->
 ```bash
 jsonschema -i bad-data.json personinfo.schema.json
