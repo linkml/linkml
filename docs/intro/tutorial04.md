@@ -356,36 +356,26 @@ personinfo:Container a sh:NodeShape ;
 schema1:Person a sh:NodeShape ;
     sh:closed true ;
     sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:datatype xsd:string ;
-            sh:description "name of the person" ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 1 ;
-            sh:path schema1:name ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 3 ;
-            sh:path schema1:telephone ;
-            sh:pattern "^[\\d\\(\\)\\-]+$" ],
-        [ sh:datatype xsd:string ;
-            sh:description "other names for the person" ;
-            sh:nodeKind sh:Literal ;
-            sh:order 2 ;
-            sh:path personinfo:aliases ],
-        [ sh:datatype xsd:integer ;
-            sh:maxCount 1 ;
+    sh:property [ sh:maxCount 1 ;
             sh:maxInclusive 200 ;
             sh:minInclusive 0 ;
-            sh:nodeKind sh:Literal ;
             sh:order 4 ;
             sh:path personinfo:age ],
-        [ sh:datatype xsd:string ;
+        [ sh:description "name of the person" ;
             sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
+            sh:minCount 1 ;
+            sh:order 1 ;
+            sh:path schema1:name ],
+        [ sh:maxCount 1 ;
             sh:order 0 ;
-            sh:path personinfo:id ] ;
+            sh:path personinfo:id ],
+        [ sh:description "other names for the person" ;
+            sh:order 2 ;
+            sh:path personinfo:aliases ],
+        [ sh:maxCount 1 ;
+            sh:order 3 ;
+            sh:path schema1:telephone ;
+            sh:pattern "^[\\d\\(\\)\\-]+$" ] ;
     sh:targetClass schema1:Person .
 ```
 
