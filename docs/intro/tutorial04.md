@@ -19,45 +19,8 @@ Let's start with the schema we developed in the previous section, with some mino
 
 personinfo.yaml:
 
-```yaml
-id: https://w3id.org/linkml/examples/personinfo
-name: personinfo
-prefixes:
-  linkml: https://w3id.org/linkml/
-  personinfo: https://w3id.org/linkml/examples/personinfo/
-  ORCID: https://orcid.org/
-default_curi_maps:
-  - semweb_context
-imports:
-  - linkml:types
-default_prefix: personinfo
-default_range: string
-
-classes:
-  Person:
-    attributes:
-      id:
-        identifier: true
-      full_name:
-        required: true
-        description:
-          name of the person
-      aliases:
-        multivalued: true
-        description:
-          other names for the person
-      phone:
-        pattern: "^[\\d\\(\\)\\-]+$"
-      age:
-        range: integer
-        minimum_value: 0
-        maximum_value: 200
-  Container:
-    attributes:
-      persons:
-        multivalued: true
-        inlined_as_list: true
-        range: Person
+```{literalinclude} ../../examples/tutorial/tutorial04/personinfo.yaml
+:language: yaml
 ```
 
 We extended the previous schema in a few ways:
@@ -69,15 +32,8 @@ We will use this schema with a collection of data records
 
 data.yaml:
 
-```yaml
-persons:
-  - id: ORCID:1234
-    full_name: Clark Kent
-    age: 33
-    phone: 555-555-5555
-  - id: ORCID:4567
-    full_name: Lois Lane
-    age: 34
+```{literalinclude} ../../examples/tutorial/tutorial04/data.yaml
+:language: yaml
 ```
 
 We can use the linkml conversion library to translate this to RDF (Turtle syntax default)
@@ -122,51 +78,8 @@ In both cases, we provide the value as a CURIE, and include a *prefixes* map tha
 
 personinfo-semantic.yaml:
 
-```yaml
-id: https://w3id.org/linkml/examples/personinfo
-name: personinfo
-prefixes:
-  linkml: https://w3id.org/linkml/
-  schema: http://schema.org/               ## define a prefix for schema.org
-  personinfo: https://w3id.org/linkml/examples/personinfo/
-  ORCID: https://orcid.org/
-imports:
-  - linkml:types
-default_curi_maps:
-  - semweb_context
-default_prefix: personinfo
-default_range: string
-
-classes:
-  Person:
-    class_uri: schema:Person              ## reuse schema.org vocabulary
-    attributes:
-      id:
-        identifier: true
-      full_name:
-        required: true
-        description:
-          name of the person
-        slot_uri: schema:name             ## reuse schema.org vocabulary
-      aliases:
-        multivalued: true
-        description:
-          other names for the person
-      phone:
-        pattern: "^[\\d\\(\\)\\-]+$"
-        slot_uri: schema:telephone       ## reuse schema.org vocabulary
-      age:
-        range: integer
-        minimum_value: 0
-        maximum_value: 200
-    id_prefixes:
-      - ORCID
-  Container:
-    attributes:
-      persons:
-        multivalued: true
-        inlined_as_list: true
-        range: Person
+```{literalinclude} ../../examples/tutorial/tutorial04/personinfo-semantic.yaml
+:language: yaml
 ```
 
 Now let's try converting the same YAML/JSON using the enhanced schema
