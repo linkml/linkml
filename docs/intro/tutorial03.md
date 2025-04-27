@@ -62,14 +62,8 @@ Let's deliberately introduce some bad data to make sure our validator is working
 
 bad-data.yaml:
 
-```yaml
-persons:
-  - id: ORCID:1234
-    full_name: Clark Kent
-    age: 90
-    phone: 1-800-kryptonite
-  - id: ORCID:5678
-    age: 33
+```{literalinclude} ../../examples/tutorial/tutorial03/bad-data.yaml
+:language: yaml
 ```
 
 Running the following command will result in errors printed to the console:
@@ -92,15 +86,8 @@ Let's fix the second issue.
 
 better-data.yaml:
 
-```yaml
-persons:
-  - id: ORCID:1234
-    full_name: Clark Kent
-    age: 90
-    phone: 1-800-kryptonite
-  - id: ORCID:5678
-    full_name: Lois Lane
-    age: 33
+```{literalinclude} ../../examples/tutorial/tutorial03/better-data.yaml
+:language: yaml
 ```
 
 <!-- FAIL -->
