@@ -1,6 +1,17 @@
-Docs
-========
+Documentation
+=============
 
-.. automodule:: linkml.generators.docgen
-    :members:
-    :undoc-members:
+Command Line
+^^^^^^^^^^^^
+
+.. currentmodule:: linkml.generators.docgen
+
+.. click:: linkml.generators.docgen:cli
+    :prog: gen-doc
+    :nested: short
+
+Code
+^^^^
+
+.. autoclass:: DocGenerator
+    :members: serialize
