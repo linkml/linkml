@@ -397,90 +397,168 @@ in favour of the de facto <code class="docutils literal notranslate"><span class
 <h2>Docs<a class="headerlink" href="#docs" title="Permalink to this heading">#</a></h2>
 <section id="command-line">
 <h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this heading">#</a></h3>
-<section id="gen-markdown">
-<h4>gen-markdown<a class="headerlink" href="#gen-markdown" title="Permalink to this heading">#</a></h4>
-<p>Generate markdown documentation of a LinkML model</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-markdown<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
+<section id="gen-doc">
+<h4>gen-doc<a class="headerlink" href="#gen-doc" title="Permalink to this heading">#</a></h4>
+<p>Generate documentation folder from a LinkML YAML schema</p>
+<p>Currently a default set of templates for markdown is provided (see the
+folder linkml/generators/docgen/)</p>
+<p>If you specify another format (e.g. html) then you need to provide a
+template_directory argument, with a template for each type of entity inside.</p>
+<p>Examples can optionally be integrated into the documentation; to enable
+this, pass in the –example-directory argument.  The example directory
+should contain one file per example, following the naming convention
+&lt;ClassName&gt;-&lt;ExampleName&gt;.&lt;extension&gt;.</p>
+<p>For example, to include examples on the page for Person, include examples</p>
+<p>Person-001.yaml, Person-002.yaml, etc.</p>
+<p>Currently examples must be in yaml</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-doc<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
 </pre></div>
 </div>
 <p class="rubric">Options</p>
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-d">
-<span id="cmdoption-gen-markdown-dir"></span><span class="sig-name descname"><span class="pre">-d</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--dir</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;dir&gt;</span></span><a class="headerlink" href="#cmdoption-gen-markdown-d" title="Permalink to this definition">#</a></dt>
-<dd><p><strong>Required</strong> Output directory</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-c">
-<span id="cmdoption-gen-markdown-classes"></span><span class="sig-name descname"><span class="pre">-c</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--classes</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;classes&gt;</span></span><a class="headerlink" href="#cmdoption-gen-markdown-c" title="Permalink to this definition">#</a></dt>
-<dd><p>Class(es) to emit</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-M">
-<span id="cmdoption-gen-markdown-map-fields"></span><span class="sig-name descname"><span class="pre">-M</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--map-fields</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;map_fields&gt;</span></span><a class="headerlink" href="#cmdoption-gen-markdown-M" title="Permalink to this definition">#</a></dt>
-<dd><p>Map metamodel fields, e.g. slot=field</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-i">
-<span id="cmdoption-gen-markdown-img"></span><span class="sig-name descname"><span class="pre">-i</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--img</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-i" title="Permalink to this definition">#</a></dt>
-<dd><p>Download YUML images to ‘image’ directory</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-I">
-<span id="cmdoption-gen-markdown-index-file"></span><span class="sig-name descname"><span class="pre">-I</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--index-file</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;index_file&gt;</span></span><a class="headerlink" href="#cmdoption-gen-markdown-I" title="Permalink to this definition">#</a></dt>
-<dd><p>Name of markdown file that holds index</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-noimages">
-<span class="sig-name descname"><span class="pre">--noimages</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-noimages" title="Permalink to this definition">#</a></dt>
-<dd><p>Do not (re-)generate images</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-noyuml">
-<span class="sig-name descname"><span class="pre">--noyuml</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-noyuml" title="Permalink to this definition">#</a></dt>
-<dd><p>Do not add yUML figures to pages</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-notypesdir">
-<span class="sig-name descname"><span class="pre">--notypesdir</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-notypesdir" title="Permalink to this definition">#</a></dt>
-<dd><p>Do not create a separate types directory</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-warnonexist">
-<span class="sig-name descname"><span class="pre">--warnonexist</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-warnonexist" title="Permalink to this definition">#</a></dt>
-<dd><p>Warn if output file already exists</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-V">
-<span id="cmdoption-gen-markdown-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-V" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-doc-V">
+<span id="cmdoption-gen-doc-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-V" title="Permalink to this definition">#</a></dt>
 <dd><p>Show the version and exit.</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-f">
-<span id="cmdoption-gen-markdown-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-markdown-f" title="Permalink to this definition">#</a></dt>
-<dd><p>Output format</p>
+<dt class="sig sig-object std" id="cmdoption-gen-doc-subfolder-type-separation">
+<span id="cmdoption-gen-doc-no-subfolder-type-separation"></span><span class="sig-name descname"><span class="pre">--subfolder-type-separation</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-subfolder-type-separation</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-subfolder-type-separation" title="Permalink to this definition">#</a></dt>
+<dd><p>Separate type (class, slot, etc.) outputs in different subfolders for navigation purposes</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-d">
+<span id="cmdoption-gen-doc-include"></span><span class="sig-name descname"><span class="pre">-d</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--include</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;include&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-d" title="Permalink to this definition">#</a></dt>
+<dd><p>Include LinkML Schema outside of imports mechanism.  Helpful in including deprecated classes and slots in a separate
+YAML, and including it when necessary but not by default (e.g. in documentation or for backwards compatibility)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-example-directory">
+<span class="sig-name descname"><span class="pre">--example-directory</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;example_directory&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-example-directory" title="Permalink to this definition">#</a></dt>
+<dd><p>Folder in which example files are found. These are used to make inline examples</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-render-imports">
+<span id="cmdoption-gen-doc-no-render-imports"></span><span class="sig-name descname"><span class="pre">--render-imports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-render-imports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-render-imports" title="Permalink to this definition">#</a></dt>
+<dd><p>Render also the documentation of elements from imported schemas</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'md'</span></code></p>
-</dd>
-<dt class="field-even">Options<span class="colon">:</span></dt>
-<dd class="field-even"><p>md</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-metadata">
-<span id="cmdoption-gen-markdown-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-metadata" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-doc-hierarchical-class-view">
+<span id="cmdoption-gen-doc-no-hierarchical-class-view"></span><span class="sig-name descname"><span class="pre">--hierarchical-class-view</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-hierarchical-class-view</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-hierarchical-class-view" title="Permalink to this definition">#</a></dt>
+<dd><p>Render class table on index page in a hierarchically indented view</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-use-class-uris">
+<span id="cmdoption-gen-doc-no-use-class-uris"></span><span class="sig-name descname"><span class="pre">--use-class-uris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-use-class-uris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-use-class-uris" title="Permalink to this definition">#</a></dt>
+<dd><p>Use IDs from class_uri instead of names</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-use-slot-uris">
+<span id="cmdoption-gen-doc-no-use-slot-uris"></span><span class="sig-name descname"><span class="pre">--use-slot-uris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-use-slot-uris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-use-slot-uris" title="Permalink to this definition">#</a></dt>
+<dd><p>Use IDs from slot_uri instead of names</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-template-directory">
+<span class="sig-name descname"><span class="pre">--template-directory</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;template_directory&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-template-directory" title="Permalink to this definition">#</a></dt>
+<dd><p>Folder in which custom templates are kept</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-genmeta">
+<span id="cmdoption-gen-doc-no-genmeta"></span><span class="sig-name descname"><span class="pre">--genmeta</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-genmeta</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-genmeta" title="Permalink to this definition">#</a></dt>
+<dd><p>Generating metamodel. Only use this for generating meta.py</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-sort-by">
+<span class="sig-name descname"><span class="pre">--sort-by</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;sort_by&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-sort-by" title="Permalink to this definition">#</a></dt>
+<dd><p>Metaslot to use to sort elements by e.g. rank, name, title</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'name'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-include-top-level-diagram">
+<span id="cmdoption-gen-doc-no-include-top-level-diagram"></span><span class="sig-name descname"><span class="pre">--include-top-level-diagram</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-include-top-level-diagram</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-include-top-level-diagram" title="Permalink to this definition">#</a></dt>
+<dd><p>Include ER diagram of the entire schema on index page.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-diagram-type">
+<span class="sig-name descname"><span class="pre">--diagram-type</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;diagram_type&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-diagram-type" title="Permalink to this definition">#</a></dt>
+<dd><p>Type of UML diagram to be rendered on class documentation pages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options<span class="colon">:</span></dt>
+<dd class="field-odd"><p>mermaid_class_diagram | plantuml_class_diagram | er_diagram</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-dialect">
+<span class="sig-name descname"><span class="pre">--dialect</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;dialect&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-dialect" title="Permalink to this definition">#</a></dt>
+<dd><p>Dialect or ‘flavor’ of Markdown used.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-index-name">
+<span class="sig-name descname"><span class="pre">--index-name</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;index_name&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-index-name" title="Permalink to this definition">#</a></dt>
+<dd><p>Name of the index document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'index'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-0">
+<span id="cmdoption-gen-doc-directory"></span><span class="sig-name descname"><span class="pre">-d</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--directory</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;directory&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-0" title="Permalink to this definition">#</a></dt>
+<dd><p><strong>Required</strong> Folder to which document files are written</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-f">
+<span id="cmdoption-gen-doc-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-f" title="Permalink to this definition">#</a></dt>
+<dd><p>Output format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'markdown'</span></code></p>
+</dd>
+<dt class="field-even">Options<span class="colon">:</span></dt>
+<dd class="field-even"><p>markdown | rst | html | latex</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-metadata">
+<span id="cmdoption-gen-doc-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-metadata" title="Permalink to this definition">#</a></dt>
 <dd><p>Include metadata in output</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -490,8 +568,8 @@ in favour of the de facto <code class="docutils literal notranslate"><span class
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-useuris">
-<span id="cmdoption-gen-markdown-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-useuris" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-doc-useuris">
+<span id="cmdoption-gen-doc-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-useuris" title="Permalink to this definition">#</a></dt>
 <dd><p>Use class and slot URIs over model uris</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -501,14 +579,14 @@ in favour of the de facto <code class="docutils literal notranslate"><span class
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-im">
-<span id="cmdoption-gen-markdown-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-markdown-im" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-doc-im">
+<span id="cmdoption-gen-doc-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-im" title="Permalink to this definition">#</a></dt>
 <dd><p>Import mapping file</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-log_level">
-<span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-markdown-log_level" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-doc-log_level">
+<span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-log_level" title="Permalink to this definition">#</a></dt>
 <dd><p>Logging level</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -521,20 +599,20 @@ in favour of the de facto <code class="docutils literal notranslate"><span class
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-v">
-<span id="cmdoption-gen-markdown-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-v" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-doc-v">
+<span id="cmdoption-gen-doc-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-v" title="Permalink to this definition">#</a></dt>
 <dd><p>Verbosity. Takes precedence over –log_level.</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-mergeimports">
-<span id="cmdoption-gen-markdown-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-mergeimports" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-doc-mergeimports">
+<span id="cmdoption-gen-doc-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-mergeimports" title="Permalink to this definition">#</a></dt>
 <dd><p>Merge imports into source file (default=mergeimports)</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-stacktrace">
-<span id="cmdoption-gen-markdown-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-stacktrace" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-doc-stacktrace">
+<span id="cmdoption-gen-doc-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-stacktrace" title="Permalink to this definition">#</a></dt>
 <dd><p>Print a stack trace when an error occurs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -545,8 +623,8 @@ in favour of the de facto <code class="docutils literal notranslate"><span class
 
 <p class="rubric">Arguments</p>
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-arg-YAMLFILE">
-<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-arg-YAMLFILE" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-doc-arg-YAMLFILE">
+<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-arg-YAMLFILE" title="Permalink to this definition">#</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
@@ -555,22 +633,48 @@ in favour of the de facto <code class="docutils literal notranslate"><span class
 <section id="code">
 <h3>Code<a class="headerlink" href="#code" title="Permalink to this heading">#</a></h3>
 <dl class="py class">
-<dt class="sig sig-object py" id="linkml.generators.markdowngen.MarkdownGenerator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.markdowngen.</span></span><span class="sig-name descname"><span class="pre">MarkdownGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.TextIO</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">~linkml.utils.generator.Generator</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemaview:</span> <span class="pre">~linkml_runtime.utils.schemaview.SchemaView</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useuris:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergeimports:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_date:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_size:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger:</span> <span class="pre">~logging.Logger</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces:</span> <span class="pre">~linkml_runtime.utils.namespaces.Namespaces</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel_name_map:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importmap:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~collections.abc.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emit_prefixes:</span> <span class="pre">set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel:</span> <span class="pre">~linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_directory:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes:</span> <span class="pre">set[linkml_runtime.linkml_model.meta.ClassDefinitionName]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_dir:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_file:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'index.md'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noimages:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noyuml:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_types_dir:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warn_on_exist:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_classes:</span> <span class="pre">set[linkml_runtime.linkml_model.meta.ClassDefinitionName]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_classes_neighborhood:</span> <span class="pre">~linkml.utils.typereferences.References</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/markdowngen.html#MarkdownGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.markdowngen.MarkdownGenerator" title="Permalink to this definition">#</a></dt>
-<dd><p>Generates markdown documentation for a LinkML schema</p>
-<p>Each schema element (class, slot, type, enum) is translated into its own markdown file;
-additionally, an index.md is generated that links everything together.</p>
-<p>The markdown is suitable for deployment as a MkDocs or Sphinx site</p>
+<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.docgen.</span></span><span class="sig-name descname"><span class="pre">DocGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.TextIO</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">~linkml.utils.generator.Generator</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemaview:</span> <span class="pre">~linkml_runtime.utils.schemaview.SchemaView</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useuris:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergeimports:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_date:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_size:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger:</span> <span class="pre">~logging.Logger</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces:</span> <span class="pre">~linkml_runtime.utils.namespaces.Namespaces</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel_name_map:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importmap:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~collections.abc.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emit_prefixes:</span> <span class="pre">set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel:</span> <span class="pre">~linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dialect:</span> <span class="pre">~linkml.generators.docgen.MarkdownDialect</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_by:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'name'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_mappings:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'index'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_directory:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagram_type:</span> <span class="pre">~linkml.generators.docgen.DiagramType</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_top_level_diagram:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subfolder_type_separation:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">example_directory:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">example_runner:</span> <span class="pre">~linkml.workspaces.example_runner.ExampleRunner</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genmeta:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_classvars:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_slots:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_types_dir:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_slot_uris:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_class_uris:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hierarchical_class_view:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_imports:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator" title="Permalink to this definition">#</a></dt>
+<dd><p>Generates documentation from a schema</p>
+<p>Note: this is a replacement for MarkdownGenerator</p>
+<p>Documents can be generated using either provided Jinja2 templates, or by
+providing your own</p>
+<p>Currently the provided templates are for markdown but this framework allows
+direct generation to rst, html, etc</p>
+<p>This works via jinja2 templates (found in docgen/ folder). By default, only
+markdown templates are provided. You can either override these, or you can
+create entirely different templates e.g. for html, latex, etc</p>
+<p>The template folder is expected to have files:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>class.FMT.jinja2</p></li>
+<li><p>enum.FMT.jinja2</p></li>
+<li><p>type.FMT.jinja2</p></li>
+<li><p>slot.FMT.jinja2</p></li>
+<li><p>schema.FMT.jinja2</p></li>
+<li><p>subset.FMT.jinja2</p></li>
+<li><p>index.FMT.jinja2</p></li>
+</ul>
+</div></blockquote>
+<p>Most of these accept a jinja2 variable <cite>element</cite>, except index, schema,
+which accept <cite>schema</cite>. See docgen for examples This will generate a single
+document for every</p>
+<ul class="simple">
+<li><p>class, enum, type, slot</p></li>
+<li><p>subset</p></li>
+<li><p>imported schema</p></li>
+</ul>
+<p>It will also create an index file</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.markdowngen.MarkdownGenerator.serialize">
-<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#linkml.generators.markdowngen.MarkdownGenerator.serialize" title="Permalink to this definition">#</a></dt>
-<dd><p>Generate output in the required format</p>
+<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.serialize">
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.serialize" title="Permalink to this definition">#</a></dt>
+<dd><p>Serialize a schema as a collection of documents</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>kwargs</strong> – Generator specific parameters</p>
+<dd class="field-odd"><p><strong>directory</strong> – relative or absolute path to directory in which documents are to be written</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Generated output</p>
+<dd class="field-even"><p></p>
 </dd>
 </dl>
 </dd></dl>
@@ -640,12 +744,12 @@ additionally, an index.md is generated that links everything together.</p>
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#docs">Docs</a><ul>
 <li><a class="reference internal" href="#command-line">Command Line</a><ul>
-<li><a class="reference internal" href="#gen-markdown">gen-markdown</a></li>
+<li><a class="reference internal" href="#gen-doc">gen-doc</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#code">Code</a><ul>
-<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator</span></code></a><ul>
-<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.serialize()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator"><code class="docutils literal notranslate"><span class="pre">DocGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">DocGenerator.serialize()</span></code></a></li>
 </ul>
 </li>
 </ul>

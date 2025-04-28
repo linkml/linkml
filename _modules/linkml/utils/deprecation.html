@@ -578,6 +578,19 @@
         <span class="p">),</span>
         <span class="n">recommendation</span><span class="o">=</span><span class="s2">&quot;Update to use linkml.validator&quot;</span><span class="p">,</span>
     <span class="p">),</span>
+    <span class="n">Deprecation</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;gen-markdown&quot;</span><span class="p">,</span>
+        <span class="c1"># the last update to any code in markdowngen.py was in v1.9.1</span>
+        <span class="c1"># we can start considering it as deprecated from this version</span>
+        <span class="n">deprecated_in</span><span class="o">=</span><span class="n">SemVer</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="s2">&quot;1.9.1&quot;</span><span class="p">),</span>
+        <span class="n">removed_in</span><span class="o">=</span><span class="n">SemVer</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="s2">&quot;1.10.0&quot;</span><span class="p">),</span>
+        <span class="n">message</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;gen-markdown has been deprecated in favor of gen-doc, which is the new &quot;</span>
+            <span class="s2">&quot;de-facto generator for generating markdown documentation files (with &quot;</span>
+            <span class="s2">&quot;embedded mermaid class diagrams) from a LinkML schema&quot;</span>
+        <span class="p">),</span>
+        <span class="n">recommendation</span><span class="o">=</span><span class="s2">&quot;Update to use `gen-doc`&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
 <span class="p">)</span>  <span class="c1"># type: tuple[Deprecation, ...]</span>
 
 <span class="n">EMITTED</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># type: set[str]</span>
