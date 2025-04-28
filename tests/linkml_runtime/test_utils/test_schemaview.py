@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 SCHEMA_NO_IMPORTS = Path(INPUT_DIR) / 'kitchen_sink_noimports.yaml'
 SCHEMA_WITH_IMPORTS = Path(INPUT_DIR) / 'kitchen_sink.yaml'
-SCHEMA_WITH_STRUCTURED_PATTERNS = Path(INPUT_DIR) / "pattern-example.yaml"
+SCHEMA_WITH_STRUCTURED_PATTERNS = Path(INPUT_DIR) / 'pattern-example.yaml'
 SCHEMA_IMPORT_TREE = Path(INPUT_DIR) / 'imports' / 'main.yaml'
 SCHEMA_RELATIVE_IMPORT_TREE = Path(INPUT_DIR) / 'imports_relative' / 'L0_0' / 'L1_0_0' / 'main.yaml'
 SCHEMA_RELATIVE_IMPORT_TREE2 = Path(INPUT_DIR) / 'imports_relative' / 'L0_2' / 'main.yaml'
@@ -357,7 +357,7 @@ def test_caching():
     view.add_class(ClassDefinition('X'))
     assert len(['X']) == len(view.all_classes())
     view.add_class(ClassDefinition('Y'))
-    assert len(['X', 'Y']) ==  len(view.all_classes())
+    assert len(['X', 'Y']) == len(view.all_classes())
     # bypass view method and add directly to schema;
     # in general this is not recommended as the cache will
     # not be updated
@@ -546,6 +546,11 @@ def test_imports_relative():
         '../L1_0_1/dupe',
         './L2_0_0_0/child',
         './L2_0_0_1/child',
+        'L2_0_0_2/two',
+        'L2_0_0_2/one',
+        'L2_0_0_2/four',
+        'L2_0_0_2/three',
+        'L2_0_0_2/stepchild',
         'main'
     ]
 
@@ -715,6 +720,7 @@ def test_slot_inheritance():
     view.add_slot(SlotDefinition('s5', is_a='does-not-exist'))
     with pytest.raises(ValueError):
         view.slot_ancestors('s5')
+
 
 def test_attribute_inheritance():
     """

@@ -11,7 +11,7 @@ Runtime support for linkml generated data classes.
 
 ## About
 
-This python library provides runtime support for [LinkML](https://linkml.io/linkml/) datamodels.
+This Python library provides runtime support for [LinkML](https://linkml.io/linkml/) datamodels.
 
 See the [LinkML repo](https://github.com/linkml/linkml) for the [Python Dataclass Generator](https://linkml.io/linkml/generators/python.html) which will convert a schema into a Python object model. That model will have dependencies on functionality in this library.
 
@@ -24,8 +24,8 @@ See [working with data](https://linkml.io/linkml/data/index.html) in the documen
 
 This repository also contains the Python dataclass representation of the [LinkML metamodel](https://github.com/linkml/linkml-model), and various utility functions that are useful for working with LinkML data and schemas.
 
-It also includes the [SchemaView](https://linkml.io/linkml/developers/manipulating-schemas.html) class for working with LinkML schemas
+It also includes the [SchemaView](https://linkml.io/linkml/developers/manipulating-schemas.html) class for working with LinkML schemas.
 
 ## Notebooks
 
-See the [notebooks](https://github.com/linkml/linkml-runtime/tree/main/notebooks) folder for examples
+See the [notebooks](https://github.com/linkml/linkml-runtime/tree/main/notebooks) folder for examples.

@@ -108,25 +108,6 @@ def is_absolute_path(path: str) -> bool:
     drive, tail = os.path.splitdrive(norm_path)
     return bool(drive and tail)
 
-def _resolve_import(source_sch: str, imported_sch: str) -> str:
-    if os.path.isabs(imported_sch):
-        # Absolute import paths are not modified
-        return imported_sch
-    if urlparse(imported_sch).scheme:
-        # File with URL schemes are not modified
-        return imported_sch
-    
-    if WINDOWS:
-        path = PurePath(os.path.normpath(PurePath(source_sch).parent / imported_sch)).as_posix()
-    else:
-        path = os.path.normpath(str(Path(source_sch).parent / imported_sch))
-
-    if imported_sch.startswith(".") and not path.startswith("."):
-        # Above condition handles cases where both source schema and imported schema are relative paths: these should remain relative
-        return f"./{path}"
-
-    return path
-
 
 @dataclass
 class SchemaUsage:
@@ -319,14 +300,24 @@ class SchemaView:
                     # path, and the target import doesn't have : (as in a curie or a URI)
                     # we prepend the relative path. This WILL make the key in the `schema_map` not
                     # equal to the literal text specified in the importing schema, but this is
-                    # essential to sensible deduplication: eg. for
+                    # essential to sensible deduplication: e.g. for
                     # - main.yaml (imports ./types.yaml, ./subdir/subschema.yaml)
                     # - types.yaml
                     # - subdir/subschema.yaml (imports ./types.yaml)
                     # - subdir/types.yaml
                     # we should treat the two `types.yaml` as separate schemas from the POV of the
                     # origin schema.
-                    i = _resolve_import(sn, i)
+
+                    # if i is not a CURIE and sn looks like a path with at least one parent folder,
+                    # normalise i with respect to sn
+                    if "/" in sn and ":" not in i:
+                        if WINDOWS:
+                            # This cannot be simplified. os.path.normpath() must be called before .as_posix()
+                            i = PurePath(
+                                os.path.normpath(PurePath(sn).parent / i)
+                            ).as_posix()
+                        else:
+                            i = os.path.normpath(str(Path(sn).parent / i))
                     todo.append(i)
 
             # add item to closure
