@@ -965,7 +965,7 @@ class DocGenerator(Generator):
     "--directory",
     "-d",
     required=True,
-    help="Folder to which document files are written",
+    help="Path to the directory where you want the Markdown files to be written to",
 )
 @click.option("--index-name", default="index", show_default=True, help="Name of the index document.")
 @click.option("--dialect", help="Dialect or 'flavor' of Markdown used.")
@@ -992,7 +992,7 @@ class DocGenerator(Generator):
     show_default=True,
     help="Generating metamodel. Only use this for generating meta.py",
 )
-@click.option("--template-directory", help="Folder in which custom templates are kept")
+@click.option("--template-directory", help="Path to the directory with custom jinja2 templates")
 @click.option(
     "--use-slot-uris/--no-use-slot-uris",
     default=False,
