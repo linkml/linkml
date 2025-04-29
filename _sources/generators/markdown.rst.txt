@@ -65,17 +65,14 @@ Docs
 Command Line
 ^^^^^^^^^^^^
 
-.. currentmodule:: linkml.generators.docgen
+.. currentmodule:: linkml.generators.markdowngen
 
-.. click:: linkml.generators.docgen:cli
-    :prog: gen-doc
+.. click:: linkml.generators.markdowngen:cli
+    :prog: gen-markdown
     :nested: short
 
 Code
 ^^^^
-
-.. autoclass:: DocGenerator
-    :members: serialize
 
 .. autoclass:: MarkdownGenerator
     :members: serialize

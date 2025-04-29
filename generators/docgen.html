@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="ER Diagrams" href="erdiagram.html" /><link rel="prev" title="Markdown" href="markdown.html" />
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
-        <title>Docs - linkml documentation</title>
+        <title>Documentation - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -222,7 +222,7 @@
 <li class="toctree-l2"><a class="reference internal" href="shacl.html">SHACL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="owl.html">OWL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="markdown.html">Markdown</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Docs</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="erdiagram.html">ER Diagrams</a></li>
 <li class="toctree-l2"><a class="reference internal" href="yuml.html">YUML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plantumlgen.html">PlantUML Diagram Generator</a></li>
@@ -345,34 +345,245 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-linkml.generators.docgen">
-<span id="docs"></span><h1>Docs<a class="headerlink" href="#module-linkml.generators.docgen" title="Permalink to this heading">#</a></h1>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DIALECT">
-<span class="sig-prename descclassname"><span class="pre">linkml.generators.docgen.</span></span><span class="sig-name descname"><span class="pre">DIALECT</span></span><a class="headerlink" href="#linkml.generators.docgen.DIALECT" title="Permalink to this definition">#</a></dt>
-<dd><p>alias of <a class="reference internal" href="#linkml.generators.docgen.MarkdownDialect" title="linkml.generators.docgen.MarkdownDialect"><code class="xref py py-class docutils literal notranslate"><span class="pre">MarkdownDialect</span></code></a></p>
+          <section id="documentation">
+<h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading">#</a></h1>
+<section id="command-line">
+<h2>Command Line<a class="headerlink" href="#command-line" title="Permalink to this heading">#</a></h2>
+<section id="gen-doc">
+<h3>gen-doc<a class="headerlink" href="#gen-doc" title="Permalink to this heading">#</a></h3>
+<p>Generate documentation folder from a LinkML YAML schema</p>
+<p>Currently a default set of templates for markdown is provided (see the
+folder linkml/generators/docgen/)</p>
+<p>If you specify another format (e.g. html) then you need to provide a
+template_directory argument, with a template for each type of entity inside.</p>
+<p>Examples can optionally be integrated into the documentation; to enable
+this, pass in the –example-directory argument.  The example directory
+should contain one file per example, following the naming convention
+&lt;ClassName&gt;-&lt;ExampleName&gt;.&lt;extension&gt;.</p>
+<p>For example, to include examples on the page for Person, include examples</p>
+<p>Person-001.yaml, Person-002.yaml, etc.</p>
+<p>Currently examples must be in yaml</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-doc<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-V">
+<span id="cmdoption-gen-doc-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-V" title="Permalink to this definition">#</a></dt>
+<dd><p>Show the version and exit.</p>
 </dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DiagramType">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.docgen.</span></span><span class="sig-name descname"><span class="pre">DiagramType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DiagramType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DiagramType" title="Permalink to this definition">#</a></dt>
-<dd><dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DiagramType.er_diagram">
-<span class="sig-name descname"><span class="pre">er_diagram</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'er_diagram'</span></em><a class="headerlink" href="#linkml.generators.docgen.DiagramType.er_diagram" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DiagramType.mermaid_class_diagram">
-<span class="sig-name descname"><span class="pre">mermaid_class_diagram</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'mermaid_class_diagram'</span></em><a class="headerlink" href="#linkml.generators.docgen.DiagramType.mermaid_class_diagram" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DiagramType.plantuml_class_diagram">
-<span class="sig-name descname"><span class="pre">plantuml_class_diagram</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'plantuml_class_diagram'</span></em><a class="headerlink" href="#linkml.generators.docgen.DiagramType.plantuml_class_diagram" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-subfolder-type-separation">
+<span id="cmdoption-gen-doc-no-subfolder-type-separation"></span><span class="sig-name descname"><span class="pre">--subfolder-type-separation</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-subfolder-type-separation</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-subfolder-type-separation" title="Permalink to this definition">#</a></dt>
+<dd><p>Separate type (class, slot, etc.) outputs in different subfolders for navigation purposes</p>
 </dd></dl>
 
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-d">
+<span id="cmdoption-gen-doc-include"></span><span class="sig-name descname"><span class="pre">-d</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--include</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;include&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-d" title="Permalink to this definition">#</a></dt>
+<dd><p>Include LinkML Schema outside of imports mechanism.  Helpful in including deprecated classes and slots in a separate
+YAML, and including it when necessary but not by default (e.g. in documentation or for backwards compatibility)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-example-directory">
+<span class="sig-name descname"><span class="pre">--example-directory</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;example_directory&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-example-directory" title="Permalink to this definition">#</a></dt>
+<dd><p>Folder in which example files are found. These are used to make inline examples</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-render-imports">
+<span id="cmdoption-gen-doc-no-render-imports"></span><span class="sig-name descname"><span class="pre">--render-imports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-render-imports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-render-imports" title="Permalink to this definition">#</a></dt>
+<dd><p>Render also the documentation of elements from imported schemas</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-hierarchical-class-view">
+<span id="cmdoption-gen-doc-no-hierarchical-class-view"></span><span class="sig-name descname"><span class="pre">--hierarchical-class-view</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-hierarchical-class-view</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-hierarchical-class-view" title="Permalink to this definition">#</a></dt>
+<dd><p>Render class table on index page in a hierarchically indented view</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-use-class-uris">
+<span id="cmdoption-gen-doc-no-use-class-uris"></span><span class="sig-name descname"><span class="pre">--use-class-uris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-use-class-uris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-use-class-uris" title="Permalink to this definition">#</a></dt>
+<dd><p>Use IDs from class_uri instead of names</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-use-slot-uris">
+<span id="cmdoption-gen-doc-no-use-slot-uris"></span><span class="sig-name descname"><span class="pre">--use-slot-uris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-use-slot-uris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-use-slot-uris" title="Permalink to this definition">#</a></dt>
+<dd><p>Use IDs from slot_uri instead of names</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-template-directory">
+<span class="sig-name descname"><span class="pre">--template-directory</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;template_directory&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-template-directory" title="Permalink to this definition">#</a></dt>
+<dd><p>Folder in which custom templates are kept</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-genmeta">
+<span id="cmdoption-gen-doc-no-genmeta"></span><span class="sig-name descname"><span class="pre">--genmeta</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-genmeta</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-genmeta" title="Permalink to this definition">#</a></dt>
+<dd><p>Generating metamodel. Only use this for generating meta.py</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-sort-by">
+<span class="sig-name descname"><span class="pre">--sort-by</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;sort_by&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-sort-by" title="Permalink to this definition">#</a></dt>
+<dd><p>Metaslot to use to sort elements by e.g. rank, name, title</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'name'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-include-top-level-diagram">
+<span id="cmdoption-gen-doc-no-include-top-level-diagram"></span><span class="sig-name descname"><span class="pre">--include-top-level-diagram</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-include-top-level-diagram</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-include-top-level-diagram" title="Permalink to this definition">#</a></dt>
+<dd><p>Include ER diagram of the entire schema on index page.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-diagram-type">
+<span class="sig-name descname"><span class="pre">--diagram-type</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;diagram_type&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-diagram-type" title="Permalink to this definition">#</a></dt>
+<dd><p>Type of UML diagram to be rendered on class documentation pages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options<span class="colon">:</span></dt>
+<dd class="field-odd"><p>mermaid_class_diagram | plantuml_class_diagram | er_diagram</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-dialect">
+<span class="sig-name descname"><span class="pre">--dialect</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;dialect&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-dialect" title="Permalink to this definition">#</a></dt>
+<dd><p>Dialect or ‘flavor’ of Markdown used.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-index-name">
+<span class="sig-name descname"><span class="pre">--index-name</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;index_name&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-index-name" title="Permalink to this definition">#</a></dt>
+<dd><p>Name of the index document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'index'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-0">
+<span id="cmdoption-gen-doc-directory"></span><span class="sig-name descname"><span class="pre">-d</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--directory</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;directory&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-0" title="Permalink to this definition">#</a></dt>
+<dd><p><strong>Required</strong> Folder to which document files are written</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-f">
+<span id="cmdoption-gen-doc-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-f" title="Permalink to this definition">#</a></dt>
+<dd><p>Output format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'markdown'</span></code></p>
+</dd>
+<dt class="field-even">Options<span class="colon">:</span></dt>
+<dd class="field-even"><p>markdown | rst | html | latex</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-metadata">
+<span id="cmdoption-gen-doc-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-metadata" title="Permalink to this definition">#</a></dt>
+<dd><p>Include metadata in output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-useuris">
+<span id="cmdoption-gen-doc-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-useuris" title="Permalink to this definition">#</a></dt>
+<dd><p>Use class and slot URIs over model uris</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-im">
+<span id="cmdoption-gen-doc-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-im" title="Permalink to this definition">#</a></dt>
+<dd><p>Import mapping file</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-log_level">
+<span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-log_level" title="Permalink to this definition">#</a></dt>
+<dd><p>Logging level</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'WARNING'</span></code></p>
+</dd>
+<dt class="field-even">Options<span class="colon">:</span></dt>
+<dd class="field-even"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-v">
+<span id="cmdoption-gen-doc-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-v" title="Permalink to this definition">#</a></dt>
+<dd><p>Verbosity. Takes precedence over –log_level.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-mergeimports">
+<span id="cmdoption-gen-doc-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-mergeimports" title="Permalink to this definition">#</a></dt>
+<dd><p>Merge imports into source file (default=mergeimports)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-stacktrace">
+<span id="cmdoption-gen-doc-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-stacktrace" title="Permalink to this definition">#</a></dt>
+<dd><p>Print a stack trace when an error occurs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-doc-arg-YAMLFILE">
+<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-arg-YAMLFILE" title="Permalink to this definition">#</a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="code">
+<h2>Code<a class="headerlink" href="#code" title="Permalink to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.docgen.</span></span><span class="sig-name descname"><span class="pre">DocGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.TextIO</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">~linkml.utils.generator.Generator</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemaview:</span> <span class="pre">~linkml_runtime.utils.schemaview.SchemaView</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useuris:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergeimports:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_date:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_size:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger:</span> <span class="pre">~logging.Logger</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces:</span> <span class="pre">~linkml_runtime.utils.namespaces.Namespaces</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel_name_map:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importmap:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~collections.abc.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emit_prefixes:</span> <span class="pre">set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel:</span> <span class="pre">~linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dialect:</span> <span class="pre">~linkml.generators.docgen.MarkdownDialect</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_by:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'name'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_mappings:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'index'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_directory:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagram_type:</span> <span class="pre">~linkml.generators.docgen.DiagramType</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_top_level_diagram:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subfolder_type_separation:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">example_directory:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">example_runner:</span> <span class="pre">~linkml.workspaces.example_runner.ExampleRunner</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genmeta:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_classvars:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_slots:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_types_dir:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_slot_uris:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_class_uris:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hierarchical_class_view:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_imports:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator" title="Permalink to this definition">#</a></dt>
@@ -407,434 +618,6 @@ document for every</p>
 </ul>
 <p>It will also create an index file</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.all_class_objects">
-<span class="sig-name descname"><span class="pre">all_class_objects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.13)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.all_class_objects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.all_class_objects" title="Permalink to this definition">#</a></dt>
-<dd><p>all class objects in schema</p>
-<p>Ensures rank is non-null
-:return: iterator</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.all_enum_objects">
-<span class="sig-name descname"><span class="pre">all_enum_objects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.13)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.EnumDefinition" title="linkml_runtime.linkml_model.meta.EnumDefinition"><span class="pre">EnumDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.all_enum_objects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.all_enum_objects" title="Permalink to this definition">#</a></dt>
-<dd><p>all enum objects in schema</p>
-<p>Ensures rank is non-null
-:return: iterator</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.all_slot_objects">
-<span class="sig-name descname"><span class="pre">all_slot_objects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.13)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.all_slot_objects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.all_slot_objects" title="Permalink to this definition">#</a></dt>
-<dd><p>all slot objects in schema</p>
-<p>Ensures rank is non-null
-:return: iterator</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.all_subset_objects">
-<span class="sig-name descname"><span class="pre">all_subset_objects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.13)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><span class="pre">SubsetDefinition</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.all_subset_objects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.all_subset_objects" title="Permalink to this definition">#</a></dt>
-<dd><p>all enum objects in schema</p>
-<p>Ensures rank is non-null
-:return: iterator</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.all_type_object_names">
-<span class="sig-name descname"><span class="pre">all_type_object_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.TypeDefinitionName</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.all_type_object_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.all_type_object_names" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.all_type_objects">
-<span class="sig-name descname"><span class="pre">all_type_objects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.13)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.TypeDefinition" title="linkml_runtime.linkml_model.meta.TypeDefinition"><span class="pre">TypeDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.all_type_objects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.all_type_objects" title="Permalink to this definition">#</a></dt>
-<dd><p>all type objects in schema</p>
-<p>Ensures rank is non-null
-:return: iterator</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.bullet">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bullet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta_slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SlotDefinitionName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backquote</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.bullet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.bullet" title="Permalink to this definition">#</a></dt>
-<dd><p>Render tag-value for an element as a bullet</p>
-<p>Limitations: currently hardcoded to be markdown
-:param e: element that holds the property, e.g. Person
-:param meta_slot: metamodel property to be shown, e.g. comments
-:param backquote: if true, render as backquote
-:return: formatted string</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.cardinality">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cardinality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.cardinality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.cardinality" title="Permalink to this definition">#</a></dt>
-<dd><p>Render combination of required, multivalued, recommended, and exact_cardinality as a range,
-according to Mermaid conventions. Considers ‘required’ and ‘multivalued’ to set defaults
-for ‘minimum_cardinality’ and ‘maximum_cardinality’.</p>
-<p>Reference: <a class="reference external" href="https://mermaid.js.org/syntax/classDiagram.html#cardinality-multiplicity-on-relations">https://mermaid.js.org/syntax/classDiagram.html#cardinality-multiplicity-on-relations</a></p>
-<p>The different cardinality options are:
-- 1 Only 1
-- 0..1 Zero or One
-- 1..* One or more
-- * Many
-- n n (where n&gt;1)
-- 0..n zero to n (where n&gt;1)
-- 1..n one to n (where n&gt;1)
-:param slot: SlotDefinition
-:return: cardinality string as used in Mermaid diagrams</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.class_hierarchy_as_tuples">
-<span class="sig-name descname"><span class="pre">class_hierarchy_as_tuples</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.13)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.class_hierarchy_as_tuples"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.class_hierarchy_as_tuples" title="Permalink to this definition">#</a></dt>
-<dd><p>Generate a hierarchical representation of all classes in the schema</p>
-<p>This is represented as a list of tuples (depth: int, cls: ClassDefinitionName),
-where the order is pre-order depth first traversal</p>
-<p>This can then be used to draw a hierarchy within jinja in a number of ways; e.g</p>
-<ul class="simple">
-<li><p>markdown (by using indentation of “ “ * depth on a list)</p></li>
-<li><p>tables (by placing fake indentation e.g using underscores)</p></li>
-</ul>
-<p>Simply iterate through all tuples, drawing each in the appropriate way</p>
-<p>Note: By default all classes are ordered alphabetically</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuples (depth: int, cls: ClassDefinitionName)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.class_induced_slots">
-<span class="sig-name descname"><span class="pre">class_induced_slots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ClassDefinitionName</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.13)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.class_induced_slots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.class_induced_slots" title="Permalink to this definition">#</a></dt>
-<dd><p>Yields all induced slots for a class</p>
-<p>Ensures rank is non-null</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>class_name</strong> – </p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>iterator</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.diagram_type">
-<span class="sig-name descname"><span class="pre">diagram_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#linkml.generators.docgen.DiagramType" title="linkml.generators.docgen.DiagramType"><span class="pre">DiagramType</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.diagram_type" title="Permalink to this definition">#</a></dt>
-<dd><p>style of diagram (ER, UML)</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.dialect">
-<span class="sig-name descname"><span class="pre">dialect</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#linkml.generators.docgen.MarkdownDialect" title="linkml.generators.docgen.MarkdownDialect"><span class="pre">MarkdownDialect</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.dialect" title="Permalink to this definition">#</a></dt>
-<dd><p>markdown dialect (e.g MyST, Python)</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.directory">
-<span class="sig-name descname"><span class="pre">directory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.directory" title="Permalink to this definition">#</a></dt>
-<dd><p>directory in which to write documents</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.example_directory">
-<span class="sig-name descname"><span class="pre">example_directory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.example_directory" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.example_object_blobs">
-<span class="sig-name descname"><span class="pre">example_object_blobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.example_object_blobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.example_object_blobs" title="Permalink to this definition">#</a></dt>
-<dd><p>Fetch list of all examples of a class.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>class_name</strong> – class for which we want to determine the examples</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of all examples of a class</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.example_runner">
-<span class="sig-name descname"><span class="pre">example_runner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ExampleRunner</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.example_runner" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.gen_classvars">
-<span class="sig-name descname"><span class="pre">gen_classvars</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.gen_classvars" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.gen_slots">
-<span class="sig-name descname"><span class="pre">gen_slots</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.gen_slots" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.generatorname">
-<span class="sig-name descname"><span class="pre">generatorname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'docgen.py'</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.generatorname" title="Permalink to this definition">#</a></dt>
-<dd><p>Name of the generator. Override with os.path.basename(__file__)</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.generatorversion">
-<span class="sig-name descname"><span class="pre">generatorversion</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'0.0.1'</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.generatorversion" title="Permalink to this definition">#</a></dt>
-<dd><p>Version of the generator. Consider deprecating and instead use overall linkml version</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.genmeta">
-<span class="sig-name descname"><span class="pre">genmeta</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.genmeta" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.get_direct_slot_names">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_direct_slot_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinitionName</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.get_direct_slot_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.get_direct_slot_names" title="Permalink to this definition">#</a></dt>
-<dd><p>Fetch list of all own attributes of a class, i.e.,
-all slot names of slots that belong to the domain of a class.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cls</strong> – class for which we want to determine the attributes</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of names of all own attributes of a class</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.get_direct_slots">
-<span class="sig-name descname"><span class="pre">get_direct_slots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.get_direct_slots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.get_direct_slots" title="Permalink to this definition">#</a></dt>
-<dd><p>Fetch list of all own attributes of a class, i.e.,
-all slots that belong to the domain of a class.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cls</strong> – class for which we want to determine the attributes</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of all own attributes of a class</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.get_indirect_slots">
-<span class="sig-name descname"><span class="pre">get_indirect_slots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.get_indirect_slots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.get_indirect_slots" title="Permalink to this definition">#</a></dt>
-<dd><p>Fetch list of all inherited attributes of a class, i.e.,
-all slots that belong to the domain of a class.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cls</strong> – class for which we want to determine the attributes</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of all own attributes of a class</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.get_mixin_inherited_slots">
-<span class="sig-name descname"><span class="pre">get_mixin_inherited_slots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.get_mixin_inherited_slots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.get_mixin_inherited_slots" title="Permalink to this definition">#</a></dt>
-<dd><p>Fetch list of all slots acquired through mixing.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cls</strong> – class for which we want to determine the mixed in slots</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of all mixed in slots from each mixin class</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.get_slot_inherited_from">
-<span class="sig-name descname"><span class="pre">get_slot_inherited_from</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ClassDefinitionName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SlotDefinitionName</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.get_slot_inherited_from"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.get_slot_inherited_from" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the name of the class that a given slot is inherited from.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>class_name</strong> – name of the class whose slot we are checking</p></li>
-<li><p><strong>slot_name</strong> – name of slot in consideration</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of classes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.hierarchical_class_view">
-<span class="sig-name descname"><span class="pre">hierarchical_class_view</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.hierarchical_class_view" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.include_top_level_diagram">
-<span class="sig-name descname"><span class="pre">include_top_level_diagram</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.include_top_level_diagram" title="Permalink to this definition">#</a></dt>
-<dd><p>Whether the index page should include a schema diagram</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.index_name">
-<span class="sig-name descname"><span class="pre">index_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'index'</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.index_name" title="Permalink to this definition">#</a></dt>
-<dd><p>name of the index document</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.inheritance_tree">
-<span class="sig-name descname"><span class="pre">inheritance_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Definition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.inheritance_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.inheritance_tree" title="Permalink to this definition">#</a></dt>
-<dd><p>Show an element in the context of its is-a hierarchy</p>
-<p>Limitations: currently only implemented for markdown (uses nested bullets)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>element</strong> – slot or class to be shown</p></li>
-<li><p><strong>children</strong> – if true, show direct children</p></li>
-<li><p><strong>mixins</strong> – if true, show mixins alongside each element</p></li>
-<li><p><strong>kwargs</strong> – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.inject_slot_info">
-<span class="sig-name descname"><span class="pre">inject_slot_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.inject_slot_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.inject_slot_info" title="Permalink to this definition">#</a></dt>
-<dd><p>Injects additional information into a slot</p>
-<p>TODO: move this functionality into schemaview
-:param slot:
-:return:</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.latex">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">latex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.latex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.latex" title="Permalink to this definition">#</a></dt>
-<dd><p>Makes text safe for latex</p>
-<p>NOTE: may be incomplete!</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>text</strong> – </p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.link">
-<span class="sig-name descname"><span class="pre">link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Definition</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DefinitionName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_link</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.link" title="Permalink to this definition">#</a></dt>
-<dd><p>Render an element as a hyperlink</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>e</strong> – </p></li>
-<li><p><strong>index_link</strong> – Whether this is a link for the index page or not</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.links">
-<span class="sig-name descname"><span class="pre">links</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.DefinitionName</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.links"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.links" title="Permalink to this definition">#</a></dt>
-<dd><p>Render list of element documentation pages as hyperlinks.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>e_list</strong> – list of elements</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of hyperlinked elements</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.mermaid_diagram">
-<span class="sig-name descname"><span class="pre">mermaid_diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.13)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.mermaid_diagram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.mermaid_diagram" title="Permalink to this definition">#</a></dt>
-<dd><p>Render a mermaid diagram for a set of classes</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>class_names</strong> – </p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.mermaid_directive">
-<span class="sig-name descname"><span class="pre">mermaid_directive</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.mermaid_directive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.mermaid_directive" title="Permalink to this definition">#</a></dt>
-<dd><p>Writes a mermaid directive. See &lt;<a class="reference external" href="https://mermaid-js.github.io/mermaid/#/">https://mermaid-js.github.io/mermaid/#/</a>&gt;_</p>
-<p>This comes after the triple-backtick.</p>
-<p>Note that the directive varies depending on whether the dialect is
-the default python markdown (used by mkdocs) or MyST (used if you
-have a sphinx site)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.name">
-<span class="sig-name descname"><span class="pre">name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Element</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.name" title="Permalink to this definition">#</a></dt>
-<dd><p>Returns the name of the element in its canonical form</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>element</strong> – SchemaView element definition</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>slot name or numeric portion of CURIE prefixed
-slot_uri</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.no_types_dir">
-<span class="sig-name descname"><span class="pre">no_types_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.no_types_dir" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.number_value_range">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">number_value_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.TypeDefinition" title="linkml_runtime.linkml_model.meta.TypeDefinition"><span class="pre">TypeDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.number_value_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.number_value_range" title="Permalink to this definition">#</a></dt>
-<dd><p>Render the minimum and maximum values for a slot or type as a range, e.g 5-100</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>e</strong> – </p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.render_imports">
-<span class="sig-name descname"><span class="pre">render_imports</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.render_imports" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.requires_metamodel">
-<span class="sig-name descname"><span class="pre">requires_metamodel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.requires_metamodel" title="Permalink to this definition">#</a></dt>
-<dd><p>Generator queries an instance of the metamodel</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.schema_title">
-<span class="sig-name descname"><span class="pre">schema_title</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.schema_title"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.schema_title" title="Permalink to this definition">#</a></dt>
-<dd><p>Returns the title of the schema.</p>
-<p>Uses title field if present, otherwise name</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.serialize">
 <span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.serialize" title="Permalink to this definition">#</a></dt>
 <dd><p>Serialize a schema as a collection of documents</p>
@@ -848,135 +631,9 @@ slot_uri</p>
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.sort_by">
-<span class="sig-name descname"><span class="pre">sort_by</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'name'</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.sort_by" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.subfolder_type_separation">
-<span class="sig-name descname"><span class="pre">subfolder_type_separation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.subfolder_type_separation" title="Permalink to this definition">#</a></dt>
-<dd><p>Whether each type (class, slot, etc.) should be put in separate subfolder for navigation purposes</p>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.template_directory">
-<span class="sig-name descname"><span class="pre">template_directory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.template_directory" title="Permalink to this definition">#</a></dt>
-<dd><p>directory for custom templates</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.template_mappings">
-<span class="sig-name descname"><span class="pre">template_mappings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.template_mappings" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.uri">
-<span class="sig-name descname"><span class="pre">uri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expand</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.uri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.uri" title="Permalink to this definition">#</a></dt>
-<dd><p>Fetches the URI string for the relevant element</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>element</strong> – </p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.uri_link">
-<span class="sig-name descname"><span class="pre">uri_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Element</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.uri_link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.uri_link" title="Permalink to this definition">#</a></dt>
-<dd><p>Returns a link string (default: markdown links) for a schema element</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>element</strong> – uri string or linkml model element</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>hyperlinked markdown or web links</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.use_class_uris">
-<span class="sig-name descname"><span class="pre">use_class_uris</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.use_class_uris" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.use_slot_uris">
-<span class="sig-name descname"><span class="pre">use_slot_uris</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.use_slot_uris" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.uses_schemaloader">
-<span class="sig-name descname"><span class="pre">uses_schemaloader</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.uses_schemaloader" title="Permalink to this definition">#</a></dt>
-<dd><p>Old-style generator that uses the SchemaLoader and visitor pattern</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.valid_formats">
-<span class="sig-name descname"><span class="pre">valid_formats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['markdown',</span> <span class="pre">'rst',</span> <span class="pre">'html',</span> <span class="pre">'latex']</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.valid_formats" title="Permalink to this definition">#</a></dt>
-<dd><p>Allowed formats - first format is default</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.visit_all_class_slots">
-<span class="sig-name descname"><span class="pre">visit_all_class_slots</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.visit_all_class_slots" title="Permalink to this definition">#</a></dt>
-<dd><p>False means only visit own slots, True means visit all slots</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Visitor ClassVar</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.yaml">
-<span class="sig-name descname"><span class="pre">yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inferred</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.yaml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.yaml" title="Permalink to this definition">#</a></dt>
-<dd><p>Render element as YAML</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>element</strong> – </p></li>
-<li><p><strong>inferred</strong> – (classes only) show all induced slots as attributes</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>yaml string</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="linkml.generators.docgen.MarkdownDialect">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.docgen.</span></span><span class="sig-name descname"><span class="pre">MarkdownDialect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#MarkdownDialect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.MarkdownDialect" title="Permalink to this definition">#</a></dt>
-<dd><dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.MarkdownDialect.myst">
-<span class="sig-name descname"><span class="pre">myst</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'myst'</span></em><a class="headerlink" href="#linkml.generators.docgen.MarkdownDialect.myst" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.docgen.MarkdownDialect.python">
-<span class="sig-name descname"><span class="pre">python</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'python'</span></em><a class="headerlink" href="#linkml.generators.docgen.MarkdownDialect.python" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="linkml.generators.docgen.customize_environment">
-<span class="sig-prename descclassname"><span class="pre">linkml.generators.docgen.</span></span><span class="sig-name descname"><span class="pre">customize_environment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://jinja.palletsprojects.com/en/latest/api/#jinja2.Environment" title="(in Jinja v3.2.x)"><span class="pre">Environment</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#customize_environment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.customize_environment" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="linkml.generators.docgen.enshorten">
-<span class="sig-prename descclassname"><span class="pre">linkml.generators.docgen.</span></span><span class="sig-name descname"><span class="pre">enshorten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#enshorten"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.enshorten" title="Permalink to this definition">#</a></dt>
-<dd><p>Custom filter to truncate any long text intended to go in a table,
-and to remove anything after a newline</p>
-</dd></dl>
-
+</section>
 </section>
 
         </article>
@@ -1034,79 +691,18 @@ and to remove anything after a newline</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Docs</a><ul>
-<li><a class="reference internal" href="#linkml.generators.docgen.DIALECT"><code class="docutils literal notranslate"><span class="pre">DIALECT</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DiagramType"><code class="docutils literal notranslate"><span class="pre">DiagramType</span></code></a><ul>
-<li><a class="reference internal" href="#linkml.generators.docgen.DiagramType.er_diagram"><code class="docutils literal notranslate"><span class="pre">DiagramType.er_diagram</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DiagramType.mermaid_class_diagram"><code class="docutils literal notranslate"><span class="pre">DiagramType.mermaid_class_diagram</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DiagramType.plantuml_class_diagram"><code class="docutils literal notranslate"><span class="pre">DiagramType.plantuml_class_diagram</span></code></a></li>
+<li><a class="reference internal" href="#">Documentation</a><ul>
+<li><a class="reference internal" href="#command-line">Command Line</a><ul>
+<li><a class="reference internal" href="#gen-doc">gen-doc</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#code">Code</a><ul>
 <li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator"><code class="docutils literal notranslate"><span class="pre">DocGenerator</span></code></a><ul>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.all_class_objects"><code class="docutils literal notranslate"><span class="pre">DocGenerator.all_class_objects()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.all_enum_objects"><code class="docutils literal notranslate"><span class="pre">DocGenerator.all_enum_objects()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.all_slot_objects"><code class="docutils literal notranslate"><span class="pre">DocGenerator.all_slot_objects()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.all_subset_objects"><code class="docutils literal notranslate"><span class="pre">DocGenerator.all_subset_objects()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.all_type_object_names"><code class="docutils literal notranslate"><span class="pre">DocGenerator.all_type_object_names()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.all_type_objects"><code class="docutils literal notranslate"><span class="pre">DocGenerator.all_type_objects()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.bullet"><code class="docutils literal notranslate"><span class="pre">DocGenerator.bullet()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.cardinality"><code class="docutils literal notranslate"><span class="pre">DocGenerator.cardinality()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.class_hierarchy_as_tuples"><code class="docutils literal notranslate"><span class="pre">DocGenerator.class_hierarchy_as_tuples()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.class_induced_slots"><code class="docutils literal notranslate"><span class="pre">DocGenerator.class_induced_slots()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.diagram_type"><code class="docutils literal notranslate"><span class="pre">DocGenerator.diagram_type</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.dialect"><code class="docutils literal notranslate"><span class="pre">DocGenerator.dialect</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.directory"><code class="docutils literal notranslate"><span class="pre">DocGenerator.directory</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.example_directory"><code class="docutils literal notranslate"><span class="pre">DocGenerator.example_directory</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.example_object_blobs"><code class="docutils literal notranslate"><span class="pre">DocGenerator.example_object_blobs()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.example_runner"><code class="docutils literal notranslate"><span class="pre">DocGenerator.example_runner</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.gen_classvars"><code class="docutils literal notranslate"><span class="pre">DocGenerator.gen_classvars</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.gen_slots"><code class="docutils literal notranslate"><span class="pre">DocGenerator.gen_slots</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">DocGenerator.generatorname</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">DocGenerator.generatorversion</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.genmeta"><code class="docutils literal notranslate"><span class="pre">DocGenerator.genmeta</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.get_direct_slot_names"><code class="docutils literal notranslate"><span class="pre">DocGenerator.get_direct_slot_names()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.get_direct_slots"><code class="docutils literal notranslate"><span class="pre">DocGenerator.get_direct_slots()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.get_indirect_slots"><code class="docutils literal notranslate"><span class="pre">DocGenerator.get_indirect_slots()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.get_mixin_inherited_slots"><code class="docutils literal notranslate"><span class="pre">DocGenerator.get_mixin_inherited_slots()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.get_slot_inherited_from"><code class="docutils literal notranslate"><span class="pre">DocGenerator.get_slot_inherited_from()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.hierarchical_class_view"><code class="docutils literal notranslate"><span class="pre">DocGenerator.hierarchical_class_view</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.include_top_level_diagram"><code class="docutils literal notranslate"><span class="pre">DocGenerator.include_top_level_diagram</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.index_name"><code class="docutils literal notranslate"><span class="pre">DocGenerator.index_name</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.inheritance_tree"><code class="docutils literal notranslate"><span class="pre">DocGenerator.inheritance_tree()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.inject_slot_info"><code class="docutils literal notranslate"><span class="pre">DocGenerator.inject_slot_info()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.latex"><code class="docutils literal notranslate"><span class="pre">DocGenerator.latex()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.link"><code class="docutils literal notranslate"><span class="pre">DocGenerator.link()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.links"><code class="docutils literal notranslate"><span class="pre">DocGenerator.links()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.mermaid_diagram"><code class="docutils literal notranslate"><span class="pre">DocGenerator.mermaid_diagram()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.mermaid_directive"><code class="docutils literal notranslate"><span class="pre">DocGenerator.mermaid_directive()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.name"><code class="docutils literal notranslate"><span class="pre">DocGenerator.name()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.no_types_dir"><code class="docutils literal notranslate"><span class="pre">DocGenerator.no_types_dir</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.number_value_range"><code class="docutils literal notranslate"><span class="pre">DocGenerator.number_value_range()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.render_imports"><code class="docutils literal notranslate"><span class="pre">DocGenerator.render_imports</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.requires_metamodel"><code class="docutils literal notranslate"><span class="pre">DocGenerator.requires_metamodel</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.schema_title"><code class="docutils literal notranslate"><span class="pre">DocGenerator.schema_title()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">DocGenerator.serialize()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.sort_by"><code class="docutils literal notranslate"><span class="pre">DocGenerator.sort_by</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.subfolder_type_separation"><code class="docutils literal notranslate"><span class="pre">DocGenerator.subfolder_type_separation</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.template_directory"><code class="docutils literal notranslate"><span class="pre">DocGenerator.template_directory</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.template_mappings"><code class="docutils literal notranslate"><span class="pre">DocGenerator.template_mappings</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.uri"><code class="docutils literal notranslate"><span class="pre">DocGenerator.uri()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.uri_link"><code class="docutils literal notranslate"><span class="pre">DocGenerator.uri_link()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.use_class_uris"><code class="docutils literal notranslate"><span class="pre">DocGenerator.use_class_uris</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.use_slot_uris"><code class="docutils literal notranslate"><span class="pre">DocGenerator.use_slot_uris</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">DocGenerator.uses_schemaloader</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">DocGenerator.valid_formats</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">DocGenerator.visit_all_class_slots</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.yaml"><code class="docutils literal notranslate"><span class="pre">DocGenerator.yaml()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#linkml.generators.docgen.MarkdownDialect"><code class="docutils literal notranslate"><span class="pre">MarkdownDialect</span></code></a><ul>
-<li><a class="reference internal" href="#linkml.generators.docgen.MarkdownDialect.myst"><code class="docutils literal notranslate"><span class="pre">MarkdownDialect.myst</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.MarkdownDialect.python"><code class="docutils literal notranslate"><span class="pre">MarkdownDialect.python</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#linkml.generators.docgen.customize_environment"><code class="docutils literal notranslate"><span class="pre">customize_environment()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.docgen.enshorten"><code class="docutils literal notranslate"><span class="pre">enshorten()</span></code></a></li>
 </ul>
 </li>
 </ul>
