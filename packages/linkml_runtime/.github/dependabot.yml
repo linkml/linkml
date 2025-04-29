@@ -1,5 +1,5 @@
 # Please see the documentation for all configuration options:
-# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+# https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference
 
 version: 2
 updates:
@@ -11,4 +11,14 @@ updates:
     directories:
       - "/"
     schedule:
-      interval: weekly
+      interval: "weekly"
+      day: "sunday"
+    groups:
+      # Individual pull requests for major/minor updates and grouped for patch updates
+      angular:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - "patch"
+    open-pull-requests-limit: 10
