@@ -474,7 +474,12 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
     def gen_classdef(self, cls: ClassDefinition) -> str:
         """Generate python definition for class cls"""
 
-        parentref = f'({self.formatted_element_name(cls.is_a, True) if cls.is_a else "YAMLRoot"})'
+        mixins = ""
+        if cls.mixins:
+            for m in cls.mixins:
+                mixins += f", {m}"
+
+        parentref = f'({self.formatted_element_name(cls.is_a, True) + mixins if cls.is_a else "YAMLRoot"})'
         slotdefs = self.gen_class_variables(cls)
         postinits = self.gen_postinits(cls)
         constructor = self.gen_constructor(cls)
@@ -780,7 +785,9 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                     can_add = True
                 else:
                     if candidate.is_a in [p.name for p in slist]:
-                        can_add = True
+                        mixins = [m for m in candidate.mixins]
+                        if set(mixins).issubset([s.name for s in slist]):
+                            can_add = True
                 if can_add:
                     slist = slist + [candidate]
                     del clist[i]
