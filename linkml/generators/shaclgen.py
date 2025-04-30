@@ -76,13 +76,13 @@ class ShaclGenerator(Generator):
 
             # check for an annotation
             shape_uri = None
-            if c.annotations and c.annotations['shape_uri'].value :
-                shape_uri = c.annotations['shape_uri'].value
+            if c.annotations and c.annotations["shape_uri"].value:
+                shape_uri = c.annotations["shape_uri"].value
 
             if shape_uri:
                 class_uri_with_suffix = URIRef(shape_uri)
             elif URIRef(sv.get_uri(c, expand=True, native=True)) is not None:
-                 class_uri_with_suffix = URIRef(sv.get_uri(c, native=True)) #.replace("/:","#"))
+                class_uri_with_suffix = URIRef(sv.get_uri(c, native=True))  # .replace("/:","#"))
             else:
                 class_uri_with_suffix = class_uri
                 if self.suffix is not None:
