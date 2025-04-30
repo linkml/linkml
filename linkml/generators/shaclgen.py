@@ -71,10 +71,22 @@ class ShaclGenerator(Generator):
                 if v is not None:
                     g.add((class_uri_with_suffix, p, v))
 
+            # first, get the base class URI
             class_uri = URIRef(sv.get_uri(c, expand=True))
-            class_uri_with_suffix = class_uri
-            if self.suffix is not None:
-                class_uri_with_suffix += self.suffix
+
+            # check for an annotation
+            shape_uri = None
+            if c.annotations and c.annotations['shape_uri'].value :
+                shape_uri = c.annotations['shape_uri'].value
+
+            if shape_uri:
+                class_uri_with_suffix = URIRef(shape_uri)
+            elif URIRef(sv.get_uri(c, expand=True, native=True)) is not None:
+                 class_uri_with_suffix = URIRef(sv.get_uri(c, native=True)) #.replace("/:","#"))
+            else:
+                class_uri_with_suffix = class_uri
+                if self.suffix is not None:
+                    class_uri_with_suffix += self.suffix
             shape_pv(RDF.type, SH.NodeShape)
             shape_pv(SH.targetClass, class_uri)  # TODO
 
