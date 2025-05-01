@@ -11,7 +11,7 @@ jobs:
         python-version: [ "3.12" ]
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@4.2.2
         with:
           fetch-depth: 0
 
@@ -27,7 +27,7 @@ jobs:
           pipx inject poetry poetry-dynamic-versioning
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.6.0
         id: setup-python
         with:
           python-version: ${{ matrix.python-version }}

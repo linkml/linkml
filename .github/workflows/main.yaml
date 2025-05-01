@@ -17,12 +17,12 @@ jobs:
   quality-checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@4.2.2
       - name: Install Poetry
         run: |
           pipx install poetry
           pipx inject poetry poetry-dynamic-versioning
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5.6.0
         with:
           python-version: 3.13
       - name: Check pyproject.toml and poetry.lock
@@ -59,7 +59,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@4.2.2
         with:
           fetch-depth: 0
 
@@ -75,7 +75,7 @@ jobs:
           pipx inject poetry poetry-dynamic-versioning
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.6.0
         id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
@@ -114,13 +114,13 @@ jobs:
         shell: bash
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@4.2.2
       - name: Install poetry
         run: |
           pipx install poetry
           pipx inject poetry poetry-dynamic-versioning
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.6.0
         id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
@@ -136,11 +136,11 @@ jobs:
           poetry run coverage report -m
       - name: Upload coverage report
         if: github.repository == 'linkml/linkml'
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5.4.2
         with:
           name: codecov-results-slow-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: coverage.xml
+          files: coverage.xml
           fail_ci_if_error: true
 
   test_build_package:
@@ -150,12 +150,12 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@4.2.2
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.6.0
         with:
           python-version: 3.13
 
