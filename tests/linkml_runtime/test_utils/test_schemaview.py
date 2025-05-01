@@ -929,3 +929,17 @@ def test_type_and_slot_with_same_name():
     view.add_type(TypeDefinition(name="test", from_schema="https://example.org/imported#"))
 
     assert view.get_uri("test", imports=True) == "ex:test"
+
+
+def test_uris_without_default_prefix():
+    """
+    Test if uri is correct if no default_prefix is defined for the schema. Issue: linkml/linkml#2578
+    """
+    schema_definition = SchemaDefinition(id="https://example.org/test#", name="test_schema")
+
+    view = SchemaView(schema_definition)
+    view.add_class(ClassDefinition(name="TestClass", from_schema="https://example.org/another#"))
+    view.add_slot(SlotDefinition(name="test_slot", from_schema="https://example.org/another#"))
+
+    assert view.get_uri("TestClass", imports=True) == "https://example.org/test#TestClass"
+    assert view.get_uri("test_slot", imports=True) == "https://example.org/test#test_slot"

@@ -15,7 +15,7 @@ from urllib.parse import urlparse
 from linkml_runtime.utils.namespaces import Namespaces
 from deprecated.classic import deprecated
 from linkml_runtime.utils.context_utils import parse_import_map, map_import
-from linkml_runtime.utils.formatutils import is_empty, underscore, camelcase
+from linkml_runtime.utils.formatutils import camelcase, is_empty, sfx, underscore
 from linkml_runtime.utils.pattern import PatternResolver
 from linkml_runtime.linkml_model.meta import *
 from linkml_runtime.exceptions import OrderingError
@@ -1112,13 +1112,18 @@ class SchemaView:
                     raise ValueError(f'Cannot find {e.from_schema} in schema_map')
             else:
                 schema = self.schema_map[self.in_schema(e.name)]
-            pfx = schema.default_prefix
             if use_element_type:
                 e_type = e.class_name.split("_",1)[0]  # for example "class_definition"
                 e_type_path = f"{e_type}/" 
             else:
                 e_type_path = ""
-            uri = f'{pfx}:{e_type_path}{e_name}'
+            pfx = schema.default_prefix
+            # To construct the uri we have to find out if the schema has a default_prefix 
+            # or if a pseudo "prefix" was derived from the schema id.
+            if pfx == sfx(str(schema.id)):  # no prefix defined in schema
+                uri = f'{pfx}{e_type_path}{e_name}'
+            else:
+                uri = f'{pfx}:{e_type_path}{e_name}'
         if expand:
             return self.expand_curie(uri)
         else:
