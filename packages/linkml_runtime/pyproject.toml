@@ -1,30 +1,30 @@
-[tool.poetry]
+[build-system]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[project]
 name = "linkml-runtime"
-version = "0.0.0"
 description = "Runtime environment for LinkML, the Linked open data modeling language"
 authors = [
-    "Chris Mungall <cjmungall@lbl.gov>",
-    "Harold Solbrig <solbrig@jhu.edu>",
-    "Sierra Moxon <smoxon@lbl.gov>",
-    "Bill Duncan <wdduncan@gmail.com>",
-    "Harshad Hegde <hhegde@lbl.gov>"
+  {name = "Chris Mungall", email = "cjmungall@lbl.gov"},
+  {name = "Harold Solbrig", email = "solbrig@jhu.edu"},
+  {name = "Sierra Moxon", email = "smoxon@lbl.gov"},
+  {name = "Bill Duncan", email = "wdduncan@gmail.com"},
+  {name = "Harshad Hegde", email = "hhegde@lbl.gov"},
 ]
-
-readme = "README.md"
-
+license = "CC0-1.0"
+license-files = ["LICENSE"]
 homepage = "https://github.com/linkml/linkml-runtime"
 repository = "https://github.com/linkml/linkml-runtime"
 documentation = "https://github.com/linkml/linkml-runtime"
-
+readme = "README.md"
 keywords = ["linkml", "metamodel", "schema visualization", "rdf", "owl", "yaml"]
-
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Intended Audience :: Healthcare Industry",
-    "License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -32,36 +32,48 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
-
-packages = [
-    { include = "linkml_runtime" }
+include = ["linkml_runtime"]
+requires-python = ">=3.9"
+dynamic = ["version"]
+dependencies = [
+    "click",
+    "deprecated",
+    "hbreader",
+    "json-flattener >=0.1.9",
+    "jsonasobj2 ==1.*,>=1.0.0,>=1.0.4",
+    "jsonschema >=3.2.0",
+    "prefixcommons >=0.1.12",
+    "pyyaml",
+    "rdflib >=6.0.0",
+    "requests",
+    "prefixmaps >=0.1.4",
+    "curies >=0.5.4",
+    "pydantic >=1.10.2, <3.0.0",
+    "isodate >=0.7.2",
 ]
+
+[project.scripts]
+comparefiles = "linkml_runtime.utils.comparefiles:cli"
+linkml-normalize = "linkml_runtime.processing.referencevalidator:cli"
+
+[tool.poetry]
+requires-poetry = ">=2.0"
+version = "0.0.0"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.requires-plugins]
+poetry-dynamic-versioning = ">=1.8.2"
 
 [tool.poetry-dynamic-versioning]
 enable = true
 vcs = "git"
 style = "pep440"
 
-[tool.poetry.scripts]
-comparefiles = "linkml_runtime.utils.comparefiles:cli"
-linkml-normalize = "linkml_runtime.processing.referencevalidator:cli"
-
-[tool.poetry.dependencies]
-python = "^3.8.1"
-click = "*"
-deprecated = "*"
-hbreader = "*"
-json-flattener = ">=0.1.9"
-jsonasobj2 = "==1.*,>=1.0.0,>=1.0.4"
-jsonschema = ">=3.2.0"
-prefixcommons = ">=0.1.12"
-pyyaml = "*"
-rdflib = ">=6.0.0"
-requests = "*"
-prefixmaps = ">=0.1.4"
-curies = ">=0.5.4"
-pydantic = ">=1.10.2, <3.0.0"
-isodate = "^0.7.2"
+[tool.poetry.group.dev.dependencies]
+coverage = "^6.2"
+requests-cache = "^1.2.0"
 
 [tool.ruff]
 line-length = 120
@@ -79,11 +91,3 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["F401"] # unused imports
-
-[tool.poetry.dev-dependencies]
-coverage = "^6.2"
-requests-cache = "^1.2.0"
-
-[build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
-build-backend = "poetry_dynamic_versioning.backend"
