@@ -1,4 +1,13 @@
-from collections import Counter
+"""
+Tests transformation from a linkml model to a relational model (independent of SQL).
+
+Note: This tests the transformation between one LinkML model and another.
+
+The input model may include multivalued fields, but these are transformed away in
+the relational representation.
+"""
+
+from pathlib import Path
 
 import pytest
 from linkml_runtime.linkml_model import SlotDefinition
@@ -17,44 +26,30 @@ from linkml.utils.schema_builder import SchemaBuilder
 DUMMY_CLASS = "c"
 
 
-"""
-Tests transformation from a linkml model to a relational model (independent of SQL).
-
-Note: This tests the transformation between one LinkML model and another.
-
-The input model may include mulitvalued fields, but these are transformed away in
-the relational representation.
-"""
-
-
 def _translate(builder: SchemaBuilder) -> TransformationResult:
     sv = SchemaView(builder.schema)
     sqltr = RelationalModelTransformer(sv)
     return sqltr.transform()
 
 
-def test_inject_primary_key():
-    """
-    test a minimal schema with no primary names declared
-    """
+def test_inject_primary_key() -> None:
+    """Test a minimal schema with no primary names declared."""
     b = SchemaBuilder()
     slots = ["name", "description"]
     b.add_class(DUMMY_CLASS, slots)
     rel_schema = _translate(b).schema
-    assert Counter(slots + ["id"]) == Counter(rel_schema.classes[DUMMY_CLASS].attributes.keys())
+    assert set(rel_schema.classes[DUMMY_CLASS].attributes.keys()) == {*slots, "id"}
     assert rel_schema.mappings == []
     rsv = SchemaView(rel_schema)
-    assert "id" == rsv.get_identifier_slot(DUMMY_CLASS).name
-    assert ["id"] == get_primary_key_attributes(rel_schema.classes[DUMMY_CLASS])
-    assert {} == get_foreign_key_map(rel_schema.classes[DUMMY_CLASS])
+    assert rsv.get_identifier_slot(DUMMY_CLASS).name == "id"
+    assert get_primary_key_attributes(rel_schema.classes[DUMMY_CLASS]) == ["id"]
+    assert get_foreign_key_map(rel_schema.classes[DUMMY_CLASS]) == {}
 
 
-@pytest.mark.parametrize("c_has_pk", (True, False))
-@pytest.mark.parametrize("d_has_pk", (True, False))
-def test_injection_clash(c_has_pk, d_has_pk):
-    """
-    test conflict with injected primary key
-    """
+@pytest.mark.parametrize("c_has_pk", [True, False])
+@pytest.mark.parametrize("d_has_pk", [True, False])
+def test_injection_clash(c_has_pk: bool, d_has_pk: bool) -> None:  # noqa: FBT001
+    """Test conflict with injected primary key."""
     name_slot = SlotDefinition("name")
     b = SchemaBuilder(name=f"test_conflicting_primary_key_name_{c_has_pk}_{d_has_pk}")
     b.add_class(
@@ -83,64 +78,58 @@ def test_injection_clash(c_has_pk, d_has_pk):
     d = rsv.get_class("d")
     c_has_d = rsv.get_class("c_has_d")
     if c_has_pk:
-        assert Counter(["id", "name"]) == Counter(c.attributes.keys())
-        assert ["id"] == get_primary_key_attributes(c)
+        assert set(c.attributes.keys()) == {"id", "name"}
+        assert get_primary_key_attributes(c) == ["id"]
     else:
-        assert Counter(["id", "uid", "name"]) == Counter(c.attributes.keys())
-        assert ["uid"] == get_primary_key_attributes(c)
+        assert set(c.attributes.keys()) == {"id", "uid", "name"}
+        assert get_primary_key_attributes(c) == ["uid"]
     if d_has_pk:
-        assert Counter(["id", "name"]) == Counter(d.attributes.keys())
-        assert ["id"] == get_primary_key_attributes(d)
+        assert set(d.attributes.keys()) == {"id", "name"}
+        assert get_primary_key_attributes(d) == ["id"]
     else:
-        assert Counter(["id", "uid", "name"]) == Counter(d.attributes.keys())
-        assert ["uid"] == get_primary_key_attributes(d)
+        assert set(d.attributes.keys()) == {"id", "uid", "name"}
+        assert get_primary_key_attributes(d) == ["uid"]
     c_id_col = "id" if c_has_pk else "uid"
     d_id_col = "id" if d_has_pk else "uid"
-    assert Counter([f"c_{c_id_col}", f"has_d_{d_id_col}"]) == Counter(c_has_d.attributes.keys())
-    assert Counter([f"c_{c_id_col}", f"has_d_{d_id_col}"]) == Counter(get_primary_key_attributes(c_has_d))
+    assert set(c_has_d.attributes.keys()) == {f"c_{c_id_col}", f"has_d_{d_id_col}"}
+    assert set(get_primary_key_attributes(c_has_d)) == {f"c_{c_id_col}", f"has_d_{d_id_col}"}
 
 
-def test_no_inject_primary_key():
-    """
-    PKs should not be injected if identifier is declared
-    """
+def test_no_inject_primary_key() -> None:
+    """PKs should not be injected if identifier is declared."""
     b = SchemaBuilder()
     slots = ["name", "description"]
     b.add_class(DUMMY_CLASS, slots).set_slot("name", identifier=True)
     rel_schema = _translate(b).schema
-    assert Counter(slots) == Counter(rel_schema.classes[DUMMY_CLASS].attributes.keys())
-    assert [] == rel_schema.mappings
+    assert set(slots) == set(rel_schema.classes[DUMMY_CLASS].attributes.keys())
+    assert rel_schema.mappings == []
     rsv = SchemaView(rel_schema)
-    assert "name" == rsv.get_identifier_slot(DUMMY_CLASS).name
-    assert ["name"] == get_primary_key_attributes(rel_schema.classes[DUMMY_CLASS])
+    assert rsv.get_identifier_slot(DUMMY_CLASS).name == "name"
+    assert get_primary_key_attributes(rel_schema.classes[DUMMY_CLASS]) == ["name"]
 
 
-def test_multivalued_literal():
-    """
-    Test translation of lists of strings
-    """
+def test_multivalued_literal() -> None:
+    """Test translation of lists of strings."""
     b = SchemaBuilder()
     b.add_class("c", ["name", "description", "aliases"]).set_slot("aliases", multivalued=True, singular_name="alias")
     rel_schema = _translate(b).schema
     rsv = SchemaView(rel_schema)
     c = rsv.get_class("c")
     assert c
-    assert Counter(["id", "name", "description"]) == Counter(c.attributes.keys())
+    assert set(c.attributes.keys()) == {"id", "name", "description"}
     c_alias = rsv.get_class("c_alias")
     assert c_alias
     c_alias_c_id = rsv.induced_slot("c_id", c_alias.name)
     assert c_alias_c_id.range == "c"
-    assert Counter(["c_id", "alias"]) == Counter(c_alias.attributes.keys())
-    assert [] == rel_schema.mappings
-    assert ["id"] == get_primary_key_attributes(c)
-    assert {} == get_foreign_key_map(c)
-    assert {"c_id": "c.id"} == get_foreign_key_map(c_alias)
+    assert set(c_alias.attributes.keys()) == {"c_id", "alias"}
+    assert rel_schema.mappings == []
+    assert get_primary_key_attributes(c) == ["id"]
+    assert get_foreign_key_map(c) == {}
+    assert get_foreign_key_map(c_alias) == {"c_id": "c.id"}
 
 
-def test_inject_foreign_key():
-    """
-    test translation of a single-valuaed object reference to a foreign key
-    """
+def test_inject_foreign_key() -> None:
+    """Test translation of a single-valued object reference to a foreign key."""
     b = SchemaBuilder()
     slots = ["name", "description", "has_d"]
     b.add_class("c", slots).add_class("d", ["name"]).set_slot("has_d", range="d")
@@ -148,18 +137,16 @@ def test_inject_foreign_key():
     rsv = SchemaView(rel_schema)
     c = rsv.get_class("c")
     d = rsv.get_class("d")
-    assert Counter(["id", "name", "description", "has_d_id"]) == Counter(c.attributes.keys())
-    assert Counter(["id", "name"]) == Counter(d.attributes.keys())
-    assert ["id"] == get_primary_key_attributes(c)
-    assert ["id"] == get_primary_key_attributes(d)
-    assert {"has_d_id": "d.id"} == get_foreign_key_map(c)
-    assert {} == get_foreign_key_map(d)
+    assert set(c.attributes.keys()) == {"id", "name", "description", "has_d_id"}
+    assert set(d.attributes.keys()) == {"id", "name"}
+    assert get_primary_key_attributes(c) == ["id"]
+    assert get_primary_key_attributes(d) == ["id"]
+    assert get_foreign_key_map(c) == {"has_d_id": "d.id"}
+    assert get_foreign_key_map(d) == {}
 
 
-def test_inject_backref_foreign_key():
-    """
-    test translation of a multi-valued object reference to a foreign key from the referenced class
-    """
+def test_inject_backref_foreign_key() -> None:
+    """Test translation of a multi-valued object reference to a foreign key from the referenced class."""
     b = SchemaBuilder()
     slots = ["name", "description", "has_ds"]
     b.add_class("c", slots).add_class("d", ["name"]).set_slot(
@@ -174,21 +161,18 @@ def test_inject_backref_foreign_key():
     rsv = SchemaView(rel_schema)
     c = rsv.get_class("c")
     d = rsv.get_class("d")
-    assert Counter(["id", "name", "description"]) == Counter(c.attributes.keys())
-    assert Counter(["id", "name", "c_id"]) == Counter(d.attributes.keys())
-    assert ["id"] == get_primary_key_attributes(c)
-    assert ["id"] == get_primary_key_attributes(d)
-    assert {} == get_foreign_key_map(c)
-    assert {"c_id": "c.id"} == get_foreign_key_map(d)
+    assert set(c.attributes.keys()) == {"id", "name", "description"}
+    assert set(d.attributes.keys()) == {"id", "name", "c_id"}
+    assert get_primary_key_attributes(c) == ["id"]
+    assert get_primary_key_attributes(d) == ["id"]
+    assert get_foreign_key_map(c) == {}
+    assert get_foreign_key_map(d) == {"c_id": "c.id"}
 
 
-@pytest.mark.parametrize("add_id_to_c", (True, False))
-@pytest.mark.parametrize("add_id_to_d", (True, False))
-def test_inject_many_to_many(add_id_to_c, add_id_to_d):
-    """
-    test translation of a non-inlined multivalued reference to a class into
-    a linking table
-    """
+@pytest.mark.parametrize("add_id_to_c", [True, False])
+@pytest.mark.parametrize("add_id_to_d", [True, False])
+def test_inject_many_to_many(add_id_to_c: bool, add_id_to_d: bool) -> None:  # noqa: FBT001
+    """Test a non-inlined multivalued reference to a class into a linking table."""
     # It should not matter if we invent the "id" identifier
     # column on tables lacking an identifier column
     slots_c = ["name", "description", "has_ds"]
@@ -204,21 +188,19 @@ def test_inject_many_to_many(add_id_to_c, add_id_to_d):
     c = rsv.get_class("c")
     d = rsv.get_class("d")
     c_has_d = rsv.get_class("c_has_d")
-    assert Counter(["id", "name", "description"]) == Counter(c.attributes.keys())
-    assert Counter(["id", "name"]) == Counter(d.attributes.keys())
-    assert Counter(["c_id", "has_d_id"]) == Counter(c_has_d.attributes.keys())
-    assert Counter(["id"]) == Counter(get_primary_key_attributes(c))
-    assert Counter(["id"]) == Counter(get_primary_key_attributes(d))
-    assert Counter(["c_id", "has_d_id"]) == Counter(get_primary_key_attributes(c_has_d))
-    assert {} == get_foreign_key_map(c)
-    assert {} == get_foreign_key_map(d)
-    assert {"c_id": "c.id", "has_d_id": "d.id"} == get_foreign_key_map(c_has_d)
+    assert set(c.attributes.keys()) == {"id", "name", "description"}
+    assert set(d.attributes.keys()) == {"id", "name"}
+    assert set(c_has_d.attributes.keys()) == {"c_id", "has_d_id"}
+    assert set(get_primary_key_attributes(c)) == {"id"}
+    assert set(get_primary_key_attributes(d)) == {"id"}
+    assert set(get_primary_key_attributes(c_has_d)) == {"c_id", "has_d_id"}
+    assert get_foreign_key_map(c) == {}
+    assert get_foreign_key_map(d) == {}
+    assert get_foreign_key_map(c_has_d) == {"c_id": "c.id", "has_d_id": "d.id"}
 
 
-def test_inject_many_to_many_with_inheritance():
-    """
-    as above, but with inheritance
-    """
+def test_inject_many_to_many_with_inheritance() -> None:
+    """As above, but with inheritance."""
     b = SchemaBuilder()
     slots = ["name", "description", "has_ds"]
     b.add_class("c", slots).add_class("d", ["name"]).set_slot(
@@ -234,20 +216,20 @@ def test_inject_many_to_many_with_inheritance():
     d1 = rsv.get_class("d1")
     c_has_d = rsv.get_class("c_has_d")
     rsv.get_class("c1_has_d")
-    assert ["id"] == get_primary_key_attributes(d1)
-    assert Counter(["id", "name", "description"]) == Counter(c.attributes.keys())
-    assert Counter(["id", "name"]) == Counter(d.attributes.keys())
-    assert Counter(["c_id", "has_d_id"]) == Counter(c_has_d.attributes.keys())
-    assert Counter(["id"]) == Counter(get_primary_key_attributes(c))
-    assert ["id"] == get_primary_key_attributes(d)
-    assert Counter(["c_id", "has_d_id"]) == Counter(get_primary_key_attributes(c_has_d))
-    assert {} == get_foreign_key_map(c)
-    assert {} == get_foreign_key_map(d)
-    assert {"c_id": "c.id", "has_d_id": "d.id"} == get_foreign_key_map(c_has_d)
+    assert get_primary_key_attributes(d1) == ["id"]
+    assert set(c.attributes.keys()) == {"id", "name", "description"}
+    assert set(d.attributes.keys()) == {"id", "name"}
+    assert set(c_has_d.attributes.keys()) == {"c_id", "has_d_id"}
+    assert set(get_primary_key_attributes(c)) == {"id"}
+    assert get_primary_key_attributes(d) == ["id"]
+    assert set(get_primary_key_attributes(c_has_d)) == {"c_id", "has_d_id"}
+    assert get_foreign_key_map(c) == {}
+    assert get_foreign_key_map(d) == {}
+    assert get_foreign_key_map(c_has_d) == {"c_id": "c.id", "has_d_id": "d.id"}
 
 
-def test_no_foreign_keys():
-    """Test Simple transformation with no injections of FKs."""
+def test_no_foreign_keys() -> None:
+    """Test simple transformation with no injections of FKs."""
     b = SchemaBuilder()
     slots = ["name", "description", "has_ds"]
     b.add_class("c", slots).add_class("d", ["name"]).set_slot(
@@ -262,13 +244,11 @@ def test_no_foreign_keys():
     rsv = SchemaView(rel_schema)
     assert "c_has_d" not in rsv.all_classes()
     c1 = rsv.get_class("c1")
-    assert Counter(c1.attributes.keys()) == Counter(["name", "description", "has_ds"])
+    assert set(c1.attributes.keys()) == {"name", "description", "has_ds"}
 
 
-def test_aliases():
-    """
-    tests using alias to override name
-    """
+def test_aliases() -> None:
+    """Test using alias to override name."""
     b = SchemaBuilder()
     b.add_class(
         "c",
@@ -298,24 +278,25 @@ def test_aliases():
     assert get_foreign_key_map(c_has_d) == {"c_id": "c.id", "has_d_id": "d.id"}
 
 
-def test_sqlt_on_metamodel():
+def test_sqlt_on_metamodel() -> None:
+    """Test sqltransform on the metamodel."""
     sv = package_schemaview("linkml_runtime.linkml_model.meta")
     sqltr = RelationalModelTransformer(sv)
     result = sqltr.transform()
     rschema = result.schema
     # test Annotation is handled correctly. This has a key annotation_tag with alias 'tag'
-    assert "id" not in rschema.classes["annotation"].attributes.keys()
-    assert "tag" in rschema.classes["annotation"].attributes.keys()
+    assert "id" not in rschema.classes["annotation"].attributes
+    assert "tag" in rschema.classes["annotation"].attributes
     # TODO: in the metamodel this changed from string to Any;
     # currently behavior of Any is undefined in SQL Transform
     # assert "value" in rschema.classes["annotation"].attributes.keys()
     cd = rschema.classes["class_definition"]
     assert cd.name == "class_definition"
-    assert "name" in cd.attributes.keys()
+    assert "name" in cd.attributes
     assert "primary_key" in cd.attributes["name"].annotations
 
 
-def test_sqlt_complete_example(input_path):
+def test_sqlt_complete_example(input_path: Path) -> None:
     """Test Relational Model Transform on personinfo.yaml schema."""
     sv = SchemaView(input_path("personinfo.yaml"))
     sqltr = RelationalModelTransformer(sv)
@@ -326,16 +307,13 @@ def test_sqlt_complete_example(input_path):
 
     # check roots, mixins, and abstracts are omitted
     # NOTE: for now we keep all classes in
-    # assert 'Container' not in sv.all_classes()
-    # assert 'HasAliases' not in sv.all_classes()
-    # assert 'WithLocation' not in sv.all_classes()
+    for c in ["Container", "HasAliases", "WithLocation"]:
+        assert c in sv.all_classes()
 
     # check multivalued are preserved as slots;
     # these are referenced from inverses
-    # assert sv.get_slot('aliases').multivalued
-    assert sv.get_slot("has_medical_history").multivalued
-    assert sv.get_slot("has_familial_relationships").multivalued
-    assert sv.get_slot("has_employment_history").multivalued
+    for s in ["aliases", "has_medical_history", "has_familial_relationships", "has_employment_history"]:
+        assert sv.get_slot(s).multivalued
 
     c = sv.get_class("Person")
     assert "aliases" not in c.attributes
