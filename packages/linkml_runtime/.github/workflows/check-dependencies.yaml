@@ -31,14 +31,14 @@ jobs:
           pipx inject poetry poetry-dynamic-versioning
 
       - name: Check out repository
-        uses: actions/checkout@v4.2
+        uses: actions/checkout@v4.2.2
         with:
           # Fetch all history for all branches and all tags.
           # The tags are required for dynamic versioning.
           fetch-depth: 0  
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5.5
+        uses: actions/setup-python@v5.6.0
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'poetry'
