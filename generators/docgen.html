@@ -347,10 +347,35 @@
         <article role="main">
           <section id="documentation">
 <h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading">#</a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
+<p>Being able to automatically generate technical documentation pages for your LinkML schema is an
+important feature of the LinkML framework. The linkml library is bundled with a generator (invoked
+using the <code class="docutils literal notranslate"><span class="pre">gen-doc</span></code> command) which can be used to automatically create individual Markdown
+pages for each of the elements (classes, slots, enumerations, etc.) in your schema.</p>
+<p>The documentation pages are an important resource for consumers of the schema because it provides a
+user-friendly way for users to explore and understand your schema.</p>
+<p>If you use the official <a class="reference external" href="https://github.com/linkml/linkml-project-cookiecutter/tree/main">LinkML cookicutter</a>
+to create your schema, it will add a static site generator framework to your environment. There
+are many static site generator frameworks available, but the one recommended by LinkML is <a class="reference external" href="https://www.mkdocs.org/">MkDocs</a>.
+MkDocs can be used to convert Markdown files/pages into HTML pages. The reason we recommend converting to
+HTML is so that the pages can be deployed to a static site hosting service like <a class="reference external" href="https://pages.github.com/">GitHub Pages</a>. Again,
+if you have used the cookicutter to create your schema, you will find a Makefile in your project folder
+with shortcuts (Makefile targets) to help you build and deploy your documentation easily.</p>
+<p>Another important detail about the information contained in the technical documentation pages is the fact
+that it also has automatically generated <a class="reference external" href="https://mermaid.js.org/syntax/classDiagram.html">Mermaid class diagrams</a>
+embedded on the class documentation pages. These diagrams summarize the relationships between various classes
+and slots in your schema.</p>
+<p>Optionally linkml also allows you to exercise more granular control on the layout and content rendered on your documentation pages.
+This customization is facilitated by the modification of the <a class="reference external" href="https://github.com/linkml/linkml/tree/main/linkml/generators/docgen">base jinja2 templates</a>
+that are used to control the layout and content of the documentation pages. There are jinja2 templates for each of the elements
+in your schema, and you can modify whichever you need to based on your requirements.</p>
+<img alt="../_images/documentation_generation_schematic.png" src="../_images/documentation_generation_schematic.png" />
+<p><em>Figure.: schematic diagram explaining the working mechanism of the ``gen-doc`` module</em></p>
 <section id="command-line">
-<h2>Command Line<a class="headerlink" href="#command-line" title="Permalink to this heading">#</a></h2>
+<h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this heading">#</a></h3>
 <section id="gen-doc">
-<h3>gen-doc<a class="headerlink" href="#gen-doc" title="Permalink to this heading">#</a></h3>
+<h4>gen-doc<a class="headerlink" href="#gen-doc" title="Permalink to this heading">#</a></h4>
 <p>Generate documentation folder from a LinkML YAML schema</p>
 <p>Currently a default set of templates for markdown is provided (see the
 folder linkml/generators/docgen/)</p>
@@ -424,7 +449,7 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-doc-template-directory">
 <span class="sig-name descname"><span class="pre">--template-directory</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;template_directory&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-template-directory" title="Permalink to this definition">#</a></dt>
-<dd><p>Folder in which custom templates are kept</p>
+<dd><p>Path to the directory with custom jinja2 templates</p>
 </dd></dl>
 
 <dl class="std option">
@@ -491,7 +516,7 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-doc-0">
 <span id="cmdoption-gen-doc-directory"></span><span class="sig-name descname"><span class="pre">-d</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--directory</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;directory&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-0" title="Permalink to this definition">#</a></dt>
-<dd><p><strong>Required</strong> Folder to which document files are written</p>
+<dd><p><strong>Required</strong> Path to the directory where you want the Markdown files to be written to</p>
 </dd></dl>
 
 <dl class="std option">
@@ -583,7 +608,7 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 </section>
 </section>
 <section id="code">
-<h2>Code<a class="headerlink" href="#code" title="Permalink to this heading">#</a></h2>
+<h3>Code<a class="headerlink" href="#code" title="Permalink to this heading">#</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.docgen.</span></span><span class="sig-name descname"><span class="pre">DocGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.TextIO</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">~linkml.utils.generator.Generator</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemaview:</span> <span class="pre">~linkml_runtime.utils.schemaview.SchemaView</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useuris:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergeimports:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_date:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_size:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger:</span> <span class="pre">~logging.Logger</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces:</span> <span class="pre">~linkml_runtime.utils.namespaces.Namespaces</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel_name_map:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importmap:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~collections.abc.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emit_prefixes:</span> <span class="pre">set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel:</span> <span class="pre">~linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dialect:</span> <span class="pre">~linkml.generators.docgen.MarkdownDialect</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_by:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'name'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_mappings:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'index'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_directory:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagram_type:</span> <span class="pre">~linkml.generators.docgen.DiagramType</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_top_level_diagram:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subfolder_type_separation:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">example_directory:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">example_runner:</span> <span class="pre">~linkml.workspaces.example_runner.ExampleRunner</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genmeta:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_classvars:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_slots:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_types_dir:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_slot_uris:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_class_uris:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hierarchical_class_view:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_imports:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator" title="Permalink to this definition">#</a></dt>
@@ -633,6 +658,7 @@ document for every</p>
 
 </dd></dl>
 
+</section>
 </section>
 </section>
 
@@ -692,6 +718,7 @@ document for every</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Documentation</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a><ul>
 <li><a class="reference internal" href="#command-line">Command Line</a><ul>
 <li><a class="reference internal" href="#gen-doc">gen-doc</a></li>
 </ul>
@@ -699,6 +726,8 @@ document for every</p>
 <li><a class="reference internal" href="#code">Code</a><ul>
 <li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator"><code class="docutils literal notranslate"><span class="pre">DocGenerator</span></code></a><ul>
 <li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">DocGenerator.serialize()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
