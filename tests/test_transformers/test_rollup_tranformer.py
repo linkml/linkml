@@ -65,8 +65,9 @@ def test_flatten_simple():
     assert set(assoc.slots) == expected_slots
 
     # Descendant classes should be removed.
-    assert "GeneticAssociation" not in flattened_schema.classes
-    assert "ChemicalAssociation" not in flattened_schema.classes
+    descendants = {"GeneticAssociation", "ChemicalAssociation"}
+    for descendant in descendants:
+        assert descendant not in flattened_schema.classes
 
 
 def test_multi_level_inheritance():
@@ -93,6 +94,10 @@ def test_multi_level_inheritance():
     assert set(association_class.slots) == expected_slots
     # Verify Entity is still there (not a descendant of Association)
     assert "Entity" in flattened_schema.classes
+
+    descendants = {"GeneAssociation", "SpecificGeneAssociation"}
+    for descendant in descendants:
+        assert descendant not in flattened_schema.classes
 
 
 def test_include_all_classes_option():
@@ -170,6 +175,7 @@ def test_designator_slot_handling():
     # Verify designator slot is preserved and description maintained
     category_slot = flattened_schema.slots["category"]
     assert category_slot.description == "Indicates the specific type of association"
+    assert "GeneAssociation" not in flattened_schema.classes
 
 
 def test_conflicting_slot_ranges():
@@ -189,6 +195,7 @@ def test_conflicting_slot_ranges():
 
     flattened_schema = transformer.transform()
     assert flattened_schema.slots["common_slot"].range == "integer"
+    assert "Descendant" not in flattened_schema.classes
 
 
 def test_union_type_handling():
@@ -216,6 +223,7 @@ def test_union_type_handling():
     special_value_slot = flattened_schema.slots["special_value"]
     assert special_value_slot.range == "string"
     assert special_value_slot.multivalued is True
+    assert "SpecialAssociation" not in flattened_schema.classes
 
 
 def test_indirect_descendants():
@@ -267,3 +275,6 @@ def test_slot_merging_with_multiple_descendants():
 
     # Common slot should be present only once
     assert base_class.slots.count("common") == 1
+    descendants = {"Child1", "Child2"}
+    for descendant in descendants:
+        assert descendant not in flattened_schema.classes
