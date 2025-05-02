@@ -40,12 +40,12 @@ jobs:
     name: Build and publish Python 🐍 package 📦 to PyPI
     needs: build
     runs-on: ubuntu-latest
-    # Next 5 lines prepare for trusted publishing: https://docs.pypi.org/trusted-publishers/adding-a-publisher/
-    # environment:
-    #   name: pypi-release
-    #   url: https://pypi.org/p/linkml-runtime
-    # permissions:
-    #   id-token: write  # this permission is mandatory for trusted publishing
+    # Uses trusted publishing. https://docs.pypi.org/trusted-publishers/adding-a-publisher/
+    environment:
+      name: pypi-release
+      url: https://pypi.org/p/linkml-runtime
+    permissions:
+      id-token: write  # This permission is mandatory for trusted publishing.
     steps:
       - name: Download built distribution
         uses: actions/download-artifact@v4.3.0
@@ -55,7 +55,6 @@ jobs:
 
       - name: Publish package 📦 to PyPI
         if: github.event_name == 'release'
-        uses: pypa/gh-action-pypi-publish@v1.12
+        uses: pypa/gh-action-pypi-publish@v1.12.4
         with:
-          password: ${{ secrets.pypi_password }}
-          # verbose: true
+          verbose: true
