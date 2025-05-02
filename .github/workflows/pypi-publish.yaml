@@ -55,7 +55,7 @@ jobs:
 
       - name: Publish package 📦 to PyPI
         if: github.event_name == 'release'
-        uses: pypa/gh-action-pypi-publish@v1.12
+        uses: pypa/gh-action-pypi-publish@v1.12.4
         with:
           password: ${{ secrets.pypi_password }}
           # verbose: true
