@@ -92,7 +92,7 @@ jobs:
         shell: bash
       - name: Upload coverage report
         if: github.repository == 'linkml/linkml'
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           name: codecov-results-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -136,7 +136,7 @@ jobs:
           poetry run coverage report -m
       - name: Upload coverage report
         if: github.repository == 'linkml/linkml'
-        uses: codecov/codecov-action@v5.4.2
+        uses: codecov/codecov-action@v5
         with:
           name: codecov-results-slow-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
