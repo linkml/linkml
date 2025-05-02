@@ -154,12 +154,12 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
     )
     # test enum docs
     assert_mdfile_contains(
-        tmp_path / "EmploymentEventType.md",
+        tmp_path / "EmploymentEventType1.md",
         "codes for different kinds of employment/HR related events",
-        after="EmploymentEventType",
+        after="EmploymentEventType1",
     )
     assert_mdfile_contains(
-        tmp_path / "EmploymentEventType.md",
+        tmp_path / "EmploymentEventType1.md",
         "PROMOTION | bizcodes:003 | promotion event",
         after="Permissible Values",
     )
@@ -184,7 +184,7 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
     )
     assert_mdfile_contains(
         tmp_path / "index.md",
-        "[EmploymentEventType](EmploymentEventType.md)",
+        "[EmploymentEventType1](EmploymentEventType1.md)",
         after="Enumerations",
     )
     assert_mdfile_contains(tmp_path / "index.md", "a provence-generating activity", after="Classes")
@@ -239,7 +239,7 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
     assert_mdfile_contains(tmp_path / "Person.md", "[schema:Person](http://schema.org/Person)", after="## See Also")
 
     # test that Aliases is showing from common metadata
-    assert_mdfile_contains(tmp_path / "EmploymentEventType.md", "* HR code", after="## Aliases")
+    assert_mdfile_contains(tmp_path / "EmploymentEventType1.md", "* HR code", after="## Aliases")
 
     # test that slots for enums are being rendered
     assert_mdfile_contains(
@@ -307,10 +307,12 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
 
     # test that slots with ranges modified using any_of have union/cup
     # separated ranges
-    assert_mdfile_contains(tmp_path / "EmploymentEvent.md", "[CordialnessEnum](CordialnessEnum.md)", after="## Slots")
+    assert_mdfile_contains(
+        tmp_path / "EmploymentEvent.md", "[EmploymentEventType2](EmploymentEventType2.md)", after="## Slots"
+    )
     assert_mdfile_contains(tmp_path / "EmploymentEvent.md", "&nbsp;or&nbsp;<br />", after="## Slots")
     assert_mdfile_contains(
-        tmp_path / "EmploymentEvent.md", "[EmploymentEventType](EmploymentEventType.md)", after="## Slots"
+        tmp_path / "EmploymentEvent.md", "[EmploymentEventType1](EmploymentEventType1.md)", after="## Slots"
     )
 
     # checks correctness of the YAML representation of source schema
@@ -388,6 +390,41 @@ def test_docgen_rank_ordering(kitchen_sink_path, tmp_path):
             "has_employment_history",
             "test_attribute",
         ],
+    )
+
+
+def test_class_rules_documentation(kitchen_sink_path, tmp_path):
+    """Tests that class rules are properly documented in markdown output"""
+    gen = DocGenerator(kitchen_sink_path, mergeimports=True, no_types_dir=True)
+    gen.serialize(directory=str(tmp_path))
+
+    # Check that the Rules section exists in EmploymentEvent documentation
+    assert_mdfile_contains(tmp_path / "EmploymentEvent.md", "## Rules", after="## Usages")
+
+    # Check that the rules table is properly structured
+    assert_mdfile_contains(
+        tmp_path / "EmploymentEvent.md",
+        "| Rule Applied | Preconditions | Postconditions | Elseconditions |",
+        after="## Rules",
+    )
+
+    # Check for preconditions showing HIRE and PROMOTION options
+    assert_mdfile_contains(
+        tmp_path / "EmploymentEvent.md",
+        "HIRE",
+        after="| Rule Applied | Preconditions | Postconditions | Elseconditions |",
+    )
+    assert_mdfile_contains(
+        tmp_path / "EmploymentEvent.md",
+        "PROMOTION",
+        after="| Rule Applied | Preconditions | Postconditions | Elseconditions |",
+    )
+
+    # Check that postconditions correctly show the heartfelt requirement
+    assert_mdfile_contains(
+        tmp_path / "EmploymentEvent.md",
+        "heartfelt",
+        after="| Rule Applied | Preconditions | Postconditions | Elseconditions |",
     )
 
 
