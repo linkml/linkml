@@ -10,19 +10,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@4.2.2
         with:
           fetch-depth: 0
 
       - name: Set up Python 3.
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.6.0
         with:
           python-version: "3.12"
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: 1.3.2
+      - name: Install poetry
+        run: |
+          pipx install poetry
+          pipx inject poetry poetry-dynamic-versioning
 
       - name: install
         run: poetry install --with docs
