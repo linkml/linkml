@@ -91,12 +91,12 @@ jobs:
           poetry run coverage report -m
         shell: bash
       - name: Upload coverage report
-        if: github.repository == 'linkml/linkml'
-        uses: codecov/codecov-action@v4
+        if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
+        uses: codecov/codecov-action@v5.4.2
         with:
           name: codecov-results-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: coverage.xml
+          files: coverage.xml
           fail_ci_if_error: true
 
   test_slow:
@@ -135,7 +135,7 @@ jobs:
           poetry run coverage xml
           poetry run coverage report -m
       - name: Upload coverage report
-        if: github.repository == 'linkml/linkml'
+        if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
         uses: codecov/codecov-action@v5.4.2
         with:
           name: codecov-results-slow-${{ matrix.os }}-${{ matrix.python-version }}
