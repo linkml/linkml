@@ -6,7 +6,7 @@
 {%- endfor -%}
 ]
 {%- endif -%}
-type {{ name }} = {% if multivalued and class_range and pyo3 -%}
+pub type {{ name }} = {% if multivalued and class_range and pyo3 -%}
     Vec<Py<{{ type_ }}>>
 {%- elif multivalued -%}
     Vec<{{ type_ }}>
