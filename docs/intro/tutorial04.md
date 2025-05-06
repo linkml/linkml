@@ -19,45 +19,8 @@ Let's start with the schema we developed in the previous section, with some mino
 
 personinfo.yaml:
 
-```yaml
-id: https://w3id.org/linkml/examples/personinfo
-name: personinfo
-prefixes:
-  linkml: https://w3id.org/linkml/
-  personinfo: https://w3id.org/linkml/examples/personinfo/
-  ORCID: https://orcid.org/
-default_curi_maps:
-  - semweb_context
-imports:
-  - linkml:types
-default_prefix: personinfo
-default_range: string
-  
-classes:
-  Person:
-    attributes:
-      id:
-        identifier: true
-      full_name:
-        required: true
-        description:
-          name of the person
-      aliases:
-        multivalued: true
-        description:
-          other names for the person
-      phone:
-        pattern: "^[\\d\\(\\)\\-]+$"
-      age:
-        range: integer
-        minimum_value: 0
-        maximum_value: 200
-  Container:
-    attributes:
-      persons:
-        multivalued: true
-        inlined_as_list: true
-        range: Person
+```{literalinclude} ../../examples/tutorial/tutorial04/personinfo.yaml
+:language: yaml
 ```
 
 We extended the previous schema in a few ways:
@@ -69,15 +32,8 @@ We will use this schema with a collection of data records
 
 data.yaml:
 
-```yaml
-persons:
-  - id: ORCID:1234
-    full_name: Clark Kent
-    age: 33
-    phone: 555-555-5555
-  - id: ORCID:4567
-    full_name: Lois Lane
-    age: 34
+```{literalinclude} ../../examples/tutorial/tutorial04/data.yaml
+:language: yaml
 ```
 
 We can use the linkml conversion library to translate this to RDF (Turtle syntax default)
@@ -89,21 +45,22 @@ linkml-convert -s personinfo.yaml -t rdf data.yaml
 Outputs:
 
 ```turtle
-@prefix ns1: <https://w3id.org/linkml/examples/personinfo/> .
+@prefix ORCID: <https://orcid.org/> .
+@prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<https://orcid.org/1234> a ns1:Person ;
-    ns1:age 33 ;
-    ns1:full_name "Clark Kent" ;
-    ns1:phone "555-555-5555" .
+ORCID:1234 a personinfo:Person ;
+    personinfo:age 33 ;
+    personinfo:full_name "Clark Kent" ;
+    personinfo:phone "555-555-5555" .
 
-<https://orcid.org/4567> a ns1:Person ;
-    ns1:age 34 ;
-    ns1:full_name "Lois Lane" .
+ORCID:4567 a personinfo:Person ;
+    personinfo:age 34 ;
+    personinfo:full_name "Lois Lane" .
 
-[] a ns1:Container ;
-    ns1:persons <https://orcid.org/1234>,
-        <https://orcid.org/4567> .
+[] a personinfo:Container ;
+    personinfo:persons ORCID:1234,
+        ORCID:4567 .
 ```
 
 Note that each person is now represented by an ORCID URI. This is a
@@ -121,51 +78,8 @@ In both cases, we provide the value as a CURIE, and include a *prefixes* map tha
 
 personinfo-semantic.yaml:
 
-```yaml
-id: https://w3id.org/linkml/examples/personinfo
-name: personinfo
-prefixes:                                  ## Note are adding 3 new ones here
-  linkml: https://w3id.org/linkml/
-  schema: http://schema.org/
-  personinfo: https://w3id.org/linkml/examples/personinfo/
-  ORCID: https://orcid.org/
-imports:
-  - linkml:types
-default_curi_maps:
-  - semweb_context
-default_prefix: personinfo
-default_range: string
-  
-classes:
-  Person:
-    class_uri: schema:Person              ## reuse schema.org vocabulary
-    attributes:
-      id:
-        identifier: true
-      full_name:
-        required: true
-        description:
-          name of the person
-        slot_uri: schema:name             ## reuse schema.org vocabulary
-      aliases:
-        multivalued: true
-        description:
-          other names for the person
-      phone:
-        pattern: "^[\\d\\(\\)\\-]+$"
-        slot_uri: schema:telephone       ## reuse schema.org vocabulary
-      age:
-        range: integer
-        minimum_value: 0
-        maximum_value: 200
-    id_prefixes:
-      - ORCID
-  Container:
-    attributes:
-      persons:
-        multivalued: true
-        inlined_as_list: true
-        range: Person
+```{literalinclude} ../../examples/tutorial/tutorial04/personinfo-semantic.yaml
+:language: yaml
 ```
 
 Now let's try converting the same YAML/JSON using the enhanced schema
@@ -176,24 +90,24 @@ linkml-convert -s personinfo-semantic.yaml -t rdf data.yaml
 
 Outputs:
 
-<!-- COMPARE_RDF -->
 ```turtle
-@prefix ns1: <http://schema.org/> .
-@prefix ns2: <https://w3id.org/linkml/examples/personinfo/> .
+@prefix ORCID: <https://orcid.org/> .
+@prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
+@prefix schema1: <http://schema.org/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<https://orcid.org/1234> a ns1:Person ;
-    ns1:name "Clark Kent" ;
-    ns1:telephone "555-555-5555" ;
-    ns2:age 33 .
+ORCID:1234 a schema1:Person ;
+    schema1:name "Clark Kent" ;
+    schema1:telephone "555-555-5555" ;
+    personinfo:age 33 .
 
-<https://orcid.org/4567> a ns1:Person ;
-    ns1:name "Lois Lane" ;
-    ns2:age 34 .
+ORCID:4567 a schema1:Person ;
+    schema1:name "Lois Lane" ;
+    personinfo:age 34 .
 
-[] a ns2:Container ;
-    ns2:persons <https://orcid.org/1234>,
-        <https://orcid.org/4567> .
+[] a personinfo:Container ;
+    personinfo:persons ORCID:1234,
+        ORCID:4567 .
 
 ```
 
@@ -216,16 +130,22 @@ Outputs:
 ```json
 {
    "@context": {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "ORCID": "https://orcid.org/",
       "linkml": "https://w3id.org/linkml/",
       "personinfo": "https://w3id.org/linkml/examples/personinfo/",
       "schema": "http://schema.org/",
       "@vocab": "https://w3id.org/linkml/examples/personinfo/",
       "persons": {
-         "@type": "@id"
+         "@type": "schema:Person",
+         "@id": "persons"
       },
       "age": {
-         "@type": "xsd:integer"
+         "@type": "xsd:integer",
+         "@id": "age"
+      },
+      "aliases": {
+         "@id": "aliases"
       },
       "full_name": {
          "@id": "schema:name"
@@ -233,6 +153,9 @@ Outputs:
       "id": "@id",
       "phone": {
          "@id": "schema:telephone"
+      },
+      "Container": {
+         "@id": "Container"
       },
       "Person": {
          "@id": "schema:Person"
@@ -255,11 +178,12 @@ gen-shex --no-metadata personinfo-semantic.yaml
 Outputs:
 
 ```shex
+# metamodel_version: 1.7.0
 BASE <https://w3id.org/linkml/examples/personinfo/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX linkml: <https://w3id.org/linkml/>
-PREFIX schema: <http://schema.org/>
+PREFIX schema1: <http://schema.org/>
 
 
 linkml:String xsd:string
@@ -274,13 +198,17 @@ linkml:Double xsd:double
 
 linkml:Decimal xsd:decimal
 
-linkml:Time xsd:dateTime
+linkml:Time xsd:time
 
 linkml:Date xsd:date
 
 linkml:Datetime xsd:dateTime
 
+linkml:DateOrDatetime linkml:DateOrDatetime
+
 linkml:Uriorcurie IRI
+
+linkml:Curie xsd:string
 
 linkml:Uri IRI
 
@@ -290,6 +218,12 @@ linkml:Objectidentifier IRI
 
 linkml:Nodeidentifier NONLITERAL
 
+linkml:Jsonpointer xsd:string
+
+linkml:Jsonpath xsd:string
+
+linkml:Sparqlpath xsd:string
+
 <Container> CLOSED {
     (  $<Container_tes> <persons> @<Person> * ;
        rdf:type [ <Container> ] ?
@@ -297,12 +231,12 @@ linkml:Nodeidentifier NONLITERAL
 }
 
 <Person> CLOSED {
-    (  $<Person_tes> (  schema:name @linkml:String ;
+    (  $<Person_tes> (  schema1:name @linkml:String ;
           <aliases> @linkml:String * ;
-          schema:telephone @linkml:String ? ;
+          schema1:telephone @linkml:String ? ;
           <age> @linkml:Integer ?
        ) ;
-       rdf:type [ schema:Person ]
+       rdf:type [ schema1:Person ]
     )
 }
 ```
@@ -314,24 +248,25 @@ gen-shacl --no-metadata personinfo-semantic.yaml > personinfo.shacl.ttl
 
 Outputs:
 
-<!-- COMPARE_RDF -->
+<!-- compare_rdf -->
+<!-- NOTE: the order of properties is non-deterministic so we cannot compare string directly>
 ```turtle
 @prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix schema: <http://schema.org/> .
+@prefix schema1: <http://schema.org/> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 personinfo:Container a sh:NodeShape ;
     sh:closed true ;
     sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:class schema:Person ;
+    sh:property [ sh:class schema1:Person ;
             sh:nodeKind sh:IRI ;
             sh:order 0 ;
             sh:path personinfo:persons ] ;
     sh:targetClass personinfo:Container .
 
-schema:Person a sh:NodeShape ;
+schema1:Person a sh:NodeShape ;
     sh:closed true ;
     sh:ignoredProperties ( rdf:type ) ;
     sh:property [ sh:maxCount 1 ;
@@ -343,7 +278,7 @@ schema:Person a sh:NodeShape ;
             sh:maxCount 1 ;
             sh:minCount 1 ;
             sh:order 1 ;
-            sh:path schema:name ],
+            sh:path schema1:name ],
         [ sh:maxCount 1 ;
             sh:order 0 ;
             sh:path personinfo:id ],
@@ -352,11 +287,9 @@ schema:Person a sh:NodeShape ;
             sh:path personinfo:aliases ],
         [ sh:maxCount 1 ;
             sh:order 3 ;
-            sh:path schema:telephone ;
+            sh:path schema1:telephone ;
             sh:pattern "^[\\d\\(\\)\\-]+$" ] ;
-    sh:targetClass schema:Person .
-
-
+    sh:targetClass schema1:Person .
 ```
 
 <!-- TODO: SPARQL -->
