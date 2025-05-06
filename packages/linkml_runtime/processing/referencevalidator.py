@@ -19,7 +19,7 @@ from collections.abc import Iterator
 import click
 import yaml
 
-from linkml_runtime import SchemaView
+from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import (
     SlotDefinition,

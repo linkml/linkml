@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from linkml_runtime import SchemaView
+from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.loaders import yaml_loader
 import tests.test_index.model.container_test as src_dm
 from linkml_runtime.index.object_index import ObjectIndex, ProxyObject

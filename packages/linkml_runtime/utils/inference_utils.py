@@ -4,7 +4,7 @@ from enum import Enum
 from typing import Union, Optional, Any, Callable
 from jsonasobj2 import JsonObj, items
 
-from linkml_runtime import SchemaView
+from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.linkml_model import SlotDefinitionName, PermissibleValue, ClassDefinitionName
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.eval_utils import eval_expr
