@@ -1,4 +1,9 @@
 #![allow(non_camel_case_types)]
+
+{% if serde %}
+mod serde_utils;
+{% endif %}
+
 {{ imports }}
 
 // Types

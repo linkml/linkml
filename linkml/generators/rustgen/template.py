@@ -2,7 +2,7 @@ from typing import ClassVar, Optional
 
 from jinja2 import Environment, PackageLoader
 from linkml_runtime.utils.formatutils import underscore
-from pydantic import Field, computed_field, field_validator
+from pydantic import Field, computed_field, field_validator, BaseModel
 
 from linkml.generators.common.template import Import as Import_
 from linkml.generators.common.template import Imports as Imports_
@@ -58,7 +58,19 @@ class RustProperty(RustTemplateModel):
     class_range: bool = False
     recursive: bool = False
     inlined: bool = False
+    is_key_value: bool = False
 
+class AsKeyValue(RustTemplateModel):
+    """
+    A key-value representation for this struct
+    """
+    template: ClassVar[str] = "as_key_value.rs.jinja"
+    name: str
+    key_property_name: str
+    key_property_type: str
+    value_property_name: str
+    value_property_type: str
+    
 
 class RustStruct(RustTemplateModel):
     """
@@ -74,6 +86,7 @@ class RustStruct(RustTemplateModel):
     """
     properties: list[RustProperty] = Field(default_factory=list)
     unsendable: bool = False
+    as_key_value: Optional[AsKeyValue] = None
 
     @computed_field()
     def property_names(self) -> list[str]:
@@ -109,6 +122,13 @@ class RustTypeAlias(RustTemplateModel):
     def attr_values_as_strings(cls, value: dict[str, any]) -> dict[str, str]:
         return {k: str(v) for k, v in value.items()}
 
+
+class SerdeUtilsFile(RustTemplateModel):
+    """
+    A file containing utility functions for serde serialization/deserialization
+    """
+
+    template: ClassVar[str] = "serde_utils.rs.jinja"
 
 class RustFile(RustTemplateModel):
     """

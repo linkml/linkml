@@ -1,0 +1,10 @@
+{% if serde %}
+impl serde_utils::InlinedPair for {{ name }} {
+    type Key   = {{ key_property_type }};
+    type Value = {{ value_property_type }};
+
+    fn from_pair(k: Self::Key, v: Self::Value) -> Self {
+        Self { {{ key_property_name }}: k, {{  value_property_name }}: v }
+    }
+}
+{% endif %}
