@@ -30,7 +30,9 @@ from linkml.generators.rustgen.template import (
     RustCargo,
     RustEnum,
     RustFile,
+    SerdeUtilsFile,
     RustProperty,
+    AsKeyValue,
     RustPyProject,
     RustStruct,
     RustTemplateModel,
@@ -259,6 +261,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 unsendable=unsendable,
                 pyo3=self.pyo3,
                 serde=self.serde,
+                as_key_value=self.generate_class_as_key_value(cls),
             ),
         )
         # merge imports
@@ -267,6 +270,33 @@ class RustGenerator(Generator, LifecycleMixin):
 
         res = self.after_generate_class(res, self.schemaview)
         return res
+    
+    def generate_class_as_key_value(self, cls: ClassDefinition) -> Optional[AsKeyValue]:
+        induced_attrs = [self.schemaview.induced_slot(sn, cls.name) for sn in self.schemaview.class_slots(cls.name)]
+        key_attr = None
+        value_attrs = []
+        for attr in induced_attrs:
+            if attr.key:
+                if key_attr is not None:
+                    ## multiple keys --> don't know what to do!
+                    return None
+                key_attr = attr
+            else:
+                value_attrs.append(attr)
+        if key_attr is not None and len(value_attrs) == 1:
+            return AsKeyValue(
+                    name=get_name(cls),
+                    key_property_name=get_name(key_attr),
+                    key_property_type=get_rust_type(key_attr.range, self.schemaview, self.pyo3),
+                    value_property_name=get_name(value_attrs[0]),
+                    value_property_type=get_rust_type(value_attrs[0].range, self.schemaview, self.pyo3),
+                    serde=self.serde,
+                    pyo3=self.pyo3,
+            )
+            return kv
+            
+        return None
+                
 
     def generate_attribute(self, attr: SlotDefinition, cls: ClassDefinition) -> AttributeResult:
         """
@@ -280,8 +310,10 @@ class RustGenerator(Generator, LifecycleMixin):
         # FIXME: split this up lol
 
         reference_recursive = False
+        is_key_value = False
         if is_class_range:
             induced_range = self.schemaview.induced_class(attr.range)
+            is_key_value = (attr.inlined is True) and (self.generate_class_as_key_value(induced_range) is not None)
             attr_ranges = [attr.range for attr in induced_range.attributes.values()]
             reference_recursive = cls.name in attr_ranges
 
@@ -296,8 +328,10 @@ class RustGenerator(Generator, LifecycleMixin):
                 multivalued=attr.multivalued,
                 class_range=is_class_range,
                 pyo3=self.pyo3,
+                serde=self.serde,
                 recursive=is_recursive,
                 inlined=bool(attr.inlined and not attr.inlined_as_list),
+                is_key_value=is_key_value,
             ),
             imports=self.get_imports(attr),
         )
@@ -391,12 +425,16 @@ class RustGenerator(Generator, LifecycleMixin):
             enums=[e.enum for e in enums],
             structs=[c.cls for c in classes],
             pyo3=self.pyo3,
+            serde=self.serde,
         )
 
         if mode == "crate":
+            extra_files = {}
+            if self.serde:
+                extra_files["serde_utils"] = SerdeUtilsFile()
             cargo = self.generate_cargo(imports)
             pyproject = self.generate_pyproject()
-            res = CrateResult(cargo=cargo, file=file, pyproject=pyproject, source=sv.schema)
+            res = CrateResult(cargo=cargo, file=file, pyproject=pyproject, source=sv.schema, extra_files=extra_files)
             return res
         else:
             res = FileResult(file=file, source=sv.schema)
@@ -449,6 +487,13 @@ class RustGenerator(Generator, LifecycleMixin):
         lib_file = src_dir / "lib.rs"
         with open(lib_file, "w") as lfile:
             lfile.write(rust_file)
+
+        for (k,f) in rendered.extra_files.items():
+            extra_file = f.render(self.template_environment)
+            extra_file_name = f"{k}.rs"
+            extra_file_path = src_dir / extra_file_name
+            with open(extra_file_path, "w") as ef:
+                ef.write(extra_file)
 
         return rust_file
 

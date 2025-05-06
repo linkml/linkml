@@ -8,8 +8,11 @@
 #[derive(Debug)]
 pub struct {{ name }} {
 {% for property in properties %}
-    {% if pyo3 %}#[pyo3(get, set)]{% endif %}
-    {{ property }}{% if not loop.last %},{{ '\n' }}{% else %}{{ '\n' }}{% endif %}
+{% filter indent(width=4, first=True, blank=False) %}
+{% if pyo3 %}#[pyo3(get, set)]{% endif %}
+{{ property }}
+{%- if not loop.last -%},{{ '\n' }}{% else %}{{ '\n' }}{%- endif -%}
+{% endfilter %}
 {% endfor %}
 }
 
@@ -23,3 +26,6 @@ impl {{ name }} {
 }
 {% endif %}
 
+{% if as_key_value %}
+{{ as_key_value }}
+{% endif %}
