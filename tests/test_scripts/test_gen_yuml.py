@@ -64,3 +64,20 @@ def test_specified_diagram_name(tmp_path, snapshot):
     result = runner.invoke(cli, ["--diagram-name", "specified_name", "-d", str(tmp_path), KITCHEN_SINK_PATH])
     assert result.exit_code == 0
     assert tmp_path == snapshot("genyuml/specified_name_dir")
+
+def test_yumlgen_deprecation():
+    """Test that YumlGenerator emits a deprecation warning since
+    it has been marked for deprecation."""
+    from linkml.utils.deprecation import EMITTED
+    from linkml.generators.yumlgen import YumlGenerator
+    print(KITCHEN_SINK_PATH)
+
+    # clear any previously emitted warnings for this test
+    if "gen-yuml" in EMITTED:
+        EMITTED.remove("gen-yuml")
+
+    with pytest.warns(DeprecationWarning) as record:
+        YumlGenerator(KITCHEN_SINK_PATH)
+
+    assert len(record) == 1
+    assert "gen-yuml" in str(record[0].message)

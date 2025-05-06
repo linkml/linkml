@@ -17,6 +17,8 @@ from rdflib import Namespace
 from linkml import REQUESTS_TIMEOUT
 from linkml.utils.generator import Generator, shared_arguments
 
+from linkml.utils.deprecation import deprecation_warning
+
 yuml_is_a = "^-"
 yuml_uses = "uses -.->"
 yuml_injected = "< -.- inject"
@@ -34,6 +36,28 @@ YUML = Namespace(yuml_base + yuml_scale + yuml_dir + yuml_class)
 
 @dataclass
 class YumlGenerator(Generator):
+    """
+    .. admonition:: Deprecated
+        :class: warning
+
+            The `yuml` generator is being deprecated and is no longer supported.
+
+            Going forward, we recommend using one of the following alternatives that offer improved visualization capabilities:
+
+            - `gen-doc` – Generates documentation with **embedded Mermaid class diagrams**.
+            - `gen-plantuml` – Produces **PlantUML diagrams**.
+            - `gen-mermaid-class-diagram` – Creates **standalone Mermaid class diagrams**.
+            - `gen-erdiagram` – For **Entity-Relationship (ER) diagrams**.
+
+            .. deprecated:: v1.8.7
+
+            Recommendation: Migrate to one of the supported generators listed above.
+
+    """
+    def __post_init__(self) -> None:
+        deprecation_warning("gen-yuml")
+        super().__post_init__()
+
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["yuml", "png", "pdf", "jpg", "json", "svg"]
@@ -274,7 +298,13 @@ class YumlGenerator(Generator):
     help="Name of the diagram in the output directory (without suffix!)",
 )
 def cli(yamlfile, **args):
-    """Generate a UML representation of a LinkML model"""
+    """Generate a UML representation of a LinkML model
+
+    .. warning::
+        `gen-yuml` is deprecated. Please use `gen-doc`, `gen-plantuml`, `gen-mermaid-class-diagram`, or `gen-erdiagram` instead.
+    """
+    deprecation_warning("gen-yuml")
+
     print(YumlGenerator(yamlfile, **args).serialize(**args), end="")
 
 
