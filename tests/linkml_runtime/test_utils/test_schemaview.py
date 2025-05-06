@@ -61,8 +61,7 @@ def test_children_method(schema_view_no_imports):
 
 
 def test_all_aliases(schema_view_no_imports):
-    """
-    This tests the aliases slot (not: alias)
+    """This tests the aliases slot (not: alias)
     :return:
     """
     view = schema_view_no_imports
@@ -74,8 +73,7 @@ def test_all_aliases(schema_view_no_imports):
 
 
 def test_alias_slot(schema_view_no_imports):
-    """
-    Tests the alias slot.
+    """Tests the alias slot.
 
     The induced slot alias should always be populated. For induced slots, it should default to the
     name field if not present.
@@ -376,8 +374,7 @@ def test_rollup_rolldown(schema_view_no_imports):
 
 
 def test_caching():
-    """
-    Determine if cache is reset after modifications made to schema
+    """Determine if cache is reset after modifications made to schema
     """
     schema = SchemaDefinition(id="test", name="test")
     view = SchemaView(schema)
@@ -405,8 +402,7 @@ def test_caching():
 
 
 def test_import_map():
-    """
-    Path to import file should be configurable
+    """Path to import file should be configurable
     """
     for im in [{"core": "/no/such/file"}, {"linkml:": "/no/such/file"}]:
         view = SchemaView(SCHEMA_WITH_IMPORTS, importmap=im)
@@ -424,7 +420,7 @@ def test_import_map():
 
 
 def test_imports(view):
-    """view should by default dynamically include imports chain"""
+    """View should by default dynamically include imports chain"""
     assert view.schema.source_file is not None
     logger.debug(view.imports_closure())
     assert set(view.imports_closure()) == {"kitchen_sink", "core", "linkml:types"}
@@ -523,7 +519,7 @@ def test_imports(view):
 
 
 def test_imports_from_schemaview(view):
-    """view should by default dynamically include imports chain"""
+    """View should by default dynamically include imports chain"""
     view2 = SchemaView(view.schema)
     assert len(view.all_classes()) == len(view2.all_classes())
     assert len(view.all_classes(imports=False)) == len(view2.all_classes(imports=False))
@@ -622,8 +618,7 @@ def test_direct_remote_imports():
 
 @pytest.mark.skip("Skipped as fragile: will break if the remote schema changes")
 def test_direct_remote_imports_additional():
-    """
-    Alternative test to: https://github.com/linkml/linkml/pull/1379
+    """Alternative test to: https://github.com/linkml/linkml/pull/1379
     """
     url = "https://raw.githubusercontent.com/GenomicsStandardsConsortium/mixs/main/model/schema/mixs.yaml"
     view = SchemaView(url)
@@ -633,8 +628,7 @@ def test_direct_remote_imports_additional():
 
 
 def test_merge_imports(view):
-    """
-    ensure merging and merging imports closure works
+    """Ensure merging and merging imports closure works
     """
     all_c = copy(view.all_classes())
     all_c_noi = copy(view.all_classes(imports=False))
@@ -647,8 +641,7 @@ def test_merge_imports(view):
 
 
 def test_metamodel_imports():
-    """
-    Tests imports of the metamodel.
+    """Tests imports of the metamodel.
 
     Note: this test and others should be able to run without network connectivity.
     SchemaView should make use of the version of the metamodel distributed with the package
@@ -665,8 +658,7 @@ def test_metamodel_imports():
 
 
 def test_non_linkml_remote_import():
-    """
-    Test that a remote import _not_ using the linkml prefix works.
+    """Test that a remote import _not_ using the linkml prefix works.
     See: https://github.com/linkml/linkml/issues/1627
     """
     schema = SchemaDefinition(
@@ -754,8 +746,7 @@ def test_slot_inheritance():
 
 
 def test_attribute_inheritance():
-    """
-    Tests attribute inheritance edge cases.
+    """Tests attribute inheritance edge cases.
     """
     view = SchemaView(os.path.join(INPUT_DIR, "attribute_edge_cases.yaml"))
     expected = [
@@ -954,8 +945,7 @@ def test_materialize_nonscalar_slot_usage():
 
 
 def test_type_and_slot_with_same_name():
-    """
-    Test that checks the case where a URI needs to be resolved and a name is ambiguously used for a slot and a
+    """Test that checks the case where a URI needs to be resolved and a name is ambiguously used for a slot and a
     type
     """
     schema_definition = SchemaDefinition(id="https://example.org/test#", name="test_schema", default_prefix="ex")
@@ -968,8 +958,7 @@ def test_type_and_slot_with_same_name():
 
 
 def test_uris_without_default_prefix():
-    """
-    Test if uri is correct if no default_prefix is defined for the schema. Issue: linkml/linkml#2578
+    """Test if uri is correct if no default_prefix is defined for the schema. Issue: linkml/linkml#2578
     """
     schema_definition = SchemaDefinition(id="https://example.org/test#", name="test_schema")
 
