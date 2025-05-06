@@ -1,3 +1,5 @@
+"""Tests of the SchemaView package."""
+
 import logging
 import os
 from copy import copy
@@ -44,26 +46,32 @@ AGE_IN_YEARS = "age in years"
 
 
 @pytest.fixture
-def schema_view_no_imports():
+def schema_view_no_imports() -> SchemaView:
+    """Fixture for SchemaView with a schema with no imports."""
     return SchemaView(SCHEMA_NO_IMPORTS)
 
 
 @pytest.fixture
-def view():
+def schema_view_with_imports() -> SchemaView:
     """Fixture for SchemaView with imports."""
     return SchemaView(SCHEMA_WITH_IMPORTS)
 
 
-def test_children_method(schema_view_no_imports):
+@pytest.fixture(scope="session")
+def schema_view_attributes() -> SchemaView:
+    """Fixture for a SchemaView for testing attribute edge cases."""
+    return SchemaView(os.path.join(INPUT_DIR, "attribute_edge_cases.yaml"))
+
+
+def test_children_method(schema_view_no_imports: SchemaView) -> None:
+    """Test retrieval of the children of a class."""
     view = schema_view_no_imports
     children = view.get_children("Person")
     assert children == ["Adult"]
 
 
-def test_all_aliases(schema_view_no_imports):
-    """This tests the aliases slot (not: alias)
-    :return:
-    """
+def test_all_aliases(schema_view_no_imports: SchemaView) -> None:
+    """Test the aliases slot (not: alias)."""
     view = schema_view_no_imports
     aliases = view.all_aliases()
     assert "identifier" in aliases["id"]
@@ -72,7 +80,7 @@ def test_all_aliases(schema_view_no_imports):
     assert "dad" in aliases["Adult"]
 
 
-def test_alias_slot(schema_view_no_imports):
+def test_alias_slot(schema_view_no_imports: SchemaView) -> None:
     """Tests the alias slot.
 
     The induced slot alias should always be populated. For induced slots, it should default to the
@@ -89,7 +97,8 @@ def test_alias_slot(schema_view_no_imports):
     assert postal_code_slot.alias == "zip"  # Assert alias is 'zip'
 
 
-def test_schemaview_enums(schema_view_no_imports):
+def test_schemaview_enums(schema_view_no_imports: SchemaView) -> None:
+    """Test various aspects of Enum representation."""
     view = schema_view_no_imports
 
     # Test for ValueError when passing incorrect parameters
@@ -122,7 +131,8 @@ def test_schemaview_enums(schema_view_no_imports):
             assert view.class_ancestors(c.name) == ["Adult", "Person", "HasAliases", "Thing"]
 
 
-def test_schemaview(schema_view_no_imports):
+def test_schemaview(schema_view_no_imports: SchemaView) -> None:
+    """General SchemaView tests."""
     view = schema_view_no_imports
     logger.debug(view.imports_closure())
     assert len(view.imports_closure()) == 1
@@ -347,7 +357,8 @@ def test_schemaview(schema_view_no_imports):
         logger.debug(s)
 
 
-def test_rollup_rolldown(schema_view_no_imports):
+def test_rollup_rolldown(schema_view_no_imports: SchemaView) -> None:
+    """Test rolling up and rolling down."""
     # no import schema
     view = schema_view_no_imports
     element_name = "Event"
@@ -373,9 +384,8 @@ def test_rollup_rolldown(schema_view_no_imports):
         assert "Adult" in view.all_classes()
 
 
-def test_caching():
-    """Determine if cache is reset after modifications made to schema
-    """
+def test_caching() -> None:
+    """Determine if cache is reset after modifications made to schema."""
     schema = SchemaDefinition(id="test", name="test")
     view = SchemaView(schema)
     assert len([]) == len(view.all_classes())
@@ -401,9 +411,8 @@ def test_caching():
     assert len(["Y", "Z", "W"]) == len(view.all_classes())
 
 
-def test_import_map():
-    """Path to import file should be configurable
-    """
+def test_import_map() -> None:
+    """Path to import file should be configurable."""
     for im in [{"core": "/no/such/file"}, {"linkml:": "/no/such/file"}]:
         view = SchemaView(SCHEMA_WITH_IMPORTS, importmap=im)
         with pytest.raises(FileNotFoundError):
@@ -419,8 +428,9 @@ def test_import_map():
         assert ACTIVITY not in view.all_classes(imports=False)  # Assert ACTIVITY is not in classes without imports
 
 
-def test_imports(view):
-    """View should by default dynamically include imports chain"""
+def test_imports(schema_view_with_imports: SchemaView) -> None:
+    """View should by default dynamically include imports chain."""
+    view = schema_view_with_imports
     assert view.schema.source_file is not None
     logger.debug(view.imports_closure())
     assert set(view.imports_closure()) == {"kitchen_sink", "core", "linkml:types"}
@@ -518,14 +528,15 @@ def test_imports(view):
     assert height.unit.ucum_code == "m"
 
 
-def test_imports_from_schemaview(view):
-    """View should by default dynamically include imports chain"""
+def test_imports_from_schemaview(schema_view_with_imports: SchemaView) -> None:
+    """View should by default dynamically include imports chain."""
+    view = schema_view_with_imports
     view2 = SchemaView(view.schema)
     assert len(view.all_classes()) == len(view2.all_classes())
     assert len(view.all_classes(imports=False)) == len(view2.all_classes(imports=False))
 
 
-def test_imports_closure_order():
+def test_imports_closure_order() -> None:
     """Imports should override in a python-like order."""
     sv = SchemaView(SCHEMA_IMPORT_TREE)
     closure = sv.imports_closure(imports=True)
@@ -549,7 +560,7 @@ def test_imports_closure_order():
     assert closure == target
 
 
-def test_imports_overrides():
+def test_imports_overrides() -> None:
     """Classes defined in the importing module should override same-named classes in imported modules."""
     sv = SchemaView(SCHEMA_IMPORT_TREE)
     defaults = {}
@@ -561,7 +572,7 @@ def test_imports_overrides():
     assert defaults == target
 
 
-def test_imports_relative():
+def test_imports_relative() -> None:
     """Relative imports from relative imports should evaluate relative to the *importing* schema."""
     sv = SchemaView(SCHEMA_RELATIVE_IMPORT_TREE)
     closure = sv.imports_closure(imports=True)
@@ -597,13 +608,13 @@ def test_imports_relative():
     assert "L2101Index" in classes
 
 
-def test_imports_relative_load():
+def test_imports_relative_load() -> None:
     """Relative imports from relative imports should load without FileNotFoundError."""
     sv = SchemaView(SCHEMA_RELATIVE_IMPORT_TREE2)
     sv.imports_closure(imports=True)
 
 
-def test_direct_remote_imports():
+def test_direct_remote_imports() -> None:
     """Tests that building a SchemaView directly from a remote URL works."""
     view = SchemaView("https://w3id.org/linkml/meta.yaml")
     main_classes = ["class_definition", "prefix"]
@@ -617,9 +628,8 @@ def test_direct_remote_imports():
 
 
 @pytest.mark.skip("Skipped as fragile: will break if the remote schema changes")
-def test_direct_remote_imports_additional():
-    """Alternative test to: https://github.com/linkml/linkml/pull/1379
-    """
+def test_direct_remote_imports_additional() -> None:
+    """Alternative test to: https://github.com/linkml/linkml/pull/1379."""
     url = "https://raw.githubusercontent.com/GenomicsStandardsConsortium/mixs/main/model/schema/mixs.yaml"
     view = SchemaView(url)
     assert view.schema.name == "MIxS"
@@ -627,9 +637,9 @@ def test_direct_remote_imports_additional():
     assert class_count > 0
 
 
-def test_merge_imports(view):
-    """Ensure merging and merging imports closure works
-    """
+def test_merge_imports(schema_view_with_imports: SchemaView) -> None:
+    """Ensure merging and merging imports closure works."""
+    view = schema_view_with_imports
     all_c = copy(view.all_classes())
     all_c_noi = copy(view.all_classes(imports=False))
     assert len(all_c_noi) < len(all_c)
@@ -640,7 +650,7 @@ def test_merge_imports(view):
     assert len(all_c2_noi) == len(all_c2)
 
 
-def test_metamodel_imports():
+def test_metamodel_imports() -> None:
     """Tests imports of the metamodel.
 
     Note: this test and others should be able to run without network connectivity.
@@ -657,9 +667,10 @@ def test_metamodel_imports():
     assert all_classes == sv.all_classes()
 
 
-def test_non_linkml_remote_import():
+def test_non_linkml_remote_import() -> None:
     """Test that a remote import _not_ using the linkml prefix works.
-    See: https://github.com/linkml/linkml/issues/1627
+
+    See: https://github.com/linkml/linkml/issues/1627.
     """
     schema = SchemaDefinition(
         id="test_non_linkml_remote_import",
@@ -674,7 +685,8 @@ def test_non_linkml_remote_import():
     assert len(slots) == 1
 
 
-def test_traversal():
+def test_traversal() -> None:
+    """Test schema traversal."""
     schema = SchemaDefinition(id="test", name="traversal-test")
     view = SchemaView(schema)
     view.add_class(ClassDefinition("Root", mixins=["RootMixin"]))
@@ -707,7 +719,8 @@ def test_traversal():
     check(view.class_ancestors("C", is_a=False), ["C", "Cm1", "Cm2", "CX"])
 
 
-def test_slot_inheritance():
+def test_slot_inheritance() -> None:
+    """Test slot inheritance."""
     schema = SchemaDefinition(id="test", name="test")
     view = SchemaView(schema)
     view.add_class(ClassDefinition("C", slots=["s1", "s2"]))
@@ -745,11 +758,9 @@ def test_slot_inheritance():
         view.slot_ancestors("s5")
 
 
-def test_attribute_inheritance():
-    """Tests attribute inheritance edge cases.
-    """
-    view = SchemaView(os.path.join(INPUT_DIR, "attribute_edge_cases.yaml"))
-    expected = [
+@pytest.mark.parametrize(
+    ("cn", "sn", "req", "desc"),
+    [
         ("Root", "a1", None, "a1"),
         ("Root", "a2", None, "a2"),
         ("Root", "a3", None, "a3"),
@@ -765,15 +776,17 @@ def test_attribute_inheritance():
         ("C1x", "a2", True, "a2c1x"),
         ("C1x", "a3", None, "a3"),
         ("C1x", "a4", None, "a4"),
-    ]
-    for cn, sn, req, desc in expected:
-        slot = view.induced_slot(sn, cn)
-        assert req == slot.required, f"in: {cn}.{sn}"
-        assert desc == slot.description, f"in: {cn}.{sn}"
-        assert slot.range == "string", f"in: {cn}.{sn}"
+    ],
+)
+def test_attribute_inheritance(schema_view_attributes: SchemaView, cn: str, sn: str, req: bool, desc: str) -> None:
+    """Tests attribute inheritance edge cases."""
+    slot = schema_view_attributes.induced_slot(sn, cn)
+    assert req == slot.required, f"in: {cn}.{sn}"
+    assert desc == slot.description, f"in: {cn}.{sn}"
+    assert slot.range == "string", f"in: {cn}.{sn}"
 
 
-def test_ambiguous_attributes():
+def test_ambiguous_attributes() -> None:
     schema = SchemaDefinition(id="test", name="test")
     view = SchemaView(schema)
     a1 = SlotDefinition("a1", range="string")
@@ -797,7 +810,8 @@ def test_ambiguous_attributes():
     assert view.induced_slot(a2x.name, "C2").range == a2x.range
 
 
-def test_metamodel_in_schemaview():
+def test_metamodel_in_schemaview() -> None:
+    """Test using SchemaView with the metamodel."""
     view = package_schemaview("linkml_runtime.linkml_model.meta")
     assert "meta" in view.imports_closure()
     assert "linkml:types" in view.imports_closure()
@@ -830,7 +844,9 @@ def test_metamodel_in_schemaview():
             assert exp_slot_uri is not None
 
 
-def test_get_classes_by_slot(view):
+def test_get_classes_by_slot(schema_view_with_imports: SchemaView) -> None:
+    """Test getting classes by slot."""
+    view = schema_view_with_imports
     slot = view.get_slot(AGE_IN_YEARS)
     actual_result = view.get_classes_by_slot(slot)
     expected_result = ["Person"]
@@ -841,7 +857,8 @@ def test_get_classes_by_slot(view):
     assert sorted(actual_result) == sorted(expected_result)
 
 
-def test_materialize_patterns():
+def test_materialize_patterns() -> None:
+    """Test pattern materialization."""
     sv = SchemaView(SCHEMA_WITH_STRUCTURED_PATTERNS)
     sv.materialize_patterns()
 
@@ -852,7 +869,8 @@ def test_materialize_patterns():
     assert weight_slot.pattern == r"\d+[\.\d+] (kg|g|lbs|stone)"
 
 
-def test_materialize_patterns_slot_usage():
+def test_materialize_patterns_slot_usage() -> None:
+    """Test pattern materialization with slot_usage."""
     sv = SchemaView(SCHEMA_WITH_STRUCTURED_PATTERNS)
     sv.materialize_patterns()
 
@@ -860,7 +878,8 @@ def test_materialize_patterns_slot_usage():
     assert name_slot_usage.pattern == r"\S+ \S+-\S+"
 
 
-def test_materialize_patterns_attribute():
+def test_materialize_patterns_attribute() -> None:
+    """Test pattern materialization with attributes."""
     sv = SchemaView(SCHEMA_WITH_STRUCTURED_PATTERNS)
     sv.materialize_patterns()
 
@@ -868,7 +887,8 @@ def test_materialize_patterns_attribute():
     assert weight_attribute.pattern == r"\d+[\.\d+] (kg|g|lbs|stone)"
 
 
-def test_mergeimports():
+def test_mergeimports() -> None:
+    """Ensure that imports are or are not merged, depending on the kwargs."""
     # note the change here to include an extra param not in the fixture
     sv = SchemaView(SCHEMA_WITH_IMPORTS, merge_imports=False)
     classes_list = list(sv.schema.classes.keys())
@@ -895,10 +915,9 @@ def test_mergeimports():
     )
 
 
-def test_is_inlined():
-    schema_path = os.path.join(INPUT_DIR, "schemaview_is_inlined.yaml")
-    sv = SchemaView(schema_path)
-    cases = [
+@pytest.mark.parametrize(
+    ("slot_name", "expected_result"),
+    [
         ("a_thing_with_id", False),
         ("inlined_thing_with_id", True),
         ("inlined_as_list_thing_with_id", True),
@@ -908,13 +927,17 @@ def test_is_inlined():
         ("an_integer", False),
         ("inlined_integer", False),
         ("inlined_as_list_integer", False),
-    ]
-    for slot_name, expected_result in cases:
-        slot = sv.get_slot(slot_name)
-        assert sv.is_inlined(slot) == expected_result
+    ],
+)
+def test_is_inlined(slot_name: str, expected_result: bool) -> None:
+    """Tests for slots being inlined or not."""
+    schema_path = os.path.join(INPUT_DIR, "schemaview_is_inlined.yaml")
+    sv = SchemaView(schema_path)
+    slot = sv.get_slot(slot_name)
+    assert sv.is_inlined(slot) == expected_result
 
 
-def test_materialize_nonscalar_slot_usage():
+def test_materialize_nonscalar_slot_usage() -> None:
     schema_path = os.path.join(INPUT_DIR, "DJ_controller_schema.yaml")
     sv = SchemaView(schema_path)
     cls = sv.induced_class("DJController")
@@ -944,10 +967,8 @@ def test_materialize_nonscalar_slot_usage():
     assert cls.slot_usage["tempo"].domain_of == []
 
 
-def test_type_and_slot_with_same_name():
-    """Test that checks the case where a URI needs to be resolved and a name is ambiguously used for a slot and a
-    type
-    """
+def test_type_and_slot_with_same_name() -> None:
+    """Test that checks the case where a URI needs to be resolved and a name is ambiguously used for a slot and a type."""
     schema_definition = SchemaDefinition(id="https://example.org/test#", name="test_schema", default_prefix="ex")
 
     view = SchemaView(schema_definition)
@@ -957,8 +978,10 @@ def test_type_and_slot_with_same_name():
     assert view.get_uri("test", imports=True) == "ex:test"
 
 
-def test_uris_without_default_prefix():
-    """Test if uri is correct if no default_prefix is defined for the schema. Issue: linkml/linkml#2578
+def test_uris_without_default_prefix() -> None:
+    """Test if uri is correct if no default_prefix is defined for the schema.
+
+    See: https://github.com/linkml/linkml/issues/2578
     """
     schema_definition = SchemaDefinition(id="https://example.org/test#", name="test_schema")
 
