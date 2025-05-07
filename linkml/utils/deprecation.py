@@ -232,6 +232,19 @@ DEPRECATIONS = (
         ),
         recommendation="Update to use linkml.validator",
     ),
+    Deprecation(
+        name="gen-markdown",
+        # the last update to any code in markdowngen.py was in v1.9.1
+        # we can start considering it as deprecated from this version
+        deprecated_in=SemVer.from_str("1.9.1"),
+        removed_in=SemVer.from_str("1.10.0"),
+        message=(
+            "gen-markdown has been deprecated in favor of gen-doc, which is the new "
+            "de-facto generator for generating markdown documentation files (with "
+            "embedded mermaid class diagrams) from a LinkML schema"
+        ),
+        recommendation="Update to use `gen-doc`",
+    ),
 )  # type: tuple[Deprecation, ...]
 
 EMITTED = set()  # type: set[str]
