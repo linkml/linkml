@@ -192,7 +192,7 @@ class SQLTableGenerator(Generator):
             if include_comments:
                 if c.abstract:
                     ddl_str += f'-- # Abstract Class: "{cn}" Description: "{strip_newlines(c.description)}"\n'
-                else:                        
+                else:
                     ddl_str += f'-- # Class: "{cn}" Description: "{strip_newlines(c.description)}"\n'
             pk_slot = sv.get_identifier_slot(cn)
             if c.attributes:

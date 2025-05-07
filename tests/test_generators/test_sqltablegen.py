@@ -125,7 +125,7 @@ def test_abstract_class(capsys):
     abstract_def = {"abstract": 1}
     b.add_class(DUMMY_CLASS, slots, **abstract_def)
     new_slots = ["nickname"]
-    inheritance_def ={"is_a":"dummy class"}
+    inheritance_def = {"is_a": "dummy class"}
     b.add_class("inherited class", new_slots, **inheritance_def)
     b.add_defaults()
     # Testing the inheritance of an abstract class
