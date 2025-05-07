@@ -403,19 +403,34 @@ pip<span class="w"> </span>install<span class="w"> </span>linkml
 <span class="w">            </span><span class="s">&quot;description&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p p-Indicator">,</span>
 <span class="w">            </span><span class="s">&quot;properties&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">{</span>
 <span class="w">                </span><span class="s">&quot;age&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">{</span>
-<span class="w">                    </span><span class="s">&quot;type&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;string&quot;</span>
+<span class="w">                    </span><span class="s">&quot;type&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">[</span>
+<span class="w">                        </span><span class="s">&quot;string&quot;</span><span class="p p-Indicator">,</span>
+<span class="w">                        </span><span class="s">&quot;null&quot;</span>
+<span class="w">                    </span><span class="p p-Indicator">]</span>
 <span class="w">                </span><span class="p p-Indicator">},</span>
 <span class="w">                </span><span class="s">&quot;aliases&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">{</span>
-<span class="w">                    </span><span class="s">&quot;type&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;string&quot;</span>
+<span class="w">                    </span><span class="s">&quot;type&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">[</span>
+<span class="w">                        </span><span class="s">&quot;string&quot;</span><span class="p p-Indicator">,</span>
+<span class="w">                        </span><span class="s">&quot;null&quot;</span>
+<span class="w">                    </span><span class="p p-Indicator">]</span>
 <span class="w">                </span><span class="p p-Indicator">},</span>
 <span class="w">                </span><span class="s">&quot;full_name&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">{</span>
-<span class="w">                    </span><span class="s">&quot;type&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;string&quot;</span>
+<span class="w">                    </span><span class="s">&quot;type&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">[</span>
+<span class="w">                        </span><span class="s">&quot;string&quot;</span><span class="p p-Indicator">,</span>
+<span class="w">                        </span><span class="s">&quot;null&quot;</span>
+<span class="w">                    </span><span class="p p-Indicator">]</span>
 <span class="w">                </span><span class="p p-Indicator">},</span>
 <span class="w">                </span><span class="s">&quot;id&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">{</span>
-<span class="w">                    </span><span class="s">&quot;type&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;string&quot;</span>
+<span class="w">                    </span><span class="s">&quot;type&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">[</span>
+<span class="w">                        </span><span class="s">&quot;string&quot;</span><span class="p p-Indicator">,</span>
+<span class="w">                        </span><span class="s">&quot;null&quot;</span>
+<span class="w">                    </span><span class="p p-Indicator">]</span>
 <span class="w">                </span><span class="p p-Indicator">},</span>
 <span class="w">                </span><span class="s">&quot;phone&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">{</span>
-<span class="w">                    </span><span class="s">&quot;type&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;string&quot;</span>
+<span class="w">                    </span><span class="s">&quot;type&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">[</span>
+<span class="w">                        </span><span class="s">&quot;string&quot;</span><span class="p p-Indicator">,</span>
+<span class="w">                        </span><span class="s">&quot;null&quot;</span>
+<span class="w">                    </span><span class="p p-Indicator">]</span>
 <span class="w">                </span><span class="p p-Indicator">}</span>
 <span class="w">            </span><span class="p p-Indicator">},</span>
 <span class="w">            </span><span class="s">&quot;title&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;Person&quot;</span><span class="p p-Indicator">,</span>
@@ -423,7 +438,7 @@ pip<span class="w"> </span>install<span class="w"> </span>linkml
 <span class="w">        </span><span class="p p-Indicator">}</span>
 <span class="w">    </span><span class="p p-Indicator">},</span>
 <span class="w">    </span><span class="s">&quot;$id&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;https://w3id.org/linkml/examples/personinfo&quot;</span><span class="p p-Indicator">,</span>
-<span class="w">    </span><span class="s">&quot;$schema&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;http://json-schema.org/draft-07/schema#&quot;</span><span class="p p-Indicator">,</span>
+<span class="w">    </span><span class="s">&quot;$schema&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;https://json-schema.org/draft/2019-09/schema&quot;</span><span class="p p-Indicator">,</span>
 <span class="w">    </span><span class="s">&quot;additionalProperties&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="nv">true</span><span class="p p-Indicator">,</span>
 <span class="w">    </span><span class="s">&quot;metamodel_version&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;1.7.0&quot;</span><span class="p p-Indicator">,</span>
 <span class="w">    </span><span class="s">&quot;title&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;personinfo&quot;</span><span class="p p-Indicator">,</span>

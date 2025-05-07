@@ -411,12 +411,12 @@
 <span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">33</span>
 </pre></div>
 </div>
-<p>Running the following command:</p>
+<p>Running the following command will result in errors printed to the console:</p>
 <!-- FAIL -->
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-validate<span class="w"> </span>-s<span class="w"> </span>personinfo.yaml<span class="w"> </span>bad-data.yaml
 </pre></div>
 </div>
-<p>Will result in:</p>
+<p>Output:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[ERROR] [bad-data.yaml/0] &#39;1-800-kryptonite&#39; does not match &#39;^[\\d\\(\\)\\-]+$&#39; in /persons/0/phone
 [ERROR] [bad-data.yaml/0] &#39;full_name&#39; is a required property in /persons/1
 </pre></div>
@@ -438,7 +438,7 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-validate<span class="w"> </span>-s<span class="w"> </span>personinfo.yaml<span class="w"> </span>better-data.yaml
 </pre></div>
 </div>
-<p>Will result in:</p>
+<p>Output:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[ERROR] [better-data.yaml/0] &#39;1-800-kryptonite&#39; does not match &#39;^[\\d\\(\\)\\-]+$&#39; in /persons/0/phone
 </pre></div>
 </div>
@@ -463,6 +463,7 @@ to be complete.</p>
 </pre></div>
 </div>
 <p>You can then use the <code class="docutils literal notranslate"><span class="pre">jsonschema</span></code> command that comes with the python library (any jsonschema validator will do here)</p>
+<!-- Note: this will actually fail when executed because 'bad-data.json' does not exist. -->
 <!-- FAIL -->
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jsonschema<span class="w"> </span>-i<span class="w"> </span>bad-data.json<span class="w"> </span>personinfo.schema.json
 </pre></div>
