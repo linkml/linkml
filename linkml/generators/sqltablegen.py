@@ -190,7 +190,10 @@ class SQLTableGenerator(Generator):
         sv = SchemaView(schema)
         for cn, c in schema.classes.items():
             if include_comments:
-                ddl_str += f'-- # Class: "{cn}" Description: "{strip_newlines(c.description)}"\n'
+                if c.abstract:
+                    ddl_str += f'-- # Abstract Class: "{cn}" Description: "{strip_newlines(c.description)}"\n'
+                else:                        
+                    ddl_str += f'-- # Class: "{cn}" Description: "{strip_newlines(c.description)}"\n'
             pk_slot = sv.get_identifier_slot(cn)
             if c.attributes:
                 cols = []
