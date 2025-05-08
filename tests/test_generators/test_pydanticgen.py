@@ -50,6 +50,7 @@ from linkml.utils.schema_builder import SchemaBuilder
 
 from .conftest import MyInjectedClass
 
+INDENT = " " * 4
 PACKAGE = "kitchen_sink"
 pytestmark = pytest.mark.pydanticgen
 
@@ -117,6 +118,16 @@ enums:
     assert enum["values"]["PLUS_SIGN"]["value"] == "+"
     assert enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]["value"] == "This & that, plus maybe a 🎩"
     assert enum["values"]["Ohio"]["value"] == "Ohio"
+    gen_output = gen.serialize()
+    expected_lines = [
+        "class TestEnum(str, Enum):",
+        f'{INDENT}number_123 = "123"',
+        f'{INDENT}PLUS_SIGN = "+"',
+        f'{INDENT}This_AMPERSAND_that_plus_maybe_a_TOP_HAT = "This & that, plus maybe a 🎩"',
+        f'{INDENT}Ohio = "Ohio"',
+    ]
+    for line in expected_lines:
+        assert f"\n{line}\n" in gen_output
 
 
 def test_pydantic_enum_titles():
@@ -136,6 +147,8 @@ enums:
       value2:
         title: label2
       value3:
+      value4:
+        title: label 4
     """
     sv = SchemaView(unit_test_schema)
     gen = PydanticGenerator(schema=unit_test_schema)
@@ -146,6 +159,87 @@ enums:
     assert enum["values"]["label1"]["value"] == "value1"
     assert enum["values"]["label2"]["value"] == "value2"
     assert enum["values"]["value3"]["value"] == "value3"
+    assert enum["values"]["label_4"]["value"] == "value4"
+    gen_output = gen.serialize()
+    expected_lines = [
+        "class TestEnum(str, Enum):",
+        f'{INDENT}label1 = "value1"',
+        f'{INDENT}label2 = "value2"',
+        f'{INDENT}value3 = "value3"',
+        f'{INDENT}label_4 = "value4"',
+    ]
+    for line in expected_lines:
+        assert f"\n{line}\n" in gen_output
+
+
+def test_pydantic_enum_descriptions():
+    unit_test_schema = """
+id: unit_test
+name: unit_test
+
+prefixes:
+  ex: https://example.org/
+default_prefix: ex
+
+enums:
+  TestEnum:
+    permissible_values:
+      no_description:
+      single_line:
+        description: A single line description. Easy!
+      multi_line:
+        description:
+          Sometimes
+
+            one line
+
+                isn't enough
+
+          for a "description".
+      multi_line_preserve_whitespace:
+        description: |
+          Multi
+
+                    Line
+
+              Madness!
+"""
+    sv = SchemaView(unit_test_schema)
+    gen = PydanticGenerator(schema=unit_test_schema)
+    enums = gen.generate_enums(sv.all_enums())
+    assert "TestEnum" in enums
+    enum = enums["TestEnum"]
+    assert enum["values"]["no_description"]["description"] is None
+
+    DESCRIPTION = {
+        "single_line": ["A single line description. Easy!"],
+        "multi_line": ["Sometimes", "one line", "isn't enough", 'for a "description".'],
+        "multi_line_preserve_whitespace": ["Multi", "", f"{' ' * 10}Line", "", f"{INDENT}Madness!", ""],
+    }
+
+    for line_type in DESCRIPTION:
+        assert enum["values"][line_type]["description"] == "\n".join(DESCRIPTION[line_type])
+
+    gen_output = gen.serialize()
+    assert "\nclass TestEnum(str, Enum):\n" in gen_output
+    assert f'\n{INDENT}no_description = "no_description"\n' in gen_output
+    for line_type in DESCRIPTION:
+        # if the line doesn't have any content, there is no indent;
+        # otherwise, there is the standard 4-space indent
+        assert (
+            "\n".join(
+                [
+                    f"{INDENT}{line}" if len(line) > 0 else ""
+                    for line in [
+                        f'{line_type} = "{line_type}"',
+                        '"""',
+                        *DESCRIPTION[line_type],
+                        '"""',
+                    ]
+                ]
+            )
+            in gen_output
+        )
 
 
 def test_pydantic_any_of():
@@ -434,7 +528,7 @@ classes:
             _ = mod.A(my_slot=a_string)
 
 
-def test_multiline_module(input_path):
+def test_multiline_descriptions(input_path):
     """
     Ensure that multi-line enum descriptions and enums containing
     reserved characters are handled correctly
@@ -454,7 +548,6 @@ def test_multiline_module(input_path):
             "",
         ]
     )
-
     assert 'INTERNAL "REORGANIZATION"' in gen.schema.enums["EmploymentEventType"].permissible_values
 
 
@@ -2435,9 +2528,9 @@ def test_generate_split_pattern(input_path):
     for an_import in should_have:
         assert an_import in imports, "Missed a necessary import when generating from a pattern"
     for an_import in shouldnt_have:
-        assert an_import not in imports, (
-            "Got one of the imports with the default template " "instead of the supplied pattern"
-        )
+        assert (
+            an_import not in imports
+        ), "Got one of the imports with the default template instead of the supplied pattern"
 
 
 @pytest.mark.pydanticgen_split
