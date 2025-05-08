@@ -298,7 +298,7 @@ class YumlGenerator(Generator):
     help="Name of the diagram in the output directory (without suffix!)",
 )
 def cli(yamlfile, **args):
-    """Generate a UML representation of a LinkML model
+    """Generate a yUML representation of a LinkML model
 
     .. warning::
         `gen-yuml` is deprecated. Please use `gen-doc`, `gen-plantuml`, `gen-mermaid-class-diagram`, or `gen-erdiagram` instead.
