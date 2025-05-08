@@ -301,7 +301,7 @@ def cli(yamlfile, **args):
     """Generate a yUML representation of a LinkML model
 
     .. warning::
-        `gen-yuml` is deprecated. Please use `gen-doc`, `gen-plantuml`, `gen-mermaid-class-diagram`, or `gen-erdiagram` instead.
+        `gen-yuml` is deprecated. Please use `gen-doc`, `gen-plantuml` or `gen-mermaid-class-diagram`.
     """
     deprecation_warning("gen-yuml")
 
