@@ -148,6 +148,7 @@ class SQLTableGenerator(Generator):
     direct_mapping: bool = False
     relative_slot_num: bool = False
     default_length_oracle: int = ORACLE_MAX_VARCHAR_LENGTH
+    generate_abstract_class_ddl: bool = True
 
     def serialize(self, **kwargs: dict[str, Any]) -> str:
         return self.generate_ddl(**kwargs)
@@ -201,7 +202,10 @@ class SQLTableGenerator(Generator):
         # into an SQL type, and adding a foreign key notation if appropriate.
         for cn, c in schema.classes.items():
             if include_comments:
-                ddl_str += f'-- # Class: "{cn}" Description: "{strip_newlines(c.description)}"\n'
+                if c.abstract:
+                    ddl_str += f'-- # Abstract Class: "{cn}" Description: "{strip_newlines(c.description)}"\n'
+                else:
+                    ddl_str += f'-- # Class: "{cn}" Description: "{strip_newlines(c.description)}"\n'
             pk_slot = sv.get_identifier_slot(cn)
             if c.attributes:
                 cols = []
@@ -235,6 +239,7 @@ class SQLTableGenerator(Generator):
                         continue
                     sql_uc = UniqueConstraint(*sql_names)
                     cols.append(sql_uc)
+            if not c.abstract or (c.abstract and self.generate_abstract_class_ddl):
                 Table(sql_name(cn), schema_metadata, *cols, comment=str(c.description))
         schema_metadata.create_all(engine)
         return ddl_str
@@ -356,6 +361,12 @@ class SQLTableGenerator(Generator):
     default=ORACLE_MAX_VARCHAR_LENGTH,
     show_default=True,
     help="Default length of varchar based arguments for oracle dialects",
+)
+@click.option(
+    "--generate_abstract_class_ddl",
+    default=True,
+    show_default=True,
+    help="A manual override to omit the abstract classes, set to true as a default for testing sake",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(
