@@ -329,7 +329,7 @@ slots:
             True,
             False,
             True,
-            "Optional[Dict[str, Union[str, B]]]",
+            "Optional[Dict[str, Union[B, str]]]",
             "references to class with identifier inlined ONLY ON REQUEST, with dict as default",
         ),
         # TODO: fix the next two
@@ -350,7 +350,7 @@ def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_i
     expected_default_factories = {
         "Optional[List[str]]": "Field(default=None",
         "Optional[List[B]]": "Field(default=None",
-        "Optional[Dict[str, B]]": "Field(default=None",
+        "Optional[Dict[B, str]]": "Field(default=None",
         "Optional[Dict[str, str]]": "Field(default=None",
         "Optional[Dict[str, Union[str, B]]]": "Field(default=None",
     }
@@ -379,6 +379,9 @@ def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_i
     assert (
         expected_default_factories[expected] in code
     ), f"did not find expected default factory {expected_default_factories[expected]}"
+
+# Optional[Dict[str, Union[B, str]]]
+# Dict[str, Union[B,str]]
 
 
 def test_ifabsent():

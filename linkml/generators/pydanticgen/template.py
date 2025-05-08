@@ -11,16 +11,6 @@ from linkml.generators.common.template import TemplateModel
 from linkml.utils.deprecation import deprecation_warning
 
 
-class SlotInliningMode(str, Enum):
-    """
-    Enumeration of different modes for inlining collections.
-    """
-
-    LIST = "list"
-    DICT = "dict"
-    SIMPLEDICT = "simpledict"
-
-
 try:
     if find_spec("black") is not None:
         from linkml.generators.pydanticgen.black import format_black
@@ -180,7 +170,7 @@ class ClassRange(PydanticTemplateModel):
     template: ClassVar[str] = "class_range.py.jinja"
 
     cls: str
-    inlining_mode: Optional[SlotInliningMode] = None
+    inlining_mode: Optional[Literal["list", "dict", "simpledict"]] = None
     value_slot: Optional[dict] = None
     value_slot_range: Optional[str] = None
     value_slot_multivalued: Optional[bool] = None

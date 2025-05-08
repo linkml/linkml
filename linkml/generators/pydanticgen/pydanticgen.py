@@ -41,7 +41,6 @@ from linkml.generators.pydanticgen.template import (
     PydanticClass,
     PydanticModule,
     PydanticTemplateModel,
-    SlotInliningMode,
 )
 from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
 from linkml.utils import deprecation_warning
@@ -492,18 +491,19 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             # Determine the inlining mode using our helper
             inlining_mode = self._determine_inlining_mode(slot, slot_ranges)
 
-            if inlining_mode == SlotInliningMode.LIST:
+            # Use string literals for comparison
+            if inlining_mode == "list":
                 result.attribute.range = f"List[{pyrange}]"
-            elif inlining_mode == SlotInliningMode.DICT:
+            elif inlining_mode == "dict":
                 collection_key = self.generate_collection_key(slot_ranges, slot, cls)
                 result.attribute.range = f"Dict[{collection_key}, {pyrange}]"
-            elif inlining_mode == SlotInliningMode.SIMPLEDICT:
+            elif inlining_mode == "simpledict":
                 value_slot, value_slot_pyrange = self._determine_simple_dict_value_slot(slot, cls)
 
                 # Create a ClassRange model that will be rendered by the template
                 result.attribute.range = ClassRange(
                     cls=pyrange,
-                    inlining_mode=SlotInliningMode.SIMPLEDICT,
+                    inlining_mode="simpledict",  # Use the string value instead of the enum
                     value_slot=value_slot.model_dump() if hasattr(value_slot, "model_dump") else value_slot.__dict__,
                     value_slot_range=value_slot_pyrange,
                     value_slot_multivalued=value_slot.multivalued,
@@ -741,26 +741,26 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         injected_classes = [textwrap.dedent(c) for c in injected_classes]
         return injected_classes
 
-    def _determine_inlining_mode(self, slot_def: SlotDefinition, slot_ranges: List[str]) -> SlotInliningMode:
+    def _determine_inlining_mode(self, slot_def: SlotDefinition, slot_ranges: List[str]) -> Literal["list", "dict", "simpledict"]:
         """
         Determine the inlining mode for a multivalued slot.
 
         :param slot_def: SlotDefinition
         :param slot_ranges: List of slot range names
-        :return: The inlining mode as a SlotInliningMode enum value
+        :return: The inlining mode as a string literal
         """
         if slot_def.inlined is False or slot_def.inlined_as_list is True:
-            return SlotInliningMode.LIST
+            return "list"
 
         # Check if eligible for simpledict mode
         if len(slot_ranges) == 1 and slot_ranges[0] in self.schemaview.all_classes():
             value_slot, _ = self._determine_simple_dict_value_slot(slot_def, None)
             if value_slot is not None:
-                return SlotInliningMode.SIMPLEDICT
+                return "simpledict"
 
         # If we have a collection key, use dict mode, otherwise default to list
         collection_key = self.generate_collection_key(slot_ranges, slot_def, None)
-        return SlotInliningMode.DICT if collection_key is not None else SlotInliningMode.LIST
+        return "dict" if collection_key is not None else "list"
 
     def _determine_simple_dict_value_slot(
         self, slot_def: SlotDefinition, cls_def
