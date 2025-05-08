@@ -563,6 +563,41 @@ def test_pydantic_pattern(kitchen_sink_path, tmp_path, input_path):
         module.Person(id="01", name="x")
 
 
+def test_pydantic_pattern_multivalued(input_path) -> None:
+    gen = PydanticGenerator(
+        str(input_path("pattern-example.yaml")),
+        package="pattern-example",
+    )
+    code = gen.serialize()
+    module = compile_python(code, "pattern-example")
+
+    # name and nicknames must match "^[A-Z0-9]\w+.*$"
+    p1 = module.PersonInfo(id="P1234321", name="Jane Doe", nicknames=[])
+    assert p1.name == "Jane Doe"
+
+    p2 = module.PersonInfo(
+        id="P1234321",
+        name="Jane Doe",
+        nicknames=["Jane Donuts", "Jane Doughnuts", "JayDoe"],
+    )
+    assert p2.nicknames == ["Jane Donuts", "Jane Doughnuts", "JayDoe"]
+
+    # test the validator on a single value
+    with pytest.raises(ValidationError, match="Invalid name format: __JDoe__"):
+        module.PersonInfo(id="P1234321", name="__JDoe__")
+
+    with pytest.raises(ValidationError, match="Invalid name format:  J Doe "):
+        module.PersonInfo(id="P1234321", name=" J Doe ")
+
+    # test the validator on a list of values
+    with pytest.raises(ValidationError, match="Invalid nicknames format:  J Doe "):
+        module.PersonInfo(id="P1234321", name="Jane Doe", nicknames=[" J Doe "])
+
+    # the first entry encountered raises the error
+    with pytest.raises(ValidationError, match="Invalid nicknames format: __JDoe__"):
+        module.PersonInfo(id="P1234321", name="Jane Doe", nicknames=["Jay", "__JDoe__", " J Doe "])
+
+
 def test_pydantic_template_1666():
     """
     Regression test for https://github.com/linkml/linkml/issues/1666
