@@ -1,6 +1,6 @@
 # Adding constraints and rules
 
-In addition to the basic [cardinality](slots) constraints for slots, additional constraints can be specified
+In addition to the basic [cardinality](/schemas/slots) constraints for slots, additional constraints can be specified
 
 ## Unique Key
 

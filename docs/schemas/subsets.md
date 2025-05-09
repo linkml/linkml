@@ -13,4 +13,4 @@ The actual subset names are defined as part of the Schema definition.
       - translator_minimal
 ```
 
-Here we define the predicate slot `genetically interacts with` as part of the `translator_minimal` subset.
+Here we define the slot `genetically interacts with` as part of the `translator_minimal` subset.

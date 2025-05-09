@@ -1,12 +1,9 @@
 import os
 import sys
 
-import rdflib_shim
 from linkml_runtime.linkml_model import linkml_files
 from linkml_runtime.linkml_model.linkml_files import Format, Source
 from rdflib.plugins.serializers.turtle import TurtleSerializer
-
-shim = rdflib_shim.RDFLIB_SHIM
 
 assert sys.version_info > (
     3,
@@ -22,6 +19,13 @@ LOCAL_TYPES_YAML_FILE = linkml_files.LOCAL_PATH_FOR(Source.TYPES, Format.YAML)
 LOCAL_MAPPINGS_YAML_FILE = linkml_files.LOCAL_PATH_FOR(Source.MAPPINGS, Format.YAML)
 LOCAL_ANNOTATIONS_YAML_FILE = linkml_files.LOCAL_PATH_FOR(Source.ANNOTATIONS, Format.YAML)
 LOCAL_EXTENSIONS_YAML_FILE = linkml_files.LOCAL_PATH_FOR(Source.EXTENSIONS, Format.YAML)
+LOCAL_MODEL_YAML_FILES = (
+    LOCAL_METAMODEL_YAML_FILE,
+    LOCAL_TYPES_YAML_FILE,
+    LOCAL_MAPPINGS_YAML_FILE,
+    LOCAL_ANNOTATIONS_YAML_FILE,
+    LOCAL_EXTENSIONS_YAML_FILE,
+)
 
 # Local location of jsonld and context.jsonld files
 LOCAL_METAMODEL_LDCONTEXT_FILE = linkml_files.LOCAL_PATH_FOR(Source.META, Format.JSONLD)
@@ -58,6 +62,13 @@ METATYPE_NAMESPACE = METAMODEL_NAMESPACE
 METAMAPPING_NAMESPACE = METAMODEL_NAMESPACE
 METAANNOTATIONS_NAMESPACE = METAMODEL_NAMESPACE
 METAEXTENSIONS_NAMESPACE = METAMODEL_NAMESPACE
+NAMESPACES = (
+    METAMODEL_NAMESPACE,
+    METATYPE_NAMESPACE,
+    METAMAPPING_NAMESPACE,
+    METAANNOTATIONS_NAMESPACE,
+    METAEXTENSIONS_NAMESPACE,
+)
 
 # Metamodel Context URI
 METAMODEL_CONTEXT_URI = linkml_files.URL_FOR(Source.META, Format.JSONLD)
@@ -74,3 +85,10 @@ BIOLINK_MODEL_URI = "https://w3id.org/biolink/biolink-model"
 BIOLINK_MODEL_PYTHON_LOC = "biolink.model"
 
 TurtleSerializer.roundtrip_prefixes = [""]
+
+REQUESTS_TIMEOUT = 10
+"""
+Time (in seconds) to wait before failing a network request
+
+See: https://docs.python-requests.org/en/latest/user/advanced/#timeouts
+"""

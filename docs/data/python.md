@@ -2,7 +2,7 @@
 
 ## Dataclasses
 
-Python dataclasses can be generated from any LinkML model (see [generators/python](../generators/python)).
+Python dataclasses can be generated from any LinkML model (see [generators/python](/generators/python)).
 
 For example, for the personinfo schema, a Person dataclass is created:
 
@@ -78,5 +78,5 @@ Loading:
 >>> p1 = json_loader.load('person_data.json')
 ```
 
-For more developer documentations, see the [loaders-and-dumpers](../developers/loaders-and-dumpers.html) section of the developer docs
+For more developer documentations, see the [loaders-and-dumpers](/developers/loaders-and-dumpers) section of the developer docs
 

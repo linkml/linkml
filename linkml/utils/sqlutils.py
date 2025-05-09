@@ -5,7 +5,7 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType
-from typing import Any, List, Optional, Type, Union
+from typing import Any, Optional, Union
 
 import click
 import linkml_runtime.linkml_model.meta as metamodel
@@ -18,10 +18,11 @@ from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.yamlutils import YAMLRoot
 from pydantic import BaseModel
-from sqlalchemy import StaticPool, create_engine
+from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.associationproxy import _AssociationCollection
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from linkml._version import __version__
 from linkml.generators.pythongen import PythonGenerator
@@ -38,6 +39,8 @@ from linkml.utils.datautils import (
     infer_index_slot,
     infer_root_class,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -57,16 +60,22 @@ class SQLStore:
     - mapping your data/objects in any LinkML compliant data format (json. yaml, rdf) into ORM objects
     """
 
-    schema: Union[str, SchemaDefinition] = None
-    schemaview: SchemaView = None
-    engine: Engine = None
-    database_path: str = None
+    schema: Optional[Union[str, Path, SchemaDefinition]] = None
+    schemaview: Optional[SchemaView] = None
+    engine: Optional[Engine] = None
+    database_path: Union[str, Path] = None
     use_memory: bool = False
     """https://docs.sqlalchemy.org/en/20/dialects/sqlite.html#using-a-memory-database-in-multiple-threads"""
 
-    module: ModuleType = None
-    native_module: ModuleType = None
-    include_schema_in_database: bool = None
+    module: Optional[ModuleType] = None
+    native_module: Optional[ModuleType] = None
+    include_schema_in_database: bool = False
+
+    def __post_init__(self):
+        if self.database_path is None and not self.use_memory:
+            raise ValueError("Must have database path or use_memory must be True")
+        if self.schema is not None and self.schemaview is None:
+            self.schemaview = SchemaView(self.schema)
 
     def db_exists(self, create=True, force=False) -> Optional[str]:
         """
@@ -116,8 +125,6 @@ class SQLStore:
         """
         gen = SQLAlchemyGenerator(self.schema)
         self.module = gen.compile_sqla(template=TemplateEnum.DECLARATIVE)
-        if self.schemaview is None:
-            self.schemaview = SchemaView(self.schema)
         return self.module
 
     def compile_native(self) -> ModuleType:
@@ -130,7 +137,7 @@ class SQLStore:
         self.native_module = gen.compile_module()
         return self.native_module
 
-    def load(self, target_class: Union[str, Type[YAMLRoot]] = None) -> YAMLRoot:
+    def load(self, target_class: Union[str, type[YAMLRoot]] = None) -> YAMLRoot:
         """
         Loads a LinkML object from the wrapped SQLite database
 
@@ -139,7 +146,7 @@ class SQLStore:
         """
         return self.load_all(target_class=target_class)[0]
 
-    def load_all(self, target_class: Union[str, Type[YAMLRoot]] = None) -> List[YAMLRoot]:
+    def load_all(self, target_class: Union[str, type[YAMLRoot]] = None) -> list[YAMLRoot]:
         if target_class is None:
             target_class_name = infer_root_class(self.schemaview)
             target_class = self.native_module.__dict__[target_class_name]
@@ -171,7 +178,7 @@ class SQLStore:
             session.add(nu_obj)
             session.commit()
 
-    def to_sqla_type(self, target_class: Type[YAMLRoot]) -> Any:
+    def to_sqla_type(self, target_class: type[YAMLRoot]) -> Any:
         for n, nu_typ in inspect.getmembers(self.module):
             if n == target_class.__name__:
                 return nu_typ
@@ -222,22 +229,19 @@ class SQLStore:
             for n, nu_typ in inspect.getmembers(self.module):
                 # TODO: make more efficient
                 if n == typ.__name__:
-                    # print(f'Creating {nu_typ} from: {inst_args}')
                     nu_obj = nu_typ(**inst_args)
                     return nu_obj
             raise ValueError(f"Cannot find {typ.__name__} in {self.module}")
         else:
             return obj
 
-    def from_sqla(self, obj: Any) -> Optional[Union[YAMLRoot, List[YAMLRoot]]]:
+    def from_sqla(self, obj: Any) -> Optional[Union[YAMLRoot, list[YAMLRoot]]]:
         """
         Translate from SQLAlchemy declarative module to native LinkML
 
         :param obj: sqla object
         :return: native dataclass object
         """
-        if self.schemaview is None:
-            self.schemaview = SchemaView(self.schema)
         typ = type(obj)
         nm = self.schemaview.class_name_mappings()
         if typ.__name__ in nm:
@@ -261,16 +265,14 @@ class SQLStore:
             for n, nu_typ in inspect.getmembers(self.native_module):
                 # TODO: make more efficient
                 if n == typ.__name__:
-                    # print(f'CREATING {nu_typ} FROM {inst_args}')
                     nu_obj = nu_typ(**inst_args)
-                    # print(f'CREATED {nu_obj}')
                     return nu_obj
             raise ValueError(f"Cannot find {typ.__name__} in {self.native_module}")
         else:
             return obj
 
 
-@click.group()
+@click.group(name="sqldb")
 @click.option("-v", "--verbose", count=True)
 @click.option("-q", "--quiet")
 @click.option(
@@ -323,9 +325,15 @@ def main(verbose: int, quiet: bool, csv_field_size_limit: int):
     show_default=True,
     help="Force creation of a database if it does not exist",
 )
-@click.argument("input")
+@click.option(
+    "--glob/--no-glob",
+    default=False,
+    show_default=True,
+    help="Treat input as a quoted glob expression, e.g. 'data/*.json'",
+)
+@click.argument("inputs", nargs=-1)
 def dump(
-    input,
+    inputs,
     module,
     db,
     target_class,
@@ -333,6 +341,7 @@ def dump(
     schema=None,
     validate=None,
     force: bool = None,
+    glob: bool = None,
     index_slot=None,
 ) -> None:
     """
@@ -358,34 +367,41 @@ def dump(
     if target_class is None:
         raise Exception("target class not specified and could not be inferred")
     py_target_class = python_module.__dict__[target_class]
-    input_format = _get_format(input, input_format)
-    loader = get_loader(input_format)
-
-    inargs = {}
-    if datautils._is_rdf_format(input_format):
-        if sv is None:
-            raise Exception("Must pass schema arg")
-        inargs["schemaview"] = sv
-        inargs["fmt"] = input_format
-    if _is_xsv(input_format):
-        if index_slot is None:
-            index_slot = infer_index_slot(sv, target_class)
-            if index_slot is None:
-                raise Exception("--index-slot is required for CSV input")
-        inargs["index_slot"] = index_slot
-        inargs["schema"] = schema
-    obj = loader.load(source=input, target_class=py_target_class, **inargs)
-    if validate:
-        if schema is None:
-            raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
-        # TODO: use validator framework
-        validation.validate_object(obj, schema)
 
     endpoint = SQLStore(schema, database_path=db, include_schema_in_database=False)
     endpoint.native_module = python_module
     endpoint.db_exists(force=force)
     endpoint.compile()
-    endpoint.dump(obj)
+
+    if glob:
+        import glob
+
+        inputs = [item for input in inputs for item in glob.glob(input)]
+    for input in inputs:
+        logger.info(f"Loading: {input}")
+        input_format = _get_format(input, input_format)
+        loader = get_loader(input_format)
+
+        inargs = {}
+        if datautils._is_rdf_format(input_format):
+            if sv is None:
+                raise Exception("Must pass schema arg")
+            inargs["schemaview"] = sv
+            inargs["fmt"] = input_format
+        if _is_xsv(input_format):
+            if index_slot is None:
+                index_slot = infer_index_slot(sv, target_class)
+                if index_slot is None:
+                    raise Exception("--index-slot is required for CSV input")
+            inargs["index_slot"] = index_slot
+            inargs["schema"] = schema
+        obj = loader.load(source=input, target_class=py_target_class, **inargs)
+        if validate:
+            if schema is None:
+                raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
+            # TODO: use validator framework
+            validation.validate_object(obj, schema)
+        endpoint.dump(obj)
 
 
 @main.command()

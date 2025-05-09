@@ -1,0 +1,211 @@
+ syntax="proto3";
+ package
+// metamodel_version: 1.7.0
+// a provence-generating activity
+message Activity
+ {
+  string id = 1
+  date startedAtTime = 0
+  date endedAtTime = 0
+  activity wasInformedBy = 0
+  agent wasAssociatedWith = 0
+  string used = 0
+  string description = 0
+ }
+message Address
+ {
+  string street = 0
+  string city = 0
+  decimal altitude = 0
+ }
+// a provence-generating agent
+message Agent
+ {
+  string id = 1
+  agent actedOnBehalfOf = 0
+  activity wasInformedBy = 0
+ }
+message AnyOfClasses
+ {
+  string attribute2 = 0
+ }
+message AnyOfEnums
+ {
+  string attribute3 = 0
+ }
+message AnyOfMix
+ {
+  string attribute4 = 0
+ }
+message AnyOfSimpleType
+ {
+  string attribute1 = 0
+ }
+message BirthEvent
+ {
+  date startedAtTime = 0
+  date endedAtTime = 0
+  boolean isCurrent = 0
+  anyObject metadata = 0
+  place inLocation = 0
+ }
+message ClassWithSpaces
+ {
+  string slotWithSpace1 = 0
+ }
+message CodeSystem
+ {
+  string id = 1
+  string name = 2
+ }
+message Company
+ {
+  string id = 1
+  string name = 2
+ repeated  string aliases = 0
+  person ceo = 0
+ }
+message Concept
+ {
+  string id = 1
+  string name = 2
+  codeSystem inCodeSystem = 0
+ }
+message Dataset
+ {
+  anyObject metadata = 0
+ repeated  person persons = 0
+ repeated  company companies = 0
+ repeated  activity activities = 0
+ repeated  codeSystem codeSystems = 0
+ }
+message DiagnosisConcept
+ {
+  string id = 1
+  string name = 2
+  codeSystem inCodeSystem = 0
+ }
+message EmploymentEvent
+ {
+  date startedAtTime = 0
+  date endedAtTime = 0
+  boolean isCurrent = 0
+  anyObject metadata = 0
+  company employedAt = 0
+  string type = 0
+ }
+message EqualsString
+ {
+  string attribute5 = 0
+ }
+message EqualsStringIn
+ {
+  string attribute6 = 0
+ }
+message Event
+ {
+  date startedAtTime = 0
+  date endedAtTime = 0
+  boolean isCurrent = 0
+  anyObject metadata = 0
+ }
+message FakeClass
+ {
+  string testAttribute = 0
+ }
+message FamilialRelationship
+ {
+  date startedAtTime = 0
+  date endedAtTime = 0
+  string cordialness = 0
+  familialRelationshipType type = 0
+  person relatedTo = 0
+ }
+message MarriageEvent
+ {
+  date startedAtTime = 0
+  date endedAtTime = 0
+  boolean isCurrent = 0
+  anyObject metadata = 0
+  person marriedTo = 0
+  place inLocation = 0
+ }
+message MedicalEvent
+ {
+  date startedAtTime = 0
+  date endedAtTime = 0
+  boolean isCurrent = 0
+  anyObject metadata = 0
+  place inLocation = 0
+  diagnosisConcept diagnosis = 0
+  procedureConcept procedure = 0
+ }
+// An organization.
+// 
+// This description
+// includes newlines
+// 
+// ## Markdown headers
+// 
+//  * and
+//  * a
+//  * list
+message Organization
+ {
+  string id = 1
+  string name = 2
+ repeated  string aliases = 0
+ }
+// A person, living or dead
+message Person
+ {
+  string id = 1
+  string name = 2
+ repeated  employmentEvent hasEmploymentHistory = 7
+ repeated  familialRelationship hasFamilialRelationships = 0
+ repeated  medicalEvent hasMedicalHistory = 5
+  integer ageInYears = 0
+ repeated  address addresses = 0
+  birthEvent hasBirthEvent = 0
+  string speciesName = 0
+  integer stomachCount = 0
+  lifeStatusEnum isLiving = 0
+ repeated  string aliases = 0
+ }
+message Place
+ {
+  string id = 1
+  string name = 2
+ repeated  string aliases = 0
+ }
+message ProcedureConcept
+ {
+  string id = 1
+  string name = 2
+  codeSystem inCodeSystem = 0
+ }
+message Relationship
+ {
+  date startedAtTime = 0
+  date endedAtTime = 0
+  string relatedTo = 0
+  string type = 0
+  cordialnessEnum cordialness = 0
+ }
+message SubSubClass2
+ {
+  string slotWithSpace1 = 0
+  classWithSpaces slotWithSpace2 = 0
+ }
+message SubclassTest
+ {
+  string slotWithSpace1 = 0
+  classWithSpaces slotWithSpace2 = 0
+ }
+// Same depth as Sub sub class 1
+message TubSubClass1
+ {
+  string slotWithSpace1 = 0
+  classWithSpaces slotWithSpace2 = 0
+ }
+

@@ -1,0 +1,11 @@
+# metamodel_version: 1.7.0id: tub_sub_class_1
+schema_generating: true
+description: Same depth as Sub sub class 1
+display_name: tub sub class 1
+document_category: tub sub class 1
+weight: 20
+fields:
+- id: slot_with_space_1
+  display_name: classWithSpaces__slot_with_space_1
+- id: slot_with_space_2
+  display_name: subclassTest__slot_with_space_2

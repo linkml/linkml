@@ -161,6 +161,38 @@ data:
 
 ```
 
+## Inlining as simple dictionaries
+
+If a collection of objects is inlined as a dict, and the objects have a "primary" value, then
+a more compact simple key-value pair inlining can be used.
+
+One example of this is [prefixes](https://w3id.org/linkml/prefixes) in the LinkML metamodel. This is an
+inlined collection of [Prefix](https://w3id.org/linkml/Prefix) classes which are essentially tuples of
+a key (the prefix itself, e.g. `dcterms`) and a value (the expansion, e.g. `http://purl.org/dc/terms/`).
+
+These can be serialized in the standard compact form like this:
+
+```yaml
+prefixes:
+  dcterms:
+    prefix_reference: http://purl.org/dc/terms/
+  ...
+```
+
+However, the canonical encoding is the more compact SimpleDict form:
+
+```yaml
+prefixes:
+  dcterms: http://purl.org/dc/terms/
+```
+
+The procedure for determining whether a SimpleDict serialization can be used
+on a collection of classes is as follows:
+
+1. There must be a key or identifier slot (this is true for all slots inlined as dict)
+2. One of the following must hold of the set of remaining slots:
+    - There is exactly one additional non-key slot (this forms the "primary" value)
+    - If there are multiple candidates for the primary value, if exactly one is `required`, it is used.
 
 ## Inlining with non-JSON serializations
 

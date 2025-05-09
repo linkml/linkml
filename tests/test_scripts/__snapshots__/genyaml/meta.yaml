@@ -1,0 +1,1699 @@
+name: kitchen_sink
+description: "Kitchen Sink Schema\n\nThis schema does not do anything useful. It exists\
+  \ to test all features of linkml.\n\nThis particular text field exists to demonstrate\
+  \ markdown within a text field:\n\nLists:\n\n   * a\n   * b\n   * c\n\nAnd links,\
+  \ e.g to [Person](Person.md)"
+title: Kitchen Sink Schema
+see_also:
+- https://example.org/
+id: https://w3id.org/linkml/tests/kitchen_sink
+imports:
+- linkml:types
+- core
+license: https://creativecommons.org/publicdomain/zero/1.0/
+prefixes:
+  pav:
+    prefix_prefix: pav
+    prefix_reference: http://purl.org/pav/
+  dce:
+    prefix_prefix: dce
+    prefix_reference: http://purl.org/dc/elements/1.1/
+  lego:
+    prefix_prefix: lego
+    prefix_reference: http://geneontology.org/lego/
+  linkml:
+    prefix_prefix: linkml
+    prefix_reference: https://w3id.org/linkml/
+  biolink:
+    prefix_prefix: biolink
+    prefix_reference: https://w3id.org/biolink/
+  ks:
+    prefix_prefix: ks
+    prefix_reference: https://w3id.org/linkml/tests/kitchen_sink/
+  RO:
+    prefix_prefix: RO
+    prefix_reference: http://purl.obolibrary.org/obo/RO_
+  BFO:
+    prefix_prefix: BFO
+    prefix_reference: http://purl.obolibrary.org/obo/BFO_
+  CODE:
+    prefix_prefix: CODE
+    prefix_reference: http://example.org/code/
+  ROR:
+    prefix_prefix: ROR
+    prefix_reference: http://example.org/ror/
+  A:
+    prefix_prefix: A
+    prefix_reference: http://example.org/activities/
+  P:
+    prefix_prefix: P
+    prefix_reference: http://example.org/person/
+  skos:
+    prefix_prefix: skos
+    prefix_reference: http://www.w3.org/2004/02/skos/core#
+  bizcodes:
+    prefix_prefix: bizcodes
+    prefix_reference: https://example.org/bizcodes/
+  schema:
+    prefix_prefix: schema
+    prefix_reference: http://schema.org/
+default_curi_maps:
+- semweb_context
+default_prefix: ks
+default_range: string
+subsets:
+  subset A:
+    name: subset A
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/SubsetA
+    description: 'test subset A
+
+
+      This is a subset for testing'
+    comments:
+    - this subset is meaningless, it is just here for testing
+    - another comment
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    aliases:
+    - A
+    rank: 2
+  subset B:
+    name: subset B
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/SubsetB
+    description: test subset B
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    aliases:
+    - B
+    rank: 1
+  subset X:
+    name: subset X
+    definition_uri: https://w3id.org/linkml/tests/core/SubsetX
+    from_schema: https://w3id.org/linkml/tests/core
+types:
+  string:
+    name: string
+    definition_uri: https://w3id.org/linkml/String
+    description: A character string
+    notes:
+    - In RDF serializations, a slot with range of string is treated as a literal or
+      type xsd:string.   If you are authoring schemas in LinkML YAML, the type is
+      referenced with the lower case "string".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:Text
+    base: str
+    uri: xsd:string
+  integer:
+    name: integer
+    definition_uri: https://w3id.org/linkml/Integer
+    description: An integer
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "integer".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:Integer
+    base: int
+    uri: xsd:integer
+  boolean:
+    name: boolean
+    definition_uri: https://w3id.org/linkml/Boolean
+    description: A binary (true or false) value
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "boolean".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:Boolean
+    base: Bool
+    uri: xsd:boolean
+    repr: bool
+  float:
+    name: float
+    definition_uri: https://w3id.org/linkml/Float
+    description: A real number that conforms to the xsd:float specification
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "float".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:Float
+    base: float
+    uri: xsd:float
+  double:
+    name: double
+    definition_uri: https://w3id.org/linkml/Double
+    description: A real number that conforms to the xsd:double specification
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "double".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    close_mappings:
+    - schema:Float
+    base: float
+    uri: xsd:double
+  decimal:
+    name: decimal
+    definition_uri: https://w3id.org/linkml/Decimal
+    description: A real number with arbitrary precision that conforms to the xsd:decimal
+      specification
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "decimal".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    broad_mappings:
+    - schema:Number
+    base: Decimal
+    uri: xsd:decimal
+  time:
+    name: time
+    definition_uri: https://w3id.org/linkml/Time
+    description: A time object represents a (local) time of day, independent of any
+      particular day
+    notes:
+    - URI is dateTime because OWL reasoners do not work with straight date or time
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "time".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:Time
+    base: XSDTime
+    uri: xsd:time
+    repr: str
+  date:
+    name: date
+    definition_uri: https://w3id.org/linkml/Date
+    description: a date (year, month and day) in an idealized calendar
+    notes:
+    - URI is dateTime because OWL reasoners don't work with straight date or time
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "date".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:Date
+    base: XSDDate
+    uri: xsd:date
+    repr: str
+  datetime:
+    name: datetime
+    definition_uri: https://w3id.org/linkml/Datetime
+    description: The combination of a date and time
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "datetime".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:DateTime
+    base: XSDDateTime
+    uri: xsd:dateTime
+    repr: str
+  date_or_datetime:
+    name: date_or_datetime
+    definition_uri: https://w3id.org/linkml/DateOrDatetime
+    description: Either a date or a datetime
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "date_or_datetime".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: str
+    uri: linkml:DateOrDatetime
+    repr: str
+  uriorcurie:
+    name: uriorcurie
+    definition_uri: https://w3id.org/linkml/Uriorcurie
+    description: a URI or a CURIE
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "uriorcurie".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: URIorCURIE
+    uri: xsd:anyURI
+    repr: str
+  curie:
+    name: curie
+    definition_uri: https://w3id.org/linkml/Curie
+    conforms_to: https://www.w3.org/TR/curie/
+    description: a compact URI
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "curie".
+    comments:
+    - in RDF serializations this MUST be expanded to a URI
+    - in non-RDF serializations MAY be serialized as the compact representation
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: Curie
+    uri: xsd:string
+    repr: str
+  uri:
+    name: uri
+    definition_uri: https://w3id.org/linkml/Uri
+    conforms_to: https://www.ietf.org/rfc/rfc3987.txt
+    description: a complete URI
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "uri".
+    comments:
+    - in RDF serializations a slot with range of uri is treated as a literal or type
+      xsd:anyURI unless it is an identifier or a reference to an identifier, in which
+      case it is translated directly to a node
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    close_mappings:
+    - schema:URL
+    base: URI
+    uri: xsd:anyURI
+    repr: str
+  ncname:
+    name: ncname
+    definition_uri: https://w3id.org/linkml/Ncname
+    description: Prefix part of CURIE
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "ncname".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: NCName
+    uri: xsd:string
+    repr: str
+  objectidentifier:
+    name: objectidentifier
+    definition_uri: https://w3id.org/linkml/Objectidentifier
+    description: A URI or CURIE that represents an object in the model.
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "objectidentifier".
+    comments:
+    - Used for inheritance and type checking
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: ElementIdentifier
+    uri: shex:iri
+    repr: str
+  nodeidentifier:
+    name: nodeidentifier
+    definition_uri: https://w3id.org/linkml/Nodeidentifier
+    description: A URI, CURIE or BNODE that represents a node in a model.
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "nodeidentifier".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: NodeIdentifier
+    uri: shex:nonLiteral
+    repr: str
+  jsonpointer:
+    name: jsonpointer
+    definition_uri: https://w3id.org/linkml/Jsonpointer
+    conforms_to: https://datatracker.ietf.org/doc/html/rfc6901
+    description: A string encoding a JSON Pointer. The value of the string MUST conform
+      to JSON Point syntax and SHOULD dereference to a valid object within the current
+      instance document when encoded in tree form.
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "jsonpointer".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: str
+    uri: xsd:string
+    repr: str
+  jsonpath:
+    name: jsonpath
+    definition_uri: https://w3id.org/linkml/Jsonpath
+    conforms_to: https://www.ietf.org/archive/id/draft-goessner-dispatch-jsonpath-00.html
+    description: A string encoding a JSON Path. The value of the string MUST conform
+      to JSON Point syntax and SHOULD dereference to zero or more valid objects within
+      the current instance document when encoded in tree form.
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "jsonpath".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: str
+    uri: xsd:string
+    repr: str
+  sparqlpath:
+    name: sparqlpath
+    definition_uri: https://w3id.org/linkml/Sparqlpath
+    conforms_to: https://www.w3.org/TR/sparql11-query/#propertypaths
+    description: A string encoding a SPARQL Property Path. The value of the string
+      MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects
+      within the current instance document when encoded as RDF.
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "sparqlpath".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: str
+    uri: xsd:string
+    repr: str
+  phone number type:
+    name: phone number type
+    definition_uri: https://w3id.org/linkml/tests/core/PhoneNumberType
+    from_schema: https://w3id.org/linkml/tests/core
+    base: str
+    uri: xsd:string
+    pattern: ^[\\+\\d+ +][\\d\\- ]+$
+  age in years type:
+    name: age in years type
+    definition_uri: https://w3id.org/linkml/tests/core/AgeInYearsType
+    from_schema: https://w3id.org/linkml/tests/core
+    base: int
+    uri: xsd:integer
+enums:
+  FamilialRelationshipType:
+    name: FamilialRelationshipType
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    permissible_values:
+      SIBLING_OF:
+        text: SIBLING_OF
+      PARENT_OF:
+        text: PARENT_OF
+      CHILD_OF:
+        text: CHILD_OF
+  DiagnosisType:
+    name: DiagnosisType
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/DiagnosisType
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    permissible_values:
+      TODO:
+        text: TODO
+  EmploymentEventType:
+    name: EmploymentEventType
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/EmploymentEventType
+    description: codes for different kinds of employment/HR related events
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    aliases:
+    - HR code
+    permissible_values:
+      HIRE:
+        text: HIRE
+        description: event for a new employee
+        meaning: bizcodes:001
+      FIRE:
+        text: FIRE
+        meaning: bizcodes:002
+        annotations:
+          biolink:opposite:
+            tag: biolink:opposite
+            value: HIRE
+      PROMOTION:
+        text: PROMOTION
+        description: promotion event
+        meaning: bizcodes:003
+      TRANSFER:
+        text: TRANSFER
+        description: transfer internally
+        meaning: bizcodes:004
+  other codes:
+    name: other codes
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/OtherCodes
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    permissible_values:
+      a b:
+        text: a b
+  LifeStatusEnum:
+    name: LifeStatusEnum
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/LifeStatusEnum
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    permissible_values:
+      LIVING:
+        text: LIVING
+      DEAD:
+        text: DEAD
+      UNKNOWN:
+        text: UNKNOWN
+  CordialnessEnum:
+    name: CordialnessEnum
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    permissible_values:
+      heartfelt:
+        text: heartfelt
+        description: warm and hearty friendliness
+      hateful:
+        text: hateful
+        description: spiteful
+      indifferent:
+        text: indifferent
+        description: not overly friendly nor obnoxiously spiteful
+  KitchenStatus:
+    name: KitchenStatus
+    definition_uri: https://w3id.org/linkml/tests/core/KitchenStatus
+    from_schema: https://w3id.org/linkml/tests/core
+    permissible_values:
+      DIRTY:
+        text: DIRTY
+      CLEAN:
+        text: CLEAN
+slots:
+  employed at:
+    name: employed at
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/employed_at
+    in_subset:
+    - subset A
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:employed_at
+    owner: EmploymentEvent
+    domain_of:
+    - EmploymentEvent
+    range: Company
+  is current:
+    name: is current
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/is_current
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:is_current
+    owner: Event
+    domain_of:
+    - Event
+    range: boolean
+  has employment history:
+    name: has employment history
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/has_employment_history
+    in_subset:
+    - subset B
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    rank: 7
+    slot_uri: ks:has_employment_history
+    owner: Person
+    domain_of:
+    - Person
+    range: EmploymentEvent
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+  has marriage history:
+    name: has marriage history
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/has_marriage_history
+    in_subset:
+    - subset B
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:has_marriage_history
+    range: MarriageEvent
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+  has medical history:
+    name: has medical history
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/has_medical_history
+    in_subset:
+    - subset B
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    rank: 5
+    slot_uri: ks:has_medical_history
+    owner: Person
+    domain_of:
+    - Person
+    range: MedicalEvent
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+  has familial relationships:
+    name: has familial relationships
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/has_familial_relationships
+    in_subset:
+    - subset B
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:has_familial_relationships
+    owner: Person
+    domain_of:
+    - Person
+    range: FamilialRelationship
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+  married to:
+    name: married to
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/married_to
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:married_to
+    owner: MarriageEvent
+    domain_of:
+    - MarriageEvent
+    range: Person
+  in location:
+    name: in location
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/in_location
+    annotations:
+      biolink:opposite:
+        tag: biolink:opposite
+        value: location_of
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:in_location
+    owner: WithLocation
+    domain_of:
+    - BirthEvent
+    - MedicalEvent
+    - WithLocation
+    range: Place
+  diagnosis:
+    name: diagnosis
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/diagnosis
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:diagnosis
+    owner: MedicalEvent
+    domain_of:
+    - MedicalEvent
+    range: DiagnosisConcept
+    inlined: true
+  procedure:
+    name: procedure
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/procedure
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:procedure
+    owner: MedicalEvent
+    domain_of:
+    - MedicalEvent
+    range: ProcedureConcept
+    inlined: true
+  addresses:
+    name: addresses
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/addresses
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:addresses
+    owner: Person
+    domain_of:
+    - Person
+    range: Address
+    multivalued: true
+    inlined: true
+  age in years:
+    name: age in years
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/age_in_years
+    description: number of years since birth
+    in_subset:
+    - subset A
+    - subset B
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:age_in_years
+    owner: Person
+    domain_of:
+    - Person
+    range: integer
+    minimum_value: 0
+    maximum_value: 999
+  related to:
+    name: related to
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/related_to
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:related_to
+    owner: Relationship
+    domain_of:
+    - Relationship
+    range: string
+  type:
+    name: type
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/type
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:type
+    owner: EmploymentEvent
+    domain_of:
+    - Relationship
+    - EmploymentEvent
+    range: string
+  street:
+    name: street
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/street
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:street
+    owner: Address
+    domain_of:
+    - Address
+    range: string
+  city:
+    name: city
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/city
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:city
+    owner: Address
+    domain_of:
+    - Address
+    range: string
+  has birth event:
+    name: has birth event
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/has_birth_event
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:has_birth_event
+    owner: Person
+    domain_of:
+    - Person
+    range: BirthEvent
+    inlined: true
+  in code system:
+    name: in code system
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/in_code_system
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:in_code_system
+    owner: Concept
+    domain_of:
+    - Concept
+    range: CodeSystem
+  metadata:
+    name: metadata
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/metadata
+    description: Example of a slot that has an unconstrained range
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:metadata
+    owner: Dataset
+    domain_of:
+    - Event
+    - Dataset
+    range: AnyObject
+    inlined: true
+  species name:
+    name: species name
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/species_name
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:species_name
+    owner: Person
+    domain_of:
+    - Person
+    range: string
+    pattern: ^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\.[A-Z]+(-[0-9]{4})?$
+  stomach count:
+    name: stomach count
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/stomach_count
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:stomach_count
+    owner: Person
+    domain_of:
+    - Person
+    range: integer
+  tree_slot_A:
+    name: tree_slot_A
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/tree_slot_A
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    mappings:
+    - ks:A
+    slot_uri: ks:A
+    range: string
+  tree_slot_B:
+    name: tree_slot_B
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/tree_slot_B
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    mappings:
+    - ks:B
+    is_a: tree_slot_A
+    slot_uri: ks:B
+    range: string
+  tree_slot_C:
+    name: tree_slot_C
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/tree_slot_C
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    mappings:
+    - ks:C
+    is_a: tree_slot_B
+    mixins:
+    - mixin_slot_I
+    slot_uri: ks:C
+    range: string
+  mixin_slot_I:
+    name: mixin_slot_I
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/mixin_slot_I
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    mixin: true
+    slot_uri: ks:mixin_slot_I
+    range: string
+  life_status:
+    name: life_status
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/life_status
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:life_status
+    range: LifeStatusEnum
+  cordialness:
+    name: cordialness
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/cordialness
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:cordialness
+    owner: FamilialRelationship
+    domain_of:
+    - Relationship
+    - FamilialRelationship
+    range: string
+  altitude:
+    name: altitude
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/altitude
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:altitude
+    owner: Address
+    domain_of:
+    - Address
+    range: decimal
+  id:
+    name: id
+    definition_uri: https://w3id.org/linkml/tests/core/id
+    from_schema: https://w3id.org/linkml/tests/core
+    rank: 1
+    slot_uri: core:id
+    identifier: true
+    owner: agent
+    domain_of:
+    - Person
+    - Organization
+    - Place
+    - Concept
+    - CodeSystem
+    - activity
+    - agent
+    range: string
+    required: true
+  name:
+    name: name
+    definition_uri: https://w3id.org/linkml/tests/core/name
+    from_schema: https://w3id.org/linkml/tests/core
+    rank: 2
+    slot_uri: core:name
+    owner: CodeSystem
+    domain_of:
+    - Friend
+    - Person
+    - Organization
+    - Place
+    - Concept
+    - CodeSystem
+    range: string
+    required: false
+  description:
+    name: description
+    definition_uri: https://w3id.org/linkml/tests/core/description
+    from_schema: https://w3id.org/linkml/tests/core
+    slot_uri: core:description
+    owner: activity
+    domain_of:
+    - activity
+    range: string
+  started at time:
+    name: started at time
+    definition_uri: https://w3id.org/linkml/tests/core/started_at_time
+    from_schema: https://w3id.org/linkml/tests/core
+    mappings:
+    - prov:startedAtTime
+    slot_uri: prov:startedAtTime
+    owner: activity
+    domain_of:
+    - Event
+    - Relationship
+    - activity
+    range: date
+  ended at time:
+    name: ended at time
+    definition_uri: https://w3id.org/linkml/tests/core/ended_at_time
+    from_schema: https://w3id.org/linkml/tests/core
+    mappings:
+    - prov:endedAtTime
+    slot_uri: prov:endedAtTime
+    owner: activity
+    domain_of:
+    - Event
+    - Relationship
+    - activity
+    range: date
+  was informed by:
+    name: was informed by
+    definition_uri: https://w3id.org/linkml/tests/core/was_informed_by
+    from_schema: https://w3id.org/linkml/tests/core
+    mappings:
+    - prov:wasInformedBy
+    slot_uri: prov:wasInformedBy
+    owner: agent
+    domain_of:
+    - activity
+    - agent
+    range: activity
+  was associated with:
+    name: was associated with
+    definition_uri: https://w3id.org/linkml/tests/core/was_associated_with
+    from_schema: https://w3id.org/linkml/tests/core
+    mappings:
+    - prov:wasAssociatedWith
+    slot_uri: prov:wasAssociatedWith
+    owner: activity
+    domain_of:
+    - activity
+    range: agent
+    inlined: false
+  acted on behalf of:
+    name: acted on behalf of
+    definition_uri: https://w3id.org/linkml/tests/core/acted_on_behalf_of
+    from_schema: https://w3id.org/linkml/tests/core
+    mappings:
+    - prov:actedOnBehalfOf
+    slot_uri: prov:actedOnBehalfOf
+    owner: agent
+    domain_of:
+    - agent
+    range: agent
+  was generated by:
+    name: was generated by
+    definition_uri: https://w3id.org/linkml/tests/core/was_generated_by
+    from_schema: https://w3id.org/linkml/tests/core
+    mappings:
+    - prov:wasGeneratedBy
+    slot_uri: prov:wasGeneratedBy
+    range: activity
+  used:
+    name: used
+    definition_uri: https://w3id.org/linkml/tests/core/used
+    from_schema: https://w3id.org/linkml/tests/core
+    mappings:
+    - prov:used
+    domain: activity
+    slot_uri: prov:used
+    owner: activity
+    domain_of:
+    - activity
+    range: string
+  activity set:
+    name: activity set
+    definition_uri: https://w3id.org/linkml/tests/core/activity_set
+    from_schema: https://w3id.org/linkml/tests/core
+    slot_uri: core:activity_set
+    range: activity
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+  agent set:
+    name: agent set
+    definition_uri: https://w3id.org/linkml/tests/core/agent_set
+    from_schema: https://w3id.org/linkml/tests/core
+    slot_uri: core:agent_set
+    range: agent
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+  anyOfSimpleType__attribute1:
+    name: anyOfSimpleType__attribute1
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:attribute1
+    alias: attribute1
+    owner: AnyOfSimpleType
+    domain_of:
+    - AnyOfSimpleType
+    range: string
+    any_of:
+    - range: string
+    - range: integer
+  anyOfClasses__attribute2:
+    name: anyOfClasses__attribute2
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:attribute2
+    alias: attribute2
+    owner: AnyOfClasses
+    domain_of:
+    - AnyOfClasses
+    range: string
+    any_of:
+    - range: Person
+    - range: Organization
+  anyOfEnums__attribute3:
+    name: anyOfEnums__attribute3
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:attribute3
+    alias: attribute3
+    owner: AnyOfEnums
+    domain_of:
+    - AnyOfEnums
+    range: string
+    any_of:
+    - range: DiagnosisType
+    - range: EmploymentEventType
+  anyOfMix__attribute4:
+    name: anyOfMix__attribute4
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:attribute4
+    alias: attribute4
+    owner: AnyOfMix
+    domain_of:
+    - AnyOfMix
+    range: string
+    any_of:
+    - range: integer
+    - range: Person
+    - range: EmploymentEventType
+  equalsString__attribute5:
+    name: equalsString__attribute5
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:attribute5
+    alias: attribute5
+    owner: EqualsString
+    domain_of:
+    - EqualsString
+    range: string
+    equals_string: foo
+  equalsStringIn__attribute6:
+    name: equalsStringIn__attribute6
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:attribute6
+    alias: attribute6
+    owner: EqualsStringIn
+    domain_of:
+    - EqualsStringIn
+    range: string
+    equals_string_in:
+    - foo
+    - bar
+  hasAliases__aliases:
+    name: hasAliases__aliases
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    mappings:
+    - skos:altLabel
+    slot_uri: skos:altLabel
+    alias: aliases
+    owner: HasAliases
+    domain_of:
+    - HasAliases
+    range: string
+    multivalued: true
+  person__is_living:
+    name: person__is_living
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:is_living
+    alias: is_living
+    owner: Person
+    domain_of:
+    - Person
+    range: LifeStatusEnum
+  company__ceo:
+    name: company__ceo
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    mappings:
+    - schema:ceo
+    slot_uri: schema:ceo
+    alias: ceo
+    owner: Company
+    domain_of:
+    - Company
+    range: Person
+  dataset__persons:
+    name: dataset__persons
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:persons
+    alias: persons
+    owner: Dataset
+    domain_of:
+    - Dataset
+    range: Person
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+  dataset__companies:
+    name: dataset__companies
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:companies
+    alias: companies
+    owner: Dataset
+    domain_of:
+    - Dataset
+    range: Company
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+  dataset__activities:
+    name: dataset__activities
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:activities
+    alias: activities
+    owner: Dataset
+    domain_of:
+    - Dataset
+    range: activity
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+  dataset__code_systems:
+    name: dataset__code_systems
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:code_systems
+    alias: code systems
+    owner: Dataset
+    domain_of:
+    - Dataset
+    range: CodeSystem
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+  fakeClass__test_attribute:
+    name: fakeClass__test_attribute
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:test_attribute
+    alias: test_attribute
+    owner: FakeClass
+    domain_of:
+    - FakeClass
+    range: string
+  classWithSpaces__slot_with_space_1:
+    name: classWithSpaces__slot_with_space_1
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:slot_with_space_1
+    alias: slot with space 1
+    owner: class with spaces
+    domain_of:
+    - class with spaces
+    range: string
+  subclassTest__slot_with_space_2:
+    name: subclassTest__slot_with_space_2
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:slot_with_space_2
+    alias: slot with space 2
+    owner: subclass test
+    domain_of:
+    - subclass test
+    range: class with spaces
+    inlined: true
+  Person_name:
+    name: Person_name
+    definition_uri: https://w3id.org/linkml/tests/core/name
+    from_schema: https://w3id.org/linkml/tests/core
+    rank: 2
+    is_a: name
+    domain: Person
+    slot_uri: core:name
+    alias: name
+    owner: Person
+    domain_of:
+    - Person
+    is_usage_slot: true
+    usage_slot_name: name
+    range: string
+    required: false
+    pattern: ^\S+ \S+$
+  Person_species name:
+    name: Person_species name
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/species_name
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    is_a: species name
+    domain: Person
+    slot_uri: ks:species_name
+    alias: species name
+    owner: Person
+    domain_of:
+    - Person
+    is_usage_slot: true
+    usage_slot_name: species name
+    range: string
+    pattern: ^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\.[A-Z]+(-[0-9]{4})?$
+    equals_string: human
+  Person_stomach count:
+    name: Person_stomach count
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/stomach_count
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    is_a: stomach count
+    domain: Person
+    slot_uri: ks:stomach_count
+    alias: stomach count
+    owner: Person
+    domain_of:
+    - Person
+    is_usage_slot: true
+    usage_slot_name: stomach count
+    range: integer
+    equals_number: 1
+  Relationship_cordialness:
+    name: Relationship_cordialness
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/cordialness
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    is_a: cordialness
+    domain: Relationship
+    slot_uri: ks:cordialness
+    alias: cordialness
+    owner: Relationship
+    domain_of:
+    - Relationship
+    is_usage_slot: true
+    usage_slot_name: cordialness
+    range: CordialnessEnum
+  FamilialRelationship_type:
+    name: FamilialRelationship_type
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/type
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    is_a: type
+    domain: FamilialRelationship
+    slot_uri: ks:type
+    alias: type
+    owner: FamilialRelationship
+    domain_of:
+    - FamilialRelationship
+    is_usage_slot: true
+    usage_slot_name: type
+    range: FamilialRelationshipType
+    required: true
+  FamilialRelationship_related to:
+    name: FamilialRelationship_related to
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/related_to
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    is_a: related to
+    domain: FamilialRelationship
+    slot_uri: ks:related_to
+    alias: related to
+    owner: FamilialRelationship
+    domain_of:
+    - FamilialRelationship
+    is_usage_slot: true
+    usage_slot_name: related to
+    range: Person
+    required: true
+  FamilialRelationship_cordialness:
+    name: FamilialRelationship_cordialness
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/cordialness
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    is_a: Relationship_cordialness
+    domain: FamilialRelationship
+    slot_uri: ks:cordialness
+    alias: cordialness
+    owner: FamilialRelationship
+    domain_of:
+    - FamilialRelationship
+    is_usage_slot: true
+    usage_slot_name: cordialness
+    range: CordialnessEnum
+  EmploymentEvent_type:
+    name: EmploymentEvent_type
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/type
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    is_a: type
+    domain: EmploymentEvent
+    slot_uri: ks:type
+    alias: type
+    owner: EmploymentEvent
+    domain_of:
+    - EmploymentEvent
+    is_usage_slot: true
+    usage_slot_name: type
+    range: string
+    required: false
+    any_of:
+    - range: CordialnessEnum
+    - range: EmploymentEventType
+classes:
+  AnyOfSimpleType:
+    name: AnyOfSimpleType
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slots:
+    - anyOfSimpleType__attribute1
+    attributes:
+      attribute1:
+        name: attribute1
+        any_of:
+        - range: string
+        - range: integer
+    class_uri: ks:AnyOfSimpleType
+  AnyOfClasses:
+    name: AnyOfClasses
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slots:
+    - anyOfClasses__attribute2
+    attributes:
+      attribute2:
+        name: attribute2
+        any_of:
+        - range: Person
+        - range: Organization
+    class_uri: ks:AnyOfClasses
+  AnyOfEnums:
+    name: AnyOfEnums
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slots:
+    - anyOfEnums__attribute3
+    attributes:
+      attribute3:
+        name: attribute3
+        any_of:
+        - range: DiagnosisType
+        - range: EmploymentEventType
+    class_uri: ks:AnyOfEnums
+  AnyOfMix:
+    name: AnyOfMix
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slots:
+    - anyOfMix__attribute4
+    attributes:
+      attribute4:
+        name: attribute4
+        any_of:
+        - range: integer
+        - range: Person
+        - range: EmploymentEventType
+    class_uri: ks:AnyOfMix
+  EqualsString:
+    name: EqualsString
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/EqualsString
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slots:
+    - equalsString__attribute5
+    attributes:
+      attribute5:
+        name: attribute5
+        equals_string: foo
+    class_uri: ks:EqualsString
+  EqualsStringIn:
+    name: EqualsStringIn
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slots:
+    - equalsStringIn__attribute6
+    attributes:
+      attribute6:
+        name: attribute6
+        equals_string_in:
+        - foo
+        - bar
+    class_uri: ks:EqualsStringIn
+  HasAliases:
+    name: HasAliases
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/HasAliases
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    mixin: true
+    slots:
+    - hasAliases__aliases
+    attributes:
+      aliases:
+        name: aliases
+        slot_uri: skos:altLabel
+        multivalued: true
+    class_uri: ks:HasAliases
+  Friend:
+    name: Friend
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Friend
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    abstract: true
+    slots:
+    - name
+    class_uri: ks:Friend
+  Person:
+    name: Person
+    id_prefixes:
+    - P
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Person
+    annotations:
+      ks:viewer:
+        tag: ks:viewer
+        value: ks:PersonViewer
+      resting:
+        tag: resting
+        value: supine
+      opinions:
+        tag: opinions
+        value: 1000
+      fallible:
+        tag: fallible
+        value: true
+    description: A person, living or dead
+    in_subset:
+    - subset A
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    see_also:
+    - https://en.wikipedia.org/wiki/Person
+    - schema:Person
+    exact_mappings:
+    - schema:Person
+    rank: 2
+    mixins:
+    - HasAliases
+    slots:
+    - id
+    - Person_name
+    - has employment history
+    - has familial relationships
+    - has medical history
+    - age in years
+    - addresses
+    - has birth event
+    - Person_species name
+    - Person_stomach count
+    - person__is_living
+    - hasAliases__aliases
+    slot_usage:
+      name:
+        name: name
+        pattern: ^\S+ \S+$
+      species name:
+        name: species name
+        equals_string: human
+      stomach count:
+        name: stomach count
+        equals_number: 1
+    attributes:
+      is_living:
+        name: is_living
+        range: LifeStatusEnum
+    class_uri: ks:Person
+  Organization:
+    name: Organization
+    id_prefixes:
+    - ROR
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Organization
+    description: "An organization.\n\nThis description\nincludes newlines\n\n## Markdown\
+      \ headers\n\n * and\n * a\n * list"
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    rank: 3
+    mixins:
+    - HasAliases
+    slots:
+    - id
+    - name
+    - hasAliases__aliases
+    class_uri: ks:Organization
+  Place:
+    name: Place
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Place
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    mixins:
+    - HasAliases
+    slots:
+    - id
+    - name
+    - hasAliases__aliases
+    class_uri: ks:Place
+  Address:
+    name: Address
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Address
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slots:
+    - street
+    - city
+    - altitude
+    class_uri: ks:Address
+  Concept:
+    name: Concept
+    id_prefixes:
+    - CODE
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Concept
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slots:
+    - id
+    - name
+    - in code system
+    class_uri: ks:Concept
+  DiagnosisConcept:
+    name: DiagnosisConcept
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    close_mappings:
+    - biolink:Disease
+    is_a: Concept
+    slots:
+    - id
+    - name
+    - in code system
+    class_uri: ks:DiagnosisConcept
+  ProcedureConcept:
+    name: ProcedureConcept
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    is_a: Concept
+    slots:
+    - id
+    - name
+    - in code system
+    class_uri: ks:ProcedureConcept
+  Event:
+    name: Event
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Event
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slots:
+    - started at time
+    - ended at time
+    - is current
+    - metadata
+    class_uri: ks:Event
+  Relationship:
+    name: Relationship
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Relationship
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slots:
+    - started at time
+    - ended at time
+    - related to
+    - type
+    - Relationship_cordialness
+    slot_usage:
+      cordialness:
+        name: cordialness
+        range: CordialnessEnum
+    class_uri: ks:Relationship
+  FamilialRelationship:
+    name: FamilialRelationship
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    rank: 5
+    is_a: Relationship
+    slots:
+    - started at time
+    - ended at time
+    - cordialness
+    - FamilialRelationship_type
+    - FamilialRelationship_related to
+    - FamilialRelationship_cordialness
+    slot_usage:
+      type:
+        name: type
+        range: FamilialRelationshipType
+        required: true
+      related to:
+        name: related to
+        range: Person
+        required: true
+      cordialness:
+        name: cordialness
+    class_uri: ks:FamilialRelationship
+  BirthEvent:
+    name: BirthEvent
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/BirthEvent
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    is_a: Event
+    slots:
+    - started at time
+    - ended at time
+    - is current
+    - metadata
+    - in location
+    class_uri: ks:BirthEvent
+  EmploymentEvent:
+    name: EmploymentEvent
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    rank: 6
+    is_a: Event
+    slots:
+    - started at time
+    - ended at time
+    - is current
+    - metadata
+    - employed at
+    - EmploymentEvent_type
+    slot_usage:
+      type:
+        name: type
+        required: false
+        any_of:
+        - range: CordialnessEnum
+        - range: EmploymentEventType
+    class_uri: ks:EmploymentEvent
+  MedicalEvent:
+    name: MedicalEvent
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    is_a: Event
+    slots:
+    - started at time
+    - ended at time
+    - is current
+    - metadata
+    - in location
+    - diagnosis
+    - procedure
+    class_uri: ks:MedicalEvent
+  WithLocation:
+    name: WithLocation
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/WithLocation
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    mixin: true
+    slots:
+    - in location
+    class_uri: ks:WithLocation
+  MarriageEvent:
+    name: MarriageEvent
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    is_a: Event
+    mixins:
+    - WithLocation
+    slots:
+    - started at time
+    - ended at time
+    - is current
+    - metadata
+    - married to
+    - in location
+    class_uri: ks:MarriageEvent
+  Company:
+    name: Company
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Company
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    is_a: Organization
+    slots:
+    - id
+    - name
+    - hasAliases__aliases
+    - company__ceo
+    attributes:
+      ceo:
+        name: ceo
+        slot_uri: schema:ceo
+        range: Person
+    class_uri: ks:Company
+  CodeSystem:
+    name: CodeSystem
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/CodeSystem
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slots:
+    - id
+    - name
+    class_uri: ks:CodeSystem
+  Dataset:
+    name: Dataset
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Dataset
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    rank: 1
+    slots:
+    - metadata
+    - dataset__persons
+    - dataset__companies
+    - dataset__activities
+    - dataset__code_systems
+    attributes:
+      persons:
+        name: persons
+        range: Person
+        multivalued: true
+        inlined: true
+        inlined_as_list: true
+      companies:
+        name: companies
+        range: Company
+        multivalued: true
+        inlined: true
+        inlined_as_list: true
+      activities:
+        name: activities
+        range: activity
+        multivalued: true
+        inlined: true
+        inlined_as_list: true
+      code systems:
+        name: code systems
+        range: CodeSystem
+        multivalued: true
+        inlined_as_list: true
+    class_uri: ks:Dataset
+    tree_root: true
+  FakeClass:
+    name: FakeClass
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/FakeClass
+    deprecated: this is not a real class, we are using it to test deprecation
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slots:
+    - fakeClass__test_attribute
+    attributes:
+      test_attribute:
+        name: test_attribute
+    class_uri: ks:FakeClass
+  class with spaces:
+    name: class with spaces
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slots:
+    - classWithSpaces__slot_with_space_1
+    attributes:
+      slot with space 1:
+        name: slot with space 1
+    class_uri: ks:ClassWithSpaces
+  subclass test:
+    name: subclass test
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/SubclassTest
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    is_a: class with spaces
+    slots:
+    - classWithSpaces__slot_with_space_1
+    - subclassTest__slot_with_space_2
+    attributes:
+      slot with space 2:
+        name: slot with space 2
+        range: class with spaces
+    class_uri: ks:SubclassTest
+  Sub sub class 2:
+    name: Sub sub class 2
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    is_a: subclass test
+    slots:
+    - classWithSpaces__slot_with_space_1
+    - subclassTest__slot_with_space_2
+    class_uri: ks:SubSubClass2
+  tub sub class 1:
+    name: tub sub class 1
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1
+    description: Same depth as Sub sub class 1
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    is_a: subclass test
+    slots:
+    - classWithSpaces__slot_with_space_1
+    - subclassTest__slot_with_space_2
+    class_uri: ks:TubSubClass1
+  AnyObject:
+    name: AnyObject
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/AnyObject
+    description: Example of unconstrained class
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    mappings:
+    - linkml:Any
+    class_uri: linkml:Any
+  activity:
+    name: activity
+    definition_uri: https://w3id.org/linkml/tests/core/Activity
+    description: a provence-generating activity
+    from_schema: https://w3id.org/linkml/tests/core
+    mappings:
+    - prov:Activity
+    slots:
+    - id
+    - started at time
+    - ended at time
+    - was informed by
+    - was associated with
+    - used
+    - description
+    class_uri: core:Activity
+  agent:
+    name: agent
+    definition_uri: https://w3id.org/linkml/tests/core/Agent
+    description: a provence-generating agent
+    from_schema: https://w3id.org/linkml/tests/core
+    mappings:
+    - prov:Agent
+    slots:
+    - id
+    - acted on behalf of
+    - was informed by
+    class_uri: prov:Agent
+metamodel_version: 1.7.0
+source_file: kitchen_sink.yaml
+source_file_date: '2000-01-01T00:00:00'
+source_file_size: 1
+generation_date: '2000-01-01T00:00:00'
+

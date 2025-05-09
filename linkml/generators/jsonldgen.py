@@ -1,6 +1,5 @@
-""" Generate JSONld
+"""Generate JSONld from a LinkML schema."""
 
-"""
 import os
 from copy import deepcopy
 from dataclasses import dataclass
@@ -36,7 +35,8 @@ class JSONLDGenerator(Generator):
 
     Status: incompletely implemented
 
-    Note: this is distinct from :ref:`ContextGenerator`, which generates a JSON-LD context
+    Note: this is distinct from
+    :class:`~linkml.generators.jsonldcontextgen.ContextGenerator`, which generates a JSON-LD context
     """
 
     # ClassVars
@@ -48,6 +48,7 @@ class JSONLDGenerator(Generator):
     ]  # jsonld includes @type and @context.  json is pure JSON
     uses_schemaloader = True
     requires_metamodel = True
+    file_extension = "jsonld"
 
     # ObjectVars
     original_schema: SchemaDefinition = None
@@ -57,8 +58,8 @@ class JSONLDGenerator(Generator):
     """Path to a JSONLD context file"""
 
     def __post_init__(self) -> None:
-        super().__post_init__()
         self.original_schema = deepcopy(self.schema)
+        super().__post_init__()
 
     def _add_type(self, node: YAMLRoot) -> dict:
         if self.format == "jsonld":
@@ -99,13 +100,15 @@ class JSONLDGenerator(Generator):
             return (
                 ClassDefinitionName(camelcase(node))
                 if node in self.schema.classes
-                else SlotDefinitionName(underscore(node))
-                if node in self.schema.slots
-                else SubsetDefinitionName(camelcase(node))
-                if node in self.schema.subsets
-                else TypeDefinitionName(underscore(node))
-                if node in self.schema.types
-                else None
+                else (
+                    SlotDefinitionName(underscore(node))
+                    if node in self.schema.slots
+                    else (
+                        SubsetDefinitionName(camelcase(node))
+                        if node in self.schema.subsets
+                        else TypeDefinitionName(underscore(node)) if node in self.schema.types else None
+                    )
+                )
             )
         return None
 
@@ -146,7 +149,7 @@ class JSONLDGenerator(Generator):
     def visit_subset(self, ss: SubsetDefinition) -> None:
         self._visit(ss)
 
-    def end_schema(self, context: str = None, **_) -> None:
+    def end_schema(self, context: str = None, **_) -> str:
         self._add_type(self.schema)
         base_prefix = self.default_prefix()
 
@@ -159,7 +162,7 @@ class JSONLDGenerator(Generator):
             # model_context = self.schema.source_file.replace('.yaml', '.prefixes.context.jsonld')
             # context = [METAMODEL_CONTEXT_URI, f'file://./{model_context}']
             # TODO: The _visit function above alters the schema in situ
-            add_prefixes = ContextGenerator(self.original_schema, model=False, metadata=False).serialize()
+            add_prefixes = ContextGenerator(self.original_schema, model=False, emit_metadata=False).serialize()
             add_prefixes_json = loads(add_prefixes)
             context = [METAMODEL_CONTEXT_URI, add_prefixes_json["@context"]]
         elif isinstance(context, str):  # Some of the older code doesn't do multiple contexts
@@ -181,12 +184,13 @@ class JSONLDGenerator(Generator):
             if base_prefix:
                 self.schema["@context"].append({"@base": base_prefix})
         # json_obj["@id"] = self.schema.id
-        print(as_json(self.schema, indent="  "))
+        out = str(as_json(self.schema, indent="  ")) + "\n"
         self.schema = self.original_schema
+        return out
 
 
 @shared_arguments(JSONLDGenerator)
-@click.command()
+@click.command(name="jsonld")
 @click.option(
     "--context",
     multiple=True,

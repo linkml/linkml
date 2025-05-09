@@ -1,12 +1,12 @@
 ER Diagrams
-========
+===========
 
 Overview
 --------
 
 Entity-Relationship (ER) Diagrams are a graphical representation of the structure of a schema.
 
-LinkML uses the [Mermaid ER Diagram](https://mermaid.js.org/syntax/entityRelationshipDiagram.html)
+LinkML uses the `Mermaid ER Diagram <https://mermaid.js.org/syntax/entityRelationshipDiagram.html>`_
 syntax to represent ER diagrams.
 
 To run:
@@ -128,11 +128,43 @@ Generates:
     EmploymentEvent ||--|o Organization : "employed_at"
 
 
+
+Also you can include upstream entities into selected entities diagram.
+This is helpful for creating smaller, focused diagrams that display the immediate
+neighborhood of a selected class.
+
+For example this
+
+.. code:: bash
+
+   erdiagramgen  kitchen-sink.yaml -c MedicalEvent --max-hops 0 --include-upstream --exclude-attributes
+
+Generates:
+
+.. mermaid::
+
+    erDiagram
+    MedicalEvent {
+    }
+    Person {
+    }
+    DiagnosisConcept {
+    }
+    ProcedureConcept {
+    }
+
+    MedicalEvent ||--|o Place : "in location"
+    MedicalEvent ||--|o DiagnosisConcept : "diagnosis"
+    MedicalEvent ||--|o ProcedureConcept : "procedure"
+    MedicalEvent ||--|o AnyObject : "metadata"
+    Person ||--}o MedicalEvent : "has medical history"
+
+
 Limitations
 -----------
 
 * There is currently no way to directly generate PNGs/PDFs/etc from the mermaid code.
-  You can use the [mermaid live editor](https://mermaid-js.github.io/mermaid-live-editor)
+  You can use the `mermaid live editor <https://mermaid-js.github.io/mermaid-live-editor>`_
   to generate these.
 
 * The mermaid diagrams are not yet directly integrated into the documentation generated
@@ -152,7 +184,6 @@ Command Line
 
 Code
 ^^^^
-
 
 .. autoclass:: ERDiagramGenerator
     :members: serialize, serialize_classes

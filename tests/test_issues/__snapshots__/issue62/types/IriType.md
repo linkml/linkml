@@ -1,7 +1,6 @@
 
 # Type: iri type
 
-
 An IRI
 
 URI: [:IriType](https://example.com/test62/IriType)

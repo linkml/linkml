@@ -62,24 +62,18 @@ Let's deliberately introduce some bad data to make sure our validator is working
 
 bad-data.yaml:
 
-```yaml
-persons:
-  - id: ORCID:1234
-    full_name: Clark Kent
-    age: 90
-    phone: 1-800-kryptonite
-  - id: ORCID:5678
-    age: 33
+```{literalinclude} ../../examples/tutorial/tutorial03/bad-data.yaml
+:language: yaml
 ```
 
-Running the following command:
+Running the following command will result in errors printed to the console:
 
 <!-- FAIL -->
 ```bash
 linkml-validate -s personinfo.yaml bad-data.yaml
 ```
 
-Will result in:
+Output:
 
 ```text
 [ERROR] [bad-data.yaml/0] '1-800-kryptonite' does not match '^[\\d\\(\\)\\-]+$' in /persons/0/phone
@@ -92,15 +86,8 @@ Let's fix the second issue.
 
 better-data.yaml:
 
-```yaml
-persons:
-  - id: ORCID:1234
-    full_name: Clark Kent
-    age: 90
-    phone: 1-800-kryptonite
-  - id: ORCID:5678
-    full_name: Lois Lane
-    age: 33
+```{literalinclude} ../../examples/tutorial/tutorial03/better-data.yaml
+:language: yaml
 ```
 
 <!-- FAIL -->
@@ -108,7 +95,7 @@ persons:
 linkml-validate -s personinfo.yaml better-data.yaml
 ```
 
-Will result in:
+Output:
 
 ```text
 [ERROR] [better-data.yaml/0] '1-800-kryptonite' does not match '^[\\d\\(\\)\\-]+$' in /persons/0/phone
@@ -129,14 +116,15 @@ JSON-Schema - note that there are some features of LinkML not
 supported by JSON-Schema, so the current validator is not guaranteed
 to be complete.
 
-If you prefer you can use your own JSON Schema validator. First compile to jsonschema:
+If you prefer you can use your own JSON Schema validator. First compile to jsonschema. Unlike the `linkml-validate` command, the `gen-json-schema` command does not attempt to automatically infer which class in your schema to use for validation. You must either identify it in your schema by setting `tree_root: true` on one class or pass the `-t/--top-class` option to `gen-json-schema`.
 
 ```bash
-gen-json-schema personinfo.yaml > personinfo.schema.json
+gen-json-schema personinfo.yaml --top-class Container > personinfo.schema.json
 ```
 
 You can then use the `jsonschema` command that comes with the python library (any jsonschema validator will do here)
 
+<!-- Note: this will actually fail when executed because 'bad-data.json' does not exist. -->
 <!-- FAIL -->
 ```bash
 jsonschema -i bad-data.json personinfo.schema.json
@@ -160,12 +148,13 @@ The next section deals with working with RDF data.
 
 ## Further reading
 
-* [Working with Data](../data/working-with-data)
+* [Working with Data](/data/index)
 * Metamodel Specification
     * [identifier](https://w3id.org/linkml/identifier) slot
     * [required](https://w3id.org/linkml/required) slot
     * [minimum_value](https://w3id.org/linkml/minimum_value) slot
     * [maximum_value](https://w3id.org/linkml/maximum_value) slot
+    * [tree_root](https://w3id.org/linkml/tree_root) slot
 * FAQ:
     - {ref}`LinkML vs shape languages <faq/why-linkml:why should i use linkml over shex/shacl?>`
 * Generators:

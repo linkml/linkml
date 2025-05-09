@@ -12,7 +12,10 @@
                     "items": {
                         "$ref": "#/$defs/IssueTypes"
                     },
-                    "type": "array"
+                    "type": [
+                        "array",
+                        "null"
+                    ]
                 }
             },
             "required": [
@@ -43,7 +46,7 @@
         }
     },
     "$id": "http://example.org/sample/types",
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
     "additionalProperties": true,
     "metamodel_version": "1.7.0",
     "title": "types",

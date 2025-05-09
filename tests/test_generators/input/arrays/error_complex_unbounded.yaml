@@ -1,0 +1,27 @@
+id: error_complex_unbounded
+name: error_complex_unbounded
+title: error_complex_unbounded
+imports:
+  - linkml:types
+
+classes:
+  ComplexUnboundedShapeArray:
+    description: |
+      When we specify a minimum number of dimensions without a max (or setting max to False) in a complex array,
+      we should throw an error - min without a max is undefined behavior, to set unbounded we need the max to be
+      explicitly false.
+    attributes:
+      array:
+        range: integer
+        array:
+          minimum_number_dimensions: 5
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: min_card
+              minimum_cardinality: 2
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6

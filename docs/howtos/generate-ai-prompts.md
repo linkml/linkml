@@ -99,15 +99,15 @@ We can dynamically introspect what the generated models look like as JSON-schema
       "title": "Name",
       "type": "string"
     },
-...      
     "has_familial_relationships": {
       "title": "Has Familial Relationships",
       "type": "array",
       "items": {
         "$ref": "#/definitions/FamilialRelationship"
       }
-    },
-...
+    }
+  }
+}
 ```    
 
 ### Step 2: Generate a prompt from the Pydantic model

@@ -11,3 +11,4 @@ See `SchemaView notebooks <https://github.com/linkml/linkml-runtime/tree/main/no
 .. autoclass:: SchemaView
     :members:                
     :inherited-members:
+    :exclude-members: permissible_value_children

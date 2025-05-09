@@ -8,26 +8,58 @@
 
 import dataclasses
 import re
-from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
-from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
+from datetime import (
+    date,
+    datetime,
+    time
+)
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    List,
+    Optional,
+    Union
+)
 
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from rdflib import Namespace, URIRef
+from jsonasobj2 import (
+    JsonObj,
+    as_dict
+)
+from linkml_runtime.linkml_model.meta import (
+    EnumDefinition,
+    PermissibleValue,
+    PvFormulaOptions
+)
 from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.formatutils import (
+    camelcase,
+    sfx,
+    underscore
+)
+from linkml_runtime.utils.metamodelcore import (
+    bnode,
+    empty_dict,
+    empty_list
+)
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.yamlutils import (
+    YAMLRoot,
+    extended_float,
+    extended_int,
+    extended_str
+)
+from rdflib import (
+    Namespace,
+    URIRef
+)
+
 from linkml_runtime.utils.metamodelcore import Bool
 
 metamodel_version = "1.7.0"
 version = None
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 FOAF = CurieNamespace('foaf', 'http://xmlns.com/foaf/0.1/')
@@ -38,21 +70,21 @@ DEFAULT_ = SAMP
 
 # Types
 class String(str):
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "string"
     type_model_uri = SAMP.String
 
 
 class Int(int):
-    type_class_uri = XSD.integer
+    type_class_uri = XSD["integer"]
     type_class_curie = "xsd:integer"
     type_name = "int"
     type_model_uri = SAMP.Int
 
 
 class Boolean(Bool):
-    type_class_uri = XSD.boolean
+    type_class_uri = XSD["boolean"]
     type_class_curie = "xsd:boolean"
     type_name = "boolean"
     type_model_uri = SAMP.Boolean
@@ -67,26 +99,26 @@ class FriendlyPersonId(PersonId):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class Person(YAMLRoot):
     """
     A person, living or dead
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = SAMP.Person
+    class_class_uri: ClassVar[URIRef] = SAMP["Person"]
     class_class_curie: ClassVar[str] = "samp:Person"
     class_name: ClassVar[str] = "person"
     class_model_uri: ClassVar[URIRef] = SAMP.Person
 
     id: Union[str, PersonId] = None
     last_name: str = None
-    first_name: Optional[Union[str, List[str]]] = empty_list()
+    first_name: Optional[Union[str, list[str]]] = empty_list()
     age: Optional[int] = None
     living: Optional[Bool] = None
-    knows: Optional[Union[Union[str, PersonId], List[Union[str, PersonId]]]] = empty_list()
+    knows: Optional[Union[Union[str, PersonId], list[Union[str, PersonId]]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, PersonId):
@@ -114,23 +146,23 @@ class Person(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class FriendlyPerson(Person):
     """
     Any person that knows someone
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = SAMP.FriendlyPerson
+    class_class_uri: ClassVar[URIRef] = SAMP["FriendlyPerson"]
     class_class_curie: ClassVar[str] = "samp:FriendlyPerson"
     class_name: ClassVar[str] = "friendly_person"
     class_model_uri: ClassVar[URIRef] = SAMP.FriendlyPerson
 
     id: Union[str, FriendlyPersonId] = None
     last_name: str = None
-    knows: Union[Union[str, PersonId], List[Union[str, PersonId]]] = None
+    knows: Union[Union[str, PersonId], list[Union[str, PersonId]]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, FriendlyPersonId):
@@ -153,13 +185,13 @@ class FriendlyPerson(Person):
 {
    "comments": {
       "description": "Auto generated by LinkML jsonld context generator",
-      "generation_date": "2023-09-25T16:04:00",
+      "generation_date": "2025-04-25T13:40:04",
       "source": null
    },
    "@context": {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "foaf": "http://xmlns.com/foaf/0.1/",
       "samp": "http://example.org/model/",
-      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "@vocab": "http://example.org/model/",
       "age": {
          "@type": "xsd:integer",
@@ -177,13 +209,20 @@ class FriendlyPerson(Person):
          "@id": "foaf:lastName"
       },
       "living": {
-         "@type": "xsd:boolean"
+         "@type": "xsd:boolean",
+         "@id": "living"
       },
-      "@base": "http://example.org/people/"
+      "@base": "http://example.org/people/",
+      "FriendlyPerson": {
+         "@id": "FriendlyPerson"
+      },
+      "Person": {
+         "@id": "Person"
+      }
    }
 }
 
-Person(id='42', last_name='smith', first_name=['Joe', 'Bob'], age=43, living=None, knows=[])
+Person({'id': '42', 'last_name': 'smith', 'first_name': ['Joe', 'Bob'], 'age': 43})
 {
   "id": "42",
   "last_name": "smith",
@@ -194,9 +233,9 @@ Person(id='42', last_name='smith', first_name=['Joe', 'Bob'], age=43, living=Non
   "age": 43,
   "@type": "Person",
   "@context": {
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
     "foaf": "http://xmlns.com/foaf/0.1/",
     "samp": "http://example.org/model/",
-    "xsd": "http://www.w3.org/2001/XMLSchema#",
     "@vocab": "http://example.org/model/",
     "age": {
       "@type": "xsd:integer",
@@ -214,9 +253,16 @@ Person(id='42', last_name='smith', first_name=['Joe', 'Bob'], age=43, living=Non
       "@id": "foaf:lastName"
     },
     "living": {
-      "@type": "xsd:boolean"
+      "@type": "xsd:boolean",
+      "@id": "living"
     },
-    "@base": "http://example.org/people/"
+    "@base": "http://example.org/people/",
+    "FriendlyPerson": {
+      "@id": "FriendlyPerson"
+    },
+    "Person": {
+      "@id": "Person"
+    }
   }
 }
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
@@ -232,9 +278,9 @@ Person(id='42', last_name='smith', first_name=['Joe', 'Bob'], age=43, living=Non
 
 # metamodel_version: 1.7.0
 BASE <http://example.org/model/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 
 
 <String> xsd:string
@@ -264,7 +310,6 @@ PREFIX foaf: <http://xmlns.com/foaf/0.1/>
        )
     } OR @<FriendlyPerson>
 )
-
 
 
 Conforms

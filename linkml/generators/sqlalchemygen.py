@@ -3,16 +3,11 @@ import os
 from collections import defaultdict
 from dataclasses import dataclass
 from types import ModuleType
-from typing import List, Union
+from typing import Optional, Union
 
 import click
 from jinja2 import Template
-from linkml_runtime.linkml_model import (
-    Annotation,
-    ClassDefinition,
-    ClassDefinitionName,
-    SchemaDefinition,
-)
+from linkml_runtime.linkml_model import Annotation, ClassDefinition, ClassDefinitionName, SchemaDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
@@ -21,13 +16,12 @@ from sqlalchemy import Enum
 from linkml._version import __version__
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
-from linkml.generators.sqlalchemy import (
-    sqlalchemy_declarative_template_str,
-    sqlalchemy_imperative_template_str,
-)
+from linkml.generators.sqlalchemy import sqlalchemy_declarative_template_str, sqlalchemy_imperative_template_str
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.transformers.relmodel_transformer import ForeignKeyPolicy, RelationalModelTransformer
 from linkml.utils.generator import Generator, shared_arguments
+
+logger = logging.getLogger(__name__)
 
 
 class TemplateEnum(Enum):
@@ -40,7 +34,7 @@ class SQLAlchemyGenerator(Generator):
     """
     Generates SQL Alchemy classes
 
-    See also: :ref:`SQLTableGenerator`
+    See also: :class:`~linkml.generators.sqltablegen.SQLTableGenerator`
     """
 
     # ClassVars
@@ -49,7 +43,7 @@ class SQLAlchemyGenerator(Generator):
     valid_formats = ["sqla"]
     file_extension = "py"
     uses_schemaloader = False
-    template: TemplateEnum = None
+    template: Optional[TemplateEnum] = None
 
     # ObjectVars
     original_schema: Union[SchemaDefinition, str] = None
@@ -61,18 +55,15 @@ class SQLAlchemyGenerator(Generator):
 
     def generate_sqla(
         self,
-        model_path: str = None,
-        no_model_import=False,
-        template: TemplateEnum = None,
-        foreign_key_policy: ForeignKeyPolicy = None,
+        model_path: Optional[str] = None,
+        no_model_import: bool = False,
+        template: Optional[TemplateEnum] = None,
+        foreign_key_policy: Optional[ForeignKeyPolicy] = None,
         **kwargs,
     ) -> str:
         # src_sv = SchemaView(self.schema)
         # self.schema = src_sv.schema
-        if template is None:
-            template = self.template
-        if template is None:
-            template = TemplateEnum.IMPERATIVE
+        template = template or self.template or TemplateEnum.IMPERATIVE
         sqltr = RelationalModelTransformer(self.schemaview)
         if foreign_key_policy:
             sqltr.foreign_key_policy = foreign_key_policy
@@ -95,7 +86,7 @@ class SQLAlchemyGenerator(Generator):
         template_obj = Template(template_str)
         if model_path is None:
             model_path = self.schema.name
-        logging.info(f"Package for dataclasses ==  {model_path}")
+        logger.info(f"Package for dataclasses ==  {model_path}")
         backrefs = defaultdict(list)
         for m in tr_result.mappings:
             backrefs[m.source_class].append(m)
@@ -124,6 +115,7 @@ class SQLAlchemyGenerator(Generator):
             is_join_table=lambda c: any(tag for tag in c.annotations.keys() if tag == "linkml:derived_from"),
             classes=rel_schema_classes_ordered,
         )
+        logger.debug(f"# Generated code:\n{code}")
         return code
 
     def serialize(self, **kwargs) -> str:
@@ -145,6 +137,7 @@ class SQLAlchemyGenerator(Generator):
              - if compile_python_dataclasses is True then a standard datamodel is generated
 
         :param compile_python_dataclasses: (default False)
+        :param pydantic:
         :param model_path:
         :param template:
         :param kwargs:
@@ -161,7 +154,7 @@ class SQLAlchemyGenerator(Generator):
             # concatenate the python dataclasses with the sqla code
             if pydantic:
                 # mixin inheritance doesn't get along with SQLAlchemy's imperative (aka classical) mapping
-                pygen = PydanticGenerator(self.original_schema, allow_extra=True, gen_mixin_inheritance=False)
+                pygen = PydanticGenerator(self.original_schema, extra_fields="allow", gen_mixin_inheritance=False)
             else:
                 pygen = PythonGenerator(self.original_schema)
             dc_code = pygen.serialize()
@@ -171,20 +164,23 @@ class SQLAlchemyGenerator(Generator):
             code = self.generate_sqla(model_path=model_path, **kwargs)
             return compile_python(code, package_path=model_path)
 
-    def add_safe_aliases(self, schema: SchemaDefinition) -> None:
+    @staticmethod
+    def add_safe_aliases(schema: SchemaDefinition) -> None:
         for c in schema.classes.values():
             # c.alias = underscore(c.name)
             for a in c.attributes.values():
                 a.alias = underscore(a.name)
 
-    def skip(self, cls: ClassDefinition) -> bool:
+    @staticmethod
+    def skip(cls: ClassDefinition) -> bool:
         is_skip = len(cls.attributes) == 0
         if is_skip:
-            logging.error(f"SKIPPING: {cls.name}")
+            logger.error(f"SKIPPING: {cls.name}")
         return is_skip
 
     # TODO: move this
-    def order_classes_by_hierarchy(self, sv: SchemaView) -> List[ClassDefinitionName]:
+    @staticmethod
+    def order_classes_by_hierarchy(sv: SchemaView) -> list[ClassDefinitionName]:
         olist = sv.class_roots()
         unprocessed = [cn for cn in sv.all_classes() if cn not in olist]
         while len(unprocessed) > 0:
@@ -222,7 +218,7 @@ class SQLAlchemyGenerator(Generator):
     help="Emit FK declarations",
 )
 @click.version_option(__version__, "-V", "--version")
-@click.command()
+@click.command(name="sqla")
 def cli(yamlfile, declarative, generate_classes, pydantic, use_foreign_keys=True, **args):
     """Generate SQL DDL representation"""
     if pydantic:

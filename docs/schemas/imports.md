@@ -4,7 +4,7 @@ LinkML encourages modular schema development. You can split you schema into modu
 modules on the web
 
 A schema can have a list of [imports](https://w3id.org/linkml/imports) associated with it. These are specified
-as [CURIEs](curies) or local imports.
+as CURIEs or local imports.
 
 ## Importing external schemas
 
@@ -48,7 +48,7 @@ of a linkml schema, as they only have to work with one file, rather
 than implementing the full import mechanism. It can also help
 eliminate network dependencies.
 
-All [generators](../generators/) have a `--mergeimports` import that
+All [generators](/generators/index) have a `--mergeimports` import that
 will merge the imports closure. i.e. all imported definitions will be
 recursively copied into the main file.
 

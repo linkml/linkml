@@ -1,47 +1,85 @@
-import unittest
+import pytest
+from click.testing import CliRunner
 
-import click
+from linkml.generators.yumlgen import YumlGenerator, cli
 
-from linkml.generators import yumlgen
-from tests.test_scripts.environment import env
-from tests.utils.clicktestcase import ClickTestCase
-
-
-class GenYUMLTestCase(ClickTestCase):
-    testdir = "genyuml"
-    click_ep = yumlgen.cli
-    prog_name = "gen-yuml"
-    env = env
-
-    def test_help(self):
-        self.do_test("--help", "help")
-
-    def test_meta(self):
-        self.temp_file_path("meta.yuml")
-        self.do_test([], "meta.yuml")
-        self.do_test("-f yuml", "meta.yuml")
-        self.do_test("-f xsv", "meta_error", expected_error=click.exceptions.BadParameter)
-        self.do_test("-c definition", "definition.yuml")
-        self.do_test("-c definition -c element", "definition_element.yuml")
-        self.do_test("-c noclass", "definition.yuml", expected_error=ValueError)
-
-        self.do_test(["-c", "schema_definition"], "meta", is_directory=True)
-        self.do_test(["-c", "definition"], "meta1", is_directory=True)
-        self.do_test(["-c", "element"], "meta2", is_directory=True)
-
-        # Directory tests
-        for fmt in yumlgen.YumlGenerator.valid_formats:
-            if fmt != "yuml":
-                self.do_test(
-                    ["-f", fmt, "-c", "schema_definition"],
-                    "meta_" + fmt,
-                    is_directory=True,
-                )
-
-    def test_specified_diagram_name(self):
-        self.temp_file_path("specified_name.svg")
-        self.do_test(["--diagram-name", "specified_name"], "specified_name_dir", is_directory=True)
+from ..conftest import KITCHEN_SINK_PATH
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_help():
+    runner = CliRunner()
+    result = runner.invoke(cli, "--help")
+    assert "Generate a yUML representation of a LinkML model" in result.output
+
+
+@pytest.mark.parametrize(
+    "arguments,snapshot_file",
+    [
+        ([], "meta.yuml"),
+        (["-c", "Person"], "person.yuml"),
+        (["-c", "Person", "-c", "Event"], "person_event.yuml"),
+    ],
+)
+def test_metamodel(arguments, snapshot_file, snapshot):
+    runner = CliRunner()
+    result = runner.invoke(cli, arguments + [KITCHEN_SINK_PATH])
+    assert result.exit_code == 0
+    assert result.output == snapshot(f"genyuml/{snapshot_file}")
+
+
+@pytest.mark.network
+@pytest.mark.parametrize(
+    "arguments,snapshot_dir",
+    [
+        (["-c", "Person"], "meta"),
+        (["-c", "Event"], "meta1"),
+    ],
+)
+def test_metamodel_output_directory(arguments, snapshot_dir, snapshot, tmp_path):
+    runner = CliRunner()
+    result = runner.invoke(cli, arguments + ["-d", str(tmp_path), KITCHEN_SINK_PATH])
+    assert result.exit_code == 0
+    assert tmp_path == snapshot(f"genyuml/{snapshot_dir}")
+
+
+def test_invalid_classname():
+    runner = CliRunner()
+    result = runner.invoke(cli, ["-c", "noclass", KITCHEN_SINK_PATH], standalone_mode=False)
+    assert result.exit_code != 0
+    assert "noclass" in str(result.exception)
+
+
+@pytest.mark.parametrize("format", YumlGenerator.valid_formats)
+@pytest.mark.network
+def test_formats(format, tmp_path, snapshot):
+    runner = CliRunner()
+    result = runner.invoke(cli, ["-f", format, "-c", "Person", "-d", str(tmp_path), KITCHEN_SINK_PATH])
+    assert result.exit_code == 0
+    assert tmp_path == snapshot(f"genyuml/meta_{format}")
+
+
+@pytest.mark.network
+def test_specified_diagram_name(tmp_path, snapshot):
+    runner = CliRunner()
+    result = runner.invoke(cli, ["--diagram-name", "specified_name", "-d", str(tmp_path), KITCHEN_SINK_PATH])
+    assert result.exit_code == 0
+    assert tmp_path == snapshot("genyuml/specified_name_dir")
+
+
+def test_yumlgen_deprecation():
+    """Test that YumlGenerator emits a deprecation warning since
+    it has been marked for deprecation."""
+    from linkml.generators.yumlgen import YumlGenerator
+    from linkml.utils.deprecation import EMITTED
+
+    print(KITCHEN_SINK_PATH)
+
+    # clear any previously emitted warnings for this test
+    if "gen-yuml" in EMITTED:
+        EMITTED.remove("gen-yuml")
+
+    with pytest.warns(DeprecationWarning) as record:
+        YumlGenerator(KITCHEN_SINK_PATH)
+
+    assert len(record) == 1
+    assert "gen-yuml" in str(record[0].message)

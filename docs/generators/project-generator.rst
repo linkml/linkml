@@ -27,5 +27,5 @@ Code
 
                    
 .. autoclass:: ProjectGenerator
-    :members: serialize
+    :members:
 

@@ -1,0 +1,67 @@
+schema:
+  id: http://example.org/test_class_inheritance_multivalued
+  name: test_class_inheritance_multivalued
+
+  types:
+    string:
+      uri: xsd:string
+      base: str
+      description: A character string
+
+  slots:
+    id:
+      range: string
+      identifier: true
+    name:
+      range: string
+      required: true
+    hair_length:
+      range: string
+    breed:
+      range: string
+    pets:
+      range: Pet
+      multivalued: true
+      inlined: true
+    pets_as_list:
+      range: Pet
+      multivalued: true
+      inlined: true
+      inlined_as_list: true
+
+  classes:
+    Pet:
+      slots:
+        - id
+        - name
+    Cat:
+      is_a: Pet
+      slots:
+        - hair_length
+    Dog:
+      is_a: Pet
+      slots:
+        - breed
+    PetCollection:
+      tree_root: true
+      slots:
+        - pets
+        - pets_as_list
+
+data_cases:
+  - data:
+      pets:
+        "pet:1":
+          name: Finn
+          hair_length: short
+        "pet:2":
+          name: Rhubarb
+          breed: Chihuahua
+  - data:
+      pets_as_list:
+        - id: "pet:1"
+          name: Finn
+          hair_length: short
+        - id: "pet:2"
+          name: Rhubarb
+          breed: Chihuahua

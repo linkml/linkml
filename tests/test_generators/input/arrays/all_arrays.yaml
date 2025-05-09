@@ -1,0 +1,9 @@
+id: all_arrays
+name: all_arrays
+title: all_arrays
+imports:
+  - linkml:types
+  - any_shape
+  - bounded_dimensions
+  - parameterized_dimensions
+  - complex_dimensions

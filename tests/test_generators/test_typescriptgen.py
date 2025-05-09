@@ -1,7 +1,10 @@
+from unittest.mock import patch
+
+from click.testing import CliRunner
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SlotDefinition
 
-from linkml.generators.typescriptgen import TypescriptGenerator
+from linkml.generators.typescriptgen import TypescriptGenerator, cli
 from linkml.utils.schema_builder import SchemaBuilder
 
 
@@ -15,7 +18,7 @@ def test_tsgen(kitchen_sink_path):
     assert "export type OrganizationId" in tss
     assert_in("export interface Person  extends HasAliases")
     assert_in("has_familial_relationships?: FamilialRelationship[]")
-    assert_in("code_systems?: {[index: CodeSystemId]: CodeSystem }")
+    assert_in("code_systems?: CodeSystem[]")
 
 
 def test_required_slots():
@@ -26,9 +29,17 @@ def test_required_slots():
     description = SlotDefinition(name="description", multivalued=False, range="string")
     sb.add_class("Person", slots=[id, description])
     schema = sb.schema
+    tss = TypescriptGenerator(schema, gen_type_utils=True, mergeimports=True).serialize()
+    assert "id: string" in tss
+    assert "'id' in o" in tss
+    assert "description?: string" in tss
+    assert "description: o.description ?? ''" in tss
+
     tss = TypescriptGenerator(schema, mergeimports=True).serialize()
     assert "id: string" in tss
+    assert "'id' in o" not in tss
     assert "description?: string" in tss
+    assert "description: o.description ?? ''" not in tss
 
 
 def test_mutlivalued_string():
@@ -37,10 +48,20 @@ def test_mutlivalued_string():
     sb = SchemaBuilder("test")
     sb.add_defaults()
     aliases = SlotDefinition(name="aliases", multivalued=True, range="string")
-    sb.add_class("Person", slots=[aliases])
+    descriptions = SlotDefinition(name="descriptions", multivalued=True, range="string", required=True)
+    sb.add_class("Person", slots=[aliases, descriptions])
     schema = sb.schema
+    tss = TypescriptGenerator(schema, gen_type_utils=True, mergeimports=True).serialize()
+    assert "aliases?: string[]" in tss
+    assert "descriptions: string[]" in tss
+    assert "'descriptions' in o" in tss
+    assert "descriptions: o.descriptions ?? []" in tss
+
     tss = TypescriptGenerator(schema, mergeimports=True).serialize()
     assert "aliases?: string[]" in tss
+    assert "descriptions: string[]" in tss
+    assert "'descriptions' in o" not in tss
+    assert "descriptions: o.descriptions ?? []" not in tss
 
 
 def test_enums():
@@ -71,3 +92,31 @@ enums:
     assert enum["values"]["PLUS_SIGN"]["value"] == "+"
     assert enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]["value"] == "This & that, plus maybe a 🎩"
     assert enum["values"]["Ohio"]["value"] == "Ohio"
+
+
+def test_output_option(kitchen_sink_path, tmp_path):
+
+    tss = TypescriptGenerator(kitchen_sink_path, mergeimports=True)
+
+    tss.serialize(output=tmp_path / "kitchen_sink.ts")
+    assert (tmp_path / "kitchen_sink.ts").exists()
+
+
+def test_cli_print_stdout_without_output(kitchen_sink_path):
+    # assert that print is called when output is None
+
+    runner = CliRunner()
+    with patch("builtins.print") as mock_print:
+        result = runner.invoke(cli, [kitchen_sink_path])
+        assert result.exit_code == 0
+        mock_print.assert_called_once()
+
+
+def test_cli_no_print_with_output(kitchen_sink_path, tmp_path):
+    # assert that print is not called when output is set
+
+    runner = CliRunner()
+    with patch("builtins.print") as mock_print:
+        result = runner.invoke(cli, [kitchen_sink_path, "--output", tmp_path / "kitchen_sink.ts"])
+        assert result.exit_code == 0
+        mock_print.assert_not_called()

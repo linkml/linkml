@@ -1,0 +1,84 @@
+# metamodel_version: 1.7.0# version: 3.1.2id: predicate_mapping
+schema_generating: true
+description: A deprecated predicate mapping object contains the deprecated predicate
+  and an example of the rewiring that should be done to use a qualified statement
+  in its place.
+display_name: predicate mapping
+document_category: predicate mapping
+weight: 20
+fields:
+- id: mapped_predicate
+  description: The predicate that is being replaced by the fully qualified representation
+    of predicate + subject and object  qualifiers.  Only to be used in test data and
+    mapping data to help with the transition to the fully qualified predicate model.
+    Not to be used in knowledge graphs.
+  display_name: mapped predicate
+- id: subject_aspect_qualifier
+  display_name: subject aspect qualifier
+- id: subject_direction_qualifier
+  display_name: subject direction qualifier
+- id: subject_form_or_variant_qualifier
+  display_name: subject form or variant qualifier
+- id: subject_part_qualifier
+  display_name: subject part qualifier
+- id: subject_derivative_qualifier
+  display_name: subject derivative qualifier
+- id: subject_context_qualifier
+  display_name: subject context qualifier
+- id: predicate
+  description: A high-level grouping for the relationship type. AKA minimal predicate.
+    This is analogous to category for nodes.
+  display_name: predicate
+- id: qualified_predicate
+  description: "Predicate to be used in an association when subject and object qualifiers\
+    \ are present and the full reading of the statement requires a qualification to\
+    \ the predicate in use in order to refine or  increase the specificity of the\
+    \ full statement reading.  This qualifier holds a relationship to be used instead\
+    \ of that  expressed by the primary predicate, in a \u2018full statement\u2019\
+    \ reading of the association, where qualifier-based  semantics are included. \
+    \ This is necessary only in cases where the primary predicate does not work in\
+    \ a  full statement reading."
+  display_name: qualified predicate
+- id: object_aspect_qualifier
+  display_name: object aspect qualifier
+- id: object_direction_qualifier
+  display_name: object direction qualifier
+- id: object_form_or_variant_qualifier
+  display_name: object form or variant qualifier
+- id: object_part_qualifier
+  display_name: object part qualifier
+- id: object_derivative_qualifier
+  display_name: object derivative qualifier
+- id: object_context_qualifier
+  display_name: object context qualifier
+- id: causal_mechanism_qualifier
+  description: A statement qualifier representing a type of molecular control mechanism
+    through which an effect of a chemical on a gene or gene product is mediated (e.g.
+    'agonism', 'inhibition', 'allosteric modulation', 'channel blocker')
+  display_name: causal mechanism qualifier
+- id: anatomical_context_qualifier
+  description: A statement qualifier representing an anatomical location where an
+    relationship expressed in an association took place (can be a tissue, cell type,
+    or sub-cellular location).
+  display_name: anatomical context qualifier
+- id: species_context_qualifier
+  description: A statement qualifier representing a taxonomic category of species
+    in which a relationship expressed in an association took place.
+  display_name: species context qualifier
+- id: exact_match
+  description: holds between two entities that have strictly equivalent meanings,
+    with a high degree of confidence
+  display_name: exact match
+  cardinality: multi
+- id: narrow_match
+  description: a list of terms from different schemas or terminology systems that
+    have a narrower, more specific meaning. Narrower terms are typically shown as
+    children in a hierarchy or tree.
+  display_name: narrow match
+  cardinality: multi
+- id: broad_match
+  description: a list of terms from different schemas or terminology systems that
+    have a broader, more general meaning. Broader terms are typically shown as parents
+    in a hierarchy or tree.
+  display_name: broad match
+  cardinality: multi

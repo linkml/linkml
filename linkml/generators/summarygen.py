@@ -1,10 +1,9 @@
-"""Generate Summary Spreadsheets
+"""Generate Summary Spreadsheets"""
 
-"""
 import os
-import sys
 from csv import DictWriter
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from io import StringIO
 from typing import Optional
 
 import click
@@ -25,11 +24,14 @@ class SummaryGenerator(Generator):
     dirname: str = None
     classtab: Optional[DictWriter] = None
     slottab: Optional[DictWriter] = None
-    dialect: str = field(default_factory=lambda: "excel-tab")
+    dialect: str = "excel-tab"
+
+    _str_io: Optional[StringIO] = None
 
     def visit_schema(self, **_) -> None:
+        self._str_io = StringIO()
         self.classtab = DictWriter(
-            sys.stdout,
+            self._str_io,
             [
                 "Class Name",
                 "Parent Class",
@@ -78,10 +80,13 @@ class SummaryGenerator(Generator):
             }
         )
 
+    def end_schema(self, **kwargs) -> Optional[str]:
+        return self._str_io.getvalue()
+
 
 @shared_arguments(SummaryGenerator)
 @click.version_option(__version__, "-V", "--version")
-@click.command()
+@click.command(name="summary")
 def cli(yamlfile, **args):
     """Generate TSV summary files for viewing in Excel and the like"""
     print(SummaryGenerator(yamlfile, **args).serialize(**args))

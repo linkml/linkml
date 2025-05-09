@@ -3,17 +3,22 @@ Tests generation of markdown and similar documents
 
 Note that docgen replaces markdowngen
 """
+
 import logging
 import os
 from collections import Counter
+from collections.abc import Generator
 from copy import copy
-from typing import List
+from pathlib import Path
 
+import pytest
 import yaml
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.generators.docgen import DocGenerator
+
+logger = logging.getLogger(__name__)
 
 
 def assert_mdfile_does_not_contain(*args, **kwargs) -> None:
@@ -24,7 +29,7 @@ def assert_mdfile_contains(
     filename,
     text,
     after: str = None,
-    followed_by: List[str] = None,
+    followed_by: list[str] = None,
     invert=False,
 ) -> None:
     found = False
@@ -47,14 +52,14 @@ def assert_mdfile_contains(
                             todo = todo[1:]
                     if len(todo) > 0:
                         if not invert:
-                            logging.error(f"Did not find: {todo}")
+                            logger.error(f"Did not find: {todo}")
                         assert invert
                     else:
                         return
             if after is not None and after in line:
                 is_after = True
     if not found and not invert:
-        logging.error(f"Failed to find {text} in {filename}")
+        logger.error(f"Failed to find {text} in {filename}")
     if invert:
         assert not found
     else:
@@ -65,6 +70,14 @@ def test_latex_generation(kitchen_sink_path, tmp_path):
     """Tests minimal latex generation"""
     gen = DocGenerator(kitchen_sink_path, mergeimports=True, no_types_dir=True, format="latex")
     gen.serialize(directory=str(tmp_path))
+
+
+def test_docgen_includes(kitchen_sink_path, input_path, tmp_path):
+    """Tests basic document generator functionality"""
+    deprecated_specification = str(input_path("deprecation.yaml"))
+    gen = DocGenerator(kitchen_sink_path, mergeimports=True, no_types_dir=True, include=deprecated_specification)
+    gen.serialize(directory=str(tmp_path))
+    assert_mdfile_contains(tmp_path / "index.md", "C1", after="## Classes")
 
 
 def test_docgen(kitchen_sink_path, input_path, tmp_path):
@@ -264,18 +277,18 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
     )
     assert_mdfile_contains(
         tmp_path / "FamilialRelationship.md",
-        ("| [related_to](related_to.md) | 1..1 <br/> [Person](Person.md) |  | " "[Relationship](Relationship.md) |"),
+        ("| [related_to](related_to.md) | 1 <br/> [Person](Person.md) |  | [Relationship](Relationship.md) |"),
         after="## Slots",
     )
     # test inheritance column
     assert_mdfile_contains(
         tmp_path / "Person.md",
-        "| [id](id.md) | 1..1 <br/> [String](String.md) |  | direct |",
+        "| [id](id.md) | 1 <br/> [String](String.md) |  | direct |",
         after="## Slots",
     )
     assert_mdfile_contains(
         tmp_path / "Person.md",
-        ("| [aliases](aliases.md) | 0..* <br/> [String](String.md) |  | [HasAliases](HasAliases.md) |"),
+        ("| [aliases](aliases.md) | * <br/> [String](String.md) |  | [HasAliases](HasAliases.md) |"),
         after="## Slots",
     )
     # Examples
@@ -295,13 +308,260 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
         after="## Properties",
     )
 
+    # test that slots with ranges modified using any_of have union/cup
+    # separated ranges
+    assert_mdfile_contains(tmp_path / "EmploymentEvent.md", "[CordialnessEnum](CordialnessEnum.md)", after="## Slots")
+    assert_mdfile_contains(tmp_path / "EmploymentEvent.md", "&nbsp;or&nbsp;<br />", after="## Slots")
+    assert_mdfile_contains(
+        tmp_path / "EmploymentEvent.md", "[EmploymentEventType](EmploymentEventType.md)", after="## Slots"
+    )
+
     # checks correctness of the YAML representation of source schema
-    person_source = gen.yaml(gen.schemaview.get_class("Person"))
+    person_source = gen.yaml(gen.schemaview.induced_class("Person"))
     person_dict = yaml.load(person_source, Loader=yaml.Loader)
     # consider the species name slot
     # species name has the Person class repeated multiple times in domain_of
-    domain_of_species_name = person_dict["slot_usage"]["species name"]["domain_of"]
+    domain_of_species_name = person_dict["attributes"]["species name"]["domain_of"]
     assert len(set(domain_of_species_name)) == len(domain_of_species_name)
+
+
+SPACER = " " * 4
+NO_DESC = "no_description"
+SINGLE_LINE = "single_line"
+MULTI_LINE = "multi_line"
+MULTI_LINE_WS = "multi_line_preserve_whitespace"
+
+UC_NAMES = {
+    NO_DESC: "NoDescription",
+    SINGLE_LINE: "SingleLine",
+    MULTI_LINE: "MultiLine",
+    MULTI_LINE_WS: "MultiLinePreserveWhitespace",
+}
+
+DESCRIPTIONS = {
+    SINGLE_LINE: ["A single line description is easy!"],
+    MULTI_LINE: [
+        "Why restrict yourself to a single line",
+        "",
+        f"{SPACER}when there are so many",
+        "",
+        f"{SPACER}{SPACER}other lines available for your description?",
+    ],
+    MULTI_LINE_WS: [
+        "Multi Line Madness is a bit like",
+        "",
+        f"{SPACER}Multi Level Marketing",
+        f"{SPACER}{SPACER}(at least initially)",
+        "",
+        f"{SPACER}but involves more lines",
+        "",
+        "",
+        "and a lot more madness",
+    ],
+}
+
+DESCRIPTIONS_MD = {
+    SINGLE_LINE: "<br>".join(DESCRIPTIONS[SINGLE_LINE]),
+    MULTI_LINE: "<br>".join([line.strip() for line in DESCRIPTIONS[MULTI_LINE] if len(line)]),
+    MULTI_LINE_WS: "<br>".join(DESCRIPTIONS[MULTI_LINE_WS]),
+}
+
+
+def generate_multiline_chunk(entity: str, indent: int = 2) -> str:
+    std_indent = " " * 2
+    indent_str = " " * indent
+    MULTI_LINE_CHUNK = [
+        f"{entity}_no_description:",
+        f"{entity}_single_line:",
+        f"{std_indent}description: {DESCRIPTIONS[SINGLE_LINE][0]}",
+        f"{entity}_multi_line:",
+        f"{std_indent}description:",
+        *[f"{std_indent}{std_indent}{line}" for line in DESCRIPTIONS[MULTI_LINE]],
+        f"{entity}_multi_line_preserve_whitespace:",
+        f"{std_indent}description: |",
+        *[f"{std_indent}{std_indent}{line}" for line in DESCRIPTIONS[MULTI_LINE_WS]],
+    ]
+
+    return "".join([f"{indent_str}{line}\n" for line in MULTI_LINE_CHUNK])
+
+
+@pytest.fixture()
+def multi_line_description_test_schema() -> str:
+    """Generate a schema with elements that have a variety of descriptions.
+
+    Four different descriptions are used:
+    - "no_description": as expected
+    - "single_line": a single line description
+    - "multi_line": a multi-line description without whitespace preserved
+    - "multi_line_preserve_whitespace": a multi-line description where whitespace is preserved
+      (i.e. the description tag is written as `description: |` in the yaml)
+
+    The following schema elements are generated by adding the element name to the description type:
+    - slot
+    - class
+    - type
+    - enum
+    - permissible value in an enum
+    - subset
+
+    e.g. slot_no_description, slot_single_line, slot_multi_line, slot_multi_line_preserve_whitespace, etc.
+
+    :return: schema as a string
+    :rtype: str
+    """
+    return (
+        """id: unit_test
+name: unit_test
+
+prefixes:
+  ex: http://example.org/
+  linkml: https://w3id.org/linkml/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+"""
+        + "\nslots:\n"
+        + generate_multiline_chunk("slot")
+        + "\nclasses:\n"
+        + generate_multiline_chunk("class")
+        # give one of the classes some slots to test out the class index page
+        + "    slots:\n"
+        + "".join(f"        - slot_{desc_type}\n" for desc_type in UC_NAMES)
+        + "\ntypes:\n"
+        + generate_multiline_chunk("type")
+        + "\nenums:\n"
+        + generate_multiline_chunk("enum")
+        # add a populated enum where the values have descriptions
+        + "  populated_enum:\n"
+        + "    permissible_values:\n"
+        + generate_multiline_chunk("pv", 6)
+        + "\nsubsets:\n"
+        + generate_multiline_chunk("subset")
+    )
+
+
+@pytest.mark.parametrize("truncate_descriptions", [True, False])
+@pytest.mark.parametrize("hierarchical_class_view", [True, False])
+def test_docgen_multiline_everything(
+    tmp_path: Generator[Path, None, None],
+    multi_line_description_test_schema: str,
+    hierarchical_class_view: bool,
+    truncate_descriptions: bool,
+) -> None:
+    """Tests that single and multi-line descriptions are rendered correctly with truncation enabled and disabled.
+
+    :param tmp_path: temp dir for doc gen output
+    :type tmp_path: Generator[Path, None, None]
+    :param multi_line_description_test_schema: schema with lots of descriptions
+    :type multi_line_description_test_schema: str
+    :param hierarchical_class_view: whether or not hierarchical class view is enabled
+    :type hierarchical_class_view: bool
+    :param truncate_descriptions: whether or not description truncation is enabled
+    :type truncate_descriptions: bool
+    """
+    gen = DocGenerator(
+        multi_line_description_test_schema,
+        hierarchical_class_view=hierarchical_class_view,
+        truncate_descriptions=truncate_descriptions,
+        mergeimports=False,
+    )
+    gen.serialize(directory=str(tmp_path))
+
+    # index.md
+    index_file = tmp_path / "index.md"
+    with index_file.open() as fh:
+        file_contents = fh.read()
+
+    # slot with no description
+    assert f"| [slot_{NO_DESC}](slot_{NO_DESC}.md) |  |\n" in file_contents
+
+    # slots with descriptions
+    for desc_type in DESCRIPTIONS:
+        component = f"slot_{desc_type}"
+        # expected output if truncate_descriptions is true
+        short_desc = DESCRIPTIONS[desc_type][0]
+        # expected if false
+        long_desc = DESCRIPTIONS_MD[desc_type]
+        if not truncate_descriptions:
+            assert f"| [{component}]({component}.md) | {long_desc} |\n" in file_contents
+            if desc_type in {MULTI_LINE, MULTI_LINE_WS}:
+                assert f"| [{component}]({component}.md) | {short_desc} |\n" not in file_contents
+        else:
+            assert f"| [{component}]({component}.md) | {short_desc} |\n" in file_contents
+            if desc_type in {MULTI_LINE, MULTI_LINE_WS}:
+                assert f"| [{component}]({component}.md) | {long_desc} |\n" not in file_contents
+
+    for element_type in ["Class", "Enum", "Type", "Subset"]:
+        for desc_type in UC_NAMES:
+            component = f"{element_type}{UC_NAMES[desc_type]}"
+            if desc_type in {MULTI_LINE, MULTI_LINE_WS}:
+                # expected output if truncate_descriptions is true
+                long_desc = DESCRIPTIONS_MD[desc_type]
+                # expected if false
+                short_desc = DESCRIPTIONS[desc_type][0]
+                if not truncate_descriptions:
+                    assert f"| [{component}]({component}.md) | {long_desc} |\n" in file_contents
+                    assert f"| [{component}]({component}.md) | {short_desc} |\n" not in file_contents
+                else:
+                    assert f"| [{component}]({component}.md) | {short_desc} |\n" in file_contents
+                    assert f"| [{component}]({component}.md) | {long_desc} |\n" not in file_contents
+            elif desc_type == SINGLE_LINE:
+                assert f"| [{component}]({component}.md) | {DESCRIPTIONS_MD[SINGLE_LINE]} |\n" in file_contents
+            else:  # no description
+                f"| [{component}]({component}.md) |  |\n" in file_contents
+
+    # check that the slot pages have the class description truncated (if applicable)
+    # can use any of the slot pages for this
+    slot_file = tmp_path / f"slot_{MULTI_LINE_WS}.md"
+    with slot_file.open() as fh:
+        slot_file_contents = fh.read()
+
+        # only ClassMultiLinePreserveWhitespace will show up (the only class that has slots)
+        class_name = f"Class{UC_NAMES[MULTI_LINE_WS]}"
+        description = DESCRIPTIONS[MULTI_LINE_WS][0] if truncate_descriptions else DESCRIPTIONS_MD[MULTI_LINE_WS]
+        assert (
+            "| Name | Description | Modifies Slot |\n"
+            + "| --- | --- | --- |\n"
+            + f"| [{class_name}]({class_name}.md) | {description} |  no  |\n"
+        ) in slot_file_contents
+
+    # check the table in the populated class file, ClassMultiLinePreserveWhitespace.md
+    class_file = tmp_path / f"Class{UC_NAMES[MULTI_LINE_WS]}.md"
+    with class_file.open() as fh:
+        class_file_contents = fh.read()
+
+        for slot in UC_NAMES:
+            description = ""
+            if slot != NO_DESC:
+                description = DESCRIPTIONS.get(slot)[0] if truncate_descriptions else DESCRIPTIONS_MD.get(slot)
+            assert (
+                f"| [slot_{slot}](slot_{slot}.md) |"
+                # all slots are type string
+                + " 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string) "
+                + f"| {description} | direct |"
+            ) in class_file_contents
+
+    # check the permissible values table in the PopulatedEnum page
+    pe_file = tmp_path / "PopulatedEnum.md"
+    with pe_file.open() as fh:
+        pe_file_contents = fh.read()
+
+        for desc_type in DESCRIPTIONS:
+            component = f"pv_{desc_type}"
+            # expected output if truncate_descriptions is true
+            short_desc = DESCRIPTIONS[desc_type][0]
+            # expected if false
+            long_desc = DESCRIPTIONS_MD[desc_type]
+            if not truncate_descriptions:
+                assert f"| {component} | None | {long_desc} |\n" in pe_file_contents
+                if desc_type in {MULTI_LINE, MULTI_LINE_WS}:
+                    assert f"| {component} | None | {short_desc} |\n" not in pe_file_contents
+            else:
+                assert f"| {component} | None | {short_desc} |\n" in pe_file_contents
+                if desc_type in {MULTI_LINE, MULTI_LINE_WS}:
+                    assert f"| {component} | None | {long_desc} |\n" not in pe_file_contents
+        assert f"| pv_{NO_DESC} | None |  |\n" in pe_file_contents
 
 
 def test_docgen_no_mergeimports(kitchen_sink_path, tmp_path):
@@ -495,6 +755,12 @@ def test_class_hierarchy_as_tuples(kitchen_sink_path, input_path):
         (0, "Address"),
         (0, "agent"),
         (0, "AnyObject"),
+        (0, "AnyOfClasses"),
+        (0, "AnyOfEnums"),
+        (0, "AnyOfMix"),
+        (0, "EqualsString"),
+        (0, "EqualsStringIn"),
+        (0, "AnyOfSimpleType"),
         (0, "class with spaces"),
         (1, "subclass test"),
         (2, "Sub sub class 2"),
@@ -559,7 +825,7 @@ def test_fetch_slots_of_class(kitchen_sink_path, input_path):
 
     # test assertion for own attributes of a class
     actual_result = gen.get_direct_slot_names(cls)
-    expected_result = ["street", "city"]
+    expected_result = ["street", "city", "altitude"]
 
     assert expected_result == actual_result
 
@@ -608,7 +874,7 @@ def test_use_slot_uris(kitchen_sink_path, input_path, tmp_path):
     gen.serialize(directory=str(tmp_path))
 
     # this is a markdown file created from slot_uri
-    assert_mdfile_contains(tmp_path / "actedOnBehalfOf.md", "Slot: actedOnBehalfOf")
+    assert_mdfile_contains(tmp_path / "actedOnBehalfOf.md", "Slot: acted on behalf of")
 
     # check label and link of documents in inheritance tree
     # A.md
@@ -621,6 +887,26 @@ def test_use_slot_uris(kitchen_sink_path, input_path, tmp_path):
         after="[tree_slot_A](A.md)",
         # followed_by="* [tree_slot_C](C.md) [ [mixin_slot_I](mixin_slot_I.md)]",
     )
+
+
+def test_use_class_uris(kitchen_sink_path, input_path, tmp_path):
+    tdir = input_path("docgen_html_templates")
+    gen = DocGenerator(
+        kitchen_sink_path,
+        mergeimports=True,
+        no_types_dir=True,
+        template_directory=str(tdir),
+        use_class_uris=True,
+    )
+
+    gen.serialize(directory=str(tmp_path))
+
+    # this is a markdown file created from class_uri
+    assert_mdfile_contains(tmp_path / "Any.md", "Class: AnyObject")
+
+    # check that the classes table on index page has correct class names and
+    # are linked to the correct class doc pages
+    assert_mdfile_contains(tmp_path / "index.md", "[AnyObject](Any.md)")
 
 
 def test_hierarchical_class_view(kitchen_sink_path, tmp_path):
@@ -636,6 +922,30 @@ def test_hierarchical_class_view(kitchen_sink_path, tmp_path):
     assert_mdfile_contains(tmp_path / "index.md", "EmploymentEvent", after="BirthEvent")
 
     assert_mdfile_contains(tmp_path / "index.md", "MarriageEvent", after="EmploymentEvent")
+
+    # check that the URIs for classes and slots contain the element type
+    assert_mdfile_contains(
+        tmp_path / "Activity.md", "[ks:Activity](https://w3id.org/linkml/tests/kitchen_sink/Activity)"
+    )
+    assert_mdfile_contains(
+        tmp_path / "activities.md", "[ks:activities](https://w3id.org/linkml/tests/kitchen_sink/activities)"
+    )
+
+
+def test_subfolder_type_separation(kitchen_sink_path, tmp_path):
+    """Test to check if class table view on index page follows hierarchical view"""
+    gen = DocGenerator(kitchen_sink_path, mergeimports=True, subfolder_type_separation=True)
+
+    gen.serialize(directory=str(tmp_path))
+    # check that the URIs for classes and slots contain the element type
+    assert_mdfile_contains(
+        tmp_path / "classes" / "Activity.md",
+        "[ks:class/Activity](https://w3id.org/linkml/tests/kitchen_sink/class/Activity)",
+    )
+    assert_mdfile_contains(
+        tmp_path / "slots" / "activities.md",
+        "[ks:slot/activities](https://w3id.org/linkml/tests/kitchen_sink/slot/activities)",
+    )
 
 
 def test_uml_diagram_er(kitchen_sink_path, tmp_path):
@@ -669,7 +979,7 @@ def test_uml_diagram_classr(kitchen_sink_path, tmp_path):
     gen = DocGenerator(
         kitchen_sink_path,
         mergeimports=True,
-        diagram_type="uml_class_diagram",
+        diagram_type="mermaid_class_diagram",
     )
 
     gen.serialize(directory=str(tmp_path))
@@ -681,3 +991,65 @@ def test_uml_diagram_classr(kitchen_sink_path, tmp_path):
         "# Class: Person",
         followed_by=["```mermaid", "classDiagram", "Person"],
     )
+
+    gen = DocGenerator(
+        kitchen_sink_path,
+        mergeimports=True,
+        diagram_type="plantuml_class_diagram",
+    )
+
+    gen.serialize(directory=str(tmp_path))
+
+    # pick a random class documentation markdown file and check if there
+    # is a mermaid class diagram in it
+    assert_mdfile_contains(
+        tmp_path / "Person.md",
+        "# Class: Person",
+        followed_by=["```puml", "@startuml", 'class "Person" [[{A person, living or dead}]] {', "@enduml"],
+    )
+
+
+def test_derived_schema_view(kitchen_sink_path, tmp_path):
+    """Test to check if class table view on index page follows hierarchical view"""
+    test_sets = {
+        "class": "activity",
+        "slot": "used",
+        "type": "phone number type",
+        "subset": "subset X",
+        "enum": "KitchenStatus",
+    }
+
+    gen = DocGenerator(
+        kitchen_sink_path,
+        mergeimports=False,
+        hierarchical_class_view=True,
+    )
+
+    # iterators cannot see elements from derived schema when no import
+    for k, v in test_sets.items():
+        gen_iter = getattr(gen, f"all_{k}_objects")
+        assert v not in [x.name for x in list(gen_iter())]
+
+    gen = DocGenerator(
+        kitchen_sink_path,
+        mergeimports=False,
+        render_imports=False,
+        hierarchical_class_view=True,
+    )
+
+    # iterators cannot see elements from derived schema when no import
+    for k, v in test_sets.items():
+        gen_iter = getattr(gen, f"all_{k}_objects")
+        assert v not in [x.name for x in list(gen_iter())]
+
+    gen = DocGenerator(
+        kitchen_sink_path,
+        mergeimports=False,
+        render_imports=True,
+        hierarchical_class_view=True,
+    )
+
+    # iterators can see elements from derived schema when import
+    for k, v in test_sets.items():
+        gen_iter = getattr(gen, f"all_{k}_objects")
+        assert v in [x.name for x in list(gen_iter())]

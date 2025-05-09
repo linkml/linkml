@@ -74,5 +74,5 @@ Code
 ^^^^
 
                    
-.. autoclass:: ShexGenerator
+.. autoclass:: ShExGenerator
     :members: serialize

@@ -115,7 +115,7 @@ Some resources to help you:
 
 ### ProjectGen docs
 
- * [project-generator](generators/project-generator)
+ * [project-generator](/generators/project-generator)
 
 ### linkml-model-template
 

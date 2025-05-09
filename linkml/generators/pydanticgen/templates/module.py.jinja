@@ -1,0 +1,32 @@
+{{ python_imports }}
+
+metamodel_version = "{{metamodel_version}}"
+version = "{{version if version else None}}"
+
+
+{{ base_model }}
+
+{% if injected_classes %}
+    {% for c in injected_classes%}
+
+{{ c }}
+    {% endfor %}
+{% endif %}
+{% if meta %}
+linkml_meta = LinkMLMeta({{ meta | pprint | indent(width=4) }} )
+{% else %}
+linkml_meta = None
+{% endif %}
+{% if enums %}
+    {% for e in enums.values() %}
+
+{{ e }}
+    {% endfor %}
+{% endif %}
+
+{% for c in classes.values() %}
+
+{{ c }}
+{% endfor %}
+
+{% include 'footer.py.jinja' %}

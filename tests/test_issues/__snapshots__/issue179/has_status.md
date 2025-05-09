@@ -3,7 +3,6 @@
 
 
 
-
 URI: [http://example.org/sample/example1/has_status](http://example.org/sample/example1/has_status)
 
 

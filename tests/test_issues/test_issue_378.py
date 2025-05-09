@@ -44,7 +44,7 @@ def test_default_vocab():
     json_ld_text = ContextGenerator(without_default).serialize()
     json_ld = loads(json_ld_text)
     assert json_ld["@context"]["@vocab"] == "http://example.org/sssom/schema/"
-    assert json_ld["@context"]["name"]["@id"] == "http://example.org/sssom/schema/name"
+    assert json_ld["@context"]["name"]["@id"] == "name"
     json_ld_text2 = ContextGenerator(with_default).serialize()
     json_ld2 = loads(json_ld_text2)
     assert json_ld2["@context"]["@vocab"] == "https://w3id.org/sssom/"

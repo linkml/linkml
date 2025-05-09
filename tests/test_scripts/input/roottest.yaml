@@ -11,3 +11,4 @@ classes:
     tree_root: true
 
   c2:
+    deprecated: true

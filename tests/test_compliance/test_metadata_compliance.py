@@ -5,6 +5,7 @@ These typically do not include meaningful instance tests since metadata does not
 
 - TODO: license slot
 """
+
 from copy import deepcopy
 
 import pytest

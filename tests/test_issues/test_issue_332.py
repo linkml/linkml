@@ -11,6 +11,7 @@ def test_context(input_path):
         [
             "https://w3id.org/linkml/meta.context.jsonld",
             {
+                "xsd": "http://www.w3.org/2001/XMLSchema#",
                 "meta": "https://w3id.org/linkml/",
                 "test14": "https://example.com/test14/",
                 "@vocab": "https://example.com/test14/",

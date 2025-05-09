@@ -1,0 +1,28 @@
+id: https://w3id.org/a
+name: m
+title: m
+
+prefixes:
+  mdm: https://a/mdm/
+  linkml: https://w3id.org/linkml/
+  schema: http://schema.org/
+default_prefix: mdm
+default_range: string
+
+imports:
+  - linkml:types
+  - ./equipment
+
+
+classes:
+    Machine:
+      is_a: Equipment
+
+
+    Container:
+        tree_root: true
+        attributes:
+            machines:
+                multivalued: true
+                inlined_as_list: true
+                range: Machine

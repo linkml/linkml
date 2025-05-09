@@ -4,6 +4,7 @@ import logging  # noqa: F401
 # Global testing control variables
 import os
 
+from linkml import LOCAL_METAMODEL_YAML_FILE, LOCAL_MODEL_YAML_FILES, METAMODEL_NAMESPACE, NAMESPACES
 from tests.utils.test_environment import MismatchAction  # noqa: F401
 
 # ---------------------------------------------------------------
@@ -72,6 +73,17 @@ DEFAULT_MISMATCH_ACTION = eval(test_settings.get("DEFAULT_MISMATCH_ACTION", "Mis
 #  will result in local path names being recorded in jsonld files.  This should always be set to False before generating
 #  the final output
 USE_LOCAL_IMPORT_MAP = test_settings.getboolean("USE_LOCAL_IMPORT_MAP", False)
+
+# set by --with-output cli flag
+WITH_OUTPUT = False
+
+# set by --with-logical-model-transformer cli flag
+# see https://github.com/linkml/linkml/issues/2234
+WITH_LOGICAL_MODEL_TRANSFORMER = False
+
+# For separating metamodel tests from other base model tests
+LOCAL_MODEL_YAML_NO_META = [model for model in LOCAL_MODEL_YAML_FILES if model != LOCAL_METAMODEL_YAML_FILE]
+NAMESPACES_NO_META = [ns for ns in NAMESPACES if ns != METAMODEL_NAMESPACE]
 
 
 # Exception for use in script testing.  Global to prevent redefinition

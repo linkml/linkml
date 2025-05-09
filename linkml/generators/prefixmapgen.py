@@ -2,17 +2,17 @@
 Generate JSON-LD contexts
 
 """
-import csv
+
 import os
 from dataclasses import dataclass, field
-from typing import Dict, Optional, Set
+from typing import Optional, Union
 
 import click
 from jsonasobj2 import JsonObj, as_json
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.linkml_model.types import SHEX
 from linkml_runtime.utils.formatutils import camelcase
-from rdflib import XSD
+from rdflib import XSD, Namespace
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
@@ -30,11 +30,11 @@ class PrefixGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
-    emit_prefixes: Set[str] = field(default_factory=lambda: set())
+    emit_prefixes: set[str] = field(default_factory=lambda: set())
     default_ns: str = None
-    context_body: Dict = field(default_factory=lambda: dict())
-    slot_class_maps: Dict = field(default_factory=lambda: dict())
-    base: str = None
+    context_body: dict = field(default_factory=lambda: dict())
+    slot_class_maps: dict = field(default_factory=lambda: dict())
+    base: Optional[Union[str, Namespace]] = None
 
     def __post_init__(self):
         super().__post_init__()
@@ -58,9 +58,10 @@ class PrefixGenerator(Generator):
             if self.default_ns:
                 self.emit_prefixes.add(self.default_ns)
 
-    def end_schema(self, base: Optional[str] = None, output: Optional[str] = None, **_) -> None:
+    def end_schema(self, base: Optional[Union[str, Namespace]] = None, output: Optional[str] = None, **_) -> str:
         context = JsonObj()
         if base:
+            base = str(base)
             if "://" not in base:
                 self.context_body["@base"] = os.path.relpath(base, os.path.dirname(self.schema.source_file))
             else:
@@ -72,31 +73,24 @@ class PrefixGenerator(Generator):
         for k, v in self.slot_class_maps.items():
             context[k] = v
 
-        if output:
-            output_ext = output.split(".")[-1]
+        if self.format == "tsv":
+            mapping: dict = {}  # prefix to IRI mapping
+            for prefix in sorted(self.emit_prefixes):
+                mapping[prefix] = self.namespaces[prefix]
 
-            if output_ext == "tsv":
-                mapping: Dict = {}
-                for prefix in sorted(self.emit_prefixes):
-                    mapping[prefix] = self.namespaces[prefix]
+            items = []
+            for key, value in mapping.items():
+                items.append("\t".join([key, value]))
+            out = "\n".join(items)
 
-                with open(output, "w", encoding="UTF-8") as outf:
-                    writer = csv.writer(outf, delimiter="\t")
-                    for key, value in mapping.items():
-                        writer.writerow([key, value])
-            else:
-                with open(output, "w", encoding="UTF-8") as outf:
-                    outf.write(as_json(context))
         else:
-            if self.format == "tsv":
-                mapping: Dict = {}  # prefix to IRI mapping
-                for prefix in sorted(self.emit_prefixes):
-                    mapping[prefix] = self.namespaces[prefix]
+            out = str(as_json(context))
 
-                for key, value in mapping.items():
-                    print(key, value, sep="\t")
-            else:
-                print(as_json(context))
+        if output:
+            with open(output, "w", encoding="UTF-8") as outf:
+                outf.write(out)
+
+        return out
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         class_def = {}
@@ -118,7 +112,7 @@ class PrefixGenerator(Generator):
 
 
 @shared_arguments(PrefixGenerator)
-@click.command()
+@click.command(name="prefix-map")
 @click.option("--base", help="Base URI for model")
 @click.option("--output", "-o", help="Output file path")
 @click.version_option(__version__, "-V", "--version")

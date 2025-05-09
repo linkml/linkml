@@ -22,7 +22,7 @@ descriptions can include markdown
 ```yaml
   Person:
     is_a: NamedThing
-    description: :-
+    description: |-
       A human being including those that are:
          * alive
          * dead

@@ -1,0 +1,45 @@
+id,mappings,description
+activity,,a provence-generating activity
+Address,,
+agent,,a provence-generating agent
+AnyObject,,Example of unconstrained class
+AnyOfClasses,,
+AnyOfEnums,,
+AnyOfMix,,
+AnyOfSimpleType,,
+BirthEvent,,
+class_with_spaces,,
+CodeSystem,,
+Company,,
+Concept,,
+Dataset,,
+DiagnosisConcept,,
+EmploymentEvent,,
+EqualsString,,
+EqualsStringIn,,
+Event,,
+FakeClass,,
+FamilialRelationship,,
+Friend,,
+HasAliases,,
+MarriageEvent,,
+MedicalEvent,,
+Organization,,"An organization.
+
+This description
+includes newlines
+
+## Markdown headers
+
+ * and
+ * a
+ * list"
+Person,,"A person, living or dead"
+Place,,
+ProcedureConcept,,
+Relationship,,
+Sub_sub_class_2,,
+subclass_test,,
+tub_sub_class_1,,Same depth as Sub sub class 1
+WithLocation,,
+

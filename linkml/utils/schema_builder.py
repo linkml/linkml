@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Optional, Union
 
 from linkml_runtime.linkml_model import (
     ClassDefinition,
@@ -59,9 +59,9 @@ class SchemaBuilder:
 
     def add_class(
         self,
-        cls: Union[ClassDefinition, Dict, str],
-        slots: Union[Dict, List[Union[str, SlotDefinition]]] = None,
-        slot_usage: Union[Dict[str, SlotDefinition], Dict[str, Any], List[SlotDefinition]] = None,
+        cls: Union[ClassDefinition, dict, str],
+        slots: Union[dict, list[Union[str, SlotDefinition]]] = None,
+        slot_usage: Union[dict[str, SlotDefinition], dict[str, Any], list[SlotDefinition]] = None,
         replace_if_present=False,
         use_attributes=False,
         **kwargs,
@@ -101,12 +101,13 @@ class SchemaBuilder:
                     for k, v in slots.items():
                         cls.slots.append(k)
                         self.add_slot(SlotDefinition(k, **v), replace_if_present=replace_if_present)
-                for s in slots:
-                    cls.slots.append(s.name if isinstance(s, SlotDefinition) else s)
-                    if isinstance(s, str) and s in self.schema.slots:
-                        # top-level slot already exists
-                        continue
-                    self.add_slot(s, replace_if_present=replace_if_present)
+                else:
+                    for s in slots:
+                        cls.slots.append(s.name if isinstance(s, SlotDefinition) else s)
+                        if isinstance(s, str) and s in self.schema.slots:
+                            # top-level slot already exists
+                            continue
+                        self.add_slot(s, replace_if_present=replace_if_present)
             if slot_usage:
                 if isinstance(slot_usage, dict):
                     for k, v in slot_usage.items():
@@ -124,7 +125,7 @@ class SchemaBuilder:
 
     def add_slot(
         self,
-        slot: Union[SlotDefinition, Dict, str],
+        slot: Union[SlotDefinition, dict, str],
         class_name: str = None,
         replace_if_present=False,
         **kwargs,
@@ -166,7 +167,7 @@ class SchemaBuilder:
     def add_enum(
         self,
         enum_def: Union[EnumDefinition, dict, str],
-        permissible_values: List[Union[str, PermissibleValue]] = None,
+        permissible_values: list[Union[str, PermissibleValue]] = None,
         replace_if_present=False,
         **kwargs,
     ) -> "SchemaBuilder":
@@ -200,6 +201,7 @@ class SchemaBuilder:
 
         :param prefix:
         :param url:
+        :param replace_if_present:
         :return: builder
         :raises ValueError: if prefix already exists and replace_if_present=False
         """
@@ -230,7 +232,7 @@ class SchemaBuilder:
 
     def add_type(
         self,
-        type: Union[TypeDefinition, Dict, str],
+        type: Union[TypeDefinition, dict, str],
         typeof: str = None,
         uri: str = None,
         replace_if_present=False,
@@ -260,7 +262,7 @@ class SchemaBuilder:
             setattr(type, k, v)
         return self
 
-    def as_dict(self) -> Dict:
+    def as_dict(self) -> dict:
         """
         Returns the schema as a dictionary.
 

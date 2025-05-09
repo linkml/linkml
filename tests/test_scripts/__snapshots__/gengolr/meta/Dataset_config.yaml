@@ -1,0 +1,21 @@
+# metamodel_version: 1.7.0id: Dataset
+schema_generating: true
+display_name: Dataset
+document_category: Dataset
+weight: 20
+fields:
+- id: metadata
+  description: Example of a slot that has an unconstrained range
+  display_name: metadata
+- id: persons
+  display_name: dataset__persons
+  cardinality: multi
+- id: companies
+  display_name: dataset__companies
+  cardinality: multi
+- id: activities
+  display_name: dataset__activities
+  cardinality: multi
+- id: code_systems
+  display_name: dataset__code_systems
+  cardinality: multi

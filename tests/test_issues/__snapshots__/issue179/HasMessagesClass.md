@@ -3,7 +3,6 @@
 
 
 
-
 URI: [http://example.org/sample/example1/HasMessagesClass](http://example.org/sample/example1/HasMessagesClass)
 
 

@@ -1,20 +1,17 @@
 import logging
 import os
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Optional
 
 import click
 from jinja2 import Template
-from linkml_runtime.linkml_model.meta import (
-    ClassDefinition,
-    ClassDefinitionName,
-    Element,
-    SlotDefinition,
-)
+from linkml_runtime.linkml_model.meta import ClassDefinition, ClassDefinitionName, Element, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
+
+logger = logging.getLogger(__name__)
 
 type_map = {
     "str": "string",
@@ -100,7 +97,8 @@ class GolangGenerator(Generator):
         out_str = template_obj.render(gen=self, schema=self.schemaview.schema, view=self.schemaview)
         return out_str
 
-    def name(self, element: Element) -> str:
+    @staticmethod
+    def name(element: Element) -> str:
         """
         Returns the name of the element in its canonical form
 
@@ -112,7 +110,8 @@ class GolangGenerator(Generator):
             alias = element.alias
         return camelcase(alias)
 
-    def json_name(self, element: Element) -> str:
+    @staticmethod
+    def json_name(element: Element) -> str:
         """
         Returns the name of the element in its JSON (snake-case) form
 
@@ -160,7 +159,7 @@ class GolangGenerator(Generator):
             rc_name = self.name(rc)
             id_slot = self.get_identifier_or_key_slot(r)
             if slot.multivalued:
-                if not id_slot or slot.inlined:
+                if not id_slot or slot.inlined or slot.inlined_as_list:
                     if slot.inlined_as_list or not id_slot:
                         return f"[]{rc_name}"
                     else:
@@ -178,10 +177,11 @@ class GolangGenerator(Generator):
                 if t.base and t.base in type_map:
                     return type_map[t.base]
                 else:
-                    logging.warning(f"Unknown type.base: {t.name}")
+                    logger.warning(f"Unknown type.base: {t.name}")
             return "string"
 
-    def parents(self, cls: ClassDefinition) -> List[ClassDefinitionName]:
+    @staticmethod
+    def parents(cls: ClassDefinition) -> list[ClassDefinitionName]:
         if cls.is_a:
             parents = [cls.is_a]
         else:
@@ -191,7 +191,7 @@ class GolangGenerator(Generator):
 
 @shared_arguments(GolangGenerator)
 @click.version_option(__version__, "-V", "--version")
-@click.command()
+@click.command(name="golang")
 def cli(yamlfile, **args):
     """Generate Golang types
 

@@ -1,0 +1,16 @@
+# metamodel_version: 1.7.0id: FamilialRelationship
+schema_generating: true
+display_name: FamilialRelationship
+document_category: FamilialRelationship
+weight: 20
+fields:
+- id: started_at_time
+  display_name: started at time
+- id: ended_at_time
+  display_name: ended at time
+- id: cordialness
+  display_name: cordialness
+- id: type
+  display_name: FamilialRelationship_type
+- id: related_to
+  display_name: FamilialRelationship_related to

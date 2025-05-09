@@ -1,0 +1,16 @@
+class {{ name }}(BaseModel):
+    model_config = ConfigDict(
+        validate_assignment = True,
+        validate_default = True,
+        extra = "{{ extra_fields }}",
+        arbitrary_types_allowed = True,
+        use_enum_values = True,
+        strict = {{ strict }},
+    )
+{% if fields is not none %}
+    {% for field in fields %}
+    {{ field }}
+    {% endfor %}
+{% else %}
+    {{ "pass" }}
+{% endif %}

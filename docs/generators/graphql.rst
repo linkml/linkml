@@ -27,8 +27,7 @@ To run:
 Inheritance
 ^^^^^^^^^^^
 
-.. code-block:: proto
-
+::
 
     type Person implements HasAliases
       {
@@ -63,6 +62,6 @@ Code
 
 .. currentmodule:: linkml.generators.graphqlgen
                    
-.. autoclass:: GrapghlGenerator
+.. autoclass:: GraphqlGenerator
     :members: serialize
 

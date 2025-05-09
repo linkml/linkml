@@ -1,14 +1,15 @@
 import inspect
-import json
+from collections.abc import Iterable
 from copy import deepcopy
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, Iterable, Union
+from typing import Any, Union
 
 import jsonschema
 import yaml
 from jsonschema.exceptions import best_match
+from jsonschema.protocols import Validator
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SchemaDefinition
@@ -29,17 +30,18 @@ class LinterProblem:
 
 
 @lru_cache
-def get_named_config(name: str) -> Dict[str, Any]:
+def get_named_config(name: str) -> dict[str, Any]:
     config_path = str(Path(__file__).parent / f"config/{name}.yaml")
     with open(config_path) as config_file:
         return yaml.safe_load(config_file)
 
 
 @lru_cache
-def get_metamodel_validator() -> jsonschema.Validator:
+def get_metamodel_validator() -> Validator:
     meta_json_gen = JsonSchemaGenerator(LOCAL_METAMODEL_YAML_FILE, not_closed=False)
-    meta_json_schema = json.loads(meta_json_gen.serialize())
-    validator = jsonschema.Draft7Validator(meta_json_schema)
+    meta_json_schema = meta_json_gen.generate()
+    validator_cls = jsonschema.validators.validator_for(meta_json_schema, default=jsonschema.Draft7Validator)
+    validator = validator_cls(meta_json_schema, format_checker=validator_cls.FORMAT_CHECKER)
     return validator
 
 
@@ -66,7 +68,7 @@ def _format_path(path):
 
 
 class Linter:
-    def __init__(self, config: Dict[str, Any] = {}) -> None:
+    def __init__(self, config: dict[str, Any] = {}) -> None:
         default_config = deepcopy(get_named_config("default"))
         merged_config = config
         if config.get("extends") == ExtendableConfigs.recommended.text:
@@ -85,7 +87,8 @@ class Linter:
             ]
         )
 
-    def validate_schema(self, schema_path: str):
+    @staticmethod
+    def validate_schema(schema_path: str):
         with open(schema_path) as schema_file:
             schema = yaml.safe_load(schema_file)
 

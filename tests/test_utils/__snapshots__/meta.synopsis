@@ -1,0 +1,127 @@
+
+Classes: 45
+	Referenced by: 28 classes, 234 slots, 0 types, 0 enums 
+	Root: 31
+	Leaf: 39
+	Standalone: 44
+	Declared mixin: 7
+	Undeclared mixin: 1
+		enum_expression
+	Abstract: 5
+
+Slots: 269
+	Referenced by: 41 classes, 63 slots, 0 types, 0 enums 
+	Root: 206
+	Leaf: 241
+	Standalone: 272
+	Declared mixin: 0
+	Undeclared mixin: 0
+	Abstract: 8
+	* Unowned slots: disjoint_with, inapplicable, inlined_as_simple_dict, owned_by, publisher, relational_logical_characteristic, rules, structured_imports, union_of
+	Not in domain: 14
+		slot.name: slot.domain
+		---------  -----------
+		"bindings": "element"
+		"children_are_mutually_disjoint": "definition"
+		"disjoint_with": "definition"
+		"inapplicable": "slot_definition"
+		"inlined_as_simple_dict": "slot_definition"
+		"owned_by": "element"
+		"pattern": "definition"
+		"publisher": "element"
+		"relational_logical_characteristic": "slot_definition"
+		"rules": "class_definition"
+		"slot_names_unique": "definition"
+		"structured_imports": "schema_definition"
+		"structured_pattern": "definition"
+		"union_of": "element"
+	Domain unspecified: 56
+	Ranges:
+		Type:
+			boolean: 41
+			datetime: 4
+			integer: 9
+			ncname: 7
+			string: 55
+			uri: 4
+			uriorcurie: 38
+		Class:
+			AnyValue: 1
+			Anything: 4
+			UnitOfMeasure: 1
+			alt_description: 1
+			annotation: 1
+			anonymous_class_expression: 9
+			anonymous_enum_expression: 2
+			anonymous_slot_expression: 6
+			anonymous_type_expression: 4
+			array_expression: 1
+			class_definition: 8
+			class_rule: 2
+			definition: 5
+			dimension_expression: 1
+			element: 2
+			enum_binding: 1
+			enum_definition: 3
+			enum_expression: 1
+			example: 1
+			expression: 6
+			extension: 1
+			import_expression: 1
+			local_name: 1
+			match_query: 1
+			path_expression: 6
+			pattern_expression: 1
+			permissible_value: 3
+			prefix: 1
+			reachability_query: 1
+			setting: 2
+			slot_definition: 18
+			structured_alias: 1
+			subset_definition: 2
+			type_definition: 5
+			type_mapping: 1
+			unique_key: 1
+		Unknown:
+			alias_predicate_enum: 1
+			obligation_level_enum: 1
+			presence_enum: 1
+			pv_formula_options: 1
+			relational_role_enum: 1
+
+Types: 19
+	Referenced by: 0 classes, 158 slots, 0 types, 0 enums 
+	Bases:
+		Bool:
+			boolean
+		Curie:
+			curie
+		Decimal:
+			decimal
+		ElementIdentifier:
+			objectidentifier
+		NCName:
+			ncname
+		NodeIdentifier:
+			nodeidentifier
+		URI:
+			uri
+		URIorCURIE:
+			uriorcurie
+		XSDDate:
+			date
+		XSDDateTime:
+			datetime
+		XSDTime:
+			time
+		float:
+			double
+			float
+		int:
+			integer
+		str:
+			date_or_datetime
+			jsonpath
+			jsonpointer
+			sparqlpath
+			string

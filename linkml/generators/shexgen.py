@@ -1,9 +1,9 @@
-"""Generate ShEx definition of a model
+"""Generate ShEx definition of a model"""
 
-"""
 import os
+import urllib.parse as urlparse
 from dataclasses import dataclass, field
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 import click
 from jsonasobj import as_json as as_json_1
@@ -40,9 +40,9 @@ class ShExGenerator(Generator):
 
     # ObjectVars
     shex: Schema = field(default_factory=lambda: Schema())  # ShEx Schema being generated
-    shapes: List = field(default_factory=lambda: [])
+    shapes: list = field(default_factory=lambda: [])
     shape: Optional[Shape] = None  # Current shape being defined
-    list_shapes: List[IRIREF] = field(default_factory=lambda: [])  # Shapes that have been defined as lists
+    list_shapes: list[IRIREF] = field(default_factory=lambda: [])  # Shapes that have been defined as lists
 
     def __post_init__(self):
         super().__post_init__()
@@ -53,12 +53,12 @@ class ShExGenerator(Generator):
             self.namespaces.join(self.namespaces[METAMODEL_NAMESPACE_NAME], "")
         )  # URI for the metamodel
         self.base = Namespace(self.namespaces.join(self.namespaces._base, ""))  # Base URI for what is being modeled
-        self.generate_header()
 
-    def generate_header(self):
-        print(f"# metamodel_version: {self.schema.metamodel_version}")
+    def generate_header(self) -> str:
+        out = f"# metamodel_version: {self.schema.metamodel_version}\n"
         if self.schema.version:
-            print(f"# version: {self.schema.version}")
+            out += f"# version: {self.schema.version}\n"
+        return out
 
     def visit_schema(self, **_):
         # Adjust the schema context to include the base model URI
@@ -78,6 +78,8 @@ class ShExGenerator(Generator):
             else:
                 typeof_uri = self._class_or_type_uri(typ.typeof)
                 self.shapes.append(Shape(id=model_uri, expression=typeof_uri))
+        if self.format != "json":
+            return self.generate_header()
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         self.shape = Shape()
@@ -139,25 +141,42 @@ class ShExGenerator(Generator):
             constraint.predicate = self.namespaces.uri_for(slot.slot_uri)
             constraint.min = int(bool(slot.required))
             constraint.max = 1 if not slot.multivalued else -1
-            constraint.valueExpr = self._class_or_type_uri(slot.range)
+            if slot.range in self.schema.enums:
+                # Handle permissible values from enums
+                enum = self.schema.enums[slot.range]
+                values = []
+                for value in enum.permissible_values.values():
+                    if value.meaning:
+                        values.append(self.namespaces.uri_for(value.meaning))
+                    else:
+                        value_uri = f"{self._class_or_type_uri(enum.name)}#{urlparse.quote(value.text)}"
+                        values.append(value_uri)
+                if values:
+                    node_constraint = NodeConstraint(
+                        # id=self._class_or_type_uri(slot.range),
+                        values=values,
+                    )
+                    constraint.valueExpr = node_constraint
+            else:
+                constraint.valueExpr = self._class_or_type_uri(slot.range)
 
-    def end_schema(self, output: Optional[str] = None, **_) -> None:
+    def end_schema(self, output: Optional[str] = None, **_) -> str:
         self.shex.shapes = self.shapes if self.shapes else [Shape()]
         shex = as_json_1(self.shex)
         if self.format == "rdf":
             g = Graph()
-            g.parse(data=shex, format="json-ld")
+            g.parse(data=shex, format="json-ld", version="1.1")
             g.bind("owl", OWL)
             shex = g.serialize(format="turtle")
         elif self.format == "shex":
             g = Graph()
             self.namespaces.load_graph(g)
             shex = str(ShExC(self.shex, base=sfx(self.namespaces._base), namespaces=g))
+
         if output:
             with open(output, "w", encoding="UTF-8") as outf:
                 outf.write(shex)
-        else:
-            print(shex)
+        return shex
 
     def _class_or_type_uri(
         self,
@@ -202,7 +221,7 @@ class ShExGenerator(Generator):
 
 
 @shared_arguments(ShExGenerator)
-@click.command()
+@click.command(name="shex")
 @click.option("-o", "--output", help="Output file name")
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):

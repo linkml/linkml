@@ -1,0 +1,68 @@
+id: complex_shape_array
+name: complex_shape_array
+title: complex_shape_array
+imports:
+  - linkml:types
+
+classes:
+  ComplexAnyShapeArray:
+    attributes:
+      array:
+        range: integer
+        array:
+          maximum_number_dimensions: false
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+
+  ComplexMaxShapeArray:
+    attributes:
+      array:
+        range: integer
+        array:
+          maximum_number_dimensions: 6
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: min_card
+              minimum_cardinality: 2
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6
+
+  ComplexRangeShapeArray:
+    attributes:
+      array:
+        range: integer
+        array:
+          minimum_number_dimensions: 5
+          maximum_number_dimensions: 7
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: min_card
+              minimum_cardinality: 2
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6
+
+  ComplexExactShapeArray:
+    attributes:
+      array:
+        range: integer
+        array:
+          exact_number_dimensions: 6
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: min_card
+              minimum_cardinality: 2
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6

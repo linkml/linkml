@@ -4,10 +4,14 @@ representation such as JsonSchema
 """
 
 from linkml.generators.javagen import JavaGenerator
+from linkml.generators.jsonldcontextgen import ContextGenerator
+from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
+from linkml.generators.panderagen import PanderaGenerator
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
+from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator
@@ -39,13 +43,17 @@ __all__ = [
     "yumlgen",
     "OwlSchemaGenerator",
     "PydanticGenerator",
+    "PanderaGenerator",
     "PythonGenerator",
     "JavaGenerator",
+    "ContextGenerator",
+    "JSONLDGenerator",
     "JsonSchemaGenerator",
     "ShaclGenerator",
     "ShExGenerator",
     "SQLAlchemyGenerator",
     "SQLTableGenerator",
+    "RDFGenerator",
 ]
 
 # TODO: deprecate usage of these

@@ -1,0 +1,10 @@
+# metamodel_version: 1.7.0id: subclass_test
+schema_generating: true
+display_name: subclass test
+document_category: subclass test
+weight: 20
+fields:
+- id: slot_with_space_1
+  display_name: classWithSpaces__slot_with_space_1
+- id: slot_with_space_2
+  display_name: subclassTest__slot_with_space_2

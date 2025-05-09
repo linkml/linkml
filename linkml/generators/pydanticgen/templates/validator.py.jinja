@@ -1,0 +1,12 @@
+@field_validator('{{name}}')
+    def pattern_{{name}}(cls, v):
+        pattern=re.compile(r"{{pattern}}")
+        if isinstance(v, list):
+            for element in v:
+                if isinstance(element, str) and not pattern.match(element):
+                    err_msg = f"Invalid {{name}} format: {element}"
+                    raise ValueError(err_msg)
+        elif isinstance(v, str) and not pattern.match(v):
+            err_msg = f"Invalid {{name}} format: {v}"
+            raise ValueError(err_msg)
+        return v

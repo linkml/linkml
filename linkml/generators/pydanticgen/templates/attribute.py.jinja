@@ -1,0 +1,18 @@
+{{name}}: {{ range }} = Field(default={{ field }}
+{%- if title != None %}, title="{{title}}"{% endif -%}
+{%- if description %}, description="""{{description}}"""{% endif -%}
+{%- if equals_number != None %}
+    , le={{equals_number}}, ge={{equals_number}}
+{%- else -%}
+    {%- if minimum_value != None %}, ge={{minimum_value}}{% endif -%}
+    {%- if maximum_value != None %}, le={{maximum_value}}{% endif -%}
+{%- endif -%}
+{%- if multivalued and exact_cardinality != None -%}
+    , min_length={{exact_cardinality}}, max_length={{exact_cardinality}}
+{%- elif multivalued -%}
+    {%- if minimum_cardinality != None %}, min_length={{minimum_cardinality}}{% endif -%}
+    {%- if maximum_cardinality != None %}, max_length={{maximum_cardinality}}{% endif -%}
+{%- endif -%}
+{%- if meta -%}
+    , json_schema_extra = { "linkml_meta": {{ meta | pprint | indent(width=8) }} }
+{%- endif -%})

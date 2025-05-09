@@ -1,0 +1,13 @@
+id: example
+name: array_example
+imports:
+  - linkml:types
+
+classes:
+  MyClass:
+    attributes:
+      data:
+        range: integer
+        array:
+          minimum_number_dimensions: 3
+          maximum_number_dimensions: 5

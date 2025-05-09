@@ -1,0 +1,58 @@
+id: validator_errors
+name: validator_errors
+title: validator_errors
+description:
+  Invalid array specifications to test ArrayValidator. Each array slot's name 
+  should match a validator method - see the docstrings there for explanations
+imports:
+  - linkml:types
+
+classes:
+  ErrorRiddenClass:
+    description: |
+      When we specify a minimum number of dimensions without a max (or setting max to False) in a complex array,
+      we should throw an error - min without a max is undefined behavior, to set unbounded we need the max to be
+      explicitly false.
+    attributes:
+      array_exact_dimensions:
+        range: integer
+        array:
+          exact_number_dimensions: 5
+          minimum_number_dimensions: 4
+      array_consistent_n_dimensions:
+        range: integer
+        array:
+          maximum_number_dimensions: 2
+          dimensions:
+            - alias: first
+            - alias: second
+            - alias: third
+      array_dimensions_ordinal:
+        range: integer
+        array:
+          maximum_number_dimensions: 2
+          minimum_number_dimensions: 3
+      array_explicitly_unbounded:
+        range: integer
+        array:
+          minimum_number_dimensions: 5
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: min_card
+              minimum_cardinality: 2
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6
+      dimension_errors:
+        range: integer
+        array:
+          dimensions:
+            - alias: dimension_exact_cardinality
+              exact_cardinality: 5
+              minimum_cardinality: 2
+            - alias: dimension_ordinal
+              minimum_cardinality: 3
+              maximum_cardinality: 2

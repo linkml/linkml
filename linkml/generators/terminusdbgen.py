@@ -1,12 +1,16 @@
 import json
 import os
+import warnings
 from dataclasses import dataclass
-from typing import List
 
 import click
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
-from terminusdb_client.woqlquery import WOQLQuery as WQ
+
+try:
+    from terminusdb_client.woqlquery import WOQLQuery as WQ
+except ImportError:
+    WQ = None
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
@@ -57,16 +61,20 @@ class TerminusdbGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
-    classes: List = None
-    raw_additions: List = None
+    classes: list = None
+    raw_additions: list = None
     clswq: str = None
+
+    def __post_init__(self):
+        if WQ is None:
+            warnings.warn("terminusdb_client is not a requirement of this package, please install it separately")
 
     def visit_schema(self, inline: bool = False, **kwargs) -> None:
         self.classes = []
         self.raw_additions = []
 
-    def end_schema(self, **_) -> None:
-        print(json.dumps(WQ().woql_and(*self.classes, *self.raw_additions).to_dict(), indent=2))
+    def end_schema(self, **_) -> str:
+        return json.dumps(WQ().woql_and(*self.classes, *self.raw_additions).to_dict(), indent=2)
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         self.clswq = WQ().add_class(camelcase(cls.name)).label(camelcase(cls.name)).description(be(cls.description))
@@ -128,7 +136,7 @@ class TerminusdbGenerator(Generator):
 
 @shared_arguments(TerminusdbGenerator)
 @click.version_option(__version__, "-V", "--version")
-@click.command()
+@click.command(name="terminusdb")
 def cli(yamlfile, **args):
     """Generate graphql representation of a LinkML model"""
     print(TerminusdbGenerator(yamlfile, **args).serialize(**args))

@@ -66,10 +66,8 @@ test-tutorials: $(patsubst %, test-tutorial-%, $(TUTORIALS))
 test-tutorial-%: docs/intro/tutorial%.md
 	$(RUN) python -m linkml.utils.execute_tutorial -d /tmp/tutorial $<
 
-rtd:
+docs:
 	cd docs && $(RUN) make html
-deploy-rtd:
-	cd docs && $(RUN) make deploy
 
 ################################################
 #### Commands for building the Docker image ####

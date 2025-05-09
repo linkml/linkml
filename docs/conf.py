@@ -12,13 +12,18 @@
 #
 import os
 import sys
+from operator import attrgetter
+from copy import deepcopy
+
 sys.path.insert(0, os.path.abspath('..'))
+
+from linkml.utils.deprecation import DEPRECATIONS
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'linkml'
-copyright = '2021-2023, LinkML Authors'
+copyright = '2021-2024, LinkML Authors'
 author = 'LinkML Authors'
 
 
@@ -36,10 +41,15 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
-    'myst_parser'
+    'sphinxcontrib.mermaid',
+    'sphinxcontrib.programoutput',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.intersphinx',
+    'myst_nb',
+    'sphinx_design',
+    'matplotlib.sphinxext.plot_directive',
+    'sphinx_jinja',
 ]
-
-myst_heading_anchors = 3
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -53,7 +63,7 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'README.md']
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -69,12 +79,17 @@ html_favicon = 'https://linkml.io/uploads/linkml-logo_color-no-words.png'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
+html_static_path = ['_static']
+
+html_css_files = [
+    'css/common.css', # used everywhere!
+    'css/notebooks.css', # when using myst_nb
+]
 
 
 # Options for the linkcheck builder
 linkcheck_ignore = [
-    'https://w3id.org/linkml/*',
+    # 'https://w3id.org/linkml/*',
     'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5819722',
     'https://doi.org/10.1093/database/bax105',
     'https://github.com/linkml/prefixmaps/*#*',
@@ -84,3 +99,37 @@ linkcheck_ignore = [
 
 # Options for autosectionlabel
 autosectionlabel_prefix_document = True
+
+# Suppress Warnings
+# dont add to these just to get em to go away, these are only here for a reason :)
+suppress_warnings = [
+    'autosectionlabel.*', # several documents have a pattern with repeating headers
+]
+# Napoleon
+napoleon_google_docstring = True
+napoleon_use_admonition_for_examples = True
+
+# Intersphinx
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'pydantic': ('https://docs.pydantic.dev/latest', None),
+    'jinja2': ('https://jinja.palletsprojects.com/en/latest/', None),
+    'numpydantic': ('https://numpydantic.readthedocs.io/en/latest/', None)
+}
+
+# myst-nb
+nb_render_markdown_format = 'myst'
+nb_execution_show_tb = True
+
+# myst
+myst_heading_anchors = 3
+myst_enable_extensions = [
+    "attrs_inline",
+    "attrs_block",
+    "fieldlist"
+]
+
+# Jinja
+jinja_contexts = {
+    'deprecations': {'deprecations': sorted(deepcopy(DEPRECATIONS), key=attrgetter('deprecated_in'))}
+}

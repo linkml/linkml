@@ -1,22 +1,68 @@
 """
-A model transformer that transforms a schema into logical form with inheritance remaoved.
+A model transformer that transforms a schema into logical form.
 
 Formally, this transformer generates a logical model of the schema in which inheritance
-of slots/attributes is replaced by boolean conjunctions.
+of slots/attributes is replaced by boolean conjunctions, and the final form is simplified.
 
-For example, given a slot s and two classes C and D, where C is_a D. If both C and D
-place constraints on s (for example, C may refine the range, or make more restricted
-value constraints), then an attribute is generated for C that for which the conjunction
-of constraints in both classes hold.
+For example, given a slot `s`:
 
-These logical constraints are then simplified by translating to disjunctive normal form,
-and applying simplification rules.
+```
+slots:
+  s:
+    range: integer
+    minimum_value: 1
+```
+
+Which is reused and refined by C and C (where C is_a D):
+
+```
+classes:
+  D:
+    slots:
+     - s
+    slot_usage:
+      s:
+         minimum_value: 2
+  C:
+    is_a: D
+    slot_usage:
+      s:
+        minimum_value: 3
+```
+
+The hierarchy unrolling step will create an attribute `s` for C that is the conjunction of usages for that
+class, ancestors, and the base slot:
+
+```
+s:
+    range: integer
+    all_of:
+        - minimum_value: 1
+        - minimum_value: 2
+        - minimum_value: 3
+```
+
+This is then simplified using symbolic reasoning to:
+
+```
+s:
+    range: integer
+    minimum_value: 3
+```
+
+See logictools.py for the symbolic reasoning engine.
+
+
+
 """
+
 import logging
+from collections.abc import Iterator
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Iterator, List, Union
+from typing import Any, Callable, Optional, Union
 
+from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.linkml_model import ClassDefinitionName, SchemaDefinition
 from linkml_runtime.linkml_model.meta import (
@@ -31,10 +77,13 @@ from linkml.transformers.model_transformer import ModelTransformer
 from linkml.utils import logictools
 
 HERITABLE_METASLOT = [
+    # "multivalued",
     "range",
     "range_expression",
     "minimum_value",
     "maximum_value",
+    "minimum_cardinality",
+    "maximum_cardinality",
     "pattern",
     "structured_pattern",
     "required",
@@ -62,6 +111,8 @@ DIRECT_ROLL_DOWN = ["multivalued", "key", "identifier", "designates_type"]
 HERITABLE_TYPE_METASLOT = [
     "minimum_value",
     "maximum_value",
+    # "minimum_cardinality",
+    # "maximum_cardinality",
     "pattern",
     "structured_pattern",
     "all_of",
@@ -101,7 +152,8 @@ class LogicalModelTransformer(ModelTransformer):
     >>> _ = sb.add_class("Person", slots={"age": {"range": "integer"}}, is_a="Thing")
     >>> _ = sb.add_class("Organization", slots={"category": {"range": "OrganizationType"}}, is_a="Thing")
     >>> _ = sb.add_enum("OrganizationType", ["commercial", "non-profit"])
-    >>> from linkml.transformers import LogicalModelTransformer
+    >>> _ = sb.add_defaults()
+    >>> from linkml.transformers.logical_model_transformer import LogicalModelTransformer
     >>> tr = LogicalModelTransformer()
     >>> tr.set_schema(sb.schema)
     >>> flat_schema = tr.transform()
@@ -111,8 +163,10 @@ class LogicalModelTransformer(ModelTransformer):
     attributes:
       id:
         name: id
+        range: string
       name:
         name: name
+        range: string
       age:
         name: age
         range: integer
@@ -140,6 +194,10 @@ class LogicalModelTransformer(ModelTransformer):
 
     ...
 
+    This has "compiled away" the hierarchy. The type of the values of 'entities' for Container can
+    be checked against the any_of expression, without needing to know the full class hierarchy.
+    This is useful when compiling to a framework that does not support inheritance.
+
     If you are compiling to a framework that does have inheritance, then you can specify that these are
     preserved:
 
@@ -152,8 +210,8 @@ class LogicalModelTransformer(ModelTransformer):
     attributes:
       entities:
         name: entities
-        multivalued: true
         range: Thing
+        multivalued: true
 
     ...
 
@@ -171,6 +229,9 @@ class LogicalModelTransformer(ModelTransformer):
         name: entities2
         multivalued: true
         any_of:
+        - range: Organization
+        - range: Person
+
     ...
 
     Note that defaults are always applied after reasoning. So if you set a default_range to
@@ -209,6 +270,10 @@ class LogicalModelTransformer(ModelTransformer):
     minimum_value: 40
     maximum_value: 60
 
+    Here the slot-level constraints seem to have been "overridden". In fact, LinkML is monotonic, and there
+    is no overriding. In fact the constraints have been combined as a conjunction (And), and then the resulting
+    entailed attribute has been *simplified* (age >= 40 & age >= 0 ==> age >= 40).
+
     The reasoning engine can also detect unsatisfiable constraints:
 
     >>> from linkml.transformers.logical_model_transformer import UnsatisfiableAttribute
@@ -225,6 +290,9 @@ class LogicalModelTransformer(ModelTransformer):
     Let's get rid of the problematic class:
 
     >>> del sb.schema.classes["YoungAdult"]
+
+    And try a different example - we will try and override the range of the age slot with a string:
+
     >>> _ = sb.add_class("Person2", is_a="Person", slot_usage={"age": {"range": "string"}})
     >>> tr.set_schema(sb.schema)
     >>> try:
@@ -234,8 +302,6 @@ class LogicalModelTransformer(ModelTransformer):
     <BLANKLINE>
     Attribute Person2.age is unsatisfiable
     <BLANKLINE>
-
-
 
     """
 
@@ -275,25 +341,33 @@ class LogicalModelTransformer(ModelTransformer):
     a lack of range assignment.
     """
 
-    def transform(self, tgt_schema_name: str = None, simplify=True, **kwargs) -> Any:
+    reason_over_metamodel_slots: Optional[list[str]] = None
+    """
+    If set, only reason over the specified metamodel slots.
+    """
+
+    def transform(self, tgt_schema_name: str = None, simplify=True, force_any_of=False, **kwargs) -> Any:
         """
-        Transform the schema to a logical model, translating inheritance to boolean expressions.
+        Transform the schema using logical reasoning, materializing entailed simple attributes.
 
         :param tgt_schema_name:
         :param simplify: If True (default), simplify the schema after transformation
+        :param force_any_of: If True, force the use of any_of expressions for range, even for singletons
         :return:
         """
         sv = self.schemaview
-        target_schema = deepcopy(self.source_schema)
+        target_schemaview = SchemaView(deepcopy(self.source_schema))
+        target_schemaview.merge_imports()
+        target_schema = target_schemaview.schema
         for tn, typ in target_schema.types.items():
             ancs = sv.type_ancestors(tn, reflexive=False)
-            logging.debug(f"Unrolling type {tn}, merging {len(ancs)}")
+            logger.debug(f"Unrolling type {tn}, merging {len(ancs)}")
             if ancs:
                 for type_anc in ancs:
                     self._merge_type_ancestors(target=typ, source=sv.get_type(type_anc))
         for sn, slot in target_schema.slots.items():
             ancs = sv.slot_ancestors(sn, reflexive=False)
-            logging.debug(f"Unrolling slot {sn}, merging {len(ancs)}")
+            logger.debug(f"Unrolling slot {sn}, merging {len(ancs)}")
             if ancs:
                 for slot_anc in ancs:
                     self._merge_slot_ancestors(target=slot, source=target_schema.slots[slot_anc])
@@ -306,11 +380,11 @@ class LogicalModelTransformer(ModelTransformer):
                 depth_first=False,
             )
             ancs = list(reversed(ancs))
-            logging.debug(f"Unrolling class {cn}, merging {len(ancs)}")
+            logger.debug(f"Unrolling class {cn}, merging {len(ancs)}")
             self._roll_down(target_schema, cn, ancs)
         self.apply_defaults(target_schema)
         if simplify:
-            self.simplify(target_schema)
+            self.simplify(target_schema, force_any_of=force_any_of)
         if self.tidy_slots:
             target_schema.slots = {}
         if self.tidy_inheritance:
@@ -334,13 +408,15 @@ class LogicalModelTransformer(ModelTransformer):
         self,
         target_schema: SchemaDefinition,
         target_class_name: ClassDefinitionName,
-        ancestors: List[ClassDefinitionName],
+        ancestors: list[ClassDefinitionName],
     ):
-        anc_classes = [self.schemaview.get_class(anc) for anc in ancestors]
-        attributes: Dict[SlotDefinitionName, SlotDefinition] = {}
-        for anc in anc_classes:
-            top_level_slots = [(s, target_schema.slots[s]) for s in anc.slots]
-            for slot_name, slot_expr in list(anc.attributes.items()) + list(anc.slot_usage.items()) + top_level_slots:
+        anc_classes = [self.schemaview.get_class(ancestor) for ancestor in ancestors]
+        attributes: dict[SlotDefinitionName, SlotDefinition] = {}
+        for ancestor_class in anc_classes:
+            top_level_slots = [(s, target_schema.slots[s]) for s in ancestor_class.slots]
+            for slot_name, slot_expr in (
+                list(ancestor_class.attributes.items()) + list(ancestor_class.slot_usage.items()) + top_level_slots
+            ):
                 if slot_name not in attributes:
                     attributes[slot_name] = SlotDefinition(slot_name)
                 sx = attributes[slot_name]
@@ -364,7 +440,8 @@ class LogicalModelTransformer(ModelTransformer):
         :return:
         """
         new_slot_dict = {}
-        for p in HERITABLE_METASLOT:
+        heritable_metaslots = self.reason_over_metamodel_slots or HERITABLE_METASLOT
+        for p in heritable_metaslots:
             pv = getattr(source, p)
             if pv is not None and pv != [] and pv != {} and pv is not False:
                 new_slot_dict[p] = pv
@@ -375,14 +452,15 @@ class LogicalModelTransformer(ModelTransformer):
         sv = self.schemaview
         if source.range in sv.all_types():
             typ = sv.get_type(source.range)
-            for p in set(HERITABLE_TYPE_METASLOT).intersection(HERITABLE_METASLOT):
+            for p in set(HERITABLE_TYPE_METASLOT).intersection(heritable_metaslots):
                 pv = getattr(typ, p)
                 if pv is not None and pv != [] and pv != {} and pv is not False:
                     new_slot_dict[p] = pv
         if new_slot_dict:
             target.all_of.append(AnonymousSlotExpression(**new_slot_dict))
 
-    def _merge_type_ancestors(self, target: TypeDefinition, source: TypeDefinition):
+    @staticmethod
+    def _merge_type_ancestors(target: TypeDefinition, source: TypeDefinition):
         """
         Generate all_ofs for type based on ancestors.
 
@@ -392,6 +470,9 @@ class LogicalModelTransformer(ModelTransformer):
         """
         new_slot_dict = {}
         for p in HERITABLE_TYPE_METASLOT:
+            if p in ["repr"]:
+                # not on anonymous types
+                continue
             pv = getattr(source, p)
             if pv is not None and pv != [] and pv != {} and pv is not False:
                 new_slot_dict[p] = pv
@@ -428,7 +509,7 @@ class LogicalModelTransformer(ModelTransformer):
         for sx in att.all_of + att.exactly_one_of + att.none_of + att.any_of:
             yield from self._collection_slot_expressions(sx, filter_function)
 
-    def simplify(self, target_schema: SchemaDefinition):
+    def simplify(self, target_schema: SchemaDefinition, force_any_of=False):
         for cls in target_schema.classes.values():
             for att in cls.attributes.values():
                 x = self._as_logical_expression(att)
@@ -438,9 +519,15 @@ class LogicalModelTransformer(ModelTransformer):
                 if logictools.is_contradiction(x):
                     raise UnsatisfiableAttribute(f"Attribute {cls.name}.{att.name} is unsatisfiable")
                 self._simplify_member_ofs(x)
+                if force_any_of:
+                    if not isinstance(x, logictools.Or):
+                        x = logictools.Or(x)
                 logger.debug(f"Simplified member of: {x}")
                 simplified_att = self._from_logical_expression(x)
                 for k, v in simplified_att.__dict__.items():
+                    if v is None or v is False:
+                        if k in ["multivalued"]:
+                            continue
                     setattr(att, k, v)
 
     def _simplify_member_ofs(self, expr: logictools.Expression):
@@ -457,7 +544,7 @@ class LogicalModelTransformer(ModelTransformer):
         elif isinstance(expr, logictools.Not):
             self._simplify_member_ofs(expr.operand)
 
-    def _remove_redundant(self, elements: List[str]) -> List[str]:
+    def _remove_redundant(self, elements: list[str]) -> list[str]:
         sv = self.schemaview
         redundant = set()
         if not self.preserve_class_mixins:
@@ -482,7 +569,7 @@ class LogicalModelTransformer(ModelTransformer):
                 logger.warning(f"Unknown class {x} in {elements}")
         return [x for x in elements if x not in redundant]
 
-    def _type_descendants(self, type_name: str, imports=True, reflexive=True, depth_first=True) -> List[str]:
+    def _type_descendants(self, type_name: str, imports=True, reflexive=True, depth_first=True) -> list[str]:
         # TODO: move this to schemaview
         sv = self.schemaview
         from linkml_runtime.utils.schemaview import _closure
@@ -498,7 +585,7 @@ class LogicalModelTransformer(ModelTransformer):
             depth_first=depth_first,
         )
 
-    def _enum_descendants(self, enum_name: str, imports=True, reflexive=True, depth_first=True) -> List[str]:
+    def _enum_descendants(self, enum_name: str, imports=True, reflexive=True, depth_first=True) -> list[str]:
         # TODO: move this to schemaview
         sv = self.schemaview
         from linkml_runtime.utils.schemaview import _closure
@@ -519,6 +606,10 @@ class LogicalModelTransformer(ModelTransformer):
         return logictools.Variable("value")
 
     @property
+    def _length_var(self) -> logictools.Variable:
+        return logictools.Variable("length")
+
+    @property
     def _type_var(self) -> logictools.Variable:
         return logictools.Variable("type")
 
@@ -529,10 +620,15 @@ class LogicalModelTransformer(ModelTransformer):
         exprs = []
         value_var = self._value_var
         type_var = self._type_var
+        length_var = self._length_var
         if slot_expression.minimum_value is not None:
             exprs.append(value_var >= slot_expression.minimum_value)
         if slot_expression.maximum_value is not None:
             exprs.append(value_var <= slot_expression.maximum_value)
+        if slot_expression.minimum_cardinality is not None:
+            exprs.append(length_var >= slot_expression.minimum_cardinality)
+        if slot_expression.maximum_cardinality is not None:
+            exprs.append(length_var <= slot_expression.maximum_cardinality)
         if slot_expression.pattern is not None:
             exprs.append(logictools.Term(MATCHES_PREDICATE, value_var, slot_expression.pattern))
         if slot_expression.range:
@@ -551,7 +647,7 @@ class LogicalModelTransformer(ModelTransformer):
         if slot_expression.all_of:
             exprs.append(logictools.And(*[self._as_logical_expression(subx) for subx in slot_expression.all_of]))
         if slot_expression.exactly_one_of:
-            # TODO: disjointness
+            # TODO: disjointedness
             exprs.append(logictools.Or(*[self._as_logical_expression(subx) for subx in slot_expression.exactly_one_of]))
         if slot_expression.none_of:
             exprs.append(
@@ -570,6 +666,7 @@ class LogicalModelTransformer(ModelTransformer):
                 "none_of",
                 "any_of",
             ]:
+                # already accounted for
                 continue
             v = getattr(slot_expression, p, None)
             if v is not None and v != [] and v != {}:
@@ -618,6 +715,17 @@ class LogicalModelTransformer(ModelTransformer):
                     return AnonymousSlotExpression(maximum_value=val - 1)
                 else:
                     raise ValueError(f"Unknown predicate {expr.predicate} for {var}")
+            elif var == self._length_var:
+                if expr.predicate == ">=":
+                    return AnonymousSlotExpression(minimum_cardinality=val)
+                elif expr.predicate == ">":
+                    return AnonymousSlotExpression(minimum_cardinality=val + 1)
+                elif expr.predicate == "<=":
+                    return AnonymousSlotExpression(maximum_cardinality=val)
+                elif expr.predicate == "<":
+                    return AnonymousSlotExpression(maximum_cardinality=val - 1)
+                else:
+                    raise ValueError(f"Unknown predicate {expr.predicate} for {var}")
             elif var == self._type_var:
                 if expr.predicate == "in":
                     if val == logictools.UniversalSet():
@@ -647,7 +755,7 @@ class LogicalModelTransformer(ModelTransformer):
         self,
         attribute: Union[SlotDefinition, AnonymousSlotExpression],
         root_slot: SlotDefinition = None,
-        stack: List = None,
+        stack: list = None,
     ) -> str:
         # Note: in future versions of the metamodel, multivalued may move to the expression
         if stack is None:

@@ -77,7 +77,7 @@ For this reason, the Python linkml-runtime has a SchemaView object that
 provides higher level access to LinkML schemas. SchemaView operates over a Python
 datamodel that is auto-generated from the LinkML metamodel.
 
-At this time, there are ports of SchemaView to other languages underway, but not as feature complete. 
+At this time, there are ports of SchemaView to other languages underway, but not as feature complete.
 
 Despite drawbacks, the direct access approach is a good approach if you are targeting one of the simple sub-profiles of LinkML.
 However, if you are aiming for a more powerful library, then this has a number of disadvantages.
@@ -153,6 +153,7 @@ import re
 from jsonasobj2 import JsonObj, as_dict
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
+from datetime import date, datetime, time
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
 
 from linkml_runtime.utils.slot import Slot
@@ -216,7 +217,7 @@ class MedicalEvent(Event):
 ```
 
 
-rdflib.URIRef is used to allow for introspection to retrieve the URI of any LinkML class at rumtime:
+rdflib.URIRef is used to allow for introspection to retrieve the URI of any LinkML class at runtime:
 
 ```python
 from rdflib import Namespace, URIRef
@@ -252,7 +253,7 @@ class Event(YAMLRoot):
 if your schema is modular and imports other schemas, the relevant import
 statements are added
 
-the python generator will also generate subclasses of builtin Python strings - these are useful for non-inlined references to type the reference slot: 
+the python generator will also generate subclasses of builtin Python strings - these are useful for non-inlined references to type the reference slot:
 
 ```python
 from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
@@ -357,7 +358,7 @@ This may include:
 
 ### Step 4 (optional): Jettison the bootstrap approach
 
-Now you have a core framework - perhaps not yet complete - for your target language, you may wish to jettison the original generator you wrote with Python/Jinja2 and implement this in the target language. 
+Now you have a core framework - perhaps not yet complete - for your target language, you may wish to jettison the original generator you wrote with Python/Jinja2 and implement this in the target language.
 This could have advantages such as leveraging code generation frameworks in that target language (this is the case for Java that has a rich codegen framework)
 
 At this stage you may wish to revisit some design decisions in the original generator, and make the generated code more fully featured like pythongen.

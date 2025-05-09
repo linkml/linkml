@@ -14,7 +14,7 @@ def make_and_clear_directory(dirbase: str) -> None:
     safety_file = os.path.join(dirbase, "generated")
     if os.path.exists(dirbase):
         if not os.path.exists(safety_file):
-            raise FileNotFoundError("'generated' guard file not found in {}".format(safety_file))
+            raise FileNotFoundError(f"'generated' guard file not found in {safety_file}")
         shutil.rmtree(dirbase)
     os.makedirs(dirbase)
     with open(os.path.join(dirbase, "generated"), "w") as f:
@@ -24,7 +24,7 @@ def make_and_clear_directory(dirbase: str) -> None:
 def file_text(txt_or_fname: str) -> str:
     """
     Determine whether text_or_fname is a file name or a string and, if a file name, read it
-    :param text_or_fname:
+    :param txt_or_fname:
     :return:
     """
     if len(txt_or_fname) > 4 and "\n" not in txt_or_fname:

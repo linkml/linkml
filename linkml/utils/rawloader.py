@@ -1,5 +1,6 @@
 import copy
 from datetime import datetime
+from pathlib import Path
 from typing import Optional, TextIO, Union
 from urllib.parse import urlparse
 
@@ -29,7 +30,7 @@ SchemaDefinition.MissingRequiredField = mrf
 
 
 def load_raw_schema(
-    data: Union[str, dict, TextIO],
+    data: Union[str, dict, TextIO, Path],
     source_file: Optional[str] = None,
     source_file_date: Optional[str] = None,
     source_file_size: Optional[int] = None,
@@ -57,6 +58,9 @@ def load_raw_schema(
         assert source_file is None, "source_file parameter not allowed if data is a file or URL"
         assert source_file_date is None, "source_file_date parameter not allowed if data is a file or URL"
         assert source_file_size is None, "source_file_size parameter not allowed if data is a file or URL"
+
+    if isinstance(data, Path):
+        data = str(data)
 
     # Convert the input into a valid SchemaDefinition
     if isinstance(data, (str, dict, TextIO)):

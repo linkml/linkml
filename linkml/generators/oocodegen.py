@@ -2,7 +2,7 @@ import abc
 import re
 import unicodedata
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Optional
 
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
@@ -32,8 +32,8 @@ class OODocument:
     name: SAFE_NAME
     package: PACKAGE = None
     source_schema: SchemaDefinition = None
-    classes: List["OOClass"] = field(default_factory=lambda: [])
-    imports: List[str] = field(default_factory=lambda: [])
+    classes: list["OOClass"] = field(default_factory=lambda: [])
+    imports: list[str] = field(default_factory=lambda: [])
 
 
 @dataclass
@@ -45,7 +45,7 @@ class OOField:
     name: SAFE_NAME
     range: TYPE_EXPRESSION = None
     default_value: str = None
-    annotations: List[ANNOTATION] = field(default_factory=lambda: [])
+    annotations: list[ANNOTATION] = field(default_factory=lambda: [])
     source_slot: SlotDefinition = field(default_factory=lambda: [])
 
 
@@ -61,10 +61,10 @@ class OOClass:
     is_a: Optional[SAFE_NAME] = None
     mixin: Optional[bool] = None
     abstract: Optional[bool] = None
-    mixins: List[SAFE_NAME] = field(default_factory=lambda: [])
-    fields: List[OOField] = field(default_factory=lambda: [])
-    all_fields: List[OOField] = field(default_factory=lambda: [])
-    annotations: List[ANNOTATION] = field(default_factory=lambda: [])
+    mixins: list[SAFE_NAME] = field(default_factory=lambda: [])
+    fields: list[OOField] = field(default_factory=lambda: [])
+    all_fields: list[OOField] = field(default_factory=lambda: [])
+    annotations: list[ANNOTATION] = field(default_factory=lambda: [])
     package: PACKAGE = None
     source_class: ClassDefinition = None
 
@@ -76,6 +76,7 @@ class OOCodeGenerator(Generator):
     visit_all_class_slots = False
     uses_schemaloader = False
     requires_metamodel = False
+    schemaview: SchemaView = None
 
     template_file: str = None
     """Path to template"""
@@ -84,7 +85,7 @@ class OOCodeGenerator(Generator):
 
     def __post_init__(self):
         # TODO: consider moving up a level
-        self.schemaview = SchemaView(self.schema)
+        self.schemaview: SchemaView = SchemaView(self.schema)
         super().__post_init__()
 
     @abc.abstractmethod
@@ -95,7 +96,8 @@ class OOCodeGenerator(Generator):
     def default_value_for_type(self, typ: str) -> str:
         raise NotImplementedError
 
-    def get_class_name(self, cn):
+    @staticmethod
+    def get_class_name(cn):
         return camelcase(cn)
 
     def get_slot_name(self, sn):
@@ -108,10 +110,12 @@ class OOCodeGenerator(Generator):
     def map_type(self, t: TypeDefinition, required: bool = False) -> str:
         return t.base
 
-    def make_multivalued(self, range: str) -> str:
+    @staticmethod
+    def make_multivalued(range: str) -> str:
         return f"List<{range}>"
 
-    def replace_invalid_identifier_character(self, char: str) -> str:
+    @staticmethod
+    def replace_invalid_identifier_character(char: str) -> str:
         if char.isalpha() or char.isnumeric() or char == "_":
             return char
         else:
@@ -131,7 +135,7 @@ class OOCodeGenerator(Generator):
 
             return safe_label
 
-    def generate_enums(self, all_enums: Dict[EnumDefinitionName, EnumDefinition]) -> Dict:
+    def generate_enums(self, all_enums: dict[EnumDefinitionName, EnumDefinition]) -> dict:
         # TODO: make an explicit class to represent how an enum is passed to the template
         enums = {}
         for enum_name, enum_original in all_enums.items():
@@ -141,7 +145,10 @@ class OOCodeGenerator(Generator):
                 enum["description"] = enum_original.description
 
             for pv in enum_original.permissible_values.values():
-                label = self.generate_enum_label(pv.text)
+                if pv.title:
+                    label = self.generate_enum_label(pv.title)
+                else:
+                    label = self.generate_enum_label(pv.text)
                 val = {"label": label, "value": pv.text.replace('"', '\\"')}
                 if hasattr(pv, "description"):
                     val["description"] = pv.description
@@ -154,7 +161,7 @@ class OOCodeGenerator(Generator):
 
         return enums
 
-    def create_documents(self) -> List[OODocument]:
+    def create_documents(self) -> list[OODocument]:
         """
         Currently hardcoded for java-style
         :return:

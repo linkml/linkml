@@ -1,0 +1,17 @@
+schema:
+  id: https://example.org/test
+  name: MyTestSchema
+
+  prefixes:
+    linkml: https://w3id.org/linkml/
+  imports:
+    - linkml:types
+  default_range: integer
+
+  classes:
+    MyClass:
+      attributes:
+        my_slot:
+
+json_schema:
+  title: MyTestSchema

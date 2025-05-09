@@ -1,0 +1,22 @@
+id: parameterized_dimensions_array
+name: parameterized_dimensions_array
+title: parameterized_dimensions_array
+imports:
+  - linkml:types
+
+classes:
+  ParameterizedArray:
+    attributes:
+      array:
+        range: integer
+        array:
+          dimensions:
+            - alias: min_card
+              minimum_cardinality: 2
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6

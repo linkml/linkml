@@ -2,14 +2,19 @@
 
 Tests that make use of linkml:inlined and related constructs.
 
-- TODO: dict normalization, SimpleDicts and CompactDicts
+See: `<https://linkml.io/linkml/schemas/inlining.html>`_
+
 """
+
 import pytest
 
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
+    OWL,
+    PANDERA_POLARS_CLASS,
     PYDANTIC,
     PYTHON_DATACLASSES,
+    SHACL,
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
@@ -38,6 +43,8 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
     """
     Tests behavior of inlined slots.
 
+    See: `<https://linkml.io/linkml/schemas/inlining.html>`_
+
     Inlining controls whether nested objects are inlined or referenced by id.
 
     This test performs combinatorial testing with different values of metamodel slots that
@@ -50,6 +57,10 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
     :param foreign_key: corresponds to whether the referenced entity has an identifier
     :return:
     """
+    if framework == SHACL:
+        pytest.skip("TODO: RDF has no concept of inlining")
+    if framework == PANDERA_POLARS_CLASS:
+        pytest.skip("PanderaGen inlining is not implemented")
     inlined = bool(inlined)
     inlined_as_list = bool(inlined_as_list)
     multivalued = bool(multivalued)
@@ -59,20 +70,20 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
     py_def_map = {
         (PYDANTIC, False, False, False, False): "D",
         (PYDANTIC, False, False, False, True): "str",
-        (PYDANTIC, False, False, True, False): "List[D]",
-        (PYDANTIC, False, False, True, True): "List[str]",
+        (PYDANTIC, False, False, True, False): "list[D]",
+        (PYDANTIC, False, False, True, True): "list[str]",
         (PYDANTIC, False, True, False, False): "D",  # odd but valid combo
         (PYDANTIC, False, True, False, True): "D",  # odd but valid combo
-        (PYDANTIC, False, True, True, False): "List[D]",
-        # (PYDANTIC, False, True, True, True): "List[str]", ## TODO check this one
+        (PYDANTIC, False, True, True, False): "list[D]",
+        (PYDANTIC, False, True, True, True): "list[D]",
         (PYDANTIC, True, False, False, False): "D",
         (PYDANTIC, True, False, False, True): "D",
-        (PYDANTIC, True, False, True, False): "List[D]",
-        (PYDANTIC, True, False, True, True): "Dict[str, D]",
+        (PYDANTIC, True, False, True, False): "list[D]",
+        (PYDANTIC, True, False, True, True): "dict[str, D]",  ## TODO: relax for CompactDict
         (PYDANTIC, True, True, False, False): "D",  # odd but valid combo
-        # (PYDANTIC, True, True, False, True): "str",  ## TODO check this one
-        (PYDANTIC, True, True, True, False): "List[D]",
-        (PYDANTIC, True, True, True, True): "List[D]",
+        (PYDANTIC, True, True, False, True): "D",
+        (PYDANTIC, True, True, True, False): "list[D]",
+        (PYDANTIC, True, True, True, True): "list[D]",
         (PYTHON_DATACLASSES, False, False, False, False): 'Union[dict, "D"]',
         (PYTHON_DATACLASSES, False, False, False, True): "Union[str, DId]",
         (
@@ -81,14 +92,14 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
             False,
             True,
             False,
-        ): 'Union[Union[dict, "D"], List[Union[dict, "D"]]]',
+        ): 'Union[Union[dict, "D"], list[Union[dict, "D"]]]',
         (
             PYTHON_DATACLASSES,
             False,
             False,
             True,
             True,
-        ): "Union[Union[str, DId], List[Union[str, DId]]]",
+        ): "Union[Union[str, DId], list[Union[str, DId]]]",
         (PYTHON_DATACLASSES, False, True, False, False): 'Union[dict, "D"]',  # odd but valid combo
         (PYTHON_DATACLASSES, False, True, False, True): 'Union[dict, "D"]',  # odd but valid combo
         (
@@ -97,14 +108,14 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
             True,
             True,
             False,
-        ): 'Union[Union[dict, "D"], List[Union[dict, "D"]]]',
+        ): 'Union[Union[dict, "D"], list[Union[dict, "D"]]]',
         (
             PYTHON_DATACLASSES,
             False,
             True,
             True,
             True,
-        ): 'Union[Dict[Union[str, DId], Union[dict, "D"]], List[Union[dict, "D"]]]',
+        ): 'Union[dict[Union[str, DId], Union[dict, "D"]], list[Union[dict, "D"]]]',
         (PYTHON_DATACLASSES, True, False, False, False): 'Union[dict, "D"]',
         (PYTHON_DATACLASSES, True, False, False, True): 'Union[dict, "D"]',
         (
@@ -113,14 +124,14 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
             False,
             True,
             False,
-        ): 'Union[Union[dict, "D"], List[Union[dict, "D"]]]',
+        ): 'Union[Union[dict, "D"], list[Union[dict, "D"]]]',
         (
             PYTHON_DATACLASSES,
             True,
             False,
             True,
             True,
-        ): 'Union[Dict[Union[str, DId], Union[dict, "D"]], List[Union[dict, "D"]]]',
+        ): 'Union[dict[Union[str, DId], Union[dict, "D"]], list[Union[dict, "D"]]]',
         (PYTHON_DATACLASSES, True, True, False, False): 'Union[dict, "D"]',  # odd but valid combo
         (PYTHON_DATACLASSES, True, True, False, True): 'Union[dict, "D"]',
         (
@@ -129,21 +140,24 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
             True,
             True,
             False,
-        ): 'Union[Union[dict, "D"], List[Union[dict, "D"]]]',
+        ): 'Union[Union[dict, "D"], list[Union[dict, "D"]]]',
         (
             PYTHON_DATACLASSES,
             True,
             True,
             True,
             True,
-        ): 'Union[Dict[Union[str, DId], Union[dict, "D"]], List[Union[dict, "D"]]]',
+        ): 'Union[dict[Union[str, DId], Union[dict, "D"]], list[Union[dict, "D"]]]',
     }
     tpl = (framework, inlined, inlined_as_list, multivalued, foreign_key)
     if tpl in py_def_map:
         py_def = py_def_map[tpl]
         py_def = f"Optional[{py_def}]"
     else:
+        if framework in (PYDANTIC, PYTHON_DATACLASSES):
+            raise ValueError(f"No python annotation found for condition {tpl}")
         py_def = "Optional"
+
     classes = {
         CLASS_C: {
             "attributes": {
@@ -169,11 +183,15 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
             },
         },
     }
+    prefixes = {
+        "X": "http://example.org/X/",
+    }
     schema = validated_schema(
         test_inlined,
         schema_name,
         framework,
         classes=classes,
+        prefixes=prefixes,
         core_elements=["inlined", "inlined_as_list", "multivalued", "identifier"],
     )
     implementation_status = ValidationBehavior.IMPLEMENTS
@@ -209,10 +227,6 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
             }
         }
         is_valid = entailed_inlined and not multivalued
-        if framework == JSON_SCHEMA:
-            if inlined and not inlined_as_list and multivalued and foreign_key:
-                # TODO: json-schema generation appears incorrect here
-                implementation_status = ValidationBehavior.INCOMPLETE
     elif data == "flat_list":
         inst = {
             SLOT_S1: [id_val, id_val2],
@@ -220,6 +234,8 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
         is_valid = not entailed_inlined and multivalued
         if framework == SQL_DDL_SQLITE and multivalued and foreign_key:
             # TODO: bug in SQLA for this case
+            # AttributeError: 'DId' object has no attribute '_sa_instance_state'
+            # https://github.com/linkml/linkml/issues/1160
             implementation_status = ValidationBehavior.INCOMPLETE
     elif data == "inlined_list":
         inst = {
@@ -241,8 +257,11 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
         raise AssertionError(f"Unknown data type {data}")
     if not is_valid and framework == PYTHON_DATACLASSES:
         implementation_status = ValidationBehavior.COERCES
-    if framework == SQL_DDL_SQLITE and not is_valid:
+    if framework in [SQL_DDL_SQLITE, SHACL] and not is_valid:
+        # inlining has no cognate in relational and RDF
         implementation_status = ValidationBehavior.NOT_APPLICABLE
+    if framework == PANDERA_POLARS_CLASS:
+        implementation_status = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data,
@@ -254,4 +273,125 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
         target_class=CLASS_C,
         description=f"testing data shape {data} against schema",
         exclude_rdf=not is_valid,
+    )
+
+
+BASIC_ATTRS = {SLOT_ID: {"key": True}, SLOT_S1: {"range": "string"}}
+EXTRA_ATTRS = {
+    SLOT_ID: {"key": True},
+    SLOT_S1: {"range": "string"},
+    SLOT_S2: {"range": "string"},
+}
+IMPLICIT_ATTRS = {
+    SLOT_ID: {"key": True},
+    SLOT_S1: {"range": "string"},
+    SLOT_S2: {"range": "string", "required": True},
+}
+ANNOTATED_ATTRS = {
+    SLOT_ID: {"key": True},
+    SLOT_S1: {"range": "string"},
+    SLOT_S2: {"range": "string", "annotations": {"simple_dict_value": True}},
+}
+
+
+@pytest.mark.parametrize(
+    "name,attrs,data_name,values,is_valid",
+    [
+        ("basic", BASIC_ATTRS, "t1", {"x": "y"}, True),
+        ("basic", BASIC_ATTRS, "expanded", {"x": {SLOT_ID: "x", SLOT_S1: "y"}}, True),
+        ("basic", BASIC_ATTRS, "expanded_nokey", {"x": {SLOT_S1: "y"}}, True),
+        ("basic", BASIC_ATTRS, "expanded_noval", {"x": None}, True),
+        ("basic", BASIC_ATTRS, "wrong_type", {"x": 5}, False),
+        ("basic", BASIC_ATTRS, "empty", {}, True),
+        ("extra", EXTRA_ATTRS, "t1", {"x": "y"}, False),
+        ("extra", EXTRA_ATTRS, "expanded", {"x": {SLOT_ID: "x", SLOT_S1: "y"}}, True),
+        ("extra", EXTRA_ATTRS, "empty", {}, True),
+        ("implicit", IMPLICIT_ATTRS, "t1", {"x": "y"}, True),
+        ("implicit", IMPLICIT_ATTRS, "expanded", {"x": {SLOT_ID: "x", SLOT_S2: "y"}}, True),
+        ("implicit", IMPLICIT_ATTRS, "expanded2", {"x": {SLOT_ID: "x", SLOT_S1: "z", SLOT_S2: "y"}}, True),
+        ("implicit", IMPLICIT_ATTRS, "expanded_noreqval", {"x": {}}, False),
+        ("implicit", IMPLICIT_ATTRS, "empty", {}, True),
+        ("annotated", ANNOTATED_ATTRS, "t1", {"x": "y"}, True),
+        ("annotated", ANNOTATED_ATTRS, "expanded", {"x": {SLOT_ID: "x", SLOT_S2: "y"}}, True),
+        ("annotated", ANNOTATED_ATTRS, "expanded2", {"x": {SLOT_ID: "x", SLOT_S1: "z", SLOT_S2: "y"}}, True),
+        ("annotated", ANNOTATED_ATTRS, "empty", {}, True),
+    ],
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_inlined_as_simple_dict(framework, name, attrs, data_name, values, is_valid):
+    """
+    Test inlined as simple dict.
+
+    In some cases, a multivalued slot whose range is objects can be compacted to
+    a SimpleDict, whose keys are the keys/identifiers of the object, and whose values
+    are atomic and represent the "main value" for the object.
+
+    An example of this is prefixes in the metamodel, where the value is the prefix_reference.
+
+    A SimpleDict can be used in the following scenarios:
+
+    1. The object is a tuple of two slots, the first being the key
+    2. There is exactly one required non-key slot
+    3. The main value slot is explicitly annotated
+
+    This test sets up a schema where class C is a container for inlined class D objects,
+    where the definition of class D is varied across different SimpleDict patterns.
+
+    :param framework:
+    :param name:
+    :param attrs:
+    :param data_name:
+    :param values:
+    :param is_valid:
+    :return:
+    """
+    if framework in [SQL_DDL_SQLITE]:
+        pytest.skip("TODO: SQLA do not support inlined as simple dict")
+    if framework == PYDANTIC and name != "basic":
+        pytest.skip("TODO: pydantic-based methods are permissive")
+    if name == "extra" and data_name == "t1":
+        if framework != JSON_SCHEMA:
+            pytest.skip("TODO: dataclasses-based methods are permissive")
+    if framework == PANDERA_POLARS_CLASS:
+        pytest.skip("PanderaGen does not support inlined as simplie dict")
+    if data_name == "expanded_noval" and framework != JSON_SCHEMA:
+        pytest.skip("TODO: dataclasses-based methods dislike empty values for simpledict")
+    coerced = None
+    classes = {
+        CLASS_D: {
+            "attributes": attrs,
+        },
+        CLASS_C: {
+            "attributes": {
+                SLOT_S3: {
+                    "range": CLASS_D,
+                    "multivalued": True,
+                    "inlined": True,
+                },
+            },
+        },
+    }
+    schema = validated_schema(
+        test_inlined_as_simple_dict, name, framework, classes=classes, description=name, core_elements=["inlined"]
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if data_name == "wrong_type":
+        if framework in [PYTHON_DATACLASSES, PYDANTIC]:
+            expected_behavior = ValidationBehavior.COERCES
+        elif framework in [OWL, SHACL]:
+            expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PYDANTIC and data_name.startswith("expanded"):
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    check_data(
+        schema,
+        data_name,
+        framework,
+        {SLOT_S3: values},
+        is_valid,
+        coerced=coerced,
+        expected_behavior=expected_behavior,
+        target_class=CLASS_C,
+        description=f"testing data shape {data_name} against schema {name}",
     )

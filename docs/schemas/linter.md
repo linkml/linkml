@@ -105,6 +105,8 @@ Enforce standard naming conventions: CamelCase for classes, snake_case for slots
 
 **Additional Configuration**
 * `permissible_values_upper_case`: If `true`, permissible values will be checked for UPPER_SNAKE, otherwise snake_case. Default: `false`.
+* `class_pattern`: If specified, permissible format pattern for classes can be provided either as one of the following pattern `snake`, `uppersnake`, `camel`, `uppercamel`, `kebab` or as regular expression (e.g. `"[a-z][_a-z0-9]+"` for snake case)
+* `slot_pattern`: If specified, permissible format pattern for slots can be provided in analogy to `class_pattern`.
 
 ### tree_root_class
 
@@ -134,3 +136,11 @@ If the linter does not encounter any rule violations at all it will exit with co
 If the linter encounters rule violations with `level: error` it will exit with code `2`. This will be the case regardless of whether there are also rule violations with `level: warning`.
 
 By default, if the linter encounters _only_ rule violations with `level: warning` it will exit with code `1`. This behavior can be changed with command line options. In this scenario, if the `--ignore-warnings` flag is provided the exit code will be `0`. If instead the `--max-warnings <int>` option is passed, the exit code will be `1` or `0` depending on whether the number of warning rule violations is greater than the provided number or not. If both `--ignore-warnings` and `--max-warnings` are used `--ignore-warnings` takes precedence. 
+
+## API Docs
+
+```{eval-rst}
+.. click:: linkml.linter.cli:main
+    :prog: linkml-lint
+    :commands:
+```

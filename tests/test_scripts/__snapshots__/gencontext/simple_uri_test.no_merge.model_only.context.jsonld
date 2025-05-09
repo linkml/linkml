@@ -1,0 +1,34 @@
+{
+   "@context": {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "@vocab": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/",
+      "tag": {
+         "@type": "xsd:anyURI",
+         "@id": "linkml:tag"
+      },
+      "value": {
+         "@type": "linkml:Any",
+         "@id": "linkml:value"
+      },
+      "extensions": {
+         "@type": "linkml:Extension",
+         "@id": "linkml:extensions"
+      },
+      "state": {
+         "@id": "foo:state"
+      },
+      "AnyValue": {
+         "@id": "linkml:Any"
+      },
+      "Extensible": {
+         "@id": "linkml:Extensible"
+      },
+      "Extension": {
+         "@id": "linkml:Extension"
+      },
+      "Model": {
+         "@id": "foo:model"
+      }
+   }
+}
+

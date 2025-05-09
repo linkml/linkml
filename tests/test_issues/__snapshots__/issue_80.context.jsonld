@@ -5,15 +5,20 @@
       "source": "issue_80.yaml"
    },
    "@context": {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "biolink": "https://w3id.org/biolink/vocab/",
       "ex": "http://example.org/",
       "linkml": "https://w3id.org/linkml/",
       "model": "https://w3id.org/biolink/",
       "@vocab": "https://w3id.org/biolink/vocab/",
       "age": {
-         "@type": "xsd:integer"
+         "@type": "xsd:integer",
+         "@id": "age"
       },
       "id": "@id",
+      "name": {
+         "@id": "name"
+      },
       "Person": {
          "@id": "ex:PERSON"
       }

@@ -16,4 +16,4 @@ enums:
   error7:
     description: Error -- unknown formula
     code_set: CLUE:mustard
-    pv_formula: LABEL
+    pv_formula: FOO

@@ -3414,8 +3414,8 @@ slots:
       represented in the available columns.
     title: experimental factor- other
     from_schema: https://example.com/nmdc_submission_schema
-    see_also:
-    - MIxS:experimental_factor|additional_info
+    # see_also:
+    #  - MIxS:experimental_factor|additional_info
     rank: 7
     string_serialization: '{text}'
     slot_group: MIxS Inspired
@@ -3427,8 +3427,8 @@ slots:
       by ;
     title: non-microbial biomass
     from_schema: https://example.com/nmdc_submission_schema
-    see_also:
-    - MIxS:biomass|microbial_biomass
+    # see_also:
+    # - MIxS:biomass|microbial_biomass
     rank: 8
     string_serialization: '{text};{float} {unit}'
     slot_group: MIxS Inspired
@@ -3499,8 +3499,8 @@ slots:
     comments:
     - required if "org_nitro" is provided
     from_schema: https://example.com/nmdc_submission_schema
-    see_also:
-    - MIxS:org_nitro|tot_nitro_cont_meth
+    # see_also:
+    # - MIxS:org_nitro|tot_nitro_cont_meth
     rank: 14
     string_serialization: '{PMID}|{DOI}|{URL}'
     slot_group: MIxS Inspired

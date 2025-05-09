@@ -5520,7 +5520,7 @@ classes:
   chemical role:
     is_a: attribute
     description: >-
-      	A role played by the molecular entity or part thereof within a chemical context.
+        A role played by the molecular entity or part thereof within a chemical context.
     id_prefixes:
       - CHEBI
     exact_mappings:

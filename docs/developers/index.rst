@@ -12,6 +12,7 @@ This section of the documentation is aimed primarily at Python developers who wa
    organization
    notebooks
    manipulating-schemas
+   manage-releases
    schemaview
    schemabuilder
    loaders-and-dumpers
@@ -20,4 +21,5 @@ This section of the documentation is aimed primarily at Python developers who wa
    sqlstore
    tool-developer-guide
    contributing-code
+   deprecation
 

@@ -9,10 +9,9 @@ FAQ
 
    general
    why-linkml
-   installation
    modeling
    tools
    python
    getting-help
    contributing
-   troubleshooting
+   tricky_choices

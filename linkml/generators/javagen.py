@@ -1,6 +1,6 @@
 import importlib.util
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 import click
@@ -70,6 +70,7 @@ class JavaGenerator(OOCodeGenerator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["java"]
+    file_extension = "java"
 
     # ObjectVars
     generate_records: bool = False
@@ -77,10 +78,10 @@ class JavaGenerator(OOCodeGenerator):
 
     template_file: Optional[str] = None
 
-    gen_classvars: bool = field(default_factory=lambda: True)
-    gen_slots: bool = field(default_factory=lambda: True)
-    genmeta: bool = field(default_factory=lambda: False)
-    emit_metadata: bool = field(default_factory=lambda: True)
+    gen_classvars: bool = True
+    gen_slots: bool = True
+    genmeta: bool = False
+    emit_metadata: bool = True
 
     def default_value_for_type(self, typ: str) -> str:
         return TYPE_DEFAULTS.get(typ, "null")
@@ -145,7 +146,7 @@ class JavaGenerator(OOCodeGenerator):
     help="Optional Java 17 record implementation",
 )
 @click.version_option(__version__, "-V", "--version")
-@click.command()
+@click.command(name="java")
 def cli(
     yamlfile,
     output_directory=None,

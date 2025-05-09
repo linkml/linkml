@@ -1,0 +1,30 @@
+
+# Slot: value_presence
+
+if PRESENT then a value must be present (for lists there must be at least one value). If ABSENT then a value must be absent (for lists, must be empty)
+
+URI: [linkml:value_presence](https://w3id.org/linkml/value_presence)
+
+
+## Domain and Range
+
+[SlotDefinition](SlotDefinition.md) &#8594;  <sub>0..1</sub> [presence_enum](presence_enum.md)
+
+## Parents
+
+ *  is_a: [list_value_specification_constant](list_value_specification_constant.md)
+
+## Children
+
+
+## Used by
+
+ * [AnonymousSlotExpression](AnonymousSlotExpression.md)
+ * [SlotDefinition](SlotDefinition.md)
+ * [SlotExpression](SlotExpression.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Comments:** | | if set to true this has the same effect as required=true. In contrast, required=false allows a value to be present |

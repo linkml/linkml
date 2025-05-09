@@ -1,8 +1,10 @@
 import logging
 import os
 from collections import OrderedDict
+from collections.abc import Iterator, Mapping
 from copy import deepcopy
-from typing import Dict, Iterator, List, Mapping, Optional, Set, TextIO, Tuple, Union, cast
+from pathlib import Path
+from typing import Optional, TextIO, Union, cast
 from urllib.parse import urlparse
 
 from jsonasobj2 import values
@@ -28,11 +30,13 @@ from linkml.utils.mergeutils import merge_classes, merge_schemas, merge_slots, s
 from linkml.utils.rawloader import load_raw_schema
 from linkml.utils.schemasynopsis import SchemaSynopsis
 
+lgr = logging.getLogger(__name__)
+
 
 class SchemaLoader:
     def __init__(
         self,
-        data: Union[str, TextIO, SchemaDefinition, dict],
+        data: Union[str, TextIO, SchemaDefinition, dict, Path],
         base_dir: Optional[str] = None,
         namespaces: Optional[Namespaces] = None,
         useuris: Optional[bool] = None,
@@ -56,7 +60,7 @@ class SchemaLoader:
         :param source_file_date: modification of source file
         :param source_file_size: size of source file
         """
-        self.logger = logger if logger is not None else logging.getLogger(self.__class__.__name__)
+        self.logger = logger if logger is not None else lgr
         if isinstance(data, SchemaDefinition):
             self.schema = data
         else:
@@ -68,7 +72,7 @@ class SchemaLoader:
                 source_file_size=source_file_size,
             )
         # Map from URI to source and version tuple
-        self.loaded: OrderedDict[str, Tuple[str, str]] = {
+        self.loaded: OrderedDict[str, tuple[str, str]] = {
             self.schema.id: (self.schema.source_file, self.schema.version)
         }
         self.base_dir = self._get_base_dir(base_dir)
@@ -79,7 +83,7 @@ class SchemaLoader:
         self.source_file_size = source_file_size
         self.synopsis: Optional[SchemaSynopsis] = None
         self.schema_location: Optional[str] = None
-        self.schema_defaults: Dict[str, str] = {}  # Map from schema URI to default namespace
+        self.schema_defaults: dict[str, str] = {}  # Map from schema URI to default namespace
         self.merge_modules = mergeimports
         self.emit_metadata = emit_metadata
 
@@ -118,7 +122,7 @@ class SchemaLoader:
             sname = self.importmap.get(str(sname), sname)  # It may also use URI or other forms
             import_schemadefinition = load_raw_schema(
                 sname + ".yaml",
-                base_dir=os.path.dirname(self.schema.source_file) if self.schema.source_file else None,
+                base_dir=os.path.dirname(self.schema.source_file) if self.schema.source_file else self.base_dir,
                 merge_modules=self.merge_modules,
                 emit_metadata=self.emit_metadata,
             )
@@ -175,7 +179,7 @@ class SchemaLoader:
                     # mangled names are overwritten if a schema with attributes is passed in
                     # TODO: handle this in a more graceful way
                     #  see https://github.com/linkml/linkml/issues/872
-                    logging.warning(
+                    self.logger.warning(
                         f'Class: "{cls.name}" attribute "{attribute.name}" - '
                         f"mangled name: {mangled_slot_name} already exists",
                     )
@@ -234,6 +238,9 @@ class SchemaLoader:
             ):
                 self.raise_value_error(f"slot: {slot.name} - unrecognized range ({slot.range})", slot.range)
 
+            # check constraints for usage of equals_string and equals_string_in
+            self._check_equals_string(slot)
+
         # apply to --> mixins
         for cls in self.schema.classes.values():
             for apply_to_cls in cls.apply_to:
@@ -275,7 +282,7 @@ class SchemaLoader:
                     self.raise_value_error(f"Slot {slot.name}.inverse ({slot.inverse}) is not defined")
 
         # Update slots with parental information
-        merged_slots: List[SlotDefinitionName] = []
+        merged_slots: list[SlotDefinitionName] = []
         for slot in self.schema.slots.values():
             if not slot.from_schema:
                 slot.from_schema = self.schema.id
@@ -300,12 +307,12 @@ class SchemaLoader:
                 cls.from_schema = self.schema.id
 
         # Merge class with its mixins and the like
-        merged_classes: List[ClassDefinitionName] = []
+        merged_classes: list[ClassDefinitionName] = []
         for cls in self.schema.classes.values():
             self.merge_class(cls, merged_classes)
 
         # Update types with parental information
-        merged_types: List[TypeDefinitionName] = []
+        merged_types: list[TypeDefinitionName] = []
         for typ in self.schema.types.values():
             if not typ.base and not typ.typeof:
                 self.raise_value_error(
@@ -351,14 +358,6 @@ class SchemaLoader:
                     f"slot: {slot.name} - unrecognized domain ({slot.domain})",
                     slot.domain,
                 )
-            if slot.ifabsent:
-                from linkml.utils.ifabsent_functions import isabsent_match
-
-                if isabsent_match(slot.ifabsent) is None:
-                    self.raise_value_error(
-                        f"Unrecognized ifabsent action for slot '{slot.name}': '{slot.ifabsent}'",
-                        slot.ifabsent,
-                    )
 
             # Keys and identifiers must be present
             if bool(slot.key or slot.identifier):
@@ -378,6 +377,9 @@ class SchemaLoader:
                 and slot.range not in self.schema.enums
             ):
                 self.raise_value_error(f"slot: {slot.name} - unrecognized range ({slot.range})", slot.range)
+
+            # check constraints for usage of equals_string and equals_string_in
+            self._check_equals_string(slot)
 
         # Massage classes, propagating class slots entries domain back to the target slots
         for cls in self.schema.classes.values():
@@ -465,7 +467,7 @@ class SchemaLoader:
                     )
 
         # Check for duplicate class and type names
-        def check_dups(s1: Set[ElementName], s2: Set[ElementName]) -> Tuple[List[ElementName], str]:
+        def check_dups(s1: set[ElementName], s2: set[ElementName]) -> tuple[list[ElementName], str]:
             if s1.isdisjoint(s2):
                 return [], ""
 
@@ -615,13 +617,13 @@ class SchemaLoader:
                 self.raise_value_error(f"Subset: {subset} is not defined", subset)
         return self.schema
 
-    def validate_item_names(self, typ: str, names: List[str]) -> None:
+    def validate_item_names(self, typ: str, names: list[str]) -> None:
         # TODO: add a more rigorous syntax check for item names
         for name in names:
             if ":" in name:
                 raise self.raise_value_error(f'{typ}: "{name}" - ":" not allowed in identifier', name)
 
-    def merge_enum(self, enum: EnumDefinition, merged_enums: List[EnumDefinitionName]) -> None:
+    def merge_enum(self, enum: EnumDefinition, merged_enums: list[EnumDefinitionName]) -> None:
         """
         Merge parent enumeration information into target enum
 
@@ -640,7 +642,7 @@ class SchemaLoader:
                         enum.is_a,
                     )
 
-    def merge_slot(self, slot: SlotDefinition, merged_slots: List[SlotDefinitionName]) -> None:
+    def merge_slot(self, slot: SlotDefinition, merged_slots: list[SlotDefinitionName]) -> None:
         """
         Merge parent slot information into target slot
 
@@ -672,7 +674,7 @@ class SchemaLoader:
                     self.raise_value_error(f'Slot: "{slot.name}" - unknown mixin reference: {mixin}', mixin)
             merged_slots.append(slot.name)
 
-    def merge_class(self, cls: ClassDefinition, merged_classes: List[ClassDefinitionName]) -> None:
+    def merge_class(self, cls: ClassDefinition, merged_classes: list[ClassDefinitionName]) -> None:
         """
         Merge parent class information into target class
 
@@ -691,7 +693,7 @@ class SchemaLoader:
                         cls.is_a,
                     )
             for mixin in cls.mixins:
-                # Note that apply_to has ben injected as a faux mixin so it gets covered here
+                # Note that apply_to has been injected as a faux mixin, so it gets covered here
                 if mixin in self.schema.classes:
                     self.merge_class(self.schema.classes[mixin], merged_classes)
                     merge_classes(self.schema, cls, self.schema.classes[mixin], True)
@@ -703,8 +705,8 @@ class SchemaLoader:
         Slot usages can be used to completely define slots.  Iterate over the class hierarchy finding all slot
         definitions that are introduced strictly as usages and add them to the slots component
         """
-        visited: Set[ClassDefinitionName] = set()
-        visited_usages: Set[SlotDefinitionName] = set()  # Slots that are or will be mangled
+        visited: set[ClassDefinitionName] = set()
+        visited_usages: set[SlotDefinitionName] = set()  # Slots that are or will be mangled
 
         def located_aliased_parent_slot(owning_class: ClassDefinition, usage_slot: SlotDefinition) -> bool:
             """Determine whether we are overriding an attributes style slot in the parent class
@@ -771,7 +773,7 @@ class SchemaLoader:
             if slotname in self.schema.slots:
                 base_slot = self.schema.slots[slotname]
             else:
-                logging.error(f"slot_usage for undefined slot: {slotname}")
+                self.logger.error(f"slot_usage for undefined slot: {slotname}")
                 base_slot = None
             parent_slot = self.schema.slots.get(slot_usage.is_a)
             # Follow the ancestry of the class to get the most proximal parent
@@ -838,7 +840,7 @@ class SchemaLoader:
                         if new_val:
                             setattr(new_slot, metaslot_name, new_val)
 
-    def merge_type(self, typ: TypeDefinition, merged_types: List[TypeDefinitionName]) -> None:
+    def merge_type(self, typ: TypeDefinition, merged_types: list[TypeDefinitionName]) -> None:
         """
         Merge parent type information into target type
         :param typ: target type
@@ -857,7 +859,7 @@ class SchemaLoader:
                     )
             merged_types.append(typ.name)
 
-    def schema_errors(self) -> List[str]:
+    def schema_errors(self) -> list[str]:
         return self.synopsis.errors() if self.synopsis else ["resolve() must be run before error check"]
 
     def slot_definition_for(self, slotname: SlotDefinitionName, cls: ClassDefinition) -> Optional[SlotDefinition]:
@@ -971,3 +973,24 @@ class SchemaLoader:
                 return rval
         else:
             return None
+
+    def _check_equals_string(self, slot: SlotDefinition):
+        if slot.equals_string or slot.equals_string_in:
+            # Range "string" mandatory for "equals_string" and "equals_string_in"
+            range = slot.range
+            if not range:
+                # range is not defined --> check default range
+                range = self.schema.default_range
+            if range != "string":
+                self.raise_value_error(
+                    f"slot: {slot.name} - 'equals_string' and 'equals_string_in' requires range "
+                    f"'string' and not range '{range}'",
+                    slot.range,
+                )
+            if slot.any_of:
+                # It is not allowed to use any of and equals_string or equals_string_in in one slot definition,
+                # as both are mapped to sh:in in SHACL
+                self.raise_value_error(
+                    f"slot: {slot.name} - 'equals_string'/'equals_string_in' and 'any_of' are mutually exclusive",
+                    slot.name,
+                )

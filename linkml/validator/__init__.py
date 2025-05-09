@@ -3,6 +3,7 @@ The ``linkml.validator`` package contains a new LinkML validation framework that
 than the ``linkml.validators`` package. While that package still exists, it may become deprecated
 in the future.
 """
+
 import os
 from pathlib import Path
 from typing import Any, Optional, Union
@@ -10,9 +11,7 @@ from typing import Any, Optional, Union
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.loaders import yaml_loader
 
-from linkml.validator.loaders import (
-    default_loader_for_file,
-)
+from linkml.validator.loaders import default_loader_for_file
 from linkml.validator.plugins import JsonschemaValidationPlugin
 from linkml.validator.report import ValidationReport
 from linkml.validator.validator import Validator
@@ -61,7 +60,7 @@ def validate(
         otherwise it should be a ``SchemaDefinition`` instance.
     :param target_class: Name of the class within the schema to validate
         against. If ``None``, the class will be inferred from the schema by
-        looked for a class with ``tree_root: true``. Defaults to ``None``.
+        looking for a class with ``tree_root: true``. Defaults to ``None``.
     :param strict: If ``True``, validation will stop after the first validation
         error is found, Otherwise all validation problems will be reported.
         Defaults to ``False``.
@@ -100,7 +99,7 @@ def validate_file(
         otherwise it should be a ``SchemaDefinition`` instance.
     :param target_class: Name of the class within the schema to validate
         against. If ``None``, the class will be inferred from the schema by
-        looked for a class with ``tree_root: true``. Defaults to ``None``.
+        looking for a class with ``tree_root: true``. Defaults to ``None``.
     :param strict: If ``True``, validation will stop after the first validation
         error is found, Otherwise all validation problems will be reported.
         Defaults to ``False``.

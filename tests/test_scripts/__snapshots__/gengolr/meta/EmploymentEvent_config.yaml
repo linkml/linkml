@@ -1,0 +1,19 @@
+# metamodel_version: 1.7.0id: EmploymentEvent
+schema_generating: true
+display_name: EmploymentEvent
+document_category: EmploymentEvent
+weight: 20
+fields:
+- id: started_at_time
+  display_name: started at time
+- id: ended_at_time
+  display_name: ended at time
+- id: is_current
+  display_name: is current
+- id: metadata
+  description: Example of a slot that has an unconstrained range
+  display_name: metadata
+- id: employed_at
+  display_name: employed at
+- id: type
+  display_name: EmploymentEvent_type

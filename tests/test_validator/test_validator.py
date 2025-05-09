@@ -1,4 +1,4 @@
-from typing import Iterable
+from collections.abc import Iterable
 
 import pytest
 from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition
@@ -41,6 +41,8 @@ class AcceptNothingValidationPlugin(ValidationPlugin):
 
 
 class TestDataLoader(Loader):
+    __test__ = False
+
     def __init__(self, source, how_many) -> None:
         super().__init__(source)
         self.how_many = how_many

@@ -3,7 +3,7 @@ import re
 from collections import defaultdict
 from copy import copy
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Union
+from typing import Any, Callable, Optional, Union
 
 import click
 import yaml
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 pattern = re.compile(r"(?<!^)(?=[A-Z])")
 
 
-def yaml_rewrite(obj: Any, replacements: Dict[str, Any], include_keys=True) -> Any:
+def yaml_rewrite(obj: Any, replacements: dict[str, Any], include_keys=True) -> Any:
     if isinstance(obj, YAMLRoot):
         obj2 = copy(obj)
         for k, v in vars(obj).items():
@@ -52,7 +52,7 @@ class SchemaFixer:
     Multiple methods for adding additional information to schemas
     """
 
-    history: List[str] = None
+    history: list[str] = None
 
     def add_titles(self, schema: SchemaDefinition):
         """
@@ -94,7 +94,7 @@ class SchemaFixer:
         tree_roots = [c for c in sv.all_classes().values() if c.tree_root]
         if len(tree_roots) > 0:
             if force:
-                logging.info("Forcing addition of containers")
+                logger.info("Forcing addition of containers")
             else:
                 raise ValueError(f"Schema already has containers: {tree_roots}")
         container = ClassDefinition(class_name, tree_root=True)
@@ -111,7 +111,7 @@ class SchemaFixer:
         must_have_identifier=False,
         slot_name_func: Callable = None,
         convert_camel_case=False,
-    ) -> List[SlotDefinition]:
+    ) -> list[SlotDefinition]:
         """
         Adds index slots to a container pointing at all top-level classes
 
@@ -228,7 +228,7 @@ class SchemaFixer:
             # slots within that are redundant
             slot_usage_keys = list(cls.slot_usage.keys())
             for slot_usage_key in slot_usage_keys:
-                logging.debug(f"TESTING: {class_name}.{slot_usage_key}")
+                logger.debug(f"TESTING: {class_name}.{slot_usage_key}")
                 slot_usage_value = cls.slot_usage[slot_usage_key]
                 # perform a deletion test: what can be retrieved by inference
                 del cls.slot_usage[slot_usage_key]
@@ -236,7 +236,7 @@ class SchemaFixer:
                 try:
                     induced_slot = sv.induced_slot(slot_usage_key, class_name)
                 except ValueError:
-                    logging.warning(f"slot_usage with no slot: {slot_usage_key}")
+                    logger.warning(f"slot_usage with no slot: {slot_usage_key}")
                     continue
                 # restore value
                 cls.slot_usage[slot_usage_key] = slot_usage_value
@@ -258,7 +258,7 @@ class SchemaFixer:
                         continue
                     induced_v = getattr(induced_slot, metaslot_name, None)
                     if v is not None and v != [] and v != {} and v == induced_v:
-                        logging.info(f"REDUNDANT: {class_name}.{slot_usage_key}[{metaslot_name}] = {v}")
+                        logger.info(f"REDUNDANT: {class_name}.{slot_usage_key}[{metaslot_name}] = {v}")
                         to_delete.append(metaslot_name)
                 for metaslot_name in to_delete:
                     del slot_usage_value[metaslot_name]
@@ -271,7 +271,8 @@ class SchemaFixer:
             for k in empty_keys:
                 del cls.slot_usage[k]
 
-    def implicit_slots(self, schema: SchemaDefinition) -> Dict[str, Dict]:
+    @staticmethod
+    def implicit_slots(schema: SchemaDefinition) -> dict[str, dict]:
         """
         Find slots that are implicit in the schema from slot_usage
 
@@ -301,7 +302,7 @@ class SchemaFixer:
                 if len(vals_strs) == 1:
                     harmonized_slot[k] = vals.pop()
                 elif len(vals_strs) > 1:
-                    logging.info(f"Variable values in {slot_name}.{k}: {vals_strs}")
+                    logger.info(f"Variable values in {slot_name}.{k}: {vals_strs}")
             new_slots[str(slot_name)] = harmonized_slot
         return new_slots
 
@@ -313,21 +314,22 @@ class SchemaFixer:
             self.history = []
         self.history.append(txt)
 
+    @staticmethod
     def fix_element_names(
-        self,
         schema: SchemaDefinition,
-        schema_dict: Dict[str, Any] = None,
-        rules: Dict[str, Callable] = None,
+        schema_dict: dict[str, Any] = None,
+        rules: dict[str, Callable] = None,
         imports=False,
-    ) -> Union[YAMLRoot, Dict]:
+        preserve_original_using: Optional[str] = None,
+    ) -> Union[YAMLRoot, dict]:
         """
         Changes element names to conform to naming conventions.
-
 
         :param schema: input schema
         :param schema_dict: if specified, the transformation will happen on this dictionary object
         :param rules: mappings between index slots and functions that normalize names
         :param imports: if True, all that imported modules are also fixed
+        :param preserve_original_using: if specified, the original name will be preserved in this slot
         :return:
         """
         if rules is None:
@@ -339,6 +341,7 @@ class SchemaFixer:
             }
         fixes = {}
         sv = SchemaView(schema)
+        preserved = []
         for n, e in sv.all_elements(imports=imports).items():
             if e.from_schema == "https://w3id.org/linkml/types":
                 continue
@@ -348,12 +351,38 @@ class SchemaFixer:
                 normalized = func(n)
                 if normalized != n:
                     fixes[n] = normalized
+                if preserve_original_using is not None:
+                    preserved.append((typ, normalized, n))
+                # if preserve_original_using is not None:
+                #    setattr(e, preserve_original_using, n)
+                #    print(f"SETTING {typ} {e.name}.{preserve_original_using} = {n}")
         if schema_dict is not None:
             schema = schema_dict
-        return yaml_rewrite(schema, fixes)
+        schema = yaml_rewrite(schema, fixes)
+        for typ, normalized, original in preserved:
+            pathmap = {
+                ClassDefinition.__name__: "classes",
+                TypeDefinition.__name__: "types",
+                SlotDefinition.__name__: "slots",
+                EnumDefinition.__name__: "enums",
+            }
+            if isinstance(schema, dict):
+                path = schema[pathmap[typ]]
+                if normalized not in path:
+                    logger.warning(f"Cannot find {typ} {normalized} in {pathmap[typ]}")
+                    continue
+                e = path[normalized]
+                if preserve_original_using not in e:
+                    path[normalized][preserve_original_using] = original
+            else:
+                path = getattr(schema, pathmap[typ])
+                e = path[normalized]
+                if not getattr(e, preserve_original_using, None):
+                    setattr(e, preserve_original_using, original)
+        return schema
 
 
-@click.group()
+@click.group(name="fix")
 @click.option("-v", "--verbose", count=True)
 @click.option("-q", "--quiet")
 def main(verbose: int, quiet: bool):
@@ -375,6 +404,13 @@ def main(verbose: int, quiet: bool):
     default=False,
     show_default=True,
     help="Apply fix to referenced elements from modules",
+)
+@click.option(
+    "--preserve-original-using",
+    "-P",
+    default=None,
+    show_default=True,
+    help="If specified, original name will be preserved in this slot (e.g. title)",
 )
 def fix_names(input_schema, **kwargs):
     """Fix element names to conform to naming conventions"""

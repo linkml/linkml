@@ -1,0 +1,442 @@
+{
+   "name": "import_test_1",
+   "title": "Base for import test",
+   "id": "http://example.org/import_test_1",
+   "imports": [
+      "http://example.org/import_test_2",
+      "base:import_test_2",
+      "loc/imp3",
+      "types",
+      "base:import_test_4"
+   ],
+   "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "prefixes": [
+      {
+         "prefix_prefix": "base",
+         "prefix_reference": "http://example.org/"
+      },
+      {
+         "prefix_prefix": "test",
+         "prefix_reference": "http://example.org/import_test_1#"
+      }
+   ],
+   "default_curi_maps": [
+      "semweb_context"
+   ],
+   "default_prefix": "test",
+   "default_range": "string",
+   "subsets": [
+      {
+         "name": "subset_2",
+         "definition_uri": "http://example.org/import_test_2#Subset2",
+         "from_schema": "http://example.org/import_test_2"
+      },
+      {
+         "name": "subset_3",
+         "definition_uri": "http://example.org/import_test_3#Subset3",
+         "from_schema": "http://example.org/import_test_3"
+      },
+      {
+         "name": "subset_4",
+         "definition_uri": "http://example.org/import_test_4#Subset4",
+         "from_schema": "http://example.org/import_test_4"
+      }
+   ],
+   "types": [
+      {
+         "name": "s1",
+         "definition_uri": "http://example.org/import_test_1#S1",
+         "description": "A character string",
+         "from_schema": "http://example.org/import_test_1",
+         "base": "str",
+         "uri": "xsd:string"
+      },
+      {
+         "name": "s2",
+         "definition_uri": "http://example.org/import_test_2#S2",
+         "description": "A character string",
+         "from_schema": "http://example.org/import_test_2",
+         "base": "str",
+         "uri": "xsd:string"
+      },
+      {
+         "name": "s3",
+         "definition_uri": "http://example.org/import_test_3#S3",
+         "description": "A character string",
+         "from_schema": "http://example.org/import_test_3",
+         "base": "str",
+         "uri": "xsd:string"
+      },
+      {
+         "name": "string",
+         "definition_uri": "https://w3id.org/linkml/String",
+         "description": "A character string",
+         "notes": [
+            "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"."
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "exact_mappings": [
+            "schema:Text"
+         ],
+         "base": "str",
+         "uri": "xsd:string"
+      },
+      {
+         "name": "integer",
+         "definition_uri": "https://w3id.org/linkml/Integer",
+         "description": "An integer",
+         "notes": [
+            "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"integer\"."
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "exact_mappings": [
+            "schema:Integer"
+         ],
+         "base": "int",
+         "uri": "xsd:integer"
+      },
+      {
+         "name": "boolean",
+         "definition_uri": "https://w3id.org/linkml/Boolean",
+         "description": "A binary (true or false) value",
+         "notes": [
+            "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"boolean\"."
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "exact_mappings": [
+            "schema:Boolean"
+         ],
+         "base": "Bool",
+         "uri": "xsd:boolean",
+         "repr": "bool"
+      },
+      {
+         "name": "float",
+         "definition_uri": "https://w3id.org/linkml/Float",
+         "description": "A real number that conforms to the xsd:float specification",
+         "notes": [
+            "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"float\"."
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "exact_mappings": [
+            "schema:Float"
+         ],
+         "base": "float",
+         "uri": "xsd:float"
+      },
+      {
+         "name": "double",
+         "definition_uri": "https://w3id.org/linkml/Double",
+         "description": "A real number that conforms to the xsd:double specification",
+         "notes": [
+            "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"double\"."
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "close_mappings": [
+            "schema:Float"
+         ],
+         "base": "float",
+         "uri": "xsd:double"
+      },
+      {
+         "name": "decimal",
+         "definition_uri": "https://w3id.org/linkml/Decimal",
+         "description": "A real number with arbitrary precision that conforms to the xsd:decimal specification",
+         "notes": [
+            "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"decimal\"."
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "broad_mappings": [
+            "schema:Number"
+         ],
+         "base": "Decimal",
+         "uri": "xsd:decimal"
+      },
+      {
+         "name": "time",
+         "definition_uri": "https://w3id.org/linkml/Time",
+         "description": "A time object represents a (local) time of day, independent of any particular day",
+         "notes": [
+            "URI is dateTime because OWL reasoners do not work with straight date or time",
+            "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"time\"."
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "exact_mappings": [
+            "schema:Time"
+         ],
+         "base": "XSDTime",
+         "uri": "xsd:time",
+         "repr": "str"
+      },
+      {
+         "name": "date",
+         "definition_uri": "https://w3id.org/linkml/Date",
+         "description": "a date (year, month and day) in an idealized calendar",
+         "notes": [
+            "URI is dateTime because OWL reasoners don't work with straight date or time",
+            "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date\"."
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "exact_mappings": [
+            "schema:Date"
+         ],
+         "base": "XSDDate",
+         "uri": "xsd:date",
+         "repr": "str"
+      },
+      {
+         "name": "datetime",
+         "definition_uri": "https://w3id.org/linkml/Datetime",
+         "description": "The combination of a date and time",
+         "notes": [
+            "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"datetime\"."
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "exact_mappings": [
+            "schema:DateTime"
+         ],
+         "base": "XSDDateTime",
+         "uri": "xsd:dateTime",
+         "repr": "str"
+      },
+      {
+         "name": "date_or_datetime",
+         "definition_uri": "https://w3id.org/linkml/DateOrDatetime",
+         "description": "Either a date or a datetime",
+         "notes": [
+            "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date_or_datetime\"."
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "str",
+         "uri": "linkml:DateOrDatetime",
+         "repr": "str"
+      },
+      {
+         "name": "uriorcurie",
+         "definition_uri": "https://w3id.org/linkml/Uriorcurie",
+         "description": "a URI or a CURIE",
+         "notes": [
+            "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uriorcurie\"."
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "URIorCURIE",
+         "uri": "xsd:anyURI",
+         "repr": "str"
+      },
+      {
+         "name": "curie",
+         "definition_uri": "https://w3id.org/linkml/Curie",
+         "conforms_to": "https://www.w3.org/TR/curie/",
+         "description": "a compact URI",
+         "notes": [
+            "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"curie\"."
+         ],
+         "comments": [
+            "in RDF serializations this MUST be expanded to a URI",
+            "in non-RDF serializations MAY be serialized as the compact representation"
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "Curie",
+         "uri": "xsd:string",
+         "repr": "str"
+      },
+      {
+         "name": "uri",
+         "definition_uri": "https://w3id.org/linkml/Uri",
+         "conforms_to": "https://www.ietf.org/rfc/rfc3987.txt",
+         "description": "a complete URI",
+         "notes": [
+            "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uri\"."
+         ],
+         "comments": [
+            "in RDF serializations a slot with range of uri is treated as a literal or type xsd:anyURI unless it is an identifier or a reference to an identifier, in which case it is translated directly to a node"
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "close_mappings": [
+            "schema:URL"
+         ],
+         "base": "URI",
+         "uri": "xsd:anyURI",
+         "repr": "str"
+      },
+      {
+         "name": "ncname",
+         "definition_uri": "https://w3id.org/linkml/Ncname",
+         "description": "Prefix part of CURIE",
+         "notes": [
+            "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"ncname\"."
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "NCName",
+         "uri": "xsd:string",
+         "repr": "str"
+      },
+      {
+         "name": "objectidentifier",
+         "definition_uri": "https://w3id.org/linkml/Objectidentifier",
+         "description": "A URI or CURIE that represents an object in the model.",
+         "notes": [
+            "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"objectidentifier\"."
+         ],
+         "comments": [
+            "Used for inheritance and type checking"
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "ElementIdentifier",
+         "uri": "shex:iri",
+         "repr": "str"
+      },
+      {
+         "name": "nodeidentifier",
+         "definition_uri": "https://w3id.org/linkml/Nodeidentifier",
+         "description": "A URI, CURIE or BNODE that represents a node in a model.",
+         "notes": [
+            "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"nodeidentifier\"."
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "NodeIdentifier",
+         "uri": "shex:nonLiteral",
+         "repr": "str"
+      },
+      {
+         "name": "jsonpointer",
+         "definition_uri": "https://w3id.org/linkml/Jsonpointer",
+         "conforms_to": "https://datatracker.ietf.org/doc/html/rfc6901",
+         "description": "A string encoding a JSON Pointer. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to a valid object within the current instance document when encoded in tree form.",
+         "notes": [
+            "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpointer\"."
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "str",
+         "uri": "xsd:string",
+         "repr": "str"
+      },
+      {
+         "name": "jsonpath",
+         "definition_uri": "https://w3id.org/linkml/Jsonpath",
+         "conforms_to": "https://www.ietf.org/archive/id/draft-goessner-dispatch-jsonpath-00.html",
+         "description": "A string encoding a JSON Path. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded in tree form.",
+         "notes": [
+            "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpath\"."
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "str",
+         "uri": "xsd:string",
+         "repr": "str"
+      },
+      {
+         "name": "sparqlpath",
+         "definition_uri": "https://w3id.org/linkml/Sparqlpath",
+         "conforms_to": "https://www.w3.org/TR/sparql11-query/#propertypaths",
+         "description": "A string encoding a SPARQL Property Path. The value of the string MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded as RDF.",
+         "notes": [
+            "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"sparqlpath\"."
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "str",
+         "uri": "xsd:string",
+         "repr": "str"
+      },
+      {
+         "name": "s4",
+         "definition_uri": "http://example.org/import_test_4#S4",
+         "description": "A character string",
+         "from_schema": "http://example.org/import_test_4",
+         "base": "str",
+         "uri": "xsd:string"
+      }
+   ],
+   "slots": [
+      {
+         "name": "slot_1",
+         "definition_uri": "http://example.org/import_test_1#slot_1",
+         "from_schema": "http://example.org/import_test_1",
+         "domain": "class_1",
+         "slot_uri": "test:slot_1",
+         "owner": "class_1",
+         "domain_of": [
+            "class_1"
+         ],
+         "range": "string"
+      },
+      {
+         "name": "slot_2",
+         "definition_uri": "http://example.org/import_test_2#slot_2",
+         "from_schema": "http://example.org/import_test_2",
+         "domain": "class_2",
+         "slot_uri": "test2:slot_2",
+         "owner": "class_2",
+         "domain_of": [
+            "class_2"
+         ],
+         "range": "string"
+      },
+      {
+         "name": "slot_3",
+         "definition_uri": "http://example.org/import_test_3#slot_3",
+         "from_schema": "http://example.org/import_test_3",
+         "domain": "class_3",
+         "slot_uri": "test3:slot_3",
+         "owner": "class_3",
+         "domain_of": [
+            "class_3"
+         ],
+         "range": "string"
+      },
+      {
+         "name": "slot_4",
+         "definition_uri": "http://example.org/import_test_4#slot_4",
+         "from_schema": "http://example.org/import_test_4",
+         "domain": "class_4",
+         "slot_uri": "test4:slot_4",
+         "owner": "class_4",
+         "domain_of": [
+            "class_4"
+         ],
+         "range": "string"
+      }
+   ],
+   "classes": [
+      {
+         "name": "class_1",
+         "definition_uri": "http://example.org/import_test_1#Class1",
+         "from_schema": "http://example.org/import_test_1",
+         "slots": [
+            "slot_1"
+         ],
+         "class_uri": "test:Class1"
+      },
+      {
+         "name": "class_2",
+         "definition_uri": "http://example.org/import_test_2#Class2",
+         "from_schema": "http://example.org/import_test_2",
+         "slots": [
+            "slot_2"
+         ],
+         "class_uri": "test2:Class2"
+      },
+      {
+         "name": "class_3",
+         "definition_uri": "http://example.org/import_test_3#Class3",
+         "from_schema": "http://example.org/import_test_3",
+         "slots": [
+            "slot_3"
+         ],
+         "class_uri": "test3:Class3"
+      },
+      {
+         "name": "class_4",
+         "definition_uri": "http://example.org/import_test_4#Class4",
+         "from_schema": "http://example.org/import_test_4",
+         "slots": [
+            "slot_4"
+         ],
+         "class_uri": "test4:Class4"
+      }
+   ],
+   "metamodel_version": "1.7.0",
+   "source_file": "import_test_1.yaml",
+   "source_file_date": "2000-01-01T00:00:00",
+   "source_file_size": 1,
+   "generation_date": "2000-01-01T00:00:00"
+}

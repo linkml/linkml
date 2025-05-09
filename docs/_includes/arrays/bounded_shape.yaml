@@ -1,0 +1,36 @@
+id: bounded_shape_array
+name: bounded_shape_array
+title: bounded_shape_array
+imports:
+  - linkml:types
+default_range: integer
+
+classes:
+  ExactDimensions:
+    attributes:
+      array:
+        range: integer
+        array:
+          exact_number_dimensions: 3
+
+  MinDimensions:
+    attributes:
+      array:
+        range: integer
+        array:
+          minimum_number_dimensions: 2
+
+  MaxDimensions:
+    attributes:
+      array:
+        range: integer
+        array:
+          maximum_number_dimensions: 5
+
+  RangeDimensions:
+    attributes:
+      array:
+        range: integer
+        array:
+          minimum_number_dimensions: 2
+          maximum_number_dimensions: 5

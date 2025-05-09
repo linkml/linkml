@@ -1,0 +1,28 @@
+# extension.yaml
+id: https://example.org/extension
+prefixes:
+  extensions: https://example.org/extension/
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+  - base
+default_prefix: extension
+
+classes:
+  Name:
+    attributes:
+      surname:
+        range: string
+  HumanIdentifier:
+    is_a: Identifier
+    slots:
+      - name
+      - birthday
+
+slots:
+  name:
+    range: Name
+  birthday:
+    range: string
+  human_identifier:
+    range: HumanIdentifier

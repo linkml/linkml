@@ -8,26 +8,58 @@
 
 import dataclasses
 import re
-from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
-from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
+from datetime import (
+    date,
+    datetime,
+    time
+)
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    List,
+    Optional,
+    Union
+)
 
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from rdflib import Namespace, URIRef
+from jsonasobj2 import (
+    JsonObj,
+    as_dict
+)
+from linkml_runtime.linkml_model.meta import (
+    EnumDefinition,
+    PermissibleValue,
+    PvFormulaOptions
+)
 from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.formatutils import (
+    camelcase,
+    sfx,
+    underscore
+)
+from linkml_runtime.utils.metamodelcore import (
+    bnode,
+    empty_dict,
+    empty_list
+)
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.yamlutils import (
+    YAMLRoot,
+    extended_float,
+    extended_int,
+    extended_str
+)
+from rdflib import (
+    Namespace,
+    URIRef
+)
+
 from linkml_runtime.utils.metamodelcore import Bool, Curie, Decimal, ElementIdentifier, NCName, NodeIdentifier, URI, URIorCURIE, XSDDate, XSDDateTime, XSDTime
 
 metamodel_version = "1.7.0"
 version = None
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
@@ -40,7 +72,7 @@ DEFAULT_ = CurieNamespace('', 'https://example.com/test14/')
 # Types
 class String(str):
     """ A character string """
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "string"
     type_model_uri = URIRef("https://example.com/test14/String")
@@ -48,7 +80,7 @@ class String(str):
 
 class Integer(int):
     """ An integer """
-    type_class_uri = XSD.integer
+    type_class_uri = XSD["integer"]
     type_class_curie = "xsd:integer"
     type_name = "integer"
     type_model_uri = URIRef("https://example.com/test14/Integer")
@@ -56,7 +88,7 @@ class Integer(int):
 
 class Boolean(Bool):
     """ A binary (true or false) value """
-    type_class_uri = XSD.boolean
+    type_class_uri = XSD["boolean"]
     type_class_curie = "xsd:boolean"
     type_name = "boolean"
     type_model_uri = URIRef("https://example.com/test14/Boolean")
@@ -64,7 +96,7 @@ class Boolean(Bool):
 
 class Float(float):
     """ A real number that conforms to the xsd:float specification """
-    type_class_uri = XSD.float
+    type_class_uri = XSD["float"]
     type_class_curie = "xsd:float"
     type_name = "float"
     type_model_uri = URIRef("https://example.com/test14/Float")
@@ -72,7 +104,7 @@ class Float(float):
 
 class Double(float):
     """ A real number that conforms to the xsd:double specification """
-    type_class_uri = XSD.double
+    type_class_uri = XSD["double"]
     type_class_curie = "xsd:double"
     type_name = "double"
     type_model_uri = URIRef("https://example.com/test14/Double")
@@ -80,7 +112,7 @@ class Double(float):
 
 class Decimal(Decimal):
     """ A real number with arbitrary precision that conforms to the xsd:decimal specification """
-    type_class_uri = XSD.decimal
+    type_class_uri = XSD["decimal"]
     type_class_curie = "xsd:decimal"
     type_name = "decimal"
     type_model_uri = URIRef("https://example.com/test14/Decimal")
@@ -88,7 +120,7 @@ class Decimal(Decimal):
 
 class Time(XSDTime):
     """ A time object represents a (local) time of day, independent of any particular day """
-    type_class_uri = XSD.time
+    type_class_uri = XSD["time"]
     type_class_curie = "xsd:time"
     type_name = "time"
     type_model_uri = URIRef("https://example.com/test14/Time")
@@ -96,7 +128,7 @@ class Time(XSDTime):
 
 class Date(XSDDate):
     """ a date (year, month and day) in an idealized calendar """
-    type_class_uri = XSD.date
+    type_class_uri = XSD["date"]
     type_class_curie = "xsd:date"
     type_name = "date"
     type_model_uri = URIRef("https://example.com/test14/Date")
@@ -104,7 +136,7 @@ class Date(XSDDate):
 
 class Datetime(XSDDateTime):
     """ The combination of a date and time """
-    type_class_uri = XSD.dateTime
+    type_class_uri = XSD["dateTime"]
     type_class_curie = "xsd:dateTime"
     type_name = "datetime"
     type_model_uri = URIRef("https://example.com/test14/Datetime")
@@ -112,7 +144,7 @@ class Datetime(XSDDateTime):
 
 class DateOrDatetime(str):
     """ Either a date or a datetime """
-    type_class_uri = META.DateOrDatetime
+    type_class_uri = META["DateOrDatetime"]
     type_class_curie = "meta:DateOrDatetime"
     type_name = "date_or_datetime"
     type_model_uri = URIRef("https://example.com/test14/DateOrDatetime")
@@ -120,7 +152,7 @@ class DateOrDatetime(str):
 
 class Uriorcurie(URIorCURIE):
     """ a URI or a CURIE """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "uriorcurie"
     type_model_uri = URIRef("https://example.com/test14/Uriorcurie")
@@ -128,7 +160,7 @@ class Uriorcurie(URIorCURIE):
 
 class Curie(Curie):
     """ a compact URI """
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "curie"
     type_model_uri = URIRef("https://example.com/test14/Curie")
@@ -136,7 +168,7 @@ class Curie(Curie):
 
 class Uri(URI):
     """ a complete URI """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "uri"
     type_model_uri = URIRef("https://example.com/test14/Uri")
@@ -144,7 +176,7 @@ class Uri(URI):
 
 class Ncname(NCName):
     """ Prefix part of CURIE """
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "ncname"
     type_model_uri = URIRef("https://example.com/test14/Ncname")
@@ -152,7 +184,7 @@ class Ncname(NCName):
 
 class Objectidentifier(ElementIdentifier):
     """ A URI or CURIE that represents an object in the model. """
-    type_class_uri = SHEX.iri
+    type_class_uri = SHEX["iri"]
     type_class_curie = "shex:iri"
     type_name = "objectidentifier"
     type_model_uri = URIRef("https://example.com/test14/Objectidentifier")
@@ -160,7 +192,7 @@ class Objectidentifier(ElementIdentifier):
 
 class Nodeidentifier(NodeIdentifier):
     """ A URI, CURIE or BNODE that represents a node in a model. """
-    type_class_uri = SHEX.nonLiteral
+    type_class_uri = SHEX["nonLiteral"]
     type_class_curie = "shex:nonLiteral"
     type_name = "nodeidentifier"
     type_model_uri = URIRef("https://example.com/test14/Nodeidentifier")
@@ -168,7 +200,7 @@ class Nodeidentifier(NodeIdentifier):
 
 class Jsonpointer(str):
     """ A string encoding a JSON Pointer. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to a valid object within the current instance document when encoded in tree form. """
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "jsonpointer"
     type_model_uri = URIRef("https://example.com/test14/Jsonpointer")
@@ -176,7 +208,7 @@ class Jsonpointer(str):
 
 class Jsonpath(str):
     """ A string encoding a JSON Path. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded in tree form. """
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "jsonpath"
     type_model_uri = URIRef("https://example.com/test14/Jsonpath")
@@ -184,7 +216,7 @@ class Jsonpath(str):
 
 class Sparqlpath(str):
     """ A string encoding a SPARQL Property Path. The value of the string MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded as RDF. """
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "sparqlpath"
     type_model_uri = URIRef("https://example.com/test14/Sparqlpath")
@@ -207,9 +239,9 @@ class ObjectRange1Id(NamedThingId):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class NamedThing(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://example.com/test14/NamedThing")
     class_class_curie: ClassVar[str] = None
@@ -221,7 +253,7 @@ class NamedThing(YAMLRoot):
     subject: Union[str, NamedThingId] = None
     object: Union[str, NamedThingId] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, NamedThingId):
@@ -245,9 +277,9 @@ class NamedThing(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class MixinOwner(NamedThing):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://example.com/test14/MixinOwner")
     class_class_curie: ClassVar[str] = None
@@ -260,7 +292,7 @@ class MixinOwner(NamedThing):
     subject: Union[str, SubjectRange1Id] = None
     sex_qualifier: Optional[Union[str, NamedThingId]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, MixinOwnerId):
@@ -277,9 +309,9 @@ class MixinOwner(NamedThing):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class SubjectRange1(NamedThing):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://example.com/test14/SubjectRange1")
     class_class_curie: ClassVar[str] = None
@@ -291,7 +323,7 @@ class SubjectRange1(NamedThing):
     subject: Union[str, NamedThingId] = None
     object: Union[str, NamedThingId] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, SubjectRange1Id):
@@ -300,9 +332,9 @@ class SubjectRange1(NamedThing):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ObjectRange1(NamedThing):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://example.com/test14/ObjectRange1")
     class_class_curie: ClassVar[str] = None
@@ -314,7 +346,7 @@ class ObjectRange1(NamedThing):
     subject: Union[str, NamedThingId] = None
     object: Union[str, NamedThingId] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, ObjectRange1Id):
@@ -323,9 +355,9 @@ class ObjectRange1(NamedThing):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class MixinClass(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://example.com/test14/MixinClass")
     class_class_curie: ClassVar[str] = None
@@ -335,7 +367,7 @@ class MixinClass(YAMLRoot):
     object: Union[str, ObjectRange1Id] = None
     sex_qualifier: Optional[Union[str, NamedThingId]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.object):
             self.MissingRequiredField("object")
         if not isinstance(self.object, ObjectRange1Id):

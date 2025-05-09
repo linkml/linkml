@@ -43,7 +43,7 @@ The following code will populate missing values:
 You can also use the ``linkml-convert`` script with the ``--infer`` flag
 
 String serialization
------------
+--------------------
 
 For simple string based expressions,
 `string_serialization <https://w3id.org/linkml/string_serialization>`_
@@ -73,7 +73,7 @@ The following code will populate the full address:
 
     
 Configuration
-----
+-------------
 
 .. currentmodule:: linkml_runtime.utils.inference_utils
 

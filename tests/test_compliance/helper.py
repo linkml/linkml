@@ -1,15 +1,19 @@
 """Helper for compliance tests. See README.md for more information."""
+
 import csv
 import enum
 import json
 import logging
+import os
 import shutil
 import subprocess
+import tempfile
 from collections import defaultdict
-from copy import deepcopy
+from collections.abc import Iterator
+from copy import copy, deepcopy
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Tuple, Type, Union
+from typing import Any, Callable, Optional, Union
 
 import linkml_runtime
 import pydantic
@@ -18,15 +22,26 @@ import rdflib
 import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import rdflib_dumper, yaml_dumper
+from linkml_runtime.linkml_model import Decimal, SchemaDefinition
 from linkml_runtime.linkml_model import meta as meta
 from linkml_runtime.loaders import rdflib_loader
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.yamlutils import YAMLRoot
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
+from linkml.transformers.logical_model_transformer import UnsatisfiableAttribute
+
+try:
+    from yaml import CSafeDumper as SafeDumper
+except ImportError:
+    from yaml import SafeDumper
+
+
+import tests
 from linkml import generators as generators
 from linkml.generators import (
+    ContextGenerator,
     JsonSchemaGenerator,
     OwlSchemaGenerator,
     PydanticGenerator,
@@ -37,8 +52,10 @@ from linkml.generators import (
 )
 from linkml.utils.generator import Generator
 from linkml.utils.sqlutils import SQLStore
-from linkml.validators import JsonSchemaDataValidator
-from tests.output.types import Decimal
+from linkml.validator import JsonschemaValidationPlugin, Validator
+from linkml.validator.plugins.shacl_validation_plugin import ShaclValidationPlugin
+
+logger = logging.getLogger(__name__)
 
 THIS_DIR = Path(__file__).parent
 OUTPUT_DIR = THIS_DIR / "output"
@@ -47,24 +64,32 @@ SCHEMA_NAME = str
 FRAMEWORK = str  ## pydantic, java, etc
 
 PYDANTIC_ROOT_CLASS = "ConfiguredBaseModel"
+PANDERA_ROOT_CLASS = "pla.DataFrameModel, _LinkmlPanderaValidator"
 PYTHON_DATACLASSES_ROOT_CLASS = "YAMLRoot"
 PYDANTIC = "pydantic"
 PYDANTIC_STRICT = "pydantic_strict"  ## TODO: https://docs.pydantic.dev/latest/usage/types/strict_types/
 PYTHON_DATACLASSES = "python_dataclasses"
 JSON_SCHEMA = "jsonschema"
+JAVA = "java"
 SHACL = "shacl"
 SHEX = "shex"
+JSONLD_CONTEXT = "jsonld_context"
+JSONLD = "jsonld"
 SQL_ALCHEMY_IMPERATIVE = "sqlalchemy_imperative"
 SQL_ALCHEMY_DECLARATIVE = "sqlalchemy_declarative"
+PANDERA_POLARS_CLASS = "pandera_polars_class"
 SQL_DDL_SQLITE = "sql_ddl_sqlite"
 SQL_DDL_POSTGRES = "sql_ddl_postgres"
 OWL = "owl"
-GENERATORS: Dict[FRAMEWORK, Union[Type[Generator], Tuple[Type[Generator], Dict[str, Any]]]] = {
+GENERATORS: dict[FRAMEWORK, Union[type[Generator], tuple[type[Generator], dict[str, Any]]]] = {
     PYDANTIC: generators.PydanticGenerator,
     PYTHON_DATACLASSES: generators.PythonGenerator,
+    JAVA: generators.JavaGenerator,
     JSON_SCHEMA: generators.JsonSchemaGenerator,
     SHACL: generators.ShaclGenerator,
     SHEX: generators.ShExGenerator,
+    JSONLD: generators.JSONLDGenerator,
+    JSONLD_CONTEXT: generators.ContextGenerator,
     SQL_ALCHEMY_IMPERATIVE: (
         generators.SQLAlchemyGenerator,
         {"template": sqlalchemygen.TemplateEnum.IMPERATIVE},
@@ -73,6 +98,7 @@ GENERATORS: Dict[FRAMEWORK, Union[Type[Generator], Tuple[Type[Generator], Dict[s
         generators.SQLAlchemyGenerator,
         {"template": sqlalchemygen.TemplateEnum.DECLARATIVE},
     ),
+    PANDERA_POLARS_CLASS: generators.PanderaGenerator,
     SQL_DDL_SQLITE: (generators.SQLTableGenerator, {"dialect": "sqlite"}),
     SQL_DDL_POSTGRES: (generators.SQLTableGenerator, {"dialect": "postgresql"}),
     OWL: (
@@ -103,7 +129,7 @@ class DataCheck(BaseModel):
     data_name: str
     framework: str
     expected_behavior: ValidationBehavior
-    description: str = None
+    description: Optional[str] = None
     notes: Optional[str] = None
 
 
@@ -112,13 +138,12 @@ class Feature(BaseModel):
     A category of tests that can be implemented by multiple frameworks.
     """
 
+    model_config = ConfigDict(use_enum_values=True)
+
     name: str
     description: str
-    implementations: Dict[FRAMEWORK, ValidationBehavior]
+    implementations: dict[FRAMEWORK, ValidationBehavior]
     num_tests: int = 0
-
-    class Config:
-        use_enum_values = True
 
     def set_framework_behavior(self, framework: FRAMEWORK, behavior: ValidationBehavior) -> ValidationBehavior:
         if framework not in self.implementations:
@@ -143,27 +168,27 @@ class Feature(BaseModel):
 class FeatureSet(BaseModel):
     """A collection of features."""
 
-    features: List[Feature]
+    features: list[Feature]
 
 
-cached_generator_output: Dict[Tuple[SCHEMA_NAME, FRAMEWORK], Tuple[Generator, str]] = {}
+cached_generator_output: dict[tuple[SCHEMA_NAME, FRAMEWORK], tuple[Generator, str, Optional[Path]]] = {}
 """Cache generators and their outputs to avoid repeated computation."""
 
-all_test_results: List[DataCheck] = []
+all_test_results: list[DataCheck] = []
 """Result of each data check."""
 
-feature_dict: Dict[str, Feature] = {}
+feature_dict: dict[str, Feature] = {}
 """Map from test name to feature."""
 
-schema_name_to_feature: Dict[str, str] = {}
+schema_name_to_feature: dict[str, str] = {}
 """Map from schema name to feature."""
 
-schema_name_to_metamodel_elements: Dict[SCHEMA_NAME, List[str]] = {}
+schema_name_to_metamodel_elements: dict[SCHEMA_NAME, list[str]] = {}
 """Map from schema name all metamodels used in that schema."""
 
 
-def _as_tsv(rows: List[Dict], path: Union[str, Path]) -> str:
-    logging.info(f"Writing report to {path}")
+def _as_tsv(rows: list[dict], path: Union[str, Path]) -> str:
+    logger.info(f"Writing report to {path}")
     fn = f"{path}.tsv"
     if rows:
         fieldnames = []
@@ -184,7 +209,7 @@ def report():
 
     Note: some of these are subject to change
     """
-    logging.info(f"Generating reports for {len(all_test_results)} tests")
+    logger.info(f"Generating reports for {len(all_test_results)} tests")
     fset = FeatureSet(features=list(feature_dict.values()))
     suffix = "" if len(fset.features) > 5 else "_partial"
     summary_base_name = f"summary{suffix}"
@@ -242,7 +267,9 @@ def _get_metamodel_elements(obj: Any) -> Iterator[str]:
         pass
 
 
-def _generate_framework_output(schema: Dict, framework: str, mappings: List = None) -> Tuple[Generator, str, str]:
+def _generate_framework_output(
+    schema: dict, framework: str, mappings: list = None
+) -> tuple[Generator, str, Optional[Path]]:
     """
     Compile a schema using a framework (e.g. jsonschema generation).
 
@@ -251,7 +278,7 @@ def _generate_framework_output(schema: Dict, framework: str, mappings: List = No
     :param schema:
     :param framework:
     :param mappings: maps between framework and expected results.
-    :return:
+    :return: tuple of Generator, generator output, optional path to generated file
     """
     pair = (schema["name"], framework)
     if schema["name"] not in schema_name_to_metamodel_elements:
@@ -260,23 +287,44 @@ def _generate_framework_output(schema: Dict, framework: str, mappings: List = No
         if mappings is None:
             # this should only happen when executing individual pytest combos
             mappings = []
-            logging.warning(f"No mappings for {pair} - called out of order?")
+            logger.warning(f"No mappings for {pair} - called out of order?")
         gen_class = GENERATORS[framework]
         if isinstance(gen_class, tuple):
             gen_class, gen_args = gen_class
         else:
             gen_args = {}
-        gen = gen_class(schema=yaml.dump(schema), **gen_args)
-        output = gen.serialize()
-        out_dir = _schema_out_path(schema) / "generated"
-        out_dir.mkdir(parents=True, exist_ok=True)
-        out_path = out_dir / f"{framework}.{gen.file_extension}"
-        with open(out_path, "w", encoding="utf-8") as stream:
-            stream.write(output)
+
+        gen_args["base_dir"] = str(_schema_out_path(schema))
+        gen = gen_class(schema=SchemaDefinition(**schema), **gen_args)
+        if framework == JAVA:
+            temp_dir = tempfile.TemporaryDirectory()
+            gen.serialize(temp_dir.name)
+            # walk all files in temp_dir and concatenate them
+            output = ""
+            for root, _dirs, files in os.walk(temp_dir.name):
+                for file in files:
+                    path = os.path.join(root, file)
+                    with open(path) as stream:
+                        output += stream.read()
+        else:
+            output = gen.serialize()
+
+        if tests.WITH_OUTPUT:
+            out_dir = _schema_out_path(schema) / "generated"
+            out_dir.mkdir(parents=True, exist_ok=True)
+            out_path = out_dir / f"{framework}.{gen.file_extension}"
+            with open(out_path, "w", encoding="utf-8") as stream:
+                stream.write(output)
+        else:
+            out_path = None
+
         cached_generator_output[pair] = (gen, output, out_path)
         for context, impdict in mappings:
+
             if framework in impdict:
                 expected = impdict[framework]
+                if expected is None:
+                    continue
                 if isinstance(expected, (list, str)) and framework in [SHACL, OWL]:
                     assert compare_rdf(expected, output, subsumes=framework in [OWL]) == set()
                 elif isinstance(expected, str):
@@ -290,14 +338,14 @@ def _generate_framework_output(schema: Dict, framework: str, mappings: List = No
                 else:
                     raise AssertionError
     else:
-        logging.debug(f"Reusing {len(cached_generator_output.items())}")
+        logger.debug(f"Reusing {len(cached_generator_output.items())}")
     return cached_generator_output[pair]
 
 
-TRIPLE = Tuple[rdflib.URIRef, rdflib.URIRef, Union[rdflib.URIRef, rdflib.Literal]]
+TRIPLE = tuple[rdflib.URIRef, rdflib.URIRef, Union[rdflib.URIRef, rdflib.Literal]]
 
 
-def compare_rdf(expected: Union[str, List[TRIPLE]], actual: str, subsumes: bool = False) -> Optional[Set]:
+def compare_rdf(expected: Union[str, list[TRIPLE]], actual: str, subsumes: bool = False) -> Optional[set]:
     """
     Compares two rdf serializations.
 
@@ -314,6 +362,8 @@ def compare_rdf(expected: Union[str, List[TRIPLE]], actual: str, subsumes: bool 
     else:
         g_expected = rdflib.Graph()
         for t in expected:
+            if t[2] is None:
+                t = (t[0], t[1], rdflib.BNode())
             g_expected.add(t)
     g_actual = rdflib.Graph()
     g_actual.parse(data=actual, format="turtle")
@@ -329,7 +379,7 @@ def compare_rdf(expected: Union[str, List[TRIPLE]], actual: str, subsumes: bool 
         return triples_expected.union(triples_actual).difference(triples_expected.intersection(triples_actual))
 
 
-def _obj_within_obj(expected: Dict, actual: Dict) -> bool:
+def _obj_within_obj(expected: dict, actual: dict) -> bool:
     """
     Check if the expected object is within the actual object.
 
@@ -351,7 +401,7 @@ def _obj_within_obj(expected: Dict, actual: Dict) -> bool:
     return False
 
 
-def _schema_out_path(schema: Dict, parent=False) -> Path:
+def _schema_out_path(schema: dict, parent=False) -> Path:
     """
     Get the output path for a schema.
 
@@ -373,7 +423,8 @@ def _schema_out_path(schema: Dict, parent=False) -> Path:
 
 @lru_cache
 def _get_linkml_types() -> dict:
-    type_schema = yaml.safe_load(open(linkml_runtime.SCHEMA_DIRECTORY / "types.yaml"))
+    with open(linkml_runtime.SCHEMA_DIRECTORY / "types.yaml") as tfile:
+        type_schema = yaml.safe_load(tfile)
     for typ in type_schema.get("types", {}).values():
         typ["from_schema"] = "https://w3id.org/linkml/types"
     return type_schema
@@ -382,16 +433,19 @@ def _get_linkml_types() -> dict:
 def _make_schema(
     test: Callable,
     name: str,
-    schema: Dict = None,
-    classes: Dict = None,
-    slots: Dict = None,
-    types: Dict = None,
-    prefixes: Dict = None,
-    core_elements: List = None,
+    schema: dict = None,
+    classes: dict = None,
+    slots: dict = None,
+    types: dict = None,
+    prefixes: dict = None,
+    core_elements: list = None,
     post_process: Callable = None,
     merge_type_imports=True,
+    imported_schemas: list[dict] = None,
+    mappings: Optional[dict[str, Any]] = None,
+    unsatisfiable: bool = False,
     **kwargs,
-) -> Tuple[Dict, List]:
+) -> tuple[dict, list]:
     """
     Create a schema for use in testing.
 
@@ -433,9 +487,12 @@ def _make_schema(
             if "imports" not in schema:
                 schema["imports"] = []
             schema["imports"].append("linkml:types")
+            if "linkml:types" not in schema["prefixes"]:
+                schema["prefixes"]["linkml"] = "https://w3id.org/linkml/"
     else:
         schema = deepcopy(schema)
-
+    if mappings is not None:
+        schema["_mappings"] = mappings
     if classes is not None:
         schema["classes"].update(classes)
     if slots is not None:
@@ -455,48 +512,77 @@ def _make_schema(
     mappings = list(_extract_mappings(schema))
     out_dir = _schema_out_path(schema)
     parent_out_dir = _schema_out_path(schema, parent=True)
-    # Write top-level README (TODO: avoid doing this for each combination)
-    with open(parent_out_dir / "README.md", "w", encoding="utf-8") as stream:
-        dlines = [x.strip() for x in schema["description"].split("\n")]
-        dlines = [x for x in dlines if not x.startswith(":")]
-        desc = "\n".join(dlines)
-        stream.write(f"# {test.__name__}\n\n")
-        stream.write(f"{desc}\n\n")
-        stream.write("## Elements Tested\n\n")
-        for el in core_elements:
-            stream.write(f"* [{el}](https://w3id.org/linkml/{el})\n")
-    # Write README for this schema combo
-    with open(out_dir / "README.md", "w", encoding="utf-8") as stream:
-        dlines = [x.strip() for x in schema["description"].split("\n")]
-        dlines = [x for x in dlines if not x.startswith(":")]
-        desc = "\n".join(dlines)
-        stream.write(f"# {schema_name.replace('test_', '')}\n\n")
-        stream.write(f"{desc}\n\n")
-        schema_minimal = deepcopy(schema)
-        builtin = [
-            tn
-            for tn, t in schema_minimal.get("types", {}).items()
-            if t.get("from_schema", None) == "https://w3id.org/linkml/types"
-        ]
-        for t in builtin:
-            del schema_minimal["types"][t]
-        if "imports" not in schema_minimal:
-            schema_minimal["imports"] = []
-        schema_minimal["imports"].append("linkml:types")
-        stream.write("## Schema\n\n")
-        stream.write("```yaml\n")
-        yaml.safe_dump(schema_minimal, stream, sort_keys=False)
-        stream.write("```\n\n")
-    with open(out_dir / "schema.yaml", "w", encoding="utf-8") as stream:
-        yaml.safe_dump(schema, stream, sort_keys=False)
-    with open(out_dir / "mappings.txt", "w", encoding="utf-8") as stream:
-        stream.write(str(mappings))
+    schema["source_file"] = str(out_dir / "schema.yaml")
+
+    if tests.WITH_OUTPUT:
+        # Write top-level README (TODO: avoid doing this for each combination)
+        with open(parent_out_dir / "README.md", "w", encoding="utf-8") as stream:
+            dlines = [x.strip() for x in schema["description"].split("\n")]
+            dlines = [x for x in dlines if not x.startswith(":")]
+            desc = "\n".join(dlines)
+            stream.write(f"# {test.__name__}\n\n")
+            stream.write(f"{desc}\n\n")
+            stream.write("## Elements Tested\n\n")
+            if not core_elements:
+                raise AssertionError(f"No core elements defined for for {schema_name}")
+            for el in core_elements:
+                stream.write(f"* [{el}](https://w3id.org/linkml/{el})\n")
+
+        # Write README for this schema combo
+        with open(out_dir / "README.md", "w", encoding="utf-8") as stream:
+            dlines = [x.strip() for x in schema["description"].split("\n")]
+            dlines = [x for x in dlines if not x.startswith(":")]
+            desc = "\n".join(dlines)
+            stream.write(f"# {schema_name.replace('test_', '')}\n\n")
+            stream.write(f"{desc}\n\n")
+            schema_minimal = deepcopy(schema)
+            builtin = [
+                tn
+                for tn, t in schema_minimal.get("types", {}).items()
+                if t.get("from_schema", None) == "https://w3id.org/linkml/types"
+            ]
+            for t in builtin:
+                del schema_minimal["types"][t]
+            if "imports" not in schema_minimal:
+                schema_minimal["imports"] = []
+            schema_minimal["imports"].append("linkml:types")
+            stream.write("## Schema\n\n")
+            stream.write("```yaml\n")
+            yaml.safe_dump(schema_minimal, stream, sort_keys=False)
+            stream.write("```\n\n")
+
+        with open(out_dir / "mappings.txt", "w", encoding="utf-8") as stream:
+            stream.write(str(mappings))
+
+        with open(out_dir / "schema.yaml", "w", encoding="utf-8") as stream:
+            yaml.safe_dump(schema, stream, sort_keys=False)
+
+    if imported_schemas:
+        for imp in imported_schemas:
+            imp_path = f'{out_dir / imp["name"]}.yaml'
+            with open(imp_path, "w", encoding="utf-8") as imp_stream:
+                yaml.safe_dump(imp, imp_stream, sort_keys=False)
+
     if not schema["name"]:
         raise ValueError(f"Schema name not set: {schema}")
+
+    if tests.WITH_LOGICAL_MODEL_TRANSFORMER:
+        from linkml.transformers.logical_model_transformer import LogicalModelTransformer
+
+        tr = LogicalModelTransformer()
+        tr.set_schema(SchemaDefinition(**schema))
+        try:
+            tr.transform()
+        except UnsatisfiableAttribute as e:
+            if unsatisfiable:
+                pass
+            else:
+                raise e
+
     return schema, mappings
 
 
-def validated_schema(test: Callable, local_name: str, framework: str, **kwargs) -> Dict:
+def validated_schema(test: Callable, local_name: str, framework: str, **kwargs) -> dict:
     """
     Generate a schema and validate it using the given framework.
 
@@ -524,6 +610,8 @@ def validated_schema(test: Callable, local_name: str, framework: str, **kwargs) 
     """
     test_name = test.__name__
     if test_name not in feature_dict:
+        if not test.__doc__:
+            raise AssertionError(f"Test {test_name} has no docstring")
         feature_dict[test_name] = Feature(
             name=test_name,
             description=test.__doc__,
@@ -536,7 +624,7 @@ def validated_schema(test: Callable, local_name: str, framework: str, **kwargs) 
     return schema
 
 
-def _extract_mappings(schema: Dict) -> Iterator[Tuple[Dict, List]]:
+def _extract_mappings(schema: dict) -> Iterator[tuple[dict, list]]:
     """
     Extract key-values injected into the schema to represent expected outputs per generator.
 
@@ -557,15 +645,15 @@ def _extract_mappings(schema: Dict) -> Iterator[Tuple[Dict, List]]:
         pass
 
 
-def _as_compact_yaml(obj: Union[YAMLRoot, BaseModel, Dict]) -> str:
+def _as_compact_yaml(obj: Union[YAMLRoot, BaseModel, dict]) -> str:
     if isinstance(obj, dict):
-        ys = yaml.dump(_clean_dict(obj), sort_keys=False)
+        ys = yaml.dump(_clean_dict(obj), sort_keys=False, Dumper=SafeDumper)
         ys = ys.replace("{}", "")
         return ys
     return yaml_dumper.dumps(obj)
 
 
-def _objects_are_equal(obj1: Union[YAMLRoot, BaseModel, Dict], obj2: Union[YAMLRoot, BaseModel, Dict]) -> bool:
+def _objects_are_equal(obj1: Union[YAMLRoot, BaseModel, dict], obj2: Union[YAMLRoot, BaseModel, dict]) -> bool:
     y1 = _as_compact_yaml(obj1)
     y2 = _as_compact_yaml(obj2)
     return y1 == y2
@@ -590,7 +678,7 @@ def _clean_dict(value: Any):
         return value
 
 
-_sql_store_cache: Dict[str, SQLStore] = {}
+_sql_store_cache: dict[str, SQLStore] = {}
 
 
 def _get_sql_store(schema) -> SQLStore:
@@ -608,16 +696,16 @@ def _get_sql_store(schema) -> SQLStore:
 
 
 def check_data(
-    schema: Dict,
+    schema: dict,
     data_name: str,
     framework: FRAMEWORK,
-    object_to_validate: Dict,
+    object_to_validate: dict,
     valid: bool,
     should_warn: bool = False,
-    expected_behavior: Union[ValidationBehavior, Tuple[ValidationBehavior, str]] = ValidationBehavior.IMPLEMENTS,
+    expected_behavior: Union[ValidationBehavior, tuple[ValidationBehavior, str]] = ValidationBehavior.IMPLEMENTS,
     target_class: str = None,
     description: str = None,
-    coerced: Dict = None,
+    coerced: dict = None,
     exclude_rdf=False,
 ):
     """
@@ -649,24 +737,26 @@ def check_data(
     feature = feature_dict[schema_name_to_feature[schema["name"]]]
     feature.num_tests += 1
     # TODO: avoid repeated rewrites of same object shared across frameworks
-    with open(out_dir / f"README.{data_name}.md", "w", encoding="utf-8") as stream:
-        stream.write(f"# {data_name}\n")
-        if description:
-            stream.write(f"_{description}_\n")
-        stream.write("\n## Schema:\n")
-        stream.write(" * [../schema.yaml](../schema.yaml)\n")
-        stream.write("\n## Object:\n")
-        stream.write("```yaml\n")
-        yaml.safe_dump(object_to_validate, stream)
-        stream.write("```\n")
-        stream.write("\nExpected behavior:\n\n")
-        if valid:
-            stream.write("* valid (frameworks must accept the data object)\n")
-        else:
-            stream.write("* invalid (frameworks must flag the data object)\n")
-    with open(out_dir / f"{data_name}.yaml", "w", encoding="utf-8") as stream:
-        yaml.safe_dump(object_to_validate, stream)
+    if tests.WITH_OUTPUT:
+        with open(out_dir / f"README.{data_name}.md", "w", encoding="utf-8") as stream:
+            stream.write(f"# {data_name}\n")
+            if description:
+                stream.write(f"_{description}_\n")
+            stream.write("\n## Schema:\n")
+            stream.write(" * [../schema.yaml](../schema.yaml)\n")
+            stream.write("\n## Object:\n")
+            stream.write("```yaml\n")
+            yaml.safe_dump(object_to_validate, stream)
+            stream.write("```\n")
+            stream.write("\nExpected behavior:\n\n")
+            if valid:
+                stream.write("* valid (frameworks must accept the data object)\n")
+            else:
+                stream.write("* invalid (frameworks must flag the data object)\n")
+        with open(out_dir / f"{data_name}.yaml", "w", encoding="utf-8") as stream:
+            yaml.safe_dump(object_to_validate, stream)
     notes = None
+    plugins = []
     if isinstance(expected_behavior, tuple):
         expected_behavior, notes = expected_behavior
     if expected_behavior is None:
@@ -676,7 +766,7 @@ def check_data(
         ValidationBehavior.NOT_APPLICABLE,
         ValidationBehavior.FALSE_POSITIVE,
     ]:
-        logging.warning(f"Skipping test for {expected_behavior}")
+        logger.warning(f"Skipping test for {expected_behavior}")
     else:
         gen, output, output_path = _generate_framework_output(schema, framework)
         if isinstance(gen, (PydanticGenerator, PythonGenerator)):
@@ -685,11 +775,12 @@ def check_data(
             # coercion detection and output of repaired objects
             mod = compile_python(output)
             py_cls = getattr(mod, target_class)
-            logging.info(f"Validating {py_cls} against {object_to_validate}// {expected_behavior} {valid}")
+            logger.info(f"Validating {py_cls} against {object_to_validate}// {expected_behavior} {valid}")
             py_inst = None
             if valid:
                 py_inst = py_cls(**object_to_validate)
             else:
+                # TODO: to move this to a validator plugin, the plugin architecture must deal with coercion
                 if expected_behavior == ValidationBehavior.COERCES:
                     try:
                         py_inst = py_cls(**object_to_validate)
@@ -701,42 +792,54 @@ def check_data(
                                 coerced
                             ), f"coerced {py_inst} != {coerced}"
                         else:
-                            logging.warning(f"INCOMPLETE TEST: did not check coerced: {py_inst}")
+                            logger.warning(f"INCOMPLETE TEST: did not check coerced: {py_inst}")
                 else:
                     if isinstance(gen, PydanticGenerator):
                         with pytest.raises(pydantic.ValidationError):
                             py_inst = py_cls(**object_to_validate)
-                            logging.info(f"Unexpectedly instantiated {py_inst} from {object_to_validate}")
+                            logger.info(f"Unexpectedly instantiated {py_inst} from {object_to_validate}")
                     else:
                         with pytest.raises(Exception):
                             py_inst = py_cls(**object_to_validate)
-                            logging.info(f"Unexpectedly instantiated {py_inst}")
+                            logger.info(f"Unexpectedly instantiated {py_inst}")
             if py_inst is not None:
-                yaml.safe_load(yaml_dumper.dumps(py_inst))
                 # assert roundtripped.items() == object_to_validate.items()
                 if valid and not exclude_rdf:
                     if isinstance(gen, PythonGenerator):
                         ttl_path = out_dir / f"{data_name}.ttl"
                         _convert_data_to_rdf(schema, object_to_validate, target_class, ttl_path)
-            logging.info(f"fwk: {framework}, cls: {target_class}, inst: {object_to_validate}, valid: {valid}")
+            logger.info(f"fwk: {framework}, cls: {target_class}, inst: {object_to_validate}, valid: {valid}")
 
         elif isinstance(gen, JsonSchemaGenerator):
-            validator = JsonSchemaDataValidator(schema=yaml.dump(schema))
-            errors = list(validator.iter_validate_dict(_clean_dict(object_to_validate), target_class, closed=True))
-            logging.info(f"Expecting {valid}, Validating {object_to_validate} against {target_class}, errors: {errors}")
-            if valid:
-                assert errors == [], f"Errors found in json schema validation: {errors}"
-            else:
-                if expected_behavior == ValidationBehavior.ACCEPTS:
-                    logging.info("Does not flag exception for borderline case (e.g. matching an int to a float)")
-                else:
-                    assert errors != [], "Expected errors in json schema validation, but none found"
-            if should_warn:
-                logging.warning("TODO: check for warnings")
+            plugins = [JsonschemaValidationPlugin(closed=True, include_range_class_descendants=False)]
+        elif isinstance(gen, GENERATORS[PANDERA_POLARS_CLASS]):
+            check_data_pandera(schema, output, target_class, object_to_validate, expected_behavior, valid)
+        elif isinstance(gen, ContextGenerator):
+            context_dir = _schema_out_path(schema) / "generated" / "jsonld_context.context.jsonld"
+            if not context_dir.exists() and tests.WITH_OUTPUT:
+                raise AssertionError(f"Could not find {context_dir}")
+            context = json.loads(cached_generator_output[(schema["name"], "jsonld_context")][1])["@context"]
+            json_object = copy(object_to_validate)
+            json_object["@context"] = context
+            jsonld_path = out_dir / f"{data_name}.jsonld"
+            if tests.WITH_OUTPUT:
+                with open(jsonld_path, "w", encoding="utf-8") as stream:
+                    json.dump(json_object, stream, indent=2, sort_keys=True, ensure_ascii=False)
+            g = rdflib.Graph()
+            g.parse(data=json.dumps(json_object, indent=2, sort_keys=True, ensure_ascii=False), format="json-ld")
+            if not valid and expected_behavior == ValidationBehavior.IMPLEMENTS:
+                logger.info(f"Skipping validation for {jsonld_path}")
         elif isinstance(gen, OwlSchemaGenerator):
+            # TODO: make this a validator
             if not exclude_rdf:
                 ttl_path = out_dir / f"{data_name}.ttl"
-                _convert_data_to_rdf(schema, object_to_validate, target_class, ttl_path)
+                try:
+                    _convert_data_to_rdf(schema, object_to_validate, target_class, ttl_path)
+                except Exception as e:
+                    if valid:
+                        raise e
+                # if not ttl_path.exists():
+                #    raise ValueError(f"Could not convert {object_to_validate} to RDF")
                 coherent = robot_check_coherency(ttl_path, output_path, str(ttl_path) + ".reasoned.owl")
                 if coherent is not None:
                     if valid:
@@ -748,13 +851,22 @@ def check_data(
             else:
                 expected_behavior = ValidationBehavior.UNTESTED
         elif isinstance(gen, ShaclGenerator):
-            # TODO: use pyshacl
-            expected_behavior = ValidationBehavior.UNTESTED
+            # currently requires translating via python objects
+            if not exclude_rdf:
+                plugins = [ShaclValidationPlugin(closed=True)]
+            else:
+                expected_behavior = ValidationBehavior.UNTESTED
+            # expected_behavior = ValidationBehavior.UNTESTED
         elif isinstance(gen, ShExGenerator):
             # TODO: use pyshex
             expected_behavior = ValidationBehavior.UNTESTED
         elif framework == SQL_DDL_SQLITE:
-            endpoint = _get_sql_store(schema)
+            # TODO: make this a validator
+            try:
+                endpoint = _get_sql_store(schema)
+            except Exception as e:
+                if not valid:
+                    raise e
             endpoint.db_exists(force=True)
             py_cls = endpoint.native_module.__dict__[target_class]
             if valid:
@@ -765,8 +877,30 @@ def check_data(
                     py_obj = py_cls(**object_to_validate)
                     endpoint.dump(py_obj)
         else:
-            logging.warning(f"Unsupported generator {gen}")
+            logger.warning(f"Unsupported generator {gen}")
             expected_behavior = ValidationBehavior.UNTESTED
+    if plugins:
+        validator = Validator(
+            schema=schema,
+            validation_plugins=plugins,
+        )
+        # validator = JsonSchemaDataValidator(schema=yaml.dump(schema))
+        # errors = list(validator.iter_validate_dict(_clean_dict(object_to_validate), target_class, closed=True))
+
+        try:
+            errors = list(validator.iter_results(clean_null_terms(object_to_validate), target_class))
+        except Exception as e:
+            errors = [e]
+        logger.info(f"Expecting {valid}, Validating {object_to_validate} against {target_class}, errors: {errors}")
+        if valid:
+            assert errors == [], f"Errors found in json schema validation: {errors}"
+        else:
+            if expected_behavior == ValidationBehavior.ACCEPTS:
+                logger.info("Does not flag exception for borderline case (e.g. matching an int to a float)")
+            else:
+                assert errors != [], "Expected errors in json schema validation, but none found"
+        if should_warn:
+            logger.warning("TODO: check for warnings")
     feature.set_framework_behavior(framework, expected_behavior)
     if not valid:
         all_test_results.append(
@@ -781,6 +915,34 @@ def check_data(
         )
 
 
+def check_data_pandera(schema, output, target_class, object_to_validate, expected_behavior, valid):
+    pl = pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
+    mod = compile_python(output)
+    py_cls = getattr(mod, target_class)
+    polars_schema = py_cls.generate_polars_schema(object_to_validate)
+
+    logger.info(
+        f"Validating {target_class} against {object_to_validate} / {expected_behavior} / "
+        f"{valid}\n\n{yaml.dump(schema)}\n\n{output}"
+    )
+
+    try:
+        dataframe_to_validate = pl.DataFrame(object_to_validate, schema=polars_schema, strict=False)
+        py_cls.validate(dataframe_to_validate, lazy=True)
+    except Exception as e:
+        if valid:
+            raise e
+
+
+def clean_null_terms(d):
+    if type(d) is dict:  # noqa E721
+        return dict((k, clean_null_terms(v)) for k, v in d.items() if v is not None)
+    elif type(d) is list:  # noqa E721
+        return [clean_null_terms(v) for v in d if v is not None]
+    else:
+        return d
+
+
 def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_path: str) -> Optional[rdflib.Graph]:
     ttl_path = str(ttl_path)
     gen, output, _ = _generate_framework_output(schema, PYTHON_DATACLASSES)
@@ -789,9 +951,9 @@ def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_pa
     try:
         py_inst = py_cls(**instance)
     except Exception as e:
-        logging.info(f"Could not instantiate {py_cls} from {instance}; exception: {e}")
+        logger.info(f"Could not instantiate {py_cls} from {instance}; exception: {e}")
         return None
-    schemaview = SchemaView(yaml.dump(schema))
+    schemaview = SchemaView(SchemaDefinition(**schema))
     g = rdflib_dumper.as_rdf_graph(
         py_inst,
         schemaview=schemaview,
@@ -801,20 +963,44 @@ def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_pa
             "P": "http://example.org/P/",
         },
     )
-    g.serialize(ttl_path, format="turtle")
+    ttl_output = g.serialize(format="turtle")
     g = rdflib.Graph()
-    g.parse(ttl_path, format="turtle")
-    roundtripped = rdflib_loader.load(ttl_path, target_class=py_cls, schemaview=schemaview)
-    yaml_dumper.dump(roundtripped, to_file=ttl_path + ".yaml")
+    g.parse(data=ttl_output, format="turtle")
+    _roundtripped = rdflib_loader.load(ttl_output, target_class=py_cls, schemaview=schemaview)
+    if tests.WITH_OUTPUT:
+        with open(ttl_path, "w", encoding="utf-8") as stream:
+            stream.write(ttl_output)
     return g
 
 
 @lru_cache
 def robot_is_on_path():
+    """
+    Check if robot is on the path.
+
+    If robot is not on the path, then OWL checks will be skipped.
+
+    To ensure robot is on the path for pycharm
+
+    .. code-block:: bash
+
+        poetry run which python
+        which robot
+
+    Then execute something like this, ensuring you substitute your robot path and virtualenv path:
+
+    .. code-block:: bash
+
+        ln -s ~/repos/robot/bin/robot ~/Library/Caches/pypoetry/virtualenvs/linkml-lavaHNw6-py3.9/bin/robot
+
+    :return:
+    """
     return shutil.which("robot") is not None
 
 
-def robot_check_coherency(data_path: str, ontology_path: str, output_path: str = None) -> Optional[bool]:
+def robot_check_coherency(
+    data_path: Union[str, Path], ontology_path: Union[str, Path], output_path: Union[str, Path] = None
+) -> Optional[bool]:
     """
     Check the data validates using an OWL reasoner, executed by robot.
 
@@ -828,14 +1014,17 @@ def robot_check_coherency(data_path: str, ontology_path: str, output_path: str =
     """
     if not robot_is_on_path():
         return None
+    if not ontology_path:
+        return None
+        # raise ValueError(f"Ontology path must be provided for data_path={data_path}")
     merged = str(data_path) + ".merged.owl"
     cmd = [
         "robot",
         "merge",
         "-i",
-        data_path,
+        str(data_path),
         "-i",
-        ontology_path,
+        str(ontology_path),
         "-o",
         merged,
         "merge",
@@ -846,22 +1035,22 @@ def robot_check_coherency(data_path: str, ontology_path: str, output_path: str =
         "hermit",
     ]
     if output_path:
-        cmd.extend(["-o", output_path])
+        cmd.extend(["-o", str(output_path)])
     try:
+        # print(f"Running robot: {' '.join(cmd)}")
         result = subprocess.run(cmd, check=True, capture_output=True, text=True)
         if result.stderr:
-            logging.warning(result.stderr)
-        logging.info(result.stdout)
+            logger.warning(result.stderr)
         return True
     except subprocess.CalledProcessError as e:
-        logging.info(f"Robot call failed, likely unsatisfiable: {e}")
+        logger.info(f"Robot call failed, likely unsatisfiable: {e}")
         return False
 
 
-TREE_NODE = Tuple[int]
+TREE_NODE = tuple[int]
 
 
-def generate_tree_nodes(depth=3, num_siblings=2, path: List[int] = None) -> Iterator[TREE_NODE]:
+def generate_tree_nodes(depth=3, num_siblings=2, path: list[int] = None) -> Iterator[TREE_NODE]:
     """
     Generate a tree of data names, with depth `depth`.
 
@@ -877,7 +1066,7 @@ def generate_tree_nodes(depth=3, num_siblings=2, path: List[int] = None) -> Iter
             yield from generate_tree_nodes(depth=depth - 1, num_siblings=num_siblings, path=path + [i])
 
 
-def generate_tree(depth=3, num_siblings=2, prefix="N") -> Iterator[Tuple[str, List[str]]]:
+def generate_tree(depth=3, num_siblings=2, prefix="N") -> Iterator[tuple[str, list[str]]]:
     """
     Generate a tree of data names, with depth `depth`.
 

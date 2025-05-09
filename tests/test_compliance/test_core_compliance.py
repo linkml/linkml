@@ -1,13 +1,17 @@
 """Compliance tests for core constructs."""
+
+import sys
 import unicodedata
+from _decimal import Decimal
 
 import pytest
-from _decimal import Decimal
 from linkml_runtime.utils.formatutils import underscore
 
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
     OWL,
+    PANDERA_POLARS_CLASS,
+    PANDERA_ROOT_CLASS,
     PYDANTIC,
     PYDANTIC_ROOT_CLASS,
     PYTHON_DATACLASSES,
@@ -22,6 +26,7 @@ from tests.test_compliance.helper import (
     validated_schema,
 )
 from tests.test_compliance.test_compliance import (
+    CLASS_ANY,
     CLASS_C,
     CORE_FRAMEWORKS,
     EXAMPLE_STRING_VALUE_1,
@@ -84,23 +89,25 @@ def test_attributes(framework, description, object, is_valid):
             "attributes": {
                 SLOT_S1: {
                     "_mappings": {
-                        PYDANTIC: "s1: Optional[str] = Field(None)",
+                        PYDANTIC: "s1: Optional[str] = Field(default=None",
                         PYTHON_DATACLASSES: "s1: Optional[str] = None",
+                        PANDERA_POLARS_CLASS: "s1: Optional[str] = pla.Field(nullable=True, )",
                     }
                 },
                 SLOT_S2: {},
             },
             "_mappings": {
                 PYDANTIC: f"class C({PYDANTIC_ROOT_CLASS}):",
-                PYTHON_DATACLASSES: f"@dataclass\nclass C({PYTHON_DATACLASSES_ROOT_CLASS}):",
+                PYTHON_DATACLASSES: f"@dataclass(repr=False)\nclass C({PYTHON_DATACLASSES_ROOT_CLASS}):",
+                PANDERA_POLARS_CLASS: f"class C({PANDERA_ROOT_CLASS})",
                 JSON_SCHEMA: {
                     "$defs": {
                         "C": {
                             "additionalProperties": False,
                             "description": "",
                             "properties": {
-                                "s1": {"type": "string"},
-                                "s2": {"type": "string"},
+                                "s1": {"type": ["string", "null"]},
+                                "s2": {"type": ["string", "null"]},
                             },
                             "title": "C",
                             "type": "object",
@@ -131,6 +138,7 @@ def test_type_range(framework, linkml_type, example_value):
 
     This test will check the cross-product of a set of example values again schemas where the
     expected type for these values varies.
+
 
     Known issues:
 
@@ -163,6 +171,7 @@ def test_type_range(framework, linkml_type, example_value):
                     "_mappings": {
                         PYDANTIC: f"{SLOT_S1}: Optional[{typ_py_name}]",
                         PYTHON_DATACLASSES: f"{SLOT_S1}: Optional[{typ_py_name}]",
+                        PANDERA_POLARS_CLASS: f"{SLOT_S1}: Optional[{typ_py_name}]",
                     },
                 },
             }
@@ -183,7 +192,11 @@ def test_type_range(framework, linkml_type, example_value):
             pass
     # Pydantic coerces by default; see https://docs.pydantic.dev/latest/usage/types/strict_types/
     if coerced:
-        if linkml_type == "boolean" and not isinstance(v, int) and v != "1":
+        if sys.version_info < (3, 10) and framework == PYDANTIC and linkml_type == "boolean" and isinstance(v, float):
+            # On Python 3.9 and earlier, Pydantic will coerce floats to bools. This goes against
+            # what their docs say should happen or why it only affects older Python version.
+            expected_behavior = ValidationBehavior.COERCES
+        elif linkml_type == "boolean" and not isinstance(v, int) and v != "1":
             pass
         else:
             if framework in [PYDANTIC, PYTHON_DATACLASSES]:
@@ -193,7 +206,7 @@ def test_type_range(framework, linkml_type, example_value):
             elif framework == JSON_SCHEMA:
                 if linkml_type in ["float", "double"] and isinstance(v, int):
                     expected_behavior = ValidationBehavior.ACCEPTS
-            elif framework == OWL:
+            elif framework in [OWL, SHACL, SHEX]:
                 # OWL validation currently depends on python dataclasses to make instances;
                 # this coerces
                 expected_behavior = ValidationBehavior.INCOMPLETE
@@ -215,6 +228,110 @@ def test_type_range(framework, linkml_type, example_value):
 
 
 @pytest.mark.parametrize(
+    "name,range,minimum,maximum,value,valid",
+    [
+        ("integer", "integer", 1, 10, 5, True),
+        ("integer", "integer", 1, 10, 15, False),
+        ("float", "float", 1.5, 10.5, 1.6, True),
+        ("float", "float", 1.5, 10.5, 1.4, False),
+    ],
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_min_max_values(framework, name, range, minimum, maximum, value, valid):
+    """
+    Tests behavior of min/max values.
+
+    :param framework:
+    :param name:
+    :param range:
+    :param minimum:
+    :param maximum:
+    :param value:
+    :param valid:
+    :return:
+    """
+    if isinstance(value, Decimal):
+        pytest.skip("Decimal not supported by YAML - https://github.com/yaml/pyyaml/issues/255")
+    classes = {
+        CLASS_C: {
+            "attributes": {
+                SLOT_S1: {
+                    "range": range,
+                    "minimum_value": minimum,
+                    "maximum_value": maximum,
+                },
+            }
+        },
+    }
+    schema = validated_schema(
+        test_min_max_values, name, framework, classes=classes, core_elements=["minimum_value", "maximum_value"]
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework in [SQL_DDL_SQLITE, PYTHON_DATACLASSES]:
+        if not valid:
+            expected_behavior = ValidationBehavior.INCOMPLETE
+    check_data(
+        schema,
+        f"{type(value).__name__}-{value}",
+        framework,
+        {SLOT_S1: value},
+        valid,
+        expected_behavior=expected_behavior,
+        target_class=CLASS_C,
+        coerced=False,
+        description="min-max values",
+    )
+
+
+@pytest.mark.parametrize("example_value", ["", None, 1, 1.1, "1", True, False, Decimal("5.4"), {}, {"foo": 1}])
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_any_type(framework, example_value):
+    """
+    Tests linkml:Any.
+
+    :param framework: all should support built-in types
+    :param example_value: value to check
+    :return:
+    """
+    if isinstance(example_value, Decimal):
+        pytest.skip("Decimal not supported by YAML - https://github.com/yaml/pyyaml/issues/255")
+    if framework in [SQL_DDL_SQLITE, SQL_DDL_POSTGRES]:
+        pytest.skip("TODO: add support in sqlgen")
+    if framework == PANDERA_POLARS_CLASS:
+        pytest.skip("PanderaGen does not support class range slots.")
+    classes = {
+        CLASS_ANY: {
+            "class_uri": "linkml:Any",
+        },
+        CLASS_C: {
+            "attributes": {
+                SLOT_S1: {
+                    "range": "Any",
+                    "_mappings": {
+                        # PYDANTIC: f"{SLOT_S1}: Optional[Any]",
+                        # PYTHON_DATACLASSES: f"{SLOT_S1}: Optional[Any]",
+                        PANDERA_POLARS_CLASS: f"{SLOT_S1}: Optional[Object]"
+                    },
+                },
+            }
+        },
+    }
+    schema = validated_schema(test_any_type, "linkml_any", framework, classes=classes, core_elements=["Any"])
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    check_data(
+        schema,
+        f"{type(example_value).__name__}-{example_value}",
+        framework,
+        {SLOT_S1: example_value},
+        True,
+        expected_behavior=expected_behavior,
+        target_class=CLASS_C,
+        exclude_rdf=True,
+        description=f"linkml:Any with {example_value}",
+    )
+
+
+@pytest.mark.parametrize(
     "linkml_type,example_value,is_valid",
     [
         ("uri", "http://example.org/x/1", True),
@@ -222,6 +339,12 @@ def test_type_range(framework, linkml_type, example_value):
         ("uriorcurie", "X:1", True),
         ("uriorcurie", "X.Y:1", True),
         ("uriorcurie", "X 1", False),
+        ("uriorcurie", "X 1:1", False),
+        # ("uriorcurie", "X:1 2", False),
+        ("curie", "X:1", True),
+        ("curie", "X.Y:A1", True),
+        ("curie", "X 1", False),
+        ("curie", "X 1:A1", False),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
@@ -235,6 +358,9 @@ def test_uri_types(framework, linkml_type, example_value, is_valid):
     :param is_valid: whether the value is valid
     :return:
     """
+    if example_value == "X:1":
+        if framework in [PYTHON_DATACLASSES, SHACL, SHEX, OWL, SQL_DDL_SQLITE]:
+            pytest.skip("Incorrectly flagged as invalid")
     classes = {
         CLASS_C: {
             "attributes": {
@@ -244,12 +370,11 @@ def test_uri_types(framework, linkml_type, example_value, is_valid):
             }
         },
     }
-    coerced = False
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if not is_valid and framework in [PYDANTIC, JSON_SCHEMA]:
         expected_behavior = ValidationBehavior.INCOMPLETE
     schema = validated_schema(
-        test_type_range,
+        test_uri_types,
         linkml_type,
         framework,
         classes=classes,
@@ -263,7 +388,6 @@ def test_uri_types(framework, linkml_type, example_value, is_valid):
         is_valid,
         expected_behavior=expected_behavior,
         target_class=CLASS_C,
-        coerced=coerced,
         description="uris and curies",
     )
 
@@ -336,9 +460,14 @@ def test_date_types(framework, linkml_type, example_value, is_valid):
         if linkml_type == "time" and "." in example_value and is_valid:
             expected_behavior = ValidationBehavior.FALSE_POSITIVE
     if framework == PYDANTIC:
+        if linkml_type == "datetime" and example_value == "2021-01-01":
+            expected_behavior = ValidationBehavior.COERCES
         if linkml_type == "time" and is_valid is False:
             expected_behavior = ValidationBehavior.INCOMPLETE
         if linkml_type == "date" and is_valid is False and example_value.startswith("2021"):
+            expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
+        if linkml_type == "datetime" and is_valid and "T" in example_value:
             expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == JSON_SCHEMA:
         # RFC3339 requires either Z or time zone offset
@@ -354,7 +483,7 @@ def test_date_types(framework, linkml_type, example_value, is_valid):
     if ("+" in example_value or "Z" in example_value) and is_valid:
         if framework in [PYDANTIC, PYTHON_DATACLASSES]:
             expected_behavior = ValidationBehavior.FALSE_POSITIVE
-    if framework == OWL:
+    if framework in [OWL, SHACL, SHEX]:
         # OWL validation currently depends on python dataclasses to make instances;
         # this coerces;
         if not is_valid:
@@ -397,10 +526,10 @@ def test_cardinality(framework, multivalued, required, data_name, value):
     :return:
     """
     choices = {
-        (PYDANTIC, False, False): "Optional[str] = Field(None)",
-        (PYDANTIC, False, True): "str = Field(...)",
-        (PYDANTIC, True, False): "Optional[List[str]] = Field(default_factory=list)",
-        (PYDANTIC, True, True): "List[str] = Field(default_factory=list)",
+        (PYDANTIC, False, False): "Optional[str] = Field(default=None",
+        (PYDANTIC, False, True): "str = Field(default=...",
+        (PYDANTIC, True, False): "Optional[list[str]] = Field(default=None",
+        (PYDANTIC, True, True): "list[str] = Field(default=...",
         # TODO: values
         (PYTHON_DATACLASSES, False, False): "",
         (PYTHON_DATACLASSES, False, True): "",
@@ -422,6 +551,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         "sh:property [ sh:datatype xsd:string ;"
         f"    {'sh:maxCount 1 ;' if not multivalued else ''}"
         f"    {'sh:minCount 1 ;' if required else ''}"
+        "    sh:nodeKind sh:Literal ;"
         "    sh:order 0 ;"
         "    sh:path ex:s1 ] ;"
         "sh:targetClass ex:C ."
@@ -457,7 +587,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
     else:
         sqlite = (
             'CREATE TABLE "C_s1" ('
-            '   "C_id" TEXT,'
+            '   "C_id" INTEGER,'
             f"   s1 TEXT {sql_nullable},"
             '   PRIMARY KEY ("C_id", s1),'
             '   FOREIGN KEY("C_id") REFERENCES "C" (id)'
@@ -517,6 +647,14 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         if not is_valid:
             # OWL is open world
             expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == SHACL:
+        if not is_valid:
+            if multivalued and not isinstance(value, list):
+                # RDF does not distinguish between singletons and single values
+                expected_behavior = ValidationBehavior.INCOMPLETE
+        if not multivalued and isinstance(value, list):
+            # RDF does not distinguish between singletons and single values
+            expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data_name,
@@ -550,6 +688,8 @@ def test_identifier_is_required(framework, required_asserted, data_name, instanc
     :param is_valid:
     :return:
     """
+    if framework == SHACL:
+        pytest.skip("TODO: @base CURIEs")
     classes = {
         CLASS_C: {
             "attributes": {
@@ -562,7 +702,7 @@ def test_identifier_is_required(framework, required_asserted, data_name, instanc
         }
     }
     schema = validated_schema(
-        test_cardinality,
+        test_identifier_is_required,
         f"requiredEQ_{required_asserted}",
         framework,
         classes=classes,
@@ -639,16 +779,18 @@ def test_non_standard_names(framework, class_name, safe_class_name, slot_name, s
         },
     }
     name = ensafeify(f"ClassNameEQ_{class_name}__SlotNameEQ_{slot_name}__TypeNameEQ_{type_name}")
-    schema = validated_schema(test_cardinality, name, framework, classes=classes, types=types, core_elements=[])
+    schema = validated_schema(test_cardinality, name, framework, classes=classes, types=types, core_elements=["name"])
     expected_behavior = ValidationBehavior.IMPLEMENTS
     instance = {
         safe_slot_name: "x",
     }
     exclude_rdf = False
     if slot_name.startswith("1"):
-        if framework in [PYTHON_DATACLASSES, PYDANTIC, SQL_DDL_SQLITE]:
+        if framework in [PYTHON_DATACLASSES, PYDANTIC, SQL_DDL_SQLITE, PANDERA_POLARS_CLASS]:
             expected_behavior = ValidationBehavior.INCOMPLETE
         exclude_rdf = True
+    if class_name == "c" and framework in [JSON_SCHEMA, SHACL]:
+        pytest.skip("TODO: causes schemaview error")
     check_data(
         schema,
         "test",
@@ -711,18 +853,25 @@ def test_non_standard_num_names(framework, enum_name, pv_name):
         framework,
         classes=classes,
         enums=enums,
-        core_elements=[],
+        core_elements=["name"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     instance = {
         SLOT_S1: pv_name,
     }
     exclude_rdf = False
-    if "[" in enum_name and framework in [PYDANTIC, SQL_DDL_SQLITE, PYTHON_DATACLASSES, OWL]:
+    if "[" in enum_name and framework in [
+        PYDANTIC,
+        SQL_DDL_SQLITE,
+        PYTHON_DATACLASSES,
+        OWL,
+        SHACL,
+        PANDERA_POLARS_CLASS,
+    ]:
         # TODO: need to escape []s
         expected_behavior = ValidationBehavior.INCOMPLETE
         exclude_rdf = True
-    if pv_name == " " and framework == PYDANTIC:
+    if pv_name == " " and framework in PYDANTIC:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,

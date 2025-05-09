@@ -1,0 +1,12 @@
+# metamodel_version: 1.7.0id: Address
+schema_generating: true
+display_name: Address
+document_category: Address
+weight: 20
+fields:
+- id: street
+  display_name: street
+- id: city
+  display_name: city
+- id: altitude
+  display_name: altitude

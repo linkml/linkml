@@ -205,7 +205,7 @@ Thus the JSON-Schema loses some information that is useful for
 validation, and for understanding of the schema. 
 
 LinkML also supports the ability to inline multivalued slots as
-dictionaries, where the key is the object identifier. See :doc:`Inlining <schemas/inlining>`
+dictionaries, where the key is the object identifier. See :doc:`Inlining </schemas/inlining>`
 
 This example schema supports inlining a list of people as a dictionary:
 
@@ -472,5 +472,5 @@ Code
 .. currentmodule:: linkml.generators.jsonschemagen
                    
 .. autoclass:: JsonSchemaGenerator
-    :members: serialize, json_schema_types
+    :members: serialize
 

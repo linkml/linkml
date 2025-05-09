@@ -1,0 +1,10 @@
+# metamodel_version: 1.7.0id: CodeSystem
+schema_generating: true
+display_name: CodeSystem
+document_category: CodeSystem
+weight: 20
+fields:
+- id: id
+  display_name: id
+- id: name
+  display_name: name

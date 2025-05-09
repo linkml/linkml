@@ -4,12 +4,15 @@ YAML Schema to RDF Generator
 Generate a JSON LD representation of the model
 
 """
+
 import os
 import urllib.parse as urlparse
-from dataclasses import dataclass, field
-from typing import List, Optional
+from copy import deepcopy
+from dataclasses import dataclass
+from typing import Optional
 
 import click
+from linkml_runtime.linkml_model import SchemaDefinition
 from rdflib import Graph
 from rdflib.plugin import Parser as rdflib_Parser
 from rdflib.plugin import plugins as rdflib_plugins
@@ -32,15 +35,21 @@ class RDFGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
-    emit_metadata: bool = field(default_factory=lambda: False)
-    context: List[str] = None
+    emit_metadata: bool = False
+    context: list[str] = None
+    original_schema: SchemaDefinition = None
+    """See https://github.com/linkml/linkml/issues/871"""
+
+    def __post_init__(self):
+        self.original_schema = deepcopy(self.schema)
+        super().__post_init__()
 
     def _data(self, g: Graph) -> str:
         return g.serialize(format="turtle" if self.format == "ttl" else self.format)
 
-    def end_schema(self, output: Optional[str] = None, context: str = None, **_) -> None:
+    def end_schema(self, output: Optional[str] = None, context: str = None, **_) -> str:
         gen = JSONLDGenerator(
-            self,
+            self.original_schema,
             format=JSONLDGenerator.valid_formats[0],
             metadata=self.emit_metadata,
             importmap=self.importmap,
@@ -58,15 +67,16 @@ class RDFGenerator(Generator):
             base=str(self.namespaces._base),
             prefix=True,
         )
+        out = self._data(graph)
         if output:
             with open(output, "w", encoding="UTF-8") as outf:
-                outf.write(self._data(graph))
-        else:
-            print(self._data(graph))
+                outf.write(out)
+
+        return out
 
 
 @shared_arguments(RDFGenerator)
-@click.command()
+@click.command(name="rdf")
 @click.option("-o", "--output", help="Output file name")
 @click.option(
     "--context",

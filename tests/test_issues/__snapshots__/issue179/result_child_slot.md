@@ -3,7 +3,6 @@
 
 
 
-
 URI: [http://example.org/sample/example1/result_child_slot](http://example.org/sample/example1/result_child_slot)
 
 

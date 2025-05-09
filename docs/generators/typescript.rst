@@ -15,7 +15,7 @@ Docs
 Command Line
 ^^^^^^^^^^^^
 
-.. currentmodule:: linkml.generators.typescript
+.. currentmodule:: linkml.generators.typescriptgen
 
 .. click:: linkml.generators.typescriptgen:cli
     :prog: gen-typescript

@@ -1,8 +1,9 @@
 import importlib
 import sys
 from collections import Counter
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Optional, Union
 
 import click
 import yaml
@@ -19,8 +20,8 @@ from linkml.validator.report import Severity
 class Config(BaseModel):
     schema_path: Union[str, Path] = Field(alias="schema")
     target_class: Optional[str] = None
-    data_sources: Iterable[Union[str, Dict[str, Dict[str, str]]]] = []
-    plugins: Optional[Dict[str, Optional[Dict[str, Any]]]] = {"JsonschemaValidationPlugin": {"closed": True}}
+    data_sources: Iterable[Union[str, dict[str, dict[str, str]]]] = []
+    plugins: Optional[dict[str, Optional[dict[str, Any]]]] = {"JsonschemaValidationPlugin": {"closed": True}}
 
 
 def _resolve_class(full_class_name: str, default_package: str, **kwargs):
@@ -37,7 +38,7 @@ def _resolve_class(full_class_name: str, default_package: str, **kwargs):
     return class_inst(**kwargs)
 
 
-def _resolve_plugins(plugin_config: Dict[str, Dict[str, Any]]) -> List[ValidationPlugin]:
+def _resolve_plugins(plugin_config: dict[str, dict[str, Any]]) -> list[ValidationPlugin]:
     plugins = []
     for key, value in plugin_config.items():
         plugin = _resolve_class(key, "linkml.validator.plugins", **value if value else {})
@@ -45,7 +46,7 @@ def _resolve_plugins(plugin_config: Dict[str, Dict[str, Any]]) -> List[Validatio
     return plugins
 
 
-def _resolve_loaders(loader_config: Iterable[Union[str, Dict[str, Dict[str, str]]]]) -> List[Loader]:
+def _resolve_loaders(loader_config: Iterable[Union[str, dict[str, dict[str, str]]]]) -> list[Loader]:
     loaders = []
     for entry in loader_config:
         if isinstance(entry, str):
@@ -64,7 +65,7 @@ def _resolve_loaders(loader_config: Iterable[Union[str, Dict[str, Dict[str, str]
 DEPRECATED = "[DEPRECATED: only used in legacy mode]"
 
 
-@click.command()
+@click.command(name="validate")
 @click.option(
     "-s",
     "--schema",
@@ -108,6 +109,13 @@ DEPRECATED = "[DEPRECATED: only used in legacy mode]"
     help=f"{DEPRECATED} When handling range constraints, include all descendants of the range "
     "class instead of just the range class",
 )
+@click.option(
+    "--include-context/--no-include-context",
+    "-D",
+    default=False,
+    show_default=True,
+    help="Include additional context when reporting of validation errors.",
+)
 @click.argument("data_sources", nargs=-1, type=click.Path(exists=True))
 @click.version_option(__version__, "-V", "--version")
 @click.pass_context
@@ -116,14 +124,18 @@ def cli(
     schema: Optional[Path],
     target_class: Optional[str],
     config: Optional[str],
-    data_sources: Tuple[str],
+    data_sources: tuple[str],
     exit_on_first_failure: bool,
     legacy_mode: bool,
     module: Optional[str],
     input_format: Optional[str],
     index_slot: Optional[str],
     include_range_class_descendants: bool,
+    include_context: bool,
 ):
+    """
+    Validate data according to a LinkML Schema
+    """
     if legacy_mode:
         from linkml.validators import jsonschemavalidator
 
@@ -183,6 +195,9 @@ def cli(
         for result in validator.iter_results_from_source(loader, config.target_class):
             severity_counter[result.severity] += 1
             click.echo(f"[{result.severity.value}] [{loader.source}/{result.instance_index}] {result.message}")
+            if include_context:
+                for ctx in result.context:
+                    click.echo(f"[CONTEXT] {ctx}")
 
     if sum(severity_counter.values()) == 0:
         click.echo("No issues found")

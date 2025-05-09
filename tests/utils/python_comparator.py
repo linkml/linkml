@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Optional
 
 from linkml_runtime.utils.compile_python import compile_python
 
@@ -14,7 +14,7 @@ def compare_python(expected: str, actual: str, expected_path: Optional[str] = No
     :return: Differences or issues if any, else None
     """
 
-    def to_text(txt_or_fn: str) -> Tuple[str, Optional[str]]:
+    def to_text(txt_or_fn: str) -> tuple[str, Optional[str]]:
         """
         Convert txt_or_fn to text
         :param txt_or_fn:
