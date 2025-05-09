@@ -42,13 +42,13 @@ dynamic = ["version"]
 dependencies = [  # Specifier syntax: https://peps.python.org/pep-0631/
     "antlr4-python3-runtime >= 4.9.0, < 4.10",
     "click >= 7.0",
-    "graphviz >= 0.10.1", 
-    "hbreader", 
+    "graphviz >= 0.10.1",
+    "hbreader",
     "isodate >= 0.6.0",
     "jinja2 >= 3.1.0",
     "jsonasobj2 >= 1.0.3, < 2.0.0",
     "jsonschema[format] >= 4.0.0",
-    "linkml-runtime >= 1.9.1, < 2.0.0",
+    "linkml-runtime >= 1.9.2, < 2.0.0",
     "openpyxl",
     "parse",
     "prefixcommons >= 0.1.7",
@@ -77,10 +77,16 @@ shacl = [
     "pyshacl >= 0.25.0",
 ]
 tests = [
-    # "linkml[black]",  # recursive dependency not supported by poetry 
+    # "linkml[black]",  # recursive dependency not supported by poetry
     "black >= 24.0.0",
     "numpydantic >= 1.6.1",
     "pyshacl >= 0.25.0",
+]
+pandera = [
+  "pandera >= 0.19.0"
+]
+polars-lts-cpu = [
+  "polars-lts-cpu >= 1.0.0"
 ]
 
 [project.scripts]
@@ -105,6 +111,7 @@ gen-proto = "linkml.generators.protogen:cli"
 gen-py-classes = "linkml.generators.pythongen:cli"
 gen-python = "linkml.generators.pythongen:cli"
 gen-pydantic = "linkml.generators.pydanticgen:cli"
+gen-pandera = "linkml.generators.panderagen:cli"
 gen-rdf = "linkml.generators.rdfgen:cli"
 gen-shex = "linkml.generators.shexgen:cli"
 gen-shacl = "linkml.generators.shaclgen:cli"
@@ -229,6 +236,7 @@ markers = [
   "plantumlgen: Tests for the plantuml generator",
   "pydanticgen_split: Split module generation in pydanticgen",
   "pydanticgen_npd: tests for the numpydantic array generator",
+  "panderagen: tests for the pandera generator",
   "pythongen: Tests for python generator",
   "pydanticgen: Tests for pydantic generator",
   "javagen: Tests for java generator",

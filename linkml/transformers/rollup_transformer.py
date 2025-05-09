@@ -13,7 +13,6 @@ from typing import Optional
 from linkml_runtime.linkml_model.meta import (
     ClassDefinitionName,
     SchemaDefinition,
-    SlotDefinition,
 )
 from linkml_runtime.utils.schemaview import SchemaView
 
@@ -59,7 +58,6 @@ class RollupTransformer(ModelTransformer):
         self.config = config or FlattenTransformerConfiguration()
         self._descendant_classes: set[str] = set()
         self._class_to_slot_map: dict[str, set[str]] = {}
-        self._collect_slots_for_class: dict[str, list[SlotDefinition]] = {}
 
     def transform(self, tgt_schema_name: str = None, top_class: ClassDefinitionName = None) -> SchemaDefinition:
         """
@@ -79,24 +77,17 @@ class RollupTransformer(ModelTransformer):
         view = SchemaView(schema_copy)
         descendants = view.class_descendants(self.target_class, imports=True, mixins=True, reflexive=False, is_a=True)
         self._descendant_classes = set(descendants)
-        self._collect_slots(view)
-        return self._create_flattened_schema(schema_copy, view)
 
-    def _collect_slots(self, view: SchemaView) -> None:
-        """
-        Collect all slots from the target class and its descendant classes.
-        Populates a mapping of class name to the set of its slot names.
-        """
-        # Get induced slots for the target class.
-        target_slots = view.class_induced_slots(self.target_class)
-        self._collect_slots_for_class[self.target_class] = target_slots
-
+        # Collect all slots from the target class and its descendant classes, and
+        # populate a mapping of class name to the set of its slot names.
         for descendant in self._descendant_classes:
             slots = view.class_induced_slots(descendant)
-            self._collect_slots_for_class[descendant] = slots
             self._class_to_slot_map[descendant] = {s.name for s in slots}
 
-    def _create_flattened_schema(self, schema: SchemaDefinition, view: SchemaView) -> SchemaDefinition:
+        # flatten the schema
+        return self._create_flattened_schema(schema_copy)
+
+    def _create_flattened_schema(self, schema: SchemaDefinition) -> SchemaDefinition:
         """
         Create a new flattened version of the schema based on collected slots.
         """
@@ -110,11 +101,10 @@ class RollupTransformer(ModelTransformer):
                     if slot_name not in existing_slot_names:
                         all_slots.add(slot_name)
 
-        #!
-        if target_class_def.slots:
-            target_class_def.slots.extend(list(all_slots))
-        else:
-            target_class_def.slots = list(all_slots)
+        if not target_class_def.slots:
+            target_class_def.slots = []
+
+        target_class_def.slots.extend(list(all_slots))
 
         # Optionally remove descendant classes.
         if not self.config.include_all_classes:
@@ -122,12 +112,4 @@ class RollupTransformer(ModelTransformer):
                 if descendant in schema.classes:
                     del schema.classes[descendant]
 
-        if self.config.preserve_class_designator and self.config.class_designator_slot:
-            self._handle_class_designator(schema)
         return schema
-
-    def _handle_class_designator(self, schema: SchemaDefinition) -> None:
-        """!Keep original class names unchanged!"""
-        # Method intentionally does nothing to preserve original designator slot behavior
-        # only for future adaptations
-        pass
