@@ -994,47 +994,45 @@ class DocGenerator(Generator):
         else:
             return obj
 
-    def classrule_to_dict_view(self, rule: ClassRule) -> dict[str, Any]:
-        """This method can iterate over a ClassRule object asserted on the `rule`
-        slot of a class. This method will return a value that contains four pieces of
-        information about the rule – _title_, _preconditions_, _postconditions_,
-        and _elseconditions_. This return value will be read in the jinja template,
-        and appropriately formatted into a tabular view for users to be able to
-        glean details about asserted rules.
+    def classrule_to_dict_view(self, element: ClassDefinition) -> list[dict[str, Any]]:
+        """Process all rules (of type ClassRule) asserted on a class.
 
-        Note: This method removes the redundant "name" key which is asserted on some
-        classes in the Python representation of some classes from the metamodel.
+        This method iterates through all rules asserted on a class and returns a list of
+        dictionaries, each containing four pieces of information about a rule:
+        _title_, _preconditions_, _postconditions_, and _elseconditions_.
+        These values will be read in the jinja template and formatted into a tabular
+        view for users to understand the rules applied to the class.
 
-        :param rule: ClassRule object to be processed
-        :return: Dictionary with title and "sanitized" conditions
-        """
-        # TODO: expand this list of ClassRule metaslots based on use case
-        classrule_as_dict = {
-            "title": rule.title or "",
-            "preconditions": None,
-            "postconditions": None,
-            "elseconditions": None,
-        }
-
-        for key in ["preconditions", "postconditions", "elseconditions"]:
-            condition_obj = getattr(rule, key, None)
-            if condition_obj:
-                json_obj = json_dumper.to_dict(condition_obj)
-                sanitized_condition = self._remove_name_keys(json_obj)
-                classrule_as_dict[key] = sanitized_condition
-
-        return classrule_as_dict
-
-    def process_class_rules(self, element: ClassDefinition) -> list[dict[str, Any]]:
-        """Apply classrule_to_dict_view() method to each rule asserted on the class.
+        Note: This method removes redundant "name" keys which are asserted on some
+        classes in the Python representation of classes from the metamodel.
 
         :param element: LinkML class object with `rules` asserted on it
-        :return: List of class rules as dictionaries
+        :return: List of dictionaries with title and "sanitized" conditions for each rule
         """
         if not element.rules:
             return []
 
-        return [self.classrule_to_dict_view(rule) for rule in element.rules]
+        rule_dicts = []
+
+        for rule in element.rules:
+            # TODO: expand this list of ClassRule metaslots based on use case
+            rule_dict = {
+                "title": rule.title or "",
+                "preconditions": None,
+                "postconditions": None,
+                "elseconditions": None,
+            }
+
+            for key in ["preconditions", "postconditions", "elseconditions"]:
+                condition_obj = getattr(rule, key, None)
+                if condition_obj:
+                    json_obj = json_dumper.to_dict(condition_obj)
+                    sanitized_condition = self._remove_name_keys(json_obj)
+                    rule_dict[key] = sanitized_condition
+
+            rule_dicts.append(rule_dict)
+
+        return rule_dicts
 
 
 @shared_arguments(DocGenerator)

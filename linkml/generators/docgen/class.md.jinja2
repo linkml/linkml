@@ -100,7 +100,7 @@ URI: {{ gen.uri_link(element) }}
 {% if element.rules %}
 ## Rules
 
-{% for rule in gen.process_class_rules(element) %}
+{% for rule in gen.classrule_to_dict_view(element) %}
 ### {{ rule.title }}
 
 | Rule Applied | Preconditions | Postconditions | Elseconditions |

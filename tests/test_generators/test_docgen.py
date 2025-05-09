@@ -427,6 +427,46 @@ def test_class_rules_documentation(kitchen_sink_path, tmp_path):
         after="| Rule Applied | Preconditions | Postconditions | Elseconditions |",
     )
 
+    # Test the specific methods for rule processing
+    # Get the EmploymentEvent class which has rules defined
+    employment_event_class = gen.schemaview.get_class("EmploymentEvent")
+
+    # Test classrule_to_dict_view method
+    processed_rules = gen.classrule_to_dict_view(employment_event_class)
+    assert len(processed_rules) == 1
+    assert processed_rules[0]["title"] == ""  # The rule in kitchen_sink doesn't have a title
+
+    # Get the first rule for further testing
+    rule_dict = processed_rules[0]
+
+    # Test that preconditions are properly processed
+    assert "slot_conditions" in rule_dict["preconditions"]
+    assert "type" in rule_dict["preconditions"]["slot_conditions"]
+    assert "any_of" in rule_dict["preconditions"]["slot_conditions"]["type"]
+
+    # Check for specific values in the preconditions
+    type_conditions = rule_dict["preconditions"]["slot_conditions"]["type"]["any_of"]
+    condition_values = [c.get("equals_string") for c in type_conditions if "equals_string" in c]
+    assert "HIRE" in condition_values
+    assert "PROMOTION" in condition_values
+
+    # Test that postconditions are properly processed
+    assert "slot_conditions" in rule_dict["postconditions"]
+    assert "cordialness" in rule_dict["postconditions"]["slot_conditions"]
+    assert "equals_string" in rule_dict["postconditions"]["slot_conditions"]["cordialness"]
+    assert rule_dict["postconditions"]["slot_conditions"]["cordialness"]["equals_string"] == "heartfelt"
+
+    # Test that elseconditions is None since it's not defined in the rule
+    assert rule_dict["elseconditions"] is None
+
+    # Test that 'name' keys have been removed from the preconditions and postconditions
+    assert "name" not in rule_dict["preconditions"]
+    assert "name" not in rule_dict["preconditions"]["slot_conditions"]
+    assert "name" not in rule_dict["preconditions"]["slot_conditions"]["type"]
+    assert "name" not in rule_dict["postconditions"]
+    assert "name" not in rule_dict["postconditions"]["slot_conditions"]
+    assert "name" not in rule_dict["postconditions"]["slot_conditions"]["cordialness"]
+
 
 def test_gen_metamodel(tmp_path):
     """Tests generation of docs for metamodel"""
