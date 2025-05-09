@@ -1020,8 +1020,8 @@ class DocGenerator(Generator):
             condition_obj = getattr(rule, key, None)
             if condition_obj:
                 json_obj = json_dumper.to_dict(condition_obj)
-                sanitzed_condition = self._remove_name_keys(json_obj)
-                classrule_as_dict[key] = sanitzed_condition
+                sanitized_condition = self._remove_name_keys(json_obj)
+                classrule_as_dict[key] = sanitized_condition
 
         return classrule_as_dict
 
