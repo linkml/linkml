@@ -240,6 +240,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../generators/excel.html">Excel Spreadsheet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/csv.html">CSV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/yaml.html">Yaml</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/pandera.html">Pandera</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../generators/common/index.html">Common</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Common</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../generators/common/build.html">Build</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../generators/common/lifecycle.html">Lifecycle</a></li>
@@ -400,6 +401,11 @@ or run <code class="docutils literal notranslate"><span class="pre">linkml</span
 <span class="sig-name descname"><span class="pre">excel</span></span></dt>
 <dd><p>Generate Excel representation of a LinkML…</p>
 </dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">gen-pandera</span></span></dt>
+<dd></dd></dl>
 
 <dl class="object">
 <dt class="sig sig-object">
@@ -1336,6 +1342,44 @@ present, then all entities are included.</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-excel-arg-YAMLFILE">
 <span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-excel-arg-YAMLFILE" title="Permalink to this definition">#</a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</section>
+<section id="linkml-generate-full-gen-pandera">
+<h4>gen-pandera<a class="headerlink" href="#linkml-generate-full-gen-pandera" title="Permalink to this heading">#</a></h4>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>linkml<span class="w"> </span>generate<span class="w"> </span><span class="o">(</span>full<span class="o">)</span><span class="w"> </span>gen-pandera<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-gen-pandera-V">
+<span id="cmdoption-linkml-generate-full-gen-pandera-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-gen-pandera-V" title="Permalink to this definition">#</a></dt>
+<dd><p>Show the version and exit.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-gen-pandera-template-file">
+<span class="sig-name descname"><span class="pre">--template-file</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;template_file&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-gen-pandera-template-file" title="Permalink to this definition">#</a></dt>
+<dd><p>Optional jinja2 template to use for class generation</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-gen-pandera-template-path">
+<span class="sig-name descname"><span class="pre">--template-path</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;template_path&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-gen-pandera-template-path" title="Permalink to this definition">#</a></dt>
+<dd><p>Optional jinja2 template directory within module</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-gen-pandera-package">
+<span class="sig-name descname"><span class="pre">--package</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;package&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-gen-pandera-package" title="Permalink to this definition">#</a></dt>
+<dd><p>Package name where relevant for generated class files</p>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-gen-pandera-arg-YAMLFILE">
+<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-gen-pandera-arg-YAMLFILE" title="Permalink to this definition">#</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
@@ -5098,6 +5142,7 @@ is conformant to the same LinkML schema.</p>
 <li><a class="reference internal" href="#linkml-generate-full-doc">doc</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-erdiagram">erdiagram</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-excel">excel</a></li>
+<li><a class="reference internal" href="#linkml-generate-full-gen-pandera">gen-pandera</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-golang">golang</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-golr-views">golr-views</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-graphql">graphql</a></li>

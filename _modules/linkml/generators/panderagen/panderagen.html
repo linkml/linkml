@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
-        <title>linkml.generators.common.type_designators - linkml documentation</title>
+        <title>linkml.generators.panderagen.panderagen - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -344,52 +344,223 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for linkml.generators.common.type_designators</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span>
+          <h1>Source code for linkml.generators.panderagen.panderagen</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">PurePosixPath</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModuleType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">PackageLoader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeDefinition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.compile_python</span><span class="w"> </span><span class="kn">import</span> <span class="n">compile_python</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">camelcase</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.schemaview</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.oocodegen</span><span class="w"> </span><span class="kn">import</span> <span class="n">OOClass</span><span class="p">,</span> <span class="n">OOCodeGenerator</span><span class="p">,</span> <span class="n">OODocument</span>
 
-<div class="viewcode-block" id="get_type_designator_value"><a class="viewcode-back" href="../../../../generators/common/type_designators.html#linkml.generators.common.type_designators.get_type_designator_value">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_type_designator_value</span><span class="p">(</span><span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">type_designator_slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">class_def</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.class_generator_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassGeneratorMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enum_generator_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnumGeneratorMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.slot_generator_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">SlotGeneratorMixin</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="c1"># keys are template_path</span>
+<span class="n">TYPEMAP</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;panderagen_class_based&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;xsd:string&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;xsd:integer&quot;</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;xsd:float&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;xsd:double&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;xsd:boolean&quot;</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;xsd:dateTime&quot;</span><span class="p">:</span> <span class="s2">&quot;DateTime&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;xsd:date&quot;</span><span class="p">:</span> <span class="s2">&quot;Date&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;xsd:time&quot;</span><span class="p">:</span> <span class="s2">&quot;Time&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;xsd:anyURI&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;xsd:decimal&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TemplateEnum</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">CLASS_BASED</span> <span class="o">=</span> <span class="s2">&quot;panderagen_class_based&quot;</span>
+
+
+<div class="viewcode-block" id="PanderaGenerator"><a class="viewcode-back" href="../../../../generators/pandera.html#linkml.generators.panderagen.PanderaGenerator">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PanderaGenerator</span><span class="p">(</span><span class="n">OOCodeGenerator</span><span class="p">,</span> <span class="n">EnumGeneratorMixin</span><span class="p">,</span> <span class="n">ClassGeneratorMixin</span><span class="p">,</span> <span class="n">SlotGeneratorMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    returns the correct value for a type designator field for a given class, depending on its range</span>
-<span class="sd">    this implements the logic described in https://github.com/linkml/linkml/issues/945:</span>
+<span class="sd">    Generates Pandera python classes from a LinkML schema.</span>
+
+<span class="sd">    Status: incompletely implemented</span>
+
+<span class="sd">    One styles is supported:</span>
+
+<span class="sd">    - panderagen_class_based</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">slot_types</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">type_ancestors</span><span class="p">(</span><span class="n">type_designator_slot</span><span class="o">.</span><span class="n">range</span><span class="p">))</span>
-    <span class="k">if</span> <span class="s2">&quot;uri&quot;</span> <span class="ow">in</span> <span class="n">slot_types</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">class_def</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="s2">&quot;uriorcurie&quot;</span> <span class="ow">in</span> <span class="n">slot_types</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">class_def</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="s2">&quot;string&quot;</span> <span class="ow">in</span> <span class="n">slot_types</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">class_def</span><span class="o">.</span><span class="n">name</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">class_def</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+    <span class="n">DEFAULT_TEMPLATE_PATH</span> <span class="o">=</span> <span class="s2">&quot;panderagen_class_based&quot;</span>
+    <span class="n">DEFAULT_TEMPLATE_FILE</span> <span class="o">=</span> <span class="s2">&quot;pandera.jinja2&quot;</span>
+
+    <span class="c1"># ClassVars</span>
+    <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+    <span class="n">generatorstem</span> <span class="o">=</span> <span class="n">PurePosixPath</span><span class="p">(</span><span class="n">generatorname</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>
+    <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.0.1&quot;</span>
+    <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;python&quot;</span><span class="p">]</span>
+    <span class="n">file_extension</span> <span class="o">=</span> <span class="s2">&quot;py&quot;</span>
+    <span class="n">java_style</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># ObjectVars</span>
+    <span class="n">template_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">template_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DEFAULT_TEMPLATE_PATH</span>
+
+    <span class="n">gen_classvars</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">gen_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">genmeta</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">emit_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">coerce</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="PanderaGenerator.default_value_for_type"><a class="viewcode-back" href="../../../../generators/pandera.html#linkml.generators.panderagen.PanderaGenerator.default_value_for_type">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">default_value_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Allow underlying framework to handle default if not specified.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_multivalued</span><span class="p">(</span><span class="nb">range</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;List[</span><span class="si">{</span><span class="nb">range</span><span class="si">}</span><span class="s2">]&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">uri_type_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xsd_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">template</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_path</span>
+
+        <span class="k">return</span> <span class="n">TYPEMAP</span><span class="p">[</span><span class="n">template</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">xsd_uri</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">map_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">TypeDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">uri</span><span class="p">:</span>
+            <span class="n">typ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uri_type_map</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">typ</span>
+        <span class="k">elif</span> <span class="n">t</span><span class="o">.</span><span class="n">typeof</span><span class="p">:</span>
+            <span class="n">typ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_type</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">typeof</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">typ</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> cannot be mapped to a type&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_filename</span><span class="p">):</span>
+        <span class="n">jinja_env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">PackageLoader</span><span class="p">(</span><span class="s2">&quot;linkml.generators.panderagen&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_path</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">jinja_env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="n">template_filename</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PanderaGenerator.compile_pandera"><a class="viewcode-back" href="../../../../generators/pandera.html#linkml.generators.panderagen.PanderaGenerator.compile_pandera">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">compile_pandera</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModuleType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates and compiles Pandera model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pandera_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">compile_python</span><span class="p">(</span><span class="n">pandera_code</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PanderaGenerator.serialize"><a class="viewcode-back" href="../../../../generators/pandera.html#linkml.generators.panderagen.PanderaGenerator.serialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rendered_module</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">OODocument</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Serialize the schema to a Pandera module as a string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">template_path</span> <span class="o">=</span> <span class="n">PanderaGenerator</span><span class="o">.</span><span class="n">DEFAULT_TEMPLATE_PATH</span>
+
+        <span class="k">if</span> <span class="n">rendered_module</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="n">rendered_module</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">template_file</span> <span class="o">=</span> <span class="n">PanderaGenerator</span><span class="o">.</span><span class="n">DEFAULT_TEMPLATE_FILE</span>
+        <span class="n">template_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_file</span>
+
+        <span class="n">template_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_template</span><span class="p">(</span><span class="n">template_file</span><span class="p">)</span>
+
+        <span class="n">code</span> <span class="o">=</span> <span class="n">template_obj</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+            <span class="n">doc</span><span class="o">=</span><span class="n">module</span><span class="p">,</span>
+            <span class="n">metamodel_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span><span class="p">,</span>
+            <span class="n">model_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+            <span class="n">coerce</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">coerce</span><span class="p">,</span>
+            <span class="n">type_map</span><span class="o">=</span><span class="n">TYPEMAP</span><span class="p">,</span>
+            <span class="n">template_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">template_path</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">code</span></div>
+
+<div class="viewcode-block" id="PanderaGenerator.render"><a class="viewcode-back" href="../../../../generators/pandera.html#linkml.generators.panderagen.PanderaGenerator.render">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OODocument</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a data structure ready to pass to the serialization templates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
+
+        <span class="n">module_name</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">oodoc</span> <span class="o">=</span> <span class="n">OODocument</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">module_name</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">package</span><span class="p">,</span> <span class="n">source_schema</span><span class="o">=</span><span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+
+        <span class="n">classes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ordered_classes</span><span class="p">():</span>
+            <span class="n">cn</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">safe_cn</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
+            <span class="n">ooclass</span> <span class="o">=</span> <span class="n">OOClass</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">safe_cn</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+                <span class="n">package</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">package</span><span class="p">,</span>
+                <span class="n">fields</span><span class="o">=</span><span class="p">[],</span>
+                <span class="n">source_class</span><span class="o">=</span><span class="n">c</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">classes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ooclass</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">mixin</span><span class="p">:</span>
+                <span class="n">ooclass</span><span class="o">.</span><span class="n">mixin</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">mixin</span>
+            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">mixins</span><span class="p">:</span>
+                <span class="n">ooclass</span><span class="o">.</span><span class="n">mixins</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">mixins</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">is_a</span><span class="p">:</span>
+                <span class="n">ooclass</span><span class="o">.</span><span class="n">is_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_class_name</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">is_a</span><span class="p">)</span>
+                <span class="n">parent_slots</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_slots</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">is_a</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">parent_slots</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_slots</span><span class="p">(</span><span class="n">cn</span><span class="p">):</span>
+                <span class="n">oofield</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_slot</span><span class="p">(</span><span class="n">cn</span><span class="p">,</span> <span class="n">sn</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">sn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parent_slots</span><span class="p">:</span>
+                    <span class="n">ooclass</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">oofield</span><span class="p">)</span>
+                <span class="n">ooclass</span><span class="o">.</span><span class="n">all_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">oofield</span><span class="p">)</span>
+
+        <span class="n">oodoc</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="n">classes</span>
+
+        <span class="k">return</span> <span class="n">oodoc</span></div></div>
 
 
-<div class="viewcode-block" id="get_accepted_type_designator_values"><a class="viewcode-back" href="../../../../generators/common/type_designators.html#linkml.generators.common.type_designators.get_accepted_type_designator_values">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_accepted_type_designator_values</span><span class="p">(</span>
-    <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">type_designator_slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">class_def</span><span class="p">:</span> <span class="n">ClassDefinition</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    returns the accepted values for a type designator field for a given class, depending on its range</span>
-<span class="sd">    this implements the logic described in https://github.com/linkml/linkml/issues/945:</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">accepted_uri_values</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">sv</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">class_def</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-        <span class="n">sv</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">class_def</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-        <span class="n">sv</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">class_def</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-        <span class="n">sv</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">class_def</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-    <span class="p">]</span>
-    <span class="c1"># unique, but with order preserved (https://stackoverflow.com/a/17016257)</span>
-    <span class="n">accepted_uri_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">accepted_uri_values</span><span class="p">))</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--package&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Package name where relevant for generated class files&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--template-path&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Optional jinja2 template directory within module&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--template-file&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Optional jinja2 template to use for class generation&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s2">&quot;yamlfile&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;gen-pandera&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span>
+    <span class="n">yamlfile</span><span class="p">,</span>
+    <span class="n">package</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">template_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">template_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">args</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">if</span> <span class="n">template_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">template_path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">TYPEMAP</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Template </span><span class="si">{</span><span class="n">template_path</span><span class="si">}</span><span class="s2"> not supported&quot;</span><span class="p">)</span>
 
-    <span class="n">slot_types</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">type_ancestors</span><span class="p">(</span><span class="n">type_designator_slot</span><span class="o">.</span><span class="n">range</span><span class="p">))</span>
-    <span class="n">uri_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;uri&quot;</span><span class="p">,</span> <span class="s2">&quot;uriorcurie&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate Pandera classes to represent a LinkML model&quot;&quot;&quot;</span>
+    <span class="n">gen</span> <span class="o">=</span> <span class="n">PanderaGenerator</span><span class="p">(</span>
+        <span class="n">yamlfile</span><span class="p">,</span>
+        <span class="n">package</span><span class="o">=</span><span class="n">package</span><span class="p">,</span>
+        <span class="n">template_path</span><span class="o">=</span><span class="n">template_path</span><span class="p">,</span>
+        <span class="n">template_file</span><span class="o">=</span><span class="n">template_file</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">args</span><span class="p">,</span>
+    <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">slot_types</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">uri_types</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">accepted_uri_values</span>
-    <span class="k">elif</span> <span class="n">type_designator_slot</span><span class="o">.</span><span class="n">range</span> <span class="o">==</span> <span class="s2">&quot;string&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">class_def</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">accepted_uri_values</span></div>
+    <span class="nb">print</span><span class="p">(</span><span class="n">gen</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">cli</span><span class="p">()</span>
 </pre></div>
         </article>
       </div>
