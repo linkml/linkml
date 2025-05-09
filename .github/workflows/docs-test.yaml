@@ -17,7 +17,7 @@ jobs:
         python-version: ["3.12"]
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@4.2.2
         with:
           fetch-depth: 0
 
@@ -27,14 +27,13 @@ jobs:
           git remote add upstream https://github.com/linkml/linkml
           git fetch upstream --tags
 
-      - name: Install Poetry 1.x
-        run: pipx install poetry==1.*
-
-      - name: Install dynamic versioning plugin
-        run: poetry self add "poetry-dynamic-versioning[plugin]"
+      - name: Install poetry
+        run: |
+          pipx install poetry
+          pipx inject poetry poetry-dynamic-versioning
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.6.0
         id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
