@@ -41,7 +41,6 @@ from linkml.generators.pydanticgen.template import (
     PydanticTemplateModel,
 )
 from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
-from linkml.utils import deprecation_warning
 from linkml.utils.generator import shared_arguments
 
 logger = logging.getLogger(__name__)

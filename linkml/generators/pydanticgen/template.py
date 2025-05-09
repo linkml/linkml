@@ -4,8 +4,7 @@ from importlib.util import find_spec
 from typing import Any, ClassVar, Literal, Optional, Union, get_args
 
 from jinja2 import Environment, PackageLoader
-from pydantic import BaseModel, Field, field_validator
-from pydantic import computed_field
+from pydantic import BaseModel, Field, computed_field, field_validator
 
 from linkml.generators.common.template import TemplateModel
 
