@@ -344,11 +344,13 @@
         </div>
         <article role="main">
           <h1>Source code for linkml.generators.sqltablegen</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.dumpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">yaml_dumper</span>
@@ -362,7 +364,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.transformers.relmodel_transformer</span><span class="w"> </span><span class="kn">import</span> <span class="n">ForeignKeyPolicy</span><span class="p">,</span> <span class="n">RelationalModelTransformer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.schemaloader</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaLoader</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -409,29 +410,33 @@
 <span class="p">}</span>
 
 
+<span class="n">VARCHAR_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;VARCHAR2?(\((\d+)\))?&quot;</span><span class="p">)</span>
+<span class="n">ORACLE_MAX_VARCHAR_LENGTH</span> <span class="o">=</span> <span class="mi">4096</span>
+
+
 <div class="viewcode-block" id="SQLTableGenerator"><a class="viewcode-back" href="../../../generators/sqltable.html#linkml.generators.sqltablegen.SQLTableGenerator">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">SQLTableGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A :class:`~linkml.utils.generator.Generator` for creating SQL DDL</span>
+<span class="sd">    A :class:`~linkml.utils.generator.Generator` for creating SQL DDL.</span>
 
 <span class="sd">    The basic algorithm for mapping a linkml schema S is as follows:</span>
 
 <span class="sd">    - Each schema S corresponds to one database schema D (see SQLSchema)</span>
-<span class="sd">    - Each Class C in S is mapped to a table T (see SQLTable)</span>
-<span class="sd">    - Each slot S in each C is mapped to a column Col (see SQLColumn)</span>
+<span class="sd">    - Each Class C in S is mapped to a table T (see sqlalchemy.Table)</span>
+<span class="sd">    - Each slot S in each C is mapped to a column Col (see sqlalchemy.Column)</span>
 
-<span class="sd">    if the direct_mapping attribute is set to true, then no further transformations</span>
+<span class="sd">    If the direct_mapping attribute is set to true, then no further transformations</span>
 <span class="sd">    are applied. Note that this means:</span>
 
 <span class="sd">    - inline objects are modeled as Text strings</span>
 <span class="sd">    - multivalued fields are modeled as single Text strings</span>
 
-<span class="sd">    this direct mapping is useful for simple spreadsheet/denormalized representations of complex data.</span>
-<span class="sd">    however, for other applications, additional transformations should occur. these are:</span>
+<span class="sd">    This direct mapping is useful for simple spreadsheet/denormalized representations of complex data.</span>
+<span class="sd">    However, for other applications, additional transformations should occur. These are:</span>
 
 <span class="sd">    MULTIVALUED SLOTS</span>
 
-<span class="sd">    The relational model does not have direct representation of lists. These are normalized as follows.</span>
+<span class="sd">    The relational model does not have direct representation of lists. These are normalized as follows:</span>
 
 <span class="sd">    If the range of the slot is a class, and there are no other slots whose range is this class,</span>
 <span class="sd">    and the slot is for a class that has a singular primary key, then a backref is added.</span>
@@ -439,9 +444,9 @@
 <span class="sd">    E.g. if we have User 0..* Address,</span>
 <span class="sd">    then add a field User_id to Address.</span>
 
-<span class="sd">    When SQLAlchemy bindings are created, a backref mapping is added</span>
+<span class="sd">    When SQLAlchemy bindings are created, a backref mapping is added.</span>
 
-<span class="sd">    If the range of the slot is an enum or type, then a new linktable is created, and a backref added</span>
+<span class="sd">    If the range of the slot is an enum or type, then a new linktable is created, and a backref added.</span>
 
 <span class="sd">    E.g. if a class User has a multivalued slot alias whose range is a string,</span>
 <span class="sd">    then create a table user_aliases, with two columns (1) alias [a string] and (2) a backref to user</span>
@@ -488,13 +493,21 @@
     <span class="n">rename_foreign_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">direct_mapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">relative_slot_num</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">default_length_oracle</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4096</span>
+    <span class="n">default_length_oracle</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">ORACLE_MAX_VARCHAR_LENGTH</span>
     <span class="n">generate_abstract_class_ddl</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="SQLTableGenerator.serialize"><a class="viewcode-back" href="../../../generators/sqltable.html#linkml.generators.sqltablegen.SQLTableGenerator.serialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="SQLTableGenerator.serialize"><a class="viewcode-back" href="../../../generators/sqltable.html#linkml.generators.sqltablegen.SQLTableGenerator.serialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_ddl</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">generate_ddl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">naming_policy</span><span class="p">:</span> <span class="n">SqlNamingPolicy</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_ddl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">naming_policy</span><span class="p">:</span> <span class="n">SqlNamingPolicy</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a DDL using the schema in self.schema.</span>
+
+<span class="sd">        :param naming_policy: naming policy for columns, defaults to None</span>
+<span class="sd">        :type naming_policy: SqlNamingPolicy, optional</span>
+<span class="sd">        :return: the DDL as a string</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ddl_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">dump</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="o">*</span><span class="n">multiparams</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
@@ -506,25 +519,20 @@
         <span class="n">sqltr</span> <span class="o">=</span> <span class="n">RelationalModelTransformer</span><span class="p">(</span><span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_foreign_keys</span><span class="p">:</span>
             <span class="n">sqltr</span><span class="o">.</span><span class="n">foreign_key_policy</span> <span class="o">=</span> <span class="n">ForeignKeyPolicy</span><span class="o">.</span><span class="n">NO_FOREIGN_KEYS</span>
-        <span class="n">tr_result</span> <span class="o">=</span> <span class="n">sqltr</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
-            <span class="n">tgt_schema_name</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tgt_schema_name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">top_class</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;top_class&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="n">tr_result</span> <span class="o">=</span> <span class="n">sqltr</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">tgt_schema_name</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tgt_schema_name&quot;</span><span class="p">),</span> <span class="n">top_class</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;top_class&quot;</span><span class="p">))</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">tr_result</span><span class="o">.</span><span class="n">schema</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">sql_name</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">naming_policy</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">naming_policy</span> <span class="o">==</span> <span class="n">SqlNamingPolicy</span><span class="o">.</span><span class="n">underscore</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">underscore</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">naming_policy</span> <span class="o">==</span> <span class="n">SqlNamingPolicy</span><span class="o">.</span><span class="n">camelcase</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">naming_policy</span> <span class="o">==</span> <span class="n">SqlNamingPolicy</span><span class="o">.</span><span class="n">preserve</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">n</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown: </span><span class="si">{</span><span class="n">naming_policy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">naming_policy</span> <span class="ow">or</span> <span class="n">naming_policy</span> <span class="o">==</span> <span class="n">SqlNamingPolicy</span><span class="o">.</span><span class="n">preserve</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">n</span>
+            <span class="k">if</span> <span class="n">naming_policy</span> <span class="o">==</span> <span class="n">SqlNamingPolicy</span><span class="o">.</span><span class="n">underscore</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">underscore</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">naming_policy</span> <span class="o">==</span> <span class="n">SqlNamingPolicy</span><span class="o">.</span><span class="n">camelcase</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Unknown: </span><span class="si">{</span><span class="n">naming_policy</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-        <span class="k">def</span><span class="w"> </span><span class="nf">strip_newlines</span><span class="p">(</span><span class="n">txt</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">strip_newlines</span><span class="p">(</span><span class="n">txt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">txt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="s2">&quot;&quot;</span>
             <span class="k">return</span> <span class="n">txt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
@@ -534,6 +542,10 @@
         <span class="c1"># As a workaround we add these as &quot;--&quot; comments via direct string manipulation</span>
         <span class="n">include_comments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialect</span> <span class="o">==</span> <span class="s2">&quot;sqlite&quot;</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+
+        <span class="c1"># Iterate through the attributes in each class, creating Column objects.</span>
+        <span class="c1"># This includes generating the appropriate column name, converting the range</span>
+        <span class="c1"># into an SQL type, and adding a foreign key notation if appropriate.</span>
         <span class="k">for</span> <span class="n">cn</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">include_comments</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">abstract</span><span class="p">:</span>
@@ -551,7 +563,7 @@
                     <span class="c1">#    is_pk = True  ## TODO: use unique key</span>
                     <span class="n">args</span> <span class="o">=</span> <span class="p">[]</span>
                     <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">classes</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_foreign_keys</span><span class="p">:</span>
-                        <span class="n">fk</span> <span class="o">=</span> <span class="n">sql_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_foreign_key</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">range</span><span class="p">,</span> <span class="n">sv</span><span class="p">))</span>
+                        <span class="n">fk</span> <span class="o">=</span> <span class="n">sql_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_id_or_key</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">range</span><span class="p">,</span> <span class="n">sv</span><span class="p">))</span>
                         <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">fk</span><span class="p">)]</span>
                     <span class="n">field_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sql_range</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
                     <span class="n">col</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
@@ -566,20 +578,9 @@
                     <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
                         <span class="n">col</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">description</span>
                     <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">uc_name</span><span class="p">,</span> <span class="n">uc</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">unique_keys</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-
-                    <span class="k">def</span><span class="w"> </span><span class="nf">_sql_name</span><span class="p">(</span><span class="n">sn</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-                        <span class="k">if</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
-                            <span class="k">return</span> <span class="n">sql_name</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="c1"># for candidate in c.attributes.values():</span>
-                            <span class="c1">#    if &quot;original_slot&quot; in candidate.annotations:</span>
-                            <span class="c1">#        original = candidate.annotations[&quot;original_slot&quot;]</span>
-                            <span class="c1">#        if original.value == sn:</span>
-                            <span class="c1">#            return sql_name(candidate.name)</span>
-                            <span class="k">return</span> <span class="kc">None</span>
-
-                    <span class="n">sql_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">_sql_name</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span> <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">uc</span><span class="o">.</span><span class="n">unique_key_slots</span><span class="p">]</span>
+                <span class="c1"># convert unique_keys into a uniqueness constraint for the table</span>
+                <span class="k">for</span> <span class="n">uc</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">unique_keys</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="n">sql_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">sql_name</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span> <span class="k">if</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">attributes</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">uc</span><span class="o">.</span><span class="n">unique_key_slots</span><span class="p">]</span>
                     <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">sn</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">sql_names</span><span class="p">):</span>
                         <span class="k">continue</span>
                     <span class="n">sql_uc</span> <span class="o">=</span> <span class="n">UniqueConstraint</span><span class="p">(</span><span class="o">*</span><span class="n">sql_names</span><span class="p">)</span>
@@ -589,73 +590,95 @@
         <span class="n">schema_metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ddl_str</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_sql_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_oracle_sql_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Text</span> <span class="o">|</span> <span class="n">VARCHAR2</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns a SQL Alchemy column type</span>
+<span class="sd">        Generate the appropriate range for Oracle SQL.</span>
+
+<span class="sd">        :param slot: the slot under examination</span>
+<span class="sd">        :type slot: SlotDefinition</span>
+<span class="sd">        :return: appropriate type for Oracle SQL or None</span>
+<span class="sd">        :rtype: Text | VARCHAR2 | None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">range</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span>
+        <span class="n">slot_range</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">slot_range</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">slot_range</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;string&quot;</span><span class="p">]:</span>
+            <span class="c1"># string type data should be represented as a VARCHAR2</span>
+            <span class="k">return</span> <span class="n">VARCHAR2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_length_oracle</span><span class="p">)</span>
+
+        <span class="c1"># check whether the slot range matches the regex &quot;VARCHAR2?(\((\d+)\))?&quot;</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">VARCHAR_REGEX</span><span class="p">,</span> <span class="n">slot_range</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="c1"># match.group(2) is the digits in brackets after VARCHAR</span>
+            <span class="c1"># i.e. a defined length for the VARCHAR</span>
+            <span class="k">if</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> <span class="o">&gt;</span> <span class="n">ORACLE_MAX_VARCHAR_LENGTH</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;Warning: range exceeds maximum Oracle VARCHAR length, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;CLOB type will be returned: </span><span class="si">{</span><span class="n">slot_range</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">Text</span><span class="p">()</span>
+            <span class="c1"># set the length to either the varchar length (as defined in the slot_range)</span>
+            <span class="c1"># or the default</span>
+            <span class="k">return</span> <span class="n">VARCHAR2</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_length_oracle</span><span class="p">)</span>
+
+        <span class="c1"># use standard SQL range matching for anything else</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_sql_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the slot range as a SQL Alchemy column type.&quot;&quot;&quot;</span>
+        <span class="n">slot_range</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialect</span> <span class="o">==</span> <span class="s2">&quot;oracle&quot;</span><span class="p">:</span>
+            <span class="n">range_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_oracle_sql_range</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">range_type</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">range_type</span>
+
+        <span class="k">if</span> <span class="n">slot_range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Text</span><span class="p">()</span>
+
         <span class="c1"># if no SchemaDefinition is explicitly provided as an argument</span>
         <span class="c1"># then simply use the schema that is provided to the SQLTableGenerator() object</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">schema</span><span class="p">:</span>
-            <span class="n">schema</span> <span class="o">=</span> <span class="n">SchemaLoader</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialect</span> <span class="o">==</span> <span class="s2">&quot;oracle&quot;</span><span class="p">:</span>
-            <span class="n">varchar_regex</span> <span class="o">=</span> <span class="s2">&quot;VARCHAR([0-9]+)&quot;</span>
-            <span class="n">varchar2_regex</span> <span class="o">=</span> <span class="s2">&quot;VARCHAR2([0-9]+)&quot;</span>
-            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">varchar_regex</span><span class="p">,</span> <span class="nb">range</span><span class="p">)</span> <span class="ow">or</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">varchar2_regex</span><span class="p">,</span> <span class="nb">range</span><span class="p">):</span>
-                <span class="n">string_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;[0-9]+&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;\([0-9]+\)&quot;</span><span class="p">,</span> <span class="nb">range</span><span class="p">)[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span>
-                <span class="k">if</span> <span class="n">string_length</span> <span class="o">&gt;</span> <span class="mi">4096</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;WARNING: RANGE EXCEEDS MAXIMUM ORACLE VARCHAR LENGTH, </span><span class="se">\</span>
-<span class="s2">                        CLOB TYPE WILL BE RETURNED: </span><span class="si">{</span><span class="nb">range</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">&quot;</span>
-                    <span class="p">)</span>
-                    <span class="k">return</span> <span class="n">Text</span><span class="p">()</span>
-                <span class="k">return</span> <span class="n">VARCHAR2</span><span class="p">(</span><span class="n">string_length</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">range</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;String&quot;</span><span class="p">,</span> <span class="s2">&quot;VARCHAR2&quot;</span><span class="p">,</span> <span class="s2">&quot;VARCHAR&quot;</span><span class="p">]:</span>
-                <span class="c1"># If a regex is not detected, string type data should still be represented as a VARCHAR2</span>
-                <span class="k">return</span> <span class="n">VARCHAR2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_length_oracle</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">range</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
+            <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span>
+
+        <span class="n">sv</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
             <span class="c1"># FK type should be the same as the identifier of the foreign key</span>
-            <span class="n">fk</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="nb">range</span><span class="p">)</span>
+            <span class="n">fk</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">fk</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sql_range</span><span class="p">(</span><span class="n">fk</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">Text</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">range</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">:</span>
-            <span class="n">e</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">[</span><span class="nb">range</span><span class="p">]</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sql_range</span><span class="p">(</span><span class="n">fk</span><span class="p">,</span> <span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Text</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_enums</span><span class="p">():</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_enums</span><span class="p">()[</span><span class="n">slot_range</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">permissible_values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">vs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">permissible_values</span><span class="p">]</span>
                 <span class="k">return</span> <span class="n">Enum</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">vs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">range</span> <span class="ow">in</span> <span class="n">METAMODEL_TYPE_TO_BASE</span><span class="p">:</span>
-            <span class="n">range_base</span> <span class="o">=</span> <span class="n">METAMODEL_TYPE_TO_BASE</span><span class="p">[</span><span class="nb">range</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="nb">range</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
-            <span class="n">range_base</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="nb">range</span><span class="p">]</span><span class="o">.</span><span class="n">base</span>
-        <span class="k">elif</span> <span class="nb">range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Text</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="n">METAMODEL_TYPE_TO_BASE</span><span class="p">:</span>
+            <span class="n">range_base</span> <span class="o">=</span> <span class="n">METAMODEL_TYPE_TO_BASE</span><span class="p">[</span><span class="n">slot_range</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_types</span><span class="p">():</span>
+            <span class="n">range_base</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_types</span><span class="p">()[</span><span class="n">slot_range</span><span class="p">]</span><span class="o">.</span><span class="n">base</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown range: </span><span class="si">{</span><span class="nb">range</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">Text</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">range_base</span> <span class="ow">in</span> <span class="n">RANGEMAP</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">RANGEMAP</span><span class="p">[</span><span class="n">range_base</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UNKNOWN range base: </span><span class="si">{</span><span class="n">range_base</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown range: </span><span class="si">{</span><span class="n">slot_range</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">Text</span><span class="p">()</span>
 
+        <span class="k">if</span> <span class="n">range_base</span> <span class="ow">in</span> <span class="n">RANGEMAP</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">RANGEMAP</span><span class="p">[</span><span class="n">range_base</span><span class="p">]</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown range base: </span><span class="si">{</span><span class="n">range_base</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Text</span><span class="p">()</span>
+
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_foreign_key</span><span class="p">(</span><span class="n">cn</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">pk</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
-        <span class="c1"># TODO: move this to SV</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_id_or_key</span><span class="p">(</span><span class="n">cn</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a named class, retrieve the identifier or key slot.&quot;&quot;&quot;</span>
+        <span class="n">pk</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">cn</span><span class="p">,</span> <span class="n">use_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">pk</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_slots</span><span class="p">(</span><span class="n">cn</span><span class="p">):</span>
-                <span class="n">s</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">sn</span><span class="p">,</span> <span class="n">cn</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">key</span><span class="p">:</span>
-                    <span class="n">pk</span> <span class="o">=</span> <span class="n">s</span>
-                    <span class="k">break</span>
-        <span class="k">if</span> <span class="n">pk</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No PK for </span><span class="si">{</span><span class="n">cn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">pk</span><span class="o">.</span><span class="n">alias</span><span class="p">:</span>
-            <span class="n">pk_name</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">alias</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">pk_name</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;No PK for </span><span class="si">{</span><span class="n">cn</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">pk_name</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">alias</span> <span class="k">if</span> <span class="n">pk</span><span class="o">.</span><span class="n">alias</span> <span class="k">else</span> <span class="n">pk</span><span class="o">.</span><span class="n">name</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cn</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">pk_name</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 
@@ -681,7 +704,7 @@
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--default_length_oracle&quot;</span><span class="p">,</span>
-    <span class="n">default</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="n">ORACLE_MAX_VARCHAR_LENGTH</span><span class="p">,</span>
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Default length of varchar based arguments for oracle dialects&quot;</span><span class="p">,</span>
 <span class="p">)</span>
@@ -693,15 +716,15 @@
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span>
-    <span class="n">yamlfile</span><span class="p">,</span>
-    <span class="n">relmodel_output</span><span class="p">,</span>
-    <span class="n">sqla_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">yamlfile</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">relmodel_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">sqla_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">python_import</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">dialect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">use_foreign_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">dialect</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">use_foreign_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">args</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate SQL DDL representation&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate SQL DDL representation.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">relmodel_output</span><span class="p">:</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">)</span>
         <span class="n">rtr</span> <span class="o">=</span> <span class="n">RelationalModelTransformer</span><span class="p">(</span><span class="n">sv</span><span class="p">)</span>
