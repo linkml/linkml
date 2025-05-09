@@ -361,7 +361,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.namespaces</span><span class="w"> </span><span class="kn">import</span> <span class="n">Namespaces</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">deprecated.classic</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecated</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.context_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_import_map</span><span class="p">,</span> <span class="n">map_import</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_empty</span><span class="p">,</span> <span class="n">underscore</span><span class="p">,</span> <span class="n">camelcase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">is_empty</span><span class="p">,</span> <span class="n">sfx</span><span class="p">,</span> <span class="n">underscore</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.pattern</span><span class="w"> </span><span class="kn">import</span> <span class="n">PatternResolver</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderingError</span>
@@ -453,25 +453,6 @@
         <span class="k">return</span> <span class="kc">False</span>
     <span class="n">drive</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitdrive</span><span class="p">(</span><span class="n">norm_path</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">drive</span> <span class="ow">and</span> <span class="n">tail</span><span class="p">)</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_resolve_import</span><span class="p">(</span><span class="n">source_sch</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">imported_sch</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">imported_sch</span><span class="p">):</span>
-        <span class="c1"># Absolute import paths are not modified</span>
-        <span class="k">return</span> <span class="n">imported_sch</span>
-    <span class="k">if</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">imported_sch</span><span class="p">)</span><span class="o">.</span><span class="n">scheme</span><span class="p">:</span>
-        <span class="c1"># File with URL schemes are not modified</span>
-        <span class="k">return</span> <span class="n">imported_sch</span>
-    
-    <span class="k">if</span> <span class="n">WINDOWS</span><span class="p">:</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="n">PurePath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">PurePath</span><span class="p">(</span><span class="n">source_sch</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="n">imported_sch</span><span class="p">))</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">source_sch</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="n">imported_sch</span><span class="p">))</span>
-
-    <span class="k">if</span> <span class="n">imported_sch</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
-        <span class="c1"># Above condition handles cases where both source schema and imported schema are relative paths: these should remain relative</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;./</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span>
-
-    <span class="k">return</span> <span class="n">path</span>
 
 
 <span class="nd">@dataclass</span>
@@ -665,14 +646,24 @@
                     <span class="c1"># path, and the target import doesn&#39;t have : (as in a curie or a URI)</span>
                     <span class="c1"># we prepend the relative path. This WILL make the key in the `schema_map` not</span>
                     <span class="c1"># equal to the literal text specified in the importing schema, but this is</span>
-                    <span class="c1"># essential to sensible deduplication: eg. for</span>
+                    <span class="c1"># essential to sensible deduplication: e.g. for</span>
                     <span class="c1"># - main.yaml (imports ./types.yaml, ./subdir/subschema.yaml)</span>
                     <span class="c1"># - types.yaml</span>
                     <span class="c1"># - subdir/subschema.yaml (imports ./types.yaml)</span>
                     <span class="c1"># - subdir/types.yaml</span>
                     <span class="c1"># we should treat the two `types.yaml` as separate schemas from the POV of the</span>
                     <span class="c1"># origin schema.</span>
-                    <span class="n">i</span> <span class="o">=</span> <span class="n">_resolve_import</span><span class="p">(</span><span class="n">sn</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+
+                    <span class="c1"># if i is not a CURIE and sn looks like a path with at least one parent folder,</span>
+                    <span class="c1"># normalise i with respect to sn</span>
+                    <span class="k">if</span> <span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">sn</span> <span class="ow">and</span> <span class="s2">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">WINDOWS</span><span class="p">:</span>
+                            <span class="c1"># This cannot be simplified. os.path.normpath() must be called before .as_posix()</span>
+                            <span class="n">i</span> <span class="o">=</span> <span class="n">PurePath</span><span class="p">(</span>
+                                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">PurePath</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="n">i</span><span class="p">)</span>
+                            <span class="p">)</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">i</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="n">i</span><span class="p">))</span>
                     <span class="n">todo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 
             <span class="c1"># add item to closure</span>
@@ -1467,13 +1458,18 @@
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot find </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">from_schema</span><span class="si">}</span><span class="s1"> in schema_map&#39;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema_map</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">in_schema</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span>
-            <span class="n">pfx</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span>
             <span class="k">if</span> <span class="n">use_element_type</span><span class="p">:</span>
                 <span class="n">e_type</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">class_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># for example &quot;class_definition&quot;</span>
                 <span class="n">e_type_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e_type</span><span class="si">}</span><span class="s2">/&quot;</span> 
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">e_type_path</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-            <span class="n">uri</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">pfx</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">e_type_path</span><span class="si">}{</span><span class="n">e_name</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">pfx</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span>
+            <span class="c1"># To construct the uri we have to find out if the schema has a default_prefix </span>
+            <span class="c1"># or if a pseudo &quot;prefix&quot; was derived from the schema id.</span>
+            <span class="k">if</span> <span class="n">pfx</span> <span class="o">==</span> <span class="n">sfx</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="p">)):</span>  <span class="c1"># no prefix defined in schema</span>
+                <span class="n">uri</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">pfx</span><span class="si">}{</span><span class="n">e_type_path</span><span class="si">}{</span><span class="n">e_name</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">uri</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">pfx</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">e_type_path</span><span class="si">}{</span><span class="n">e_name</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="k">if</span> <span class="n">expand</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand_curie</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
