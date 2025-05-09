@@ -7,6 +7,7 @@ import pytest
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
     OWL,
+    PANDERA_POLARS_CLASS,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SHACL,
@@ -41,7 +42,7 @@ FUZZ_STR = "a b_c!@#$%^&*_+{}|:<>?[]()'\""
             None,
             True,
             False,
-            [PYTHON_DATACLASSES, PYDANTIC],
+            [PYTHON_DATACLASSES, PYDANTIC, PANDERA_POLARS_CLASS],
         ),
         (
             "incompat_bool",
@@ -52,7 +53,7 @@ FUZZ_STR = "a b_c!@#$%^&*_+{}|:<>?[]()'\""
             None,
             True,
             False,
-            [PYTHON_DATACLASSES, PYDANTIC, SHACL],
+            [PYTHON_DATACLASSES, PYDANTIC, SHACL, PANDERA_POLARS_CLASS],
         ),
         (
             "incompat_float",
@@ -63,7 +64,7 @@ FUZZ_STR = "a b_c!@#$%^&*_+{}|:<>?[]()'\""
             None,
             True,
             False,
-            [PYTHON_DATACLASSES, PYDANTIC, SHACL],
+            [PYTHON_DATACLASSES, PYDANTIC, SHACL, PANDERA_POLARS_CLASS],
         ),
         ("fuzz_str", "string", f"string({FUZZ_STR})", "has_value", None, FUZZ_STR, True, True, []),
         # ("enum", ENUM_E, f"(EnumName({PV_1})", "has_value", None, PV_1, True, True),
