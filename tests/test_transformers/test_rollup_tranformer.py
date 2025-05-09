@@ -1,4 +1,8 @@
+"""Tests for the linkml rollup transformer."""
+
 from pathlib import Path
+
+import pytest
 
 from linkml.transformers.rollup_transformer import (
     FlattenTransformerConfiguration,
@@ -8,6 +12,13 @@ from linkml.utils.schema_builder import SchemaBuilder
 
 THIS_DIR = Path(__file__).parent
 OUTPUT_DIR = THIS_DIR / "output"
+
+
+def test_no_schema():
+    """Simple brainless test to ensure that RollupTransformer will not transform without a schema set."""
+    transformer = RollupTransformer(target_class="Association")
+    with pytest.raises(ValueError, match="SchemaView not set"):
+        transformer.transform()
 
 
 def test_flatten_simple():
