@@ -22,7 +22,6 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
 from linkml_runtime.utils.schemaview import SchemaView
-from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml._version import __version__
 from linkml.generators.common.lifecycle import LifecycleMixin
@@ -46,10 +45,6 @@ from linkml.utils import deprecation_warning
 from linkml.utils.generator import shared_arguments
 
 logger = logging.getLogger(__name__)
-
-
-if int(PYDANTIC_VERSION[0]) == 1:
-    deprecation_warning("pydantic-v1")
 
 
 def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:

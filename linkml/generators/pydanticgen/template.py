@@ -5,10 +5,9 @@ from typing import Any, ClassVar, Literal, Optional, Union, get_args
 
 from jinja2 import Environment, PackageLoader
 from pydantic import BaseModel, Field, field_validator
-from pydantic.version import VERSION as PYDANTIC_VERSION
+from pydantic import computed_field
 
 from linkml.generators.common.template import TemplateModel
-from linkml.utils.deprecation import deprecation_warning
 
 try:
     if find_spec("black") is not None:
@@ -19,15 +18,6 @@ try:
 except ImportError:
     # we can also get an import error from find_spec during testing because that's how we mock not having it installed
     format_black = None
-
-if int(PYDANTIC_VERSION[0]) >= 2:
-    from pydantic import computed_field
-else:
-    deprecation_warning("pydantic-v1")
-
-    def computed_field(f):
-        """No-op decorator to allow this module to not break imports until 1.9.0"""
-        return f
 
 
 IMPORT_GROUPS = Literal["future", "stdlib", "thirdparty", "local", "conditional"]
