@@ -362,6 +362,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdflib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Namespace</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml</span><span class="w"> </span><span class="kn">import</span> <span class="n">REQUESTS_TIMEOUT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecation_warning</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 
 <span class="n">yuml_is_a</span> <span class="o">=</span> <span class="s2">&quot;^-&quot;</span>
@@ -381,6 +382,30 @@
 
 <div class="viewcode-block" id="YumlGenerator"><a class="viewcode-back" href="../../../generators/yuml.html#linkml.generators.yumlgen.YumlGenerator">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">YumlGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    .. admonition:: Deprecated</span>
+<span class="sd">        :class: warning</span>
+
+<span class="sd">            The `yuml` generator is being deprecated and is no longer supported.</span>
+
+<span class="sd">            Going forward, we recommend using one of the following alternatives that offer improved visualization</span>
+<span class="sd">            capabilities:</span>
+
+<span class="sd">            - `gen-doc` – Generates documentation with **embedded Mermaid class diagrams**.</span>
+<span class="sd">            - `gen-plantuml` – Produces **PlantUML diagrams**.</span>
+<span class="sd">            - `gen-mermaid-class-diagram` – Creates **standalone Mermaid class diagrams**.</span>
+<span class="sd">            - `gen-erdiagram` – For **Entity-Relationship (ER) diagrams**.</span>
+
+<span class="sd">            .. deprecated:: v1.8.7</span>
+
+<span class="sd">            Recommendation: Migrate to one of the supported generators listed above.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">deprecation_warning</span><span class="p">(</span><span class="s2">&quot;gen-yuml&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.1.1&quot;</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;yuml&quot;</span><span class="p">,</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;svg&quot;</span><span class="p">]</span>
@@ -434,6 +459,7 @@
 
         <span class="n">file_suffix</span> <span class="o">=</span> <span class="s2">&quot;.svg&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s2">&quot;yuml&quot;</span> <span class="k">else</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span>
         <span class="n">file_name</span> <span class="o">=</span> <span class="n">diagram_name</span> <span class="ow">or</span> <span class="n">camelcase</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">classes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">classes</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">directory</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">output_file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="n">directory</span><span class="p">,</span>
@@ -621,7 +647,13 @@
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Name of the diagram in the output directory (without suffix!)&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a UML representation of a LinkML model&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a yUML representation of a LinkML model</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">        `gen-yuml` is deprecated. Please use `gen-doc`, `gen-plantuml` or `gen-mermaid-class-diagram`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">deprecation_warning</span><span class="p">(</span><span class="s2">&quot;gen-yuml&quot;</span><span class="p">)</span>
+
     <span class="nb">print</span><span class="p">(</span><span class="n">YumlGenerator</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">),</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 
 
