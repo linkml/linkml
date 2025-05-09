@@ -1,0 +1,1018 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
+
+    <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
+        <title>Using ontology terms as values in data - linkml documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/common.css?v=b029f2e4" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/notebooks.css?v=8a1ccf7d" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">linkml  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="https://linkml.io/uploads/linkml-logo_color.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">linkml  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorial</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial01.html">Part 1: Creating your first LinkML schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial02.html">Part 2: Adding a container object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial03.html">Part 3: Adding constraints and performing validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial04.html">Part 4: Working with RDF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial05.html">Part 5: Using Python dataclasses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial06.html">Part 6: Enumerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial07.html">Part 7: Slots and inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial08.html">Part 8: Generating Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial09.html">Part 9: Working with SQL databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial10.html">Part 10: Working with SQL databases</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of LinkML Schemas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/metadata.html">Schema Element Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/inheritance.html">Inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/slots.html">Slots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/arrays.html">Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/uris-and-mappings.html">URIs and Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/enums.html">Semantic Enumerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/inlining.html">Inlining objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/constraints.html">Adding constraints and rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/type-designators.html">Type designators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/subsets.html">Subsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/imports.html">Imports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/advanced.html">Advanced features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/generators.html">Mapping schemas to other frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/linter.html">Schema Linter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/derived-models.html">Derived models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/annotations.html">Annotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/metamodel.html">The metamodel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/expression-language.html">Expression Language</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../data/index.html">Working with Data</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Working with Data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../data/conversion.html">Converting between different representations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/validating-data.html">Data Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/rdf.html">Working with RDF and LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/csvs.html">CSVs and Tabular Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/python.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/sql-databases.html">Working with data in SQL Databases</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../generators/index.html">Generators</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Generators</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generators/json-schema.html">JSON Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/protobuf.html">ProtoBuf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/graphql.html">GraphQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/jsonld-context.html">JSON-LD Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/jsonld.html">JSON-LD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/rdf.html">RDF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/sparql.html">SPARQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/shex.html">ShEx</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/shacl.html">SHACL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/owl.html">OWL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/markdown.html">Markdown</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/docgen.html">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/erdiagram.html">ER Diagrams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/yuml.html">YUML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/plantumlgen.html">PlantUML Diagram Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/project-generator.html">Project Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/python.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/pydantic.html">Pydantic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/java.html">Java</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/typescript.html">Typescript</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/sqltable.html">SQL DDL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/sqlalchemy.html">SQL Alchemy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/linkml.html">LinkML Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/prefixmap.html">Prefix Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/sssom.html">SSSOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/terminusdb.html">TerminusDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/excel.html">Excel Spreadsheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/csv.html">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/yaml.html">Yaml</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/pandera.html">Pandera</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../generators/common/index.html">Common</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Common</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../generators/common/build.html">Build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generators/common/lifecycle.html">Lifecycle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generators/common/type_designators.html">Type Designators</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of How-to Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collaborative-development.html">How to run a collaborative data modeling project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recognize-structural-forms.html">How to recognize and work with different structural forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="using-jsonld.html">Using JSON-LD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model-measurements.html">How to model quantities and measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="port-linkml.html">Porting LinkML tools to other programming languages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multidimensional-arrays.html">Multidimensional Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model-property-graphs.html">How to make a property graph schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generate-ai-prompts.html">How to Generate AI prompts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deprecating-elements.html">Deprecating elements while maintaining PURLs and other URIs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/contributing.html">Contribution Guidelines</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of FAQ</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/general.html">FAQ: General</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/why-linkml.html">FAQ: Why LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/modeling.html">FAQ: Modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/tools.html">FAQ: Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/python.html">FAQ: Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/getting-help.html">FAQ: Getting Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/contributing.html">FAQ: Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/tricky_choices.html">FAQ: Tricky Choices</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cli/index.html">CLI</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of CLI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cli/linkml.html"><code class="docutils literal notranslate"><span class="pre">linkml</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli/generate.html"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">generate</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli/lint.html"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">lint</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli/validate.html"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">validate</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli/entrypoints.html">Entrypoints</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../developers/index.html">Developers guide</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Developers guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../developers/organization.html">GitHub Organization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/notebooks.html">Jupyter Notebooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/manipulating-schemas.html">Manipulating Schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/manage-releases.html">How to Manage Releases of your LinkML Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/schemaview.html">SchemaView</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/schemabuilder.html">SchemaBuilder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/loaders-and-dumpers.html">Data Conversion: Loaders and Dumpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/inference.html">Inferring Missing Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/using-sql-dbs.html">Using SQL Databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/sqlstore.html">SQLStore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/tool-developer-guide.html">Tool Implementer Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/contributing-code.html">Contributing Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/deprecation.html">Deprecations</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Code</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Code</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../code/metamodel.html">MetaModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/utils.html">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/validator.html">Validator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/deprecation.html">Deprecation Log</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="using-ontology-terms-as-values-in-data">
+<h1>Using ontology terms as values in data<a class="headerlink" href="#using-ontology-terms-as-values-in-data" title="Permalink to this heading">#</a></h1>
+<p>LinkML provides a flexible way of modeling data. LinkML allows for the optional use
+of <em>ontologies</em>, <em>vocabularies</em>, or <em>controlled vocabularies</em> to add semantics to
+datamodels, for example, by mapping classes or slots to external terms.</p>
+<p>This howto guide deals with another use case, where we want to include ontology
+elements as data values in our data model. In formal terms, this is called including
+ontology elements <em>in the domain of discourse</em>.</p>
+<p>This is in principle straightforward - we just treat ontology elements
+the same way we would any other identifier or object. However, in some
+cases, this can lead to confusion about what the respective roles of
+the LinkML schema, data, or ontologies are.</p>
+<section id="motivating-example-associations-to-ontology-terms">
+<h2>Motivating Example: associations to ontology terms.<a class="headerlink" href="#motivating-example-associations-to-ontology-terms" title="Permalink to this heading">#</a></h2>
+<p>Let’s say we want to model associations between genes and
+phenotypes. This is a standard use case for biological ontologies -
+creating <em>annotations</em> that associate some kind of entity with a descriptor.</p>
+<p>In the simplest case, this might be communicated by a two-column file:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Gene</p></th>
+<th class="head"><p>Phenotype</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>PEX1</p></td>
+<td><p>Seizure</p></td>
+</tr>
+<tr class="row-odd"><td><p>PEX1</p></td>
+<td><p>Hypotonia</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>This uses labels, which is not best practice; we could instead do this:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Gene</p></th>
+<th class="head"><p>Phenotype</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>NCBIGene:5189</p></td>
+<td><p>HP:0001250</p></td>
+</tr>
+<tr class="row-odd"><td><p>NCBIGene:5189</p></td>
+<td><p>HP:0001252</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Or perhaps a denormalized representation:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Gene</p></th>
+<th class="head"><p>Gene Label</p></th>
+<th class="head"><p>Phenotype</p></th>
+<th class="head"><p>Phenotype Label</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>NCBIGene:5189</p></td>
+<td><p>PEX1</p></td>
+<td><p>HP:0001250</p></td>
+<td><p>Seizure</p></td>
+</tr>
+<tr class="row-odd"><td><p>NCBIGene:5189</p></td>
+<td><p>PEX1</p></td>
+<td><p>HP:0001252</p></td>
+<td><p>Hypotonia</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>This is <em>denormalized</em> because we end up repeating values.</p>
+<p>If we go with a richer data serialization form like YAML, JSON, RDF,
+or a relational database model, we can <em>normalize</em> this model. For
+YAML/JSON this may be implemented by <em>referencing</em> objects in another
+collection, like this:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">associations</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">gene</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCBIGene:5189</span>
+<span class="w">    </span><span class="nt">phenotype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HP:0001250</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">gene</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCBIGene:5189</span>
+<span class="w">    </span><span class="nt">phenotype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HP:0001252</span>
+<span class="nt">genes</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCBIGene:5189</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PEX1</span>
+<span class="nt">phenotypes</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HP:0001250</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Seizure</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HP:0001252</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Hypotonia</span>
+</pre></div>
+</div>
+<p>However, for now let’s return to the simple 2-element model:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Gene</p></th>
+<th class="head"><p>Phenotype</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>NCBIGene:5189</p></td>
+<td><p>HP:0001250</p></td>
+</tr>
+<tr class="row-odd"><td><p>NCBIGene:5189</p></td>
+<td><p>HP:0001252</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="simple-schema-for-pairwise-associations">
+<h3>Simple schema for pairwise associations<a class="headerlink" href="#simple-schema-for-pairwise-associations" title="Permalink to this heading">#</a></h3>
+<p>The simplest possible data model that could work for this case is:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w"> </span><span class="nt">GenePhenotypeAssociation</span><span class="p">:</span>
+<span class="w">   </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">gene</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">phenotype</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>Note that the schema doesn’t care that the phenotypes come from an ontology, or that the genes
+come from a standard resource - these are just pieces of data.</p>
+<p>However, this isn’t quite satisfactory - it allows the data provider to put any free text they like in.
+We would like to constrain both <code class="docutils literal notranslate"><span class="pre">gene</span></code> and <code class="docutils literal notranslate"><span class="pre">phenotype</span></code> to be identifiers.</p>
+<p>We can do this by specifying a <a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.range" title="linkml_runtime.linkml_model.meta.SlotDefinition.range"><span class="xref myst py py-attr">https://w3id.org/linkml/range</span></a>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w"> </span><span class="nt">GenePhenotypeAssociation</span><span class="p">:</span>
+<span class="w">   </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">gene</span><span class="p">:</span>
+<span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span>
+<span class="w">     </span><span class="nt">phenotype</span><span class="p">:</span>
+<span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span>
+</pre></div>
+</div>
+<p>We can constrain it further still, by including a regexp <a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.pattern" title="linkml_runtime.linkml_model.meta.SlotDefinition.pattern"><span class="xref myst py py-attr">https://w3id.org/linkml/pattern</span></a>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w"> </span><span class="nt">GenePhenotypeAssociation</span><span class="p">:</span>
+<span class="w">   </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">gene</span><span class="p">:</span>
+<span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span>
+<span class="w">       </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;NCBIGene:\\d+&quot;</span>
+<span class="w">     </span><span class="nt">phenotype</span><span class="p">:</span>
+<span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span>
+<span class="w">       </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;HP:\\d+&quot;</span>
+</pre></div>
+</div>
+<p>(obviously this constrains the schema so tightly it can’t be used
+for other phenotype ontologies, which may or may not be what we want).</p>
+<p>So far so good. But what if we want to have a data model where we
+can communicate information about the genes and phenotypes themselves,
+rather than forcing the client to do an external lookup?</p>
+<p>Let’s go one step further, and make a <a class="reference external" href="https://docs.python.org/3/glossary.html#term-class" title="Python 3.13"><span class="xref myst">https://w3id.org/linkml/ClassDefinition</span></a> for gene and phenotype:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w"> </span><span class="nt">GenePhenotypeAssociation</span><span class="p">:</span>
+<span class="w">   </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">gene</span><span class="p">:</span>
+<span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Gene</span>
+<span class="w">     </span><span class="nt">phenotype</span><span class="p">:</span>
+<span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Phenotype</span>
+<span class="w"> </span><span class="nt">Gene</span><span class="p">:</span>
+<span class="w">   </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">id</span><span class="p">:</span>
+<span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span>
+<span class="w">       </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">       </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;NCBIGene:\\d+&quot;</span>
+<span class="w">     </span><span class="nt">label</span><span class="p">:</span>
+<span class="w"> </span><span class="nt">Phenotype</span><span class="p">:</span>
+<span class="w">   </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">id</span><span class="p">:</span>
+<span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span>
+<span class="w">       </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">       </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;HP:\\d+&quot;</span>
+<span class="w">     </span><span class="nt">label</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>We can abstract it a bit further to avoid repetition:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w"> </span><span class="nt">GenePhenotypeAssociation</span><span class="p">:</span>
+<span class="w">   </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">gene</span><span class="p">:</span>
+<span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Gene</span>
+<span class="w">     </span><span class="nt">phenotype</span><span class="p">:</span>
+<span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Phenotype</span>
+<span class="w"> </span><span class="nt">NamedThing</span><span class="p">:</span>
+<span class="w">   </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">id</span><span class="p">:</span>
+<span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span>
+<span class="w">       </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">     </span><span class="nt">label</span><span class="p">:</span>
+<span class="w"> </span><span class="nt">Gene</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
+<span class="w">  </span><span class="nt">id_prefixes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCBIGene</span>
+<span class="w"> </span><span class="nt">Phenotype</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
+<span class="w">  </span><span class="nt">id_prefixes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HP</span>
+</pre></div>
+</div>
+<p>Note we are taking advantage of the <a class="reference internal" href="#id_prefixes"><span class="xref myst">https://w3id.org/linkml/id_prefixes</span></a> metaslot, but
+strictly speaking this is weaker than the previous regular expression pattern.</p>
+</section>
+<section id="adding-a-container">
+<h3>Adding a container<a class="headerlink" href="#adding-a-container" title="Permalink to this heading">#</a></h3>
+<p>Let’s add a <em>container</em> class, to allow us to bundle lists of objects inside a single JSON or YAML document:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="n">Container</span><span class="p">:</span>
+    <span class="n">tree_root</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">attributes</span><span class="p">:</span>
+      <span class="n">genes</span><span class="p">:</span>
+        <span class="nb">range</span><span class="p">:</span> <span class="n">Gene</span>
+        <span class="n">inlined_as_list</span><span class="p">:</span> <span class="n">true</span>
+      <span class="n">phenotypes</span><span class="p">:</span>
+        <span class="nb">range</span><span class="p">:</span> <span class="n">Phenotype</span>
+        <span class="n">inlined_as_list</span><span class="p">:</span> <span class="n">true</span>
+      <span class="n">associations</span><span class="p">:</span>
+        <span class="nb">range</span><span class="p">:</span> <span class="n">Association</span>
+        <span class="n">inlined_as_list</span><span class="p">:</span> <span class="n">true</span>  <span class="c1">## not necessary as Association has no id</span>
+      
+</pre></div>
+</div>
+<p>Our container class allows genes, phenotypes, plus associations between them to be transmitted as a single YAML/JSON object/document.</p>
+<p>Note that <a class="reference external" href="https://linkml.io/linkml/schemas/inlining.html">inlining</a> is non-default if a referenced entity has an identifier. This means
+that the right way to represent associations is using references (like foreign
+keys in a relational database):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">associations</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">gene</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCBIGene:5189</span>
+<span class="w">    </span><span class="nt">phenotype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HP:0001250</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">gene</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCBIGene:5189</span>
+<span class="w">    </span><span class="nt">phenotype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HP:0001252</span>
+</pre></div>
+</div>
+</section>
+<section id="example-of-separate-collections">
+<h3>Example of separate collections<a class="headerlink" href="#example-of-separate-collections" title="Permalink to this heading">#</a></h3>
+<p>We can optionally communicate information about the referenced entities:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">associations</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">gene</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCBIGene:5189</span>
+<span class="w">    </span><span class="nt">phenotype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HP:0001250</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">gene</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCBIGene:5189</span>
+<span class="w">    </span><span class="nt">phenotype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HP:0001252</span>
+<span class="nt">genes</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCBIGene:5189</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PEX1</span>
+<span class="nt">phenotypes</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HP:0001250</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Seizure</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HP:0001252</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Hypotonia</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="representing-the-ontology-hierarchy-as-data">
+<h2>Representing the ontology hierarchy as data<a class="headerlink" href="#representing-the-ontology-hierarchy-as-data" title="Permalink to this heading">#</a></h2>
+<p>It’s common practice to separate the ontology representation from the data,
+but in some cases it may be useful to transmit everything using the same
+schema, sending both associations and ontology classificiation in one YAML/JSON blob.</p>
+<p>Let’s do that here, by adding a <code class="docutils literal notranslate"><span class="pre">parents</span></code> slot in the schema:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="nt">Phenotype</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">parents</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Phenotype</span>
+<span class="w">      </span><span class="nt">multiavalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdfs:subClassOf</span>
+</pre></div>
+</div>
+<p>Note we could call this whatever we like. We include a <a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.slot_uri" title="linkml_runtime.linkml_model.meta.SlotDefinition.slot_uri"><span class="xref myst py py-attr">https://w3id.org/linkml/slot_uri</span></a> declaration
+to indicate that this is equivalent to <code class="docutils literal notranslate"><span class="pre">rdfs:subClassOf</span></code>.</p>
+<p>This modified schema allows data like:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">phenotypes</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HP:0001250</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Seizure</span>
+<span class="w">    </span><span class="nt">parents</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HP:0012638</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HP:0012638</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Abnormal nervous system physiology</span>
+<span class="w">    </span><span class="nt">parents</span><span class="p">:</span>
+<span class="w">       </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+</div>
+<p>This is very practical - consumers of the data can consume the
+associations and the ontology hierarchy together to perform rollup
+operations, etc.</p>
+<p>The fact that we have two classification systems co-existing (LinkML
+is_a hierarchy and ontology hierarchy as data) is not be a cause
+for concern.</p>
+<section id="ontology-classes-may-be-linkml-instances">
+<h3>Ontology classes may be LinkML instances<a class="headerlink" href="#ontology-classes-may-be-linkml-instances" title="Permalink to this heading">#</a></h3>
+<p>So far, so good. This should so far be familiar to people who have
+modeled this kind of ontological association in JSON-Schema, or
+relational databases.</p>
+<p>However, this could potentially be confusing for people coming from a
+particular kind of ontology modeling background, such as OBO. In this
+community, a phenotype concepts like “Seizure” (HP:0001250) denotes a
+<em>class</em>, and there are many such classes in an ontology. Instances of
+seizures would be particular instances such as those experienced by an
+individual at a particular space and time.</p>
+<p>But here we are modeling HP:0001250 as an <em>instance</em>. What’s going on?</p>
+<p>In fact this is quite straightforward - ontology classes (typically
+formalized in OWL) and classes in LinkML are not the same thing,
+despite the name “class”. And instances in LinkML and instances in
+“realist” OBO ontologies are not the same thing.</p>
+</section>
+</section>
+<section id="ontology-class-hierarchies-and-linkml-class-hierarchies-need-not-be-mirrored">
+<h2>Ontology class hierarchies and LinkML class hierarchies need not be mirrored<a class="headerlink" href="#ontology-class-hierarchies-and-linkml-class-hierarchies-need-not-be-mirrored" title="Permalink to this heading">#</a></h2>
+<p>Next we will look at a more advanced example. Here we will also
+talk about how what we are modeling is represented in RDF/OWL, so some
+knowledge of these frameworks helps here.</p>
+<section id="a-model-of-organisms-in-linkml">
+<h3>A model of organisms in LinkML<a class="headerlink" href="#a-model-of-organisms-in-linkml" title="Permalink to this heading">#</a></h3>
+<p>Consider a schema that models both individual people and organisms, as well as taxonomic concepts
+such as Homo sapiens or Vertebrate:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w"> </span><span class="nt">NamedThing</span><span class="p">:</span>
+<span class="w">   </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">id</span><span class="p">:</span>
+<span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span>
+<span class="w">     </span><span class="nt">label</span><span class="p">:</span>
+<span class="w"> </span><span class="nt">IndividualOrganism</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">species</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Species</span>
+<span class="w">  </span><span class="nt">examples</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Seabiscuit the horse</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Napoleon Bonaparte</span>
+<span class="w"> </span><span class="nt">OrganismTaxonomicConcept</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
+<span class="w">  </span><span class="nt">abstract</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">parent_concept</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OrganismTaxonomicConcept</span>
+<span class="w"> </span><span class="nt">Species</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OrganismTaxonomicConcept</span>
+<span class="w">  </span><span class="nt">examples</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Homo sapiens</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Felis catus</span>
+<span class="w"> </span><span class="nt">Genus</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OrganismTaxonomicConcept</span>
+<span class="w">  </span><span class="nt">examples</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Homo</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Felis</span>
+</pre></div>
+</div>
+<p>Note we have decided to make subclasses of a generic taxon concept class for different taxonomic ranks
+(we only should species and genus but we could add more).</p>
+<p>Individual organisms are connected to species via a <code class="docutils literal notranslate"><span class="pre">species</span></code>
+attribute, and species are connected up to parent taxa via a
+<code class="docutils literal notranslate"><span class="pre">parent_concept</span></code> attribute.</p>
+<p>IndividualOrganism:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wikidata:Q517</span>
+<span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Napoleon Bonaparte</span>
+<span class="nt">species</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9606</span>
+</pre></div>
+</div>
+<p>Species:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9606</span>
+<span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Homo sapiens</span>
+<span class="nt">parent_concept</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9605</span>
+</pre></div>
+</div>
+<p>Note here that in the LinkML model, our <strong>classes</strong> are
+<em>IndividualOrganism</em>, <em>Species</em>, <em>Genus</em>, (and potentially other
+ranks, and a generic grouping of these). Our <strong>instances</strong> are
+Napolean, Homo sapiens, Homo.</p>
+<p>When we translate the YAML above to RDF we get:</p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="nn">wikidata</span><span class="p">:</span><span class="nt">Q517</span> <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="nn">my</span><span class="p">:</span><span class="nt">IndividualOrganism</span> <span class="p">.</span>
+<span class="nn">NCBITaxon</span><span class="p">:</span><span class="nt">9606</span> <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="nn">my</span><span class="p">:</span><span class="nt">Species</span> <span class="p">.</span>
+<span class="nn">NCBITaxon</span><span class="p">:</span><span class="nt">9606</span> <span class="nn">my</span><span class="p">:</span><span class="nt">parent_concept</span> <span class="nn">NCBITaxon</span><span class="p">:</span><span class="nt">9605</span>
+<span class="nn">NCBITaxon</span><span class="p">:</span><span class="nt">9605</span> <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="nn">my</span><span class="p">:</span><span class="nt">Genus</span> <span class="p">.</span>
+</pre></div>
+</div>
+<p>In OWL terms, this is called the <strong>ABox</strong></p>
+<p>Our LinkML schema can also be represented as RDF or OWL (formally: <strong>TBox</strong>)</p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="nn">my</span><span class="p">:</span><span class="nt">IndividualOrganism</span> <span class="kt">a</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">Class</span> <span class="p">.</span>
+<span class="nn">my</span><span class="p">:</span><span class="nt">Genus</span> <span class="kt">a</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">Class</span> <span class="p">.</span>
+<span class="nn">my</span><span class="p">:</span><span class="nt">Species</span> <span class="kt">a</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">Class</span> <span class="p">.</span>
+<span class="nn">my</span><span class="p">:</span><span class="nt">Genus</span> <span class="nn">rdfs</span><span class="p">:</span><span class="nt">subClassOf</span> <span class="nn">my</span><span class="p">:</span><span class="nt">OrganismTaxonomicConcept</span>
+<span class="nn">my</span><span class="p">:</span><span class="nt">Species</span> <span class="nn">rdfs</span><span class="p">:</span><span class="nt">subClassOf</span> <span class="nn">my</span><span class="p">:</span><span class="nt">OrganismTaxonomicConcept</span>
+</pre></div>
+</div>
+<p>(omitting some axioms for brevity)</p>
+<p>Again, this should not be such a foreign way of modeling things from a standard database perspective.
+But if you are coming from ontology modeling this could be confusing.</p>
+<p>Next, we’ll look at an ontologist’s way to model the same domain. Let’s first summarize the LinkML model:</p>
+<ul class="simple">
+<li><p>Individuals such as Napoleon as well as taxonomic concepts such as human or cat are <em>instances</em></p></li>
+<li><p>individuals such as Napoleon instantiate “individual organism”, whereas taxonomic concepts instantiate Species, Genus, etc</p></li>
+<li><p>we can add more properties and constraints on each LinkML class, e.g.</p>
+<ul>
+<li><p>make <code class="docutils literal notranslate"><span class="pre">species</span></code> a required field</p></li>
+<li><p>constrain the parent of <code class="docutils literal notranslate"><span class="pre">Species</span></code> to be a <code class="docutils literal notranslate"><span class="pre">Genus</span></code> rather than any taxonomic concept</p></li>
+<li><p>add appropriate slots to “IndividualOrganism”, e.g. a single-value-per-time geolocation</p></li>
+<li><p>add appropriate slots to taxonomic concepts</p>
+<ul>
+<li><p>common name vs scientific name</p></li>
+<li><p>constrain species names to be binomial</p></li>
+<li><p>geolocation ranges</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>From a LinkML modeling perspective, these additional properties would be Good Things. They allow
+us to constrain our data model to avoid instance data that is invalid or surprising (for example,
+Napoleon having a “species” value of “Vertebrate” or “HistoricHuman”).</p>
+</section>
+<section id="a-model-of-organisms-following-ontology-conventions">
+<h3>A model of organisms following ontology conventions<a class="headerlink" href="#a-model-of-organisms-following-ontology-conventions" title="Permalink to this heading">#</a></h3>
+<p>Consider how this is modeled in ontologies in OBO or clinical terminologies like SNOMED or NCIT.
+In these ontologies, there is neither a “individual organism” class nor classes for ranks like “species”.</p>
+<p>Instead there is just a hierarchy of organism OWL classes, increasingly refined:</p>
+<ul class="simple">
+<li><p>Organism</p>
+<ul>
+<li><p>Vertebrate</p>
+<ul>
+<li><p>Mammalia</p>
+<ul>
+<li><p>Homo</p>
+<ul>
+<li><p>Homo sapiens</p></li>
+</ul>
+</li>
+<li><p>Felis</p>
+<ul>
+<li><p>Felis catus</p>
+<ul>
+<li><p>Russian blue</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>(Intermediate nodes omitted for brevity)</p>
+<p>There is also nothing formally prohibiting classes such as
+“FriendlyMammal” or “HistoricHuman”, but by convention the class
+hierarchy mirrors conventional classifications that mirror phylogeny.</p>
+<p>In this model there are no logical elements “species” or “genus”. It’s common practice
+to include the taxonomic rank as an OWL <em>annotation property</em>. If we want to include these
+concepts as true first-class logical citizens in an OWL model, then we need to either introduce
+<em>punning</em> (OWL-DL) or <em>metaclasses</em> (OWL-Full).</p>
+<p>In practice, punning or metaclasses are not used much in OWL, so let’s stick with the rank-free
+model. Formally, concepts like “Homo sapiens” are not in the <em>domain of discourse</em>.</p>
+<p>Individual organisms like Napoleon (Q517 in Wikidata) instantiate the classes in the hierarchy:</p>
+<div class="highlight-rdf notranslate"><div class="highlight"><pre><span></span>wikidata:Q517 rdf:type NCBITaxon:9606 .
+NCBITaxon:9606 rdfs:subClassOf NCBITaxon:9605
+</pre></div>
+</div>
+<p>Compare to the RDF serialization of the LinkML instances:</p>
+<div class="highlight-rdf notranslate"><div class="highlight"><pre><span></span>wikidata:Q517 my:species NCBITaxon:9606 .
+NCBITaxon:9606 my:parent_concept NCBITaxon:9605
+</pre></div>
+</div>
+<p>In this case, <code class="docutils literal notranslate"><span class="pre">rdf:type</span></code> corresponds roughly to the <code class="docutils literal notranslate"><span class="pre">species</span></code> attribute in the LinkML model. It’s not quite the same, as we might have the following OWL:</p>
+<div class="highlight-rdf notranslate"><div class="highlight"><pre><span></span>wikidata:Q517 rdf:type NCBITaxon:9605 .  ## Homo
+</pre></div>
+</div>
+<p>This is valid (and entailed) but less specific. Note that this would be disallowed
+in the LinkML model, which intentionally forces the data provider to provide a species-level
+taxon node ID rather than any other taxon ID.</p>
+<p>In the RDF model we might even have:</p>
+<div class="highlight-rdf notranslate"><div class="highlight"><pre><span></span>wikidata:Q517 rdf:type My:HistoricPerson .
+My:HistoricPerson rdfs:subClassOf NCBITaxon:9606 .
+</pre></div>
+</div>
+</section>
+<section id="aligning-the-linkml-model-with-the-ontological-model">
+<h3>Aligning the LinkML model with the ontological model<a class="headerlink" href="#aligning-the-linkml-model-with-the-ontological-model" title="Permalink to this heading">#</a></h3>
+<p>Note also the correspondence between the owl SubClassOf axiom and the ‘parent_concept` attribute in our LinkML model.
+These would correspond even further if we extended our model to other taxonomic ranks.</p>
+<p>We could map these using <code class="docutils literal notranslate"><span class="pre">slot_uri</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w"> </span><span class="nt">NamedThing</span><span class="p">:</span>
+<span class="w">   </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">id</span><span class="p">:</span>
+<span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span>
+<span class="w">     </span><span class="nt">label</span><span class="p">:</span>
+<span class="w"> </span><span class="nt">IndividualOrganism</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCBITaxon:1</span><span class="w">   </span><span class="c1">## root node of NCBI taxonomy</span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">species</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Species</span>
+<span class="w">      </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdf:type</span><span class="w">   </span><span class="c1">## map species to instantiation predicate</span>
+<span class="w">  </span><span class="nt">examples</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Seabiscuit the horse</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Napoleon Bonaparte</span>
+<span class="w"> </span><span class="nt">OrganismTaxonomicConcept</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
+<span class="w">  </span><span class="nt">abstract</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">parent_concept</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OrganismTaxonomicConcept</span>
+<span class="w">      </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdfs:subClassOf</span><span class="w">   </span><span class="c1">## map parent_concept to subsumption</span>
+<span class="w"> </span><span class="nt">Species</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OrganismTaxonomicConcept</span>
+<span class="w">  </span><span class="nt">examples</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Homo sapiens</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Felis catus</span>
+<span class="w"> </span><span class="nt">Genus</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OrganismTaxonomicConcept</span>
+<span class="w">  </span><span class="nt">examples</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Homo</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Felis</span>
+</pre></div>
+</div>
+<p>The LinkML instances now serialize as:</p>
+<div class="highlight-rdf notranslate"><div class="highlight"><pre><span></span>wikidata:Q517 rdf:type NCBITaxon:1 .
+wikidata:Q517 rdf:type NCBITaxon:9606 .
+NCBITaxon:9606 rdf:type my:Species .
+NCBITaxon:9606 rdfs:subClassOf NCBITaxon:9605
+NCBITaxon:9605 rdf:type my:Genus .
+</pre></div>
+</div>
+<p>Viewed through the lens of RDF/OWL this is potentially
+confusing. Under OWL2 Description Logic semantics, we have introduced
+<em>punning</em>, and under OWL-Full we have <em>metaclasses</em>. The latter
+approach is quite common in knowledge bases such as Wikidata.</p>
+</section>
+<section id="separate-models">
+<h3>Separate models<a class="headerlink" href="#separate-models" title="Permalink to this heading">#</a></h3>
+<p>We can imagine people getting confused, and making incorrect inferences
+such as the following:</p>
+<ol class="arabic simple">
+<li><p>Homo sapiens is a Species</p></li>
+<li><p>Species is a Genus</p></li>
+<li><p>Therefore, Homo sapiens is a Genus</p></li>
+</ol>
+<p>Clearly this is wrong. In fact entailment is thankfully not justified
+either via the LinkML or via the RDF/OWL (either punning model or metaclass).</p>
+<p>The mistake is confusing the different levels of modeling.</p>
+</section>
+</section>
+<section id="when-should-hierarchies-be-mirrored">
+<h2>When should hierarchies be mirrored?<a class="headerlink" href="#when-should-hierarchies-be-mirrored" title="Permalink to this heading">#</a></h2>
+<p>It should be clear that LinkML (and more generally, schema and shape
+frameworks such as JSON-Schema, SHACL, and so on) and formal OWL
+modeling are distinct. By keeping these separate, we avoid problems.</p>
+<p>However, there are some cases where hierarchies in our data model do
+trivially mirror our ontological hierarchies. There are some schemas
+and data models that also resemble upper ontologies.</p>
+<ul class="simple">
+<li><p>schema.org for everyday concepts like Person, CreativeWork</p></li>
+<li><p>biolink for biological concepts like Gene, Chemical, Disease</p></li>
+<li><p>chemrof for chemical concepts like atom, isotope, molecule</p></li>
+</ul>
+<p>In the case of schema.org, most elements can do double duty as
+ontology classes compatible with OBO-style realist modeling (intended
+to model the world scientifically) as well as schema classes (intended
+to model how we exchange data about the things in the world).</p>
+<p>However, this can get quite nuanced. Sometimes there are
+classifications that make sense in one perspective and not in the
+other.</p>
+<p>The modeling of personhood in ontologies can get quite involved. Some
+ontologies will treat Person as a subclass of Homo sapiens (which is
+scientifically valid but from a modeling perspective mixes two
+separate concerns); other ontologies may represent personhood as a
+“role”, which complicates things if you want to have straightforward
+connections between concepts like “Person” and “Address”</p>
+<p>This gets even more nuanced with biomedical concepts, where we have to deal with
+multiple interlinked ontological debates about modeling concepts like
+Gene and Allele, and whether these are classes or instances. Most
+bio-ontologies eliminate the concept of “levels” in hierarchies, so
+the concepts “eukaroyotic gene”, “gene”, “human Shh gene” and “human
+Shh gene with foo variant” are all valid gene concepts, just at
+different levels of the hierarchy.</p>
+<p>Additionally, ontologists have a habit of grouping unlike entities or
+separating like concepts, on the basis of upper ontologies.</p>
+<p>A full discussion of these issues is well outside the scope of this
+guide.</p>
+<p>From a modeling perspective, the key points are:</p>
+<ul class="simple">
+<li><p>use the appropriate modeling framework for the problem at hand</p></li>
+<li><p>mirror hierarchies where appropriate</p></li>
+<li><p>do not assume hierarchies must be mirrored</p></li>
+</ul>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2021-2024, LinkML Authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Using ontology terms as values in data</a><ul>
+<li><a class="reference internal" href="#motivating-example-associations-to-ontology-terms">Motivating Example: associations to ontology terms.</a><ul>
+<li><a class="reference internal" href="#simple-schema-for-pairwise-associations">Simple schema for pairwise associations</a></li>
+<li><a class="reference internal" href="#adding-a-container">Adding a container</a></li>
+<li><a class="reference internal" href="#example-of-separate-collections">Example of separate collections</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#representing-the-ontology-hierarchy-as-data">Representing the ontology hierarchy as data</a><ul>
+<li><a class="reference internal" href="#ontology-classes-may-be-linkml-instances">Ontology classes may be LinkML instances</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ontology-class-hierarchies-and-linkml-class-hierarchies-need-not-be-mirrored">Ontology class hierarchies and LinkML class hierarchies need not be mirrored</a><ul>
+<li><a class="reference internal" href="#a-model-of-organisms-in-linkml">A model of organisms in LinkML</a></li>
+<li><a class="reference internal" href="#a-model-of-organisms-following-ontology-conventions">A model of organisms following ontology conventions</a></li>
+<li><a class="reference internal" href="#aligning-the-linkml-model-with-the-ontological-model">Aligning the LinkML model with the ontological model</a></li>
+<li><a class="reference internal" href="#separate-models">Separate models</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#when-should-hierarchies-be-mirrored">When should hierarchies be mirrored?</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    </body>
+</html>
