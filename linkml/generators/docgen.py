@@ -999,7 +999,7 @@ class DocGenerator(Generator):
         slot of a class. This method will return a value that contains four pieces of
         information about the rule – _title_, _preconditions_, _postconditions_,
         and _elseconditions_. This return value will be read in the jinja template,
-        and appropriately formatted into a tablular view for users to be able to
+        and appropriately formatted into a tabular view for users to be able to
         glean details about asserted rules.
 
         Note: This method removes the redundant "name" key which is asserted on some
