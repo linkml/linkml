@@ -960,6 +960,40 @@ class DocGenerator(Generator):
                 objs.append((stem, f.read()))
         return objs
 
+    def _remove_name_keys(self, obj):
+        """Recursively removes 'name' keys from a JSON object representation.
+
+        This is used to clean up the output of ClassRule objects. For example, if we had a rule like:
+        rules:
+        - title: calibration_standard_if_rt
+            preconditions:
+                slot_conditions:
+                    calibration_target:
+                        equals_string: retention_index
+
+        The JSON representation would include redundant "name" keys:
+        {
+            "slot_conditions": {
+                "name": "slot_conditions"
+                "calibration_target": {
+                    "name": "calibration_target"
+                    "equals_string": "retention_index",
+                },
+            }
+        }
+
+        This function removes those redundant "name" keys to make the output cleaner.
+
+        :param obj: The object to clean (dict, list, or primitive value)
+        :return: The same object with all "name" keys removed from dicts
+        """
+        if isinstance(obj, dict):
+            return {k: self._remove_name_keys(v) for k, v in obj.items() if k != "name"}
+        elif isinstance(obj, list):
+            return [self._remove_name_keys(item) for item in obj]
+        else:
+            return obj
+
     def classrule_to_dict_view(self, rule: ClassRule) -> dict[str, Any]:
         """This method can iterate over a ClassRule object asserted on the `rule`
         slot of a class. This method will return a value that contains four pieces of
@@ -974,34 +1008,6 @@ class DocGenerator(Generator):
         :param rule: ClassRule object to be processed
         :return: Dictionary with title and "sanitized" conditions
         """
-
-        # below is an inner function to recursively remove "name" keys from a JSON object
-        # for example, if we had a rule asserted like below:
-        # rules:
-        #   - title: calibration_standard_if_rt
-        #   preconditions:
-        #      slot_conditions:
-        #           calibration_target:
-        #               equals_string: retention_index
-        # the JSON representation for this precondition would look like below:
-        # {
-        #   "slot_conditions": {
-        #       "name": "slot_conditions"
-        #       "calibration_target": {
-        #           "name": "calibration_target"
-        #           "equals_string": "retention_index",
-        #       },
-        #   }
-        # }
-        # the "name" keys are redundant and do not add any value in the user documentation
-        def remove_name_keys(obj):
-            if isinstance(obj, dict):
-                return {k: remove_name_keys(v) for k, v in obj.items() if k != "name"}
-            elif isinstance(obj, list):
-                return [remove_name_keys(item) for item in obj]
-            else:
-                return obj
-
         # TODO: expand this list of ClassRule metaslots based on use case
         classrule_as_dict = {
             "title": rule.title or "",
@@ -1014,7 +1020,7 @@ class DocGenerator(Generator):
             condition_obj = getattr(rule, key, None)
             if condition_obj:
                 json_obj = json_dumper.to_dict(condition_obj)
-                sanitzed_condition = remove_name_keys(json_obj)
+                sanitzed_condition = self._remove_name_keys(json_obj)
                 classrule_as_dict[key] = sanitzed_condition
 
         return classrule_as_dict
