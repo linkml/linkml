@@ -68,8 +68,8 @@ def test_specified_diagram_name(tmp_path, snapshot):
 def test_yumlgen_deprecation():
     """Test that YumlGenerator emits a deprecation warning since
     it has been marked for deprecation."""
-    from linkml.utils.deprecation import EMITTED
     from linkml.generators.yumlgen import YumlGenerator
+    from linkml.utils.deprecation import EMITTED
     print(KITCHEN_SINK_PATH)
 
     # clear any previously emitted warnings for this test

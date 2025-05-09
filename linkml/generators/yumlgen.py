@@ -15,9 +15,8 @@ from linkml_runtime.utils.formatutils import camelcase, underscore
 from rdflib import Namespace
 
 from linkml import REQUESTS_TIMEOUT
-from linkml.utils.generator import Generator, shared_arguments
-
 from linkml.utils.deprecation import deprecation_warning
+from linkml.utils.generator import Generator, shared_arguments
 
 yuml_is_a = "^-"
 yuml_uses = "uses -.->"
@@ -42,7 +41,8 @@ class YumlGenerator(Generator):
 
             The `yuml` generator is being deprecated and is no longer supported.
 
-            Going forward, we recommend using one of the following alternatives that offer improved visualization capabilities:
+            Going forward, we recommend using one of the following alternatives that offer improved visualization
+            capabilities:
 
             - `gen-doc` – Generates documentation with **embedded Mermaid class diagrams**.
             - `gen-plantuml` – Produces **PlantUML diagrams**.
@@ -111,6 +111,7 @@ class YumlGenerator(Generator):
 
         file_suffix = ".svg" if self.format == "yuml" else "." + self.format
         file_name = diagram_name or camelcase(sorted(classes)[0] if classes else self.schema.name)
+
         if directory:
             self.output_file_name = os.path.join(
                 directory,
