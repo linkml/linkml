@@ -54,6 +54,7 @@ class YumlGenerator(Generator):
             Recommendation: Migrate to one of the supported generators listed above.
 
     """
+
     def __post_init__(self) -> None:
         deprecation_warning("gen-yuml")
         super().__post_init__()
