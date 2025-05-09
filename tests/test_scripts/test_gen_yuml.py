@@ -9,7 +9,7 @@ from ..conftest import KITCHEN_SINK_PATH
 def test_help():
     runner = CliRunner()
     result = runner.invoke(cli, "--help")
-    assert "Generate a UML representation of a LinkML model" in result.output
+    assert "Generate a yUML representation of a LinkML model" in result.output
 
 
 @pytest.mark.parametrize(
