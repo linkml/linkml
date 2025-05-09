@@ -1,5 +1,5 @@
 import unittest
-from linkml_runtime import SchemaView
+from linkml_runtime.utils.schemaview import SchemaView
 
 URL = ("https://raw.githubusercontent.com/linkml/linkml-runtime/"
        "2a46c65fe2e7db08e5e524342e5ff2ffb94bec92/tests/test_utils/input/kitchen_sink.yaml")

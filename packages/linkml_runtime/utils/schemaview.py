@@ -1,37 +1,68 @@
+"""SchemaView, a virtual schema layered on top of a schema plus its import closure."""
+
+from __future__ import annotations
+
+import collections
+import logging
 import os
 import sys
 import uuid
-import logging
-import collections
-from functools import lru_cache
-from copy import copy, deepcopy
-from collections import defaultdict, deque
-from pathlib import Path, PurePath
-from typing import Optional, TypeVar
-from collections.abc import Mapping
 import warnings
-from urllib.parse import urlparse
-
-from linkml_runtime.utils.namespaces import Namespaces
-from deprecated.classic import deprecated
-from linkml_runtime.utils.context_utils import parse_import_map, map_import
-from linkml_runtime.utils.formatutils import camelcase, is_empty, sfx, underscore
-from linkml_runtime.utils.pattern import PatternResolver
-from linkml_runtime.linkml_model.meta import *
-from linkml_runtime.exceptions import OrderingError
+from collections import defaultdict, deque
+from collections.abc import Mapping
+from copy import copy, deepcopy
+from dataclasses import dataclass
 from enum import Enum
+from functools import lru_cache
+from pathlib import Path, PurePath
+from typing import TYPE_CHECKING, Any, TypeVar, Union
+
+from deprecated.classic import deprecated
+
+from linkml_runtime.exceptions import OrderingError
+from linkml_runtime.linkml_model.meta import (
+    AnonymousSlotExpression,
+    ClassDefinition,
+    ClassDefinitionName,
+    Definition,
+    DefinitionName,
+    Element,
+    ElementName,
+    EnumDefinition,
+    EnumDefinitionName,
+    PermissibleValueText,
+    SchemaDefinition,
+    SchemaDefinitionName,
+    SlotDefinition,
+    SlotDefinitionName,
+    SubsetDefinition,
+    SubsetDefinitionName,
+    TypeDefinition,
+    TypeDefinitionName,
+)
+from linkml_runtime.utils.context_utils import map_import, parse_import_map
+from linkml_runtime.utils.formatutils import camelcase, is_empty, sfx, underscore
+from linkml_runtime.utils.namespaces import Namespaces
+from linkml_runtime.utils.pattern import PatternResolver
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+    from types import NotImplementedType
+
+    from linkml_runtime.utils.metamodelcore import URIorCURIE
+
 
 logger = logging.getLogger(__name__)
 
 MAPPING_TYPE = str  ## e.g. broad, exact, related, ...
 CACHE_SIZE = 1024
 
-SLOTS = 'slots'
-CLASSES = 'classes'
-ENUMS = 'enums'
-SUBSETS = 'subsets'
-TYPES = 'types'
-WINDOWS = sys.platform == 'win32'
+SLOTS = "slots"
+CLASSES = "classes"
+ENUMS = "enums"
+SUBSETS = "subsets"
+TYPES = "types"
+WINDOWS = sys.platform == "win32"
 
 CLASS_NAME = Union[ClassDefinitionName, str]
 SLOT_NAME = Union[SlotDefinitionName, str]
@@ -48,6 +79,8 @@ DefDict = dict[DefinitionNameType, DefinitionType]
 
 
 class OrderedBy(Enum):
+    """Permissible values for ordering."""
+
     RANK = "rank"
     LEXICAL = "lexical"
     PRESERVE = "preserve"
@@ -57,7 +90,7 @@ class OrderedBy(Enum):
     """
 
 
-def _closure(f, x, reflexive=True, depth_first=True, **kwargs):
+def _closure(f, x, reflexive: bool = True, depth_first: bool = True, **kwargs: dict[str, Any] | None) -> list:
     if reflexive:
         rv = [x]
     else:
@@ -80,9 +113,11 @@ def _closure(f, x, reflexive=True, depth_first=True, **kwargs):
     return rv
 
 
-def load_schema_wrap(path: str, **kwargs):
+def load_schema_wrap(path: str, **kwargs: dict[str, Any]) -> SchemaDefinition:
+    """Load a schema."""
     # import here to avoid circular imports
     from linkml_runtime.loaders.yaml_loader import YAMLLoader
+
     yaml_loader = YAMLLoader()
     schema: SchemaDefinition
     schema = yaml_loader.load(path, target_class=SchemaDefinition, **kwargs)
@@ -97,6 +132,13 @@ def load_schema_wrap(path: str, **kwargs):
 
 
 def is_absolute_path(path: str) -> bool:
+    """Test whether a string represents an absolute path.
+
+    :param path: string representing a path
+    :type path: str
+    :return: true or false
+    :rtype: bool
+    """
     if path.startswith("/"):
         return True
     # windows
@@ -111,20 +153,18 @@ def is_absolute_path(path: str) -> bool:
 
 @dataclass
 class SchemaUsage:
-    """
-    A usage of an element of a schema
-    """
+    """A usage of an element of a schema."""
+
     used_by: ElementName
     slot: SlotDefinitionName
     metaslot: SlotDefinitionName
     used: ElementName
-    inferred: bool = None
+    inferred: bool | None = None
 
 
 @dataclass
 class SchemaView:
-    """
-    A SchemaView provides a virtual schema layered on top of a schema plus its import closure
+    """A SchemaView provides a virtual schema layered on top of a schema plus its import closure.
 
     Most operations are parameterized by `imports`. If this is set to True (default), then the full
     import closure is considered when answering
@@ -141,20 +181,35 @@ class SchemaView:
      - https://github.com/linkml/linkml/issues/270
     """
 
-    schema: SchemaDefinition = None
-    schema_map: dict[SchemaDefinitionName, SchemaDefinition] = None
-    importmap: Optional[Mapping[str, str]] = None
+    schema: SchemaDefinition | None = None
+    schema_map: dict[SchemaDefinitionName, SchemaDefinition] | None = None
+    importmap: Mapping[str, str] | None = None
     """Optional mapping between schema names and local paths/URLs"""
     modifications: int = 0
-    uuid: str = None
+    uuid: str | None = None
 
     ## private vars --------
     # cached hash
-    _hash: Optional[int] = None
+    _hash: int | None = None
 
+    def __init__(
+        self,
+        schema: str | Path | SchemaDefinition,
+        importmap: dict[str, str] | None = None,
+        merge_imports: bool = False,
+        base_dir: str | None = None,
+    ) -> None:
+        """Initialize a SchemaView instance.
 
-    def __init__(self, schema: Union[str, Path, SchemaDefinition],
-                 importmap: Optional[dict[str, str]] = None, merge_imports: bool = False, base_dir: str = None):
+        :param schema: schema or path to schema to be viewed
+        :type schema: str | Path | SchemaDefinition
+        :param importmap: import mapping, defaults to None
+        :type importmap: dict[str, str] | None, optional
+        :param merge_imports: whether or not to merge imports, defaults to False
+        :type merge_imports: bool, optional
+        :param base_dir: base directory for import map, defaults to None
+        :type base_dir: str | None, optional
+        """
         if isinstance(schema, Path):
             schema = str(schema)
         if isinstance(schema, str):
@@ -169,7 +224,14 @@ class SchemaView:
     def __key(self):
         return self.schema.id, self.uuid, self.modifications
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool | NotImplementedType:
+        """Test whether another object is equal to this one.
+
+        :param other: other object
+        :type other: object
+        :return: true or false if the object is a schemaview; otherwise, raise an error
+        :rtype: bool | type[NotImplemented]
+        """
         if isinstance(other, SchemaView):
             return self.__key() == other.__key()
         return NotImplemented
@@ -181,6 +243,11 @@ class SchemaView:
 
     @lru_cache(None)
     def namespaces(self) -> Namespaces:
+        """Return the namespaces present in a schema.
+
+        :return: namespaces
+        :rtype: Namespaces
+        """
         namespaces = Namespaces()
         for s in self.schema_map.values():
             for cmap in self.schema.default_curi_maps:
@@ -189,9 +256,8 @@ class SchemaView:
                 namespaces[prefix.prefix_prefix] = prefix.prefix_reference
         return namespaces
 
-    def load_import(self, imp: str, from_schema: SchemaDefinition = None):
-        """
-        Handles import directives.
+    def load_import(self, imp: str, from_schema: SchemaDefinition | None = None) -> SchemaDefinition:
+        """Handle import directives.
 
         The value of the import can be:
 
@@ -218,24 +284,23 @@ class SchemaView:
         if from_schema is None:
             from_schema = self.schema
         from linkml_runtime import SCHEMA_DIRECTORY
-        default_import_map = {
-            "linkml:": str(SCHEMA_DIRECTORY)
-        }
+
+        default_import_map = {"linkml:": str(SCHEMA_DIRECTORY)}
         importmap = {**default_import_map, **self.importmap}
         sname = map_import(importmap, self.namespaces, imp)
         if from_schema.source_file and not is_absolute_path(sname):
             base_dir = os.path.dirname(from_schema.source_file)
         else:
             base_dir = None
-        logger.info(f'Importing {imp} as {sname} from source {from_schema.source_file}; base_dir={base_dir}')
-        schema = load_schema_wrap(sname + '.yaml', base_dir=base_dir)
+        logger.info(f"Importing {imp} as {sname} from source {from_schema.source_file}; base_dir={base_dir}")
+        schema = load_schema_wrap(sname + ".yaml", base_dir=base_dir)
         return schema
 
     @lru_cache(None)
-    def imports_closure(self, imports: bool = True, traverse: Optional[bool] = None, inject_metadata=True) -> list[
-        SchemaDefinitionName]:
-        """
-        Return all imports
+    def imports_closure(
+        self, imports: bool = True, traverse: bool | None = None, inject_metadata: bool = True
+    ) -> list[SchemaDefinitionName]:
+        """Return all imports.
 
         Objects in imported classes override one another in a "python-like" order -
         from the point of view of the importing schema, imports will override one
@@ -271,8 +336,8 @@ class SchemaView:
 
         if traverse is not None:
             warnings.warn(
-                'traverse behaves identically to imports and will be removed in a future version. Use imports instead.',
-                DeprecationWarning
+                "traverse behaves identically to imports and will be removed in a future version. Use imports instead.",
+                DeprecationWarning,
             )
 
         if not imports or (not traverse and traverse is not None):
@@ -313,9 +378,7 @@ class SchemaView:
                     if "/" in sn and ":" not in i:
                         if WINDOWS:
                             # This cannot be simplified. os.path.normpath() must be called before .as_posix()
-                            i = PurePath(
-                                os.path.normpath(PurePath(sn).parent / i)
-                            ).as_posix()
+                            i = PurePath(os.path.normpath(PurePath(sn).parent / i)).as_posix()
                         else:
                             i = os.path.normpath(str(Path(sn).parent / i))
                     todo.append(i)
@@ -327,7 +390,7 @@ class SchemaView:
             visited.add(sn)
 
         # filter duplicates, keeping first entry
-        closure = list({k: None for k in closure}.keys())
+        closure = list(dict.fromkeys(closure).keys())
 
         if inject_metadata:
             for s in self.schema_map.values():
@@ -349,7 +412,8 @@ class SchemaView:
 
     @lru_cache(None)
     def all_schema(self, imports: bool = True) -> list[SchemaDefinition]:
-        """
+        """Return all schemas.
+
         :param imports: include imports closure
         :return: all schemas
         """
@@ -358,32 +422,30 @@ class SchemaView:
 
     @deprecated("Use `all_classes` instead")
     @lru_cache(None)
-    def all_class(self, imports=True) -> dict[ClassDefinitionName, ClassDefinition]:
-        """
+    def all_class(self, imports: bool = True) -> dict[ClassDefinitionName, ClassDefinition]:
+        """Return all classes.
+
         :param imports: include imports closure
         :return: all classes in schema view
         """
         return self._get_dict(CLASSES, imports)
 
-    def ordered(self, elements: ElementDict, ordered_by: Optional[OrderedBy] = None) -> ElementDict:
-        """
-        Order a dictionary of elements with some ordering method in :class:`.OrderedBy`
-        """
+    def ordered(self, elements: ElementDict, ordered_by: OrderedBy | None = None) -> ElementDict:
+        """Order a dictionary of elements with some ordering method in :class:`.OrderedBy`."""
         if ordered_by in (OrderedBy.LEXICAL, OrderedBy.LEXICAL.value):
             return self._order_lexically(elements)
-        elif ordered_by in (OrderedBy.RANK, OrderedBy.RANK.value):
+        if ordered_by in (OrderedBy.RANK, OrderedBy.RANK.value):
             return self._order_rank(elements)
-        elif ordered_by in (OrderedBy.INHERITANCE, OrderedBy.INHERITANCE.value):
+        if ordered_by in (OrderedBy.INHERITANCE, OrderedBy.INHERITANCE.value):
             return self._order_inheritance(elements)
-        elif ordered_by is None or ordered_by in (OrderedBy.PRESERVE, OrderedBy.PRESERVE.value):
+        if ordered_by is None or ordered_by in (OrderedBy.PRESERVE, OrderedBy.PRESERVE.value):
             return elements
-        else:
-            raise ValueError(f"ordered_by must be in OrderedBy or None, got {ordered_by}")
+        raise ValueError(f"ordered_by must be in OrderedBy or None, got {ordered_by}")
 
     def _order_lexically(self, elements: ElementDict) -> ElementDict:
-        """
+        """Order elements by name.
+
         :param element: slots or class type to order
-        :param imports
         :return: all classes or slots sorted lexically in schema view
         """
         ordered_list_of_names = []
@@ -396,11 +458,11 @@ class SchemaView:
         return ordered_elements
 
     def _order_rank(self, elements: ElementDict) -> ElementDict:
-        """
+        """Order elements by rank.
+
         :param elements: slots or classes to order
         :return: all classes or slots sorted by their rank in schema view
         """
-
         rank_map = {}
         unranked_map = {}
         rank_ordered_elements = {}
@@ -418,9 +480,7 @@ class SchemaView:
         return rank_ordered_elements
 
     def _order_inheritance(self, elements: DefDict) -> DefDict:
-        """
-        sort classes such that if C is a child of P then C appears after P in the list
-        """
+        """Sort classes such that if C is a child of P then C appears after P in the list."""
         clist = list(elements.values())
         slist = []  # sorted
         can_add = False
@@ -428,11 +488,8 @@ class SchemaView:
             for i in range(len(clist)):
                 candidate = clist[i]
                 can_add = False
-                if candidate.is_a is None:
+                if candidate.is_a is None or candidate.is_a in [p.name for p in slist]:
                     can_add = True
-                else:
-                    if candidate.is_a in [p.name for p in slist]:
-                        can_add = True
                 if can_add:
                     slist = slist + [candidate]
                     del clist[i]
@@ -443,35 +500,39 @@ class SchemaView:
         return {s.name: s for s in slist}
 
     @lru_cache(None)
-    def all_classes(self, ordered_by=OrderedBy.PRESERVE, imports=True) -> dict[ClassDefinitionName, ClassDefinition]:
-        """
+    def all_classes(
+        self, ordered_by: OrderedBy = OrderedBy.PRESERVE, imports: bool = True
+    ) -> dict[ClassDefinitionName, ClassDefinition]:
+        """Retrieve all classes from a schema.
+
         :param ordered_by: an enumerated parameter that returns all the classes in the order specified.
         :param imports: include imports closure
         :return: all classes in schema view
         """
         classes = copy(self._get_dict(CLASSES, imports))
-        classes = self.ordered(classes, ordered_by=ordered_by)
-        return classes
+        return self.ordered(classes, ordered_by=ordered_by)
 
     @deprecated("Use `all_slots` instead")
     @lru_cache(None)
-    def all_slot(self, **kwargs) -> dict[SlotDefinitionName, SlotDefinition]:
-        """
+    def all_slot(self, **kwargs: dict[str, Any]) -> dict[SlotDefinitionName, SlotDefinition]:
+        """Retrieve all slots from the schema.
+
         :param imports: include imports closure
         :return: all slots in schema view
         """
         return self.all_slots(**kwargs)
 
     @lru_cache(None)
-    def all_slots(self, ordered_by=OrderedBy.PRESERVE, imports=True, attributes=True) -> dict[
-        SlotDefinitionName, SlotDefinition]:
-        """
+    def all_slots(
+        self, ordered_by: OrderedBy = OrderedBy.PRESERVE, imports: bool = True, attributes: bool = True
+    ) -> dict[SlotDefinitionName, SlotDefinition]:
+        """Retrieve all slots from the schema.
+
         :param ordered_by: an enumerated parameter that returns all the slots in the order specified.
         :param imports: include imports closure
         :param attributes: include attributes as slots or not, default is to include.
         :return: all slots in schema view
         """
-
         slots = copy(self._get_dict(SLOTS, imports))
         if attributes:
             for c in self.all_classes().values():
@@ -479,21 +540,22 @@ class SchemaView:
                     if aname not in slots:
                         slots[aname] = a
 
-        slots = self.ordered(slots, ordered_by=ordered_by)
-        return slots
+        return self.ordered(slots, ordered_by=ordered_by)
 
     @deprecated("Use `all_enums` instead")
     @lru_cache(None)
-    def all_enum(self, imports=True) -> dict[EnumDefinitionName, EnumDefinition]:
-        """
+    def all_enum(self, imports: bool = True) -> dict[EnumDefinitionName, EnumDefinition]:
+        """Retrieve all enums from the schema.
+
         :param imports: include imports closure
         :return: all enums in schema view
         """
-        return self._get_dict(ENUMS, imports)
+        return self.all_enums(imports)
 
     @lru_cache(None)
-    def all_enums(self, imports=True) -> dict[EnumDefinitionName, EnumDefinition]:
-        """
+    def all_enums(self, imports: bool = True) -> dict[EnumDefinitionName, EnumDefinition]:
+        """Retrieve all enums from the schema.
+
         :param imports: include imports closure
         :return: all enums in schema view
         """
@@ -501,32 +563,36 @@ class SchemaView:
 
     @deprecated("Use `all_types` instead")
     @lru_cache(None)
-    def all_type(self, imports=True) -> dict[TypeDefinitionName, TypeDefinition]:
-        """
+    def all_type(self, imports: bool = True) -> dict[TypeDefinitionName, TypeDefinition]:
+        """Retrieve all types from the schema.
+
         :param imports: include imports closure
         :return: all types in schema view
         """
-        return self._get_dict(TYPES, imports)
+        return self.all_types(imports)
 
     @lru_cache(None)
-    def all_types(self, imports=True) -> dict[TypeDefinitionName, TypeDefinition]:
-        """
+    def all_types(self, imports: bool = True) -> dict[TypeDefinitionName, TypeDefinition]:
+        """Retrieve all types from the schema.
+
         :param imports: include imports closure
         :return: all types in schema view
         """
         return self._get_dict(TYPES, imports)
 
     @deprecated("Use `all_subsets` instead")
-    def all_subset(self, imports=True) -> dict[SubsetDefinitionName, SubsetDefinition]:
-        """
+    def all_subset(self, imports: bool = True) -> dict[SubsetDefinitionName, SubsetDefinition]:
+        """Retrieve all subsets from the schema.
+
         :param imports: include imports closure
         :return: all subsets in schema view
         """
-        return self._get_dict(SUBSETS, imports)
+        return self.all_subsets(imports)
 
     @lru_cache(None)
-    def all_subsets(self, imports=True) -> dict[SubsetDefinitionName, SubsetDefinition]:
-        """
+    def all_subsets(self, imports: bool = True) -> dict[SubsetDefinitionName, SubsetDefinition]:
+        """Retrieve all subsets from the schema.
+
         :param imports: include imports closure
         :return: all subsets in schema view
         """
@@ -534,22 +600,18 @@ class SchemaView:
 
     @deprecated("Use `all_elements` instead")
     @lru_cache(None)
-    def all_element(self, imports=True) -> dict[ElementName, Element]:
-        """
+    def all_element(self, imports: bool = True) -> dict[ElementName, Element]:
+        """Retrieve all elements from the schema.
+
         :param imports: include imports closure
         :return: all elements in schema view
         """
-        all_classes = self.all_classes(imports=imports)
-        all_slots = self.all_slots(imports=imports)
-        all_enums = self.all_enums(imports=imports)
-        all_types = self.all_types(imports=imports)
-        all_subsets = self.all_subsets(imports=imports)
-        # {**a,**b} syntax merges dictionary a and b into a single dictionary, removing duplicates.
-        return {**all_classes, **all_slots, **all_enums, **all_types, **all_subsets}
+        return self.all_elements(imports)
 
     @lru_cache(None)
-    def all_elements(self, imports=True) -> dict[ElementName, Element]:
-        """
+    def all_elements(self, imports: bool = True) -> dict[ElementName, Element]:
+        """Retrieve all elements from the schema.
+
         :param imports: include imports closure
         :return: all elements in schema view
         """
@@ -561,7 +623,7 @@ class SchemaView:
         # {**a,**b} syntax merges dictionary a and b into a single dictionary, removing duplicates.
         return {**all_classes, **all_slots, **all_enums, **all_types, **all_subsets}
 
-    def _get_dict(self, slot_name: str, imports=True) -> dict:
+    def _get_dict(self, slot_name: str, imports: bool = True) -> dict:
         schemas = self.all_schema(imports)
         d = {}
         # pdb.set_trace()
@@ -576,8 +638,7 @@ class SchemaView:
 
     @lru_cache(None)
     def slot_name_mappings(self) -> dict[str, SlotDefinition]:
-        """
-        Mapping between processed safe slot names (following naming conventions)  and slots.
+        """Return a mapping between processed safe slot names (following naming conventions) and slots.
 
         For example, a slot may have name 'lives at', the code-safe version is `lives_at`
 
@@ -590,8 +651,7 @@ class SchemaView:
 
     @lru_cache(None)
     def class_name_mappings(self) -> dict[str, ClassDefinition]:
-        """
-        Mapping between processed safe class names (following naming conventions) and classes.
+        """Return a mapping between processed safe class names (following naming conventions) and classes.
 
         For example, a class may have name 'named thing', the code-safe version is `NamedThing`
 
@@ -604,13 +664,14 @@ class SchemaView:
 
     @lru_cache(None)
     def in_schema(self, element_name: ElementName) -> SchemaDefinitionName:
-        """
+        """Retrieve the name of the schema in which an element is defined.
+
         :param element_name:
         :return: name of schema in which element is defined
         """
         ix = self.element_by_schema_map()
         if element_name not in ix:
-            raise ValueError(f'Element {element_name} not in any schema')
+            raise ValueError(f"Element {element_name} not in any schema")
         return ix[element_name]
 
     @lru_cache(None)
@@ -627,8 +688,9 @@ class SchemaView:
         return ix
 
     @lru_cache(None)
-    def get_class(self, class_name: CLASS_NAME, imports=True, strict=False) -> ClassDefinition:
-        """
+    def get_class(self, class_name: CLASS_NAME, imports: bool = True, strict: bool = False) -> ClassDefinition:
+        """Retrieve a class from the schema.
+
         :param class_name: name of the class to be retrieved
         :param imports: include import closure
         :return: class definition
@@ -636,12 +698,14 @@ class SchemaView:
         c = self.all_classes(imports=imports).get(class_name, None)
         if strict and c is None:
             raise ValueError(f'No such class as "{class_name}"')
-        else:
-            return c
+        return c
 
     @lru_cache(None)
-    def get_slot(self, slot_name: SLOT_NAME, imports=True, attributes=True, strict=False) -> SlotDefinition:
-        """
+    def get_slot(
+        self, slot_name: SLOT_NAME, imports: bool = True, attributes: bool = True, strict: bool = False
+    ) -> SlotDefinition:
+        """Retrieve a slot from the schema.
+
         :param slot_name: name of the slot to be retrieved
         :param imports: include import closure
         :param attributes: include attributes
@@ -663,8 +727,9 @@ class SchemaView:
         return slot
 
     @lru_cache(None)
-    def get_subset(self, subset_name: SUBSET_NAME, imports=True, strict=False) -> SubsetDefinition:
-        """
+    def get_subset(self, subset_name: SUBSET_NAME, imports: bool = True, strict: bool = False) -> SubsetDefinition:
+        """Retrieve a subset from the schema.
+
         :param subset_name: name of the subsey to be retrieved
         :param imports: include import closure
         :return: subset definition
@@ -672,12 +737,12 @@ class SchemaView:
         s = self.all_subsets(imports).get(subset_name, None)
         if strict and s is None:
             raise ValueError(f'No such subset as "{subset_name}"')
-        else:
-            return s
+        return s
 
     @lru_cache(None)
-    def get_enum(self, enum_name: ENUM_NAME, imports=True, strict=False) -> EnumDefinition:
-        """
+    def get_enum(self, enum_name: ENUM_NAME, imports: bool = True, strict: bool = False) -> EnumDefinition:
+        """Retrieve an enum from the schema.
+
         :param enum_name: name of the enum to be retrieved
         :param imports: include import closure
         :return: enum definition
@@ -685,12 +750,12 @@ class SchemaView:
         e = self.all_enums(imports).get(enum_name, None)
         if strict and e is None:
             raise ValueError(f'No such subset as "{enum_name}"')
-        else:
-            return e
+        return e
 
     @lru_cache(None)
-    def get_type(self, type_name: TYPE_NAME, imports=True, strict=False) -> TypeDefinition:
-        """
+    def get_type(self, type_name: TYPE_NAME, imports: bool = True, strict: bool = False) -> TypeDefinition:
+        """Retrieve a type from the schema.
+
         :param type_name: name of the type to be retrieved
         :param imports: include import closure
         :return: type definition
@@ -698,22 +763,19 @@ class SchemaView:
         t = self.all_types(imports).get(type_name, None)
         if strict and t is None:
             raise ValueError(f'No such subset as "{type_name}"')
-        else:
-            return t
+        return t
 
-    def _parents(self, e: Element, imports=True, mixins=True, is_a=True) -> list[ElementName]:
-        if mixins:
-            parents = copy(e.mixins)
-        else:
-            parents = []
+    def _parents(self, e: Element, imports: bool = True, mixins: bool = True, is_a: bool = True) -> list[ElementName]:
+        parents = copy(e.mixins) if mixins else []
         if e.is_a is not None and is_a:
             parents.append(e.is_a)
         return parents
 
     @lru_cache(None)
-    def class_parents(self, class_name: CLASS_NAME, imports=True, mixins=True, is_a=True) -> list[ClassDefinitionName]:
-        """
-        :param class_name: child class name
+    def class_parents(
+        self, class_name: CLASS_NAME, imports: bool = True, mixins: bool = True, is_a: bool = True
+    ) -> list[ClassDefinitionName]:
+        """:param class_name: child class name
         :param imports: include import closure
         :param mixins: include mixins (default is True)
         :return: all direct parent class names (is_a and mixins)
@@ -722,9 +784,10 @@ class SchemaView:
         return self._parents(cls, imports, mixins, is_a)
 
     @lru_cache(None)
-    def enum_parents(self, enum_name: ENUM_NAME, imports=False, mixins=False, is_a=True) -> list[EnumDefinitionName]:
-        """
-        :param enum_name: child enum name
+    def enum_parents(
+        self, enum_name: ENUM_NAME, imports: bool = False, mixins: bool = False, is_a: bool = True
+    ) -> list[EnumDefinitionName]:
+        """:param enum_name: child enum name
         :param imports: include import closure (False)
         :param mixins: include mixins (default is False)
         :return: all direct parent enum names (is_a and mixins)
@@ -733,10 +796,10 @@ class SchemaView:
         return self._parents(e, imports, mixins, is_a=is_a)
 
     @lru_cache(None)
-    def permissible_value_parent(self, permissible_value: str, enum_name: ENUM_NAME) -> Union[
-        str, PermissibleValueText, None, ValueError]:
-        """
-        :param enum_name: child enum name
+    def permissible_value_parent(
+        self, permissible_value: str, enum_name: ENUM_NAME
+    ) -> str | PermissibleValueText | None | ValueError:
+        """:param enum_name: child enum name
         :param permissible_value: permissible value
         :return: all direct parent enum names (is_a)
         """
@@ -750,10 +813,10 @@ class SchemaView:
             return []
 
     @lru_cache(None)
-    def permissible_value_children(self, permissible_value: str, enum_name: ENUM_NAME) -> Union[
-        str, PermissibleValueText, None, ValueError]:
-        """
-        :param enum_name: parent enum name
+    def permissible_value_children(
+        self, permissible_value: str, enum_name: ENUM_NAME
+    ) -> str | PermissibleValueText | None | ValueError:
+        """:param enum_name: parent enum name
         :param permissible_value: permissible value
         :return: all direct child permissible values (is_a)
 
@@ -769,7 +832,6 @@ class SchemaView:
           is_a: BIRD
 
         """
-
         enum = self.get_enum(enum_name, strict=True)
         children = []
         if enum:
@@ -784,8 +846,11 @@ class SchemaView:
             raise ValueError(f'No such enum as "{enum_name}"')
 
     @lru_cache(None)
-    def slot_parents(self, slot_name: SLOT_NAME, imports=True, mixins=True, is_a=True) -> list[SlotDefinitionName]:
-        """
+    def slot_parents(
+        self, slot_name: SLOT_NAME, imports: bool = True, mixins: bool = True, is_a: bool = True
+    ) -> list[SlotDefinitionName]:
+        """Return the parent of a slot, if it exists.
+
         :param slot_name: child slot name
         :param imports: include import closure
         :param mixins: include mixins (default is True)
@@ -794,12 +859,12 @@ class SchemaView:
         s = self.get_slot(slot_name, imports, strict=True)
         if s:
             return self._parents(s, imports, mixins, is_a)
-        else:
-            return []
+        return []
 
     @lru_cache(None)
-    def type_parents(self, type_name: TYPE_NAME, imports=True) -> list[TypeDefinitionName]:
-        """
+    def type_parents(self, type_name: TYPE_NAME, imports: bool = True) -> list[TypeDefinitionName]:
+        """Return the parent of a type, if it exists.
+
         :param type_name: child type name
         :param imports: include import closure
         :return: all direct parent enum names (is_a and mixins)
@@ -807,13 +872,12 @@ class SchemaView:
         typ = self.get_type(type_name, imports, strict=True)
         if typ.typeof:
             return [typ.typeof]
-        else:
-            return []
+        return []
 
     @lru_cache(None)
     def get_children(self, name: str, mixin: bool = True) -> list[str]:
-        """
-        get the children of an element (any class, slot, enum, type)
+        """Get the children of an element (any class, slot, enum, type).
+
         :param name: name of the parent element
         :param mixin: include mixins
         :return: list of child element
@@ -828,8 +892,11 @@ class SchemaView:
         return children
 
     @lru_cache(None)
-    def class_children(self, class_name: CLASS_NAME, imports=True, mixins=True, is_a=True) -> list[ClassDefinitionName]:
-        """
+    def class_children(
+        self, class_name: CLASS_NAME, imports: bool = True, mixins: bool = True, is_a: bool = True
+    ) -> list[ClassDefinitionName]:
+        """Return class children.
+
         :param class_name: parent class name
         :param imports: include import closure
         :param mixins: include mixins (default is True)
@@ -840,8 +907,11 @@ class SchemaView:
         return [x.name for x in elts if (x.is_a == class_name and is_a) or (mixins and class_name in x.mixins)]
 
     @lru_cache(None)
-    def slot_children(self, slot_name: SLOT_NAME, imports=True, mixins=True, is_a=True) -> list[SlotDefinitionName]:
-        """
+    def slot_children(
+        self, slot_name: SLOT_NAME, imports: bool = True, mixins: bool = True, is_a: bool = True
+    ) -> list[SlotDefinitionName]:
+        """Return slot children.
+
         :param slot_name: parent slot name
         :param imports: include import closure
         :param mixins: include mixins (default is True)
@@ -852,10 +922,16 @@ class SchemaView:
         return [x.name for x in elts if (x.is_a == slot_name and is_a) or (mixins and slot_name in x.mixins)]
 
     @lru_cache(None)
-    def class_ancestors(self, class_name: CLASS_NAME, imports=True, mixins=True, reflexive=True, is_a=True,
-                        depth_first=True) -> list[ClassDefinitionName]:
-        """
-        Closure of class_parents method
+    def class_ancestors(
+        self,
+        class_name: CLASS_NAME,
+        imports: bool = True,
+        mixins: bool = True,
+        reflexive: bool = True,
+        is_a: bool = True,
+        depth_first: bool = True,
+    ) -> list[ClassDefinitionName]:
+        """Return the closure of class_parents method.
 
         :param class_name: query class
         :param imports: include import closure
@@ -865,45 +941,63 @@ class SchemaView:
         :param depth_first:
         :return: ancestor class names
         """
-        return _closure(lambda x: self.class_parents(x, imports=imports, mixins=mixins, is_a=is_a),
-                        class_name,
-                        reflexive=reflexive, depth_first=depth_first)
+        return _closure(
+            lambda x: self.class_parents(x, imports=imports, mixins=mixins, is_a=is_a),
+            class_name,
+            reflexive=reflexive,
+            depth_first=depth_first,
+        )
 
     @lru_cache(None)
-    def permissible_value_ancestors(self, permissible_value_text: str,
-                                    enum_name: ENUM_NAME,
-                                    reflexive=True,
-                                    depth_first=True) -> list[str]:
+    def permissible_value_ancestors(
+        self, permissible_value_text: str, enum_name: ENUM_NAME, reflexive: bool = True, depth_first: bool = True
+    ) -> list[str]:
+        """Return the closure of permissible_value_parents method.
+
+        :param permissible_value_text:
+        :type permissible_value_text: str
+        :param enum_name:
+        :type enum_name: ENUM_NAME
+        :param reflexive: ..., defaults to True
+        :type reflexive: bool, optional
+        :param depth_first: ..., defaults to True
+        :type depth_first: bool, optional
+        :return: closure of permissible_value_parents
+        :rtype: list[str]
         """
-        Closure of permissible_value_parents method
+        return _closure(
+            lambda x: self.permissible_value_parent(x, enum_name),
+            permissible_value_text,
+            reflexive=reflexive,
+            depth_first=depth_first,
+        )
+
+    @lru_cache(None)
+    def permissible_value_descendants(
+        self, permissible_value_text: str, enum_name: ENUM_NAME, reflexive: bool = True, depth_first: bool = True
+    ) -> list[str]:
+        """Return the closure of permissible_value_children method.
+
         :enum
         """
-
-        return _closure(lambda x: self.permissible_value_parent(x, enum_name),
-                        permissible_value_text,
-                        reflexive=reflexive,
-                        depth_first=depth_first)
-
-    @lru_cache(None)
-    def permissible_value_descendants(self, permissible_value_text: str,
-                                      enum_name: ENUM_NAME,
-                                      reflexive=True,
-                                      depth_first=True) -> list[str]:
-        """
-        Closure of permissible_value_children method
-        :enum
-        """
-
-        return _closure(lambda x: self.permissible_value_children(x, enum_name),
-                        permissible_value_text,
-                        reflexive=reflexive,
-                        depth_first=depth_first)
+        return _closure(
+            lambda x: self.permissible_value_children(x, enum_name),
+            permissible_value_text,
+            reflexive=reflexive,
+            depth_first=depth_first,
+        )
 
     @lru_cache(None)
-    def enum_ancestors(self, enum_name: ENUM_NAME, imports=True, mixins=True, reflexive=True, is_a=True,
-                       depth_first=True) -> list[EnumDefinitionName]:
-        """
-        Closure of enum_parents method
+    def enum_ancestors(
+        self,
+        enum_name: ENUM_NAME,
+        imports: bool = True,
+        mixins: bool = True,
+        reflexive: bool = True,
+        is_a: bool = True,
+        depth_first: bool = True,
+    ) -> list[EnumDefinitionName]:
+        """Return the closure of enum_parents method.
 
         :param enum_name: query enum
         :param imports: include import closure
@@ -913,15 +1007,18 @@ class SchemaView:
         :param depth_first:
         :return: ancestor enum names
         """
-        return _closure(lambda x: self.enum_parents(x, imports=imports, mixins=mixins, is_a=is_a),
-                        enum_name,
-                        reflexive=reflexive, depth_first=depth_first)
+        return _closure(
+            lambda x: self.enum_parents(x, imports=imports, mixins=mixins, is_a=is_a),
+            enum_name,
+            reflexive=reflexive,
+            depth_first=depth_first,
+        )
 
     @lru_cache(None)
-    def type_ancestors(self, type_name: TYPES, imports=True, reflexive=True, depth_first=True) -> list[
-        TypeDefinitionName]:
-        """
-        All ancestors of a type via typeof
+    def type_ancestors(
+        self, type_name: TYPES, imports: bool = True, reflexive: bool = True, depth_first: bool = True
+    ) -> list[TypeDefinitionName]:
+        """Return all ancestors of a type via typeof.
 
         :param type_name: query type
         :param imports: include import closure
@@ -929,15 +1026,15 @@ class SchemaView:
         :param depth_first:
         :return: ancestor class names
         """
-        return _closure(lambda x: self.type_parents(x, imports=imports),
-                        type_name,
-                        reflexive=reflexive, depth_first=depth_first)
+        return _closure(
+            lambda x: self.type_parents(x, imports=imports), type_name, reflexive=reflexive, depth_first=depth_first
+        )
 
     @lru_cache(None)
-    def slot_ancestors(self, slot_name: SLOT_NAME, imports=True, mixins=True, reflexive=True, is_a=True) -> list[
-        SlotDefinitionName]:
-        """
-        Closure of slot_parents method
+    def slot_ancestors(
+        self, slot_name: SLOT_NAME, imports: bool = True, mixins: bool = True, reflexive: bool = True, is_a: bool = True
+    ) -> list[SlotDefinitionName]:
+        """Return the closure of slot_parents method.
 
         :param slot_name: query slot
         :param imports: include import closure
@@ -946,15 +1043,20 @@ class SchemaView:
         :param reflexive: include self in set of ancestors
         :return: ancestor slot names
         """
-        return _closure(lambda x: self.slot_parents(x, imports=imports, mixins=mixins, is_a=is_a),
-                        slot_name,
-                        reflexive=reflexive)
+        return _closure(
+            lambda x: self.slot_parents(x, imports=imports, mixins=mixins, is_a=is_a), slot_name, reflexive=reflexive
+        )
 
     @lru_cache(None)
-    def class_descendants(self, class_name: CLASS_NAME, imports=True, mixins=True, reflexive=True, is_a=True) -> list[
-        ClassDefinitionName]:
-        """
-        Closure of class_children method
+    def class_descendants(
+        self,
+        class_name: CLASS_NAME,
+        imports: bool = True,
+        mixins: bool = True,
+        reflexive: bool = True,
+        is_a: bool = True,
+    ) -> list[ClassDefinitionName]:
+        """Return the closure of class_children method.
 
         :param class_name: query class
         :param imports: include import closure
@@ -963,14 +1065,15 @@ class SchemaView:
         :param reflexive: include self in set of descendants
         :return: descendants class names
         """
-        return _closure(lambda x: self.class_children(x, imports=imports, mixins=mixins, is_a=is_a), class_name,
-                        reflexive=reflexive)
+        return _closure(
+            lambda x: self.class_children(x, imports=imports, mixins=mixins, is_a=is_a), class_name, reflexive=reflexive
+        )
 
     @lru_cache(None)
-    def slot_descendants(self, slot_name: SLOT_NAME, imports=True, mixins=True, reflexive=True, is_a=True) -> list[
-        SlotDefinitionName]:
-        """
-        Closure of slot_children method
+    def slot_descendants(
+        self, slot_name: SLOT_NAME, imports: bool = True, mixins: bool = True, reflexive: bool = True, is_a: bool = True
+    ) -> list[SlotDefinitionName]:
+        """Return the closure of slot_children method.
 
         :param slot_name: query slot
         :param imports: include import closure
@@ -979,90 +1082,92 @@ class SchemaView:
         :param reflexive: include self in set of descendants
         :return: descendants slot names
         """
-        return _closure(lambda x: self.slot_children(x, imports=imports, mixins=mixins, is_a=is_a), slot_name,
-                        reflexive=reflexive)
+        return _closure(
+            lambda x: self.slot_children(x, imports=imports, mixins=mixins, is_a=is_a), slot_name, reflexive=reflexive
+        )
 
     @lru_cache(None)
-    def class_roots(self, imports=True, mixins=True, is_a=True) -> list[ClassDefinitionName]:
-        """
-        All classes that have no parents
+    def class_roots(self, imports: bool = True, mixins: bool = True, is_a: bool = True) -> list[ClassDefinitionName]:
+        """Return all classes that have no parents.
+
         :param imports:
         :param mixins:
         :param is_a: include is_a parents (default is True)
         :return:
         """
-        return [c
-                for c in self.all_classes(imports=imports)
-                if self.class_parents(c, mixins=mixins, is_a=is_a, imports=imports) == []]
+        return [
+            c
+            for c in self.all_classes(imports=imports)
+            if self.class_parents(c, mixins=mixins, is_a=is_a, imports=imports) == []
+        ]
 
     @lru_cache(None)
-    def class_leaves(self, imports=True, mixins=True, is_a=True) -> list[ClassDefinitionName]:
-        """
-        All classes that have no children
+    def class_leaves(self, imports: bool = True, mixins: bool = True, is_a: bool = True) -> list[ClassDefinitionName]:
+        """Return all classes that have no children.
+
         :param imports:
         :param mixins:
         :param is_a: include is_a parents (default is True)
         :return:
         """
-        return [c
-                for c in self.all_classes(imports=imports)
-                if self.class_children(c, mixins=mixins, is_a=is_a, imports=imports) == []]
+        return [
+            c
+            for c in self.all_classes(imports=imports)
+            if self.class_children(c, mixins=mixins, is_a=is_a, imports=imports) == []
+        ]
 
     @lru_cache(None)
-    def slot_roots(self, imports=True, mixins=True) -> list[SlotDefinitionName]:
-        """
-        All slotes that have no parents
+    def slot_roots(self, imports: bool = True, mixins: bool = True) -> list[SlotDefinitionName]:
+        """Return all slots that have no parents.
+
         :param imports:
         :param mixins:
         :return:
         """
-        return [c
-                for c in self.all_slots(imports=imports)
-                if self.slot_parents(c, mixins=mixins, imports=imports) == []]
+        return [
+            c for c in self.all_slots(imports=imports) if self.slot_parents(c, mixins=mixins, imports=imports) == []
+        ]
 
     @lru_cache(None)
-    def slot_leaves(self, imports=True, mixins=True) -> list[SlotDefinitionName]:
-        """
-        All slotes that have no children
+    def slot_leaves(self, imports: bool = True, mixins: bool = True) -> list[SlotDefinitionName]:
+        """Return all slots that have no children.
+
         :param imports:
         :param mixins:
         :return:
         """
-        return [c
-                for c in self.all_slots(imports=imports)
-                if self.slot_children(c, mixins=mixins, imports=imports) == []]
+        return [
+            c for c in self.all_slots(imports=imports) if self.slot_children(c, mixins=mixins, imports=imports) == []
+        ]
 
     @lru_cache(None)
     def is_multivalued(self, slot_name: SlotDefinition) -> bool:
-        """
-        returns True if slot is multivalued, else returns False
+        """Return True if slot is multivalued, else returns False.
+
         :param slot_name: slot to test for multivalued
         :return boolean:
         """
         induced_slot = self.induced_slot(slot_name)
-        return True if induced_slot.multivalued else False
+        return bool(induced_slot.multivalued)
 
     @lru_cache(None)
     def slot_is_true_for_metadata_property(self, slot_name: SlotDefinition, metadata_property: str) -> bool:
-        """
-        Returns true if the value of the provided "metadata_property" is True.  For example,
-        sv.slot_is_true_for_metadata_property('id','identifier')
+        """Return true if the value of the provided "metadata_property" is True.
+
+        For example, sv.slot_is_true_for_metadata_property('id','identifier')
         will return True if the slot id has the identifier property set to True.
 
         :param slot_name: slot to test for multivalued
         :param metadata_property: controlled vocabulary for boolean attribtues
         :return: boolean
         """
-
         induced_slot = self.induced_slot(slot_name)
         if type(getattr(induced_slot, metadata_property)) == bool:
             return True if getattr(induced_slot, metadata_property) else False
-        else:
-            raise ValueError(f'property to introspect must be of type "boolean"')
+        raise ValueError('property to introspect must be of type "boolean"')
 
-    def get_element(self, element: Union[ElementName, Element], imports=True) -> Element:
-        """
-        Fetch an element by name
+    def get_element(self, element: ElementName | Element, imports: bool = True) -> Element:
+        """Fetch an element by name.
 
         :param element: query element
         :param imports: include imports closure
@@ -1081,10 +1186,18 @@ class SchemaView:
             e = self.get_subset(element, imports=imports)
         return e
 
-    def get_uri(self, element: Union[ElementName, Element], imports=True, expand=False, native=False, use_element_type=False) -> str:
-        """
-        Return the CURIE or URI for a schema element. If the schema defines a specific URI, this is
-        used, otherwise this is constructed from the default prefix combined with the element name
+    def get_uri(
+        self,
+        element: ElementName | Element,
+        imports: bool = True,
+        expand: bool = False,
+        native: bool = False,
+        use_element_type: bool = False,
+    ) -> str:
+        """Return the CURIE or URI for a schema element.
+
+        If the schema defines a specific URI, this is used;
+        otherwise this is constructed from the default prefix combined with the element name.
 
         :param element: name of schema element
         :param imports: include imports closure
@@ -1104,39 +1217,38 @@ class SchemaView:
             uri = e.uri
             e_name = underscore(e.name)
         else:
-            raise ValueError(f'Must be class or slot or type: {e}')
+            raise ValueError(f"Must be class or slot or type: {e}")
         if uri is None or native:
             if e.from_schema is not None:
                 schema = next((sc for sc in self.schema_map.values() if sc.id == e.from_schema), None)
                 if schema is None:
-                    raise ValueError(f'Cannot find {e.from_schema} in schema_map')
+                    raise ValueError(f"Cannot find {e.from_schema} in schema_map")
             else:
                 schema = self.schema_map[self.in_schema(e.name)]
             if use_element_type:
-                e_type = e.class_name.split("_",1)[0]  # for example "class_definition"
-                e_type_path = f"{e_type}/" 
+                e_type = e.class_name.split("_", 1)[0]  # for example "class_definition"
+                e_type_path = f"{e_type}/"
             else:
                 e_type_path = ""
             pfx = schema.default_prefix
-            # To construct the uri we have to find out if the schema has a default_prefix 
+            # To construct the uri we have to find out if the schema has a default_prefix
             # or if a pseudo "prefix" was derived from the schema id.
             if pfx == sfx(str(schema.id)):  # no prefix defined in schema
-                uri = f'{pfx}{e_type_path}{e_name}'
+                uri = f"{pfx}{e_type_path}{e_name}"
             else:
-                uri = f'{pfx}:{e_type_path}{e_name}'
+                uri = f"{pfx}:{e_type_path}{e_name}"
         if expand:
             return self.expand_curie(uri)
-        else:
-            return uri
+        return uri
 
     def expand_curie(self, uri: str) -> str:
-        """
-        Expands a URI or CURIE to a full URI
+        """Expand a URI or CURIE to a full URI.
+
         :param uri:
         :return: URI as a string
         """
-        if ':' in uri:
-            parts = uri.split(':')
+        if ":" in uri:
+            parts = uri.split(":")
             if len(parts) == 2:
                 [pfx, local_id] = parts
                 ns = self.namespaces()
@@ -1146,8 +1258,9 @@ class SchemaView:
 
     @lru_cache(CACHE_SIZE)
     def get_elements_applicable_by_identifier(self, identifier: str) -> list[str]:
-        """
-        Get a model element by identifier.  The model element corresponding to the given identifier as available via
+        """Get a model element by identifier.
+
+        The model element corresponding to the given identifier as available via
         the id_prefixes mapped to that element.
 
         :param identifier:
@@ -1156,14 +1269,17 @@ class SchemaView:
         """
         elements = self.get_elements_applicable_by_prefix(self.namespaces().prefix_for(identifier))
         if len(elements) == 0:
-            logger.warning("no element found for the given curie using id_prefixes attribute"
-                           ": %s, try get_mappings method?", identifier)
+            logger.warning(
+                "no element found for the given curie using id_prefixes attribute: %s, try get_mappings method?",
+                identifier,
+            )
         return elements
 
     @lru_cache(CACHE_SIZE)
     def get_elements_applicable_by_prefix(self, prefix: str) -> list[str]:
-        """
-        Get a model element by prefix. The model element corresponding to the given prefix as available via
+        """Get a model element by prefix.
+
+        The model element corresponding to the given prefix as available via
         the id_prefixes mapped to that element.
 
         :param prefix: the prefix of a CURIE
@@ -1173,22 +1289,21 @@ class SchemaView:
         applicable_elements = []
         elements = self.all_elements()
         for category, category_element in elements.items():
-            if hasattr(category_element, 'id_prefixes') and prefix in category_element.id_prefixes:
+            if hasattr(category_element, "id_prefixes") and prefix in category_element.id_prefixes:
                 applicable_elements.append(category_element.name)
 
         return applicable_elements
 
     @lru_cache(None)
     def all_aliases(self) -> list[str]:
-        """
-        Get the aliases
+        """Get all aliases.
 
         :return: list of aliases
         """
         element_aliases = {}
 
         for e, el in self.all_elements().items():
-            if el.name not in element_aliases.keys():
+            if el.name not in element_aliases:
                 element_aliases[el.name] = []
             if el.aliases and el.aliases is not None:
                 for a in el.aliases:
@@ -1200,10 +1315,10 @@ class SchemaView:
         return element_aliases
 
     @lru_cache(None)
-    def get_mappings(self, element_name: ElementName = None, imports=True, expand=False) -> dict[
-        MAPPING_TYPE, list[URIorCURIE]]:
-        """
-        Get all mappings for a given element
+    def get_mappings(
+        self, element_name: ElementName = None, imports: bool = True, expand: bool = False
+    ) -> dict[MAPPING_TYPE, list[URIorCURIE]]:
+        """Get all mappings for a given element.
 
         :param element_name: the query element
         :param imports: include imports closure
@@ -1213,14 +1328,14 @@ class SchemaView:
         e = self.get_element(element_name, imports=imports)
         if isinstance(e, ClassDefinition) or isinstance(e, SlotDefinition) or isinstance(e, TypeDefinition):
             m_dict = {
-                'self': [self.get_uri(element_name, imports=imports, expand=False)],
-                'native': [self.get_uri(element_name, imports=imports, expand=False, native=True)],
-                'exact': e.exact_mappings,
-                'narrow': e.narrow_mappings,
-                'broad': e.broad_mappings,
-                'related': e.related_mappings,
-                'close': e.close_mappings,
-                'undefined': e.mappings
+                "self": [self.get_uri(element_name, imports=imports, expand=False)],
+                "native": [self.get_uri(element_name, imports=imports, expand=False, native=True)],
+                "exact": e.exact_mappings,
+                "narrow": e.narrow_mappings,
+                "broad": e.broad_mappings,
+                "related": e.related_mappings,
+                "close": e.close_mappings,
+                "undefined": e.mappings,
             }
         else:
             m_dict = {}
@@ -1231,24 +1346,23 @@ class SchemaView:
         return m_dict
 
     @lru_cache(None)
-    def is_mixin(self, element_name: Union[ElementName, Element]):
-        """
-        Determines whether the given name is the name of a mixin
-        in the model. An element is a mixin if one of its properties is "is_mixin:true"
+    def is_mixin(self, element_name: ElementName | Element) -> bool:
+        """Determine whether the given name is the name of a mixin.
+
+        An element is a mixin if one of its properties is "is_mixin:true"
 
         :param element_name: The name or alias of an element in the model
         :return: boolean
         """
-
         element = self.get_element(element_name)
         is_mixin = element.mixin if isinstance(element, Definition) else False
         return is_mixin
 
     @lru_cache(None)
     def inverse(self, slot_name: SlotDefinition):
-        """
-        Determines whether the given name is a relationship, and if that relationship has an inverse, returns
-        the inverse.
+        """Determine whether the given name is a relationship, and return the inverse (if available).
+
+        If that relationship has an inverse, returns the inverse.
 
         :param slot_name: The name or alias of an element in the model
         :return: inverse_name
@@ -1267,14 +1381,18 @@ class SchemaView:
         elements = self.all_elements()
         for el in elements:
             element = self.get_element(el)
-            mappings = element.exact_mappings + element.close_mappings + element.narrow_mappings + element.broad_mappings
+            mappings = (
+                element.exact_mappings + element.close_mappings + element.narrow_mappings + element.broad_mappings
+            )
             if mapping_id in mappings:
                 model_elements.append(element.name)
         return model_elements
 
-    def get_mapping_index(self, imports=True, expand=False) -> dict[URIorCURIE, list[tuple[MAPPING_TYPE, Element]]]:
-        """
-        Returns an index of all elements keyed by the mapping value.
+    def get_mapping_index(
+        self, imports: bool = True, expand: bool = False
+    ) -> dict[URIorCURIE, list[tuple[MAPPING_TYPE, Element]]]:
+        """Return an index of all elements keyed by the mapping value.
+
         The index values are tuples of mapping type and element
 
         :param imports:
@@ -1289,15 +1407,14 @@ class SchemaView:
         return ix
 
     @lru_cache(None)
-    def is_relationship(self, class_name: CLASS_NAME = None, imports=True) -> bool:
-        """
-        Tests if a class represents a relationship or reified statement
+    def is_relationship(self, class_name: CLASS_NAME | None = None, imports: bool = True) -> bool:
+        """Test if a class represents a relationship or reified statement.
 
         :param class_name:
         :param imports:
         :return: true if the class represents a relationship
         """
-        STMT_TYPES = ['rdf:Statement', 'owl:Axiom']
+        STMT_TYPES = ["rdf:Statement", "owl:Axiom"]
         for an in self.class_ancestors(class_name, imports=imports):
             if self.get_uri(an) in STMT_TYPES:
                 return True
@@ -1308,9 +1425,8 @@ class SchemaView:
         return False
 
     @lru_cache(None)
-    def annotation_dict(self, element_name: ElementName, imports=True) -> dict[URIorCURIE, Any]:
-        """
-        Return a dictionary where keys are annotation tags and values are annotation values for any given element.
+    def annotation_dict(self, element_name: ElementName, imports: bool = True) -> dict[URIorCURIE, Any]:
+        """Return a dictionary where keys are annotation tags and values are annotation values for any given element.
 
         Note this will not include higher-order annotations
 
@@ -1324,9 +1440,11 @@ class SchemaView:
         return {k: v.value for k, v in e.annotations.items()}
 
     @lru_cache(None)
-    def class_slots(self, class_name: CLASS_NAME, imports=True, direct=False, attributes=True) -> list[
-        SlotDefinitionName]:
-        """
+    def class_slots(
+        self, class_name: CLASS_NAME, imports: bool = True, direct: bool = False, attributes: bool = True
+    ) -> list[SlotDefinitionName]:
+        """Return all slots for a class.
+
         :param class_name:
         :param imports: include imports closure
         :param direct: only returns slots directly associated with a class (default is False)
@@ -1350,9 +1468,15 @@ class SchemaView:
         return slots_nr
 
     @lru_cache(None)
-    def induced_slot(self, slot_name: SLOT_NAME, class_name: CLASS_NAME = None, imports=True,
-                     mangle_name=False) -> SlotDefinition:
-        """
+    def induced_slot(
+        self,
+        slot_name: SLOT_NAME,
+        class_name: CLASS_NAME | None = None,
+        imports: bool = True,
+        mangle_name: bool = False,
+    ) -> SlotDefinition:
+        """Generate a SlotDefinition with all properties materialized.
+
         Given a slot, in the context of a particular class, yield a dynamic SlotDefinition that
         has all properties materialized.
 
@@ -1386,8 +1510,10 @@ class SchemaView:
             slot = self.get_slot(slot_name, imports, attributes=True)
 
         if slot is None:
-            raise ValueError(f"No such slot {slot_name} as an attribute of {class_name} ancestors "
-                             "or as a slot definition in the schema")
+            raise ValueError(
+                f"No such slot {slot_name} as an attribute of {class_name} ancestors "
+                "or as a slot definition in the schema"
+            )
 
         # copy the slot, as it will be modified
         induced_slot = copy(slot)
@@ -1400,8 +1526,8 @@ class SchemaView:
                     if getattr(anc_slot, metaslot_name, None):
                         setattr(induced_slot, metaslot_name, copy(getattr(anc_slot, metaslot_name)))
         COMBINE = {
-            'maximum_value': lambda x, y: min(x, y),
-            'minimum_value': lambda x, y: max(x, y),
+            "maximum_value": lambda x, y: min(x, y),
+            "minimum_value": lambda x, y: max(x, y),
         }
         # iterate through all metaslots, and potentially populate metaslot value for induced slot
         for metaslot_name in self._metaslots_for_slot():
@@ -1419,23 +1545,21 @@ class SchemaView:
                 v2 = getattr(anc_slot_usage, metaslot_name, None)
                 if v is None:
                     v = v2
-                else:
-                    if metaslot_name in COMBINE:
-                        if v2 is not None:
-                            v = COMBINE[metaslot_name](v, v2)
-                    else:
-                        # can rewrite below as:
-                        # 1. if v2:
-                        # 2. if v2 is not None and
-                        #    (
-                        #      (isinstance(v2, (dict, list)) and v2) or
-                        #      (isinstance(v2, JsonObj) and as_dict(v2))
-                        #    )
-                        if not is_empty(v2):
-                            v = v2
-                            logger.debug(f'{v} takes precedence over {v2} for {induced_slot.name}.{metaslot_name}')
+                elif metaslot_name in COMBINE:
+                    if v2 is not None:
+                        v = COMBINE[metaslot_name](v, v2)
+                # can rewrite below as:
+                # 1. if v2:
+                # 2. if v2 is not None and
+                #    (
+                #      (isinstance(v2, (dict, list)) and v2) or
+                #      (isinstance(v2, JsonObj) and as_dict(v2))
+                #    )
+                elif not is_empty(v2):
+                    v = v2
+                    logger.debug(f"{v} takes precedence over {v2} for {induced_slot.name}.{metaslot_name}")
             if v is None:
-                if metaslot_name == 'range':
+                if metaslot_name == "range":
                     v = self.schema.default_range
             if v is not None:
                 setattr(induced_slot, metaslot_name, v)
@@ -1444,7 +1568,7 @@ class SchemaView:
         if slot.identifier or slot.key:
             slot.required = True
         if mangle_name:
-            mangled_name = f'{camelcase(class_name)}__{underscore(slot_name)}'
+            mangled_name = f"{camelcase(class_name)}__{underscore(slot_name)}"
             induced_slot.name = mangled_name
         if not induced_slot.alias:
             induced_slot.alias = underscore(slot_name)
@@ -1456,13 +1580,12 @@ class SchemaView:
 
     @lru_cache(None)
     def _metaslots_for_slot(self):
-        fake_slot = SlotDefinition('__FAKE')
+        fake_slot = SlotDefinition("__FAKE")
         return vars(fake_slot).keys()
 
     @lru_cache(None)
-    def class_induced_slots(self, class_name: CLASS_NAME = None, imports=True) -> list[SlotDefinition]:
-        """
-        All slots that are asserted or inferred for a class, with their inferred semantics
+    def class_induced_slots(self, class_name: CLASS_NAME | None = None, imports: bool = True) -> list[SlotDefinition]:
+        """Retrieve all slots that are asserted or inferred for a class, with their inferred semantics.
 
         :param class_name:
         :param imports:
@@ -1471,9 +1594,8 @@ class SchemaView:
         return [self.induced_slot(sn, class_name, imports=imports) for sn in self.class_slots(class_name)]
 
     @lru_cache(None)
-    def induced_class(self, class_name: CLASS_NAME = None) -> ClassDefinition:
-        """
-        Generate an induced class
+    def induced_class(self, class_name: CLASS_NAME | None = None) -> ClassDefinition:
+        """Generate an induced class.
 
         - the class will have no slots
         - the class will have one attribute per `class_induced_slots`
@@ -1491,8 +1613,8 @@ class SchemaView:
         return c
 
     @lru_cache(None)
-    def induced_type(self, type_name: TYPE_NAME = None) -> TypeDefinition:
-        """
+    def induced_type(self, type_name: TYPE_NAME | None = None) -> TypeDefinition:
+        """Generate an induced type.
 
         :param type_name:
         :return:
@@ -1509,23 +1631,21 @@ class SchemaView:
         return t
 
     @lru_cache(None)
-    def induced_enum(self, enum_name: ENUM_NAME = None) -> EnumDefinition:
-        """
+    def induced_enum(self, enum_name: ENUM_NAME | None = None) -> EnumDefinition:
+        """Generate an induced enum.
 
         :param enum_name:
         :return:
         """
-        e = deepcopy(self.get_enum(enum_name))
-        return e
+        return deepcopy(self.get_enum(enum_name))
 
     @lru_cache(None)
-    def get_identifier_slot(self, cn: CLASS_NAME, use_key=False, imports=True) -> Optional[SlotDefinition]:
-        """
-        Find the slot that is the identifier for the given class
+    def get_identifier_slot(self, cn: CLASS_NAME, use_key: bool = False, imports: bool = True) -> SlotDefinition | None:
+        """Retrieve the slot that is the identifier for the given class.
 
         :param cn: class name
         :param imports:
-        :return: name of slot that acts as identifier
+        :return: slot that acts as identifier, if present
         """
         for sn in self.class_slots(cn, imports=imports):
             s = self.induced_slot(sn, cn, imports=imports)
@@ -1533,17 +1653,15 @@ class SchemaView:
                 return s
         if use_key:
             return self.get_key_slot(cn, imports=imports)
-        else:
-            return None
+        return None
 
     @lru_cache(None)
-    def get_key_slot(self, cn: CLASS_NAME, imports=True) -> Optional[SlotDefinition]:
-        """
-        Find the slot that is the key for the given class
+    def get_key_slot(self, cn: CLASS_NAME, imports: bool = True) -> SlotDefinition | None:
+        """Retrieve the slot that is the key for the given class.
 
         :param cn: class name
         :param imports:
-        :return: name of slot that acts as key
+        :return: slot that acts as key, if present
         """
         for sn in self.class_slots(cn, imports=imports):
             s = self.induced_slot(sn, cn, imports=imports)
@@ -1552,8 +1670,9 @@ class SchemaView:
         return None
 
     @lru_cache(None)
-    def get_type_designator_slot(self, cn: CLASS_NAME, imports=True) -> Optional[SlotDefinition]:
-        """
+    def get_type_designator_slot(self, cn: CLASS_NAME, imports: bool = True) -> SlotDefinition | None:
+        """Get the type designator slot for a class.
+
         :param cn: class name
         :param imports:
         :return: name of slot that acts as type designator for the given class
@@ -1564,9 +1683,8 @@ class SchemaView:
                 return s
         return None
 
-    def is_inlined(self, slot: SlotDefinition, imports=True) -> bool:
-        """
-        True if slot is inferred or asserted inline
+    def is_inlined(self, slot: SlotDefinition, imports: bool = True) -> bool:
+        """Return true if slot is inferred or asserted inline.
 
         :param slot:
         :param imports:
@@ -1574,24 +1692,20 @@ class SchemaView:
         """
         range = slot.range
         if range in self.all_classes():
-            if slot.inlined:
-                return True
-            elif slot.inlined_as_list:
+            if slot.inlined or slot.inlined_as_list:
                 return True
 
             id_slot = self.get_identifier_slot(range, imports=imports)
             if id_slot is None:
                 # must be inlined as has no identifier
                 return True
-            else:
-                # not explicitly declared inline and has an identifier: assume is ref, not inlined
-                return False
-        else:
+            # not explicitly declared inline and has an identifier: assume is ref, not inlined
             return False
+        return False
 
     def slot_applicable_range_elements(self, slot: SlotDefinition) -> list[ClassDefinitionName]:
-        """
-        Returns all applicable metamodel elements for a slot range
+        """Retrieve all applicable metamodel elements for a slot range.
+
         (metamodel class names returned: class_definition, enum_definition, type_definition)
 
         Typically any given slot has exactly one range, and one metamodel element type,
@@ -1608,19 +1722,18 @@ class SchemaView:
             if r in self.all_classes():
                 range_types.append(ClassDefinition.class_name)
                 rc = self.get_class(r)
-                if rc.class_uri == 'linkml:Any':
+                if rc.class_uri == "linkml:Any":
                     is_any = True
             if is_any or r in self.all_enums():
                 range_types.append(EnumDefinition.class_name)
             if is_any or r in self.all_types():
                 range_types.append(TypeDefinition.class_name)
         if not range_types:
-            raise ValueError(f'Unrecognized range: {r}')
+            raise ValueError(f"Unrecognized range: {r}")
         return range_types
 
     def slot_range_as_union(self, slot: SlotDefinition) -> list[ElementName]:
-        """
-        Returns all applicable ranges for a slot
+        """Retrieve all applicable ranges for a slot.
 
         Typically, any given slot has exactly one range, and one metamodel element type,
         but a proposed feature in LinkML 1.2 is range expressions, where ranges can be defined as unions
@@ -1635,9 +1748,7 @@ class SchemaView:
                 range_union_of.append(x.range)
         return range_union_of
 
-    def get_classes_by_slot(
-            self, slot: SlotDefinition, include_induced: bool = False
-    ) -> list[ClassDefinitionName]:
+    def get_classes_by_slot(self, slot: SlotDefinition, include_induced: bool = False) -> list[ClassDefinitionName]:
         """Get all classes that use a given slot, either as a direct or induced slot.
 
         :param slot: slot in consideration
@@ -1653,9 +1764,7 @@ class SchemaView:
 
         if include_induced:
             for c_name in all_classes:
-                induced_slot_names = [
-                    ind_slot.name for ind_slot in self.class_induced_slots(c_name)
-                ]
+                induced_slot_names = [ind_slot.name for ind_slot in self.class_induced_slots(c_name)]
                 if slot.name in induced_slot_names:
                     classes_set.add(c_name)
 
@@ -1694,9 +1803,8 @@ class SchemaView:
 
         return modifying_classes
 
-    def is_slot_percent_encoded(self, slot: SlotDefinitionName) -> bool:
-        """
-        True if slot or its range is has a percent_encoded annotation.
+    def is_slot_percent_encoded(self, slot: SlotDefinitionName) -> bool | None:
+        """Return true if slot or its range is has a percent_encoded annotation.
 
         This is true for type fields that are the range of identifier columns,
         where the identifier is not guaranteed to be a valid URI or CURIE
@@ -1711,15 +1819,15 @@ class SchemaView:
             for t in id_slot_ranges:
                 anns = self.get_type(t).annotations
                 return "percent_encoded" in anns
+        return None
 
     @lru_cache(None)
     def usage_index(self) -> dict[ElementName, list[SchemaUsage]]:
-        """
-        Fetch an index that shows the ways in which each element is used
+        """Fetch an index that shows the ways in which each element is used.
 
         :return: dictionary of SchemaUsages keyed by used elements
         """
-        ROLES = ['domain', 'range', 'any_of', 'exactly_one_of', 'none_of', 'all_of']
+        ROLES = ["domain", "range", "any_of", "exactly_one_of", "none_of", "all_of"]
         ix = defaultdict(list)
         for cn, c in self.all_classes().items():
             direct_slots = c.slots
@@ -1745,7 +1853,8 @@ class SchemaView:
     # MUTATION OPERATIONS
 
     def add_class(self, cls: ClassDefinition) -> None:
-        """
+        """Add a class to the schema.
+
         :param cls: class to be added
         :return:
         """
@@ -1753,7 +1862,8 @@ class SchemaView:
         self.set_modified()
 
     def add_slot(self, slot: SlotDefinition) -> None:
-        """
+        """Add a slot to the schema.
+
         :param slot: slot to be added
         :return:
         """
@@ -1761,31 +1871,35 @@ class SchemaView:
         self.set_modified()
 
     def add_enum(self, enum: EnumDefinition) -> None:
-        """
+        """Add an enum to the schema.
+
         :param enum: enum to be added
         :return:
         """
         self.schema.enums[enum.name] = enum
         self.set_modified()
 
-    def add_type(self, type: TypeDefinition) -> None:
-        """
+    def add_type(self, type_def: TypeDefinition) -> None:
+        """Add a type to the schema.
+
         :param type: type to be added
         :return:
         """
-        self.schema.types[type.name] = type
+        self.schema.types[type_def.name] = type_def
         self.set_modified()
 
     def add_subset(self, subset: SubsetDefinition) -> None:
-        """
+        """Add a subset to the schema.
+
         :param subset: subset to be added
         :return:
         """
-        self.schema.subsets[subset.name] = type
+        self.schema.subsets[subset.name] = subset
         self.set_modified()
 
-    def delete_class(self, class_name: ClassDefinitionName, delete_references=True) -> None:
-        """
+    def delete_class(self, class_name: ClassDefinitionName, delete_references: bool = True) -> None:
+        """Delete a class from the schema.
+
         :param class_name: class to be deleted
         :return:
         """
@@ -1802,7 +1916,8 @@ class SchemaView:
         self.set_modified()
 
     def delete_slot(self, slot_name: SlotDefinitionName) -> None:
-        """
+        """Delete a slot from the schema.
+
         :param slot_name: slot to be deleted
         :return:
         """
@@ -1810,7 +1925,8 @@ class SchemaView:
         self.set_modified()
 
     def delete_enum(self, enum_name: EnumDefinitionName) -> None:
-        """
+        """Delete an enum from the schema.
+
         :param enum_name: enum to be deleted
         :return:
         """
@@ -1818,7 +1934,8 @@ class SchemaView:
         self.set_modified()
 
     def delete_type(self, type_name: TypeDefinitionName) -> None:
-        """
+        """Delete a type from the schema.
+
         :param type_name: type to be deleted
         :return:
         """
@@ -1826,7 +1943,8 @@ class SchemaView:
         self.set_modified()
 
     def delete_subset(self, subset_name: SubsetDefinitionName) -> None:
-        """
+        """Delete a subset from the schema.
+
         :param subset_name: subset to be deleted
         :return:
         """
@@ -1834,11 +1952,10 @@ class SchemaView:
         self.set_modified()
 
     # def rename(self, old_name: str, new_name: str):
-    #   todo: add to runtime
+    #   TODO: add to runtime
 
-    def merge_schema(self, schema: SchemaDefinition, clobber=False) -> None:
-        """
-        merges another schema into this one.
+    def merge_schema(self, schema: SchemaDefinition, clobber: bool = False) -> None:
+        """Merge another schema into this one.
 
         If the other schema has an element with the same name as an element in this schema,
         then this element is NOT copied.
@@ -1867,12 +1984,8 @@ class SchemaView:
                 dest.subsets[k] = copy(v)
         self.set_modified()
 
-    def merge_imports(self):
-        """
-        Merges the full imports closure
-
-        :return:
-        """
+    def merge_imports(self) -> None:
+        """Merge the full imports closure."""
         schema = self.schema
         to_merge = [s2 for s2 in self.all_schema(imports=True) if s2 != schema]
         for s2 in to_merge:
@@ -1880,21 +1993,26 @@ class SchemaView:
         schema.imports = []
         self.set_modified()
 
-    def copy_schema(self, new_name: str = None) -> SchemaDefinition:
+    def copy_schema(self, new_name: str | None = None) -> SchemaDefinition:
+        """Generate a copy of the schema.
+
+        :param new_name: name for the new schema, defaults to None
+        :type new_name: str | None, optional
+        :return: copied SchemaDefinition, optionally with new name
+        :rtype: SchemaDefinition
+        """
         s2 = copy(self.schema)
         if new_name is not None:
             s2.name = new_name
         return s2
 
     def set_modified(self) -> None:
+        """Increase the number of schema modifications by 1."""
         self._hash = None
         self.modifications += 1
 
     def materialize_patterns(self) -> None:
-        """Materialize schema by expanding structured patterns 
-        into regular expressions based on composite patterns 
-        provided in the settings dictionary.
-        """
+        """Materialize schema by expanding structured patterns into regular expressions based on composite patterns provided in the settings dictionary."""
         resolver = PatternResolver(self)
 
         def materialize_pattern_into_slot_definition(slot_definition: SlotDefinition) -> None:
@@ -1916,7 +2034,7 @@ class SchemaView:
                     materialize_pattern_into_slot_definition(slot_definition)
 
     def materialize_derived_schema(self) -> SchemaDefinition:
-        """ Materialize a schema view into a schema definition """
+        """Materialize a schema view into a schema definition."""
         derived_schema = deepcopy(self.schema)
         derived_schemaview = SchemaView(derived_schema)
         derived_schemaview.merge_imports()

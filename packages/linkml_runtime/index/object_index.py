@@ -13,7 +13,7 @@ import inspect
 from typing import Any, Union
 from collections.abc import Mapping, Iterator
 
-from linkml_runtime import SchemaView
+from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils import eval_utils
 from linkml_runtime.utils.yamlutils import YAMLRoot
 

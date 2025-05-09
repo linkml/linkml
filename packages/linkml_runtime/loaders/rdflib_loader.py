@@ -10,11 +10,17 @@ from rdflib import Graph, URIRef
 from rdflib.term import BNode, Literal
 from rdflib.namespace import RDF
 
-from linkml_runtime import MappingError, DataNotFoundError
-from linkml_runtime.linkml_model import ClassDefinitionName, TypeDefinition, EnumDefinition, ClassDefinition
+from linkml_runtime import DataNotFoundError, MappingError
+from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    ClassDefinitionName,
+    EnumDefinition,
+    SlotDefinition,
+    TypeDefinition,
+)
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.formatutils import underscore
-from linkml_runtime.utils.schemaview import SchemaView, SlotDefinition
+from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 from pydantic import BaseModel
 
