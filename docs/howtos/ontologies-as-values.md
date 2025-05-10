@@ -441,21 +441,21 @@ model. Formally, concepts like "Homo sapiens" are not in the *domain of discours
 
 Individual organisms like Napoleon (Q517 in Wikidata) instantiate the classes in the hierarchy:
 
-```rdf
+```
 wikidata:Q517 rdf:type NCBITaxon:9606 .
 NCBITaxon:9606 rdfs:subClassOf NCBITaxon:9605
 ```
 
 Compare to the RDF serialization of the LinkML instances:
 
-```rdf
+```
 wikidata:Q517 my:species NCBITaxon:9606 .
 NCBITaxon:9606 my:parent_concept NCBITaxon:9605
 ```
         
 In this case, `rdf:type` corresponds roughly to the `species` attribute in the LinkML model. It's not quite the same, as we might have the following OWL:
 
-```rdf
+```
 wikidata:Q517 rdf:type NCBITaxon:9605 .  ## Homo
 ```
 
@@ -466,7 +466,7 @@ taxon node ID rather than any other taxon ID.
 In the RDF model we might even have:
 
 
-```rdf
+```
 wikidata:Q517 rdf:type My:HistoricPerson .
 My:HistoricPerson rdfs:subClassOf NCBITaxon:9606 .
 ```
@@ -516,7 +516,7 @@ classes:
 
 The LinkML instances now serialize as:
 
-```rdf
+```
 wikidata:Q517 rdf:type NCBITaxon:1 .
 wikidata:Q517 rdf:type NCBITaxon:9606 .
 NCBITaxon:9606 rdf:type my:Species .
