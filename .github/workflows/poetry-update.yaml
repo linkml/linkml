@@ -12,13 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@4.2.2
     - name: Set up python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v5.6.0
       with:
-        python-version: "3.13"
+        python-version: "3.12"
     - name: Install Poetry
-      uses: snok/install-poetry@v1
+      run: |
+        pipx install poetry
     - name: Show current deps
       shell: bash
       run: |
@@ -47,13 +48,13 @@ jobs:
           echo "$UPDATE_MSG"
           echo EOF
         } >> "$GITHUB_ENV"
-    - uses: actions/create-github-app-token@v1
+    - uses: actions/create-github-app-token@v2.0.6
       id: app-token
       with:
         app-id: ${{ vars.PR_BOT_APP_ID }}
         private-key: ${{ secrets.PR_BOT_APP_PRIVATE_KEY }}
     - name: Create pull request
-      uses: peter-evans/create-pull-request@v6
+      uses: peter-evans/create-pull-request@v7.0.8
       with:
         token: ${{ steps.app-token.outputs.token }}
         branch: update-lockfile
