@@ -81,7 +81,7 @@ def text_to_web(input) -> str:
     if input is None:
         return ""
     # Handle both Windows (\r\n) and Unix (\n) line endings
-    return "<br>".join(input.strip().replace('\r\n', '\n').split("\n"))
+    return "<br>".join(input.strip().replace("\r\n", "\n").split("\n"))
 
 
 def _ensure_ranked(elements: Iterable[Element]):
