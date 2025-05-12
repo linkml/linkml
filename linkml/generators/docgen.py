@@ -80,7 +80,8 @@ def text_to_web(input) -> str:
     """Custom filter to convert multi-line text strings into a suitable format for web/markdown output."""
     if input is None:
         return ""
-    return "<br>".join(input.strip().split("\n"))
+    # Handle both Windows (\r\n) and Unix (\n) line endings
+    return "<br>".join(input.strip().replace('\r\n', '\n').split("\n"))
 
 
 def _ensure_ranked(elements: Iterable[Element]):
