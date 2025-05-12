@@ -80,8 +80,10 @@ def text_to_web(input) -> str:
     """Custom filter to convert multi-line text strings into a suitable format for web/markdown output."""
     if input is None:
         return ""
-    # Handle both Windows (\r\n) and Unix (\n) line endings
-    return "<br>".join(input.strip().replace("\r\n", "\n").split("\n"))
+    # First normalize all line endings to Unix-style (\n)
+    normalized = input.strip().replace("\r\n", "\n")
+    # Then split on newlines and join with <br>
+    return "<br>".join(normalized.split("\n"))
 
 
 def _ensure_ranked(elements: Iterable[Element]):
@@ -102,6 +104,10 @@ class DocGenerator(Generator):
 
     Currently the provided templates are for markdown but this framework allows
     direct generation to rst, html, etc
+    
+    Important: This generator handles line endings carefully to ensure cross-platform
+    compatibility (Windows/Unix). All output files use LF line endings and Jinja2
+    templates are configured with consistent newline handling.
 
     This works via jinja2 templates (found in docgen/ folder). By default, only
     markdown templates are provided. You can either override these, or you can
@@ -280,6 +286,11 @@ class DocGenerator(Generator):
     def _write(self, out_str: str, directory: str, name: str) -> None:
         """
         Writes a string in desired format (e.g. markdown) to the appropriate file in a directory
+        
+        Important: This method handles line endings carefully to ensure compatibility across 
+        platforms (Windows/Unix). We normalize all line endings to LF (\n) before writing, and
+        don't specify a newline parameter to the open() call. This allows for consistent
+        behavior regardless of operating system.
 
         :param out_str: string to be written
         :param directory: location
@@ -290,6 +301,10 @@ class DocGenerator(Generator):
         path.mkdir(parents=True, exist_ok=True)
         file_name = f"{name}.{self._file_suffix()}"
         self.logger.debug(f"  Writing file: {file_name}")
+        
+        # Ensure consistent line endings (convert Windows CRLF to Unix LF)
+        out_str = out_str.replace('\r\n', '\n')
+        
         with open(path / file_name, "w", encoding="UTF-8") as stream:
             stream.write(out_str)
 
@@ -320,7 +335,7 @@ class DocGenerator(Generator):
             path = self.template_mappings[element_type]
             # TODO: relative paths
             # loader = FileSystemLoader()
-            env = Environment()
+            env = Environment(keep_trailing_newline=True, newline_sequence='\n')
             self.customize_environment(env)
             return env.get_template(path)
         else:
@@ -338,7 +353,7 @@ class DocGenerator(Generator):
                 package_dir = os.path.dirname(importlib.util.find_spec(__name__).origin)
                 folder = os.path.join(package_dir, "docgen", "")
             loader = FileSystemLoader(folder)
-            env = Environment(loader=loader)
+            env = Environment(loader=loader, keep_trailing_newline=True, newline_sequence='\n')
             self.customize_environment(env)
             return env.get_template(base_file_name)
 
@@ -971,6 +986,10 @@ class DocGenerator(Generator):
             env.filters["enshorten"] = enshorten
         else:
             env.filters["enshorten"] = text_to_web
+        
+        # Ensure Jinja consistently uses Unix line endings regardless of platform
+        env.newline_sequence = '\n'
+        env.keep_trailing_newline = True
 
 
 @shared_arguments(DocGenerator)
