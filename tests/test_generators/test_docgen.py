@@ -469,6 +469,17 @@ def test_docgen_multiline_everything(
         truncate_descriptions=truncate_descriptions,
         mergeimports=False,
     )
+    
+    # Debug information
+    print("\n=== DEBUG INFO ===")
+    class_name = f"class_{MULTI_LINE_WS}"
+    cls = gen.schemaview.get_class(class_name)
+    print(f"Class: {class_name}")
+    print(f"Slots: {cls.slots}")
+    print(f"Direct slot names: {gen.get_direct_slot_names(cls)}")
+    print(f"Direct slots: {[s.name for s in gen.get_direct_slots(cls)]}")
+    print("=== END DEBUG INFO ===\n")
+    
     gen.serialize(directory=str(tmp_path))
 
     # index.md
