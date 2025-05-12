@@ -78,14 +78,13 @@ def enshorten(input):
 
 def text_to_web(input) -> str:
     """Custom filter to convert multi-line text strings into a suitable format for web/markdown output."""
-    if input is None:
+    if input is None or input == "":
         return ""
     # First normalize all line endings to Unix-style (\n)
     normalized = input.strip().replace("\r\n", "\n")
     # Then split on newlines and join with <br>
-    # Important: don't use trailing newlines in the <br> to ensure consistent
-    # output on all platforms (Windows/Unix)
-    return "<br>".join(normalized.split("\n"))
+    # Important: we normalize all whitespace to ensure consistent rendering across platforms
+    return "<br>".join([line.strip() for line in normalized.split("\n")])
 
 
 def _ensure_ranked(elements: Iterable[Element]):

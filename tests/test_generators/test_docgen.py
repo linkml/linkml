@@ -366,7 +366,7 @@ DESCRIPTIONS = {
 DESCRIPTIONS_MD = {
     SINGLE_LINE: "<br>".join(DESCRIPTIONS[SINGLE_LINE]),
     MULTI_LINE: "<br>".join([line.strip() for line in DESCRIPTIONS[MULTI_LINE] if len(line)]),
-    MULTI_LINE_WS: "<br>".join(DESCRIPTIONS[MULTI_LINE_WS]),
+    MULTI_LINE_WS: "<br>".join([line.strip() for line in DESCRIPTIONS[MULTI_LINE_WS]]),
 }
 
 
@@ -469,17 +469,6 @@ def test_docgen_multiline_everything(
         truncate_descriptions=truncate_descriptions,
         mergeimports=False,
     )
-    
-    # Debug information
-    print("\n=== DEBUG INFO ===")
-    class_name = f"class_{MULTI_LINE_WS}"
-    cls = gen.schemaview.get_class(class_name)
-    print(f"Class: {class_name}")
-    print(f"Slots: {cls.slots}")
-    print(f"Direct slot names: {gen.get_direct_slot_names(cls)}")
-    print(f"Direct slots: {[s.name for s in gen.get_direct_slots(cls)]}")
-    print("=== END DEBUG INFO ===\n")
-    
     gen.serialize(directory=str(tmp_path))
 
     # index.md

@@ -67,14 +67,14 @@ URI: {{ gen.uri_link(element) }}
 | Name | Cardinality and Range | Description | Inheritance |
 | ---  | --- | --- | --- |
 {% if gen.get_direct_slots(element)|length > 0 %}
-{%- for slot in gen.get_direct_slots(element) -%}
-| {{ gen.link(slot) }} | {{ gen.cardinality(slot) }} <br/> {{ compute_range(slot) }} | {% if slot.description %}{{ slot.description|enshorten }}{% endif %} | direct |
-{% endfor -%}
-{% endif -%}
+{% for slot in gen.get_direct_slots(element) %}
+| {{ gen.link(slot) }} | {{ gen.cardinality(slot) }} <br/> {{ compute_range(slot) }} | {{ slot.description|enshorten if slot.description else "" }} | direct |
+{% endfor %}
+{% endif %}
 {% if gen.get_indirect_slots(element)|length > 0 %}
-{%- for slot in gen.get_indirect_slots(element) -%}
-| {{ gen.link(slot) }} | {{ gen.cardinality(slot) }} <br/> {{ compute_range(slot) }} | {% if slot.description %}{{ slot.description|enshorten }}{% endif %} | {{ gen.links(gen.get_slot_inherited_from(element.name, slot.name))|join(', ') }} |
-{% endfor -%}
+{% for slot in gen.get_indirect_slots(element) %}
+| {{ gen.link(slot) }} | {{ gen.cardinality(slot) }} <br/> {{ compute_range(slot) }} | {{ slot.description|enshorten if slot.description else "" }} | {{ gen.links(gen.get_slot_inherited_from(element.name, slot.name))|join(', ') }} |
+{% endfor %}
 {% endif %}
 
 {% if schemaview.is_mixin(element.name) %}
