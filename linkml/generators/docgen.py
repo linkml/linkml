@@ -83,6 +83,8 @@ def text_to_web(input) -> str:
     # First normalize all line endings to Unix-style (\n)
     normalized = input.strip().replace("\r\n", "\n")
     # Then split on newlines and join with <br>
+    # Important: don't use trailing newlines in the <br> to ensure consistent
+    # output on all platforms (Windows/Unix)
     return "<br>".join(normalized.split("\n"))
 
 
@@ -305,7 +307,7 @@ class DocGenerator(Generator):
         # Ensure consistent line endings (convert Windows CRLF to Unix LF)
         out_str = out_str.replace("\r\n", "\n")
 
-        with open(path / file_name, "w", encoding="UTF-8") as stream:
+        with open(path / file_name, "w", encoding="UTF-8", newline="") as stream:
             stream.write(out_str)
 
     def _file_suffix(self):
