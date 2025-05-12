@@ -38,7 +38,7 @@ def assert_mdfile_contains(
         # Read file contents and normalize line endings for cross-platform compatibility
         file_content = stream.read().replace("\r\n", "\n")
         lines = file_content.split("\n")
-        
+
         for i in range(0, len(lines)):
             line = lines[i]
             if text in line:
