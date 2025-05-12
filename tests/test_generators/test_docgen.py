@@ -35,7 +35,10 @@ def assert_mdfile_contains(
     found = False
     is_after = False  # have we reached the after mark?
     with open(filename) as stream:
-        lines = stream.readlines()
+        # Read file contents and normalize line endings for cross-platform compatibility
+        file_content = stream.read().replace("\r\n", "\n")
+        lines = file_content.split("\n")
+        
         for i in range(0, len(lines)):
             line = lines[i]
             if text in line:
@@ -472,6 +475,8 @@ def test_docgen_multiline_everything(
     index_file = tmp_path / "index.md"
     with index_file.open() as fh:
         file_contents = fh.read()
+        # Normalize line endings for consistent comparison across platforms
+        file_contents = file_contents.replace("\r\n", "\n")
 
     # slot with no description
     assert f"| [slot_{NO_DESC}](slot_{NO_DESC}.md) |  |\n" in file_contents
@@ -516,6 +521,8 @@ def test_docgen_multiline_everything(
     slot_file = tmp_path / f"slot_{MULTI_LINE_WS}.md"
     with slot_file.open() as fh:
         slot_file_contents = fh.read()
+        # Normalize line endings for consistent comparison across platforms
+        slot_file_contents = slot_file_contents.replace("\r\n", "\n")
 
         # only ClassMultiLinePreserveWhitespace will show up (the only class that has slots)
         class_name = f"Class{UC_NAMES[MULTI_LINE_WS]}"
@@ -530,6 +537,8 @@ def test_docgen_multiline_everything(
     class_file = tmp_path / f"Class{UC_NAMES[MULTI_LINE_WS]}.md"
     with class_file.open() as fh:
         class_file_contents = fh.read()
+        # Normalize line endings for consistent comparison across platforms
+        class_file_contents = class_file_contents.replace("\r\n", "\n")
 
         for slot in UC_NAMES:
             description = ""
