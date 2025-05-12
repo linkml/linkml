@@ -61,7 +61,7 @@ SUBSET_SUBFOLDER = "subsets"
 
 def enshorten(input):
     """
-    Custom filter to truncate any long text intended to go in a table,
+    Custom filters to truncate any long text intended to go in a table
     and to remove anything after a newline"""
     if input is None:
         return ""
