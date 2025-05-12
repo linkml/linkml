@@ -1,7 +1,11 @@
+import os
+
 import pytest
 from click.testing import CliRunner
+from yaml import safe_load
 
 from linkml.generators.jsonldcontextgen import cli
+from tests.utils.validate_jsonld_context import RdfExpectations
 
 from ..conftest import KITCHEN_SINK_PATH
 
@@ -59,3 +63,35 @@ def test_slot_class_uri(input_path, snapshot):
     result = runner.invoke(cli, [str(schema)])
     assert result.exit_code == 0
     assert result.output == snapshot("gencontext/uri_tests.jsonld")
+
+
+@pytest.mark.parametrize(
+    "schema",
+    [
+        pytest.param(
+            "simple_uri_test.yaml",
+            marks=pytest.mark.xfail(reason="Bug linkml#2625: different context between class or cli"),
+        ),
+        pytest.param(
+            "uri_tests.yaml", marks=pytest.mark.xfail(reason="Bug linkml#2625: different context between class or cli")
+        ),
+    ],
+)
+def test_expected_rdf(input_path, schema):
+    schema_path = input_path(schema)
+    if os.environ.get("DETAILED_OUTPUT"):
+        print(f"\n‼️‼️‼️ Processing '{schema_path}' ‼️‼️‼️")
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [str(schema_path)])
+    assert result.exit_code == 0
+
+    with open(schema_path) as schema_file:
+        schema_yaml = safe_load(schema_file)
+
+    rdf_expects = RdfExpectations(schema_yaml, result.output)
+
+    rdf_expects.expected_id_uri()
+    rdf_expects.expected_namespaces()
+    rdf_expects.expected_classes()
+    rdf_expects.expected_slots()
