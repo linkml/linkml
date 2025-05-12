@@ -1,0 +1,52 @@
+name: Windows Specific Tests
+
+# This workflow runs early in the CI process - after code quality checks but before other tests
+# If it fails on Windows, you won't have to wait for other tests to complete
+
+on:
+  push:
+    branches:
+      - fix_docgen
+  workflow_dispatch:
+
+# Set concurrency to ensure this runs before other test workflows but after code quality
+concurrency:
+  group: windows-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-windows:
+    name: Early Windows Tests - Critical Check
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.9', '3.13']
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry install
+      
+    - name: Run specific docgen tests first
+      run: |
+        poetry run pytest tests/test_generators/test_docgen.py::test_docgen_multiline_everything -v
+      
+    - name: Run all docgen tests
+      # Only run this if the specific test passes
+      if: success()
+      run: |
+        poetry run pytest tests/test_generators/test_docgen.py -v
+        
+    - name: Notify on failure
+      if: failure()
+      run: |
+        echo "Windows-specific tests failed. Please check the docgen.py file for line ending handling issues."
