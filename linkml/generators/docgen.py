@@ -78,13 +78,9 @@ def enshorten(input):
 
 def text_to_web(input) -> str:
     """Custom filter to convert multi-line text strings into a suitable format for web/markdown output."""
-    if input is None or input == "":
+    if input is None:
         return ""
-    # First normalize all line endings to Unix-style (\n)
-    normalized = input.strip().replace("\r\n", "\n")
-    # Then split on newlines and join with <br>
-    # Important: we normalize all whitespace to ensure consistent rendering across platforms
-    return "<br>".join([line.strip() for line in normalized.split("\n")])
+    return "<br>".join(input.strip().split("\n"))
 
 
 def _ensure_ranked(elements: Iterable[Element]):
@@ -105,10 +101,6 @@ class DocGenerator(Generator):
 
     Currently the provided templates are for markdown but this framework allows
     direct generation to rst, html, etc
-
-    Important: This generator handles line endings carefully to ensure cross-platform
-    compatibility (Windows/Unix). All output files use LF line endings and Jinja2
-    templates are configured with consistent newline handling.
 
     This works via jinja2 templates (found in docgen/ folder). By default, only
     markdown templates are provided. You can either override these, or you can
@@ -243,38 +235,6 @@ class DocGenerator(Generator):
                 continue
             n = self.name(c)
             self.logger.debug(f"  Generating doc for {n}")
-
-            # To debug Windows-specific issues, explicitly generate and handle template parts separately
-            import platform
-
-            if platform.system() == "Windows" and n == "ClassMultiLinePreserveWhitespace":
-                # Special Windows handling for this class that causes test failures
-                # Get direct slots for debugging
-                direct_slots = self.get_direct_slots(c)
-                self.logger.debug(f"Windows debugging for {n} - has {len(direct_slots)} direct slots")
-                for slot in direct_slots:
-                    self.logger.debug(f"  Slot: {slot.name}, Has description: {bool(slot.description)}")
-
-                # Add explicit debugging markers to help trace rendering issues
-                out_str = template.render(gen=self, element=c, schemaview=sv, **template_vars)
-
-                # Find specific markers for debugging - check if slot table is rendered
-                if "<!-- BEGIN SLOT TABLE -->" in out_str and "<!-- END SLOT TABLE -->" in out_str:
-                    self.logger.debug("Slot table markers present in rendered output")
-                else:
-                    self.logger.debug("MISSING slot table markers in rendered output!")
-
-                # Write with extra care for Windows line endings
-                out_path = (
-                    Path(f"{directory}/{CLASS_SUBFOLDER}" if self.subfolder_type_separation else directory)
-                    / f"{n}.{self._file_suffix()}"
-                )
-                out_path.parent.mkdir(parents=True, exist_ok=True)
-                with open(out_path, "w", encoding="UTF-8", newline="") as stream:
-                    stream.write(out_str)
-                return
-
-            # Normal processing for other classes
             out_str = template.render(gen=self, element=c, schemaview=sv, **template_vars)
             self._write(out_str, f"{directory}/{CLASS_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
         self.logger.debug("Processing Slots...")
@@ -320,11 +280,6 @@ class DocGenerator(Generator):
         """
         Writes a string in desired format (e.g. markdown) to the appropriate file in a directory
 
-        Important: This method handles line endings carefully to ensure compatibility across
-        platforms (Windows/Unix). We normalize all line endings to LF (\n) before writing, and
-        don't specify a newline parameter to the open() call. This allows for consistent
-        behavior regardless of operating system.
-
         :param out_str: string to be written
         :param directory: location
         :param name: base name - should correspond to element name
@@ -334,11 +289,7 @@ class DocGenerator(Generator):
         path.mkdir(parents=True, exist_ok=True)
         file_name = f"{name}.{self._file_suffix()}"
         self.logger.debug(f"  Writing file: {file_name}")
-
-        # Ensure consistent line endings (convert Windows CRLF to Unix LF)
-        out_str = out_str.replace("\r\n", "\n")
-
-        with open(path / file_name, "w", encoding="UTF-8", newline="") as stream:
+        with open(path / file_name, "w", encoding="UTF-8") as stream:
             stream.write(out_str)
 
     def _file_suffix(self):
@@ -368,7 +319,7 @@ class DocGenerator(Generator):
             path = self.template_mappings[element_type]
             # TODO: relative paths
             # loader = FileSystemLoader()
-            env = Environment(keep_trailing_newline=True, newline_sequence="\n")
+            env = Environment()
             self.customize_environment(env)
             return env.get_template(path)
         else:
@@ -386,7 +337,7 @@ class DocGenerator(Generator):
                 package_dir = os.path.dirname(importlib.util.find_spec(__name__).origin)
                 folder = os.path.join(package_dir, "docgen", "")
             loader = FileSystemLoader(folder)
-            env = Environment(loader=loader, keep_trailing_newline=True, newline_sequence="\n")
+            env = Environment(loader=loader)
             self.customize_environment(env)
             return env.get_template(base_file_name)
 
@@ -1019,17 +970,6 @@ class DocGenerator(Generator):
             env.filters["enshorten"] = enshorten
         else:
             env.filters["enshorten"] = text_to_web
-
-        # Ensure Jinja consistently uses Unix line endings regardless of platform
-        env.newline_sequence = "\n"
-        env.keep_trailing_newline = True
-
-        # Add platform detection for debugging
-        import platform
-
-        if platform.system() == "Windows":
-            self.logger.debug("Setting up Jinja environment on Windows platform")
-            # Add any Windows-specific customizations here if needed
 
 
 @shared_arguments(DocGenerator)
