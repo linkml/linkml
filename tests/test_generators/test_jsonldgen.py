@@ -1,6 +1,5 @@
 import json
 
-import pytest
 from linkml_runtime.utils.schemaview import SchemaView
 from rdflib import Graph, term
 from yaml import safe_load
@@ -8,7 +7,6 @@ from yaml import safe_load
 from linkml.generators import JSONLDGenerator, RDFGenerator
 
 
-@pytest.mark.xfail(reason="Bug 2687: class_uri should be exactMatch")
 def test_class_uri(input_path):
     """`class_uri` should result in an `skos:exactMatch` relationship
     in the generated JSON-LD and RDF."""
