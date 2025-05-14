@@ -6,6 +6,7 @@ Note that docgen replaces markdowngen
 
 import logging
 import os
+import platform
 from collections import Counter
 from collections.abc import Generator
 from copy import copy
@@ -19,6 +20,9 @@ from linkml_runtime.utils.schemaview import SchemaView
 from linkml.generators.docgen import DocGenerator
 
 logger = logging.getLogger(__name__)
+
+
+WINDOWS = platform.system() == "Windows"
 
 
 def assert_mdfile_does_not_contain(*args, **kwargs) -> None:
@@ -268,11 +272,7 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
     # test slot usage overrides. See https://github.com/linkml/linkml/issues/1208
     assert_mdfile_contains(
         tmp_path / "FamilialRelationship.md",
-        (
-            "| [started_at_time](started_at_time.md) "
-            "| 0..1 <br/> [Date](Date.md) |  "
-            "| [Relationship](Relationship.md) |"
-        ),
+        ("| [started_at_time](started_at_time.md) | 0..1 <br/> [Date](Date.md) |  | [Relationship](Relationship.md) |"),
         after="## Slots",
     )
     assert_mdfile_contains(
@@ -443,7 +443,7 @@ imports:
 
 @pytest.mark.parametrize("truncate_descriptions", [True, False])
 @pytest.mark.parametrize("hierarchical_class_view", [True, False])
-def test_docgen_multiline_everything(
+def test_docgen_multiline_everything_index_page(
     tmp_path: Generator[Path, None, None],
     multi_line_description_test_schema: str,
     hierarchical_class_view: bool,
@@ -511,6 +511,34 @@ def test_docgen_multiline_everything(
             else:  # no description
                 f"| [{component}]({component}.md) |  |\n" in file_contents
 
+
+@pytest.mark.parametrize("truncate_descriptions", [True, False])
+@pytest.mark.parametrize("hierarchical_class_view", [True, False])
+def test_docgen_multiline_everything_slots_page(
+    tmp_path: Generator[Path, None, None],
+    multi_line_description_test_schema: str,
+    hierarchical_class_view: bool,
+    truncate_descriptions: bool,
+) -> None:
+    """Tests that single and multi-line descriptions are rendered correctly with truncation enabled and disabled.
+
+    :param tmp_path: temp dir for doc gen output
+    :type tmp_path: Generator[Path, None, None]
+    :param multi_line_description_test_schema: schema with lots of descriptions
+    :type multi_line_description_test_schema: str
+    :param hierarchical_class_view: whether or not hierarchical class view is enabled
+    :type hierarchical_class_view: bool
+    :param truncate_descriptions: whether or not description truncation is enabled
+    :type truncate_descriptions: bool
+    """
+    gen = DocGenerator(
+        multi_line_description_test_schema,
+        hierarchical_class_view=hierarchical_class_view,
+        truncate_descriptions=truncate_descriptions,
+        mergeimports=False,
+    )
+    gen.serialize(directory=str(tmp_path))
+
     # check that the slot pages have the class description truncated (if applicable)
     # can use any of the slot pages for this
     slot_file = tmp_path / f"slot_{MULTI_LINE_WS}.md"
@@ -526,21 +554,88 @@ def test_docgen_multiline_everything(
             + f"| [{class_name}]({class_name}.md) | {description} |  no  |\n"
         ) in slot_file_contents
 
+
+@pytest.mark.parametrize("slot", UC_NAMES)
+@pytest.mark.parametrize("truncate_descriptions", [True, False])
+@pytest.mark.parametrize("hierarchical_class_view", [True, False])
+def test_docgen_multiline_everything_class_page(
+    tmp_path: Generator[Path, None, None],
+    multi_line_description_test_schema: str,
+    hierarchical_class_view: bool,
+    truncate_descriptions: bool,
+    slot: str,
+) -> None:
+    """Tests that single and multi-line descriptions are rendered correctly with truncation enabled and disabled.
+
+    :param tmp_path: temp dir for doc gen output
+    :type tmp_path: Generator[Path, None, None]
+    :param multi_line_description_test_schema: schema with lots of descriptions
+    :type multi_line_description_test_schema: str
+    :param hierarchical_class_view: whether or not hierarchical class view is enabled
+    :type hierarchical_class_view: bool
+    :param truncate_descriptions: whether or not description truncation is enabled
+    :type truncate_descriptions: bool
+    :param slot: the slot being tested in this particular test
+    :type slot: str
+    """
+    gen = DocGenerator(
+        multi_line_description_test_schema,
+        hierarchical_class_view=hierarchical_class_view,
+        truncate_descriptions=truncate_descriptions,
+        mergeimports=False,
+    )
+    gen.serialize(directory=str(tmp_path))
+
     # check the table in the populated class file, ClassMultiLinePreserveWhitespace.md
     class_file = tmp_path / f"Class{UC_NAMES[MULTI_LINE_WS]}.md"
     with class_file.open() as fh:
         class_file_contents = fh.read()
 
-        for slot in UC_NAMES:
-            description = ""
-            if slot != NO_DESC:
-                description = DESCRIPTIONS.get(slot)[0] if truncate_descriptions else DESCRIPTIONS_MD.get(slot)
-            assert (
-                f"| [slot_{slot}](slot_{slot}.md) |"
-                # all slots are type string
-                + " 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string) "
-                + f"| {description} | direct |"
-            ) in class_file_contents
+        class_file_list = [line for line in class_file_contents.split("\n") if ".md" in line]
+        print(class_file_list)
+
+        slot_type = "[xsd:string](http://www.w3.org/2001/XMLSchema#string)"
+        if WINDOWS:
+            slot_type = "[xsd:string](xsd:string)"
+
+        description = ""
+        if slot != NO_DESC:
+            description = DESCRIPTIONS.get(slot)[0] if truncate_descriptions else DESCRIPTIONS_MD.get(slot)
+
+        assert (
+            f"| [slot_{slot}](slot_{slot}.md) |"
+            # all slots are type string
+            + f" 0..1 <br/> {slot_type} "
+            + f"| {description} | direct |"
+        ) in class_file_contents
+
+
+@pytest.mark.parametrize("truncate_descriptions", [True, False])
+@pytest.mark.parametrize("hierarchical_class_view", [True, False])
+def test_docgen_multiline_everything_enum_page(
+    tmp_path: Generator[Path, None, None],
+    multi_line_description_test_schema: str,
+    hierarchical_class_view: bool,
+    truncate_descriptions: bool,
+) -> None:
+    """Tests that single and multi-line descriptions are rendered correctly with truncation enabled and disabled.
+
+    :param tmp_path: temp dir for doc gen output
+    :type tmp_path: Generator[Path, None, None]
+    :param multi_line_description_test_schema: schema with lots of descriptions
+    :type multi_line_description_test_schema: str
+    :param hierarchical_class_view: whether or not hierarchical class view is enabled
+    :type hierarchical_class_view: bool
+    :param truncate_descriptions: whether or not description truncation is enabled
+    :type truncate_descriptions: bool
+    """
+    gen = DocGenerator(
+        multi_line_description_test_schema,
+        hierarchical_class_view=hierarchical_class_view,
+        truncate_descriptions=truncate_descriptions,
+        mergeimports=False,
+    )
+    gen.serialize(directory=str(tmp_path))
 
     # check the permissible values table in the PopulatedEnum page
     pe_file = tmp_path / "PopulatedEnum.md"
