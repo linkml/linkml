@@ -555,7 +555,6 @@ def test_docgen_multiline_everything_slots_page(
         ) in slot_file_contents
 
 
-@pytest.mark.parametrize("slot", UC_NAMES)
 @pytest.mark.parametrize("truncate_descriptions", [True, False])
 @pytest.mark.parametrize("hierarchical_class_view", [True, False])
 def test_docgen_multiline_everything_class_page(
@@ -563,7 +562,6 @@ def test_docgen_multiline_everything_class_page(
     multi_line_description_test_schema: str,
     hierarchical_class_view: bool,
     truncate_descriptions: bool,
-    slot: str,
 ) -> None:
     """Tests that single and multi-line descriptions are rendered correctly with truncation enabled and disabled.
 
@@ -575,8 +573,6 @@ def test_docgen_multiline_everything_class_page(
     :type hierarchical_class_view: bool
     :param truncate_descriptions: whether or not description truncation is enabled
     :type truncate_descriptions: bool
-    :param slot: the slot being tested in this particular test
-    :type slot: str
     """
     gen = DocGenerator(
         multi_line_description_test_schema,
@@ -586,28 +582,26 @@ def test_docgen_multiline_everything_class_page(
     )
     gen.serialize(directory=str(tmp_path))
 
+    slot_type = "[xsd:string](http://www.w3.org/2001/XMLSchema#string)"
+    if WINDOWS:
+        slot_type = "[xsd:string](xsd:string)"
+
     # check the table in the populated class file, ClassMultiLinePreserveWhitespace.md
     class_file = tmp_path / f"Class{UC_NAMES[MULTI_LINE_WS]}.md"
     with class_file.open() as fh:
         class_file_contents = fh.read()
 
-        class_file_list = [line for line in class_file_contents.split("\n") if ".md" in line]
-        print(class_file_list)
+        for slot in UC_NAMES:
+            description = ""
+            if slot != NO_DESC:
+                description = DESCRIPTIONS.get(slot)[0] if truncate_descriptions else DESCRIPTIONS_MD.get(slot)
 
-        slot_type = "[xsd:string](http://www.w3.org/2001/XMLSchema#string)"
-        if WINDOWS:
-            slot_type = "[xsd:string](xsd:string)"
-
-        description = ""
-        if slot != NO_DESC:
-            description = DESCRIPTIONS.get(slot)[0] if truncate_descriptions else DESCRIPTIONS_MD.get(slot)
-
-        assert (
-            f"| [slot_{slot}](slot_{slot}.md) |"
-            # all slots are type string
-            + f" 0..1 <br/> {slot_type} "
-            + f"| {description} | direct |"
-        ) in class_file_contents
+            assert (
+                f"| [slot_{slot}](slot_{slot}.md) |"
+                # all slots are type string
+                + f" 0..1 <br/> {slot_type} "
+                + f"| {description} | direct |"
+            ) in class_file_contents
 
 
 @pytest.mark.parametrize("truncate_descriptions", [True, False])
