@@ -253,7 +253,7 @@ class SchemaLoader:
                     )
             # Class URI's also count as (trivial) mappings
             if cls.class_uri is not None:
-                cls.mappings.insert(0, cls.class_uri)
+                cls.exact_mappings.insert(0, cls.class_uri)
             if cls.class_uri is None or not self.useuris:
                 from_schema = cls.from_schema
                 if from_schema is None:
@@ -265,6 +265,7 @@ class SchemaLoader:
                     self.schema_defaults.get(cls.from_schema, suffixed_cls_schema),
                     camelcase(cls.name),
                 )
+                cls.exact_mappings.insert(0, cls.class_uri)
 
         # Get the inverse ducks all in a row before we start filling other stuff in
         for slot in self.schema.slots.values():
