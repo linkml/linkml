@@ -14,7 +14,6 @@ from linkml_runtime.dumpers import json_dumper, yaml_dumper
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
-    ClassRule,
     Definition,
     DefinitionName,
     Element,
