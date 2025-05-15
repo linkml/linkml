@@ -40,6 +40,9 @@ meta:C1 a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "c1" ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty meta:annotslot2 ],
+        [ a owl:Restriction ;
             owl:minCardinality 0 ;
             owl:onProperty meta:dataslot ],
         [ a owl:Restriction ;
@@ -49,29 +52,26 @@ meta:C1 a owl:Class,
             owl:maxCardinality 1 ;
             owl:onProperty meta:dataslot ],
         [ a owl:Restriction ;
+            owl:allValuesFrom meta:C2 ;
+            owl:onProperty meta:annotslot ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom meta:C2 ;
+            owl:onProperty meta:objslot ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty meta:objslot ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty meta:annotslot ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty meta:annotslot ],
+        [ a owl:Restriction ;
             owl:allValuesFrom meta:string ;
             owl:onProperty meta:dataslot ],
         [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty meta:objslot ],
-        [ a owl:Restriction ;
             owl:maxCardinality 1 ;
             owl:onProperty meta:objslot ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom meta:C2 ;
-            owl:onProperty meta:objslot ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty meta:annotslot2 ],
-        [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty meta:annotslot ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty meta:annotslot ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom meta:C2 ;
-            owl:onProperty meta:annotslot ],
         [ a owl:Restriction ;
             owl:minCardinality 0 ;
             owl:onProperty meta:annotslot2 ] ;

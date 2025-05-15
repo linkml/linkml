@@ -14,18 +14,24 @@ classes:
     name: c1
     definition_uri: http://example.org/tests/issue177/C1
     from_schema: http://example.org/tests/issue177
+    exact_mappings:
+    - http://example.org/tests/issue177/C1
     class_uri: http://example.org/tests/issue177/C1
     tree_root: true
   c2:
     name: c2
     definition_uri: http://example.org/tests/issue177/C2
     from_schema: http://example.org/tests/issue177
+    exact_mappings:
+    - http://example.org/tests/issue177/C2
     class_uri: http://example.org/tests/issue177/C2
     tree_root: true
   c3:
     name: c3
     definition_uri: http://example.org/tests/issue177/C3
     from_schema: http://example.org/tests/issue177
+    exact_mappings:
+    - http://example.org/tests/issue177/C3
     class_uri: http://example.org/tests/issue177/C3
     tree_root: true
 metamodel_version: 1.7.0

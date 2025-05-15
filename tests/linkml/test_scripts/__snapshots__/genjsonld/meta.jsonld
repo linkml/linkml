@@ -1549,6 +1549,9 @@
       "name": "AnyOfSimpleType",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:AnyOfSimpleType"
+      ],
       "slots": [
         "anyOfSimpleType__attribute1"
       ],
@@ -1569,13 +1572,15 @@
           "@type": "SlotDefinition"
         }
       ],
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType",
       "@type": "ClassDefinition"
     },
     {
       "name": "AnyOfClasses",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:AnyOfClasses"
+      ],
       "slots": [
         "anyOfClasses__attribute2"
       ],
@@ -1596,13 +1601,15 @@
           "@type": "SlotDefinition"
         }
       ],
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses",
       "@type": "ClassDefinition"
     },
     {
       "name": "AnyOfEnums",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:AnyOfEnums"
+      ],
       "slots": [
         "anyOfEnums__attribute3"
       ],
@@ -1623,13 +1630,15 @@
           "@type": "SlotDefinition"
         }
       ],
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums",
       "@type": "ClassDefinition"
     },
     {
       "name": "AnyOfMix",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:AnyOfMix"
+      ],
       "slots": [
         "anyOfMix__attribute4"
       ],
@@ -1654,13 +1663,15 @@
           "@type": "SlotDefinition"
         }
       ],
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix",
       "@type": "ClassDefinition"
     },
     {
       "name": "EqualsString",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/EqualsString",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:EqualsString"
+      ],
       "slots": [
         "equalsString__attribute5"
       ],
@@ -1672,13 +1683,15 @@
           "@type": "SlotDefinition"
         }
       ],
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/EqualsString",
       "@type": "ClassDefinition"
     },
     {
       "name": "EqualsStringIn",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:EqualsStringIn"
+      ],
       "slots": [
         "equalsStringIn__attribute6"
       ],
@@ -1693,13 +1706,15 @@
           "@type": "SlotDefinition"
         }
       ],
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn",
       "@type": "ClassDefinition"
     },
     {
       "name": "HasAliases",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/HasAliases",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:HasAliases"
+      ],
       "mixin": true,
       "slots": [
         "hasAliases__aliases"
@@ -1713,19 +1728,20 @@
           "@type": "SlotDefinition"
         }
       ],
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/HasAliases",
       "@type": "ClassDefinition"
     },
     {
       "name": "Friend",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Friend",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:Friend"
+      ],
       "abstract": true,
       "slots": [
         "name"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/Friend",
       "@type": "ClassDefinition"
     },
     {
@@ -1766,6 +1782,7 @@
         "schema:Person"
       ],
       "exact_mappings": [
+        "ks:Person",
         "schema:Person"
       ],
       "rank": 2,
@@ -1794,7 +1811,6 @@
           "@type": "SlotDefinition"
         }
       ],
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/Person",
       "@type": "ClassDefinition"
     },
     {
@@ -1805,6 +1821,9 @@
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Organization",
       "description": "An organization.\n\nThis description\nincludes newlines\n\n## Markdown headers\n\n * and\n * a\n * list",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:Organization"
+      ],
       "rank": 3,
       "mixins": [
         "HasAliases"
@@ -1815,13 +1834,15 @@
         "hasAliases__aliases"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/Organization",
       "@type": "ClassDefinition"
     },
     {
       "name": "Place",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Place",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:Place"
+      ],
       "mixins": [
         "HasAliases"
       ],
@@ -1831,20 +1852,21 @@
         "hasAliases__aliases"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/Place",
       "@type": "ClassDefinition"
     },
     {
       "name": "Address",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Address",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:Address"
+      ],
       "slots": [
         "street",
         "city",
         "altitude"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/Address",
       "@type": "ClassDefinition"
     },
     {
@@ -1854,19 +1876,24 @@
       ],
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Concept",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:Concept"
+      ],
       "slots": [
         "id",
         "name",
         "in_code_system"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/Concept",
       "@type": "ClassDefinition"
     },
     {
       "name": "DiagnosisConcept",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:DiagnosisConcept"
+      ],
       "close_mappings": [
         "biolink:Disease"
       ],
@@ -1877,13 +1904,15 @@
         "in_code_system"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept",
       "@type": "ClassDefinition"
     },
     {
       "name": "ProcedureConcept",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:ProcedureConcept"
+      ],
       "is_a": "Concept",
       "slots": [
         "id",
@@ -1891,13 +1920,15 @@
         "in_code_system"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept",
       "@type": "ClassDefinition"
     },
     {
       "name": "Event",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Event",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:Event"
+      ],
       "slots": [
         "started_at_time",
         "ended_at_time",
@@ -1905,13 +1936,15 @@
         "metadata"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/Event",
       "@type": "ClassDefinition"
     },
     {
       "name": "Relationship",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Relationship",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:Relationship"
+      ],
       "slots": [
         "started_at_time",
         "ended_at_time",
@@ -1920,13 +1953,15 @@
         "Relationship_cordialness"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/Relationship",
       "@type": "ClassDefinition"
     },
     {
       "name": "FamilialRelationship",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:FamilialRelationship"
+      ],
       "rank": 5,
       "is_a": "Relationship",
       "slots": [
@@ -1938,13 +1973,15 @@
         "FamilialRelationship_cordialness"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship",
       "@type": "ClassDefinition"
     },
     {
       "name": "BirthEvent",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/BirthEvent",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:BirthEvent"
+      ],
       "is_a": "Event",
       "slots": [
         "started_at_time",
@@ -1954,13 +1991,15 @@
         "in_location"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/BirthEvent",
       "@type": "ClassDefinition"
     },
     {
       "name": "EmploymentEvent",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:EmploymentEvent"
+      ],
       "rank": 6,
       "is_a": "Event",
       "slots": [
@@ -1972,13 +2011,15 @@
         "EmploymentEvent_type"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent",
       "@type": "ClassDefinition"
     },
     {
       "name": "MedicalEvent",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:MedicalEvent"
+      ],
       "is_a": "Event",
       "slots": [
         "started_at_time",
@@ -1990,25 +2031,29 @@
         "procedure"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent",
       "@type": "ClassDefinition"
     },
     {
       "name": "WithLocation",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/WithLocation",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:WithLocation"
+      ],
       "mixin": true,
       "slots": [
         "in_location"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/WithLocation",
       "@type": "ClassDefinition"
     },
     {
       "name": "MarriageEvent",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:MarriageEvent"
+      ],
       "is_a": "Event",
       "mixins": [
         "WithLocation"
@@ -2022,13 +2067,15 @@
         "in_location"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent",
       "@type": "ClassDefinition"
     },
     {
       "name": "Company",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Company",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:Company"
+      ],
       "is_a": "Organization",
       "slots": [
         "id",
@@ -2045,25 +2092,29 @@
           "@type": "SlotDefinition"
         }
       ],
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/Company",
       "@type": "ClassDefinition"
     },
     {
       "name": "CodeSystem",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/CodeSystem",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:CodeSystem"
+      ],
       "slots": [
         "id",
         "name"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/CodeSystem",
       "@type": "ClassDefinition"
     },
     {
       "name": "Dataset",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Dataset",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:Dataset"
+      ],
       "rank": 1,
       "slots": [
         "metadata",
@@ -2106,7 +2157,6 @@
           "@type": "SlotDefinition"
         }
       ],
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/Dataset",
       "tree_root": true,
       "@type": "ClassDefinition"
     },
@@ -2115,6 +2165,9 @@
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/FakeClass",
       "deprecated": "this is not a real class, we are using it to test deprecation",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:FakeClass"
+      ],
       "slots": [
         "fakeClass__test_attribute"
       ],
@@ -2125,13 +2178,15 @@
           "@type": "SlotDefinition"
         }
       ],
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/FakeClass",
       "@type": "ClassDefinition"
     },
     {
       "name": "ClassWithSpaces",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:ClassWithSpaces"
+      ],
       "slots": [
         "classWithSpaces__slot_with_space_1"
       ],
@@ -2142,13 +2197,15 @@
           "@type": "SlotDefinition"
         }
       ],
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces",
       "@type": "ClassDefinition"
     },
     {
       "name": "SubclassTest",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/SubclassTest",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:SubclassTest"
+      ],
       "is_a": "ClassWithSpaces",
       "slots": [
         "classWithSpaces__slot_with_space_1",
@@ -2162,20 +2219,21 @@
           "@type": "SlotDefinition"
         }
       ],
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/SubclassTest",
       "@type": "ClassDefinition"
     },
     {
       "name": "SubSubClass2",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:SubSubClass2"
+      ],
       "is_a": "SubclassTest",
       "slots": [
         "classWithSpaces__slot_with_space_1",
         "subclassTest__slot_with_space_2"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2",
       "@type": "ClassDefinition"
     },
     {
@@ -2183,13 +2241,15 @@
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1",
       "description": "Same depth as Sub sub class 1",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "ks:TubSubClass1"
+      ],
       "is_a": "SubclassTest",
       "slots": [
         "classWithSpaces__slot_with_space_1",
         "subclassTest__slot_with_space_2"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1",
       "@type": "ClassDefinition"
     },
     {
@@ -2197,11 +2257,10 @@
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/AnyObject",
       "description": "Example of unconstrained class",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
-      "mappings": [
+      "exact_mappings": [
         "linkml:Any"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Any",
       "@type": "ClassDefinition"
     },
     {
@@ -2211,6 +2270,9 @@
       "from_schema": "https://w3id.org/linkml/tests/core",
       "mappings": [
         "prov:Activity"
+      ],
+      "exact_mappings": [
+        "core:Activity"
       ],
       "slots": [
         "id",
@@ -2222,7 +2284,6 @@
         "description"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/core/Activity",
       "@type": "ClassDefinition"
     },
     {
@@ -2230,7 +2291,7 @@
       "definition_uri": "https://w3id.org/linkml/tests/core/Agent",
       "description": "a provence-generating agent",
       "from_schema": "https://w3id.org/linkml/tests/core",
-      "mappings": [
+      "exact_mappings": [
         "prov:Agent"
       ],
       "slots": [
@@ -2239,7 +2300,6 @@
         "was_informed_by"
       ],
       "slot_usage": {},
-      "class_uri": "http://www.w3.org/ns/prov#Agent",
       "@type": "ClassDefinition"
     }
   ],
