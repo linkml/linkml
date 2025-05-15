@@ -6,9 +6,9 @@ from linkml_runtime.linkml_model.meta import SlotDefinition
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
 from sqlalchemy.dialects.oracle import VARCHAR2
-from sqlalchemy.sql.sqltypes import Enum, Integer, Text
+from sqlalchemy.sql.sqltypes import Boolean, Date, DateTime, Enum, Float, Integer, Text, Time
 
-from linkml.generators.sqltablegen import SQLTableGenerator
+from linkml.generators.sqltablegen import ORACLE_MAX_VARCHAR_LENGTH, SQLTableGenerator
 from linkml.utils.schema_builder import SchemaBuilder
 
 # from tests.test_generators.environment import env
@@ -24,14 +24,12 @@ DUMMY_CLASS = "dummy class"
 
 
 @pytest.fixture
-def schema(input_path):
+def schema(input_path) -> str:
     return str(input_path("personinfo.yaml"))
 
 
-def test_inject_primary_key():
-    """
-    test a minimal schema with no primary names declared
-    """
+def test_inject_primary_key() -> None:
+    """Test a minimal schema with no primary names declared, PK injection."""
     b = SchemaBuilder()
     slots = ["full name", "description"]
     b.add_class(DUMMY_CLASS, slots)
@@ -43,10 +41,8 @@ def test_inject_primary_key():
     assert 'CREATE TABLE "dummy class"' in ddl
 
 
-def test_no_injection(schema):
-    """
-    test a minimal schema with no primary names declared
-    """
+def test_no_injection(schema: str) -> None:
+    """Test a minimal schema with no primary names declared, no PK injection."""
     b = SchemaBuilder()
     slots = ["full name", "description"]
     b.add_class(DUMMY_CLASS, slots)
@@ -63,10 +59,8 @@ def test_no_injection(schema):
     assert "FOREIGN KEY" not in ddl
 
 
-def test_dialect():
-    """
-    test dialect options
-    """
+def test_dialect() -> None:
+    """Test dialect options."""
     b = SchemaBuilder()
     b.add_slot(SlotDefinition("age", range="integer", description="age of person in years"))
     slots = ["full name", "description", "age"]
@@ -90,7 +84,7 @@ def test_dialect():
             assert "COMMENT" in ddl
 
 
-def test_generate_ddl(schema):
+def test_generate_ddl(schema: str) -> None:
     """Generate contents of DDL file as a string."""
     gen = SQLTableGenerator(schema)
 
@@ -119,151 +113,147 @@ def test_generate_ddl(schema):
         assert expected in tables
 
 
-def test_get_sql_range(schema):
+def test_abstract_class(capsys):
+    b = SchemaBuilder()
+    slots = ["full name", "description"]
+    abstract_def = {"abstract": 1}
+    b.add_class(DUMMY_CLASS, slots, **abstract_def)
+    new_slots = ["nickname"]
+    inheritance_def = {"is_a": "dummy class"}
+    b.add_class("inherited class", new_slots, **inheritance_def)
+    b.add_defaults()
+    # Testing the inheritance of an abstract class
+    gen = SQLTableGenerator(b.schema, generate_abstract_class_ddl=False)
+    ddl = gen.generate_ddl()
+    assert 'Abstract Class: "dummy class"' in ddl
+    assert 'CREATE TABLE "dummy class"' not in ddl
+    assert 'CREATE TABLE "inherited class"' in ddl
+    # Creating and asserting the default values work
+    gen2 = SQLTableGenerator(b.schema)
+    assert gen2.generate_abstract_class_ddl
+    ddl2 = gen2.generate_ddl()
+    assert 'Abstract Class: "dummy class"' in ddl2
+    assert 'CREATE TABLE "dummy class"' in ddl2
+    assert 'CREATE TABLE "inherited class"' in ddl2
+
+
+@pytest.mark.parametrize(
+    ("slot_range", "ddl_type"),
+    [
+        ("Person", Text),  # class with a text PK
+        ("IntegerPrimaryKeyObject", Integer),  # class with an int PK
+        ("MedicalEvent", Text),  # class with no PK
+        ("NonExistentRange", Text),  # class that doesn't exist
+        ("FamilialRelationshipType", Enum),  # enum
+        ("jsonpath", Text),  # type, base type is string
+        ("str", Text),
+        ("string", Text),
+        ("integer", Integer),
+        ("boolean", Boolean),
+        ("float", Float),
+        ("double", Float),
+        ("decimal", Integer),  # ???
+        ("time", Time),
+        ("date", Date),
+        ("datetime", DateTime),
+        ("uriorcurie", Text),
+        ("uri", Text),
+        ("ncname", Text),
+        ("objectidentifier", Text),
+        ("nodeidentifier", Text),
+        # various incorrect types that get set to text instead
+        ("int", Text),  # "int" is invalid -- should be "integer"
+        ("number", Text),  # "int" is invalid -- should be "integer"
+    ],
+)
+def test_get_sql_range(schema: str, slot_range: str, ddl_type: type) -> None:
     """Test case for the get_sql_range() method."""
     gen = SQLTableGenerator(schema)
+    slot = SlotDefinition(name="range_test", range=slot_range)
+    assert isinstance(gen.get_sql_range(slot), ddl_type)
+
+
+def test_varchar_sql_range(capsys) -> None:
+    """Test cases for the get_oracle_sql_range() method for Varchar."""
+    slots = [
+        SlotDefinition(name="str_column", range="str"),
+        SlotDefinition(name="string_column", range="String"),
+        SlotDefinition(name="std_string_column", range="string"),  # the standard string type
+        SlotDefinition(name="varchar_column", range="VARCHAR"),
+        SlotDefinition(name="varchar2_column_no_len", range="VARCHAR2"),
+        SlotDefinition(name="varchar2_length_column", range="VARCHAR2(128)"),
+        SlotDefinition(name="clob_column", range="VARCHAR2(4097)"),
+    ]
+
+    sb = SchemaBuilder()
+    sb.add_class(DUMMY_CLASS, slots, description="My dummy class")
+    # add in the ranges as types to ensure that the schema will validate
+    for varchar in ["str", "String", "VARCHAR", "VARCHAR2", "VARCHAR2(128)", "VARCHAR2(4097)"]:
+        sb.add_type(varchar, typeof="string")
+    sb.add_defaults()
+
     # Test case to enable Varchar2 usage
-
-    # loader = SchemaLoader(data=SCHEMA)
-    # schema_def_str = loader.resolve()
-
-    case_1_slot = SlotDefinition(
-        name="id",
-        definition_uri="https://w3id.org/linkml/examples/personinfo/id",
-        mappings=["schema:identifier"],
-        from_schema="https://w3id.org/linkml/examples/personinfo",
-        range="string",
-        slot_uri="schema:identifier",
-        owner="Place",
-        domain_of=["NamedThing", "Place"],
-    )
-
-    case_2_slot = SlotDefinition(
-        name="FamilialRelationship_type",
-        from_schema="https://w3id.org/linkml/examples/personinfo",
-        is_a="type",
-        domain="FamilialRelationship",
-        range="FamilialRelationshipType",
-        slot_uri="personinfo:type",
-        alias="type",
-        owner="FamilialRelationship",
-        domain_of=["FamilialRelationship"],
-        usage_slot_name="type",
-    )
-
-    case_3_slot = SlotDefinition(name="NonExistentSlot", range="NonExistentRange")
-
-    case_4_slot = SlotDefinition(name="ForeignKeySlot", range="IntegerPrimaryKeyObject")
-
-    # Slot range in list of schema classes
-    actual_1_output = gen.get_sql_range(case_1_slot)
-
-    # Slot range in list of schema enums
-    actual_2_output = gen.get_sql_range(case_2_slot)
-
-    # Slot not present in schema
-    actual_3_output = gen.get_sql_range(case_3_slot)
-
-    # foreign key slot type
-    actual_4_output = gen.get_sql_range(case_4_slot)
-
-    # Slot range for oracle dialect type
-    # varchar_output = gen_oracle.get_sql_range(case_1_slot)
-
-    assert isinstance(actual_1_output, Text)
-    assert isinstance(actual_2_output, Enum)
-    assert isinstance(actual_3_output, Text)
-    assert isinstance(actual_4_output, Integer)
-    # assert isinstance(varchar_output, VARCHAR2())
-
-
-def test_varchar_sql_range(schema, capsys):
-    """Test case for the get_sql_range() method for Varchar."""
-    # Test case to enable Varchar2 usage
-    gen_oracle = SQLTableGenerator(schema)
-    gen_oracle.dialect = "oracle"
-
+    gen_oracle = SQLTableGenerator(sb.schema, dialect="oracle")
     assert gen_oracle.dialect == "oracle"
-    assert gen_oracle.default_length_oracle == 4096
+    # default length should initially be 4096
+    assert gen_oracle.default_length_oracle == ORACLE_MAX_VARCHAR_LENGTH
 
-    gen_oracle.default_length_oracle = 256
-    assert gen_oracle.default_length_oracle == 256
-    string_1_slot = SlotDefinition(name="string_column", range="string")
-    string_2_slot = SlotDefinition(name="varchar_column", range="VARCHAR")
-    string_3_slot = SlotDefinition(name="varchar2_length_column", range="VARCHAR2(128)")
-    string_4_slot = SlotDefinition(name="clob_column", range="VARCHAR2(4097)")
+    # set the default varchar2 length to different values and ensure the ddl reflects them
+    for default_length in [256, 4096, 666]:
+        gen_oracle.default_length_oracle = default_length
+        for slot in slots:
+            sql_range = VARCHAR2
+            if slot.name == "clob_column":
+                # clob_column is over the VARCHAR2 length limit
+                sql_range = Text
+            assert isinstance(gen_oracle.get_sql_range(slot), sql_range)
 
-    string_1_output = gen_oracle.get_sql_range(string_1_slot)
-    assert isinstance(string_1_output, VARCHAR2)
-
-    string_2_output = gen_oracle.get_sql_range(string_2_slot)
-    assert isinstance(string_2_output, VARCHAR2)
-
-    string_3_output = gen_oracle.get_sql_range(string_3_slot)
-    assert isinstance(string_3_output, VARCHAR2)
-
-    string_4_output = gen_oracle.get_sql_range(string_4_slot)
-    assert isinstance(string_4_output, Text)
-
-    # testing the ddl generation of varchars
-
-    b = SchemaBuilder()
-    slots = [string_1_slot, string_2_slot, string_3_slot, string_4_slot]
-    b.add_class(DUMMY_CLASS, slots, description="My dummy class")
-
-    gen_oracle2 = SQLTableGenerator(b.schema, dialect="oracle")
-    gen_oracle2.default_length_oracle = 256
-    ddl = gen_oracle2.generate_ddl()
-    assert ddl
-    assert "string_column VARCHAR2(256 CHAR)" in ddl
-    assert "varchar_column VARCHAR2(256 CHAR)" in ddl
-    assert "varchar2_length_column VARCHAR2(128 CHAR)" in ddl
-    assert "clob_column CLOB" in ddl
+        oracle_ddl = gen_oracle.generate_ddl()
+        assert f"str_column VARCHAR2({default_length} CHAR)" in oracle_ddl
+        assert f"string_column VARCHAR2({default_length} CHAR)" in oracle_ddl
+        assert f"std_string_column VARCHAR2({default_length} CHAR)" in oracle_ddl
+        assert f"varchar_column VARCHAR2({default_length} CHAR)" in oracle_ddl
+        assert f"varchar2_column_no_len VARCHAR2({default_length} CHAR)" in oracle_ddl
+        assert "varchar2_length_column VARCHAR2(128 CHAR)" in oracle_ddl
+        assert "clob_column CLOB" in oracle_ddl
 
     # Utilizing the default settings to ensure errors aren't thrown
-    gen_sqlite = SQLTableGenerator(schema)
-
+    gen_sqlite = SQLTableGenerator(sb.schema)
     assert gen_sqlite.dialect == "sqlite"
-    sqlite_1_slot = SlotDefinition(name="string_column", range="string")
-    sqlite_2_slot = SlotDefinition(name="varchar_column", range="VARCHAR")
-    sqlite_3_slot = SlotDefinition(name="varchar2_length_column", range="VARCHAR2(128)")
-    sqlite_4_slot = SlotDefinition(name="clob_column", range="VARCHAR2(4097)")
 
     # Verifying Text range for sqlite
-    sqlite_1_output = gen_sqlite.get_sql_range(sqlite_1_slot)
-    assert isinstance(sqlite_1_output, Text)
+    for slot_n in slots:
+        assert isinstance(gen_sqlite.get_sql_range(slot_n), Text)
 
-    sqlite_2_output = gen_sqlite.get_sql_range(sqlite_2_slot)
-    assert isinstance(sqlite_2_output, Text)
-
-    sqlite_3_output = gen_sqlite.get_sql_range(sqlite_3_slot)
-    assert isinstance(sqlite_3_output, Text)
-
-    sqlite_4_output = gen_sqlite.get_sql_range(sqlite_4_slot)
-    assert isinstance(sqlite_4_output, Text)
-
-    c = SchemaBuilder()
-    slots = [sqlite_1_slot, sqlite_2_slot, sqlite_3_slot, sqlite_4_slot]
-    c.add_class(DUMMY_CLASS, slots, description="My dummy class")
     # The DDL should contain text type
-    gen_sqlite2 = SQLTableGenerator(c.schema)
-    ddl2 = gen_sqlite2.generate_ddl()
-    assert ddl2
-    assert "string_column TEXT" in ddl2
-    assert "varchar_column TEXT" in ddl2
-    assert "varchar2_length_column TEXT" in ddl2
-    assert "clob_column TEXT" in ddl2
+    ddl_sqlite = gen_sqlite.generate_ddl()
+    assert ddl_sqlite
+    assert "str_column TEXT" in ddl_sqlite
+    assert "string_column TEXT" in ddl_sqlite
+    assert "std_string_column TEXT" in ddl_sqlite
+    assert "varchar_column TEXT" in ddl_sqlite
+    assert "varchar2_column_no_len TEXT" in ddl_sqlite
+    assert "varchar2_length_column TEXT" in ddl_sqlite
+    assert "clob_column TEXT" in ddl_sqlite
 
 
-def test_get_foreign_key(schema):
-    """Test case for the get_foreign_key() method."""
-    gen = SQLTableGenerator(schema)
+def test_get_id_or_key() -> None:
+    """Test case for the get_id_or_key() method."""
+    sb = SchemaBuilder()
+    sb.add_slot("identifier_slot", identifier=True)
+    sb.add_slot("key_slot", key=True)
+    sb.add_class("ClassWithId", slots=["identifier_slot", "name", "whatever"])
+    sb.add_class("ClassWithKey", slots=["key_slot", "key_hole", "Torquay"])
+    sb.add_class("ClassWithNowt", slots=["slot_1", "slot_2"])
+    sb.add_class("ClassWithItAll", slots=["identifier_slot", "key_slot", "name", "miscellany"])
+    gen = SQLTableGenerator(sb.schema)
+    sv = SchemaView(schema=sb.schema)
 
-    sv = SchemaView(schema=schema)
-
-    fk_value = gen.get_foreign_key("Person", sv)
-
-    assert fk_value == "Person.id"
+    assert gen.get_id_or_key("ClassWithId", sv) == "ClassWithId.identifier_slot"
+    assert gen.get_id_or_key("ClassWithKey", sv) == "ClassWithKey.key_slot"
+    assert gen.get_id_or_key("ClassWithItAll", sv) == "ClassWithItAll.identifier_slot"
+    with pytest.raises(Exception, match="No PK for ClassWithNowt"):
+        gen.get_id_or_key("ClassWithNowt", sv)
 
 
 def test_sqlddl_on_metamodel():

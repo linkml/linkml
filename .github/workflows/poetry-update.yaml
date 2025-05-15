@@ -16,7 +16,7 @@ jobs:
     - name: Set up python
       uses: actions/setup-python@v5.6.0
       with:
-        python-version: "3.13"
+        python-version: "3.12"
     - name: Install Poetry
       run: |
         pipx install poetry
@@ -48,7 +48,7 @@ jobs:
           echo "$UPDATE_MSG"
           echo EOF
         } >> "$GITHUB_ENV"
-    - uses: actions/create-github-app-token@v2.0.2
+    - uses: actions/create-github-app-token@v2.0.6
       id: app-token
       with:
         app-id: ${{ vars.PR_BOT_APP_ID }}

@@ -62,7 +62,7 @@ SUBSET_SUBFOLDER = "subsets"
 
 def enshorten(input):
     """
-    Custom filter to truncate any long text intended to go in a table,
+    Custom filters to truncate any long text intended to go in a table
     and to remove anything after a newline"""
     if input is None:
         return ""
@@ -77,8 +77,11 @@ def enshorten(input):
     return input
 
 
-def customize_environment(env: Environment):
-    env.filters["enshorten"] = enshorten
+def text_to_web(input) -> str:
+    """Custom filter to convert multi-line text strings into a suitable format for web/markdown output."""
+    if input is None:
+        return ""
+    return "<br>".join(input.strip().split("\n"))
 
 
 def _ensure_ranked(elements: Iterable[Element]):
@@ -155,6 +158,9 @@ class DocGenerator(Generator):
 
     subfolder_type_separation: bool = False
     """Whether each type (class, slot, etc.) should be put in separate subfolder for navigation purposes"""
+
+    truncate_descriptions: bool = True
+    """Whether to truncate long (multi-line) descriptions down to a single line."""
 
     example_directory: Optional[str] = None
     example_runner: ExampleRunner = field(default_factory=lambda: ExampleRunner())
@@ -315,7 +321,7 @@ class DocGenerator(Generator):
             # TODO: relative paths
             # loader = FileSystemLoader()
             env = Environment()
-            customize_environment(env)
+            self.customize_environment(env)
             return env.get_template(path)
         else:
             base_file_name = f"{element_type}.{self._file_suffix()}.jinja2"
@@ -333,7 +339,7 @@ class DocGenerator(Generator):
                 folder = os.path.join(package_dir, "docgen", "")
             loader = FileSystemLoader(folder)
             env = Environment(loader=loader)
-            customize_environment(env)
+            self.customize_environment(env)
             return env.get_template(base_file_name)
 
     def schema_title(self) -> str:
@@ -1034,6 +1040,12 @@ class DocGenerator(Generator):
 
         return rule_dicts
 
+    def customize_environment(self, env: Environment):
+        if self.truncate_descriptions:
+            env.filters["enshorten"] = enshorten
+        else:
+            env.filters["enshorten"] = text_to_web
+
 
 @shared_arguments(DocGenerator)
 @click.option(
@@ -1106,6 +1118,14 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
     default=False,
     help="Separate type (class, slot, etc.) outputs in different subfolders for navigation purposes",
 )
+@click.option(
+    "--truncate-descriptions",
+    default=True,
+    show_default=True,
+    help="""
+Whether to truncate long (potentially spanning multiple lines) descriptions of classes, slots, etc., in the docs.
+Set to true for truncated descriptions, and false to display full descriptions.""",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="doc")
 def cli(
@@ -1119,6 +1139,7 @@ def cli(
     hierarchical_class_view,
     subfolder_type_separation,
     render_imports,
+    truncate_descriptions,
     **args,
 ):
     """Generate documentation folder from a LinkML YAML schema
@@ -1151,6 +1172,7 @@ def cli(
         index_name=index_name,
         subfolder_type_separation=subfolder_type_separation,
         render_imports=render_imports,
+        truncate_descriptions=truncate_descriptions,
         **args,
     )
     print(gen.serialize())
