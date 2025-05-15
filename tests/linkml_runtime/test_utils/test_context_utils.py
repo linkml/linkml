@@ -1,3 +1,4 @@
+import os
 import pytest
 
 from jsonasobj2 import JsonObj, loads
@@ -93,17 +94,18 @@ def test_merge_contexts_base():
 @pytest.mark.parametrize(
     ("imp", "result"),
     [
-        ("linkml:types", r"C:\temp\linkml_model\model\schema\types"),
-        ("ex_file", "C:\\temp\\example\\schema"),
+        ("linkml:types", f"C:\\temp\\linkml_model\\model\\schema{os.sep}types"),
+        ("ex_file", "/tmp/example/schema"),
         ("_types", "https://w3id.org/linkml/types"),
     ],
 )
 def test_map_import(imp, result):
     importmap = {
         "linkml:": "C:\\temp\\linkml_model\\model\\schema",
-        "ex_file": "C:\\temp\\example\\schema",
+        "ex_file": "/tmp/example/schema",
         "_types": "linkml:types",
     }
+
     def namespaces():
         ns = Namespaces()
         ns["linkml"] = URIRef("https://w3id.org/linkml/")
