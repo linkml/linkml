@@ -6,6 +6,12 @@ from typing import Optional, Union, Any, Callable
 import yaml
 from jsonasobj2 import JsonObj, loads
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from linkml_runtime.utils.namespaces import Namespaces
+
+
 CONTEXT_TYPE = Union[str, dict, JsonObj]
 CONTEXTS_PARAM_TYPE = Optional[Union[CONTEXT_TYPE, list[CONTEXT_TYPE]]]
 
