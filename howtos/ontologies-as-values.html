@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Examples of use" href="../examples.html" /><link rel="prev" title="Deprecating elements while maintaining PURLs and other URIs" href="deprecating-elements.html" />
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
         <title>Using ontology terms as values in data - linkml documentation</title>
@@ -163,7 +163,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorial</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -249,7 +249,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of How-to Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">How-to Guides</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of How-to Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="collaborative-development.html">How to run a collaborative data modeling project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="recognize-structural-forms.html">How to recognize and work with different structural forms</a></li>
@@ -261,6 +261,7 @@
 <li class="toctree-l2"><a class="reference internal" href="model-property-graphs.html">How to make a property graph schema</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generate-ai-prompts.html">How to Generate AI prompts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="deprecating-elements.html">Deprecating elements while maintaining PURLs and other URIs</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Using ontology terms as values in data</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
@@ -475,7 +476,7 @@ collection, like this:</p>
 come from a standard resource - these are just pieces of data.</p>
 <p>However, this isn’t quite satisfactory - it allows the data provider to put any free text they like in.
 We would like to constrain both <code class="docutils literal notranslate"><span class="pre">gene</span></code> and <code class="docutils literal notranslate"><span class="pre">phenotype</span></code> to be identifiers.</p>
-<p>We can do this by specifying a <a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.range" title="linkml_runtime.linkml_model.meta.SlotDefinition.range"><span class="xref myst py py-attr">https://w3id.org/linkml/range</span></a>:</p>
+<p>We can do this by specifying a <a class="reference external" href="https://w3id.org/linkml/range">range</a>:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
 <span class="w"> </span><span class="nt">GenePhenotypeAssociation</span><span class="p">:</span>
 <span class="w">   </span><span class="nt">attributes</span><span class="p">:</span>
@@ -485,7 +486,7 @@ We would like to constrain both <code class="docutils literal notranslate"><span
 <span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span>
 </pre></div>
 </div>
-<p>We can constrain it further still, by including a regexp <a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.pattern" title="linkml_runtime.linkml_model.meta.SlotDefinition.pattern"><span class="xref myst py py-attr">https://w3id.org/linkml/pattern</span></a>:</p>
+<p>We can constrain it further still, by including a regexp <a class="reference external" href="https://w3id.org/linkml/pattern">pattern</a>:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
 <span class="w"> </span><span class="nt">GenePhenotypeAssociation</span><span class="p">:</span>
 <span class="w">   </span><span class="nt">attributes</span><span class="p">:</span>
@@ -502,7 +503,7 @@ for other phenotype ontologies, which may or may not be what we want).</p>
 <p>So far so good. But what if we want to have a data model where we
 can communicate information about the genes and phenotypes themselves,
 rather than forcing the client to do an external lookup?</p>
-<p>Let’s go one step further, and make a <a class="reference external" href="https://docs.python.org/3/glossary.html#term-class" title="Python 3.13"><span class="xref myst">https://w3id.org/linkml/ClassDefinition</span></a> for gene and phenotype:</p>
+<p>Let’s go one step further, and make a <a class="reference external" href="https://w3id.org/linkml/ClassDefinition">class</a> for gene and phenotype:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
 <span class="w"> </span><span class="nt">GenePhenotypeAssociation</span><span class="p">:</span>
 <span class="w">   </span><span class="nt">attributes</span><span class="p">:</span>
@@ -550,7 +551,7 @@ rather than forcing the client to do an external lookup?</p>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HP</span>
 </pre></div>
 </div>
-<p>Note we are taking advantage of the <a class="reference internal" href="#id_prefixes"><span class="xref myst">https://w3id.org/linkml/id_prefixes</span></a> metaslot, but
+<p>Note we are taking advantage of the <code class="docutils literal notranslate"><span class="pre">id_prefixes</span></code> metaslot, but
 strictly speaking this is weaker than the previous regular expression pattern.</p>
 </section>
 <section id="adding-a-container">
@@ -618,7 +619,7 @@ schema, sending both associations and ontology classificiation in one YAML/JSON 
 <span class="w">      </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdfs:subClassOf</span>
 </pre></div>
 </div>
-<p>Note we could call this whatever we like. We include a <a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.slot_uri" title="linkml_runtime.linkml_model.meta.SlotDefinition.slot_uri"><span class="xref myst py py-attr">https://w3id.org/linkml/slot_uri</span></a> declaration
+<p>Note we could call this whatever we like. We include a <a class="reference external" href="https://w3id.org/linkml/slot_uri">slot_uri</a> declaration
 to indicate that this is equivalent to <code class="docutils literal notranslate"><span class="pre">rdfs:subClassOf</span></code>.</p>
 <p>This modified schema allows data like:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">phenotypes</span><span class="p">:</span>
@@ -718,7 +719,7 @@ attribute, and species are connected up to parent taxa via a
 <p>Note here that in the LinkML model, our <strong>classes</strong> are
 <em>IndividualOrganism</em>, <em>Species</em>, <em>Genus</em>, (and potentially other
 ranks, and a generic grouping of these). Our <strong>instances</strong> are
-Napolean, Homo sapiens, Homo.</p>
+Napoleon, Homo sapiens, Homo.</p>
 <p>When we translate the YAML above to RDF we get:</p>
 <div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="nn">wikidata</span><span class="p">:</span><span class="nt">Q517</span> <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="nn">my</span><span class="p">:</span><span class="nt">IndividualOrganism</span> <span class="p">.</span>
 <span class="nn">NCBITaxon</span><span class="p">:</span><span class="nt">9606</span> <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="nn">my</span><span class="p">:</span><span class="nt">Species</span> <span class="p">.</span>
@@ -805,25 +806,25 @@ concepts as true first-class logical citizens in an OWL model, then we need to e
 <p>In practice, punning or metaclasses are not used much in OWL, so let’s stick with the rank-free
 model. Formally, concepts like “Homo sapiens” are not in the <em>domain of discourse</em>.</p>
 <p>Individual organisms like Napoleon (Q517 in Wikidata) instantiate the classes in the hierarchy:</p>
-<div class="highlight-rdf notranslate"><div class="highlight"><pre><span></span>wikidata:Q517 rdf:type NCBITaxon:9606 .
-NCBITaxon:9606 rdfs:subClassOf NCBITaxon:9605
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wikidata</span><span class="p">:</span><span class="n">Q517</span> <span class="n">rdf</span><span class="p">:</span><span class="nb">type</span> <span class="n">NCBITaxon</span><span class="p">:</span><span class="mi">9606</span> <span class="o">.</span>
+<span class="n">NCBITaxon</span><span class="p">:</span><span class="mi">9606</span> <span class="n">rdfs</span><span class="p">:</span><span class="n">subClassOf</span> <span class="n">NCBITaxon</span><span class="p">:</span><span class="mi">9605</span>
 </pre></div>
 </div>
 <p>Compare to the RDF serialization of the LinkML instances:</p>
-<div class="highlight-rdf notranslate"><div class="highlight"><pre><span></span>wikidata:Q517 my:species NCBITaxon:9606 .
-NCBITaxon:9606 my:parent_concept NCBITaxon:9605
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wikidata</span><span class="p">:</span><span class="n">Q517</span> <span class="n">my</span><span class="p">:</span><span class="n">species</span> <span class="n">NCBITaxon</span><span class="p">:</span><span class="mi">9606</span> <span class="o">.</span>
+<span class="n">NCBITaxon</span><span class="p">:</span><span class="mi">9606</span> <span class="n">my</span><span class="p">:</span><span class="n">parent_concept</span> <span class="n">NCBITaxon</span><span class="p">:</span><span class="mi">9605</span>
 </pre></div>
 </div>
 <p>In this case, <code class="docutils literal notranslate"><span class="pre">rdf:type</span></code> corresponds roughly to the <code class="docutils literal notranslate"><span class="pre">species</span></code> attribute in the LinkML model. It’s not quite the same, as we might have the following OWL:</p>
-<div class="highlight-rdf notranslate"><div class="highlight"><pre><span></span>wikidata:Q517 rdf:type NCBITaxon:9605 .  ## Homo
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wikidata</span><span class="p">:</span><span class="n">Q517</span> <span class="n">rdf</span><span class="p">:</span><span class="nb">type</span> <span class="n">NCBITaxon</span><span class="p">:</span><span class="mi">9605</span> <span class="o">.</span>  <span class="c1">## Homo</span>
 </pre></div>
 </div>
 <p>This is valid (and entailed) but less specific. Note that this would be disallowed
 in the LinkML model, which intentionally forces the data provider to provide a species-level
 taxon node ID rather than any other taxon ID.</p>
 <p>In the RDF model we might even have:</p>
-<div class="highlight-rdf notranslate"><div class="highlight"><pre><span></span>wikidata:Q517 rdf:type My:HistoricPerson .
-My:HistoricPerson rdfs:subClassOf NCBITaxon:9606 .
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wikidata</span><span class="p">:</span><span class="n">Q517</span> <span class="n">rdf</span><span class="p">:</span><span class="nb">type</span> <span class="n">My</span><span class="p">:</span><span class="n">HistoricPerson</span> <span class="o">.</span>
+<span class="n">My</span><span class="p">:</span><span class="n">HistoricPerson</span> <span class="n">rdfs</span><span class="p">:</span><span class="n">subClassOf</span> <span class="n">NCBITaxon</span><span class="p">:</span><span class="mi">9606</span> <span class="o">.</span>
 </pre></div>
 </div>
 </section>
@@ -868,11 +869,11 @@ These would correspond even further if we extended our model to other taxonomic 
 </pre></div>
 </div>
 <p>The LinkML instances now serialize as:</p>
-<div class="highlight-rdf notranslate"><div class="highlight"><pre><span></span>wikidata:Q517 rdf:type NCBITaxon:1 .
-wikidata:Q517 rdf:type NCBITaxon:9606 .
-NCBITaxon:9606 rdf:type my:Species .
-NCBITaxon:9606 rdfs:subClassOf NCBITaxon:9605
-NCBITaxon:9605 rdf:type my:Genus .
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wikidata</span><span class="p">:</span><span class="n">Q517</span> <span class="n">rdf</span><span class="p">:</span><span class="nb">type</span> <span class="n">NCBITaxon</span><span class="p">:</span><span class="mi">1</span> <span class="o">.</span>
+<span class="n">wikidata</span><span class="p">:</span><span class="n">Q517</span> <span class="n">rdf</span><span class="p">:</span><span class="nb">type</span> <span class="n">NCBITaxon</span><span class="p">:</span><span class="mi">9606</span> <span class="o">.</span>
+<span class="n">NCBITaxon</span><span class="p">:</span><span class="mi">9606</span> <span class="n">rdf</span><span class="p">:</span><span class="nb">type</span> <span class="n">my</span><span class="p">:</span><span class="n">Species</span> <span class="o">.</span>
+<span class="n">NCBITaxon</span><span class="p">:</span><span class="mi">9606</span> <span class="n">rdfs</span><span class="p">:</span><span class="n">subClassOf</span> <span class="n">NCBITaxon</span><span class="p">:</span><span class="mi">9605</span>
+<span class="n">NCBITaxon</span><span class="p">:</span><span class="mi">9605</span> <span class="n">rdf</span><span class="p">:</span><span class="nb">type</span> <span class="n">my</span><span class="p">:</span><span class="n">Genus</span> <span class="o">.</span>
 </pre></div>
 </div>
 <p>Viewed through the lens of RDF/OWL this is potentially
@@ -945,8 +946,26 @@ guide.</p>
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="../examples.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Examples of use</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="deprecating-elements.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Deprecating elements while maintaining PURLs and other URIs</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
