@@ -19,4 +19,4 @@ URI: [linkml:AnyValue](https://w3id.org/linkml/AnyValue)
 
 |  |  |  |
 | --- | --- | --- |
-| **Mappings:** | | linkml:Any |
+| **Exact Mappings:** | | linkml:Any |
