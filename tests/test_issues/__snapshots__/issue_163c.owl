@@ -15,6 +15,9 @@ ex:C1 a owl:Class,
             owl:maxCardinality 1 ;
             owl:onProperty ex:s1 ],
         [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty ex:s1 ],
+        [ a owl:Restriction ;
             owl:allValuesFrom linkml:String ;
             owl:onProperty ex:s1 ] ;
     skos:inScheme <http://example.org/sample/example163c> .

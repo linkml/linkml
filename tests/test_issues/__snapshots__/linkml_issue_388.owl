@@ -8,10 +8,10 @@
 this:C2 a owl:Class ;
     rdfs:label "C2" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:minCardinality 0 ;
+            owl:allValuesFrom this:my_int ;
             owl:onProperty this:a ],
         [ a owl:Restriction ;
-            owl:allValuesFrom this:my_int ;
+            owl:minCardinality 0 ;
             owl:onProperty this:a ],
         [ a owl:Restriction ;
             owl:maxCardinality 1 ;
@@ -25,6 +25,9 @@ this:C3 a owl:Class ;
             owl:onProperty this:a ],
         [ a owl:Restriction ;
             owl:maxCardinality 1 ;
+            owl:onProperty this:a ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom this:C1 ;
             owl:onProperty this:a ],
         [ a owl:Restriction ;
             owl:minCardinality 0 ;
