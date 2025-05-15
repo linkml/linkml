@@ -363,7 +363,7 @@ parent_concept: NCBITaxon:9605
 Note here that in the LinkML model, our __classes__ are
 *IndividualOrganism*, *Species*, *Genus*, (and potentially other
 ranks, and a generic grouping of these). Our __instances__ are
-Napolean, Homo sapiens, Homo.
+Napoleon, Homo sapiens, Homo.
 
 When we translate the YAML above to RDF we get:
 
