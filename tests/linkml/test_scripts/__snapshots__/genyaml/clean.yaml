@@ -316,6 +316,8 @@ classes:
     name: geographic location
     definition_uri: http://example.org/tests/cleanyaml/GeographicLocation
     from_schema: http://example.org/tests/cleanyaml
+    exact_mappings:
+    - http://example.org/tests/cleanyaml/GeographicLocation
     slots:
     - k
     class_uri: http://example.org/tests/cleanyaml/GeographicLocation
@@ -323,6 +325,8 @@ classes:
     name: geographic location at time
     definition_uri: http://example.org/tests/cleanyaml/GeographicLocationAtTime
     from_schema: http://example.org/tests/cleanyaml
+    exact_mappings:
+    - http://example.org/tests/cleanyaml/GeographicLocationAtTime
     is_a: geographic location
     slots:
     - k

@@ -192,9 +192,8 @@ linkml:uri a linkml:TypeDefinition ;
     linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI"^^xsd:anyURI .
 
 linkml:AnyValue a linkml:ClassDefinition ;
+    skos:exactMatch "linkml:Any"^^xsd:anyURI ;
     skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
-    skos:mappingRelation "linkml:Any"^^xsd:anyURI ;
-    linkml:class_uri "https://w3id.org/linkml/Any"^^xsd:anyURI ;
     linkml:definition_uri "https://w3id.org/linkml/AnyValue"^^xsd:anyURI ;
     linkml:imported_from "linkml:extensions" ;
     linkml:slot_usage [ ] .
@@ -308,8 +307,8 @@ linkml:extension_value a linkml:SlotDefinition ;
     linkml:slot_uri "https://w3id.org/linkml/value"^^xsd:anyURI .
 
 linkml:Annotatable a linkml:ClassDefinition ;
+    skos:exactMatch "linkml:Annotatable"^^xsd:anyURI ;
     skos:inScheme "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
-    linkml:class_uri "https://w3id.org/linkml/Annotatable"^^xsd:anyURI ;
     linkml:definition_uri "https://w3id.org/linkml/Annotatable"^^xsd:anyURI ;
     linkml:description "mixin for classes that support annotations" ;
     linkml:mixin true ;
@@ -317,8 +316,8 @@ linkml:Annotatable a linkml:ClassDefinition ;
     linkml:slots linkml:annotations .
 
 linkml:Annotation a linkml:ClassDefinition ;
+    skos:exactMatch "linkml:Annotation"^^xsd:anyURI ;
     skos:inScheme "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
-    linkml:class_uri "https://w3id.org/linkml/Annotation"^^xsd:anyURI ;
     linkml:definition_uri "https://w3id.org/linkml/Annotation"^^xsd:anyURI ;
     linkml:description "a tag/value pair with the semantics of OWL Annotation" ;
     linkml:is_a linkml:Extension ;
@@ -330,8 +329,8 @@ linkml:Annotation a linkml:ClassDefinition ;
         linkml:extensions .
 
 linkml:Extensible a linkml:ClassDefinition ;
+    skos:exactMatch "linkml:Extensible"^^xsd:anyURI ;
     skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
-    linkml:class_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
     linkml:definition_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
     linkml:description "mixin for classes that support extension" ;
     linkml:imported_from "linkml:extensions" ;
@@ -354,8 +353,8 @@ linkml:extensions a linkml:SlotDefinition ;
     linkml:slot_uri "https://w3id.org/linkml/extensions"^^xsd:anyURI .
 
 linkml:Extension a linkml:ClassDefinition ;
+    skos:exactMatch "linkml:Extension"^^xsd:anyURI ;
     skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
-    linkml:class_uri "https://w3id.org/linkml/Extension"^^xsd:anyURI ;
     linkml:definition_uri "https://w3id.org/linkml/Extension"^^xsd:anyURI ;
     linkml:description "a tag/value pair used to add non-model information to an entry" ;
     linkml:imported_from "linkml:extensions" ;

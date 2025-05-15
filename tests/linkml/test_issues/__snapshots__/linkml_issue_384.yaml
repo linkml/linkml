@@ -1,6 +1,5 @@
-name: alternatives
-description: Enumeration alternatives
-id: http://example.org/test/alternatives
+name: personinfo
+id: https://w3id.org/linkml/examples/personinfo
 imports:
 - linkml:types
 license: https://creativecommons.org/publicdomain/zero/1.0/
@@ -8,28 +7,14 @@ prefixes:
   linkml:
     prefix_prefix: linkml
     prefix_reference: https://w3id.org/linkml/
-  evidence:
-    prefix_prefix: evidence
-    prefix_reference: http://example.org/test/evidence/
-  CLUE:
-    prefix_prefix: CLUE
-    prefix_reference: http://ontologies-r.us/clue/
-  CS:
-    prefix_prefix: CS
-    prefix_reference: http://ontologies-r.us/codesystems/
-default_prefix: evidence
+  sdo:
+    prefix_prefix: sdo
+    prefix_reference: http://schema.org/
+  ex:
+    prefix_prefix: ex
+    prefix_reference: https://w3id.org/linkml/examples/personinfo/
+default_prefix: ex
 default_range: string
-subsets:
-  hpo_options:
-    name: hpo_options
-    definition_uri: http://example.org/test/evidence/HpoOptions
-    description: Subset of enumerations that include HPO references
-    from_schema: http://example.org/test/alternatives
-  test_subset:
-    name: test_subset
-    definition_uri: http://example.org/test/evidence/TestSubset
-    description: Another subset
-    from_schema: http://example.org/test/alternatives
 types:
   string:
     name: string
@@ -299,233 +284,262 @@ types:
     base: str
     uri: xsd:string
     repr: str
-enums:
-  open_enum:
-    name: open_enum
-    definition_uri: http://example.org/test/evidence/OpenEnum
-    description: Baseline enumeration -- simple code/value pairs, where the value
-      (description) is optional
-    from_schema: http://example.org/test/alternatives
-    permissible_values:
-      a:
-        text: a
-        description: top
-      b:
-        text: b
-        description: middle
-      c:
-        text: c
-        description: bottom
-      d:
-        text: d
-  constrained_enum_2:
-    name: constrained_enum_2
-    definition_uri: http://example.org/test/evidence/ConstrainedEnum2
-    description: All codes from the version of HPO labeled "current" by the referenced
-      service
-    in_subset:
-    - hpo_options
-    from_schema: http://example.org/test/alternatives
-    code_set: CS:HPO
-    pv_formula: CODE
-  constrained_enum_3:
-    name: constrained_enum_3
-    definition_uri: http://example.org/test/evidence/ConstrainedEnum3
-    description: All uris from the version of HPO with the tag, "production"
-    in_subset:
-    - hpo_options
-    from_schema: http://example.org/test/alternatives
-    code_set: CS:HPO
-    code_set_tag: production
-    pv_formula: URI
-  constrained_enum_4:
-    name: constrained_enum_4
-    definition_uri: http://example.org/test/evidence/ConstrainedEnum4
-    description: All curies from version 1.17 of HPO
-    in_subset:
-    - hpo_options
-    from_schema: http://example.org/test/alternatives
-    code_set: CS:HPO
-    code_set_version: '1.17'
-    pv_formula: CURIE
-  constrained_enum_5:
-    name: constrained_enum_5
-    definition_uri: http://example.org/test/evidence/ConstrainedEnum5
-    description: All fhir codings from the "current" version of the CLUE "mustard
-      options" value set
-    from_schema: http://example.org/test/alternatives
-    code_set: CLUE:mustard_options
-    pv_formula: FHIR_CODING
-  constrained_enum_6:
-    name: constrained_enum_6
-    definition_uri: http://example.org/test/evidence/ConstrainedEnum6
-    description: All codes from SNOMED CT INTL 2020-7-31 or greater
-    from_schema: http://example.org/test/alternatives
-    code_set: CS:SCT
-    code_set_version: '>=2020-7-31'
-    pv_formula: CODE
-  constrained_evidence:
-    name: constrained_evidence
-    definition_uri: http://example.org/test/evidence/ConstrainedEvidence
-    description: Permissible values for CLUE evidence fragments
-    from_schema: http://example.org/test/alternatives
-    code_set: clue_answers
-    permissible_values:
-      IEA:
-        text: IEA
-        description: Colonel Mustard in the Ballroom
-      ISS:
-        text: ISS
-        description: Mrs. Peacock with the Dagger
-        meaning: CLUE:1173
-  mapped_evidence:
-    name: mapped_evidence
-    definition_uri: http://example.org/test/evidence/MappedEvidence
-    description: Permissible values that draw directly from the code set
-    in_subset:
-    - test_subset
-    from_schema: http://example.org/test/alternatives
-    code_set: clue_answers
-    pv_formula: URI
 slots:
-  allEnums__entry_name:
-    name: allEnums__entry_name
-    description: Name of the particular enum permutation
-    from_schema: http://example.org/test/alternatives
-    slot_uri: evidence:entry_name
-    identifier: true
-    alias: entry_name
-    owner: all_enums
+  id:
+    name: id
+    definition_uri: https://w3id.org/linkml/examples/personinfo/id
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:id
+    owner: Thing
     domain_of:
-    - all_enums
+    - Thing
     range: string
-    required: true
-  allEnums__code_1:
-    name: allEnums__code_1
-    from_schema: http://example.org/test/alternatives
-    slot_uri: evidence:code_1
-    alias: code_1
-    owner: all_enums
+  full_name:
+    name: full_name
+    definition_uri: https://w3id.org/linkml/examples/personinfo/full_name
+    title: full name
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:full_name
+    owner: Thing
     domain_of:
-    - all_enums
-    range: open_enum
-    required: true
+    - Thing
+    range: string
+  parent:
+    name: parent
+    definition_uri: https://w3id.org/linkml/examples/personinfo/parent
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:parent
+    range: Thing
     multivalued: true
-  allEnums__code_2:
-    name: allEnums__code_2
-    from_schema: http://example.org/test/alternatives
-    slot_uri: evidence:code_2
-    alias: code_2
-    owner: all_enums
+    inlined: true
+    inlined_as_list: true
+  person__aliases:
+    name: person__aliases
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:aliases
+    alias: aliases
+    owner: Person
     domain_of:
-    - all_enums
-    range: constrained_enum_2
-  allEnums__code_3:
-    name: allEnums__code_3
-    from_schema: http://example.org/test/alternatives
-    slot_uri: evidence:code_3
-    alias: code_3
-    owner: all_enums
+    - Person
+    range: string
+    multivalued: true
+  person__phone:
+    name: person__phone
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:phone
+    alias: phone
+    owner: Person
     domain_of:
-    - all_enums
-    range: constrained_enum_3
-  allEnums__code_4:
-    name: allEnums__code_4
-    from_schema: http://example.org/test/alternatives
-    slot_uri: evidence:code_4
-    alias: code_4
-    owner: all_enums
+    - Person
+    range: string
+  person__age:
+    name: person__age
+    description: age in years
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:age
+    alias: age
+    owner: Person
     domain_of:
-    - all_enums
-    range: constrained_enum_4
-  allEnums__code_5:
-    name: allEnums__code_5
-    from_schema: http://example.org/test/alternatives
-    slot_uri: evidence:code_5
-    alias: code_5
-    owner: all_enums
+    - Person
+    range: integer
+  geoObject__aliases:
+    name: geoObject__aliases
+    comments:
+    - we introduce a deliberate conflict (single vs multivalied) with the aliases
+      attribute that is local to person
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:aliases
+    alias: aliases
+    owner: GeoObject
     domain_of:
-    - all_enums
-    range: constrained_enum_4
-  allEnums__code_6:
-    name: allEnums__code_6
-    from_schema: http://example.org/test/alternatives
-    slot_uri: evidence:code_6
-    alias: code_6
-    owner: all_enums
+    - GeoObject
+    range: string
+    multivalued: false
+  geoObject__age:
+    name: geoObject__age
+    comments:
+    - we introduce a deliberate conflict (type vs class range) with the age attribute
+      that is local to person
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:age
+    alias: age
+    owner: GeoObject
     domain_of:
-    - all_enums
-    range: constrained_enum_4
-  allEnums__code_7:
-    name: allEnums__code_7
-    from_schema: http://example.org/test/alternatives
-    slot_uri: evidence:code_7
-    alias: code_7
-    owner: all_enums
+    - GeoObject
+    range: GeoAge
+    inlined: true
+    inlined_as_list: true
+  geoAge__unit:
+    name: geoAge__unit
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:unit
+    alias: unit
+    owner: GeoAge
     domain_of:
-    - all_enums
-    range: constrained_evidence
-  allEnums__code_8:
-    name: allEnums__code_8
-    from_schema: http://example.org/test/alternatives
-    slot_uri: evidence:code_8
-    alias: code_8
-    owner: all_enums
+    - GeoAge
+    range: string
+  geoAge__value:
+    name: geoAge__value
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:value
+    alias: value
+    owner: GeoAge
     domain_of:
-    - all_enums
-    range: mapped_evidence
+    - GeoAge
+    range: float
+  Person_parent:
+    name: Person_parent
+    definition_uri: https://w3id.org/linkml/examples/personinfo/parent
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    is_a: parent
+    domain: Person
+    slot_uri: ex:parent
+    alias: parent
+    owner: Person
+    domain_of:
+    - Person
+    is_usage_slot: true
+    usage_slot_name: parent
+    range: Person
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+  Organization_full_name:
+    name: Organization_full_name
+    definition_uri: https://w3id.org/linkml/examples/personinfo/full_name
+    description: name of the organization, e.g. ACME inc
+    title: full name
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    is_a: full_name
+    domain: Organization
+    slot_uri: ex:full_name
+    alias: full_name
+    owner: Organization
+    domain_of:
+    - Organization
+    is_usage_slot: true
+    usage_slot_name: full_name
+    range: string
+  Organization_parent:
+    name: Organization_parent
+    definition_uri: https://w3id.org/linkml/examples/personinfo/parent
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    is_a: parent
+    domain: Organization
+    slot_uri: ex:parent
+    alias: parent
+    owner: Organization
+    domain_of:
+    - Organization
+    is_usage_slot: true
+    usage_slot_name: parent
+    range: Organization
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
 classes:
-  all_enums:
-    name: all_enums
-    definition_uri: http://example.org/test/evidence/AllEnums
-    description: A class that incorporates all of the enumeration examples above
-    from_schema: http://example.org/test/alternatives
+  Thing:
+    name: Thing
+    definition_uri: https://w3id.org/linkml/examples/personinfo/Thing
+    from_schema: https://w3id.org/linkml/examples/personinfo
     exact_mappings:
-    - evidence:AllEnums
+    - ex:Thing
     slots:
-    - allEnums__entry_name
-    - allEnums__code_1
-    - allEnums__code_2
-    - allEnums__code_3
-    - allEnums__code_4
-    - allEnums__code_5
-    - allEnums__code_6
-    - allEnums__code_7
-    - allEnums__code_8
+    - id
+    - full_name
+    class_uri: ex:Thing
+  Person:
+    name: Person
+    definition_uri: https://w3id.org/linkml/examples/personinfo/Person
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    exact_mappings:
+    - sdo:Person
+    is_a: Thing
+    slots:
+    - id
+    - full_name
+    - person__aliases
+    - person__phone
+    - person__age
+    - Person_parent
+    slot_usage:
+      parent:
+        name: parent
+        range: Person
     attributes:
-      entry_name:
-        name: entry_name
-        description: Name of the particular enum permutation
-        identifier: true
-      code_1:
-        name: code_1
-        range: open_enum
-        required: true
+      aliases:
+        name: aliases
         multivalued: true
-      code_2:
-        name: code_2
-        range: constrained_enum_2
-      code_3:
-        name: code_3
-        range: constrained_enum_3
-      code_4:
-        name: code_4
-        range: constrained_enum_4
-      code_5:
-        name: code_5
-        range: constrained_enum_4
-      code_6:
-        name: code_6
-        range: constrained_enum_4
-      code_7:
-        name: code_7
-        range: constrained_evidence
-      code_8:
-        name: code_8
-        range: mapped_evidence
-    class_uri: evidence:AllEnums
+      phone:
+        name: phone
+      age:
+        name: age
+        description: age in years
+        range: integer
+    class_uri: sdo:Person
+  Organization:
+    name: Organization
+    definition_uri: https://w3id.org/linkml/examples/personinfo/Organization
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    exact_mappings:
+    - ex:Organization
+    is_a: Thing
+    slots:
+    - id
+    - Organization_full_name
+    - Organization_parent
+    slot_usage:
+      full_name:
+        name: full_name
+        description: name of the organization, e.g. ACME inc
+      parent:
+        name: parent
+        range: Organization
+    class_uri: ex:Organization
+  GeoObject:
+    name: GeoObject
+    definition_uri: https://w3id.org/linkml/examples/personinfo/GeoObject
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    exact_mappings:
+    - ex:GeoObject
+    is_a: Thing
+    slots:
+    - id
+    - full_name
+    - geoObject__aliases
+    - geoObject__age
+    attributes:
+      aliases:
+        name: aliases
+        comments:
+        - we introduce a deliberate conflict (single vs multivalied) with the aliases
+          attribute that is local to person
+        multivalued: false
+      age:
+        name: age
+        comments:
+        - we introduce a deliberate conflict (type vs class range) with the age attribute
+          that is local to person
+        range: GeoAge
+    class_uri: ex:GeoObject
+  GeoAge:
+    name: GeoAge
+    definition_uri: https://w3id.org/linkml/examples/personinfo/GeoAge
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    exact_mappings:
+    - ex:GeoAge
+    slots:
+    - geoAge__unit
+    - geoAge__value
+    attributes:
+      unit:
+        name: unit
+      value:
+        name: value
+        range: float
+    class_uri: ex:GeoAge
 metamodel_version: 1.7.0
-source_file: alternatives.yaml
+source_file: linkml_issue_384.yaml
 source_file_date: '2000-01-01T00:00:00'
 source_file_size: 1
 generation_date: '2000-01-01T00:00:00'
