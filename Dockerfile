@@ -1,4 +1,4 @@
-FROM python:3.12-bookworm as builder
+FROM python:3.12-bookworm AS builder
 
 # https://stackoverflow.com/questions/53835198/integrating-python-poetry-with-docker
 ENV PYTHONFAULTHANDLER=1 \
@@ -19,7 +19,7 @@ COPY . .
 RUN poetry build
 
 #######################################
-FROM python:3.12-slim-bookworm as runner
+FROM python:3.12-slim-bookworm AS runner
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update

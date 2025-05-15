@@ -10,7 +10,7 @@ from jinja2 import Environment, FileSystemLoader
 from linkml_runtime.linkml_model.meta import Element, SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView
 
-from linkml.generators.docgen import DocGenerator, customize_environment
+from linkml.generators.docgen import DocGenerator
 from linkml.utils.generator import Generator, shared_arguments
 
 
@@ -59,7 +59,8 @@ class MermaidClassDiagramGenerator(Generator):
         template_name = os.path.basename(self.template_file)
         loader = FileSystemLoader(template_folder)
         env = Environment(loader=loader)
-        customize_environment(env)
+        temp_doc_gen = DocGenerator(self.schema, mergeimports=self.mergeimports)
+        temp_doc_gen.customize_environment(env)
 
         template = env.get_template(template_name)
 
