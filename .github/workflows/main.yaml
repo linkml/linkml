@@ -9,8 +9,6 @@ on:
     branches:
       - main
   pull_request:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
@@ -128,8 +126,8 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction --all-extras
       - name: Generate coverage results
-        # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668 
-        shell: bash      
+        # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668
+        shell: bash
         run: |
           poetry run coverage run -m pytest --with-slow --with-biolink -m slow -n auto
           poetry run coverage xml
