@@ -10,6 +10,8 @@ from linkml_runtime.utils.formatutils import underscore
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
     OWL,
+    PANDERA_POLARS_CLASS,
+    PANDERA_ROOT_CLASS,
     PYDANTIC,
     PYDANTIC_ROOT_CLASS,
     PYTHON_DATACLASSES,
@@ -89,6 +91,7 @@ def test_attributes(framework, description, object, is_valid):
                     "_mappings": {
                         PYDANTIC: "s1: Optional[str] = Field(default=None",
                         PYTHON_DATACLASSES: "s1: Optional[str] = None",
+                        PANDERA_POLARS_CLASS: "s1: Optional[str] = pla.Field(nullable=True, )",
                     }
                 },
                 SLOT_S2: {},
@@ -96,6 +99,7 @@ def test_attributes(framework, description, object, is_valid):
             "_mappings": {
                 PYDANTIC: f"class C({PYDANTIC_ROOT_CLASS}):",
                 PYTHON_DATACLASSES: f"@dataclass(repr=False)\nclass C({PYTHON_DATACLASSES_ROOT_CLASS}):",
+                PANDERA_POLARS_CLASS: f"class C({PANDERA_ROOT_CLASS})",
                 JSON_SCHEMA: {
                     "$defs": {
                         "C": {
@@ -135,6 +139,7 @@ def test_type_range(framework, linkml_type, example_value):
     This test will check the cross-product of a set of example values again schemas where the
     expected type for these values varies.
 
+
     Known issues:
 
     - Many frameworks **coerce** values to the correct type.
@@ -166,6 +171,7 @@ def test_type_range(framework, linkml_type, example_value):
                     "_mappings": {
                         PYDANTIC: f"{SLOT_S1}: Optional[{typ_py_name}]",
                         PYTHON_DATACLASSES: f"{SLOT_S1}: Optional[{typ_py_name}]",
+                        PANDERA_POLARS_CLASS: f"{SLOT_S1}: Optional[{typ_py_name}]",
                     },
                 },
             }
@@ -291,6 +297,8 @@ def test_any_type(framework, example_value):
         pytest.skip("Decimal not supported by YAML - https://github.com/yaml/pyyaml/issues/255")
     if framework in [SQL_DDL_SQLITE, SQL_DDL_POSTGRES]:
         pytest.skip("TODO: add support in sqlgen")
+    if framework == PANDERA_POLARS_CLASS:
+        pytest.skip("PanderaGen does not support class range slots.")
     classes = {
         CLASS_ANY: {
             "class_uri": "linkml:Any",
@@ -302,6 +310,7 @@ def test_any_type(framework, example_value):
                     "_mappings": {
                         # PYDANTIC: f"{SLOT_S1}: Optional[Any]",
                         # PYTHON_DATACLASSES: f"{SLOT_S1}: Optional[Any]",
+                        PANDERA_POLARS_CLASS: f"{SLOT_S1}: Optional[Object]"
                     },
                 },
             }
@@ -457,6 +466,9 @@ def test_date_types(framework, linkml_type, example_value, is_valid):
             expected_behavior = ValidationBehavior.INCOMPLETE
         if linkml_type == "date" and is_valid is False and example_value.startswith("2021"):
             expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
+        if linkml_type == "datetime" and is_valid and "T" in example_value:
+            expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == JSON_SCHEMA:
         # RFC3339 requires either Z or time zone offset
         if (
@@ -516,8 +528,8 @@ def test_cardinality(framework, multivalued, required, data_name, value):
     choices = {
         (PYDANTIC, False, False): "Optional[str] = Field(default=None",
         (PYDANTIC, False, True): "str = Field(default=...",
-        (PYDANTIC, True, False): "Optional[List[str]] = Field(default=None",
-        (PYDANTIC, True, True): "List[str] = Field(default=...",
+        (PYDANTIC, True, False): "Optional[list[str]] = Field(default=None",
+        (PYDANTIC, True, True): "list[str] = Field(default=...",
         # TODO: values
         (PYTHON_DATACLASSES, False, False): "",
         (PYTHON_DATACLASSES, False, True): "",
@@ -774,7 +786,7 @@ def test_non_standard_names(framework, class_name, safe_class_name, slot_name, s
     }
     exclude_rdf = False
     if slot_name.startswith("1"):
-        if framework in [PYTHON_DATACLASSES, PYDANTIC, SQL_DDL_SQLITE]:
+        if framework in [PYTHON_DATACLASSES, PYDANTIC, SQL_DDL_SQLITE, PANDERA_POLARS_CLASS]:
             expected_behavior = ValidationBehavior.INCOMPLETE
         exclude_rdf = True
     if class_name == "c" and framework in [JSON_SCHEMA, SHACL]:
@@ -848,11 +860,18 @@ def test_non_standard_num_names(framework, enum_name, pv_name):
         SLOT_S1: pv_name,
     }
     exclude_rdf = False
-    if "[" in enum_name and framework in [PYDANTIC, SQL_DDL_SQLITE, PYTHON_DATACLASSES, OWL, SHACL]:
+    if "[" in enum_name and framework in [
+        PYDANTIC,
+        SQL_DDL_SQLITE,
+        PYTHON_DATACLASSES,
+        OWL,
+        SHACL,
+        PANDERA_POLARS_CLASS,
+    ]:
         # TODO: need to escape []s
         expected_behavior = ValidationBehavior.INCOMPLETE
         exclude_rdf = True
-    if pv_name == " " and framework == PYDANTIC:
+    if pv_name == " " and framework in PYDANTIC:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,

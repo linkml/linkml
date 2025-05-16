@@ -213,6 +213,40 @@ def test_process_ifabsent_uri():
     ) == Literal("https://en.wikipedia.org/wiki/Student", datatype=ShaclDataType.URI.uri_ref)
 
 
+def test_process_ifabsent_uriorcurie():
+    schema_view = SchemaView(
+        schema_base
+        + """
+    - name: definition_A
+      range: uriorcurie
+      ifabsent: string(https://en.wikipedia.org/wiki/Student)
+    - name: definition_B
+      range: uriorcurie
+      ifabsent: string(ex:Student)
+    - name: definition_C
+      range: uriorcurie
+      ifabsent: string(wikipedia:Student)
+    """
+    )
+
+    processor = ShaclIfAbsentProcessor(schema_view)
+
+    assert processor.process_slot(
+        schema_view.all_slots()[SlotDefinitionName("definition_A")],
+        schema_view.all_classes()[ClassDefinitionName("Student")],
+    ) == Literal("https://en.wikipedia.org/wiki/Student", datatype=ShaclDataType.URI.uri_ref)
+
+    assert processor.process_slot(
+        schema_view.all_slots()[SlotDefinitionName("definition_B")],
+        schema_view.all_classes()[ClassDefinitionName("Student")],
+    ) == Literal("https://example.org/Student", datatype=ShaclDataType.URI.uri_ref)
+
+    assert processor.process_slot(
+        schema_view.all_slots()[SlotDefinitionName("definition_C")],
+        schema_view.all_classes()[ClassDefinitionName("Student")],
+    ) == Literal("wikipedia:Student", datatype=ShaclDataType.URI.uri_ref)
+
+
 def test_process_class_curie():
     schema_view = SchemaView(
         schema_base
@@ -334,25 +368,6 @@ def test_process_impossible_range_ifabsent_attribute():
     assert str(e.value) == (
         "The ifabsent value `ImpossibleEnum(DivideByZero)` of the `impossibleRange` slot could not " "be processed"
     )
-
-
-def test_process_uri_or_curie_ifabsent_attribute():
-    schema_view = SchemaView(
-        schema_base
-        + """
-    - name: unimplementedUriOrCurie
-      range: uriorcurie
-      ifabsent: uriorcurie('https://example.org')
-    """
-    )
-
-    processor = ShaclIfAbsentProcessor(schema_view)
-
-    with pytest.raises(NotImplementedError):
-        processor.process_slot(
-            schema_view.all_slots()[SlotDefinitionName("unimplementedUriOrCurie")],
-            schema_view.all_classes()[ClassDefinitionName("Student")],
-        )
 
 
 def test_process_nc_name_ifabsent_attribute():

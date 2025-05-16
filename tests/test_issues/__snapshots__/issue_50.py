@@ -33,7 +33,6 @@ from linkml_runtime.linkml_model.meta import (
     PvFormulaOptions
 )
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.formatutils import (
     camelcase,
@@ -61,9 +60,6 @@ from rdflib import (
 
 metamodel_version = "1.7.0"
 version = None
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
@@ -93,7 +89,7 @@ class TestClass3Id(extended_str):
 
 @dataclass(repr=False)
 class TestClass1(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("http://example.com/TestClass1")
     class_class_curie: ClassVar[str] = None
@@ -104,7 +100,7 @@ class TestClass1(YAMLRoot):
     required_mixin_slot: str = None
     optional_mixin_slot: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, TestClass1Id):
@@ -123,7 +119,7 @@ class TestClass1(YAMLRoot):
 
 @dataclass(repr=False)
 class TestClass2(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("http://example.com/TestClass2")
     class_class_curie: ClassVar[str] = None
@@ -134,7 +130,7 @@ class TestClass2(YAMLRoot):
     required_mixin_slot: str = None
     optional_mixin_slot: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, TestClass2Id):
@@ -153,7 +149,7 @@ class TestClass2(YAMLRoot):
 
 @dataclass(repr=False)
 class TestClass3(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("http://example.com/TestClass3")
     class_class_curie: ClassVar[str] = None
@@ -162,7 +158,7 @@ class TestClass3(YAMLRoot):
 
     id: Union[str, TestClass3Id] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, TestClass3Id):

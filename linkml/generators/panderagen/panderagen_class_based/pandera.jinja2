@@ -1,0 +1,16 @@
+{#-
+  Jinja2 Template for the top level of a Pandera class-based model
+  Details at https://pandera.readthedocs.io/
+-#}
+{%- import 'header.jinja2' as header -%}
+{%- import 'class.jinja2' as class_macros -%}
+{%- import 'mixins.jinja2' as mixins -%}
+{{ header }}
+
+{{ mixins }}
+
+{% if metamodel_version %}# metamodel_version: {{metamodel_version}}{% endif %}
+{% if model_version %}# version: {{model_version}}{% endif %}
+{%- for cls in doc.classes -%}
+    {{- class_macros.render_class(cls) -}}
+{%- endfor %}

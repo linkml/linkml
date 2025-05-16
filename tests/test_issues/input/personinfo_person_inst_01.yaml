@@ -1,0 +1,52 @@
+id: P:001
+name: John Doe
+description: A sample person
+primary_email: john.doe@example.com
+birth_date: 1980-01-15
+age_in_years: 44
+gender: cisgender man
+aliases:
+  - Johnny
+  - J.D.
+# Note that we don't use the slot name verbatim here – color_of_hair
+# but instead we use the alias – hair_color, in the instance file.
+hair_color: BROWN
+current_address:
+  street: 123 Main Street
+  city: Anytown
+  postal_code: "12345"
+has_employment_history:
+  - employed_at:
+      id: ROR:001
+      name: Tech Company Inc.
+    started_at_time: 2010-06-01
+    ended_at_time: 2020-12-31
+    is_current: false
+  - employed_at:
+      id: ROR:002
+      name: Data Science Corp
+    started_at_time: 2021-01-15
+    is_current: true
+has_familial_relationships:
+  - related_to:
+      id: P:002
+      name: Jane Doe
+    type: SIBLING_OF
+    started_at_time: 1980-01-15
+  - related_to:
+      id: P:003
+      name: Sam Doe
+    type: PARENT_OF
+    started_at_time: 2010-05-10
+has_medical_history:
+  - started_at_time: 2022-03-15
+    ended_at_time: 2022-03-20
+    in_location:
+      id: GEO:001
+      name: General Hospital
+    diagnosis:
+      id: CODE:D123
+      name: Seasonal Allergy
+    procedure:
+      id: CODE:P456
+      name: Allergy Testing

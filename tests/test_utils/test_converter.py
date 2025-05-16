@@ -2,6 +2,7 @@ import json
 
 import pytest
 from click.testing import CliRunner
+from rdflib import Graph
 
 from linkml.utils.converter import cli
 
@@ -46,6 +47,22 @@ def test_infer_and_convert(input_path, cli_runner, tmp_path):
         assert p2["age_in_months"] == 240
         assert p2["age_category"] == "adult"
         assert p2["full_name"] == "first2 last2"
+
+
+def test_prefix_file(input_path, cli_runner, tmp_path):
+    schema = input_path("schema_with_inference.yaml")
+    data_in = input_path("data_example.yaml")
+    rdf_out = tmp_path / "data_example.out.ttl"
+    prefix_file = input_path("data_example_prefix_map.yaml")
+    result = cli_runner.invoke(
+        cli, ["-s", schema, data_in, "-t", "rdf", "-o", rdf_out, "--prefix-file", prefix_file], catch_exceptions=True
+    )
+    assert result.exit_code == 0
+    rdf_graph = Graph()
+    rdf_graph.parse(rdf_out, format="turtle")
+    namespaces = {str(prefix): str(namespace) for prefix, namespace in rdf_graph.namespaces()}
+    assert "P" in namespaces
+    assert namespaces["P"] == "http://www.example.com/personinfo/"
 
 
 def test_version(cli_runner):

@@ -21,7 +21,7 @@ Name: {{ schema.name }}
 | --- | --- |
 {% if gen.hierarchical_class_view -%}
 {% for u, v in gen.class_hierarchy_as_tuples() -%}
-| {{ "&nbsp;"|safe*u*8 }}{{ gen.link(schemaview.get_class(v), True) }} | {{ schemaview.get_class(v).description }} |
+| {{ "&nbsp;"|safe*u*8 }}{{ gen.link(schemaview.get_class(v), True) }} | {{ schemaview.get_class(v).description|enshorten }} |
 {% endfor %}
 {% else -%}
 {% for c in gen.all_class_objects()|sort(attribute=sort_by) -%}

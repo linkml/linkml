@@ -1,10 +1,13 @@
-import unittest
+import logging
 
+import pytest
 from linkml_runtime.dumpers import yaml_dumper
 
 from linkml.validators.sparqlvalidator import SparqlDataValidator
 from tests import SKIP_REMOTE_SPARQL_TESTS
 from tests.test_validation.environment import env
+
+logger = logging.getLogger(__name__)
 
 SCHEMA = env.input_path("omo.yaml")
 REPORT = env.expected_path("omo-report.yaml")
@@ -15,19 +18,21 @@ NGS = [
 ]
 
 
-class RemoteSparqlValidatorTestCase(unittest.TestCase):
-    @staticmethod
-    def test_remote_sparql_validation():
-        """Validate a schema"""
-        sv = SparqlDataValidator()
-        sv.load_schema(SCHEMA)
-        if SKIP_REMOTE_SPARQL_TESTS:
-            print("Skipping ontobee test")
-        else:
-            results = sv.validate_endpoint("http://sparql.hegroup.org/sparql", named_graphs=NGS)
-            print(results)
-            yaml_dumper.dump(results, to_file=REPORT)
+@pytest.fixture
+def validator():
+    sv = SparqlDataValidator()
+    sv.load_schema(SCHEMA)
+    return sv
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_sparql_validation_load_schema(validator):
+    """Only load a schema"""
+    assert validator.schema is not None
+
+
+@pytest.mark.skipif(SKIP_REMOTE_SPARQL_TESTS, reason="Skipping ontobee test")
+def test_remote_sparql_validation(validator):
+    """Validate a schema"""
+    results = validator.validate_endpoint("http://sparql.hegroup.org/sparql", named_graphs=NGS)
+    logger.info(results)
+    yaml_dumper.dump(results, to_file=REPORT)

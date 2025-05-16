@@ -1,5 +1,4 @@
 import io
-import unittest
 
 from linkml.linter.config.datamodel.config import RuleLevel
 from linkml.linter.formatters import (
@@ -53,13 +52,12 @@ def populate_report(formatter):
     formatter.end_report()
 
 
-class TestFormatters(unittest.TestCase):
-    def test_terminal_formatter(self):
-        output = io.StringIO()
-        formatter = TerminalFormatter(file=output)
-        populate_report(formatter)
+def test_terminal_formatter():
+    output = io.StringIO()
+    formatter = TerminalFormatter(file=output)
+    populate_report(formatter)
 
-        expected = """
+    expected = """
 a.yaml
   error    this is an error  (rule_1)
   warning  this is a warning  (rule_2)
@@ -69,14 +67,15 @@ b.yaml
 
 ✖ Found 3 problems in 2 schemas
 """
-        self.assertEqual(output.getvalue().strip(), expected.strip())
+    assert output.getvalue().strip() == expected.strip()
 
-    def test_terminal_formatter_verbose(self):
-        output = io.StringIO()
-        formatter = TerminalFormatter(file=output, verbose=True)
-        populate_report(formatter)
 
-        expected = """
+def test_terminal_formatter_verbose():
+    output = io.StringIO()
+    formatter = TerminalFormatter(file=output, verbose=True)
+    populate_report(formatter)
+
+    expected = """
 a.yaml
   error    this is an error  (rule_1)
   warning  this is a warning  (rule_2)
@@ -88,14 +87,15 @@ b.yaml
 
 ✖ Found 3 problems in 2 schemas
 """
-        self.assertEqual(output.getvalue().strip(), expected.strip())
+    assert output.getvalue().strip() == expected.strip()
 
-    def test_markdown_formatter(self):
-        output = io.StringIO()
-        formatter = MarkdownFormatter(file=output)
-        populate_report(formatter)
 
-        expected = """
+def test_markdown_formatter():
+    output = io.StringIO()
+    formatter = MarkdownFormatter(file=output)
+    populate_report(formatter)
+
+    expected = """
 ## Summary
 
 |                      | Count |
@@ -119,14 +119,15 @@ b.yaml
 #### Errors
 * rule_3: this is another error
 """
-        self.assertEqual(output.getvalue().strip(), expected.strip())
+    assert output.getvalue().strip() == expected.strip()
 
-    def test_json_formatter(self):
-        output = io.StringIO()
-        formatter = JsonFormatter(file=output)
-        populate_report(formatter)
 
-        expected = """
+def test_json_formatter():
+    output = io.StringIO()
+    formatter = JsonFormatter(file=output)
+    populate_report(formatter)
+
+    expected = """
 [
   {
     "message": "this is an error",
@@ -151,19 +152,20 @@ b.yaml
   }
 ]
 """
-        self.assertEqual(output.getvalue().strip(), expected.strip())
+    assert output.getvalue().strip() == expected.strip()
 
-    def test_tsv_formatter(self):
-        output = io.StringIO()
-        formatter = TsvFormatter(file=output)
-        populate_report(formatter)
 
-        expected = """
+def test_tsv_formatter():
+    output = io.StringIO()
+    formatter = TsvFormatter(file=output)
+    populate_report(formatter)
+
+    expected = """
 source	schema name	rule name	level	message
 a.yaml	a name	rule_1	error	this is an error
 a.yaml	a name	rule_2	warning	this is a warning
 b.yaml	b name	rule_3	error	this is another error
 """
-        actual = output.getvalue()
-        actual_normalized = actual.strip().replace("\r\n", "\n").replace("\r", "\n")
-        self.assertEqual(actual_normalized, expected.strip())
+    actual = output.getvalue()
+    actual_normalized = actual.strip().replace("\r\n", "\n").replace("\r", "\n")
+    assert actual_normalized == expected.strip()

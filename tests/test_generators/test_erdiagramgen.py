@@ -2,7 +2,15 @@
 Tests generation of mermaidfrom LinkML schemas
 """
 
-from linkml.generators.erdiagramgen import ERDiagramGenerator
+import pytest
+from click.testing import CliRunner
+
+from linkml.generators.erdiagramgen import ERDiagramGenerator, cli
+
+
+@pytest.fixture
+def runner():
+    return CliRunner()
 
 
 def remove_whitespace(string: str):
@@ -131,3 +139,19 @@ def test_max_hops(kitchen_sink_path):
     mermaid = remove_whitespace(gen.serialize_classes(["Dataset"], max_hops=1))
     assert PERSON in mermaid, "Person reachable from selected in one hop"
     assert "FamilialRelationship{" not in mermaid, "FamilialRelationship not reachable from selected in zero hops"
+
+
+def test_format_option_markdown(runner, kitchen_sink_path):
+    """Test the --format option with 'markdown'."""
+    result = runner.invoke(cli, [kitchen_sink_path, "--format", "markdown"])
+    print(result.output)
+    assert result.output.startswith("```mermaid")
+    assert result.output.endswith("```\n\n")
+
+
+def test_format_option_no_markdown(runner, kitchen_sink_path):
+    """Test the --format option with 'mermaid'."""
+    result = runner.invoke(cli, [kitchen_sink_path, "--format", "mermaid"])
+    print(result.output)
+    assert not result.output.startswith("```mermaid")
+    assert result.output.endswith("\n\n")

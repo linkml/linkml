@@ -1,24 +1,31 @@
-import unittest
+import logging
+
+import pytest
 
 from linkml.generators.sparqlgen import SparqlGenerator
 from linkml.validators.sparqlvalidator import SparqlDataValidator
 from tests.test_validation.environment import env
 
+logger = logging.getLogger(__file__)
+
+
 SCHEMA = env.input_path("kitchen_sink.yaml")
 DATA = env.input_path("kitchen_sink_inst_01.ttl")
 
 
-class SparqlValidatorTestCase(unittest.TestCase):
-    # rdflib bug on parsing sparql queries
-    @unittest.skip
-    def test_sparql_validation(self):
-        """Validate using in-memory sparql"""
-        SparqlGenerator(SCHEMA)
-        sv = SparqlDataValidator()
-        sv.load_schema(SCHEMA)
-        results = sv.validate_file(DATA)
-        print(results)
+@pytest.fixture
+def validator():
+    SparqlGenerator(SCHEMA)
+    sv = SparqlDataValidator()
+    sv.load_schema(SCHEMA)
+    return sv
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.mark.skip(
+    reason="ttl file not present; rdflib bug on parsing sparql queries. see: https://github.com/linkml/linkml/issues/2504"
+)
+def test_sparql_validation(validator):
+    """Validate using in-memory sparql"""
+    results = validator.validate_file(DATA)
+    logger.info(results)
+    assert results is not None

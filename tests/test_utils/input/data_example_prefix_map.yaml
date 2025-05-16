@@ -1,0 +1,4 @@
+prefixes:
+  ex: http://www.example.com/
+  schema: http://schema.org/
+  P: http://www.example.com/personinfo/

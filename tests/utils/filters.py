@@ -1,4 +1,4 @@
-""" Metadata filters for test cases -- various tools to remove metadata from output """
+"""Metadata filters for test cases -- various tools to remove metadata from output."""
 
 import re
 

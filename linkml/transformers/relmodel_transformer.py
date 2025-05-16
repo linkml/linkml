@@ -1,7 +1,7 @@
 import logging
 from copy import copy
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Optional
 
 from linkml_runtime.linkml_model import (
     Annotation,
@@ -105,7 +105,7 @@ class MultivaluedScalar(RelationalMapping):
     mapping_type: str = "MultivaluedScalar"
 
 
-def add_attribute(attributes: Dict[str, SlotDefinition], tgt_slot: SlotDefinition) -> None:
+def add_attribute(attributes: dict[str, SlotDefinition], tgt_slot: SlotDefinition) -> None:
     attributes[tgt_slot.name] = tgt_slot
 
 
@@ -114,11 +114,11 @@ def add_annotation(element: Definition, tag: str, value: str) -> None:
     element.annotations[ann.tag] = ann
 
 
-def get_primary_key_attributes(cls: ClassDefinition) -> List[SlotDefinitionName]:
+def get_primary_key_attributes(cls: ClassDefinition) -> list[SlotDefinitionName]:
     return [a.name for a in cls.attributes.values() if RelationalAnnotations.PRIMARY_KEY in a.annotations]
 
 
-def get_foreign_key_map(cls: ClassDefinition) -> Dict[SlotDefinitionName, str]:
+def get_foreign_key_map(cls: ClassDefinition) -> dict[SlotDefinitionName, str]:
     return {
         a.name: a.annotations[RelationalAnnotations.FOREIGN_KEY].value
         for a in cls.attributes.values()
@@ -133,7 +133,7 @@ class TransformationResult:
     """
 
     schema: SchemaDefinition
-    mappings: List[RelationalMapping]
+    mappings: list[RelationalMapping]
 
 
 @dataclass
@@ -412,7 +412,7 @@ class RelationalModelTransformer:
                 return a
         return None
 
-    def get_reference_map(self) -> List[Link]:
+    def get_reference_map(self) -> list[Link]:
         """
         Extract all class-slot-range references
 

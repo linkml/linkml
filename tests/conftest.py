@@ -1,11 +1,12 @@
 import os
+import re
 import shutil
 import sys
 from abc import ABC, abstractmethod
 from importlib.abc import MetaPathFinder
 from importlib.metadata import version
 from pathlib import Path
-from typing import Callable, List, Optional, Union
+from typing import Callable, Optional, Union
 
 import docker
 import pytest
@@ -21,6 +22,8 @@ KITCHEN_SINK_PATH = str(Path(__file__).parent / "test_generators" / "input" / "k
 
 # avoid an error from nbconvert -> jupyter_core. remove this after jupyter_core v6
 os.environ["JUPYTER_PLATFORM_DIRS"] = "1"
+
+UNSAFE_PATHS = re.compile(r"[^\w_.-]")
 
 
 def normalize_line_endings(string: str):
@@ -60,7 +63,7 @@ class SnapshotFile(Snapshot):
         self.rdf_format: Optional[bool] = rdf_format
 
     def __repr__(self):
-        with open(self.path, "r", encoding="utf-8") as snapshot_file:
+        with open(self.path, encoding="utf-8") as snapshot_file:
             return snapshot_file.read()
 
     def generate_snapshot(self, source: object) -> bool:
@@ -78,11 +81,11 @@ class SnapshotFile(Snapshot):
         raise TypeError(f"cannot generate snapshot from {source}")
 
     def compare_to_snapshot(self, other: object) -> bool:
-        with open(self.path, "r", encoding="utf-8") as snapshot_file:
+        with open(self.path, encoding="utf-8") as snapshot_file:
             expected = snapshot_file.read()
 
         if isinstance(other, Path):
-            with open(other, "r", encoding="utf-8") as compare_file:
+            with open(other, encoding="utf-8") as compare_file:
                 actual = compare_file.read()
         elif isinstance(other, str):
             actual = other
@@ -173,11 +176,11 @@ def input_path(request) -> Callable[[str], Path]:
 @pytest.fixture(scope="function")
 def temp_dir(request) -> Path:
     base = Path(request.path.parent) / "temp"
-    test_dir = base / request.function.__name__
+    test_dir = base / UNSAFE_PATHS.sub("_", request.node.name)
     test_dir.mkdir(exist_ok=True, parents=True)
     yield test_dir
     if not request.config.getoption("with_output"):
-        shutil.rmtree(test_dir)
+        shutil.rmtree(test_dir, ignore_errors=True)
 
 
 def pytest_addoption(parser):
@@ -192,14 +195,21 @@ def pytest_addoption(parser):
         "--with-output", action="store_true", help="dump output in compliance test for richer debugging information"
     )
     parser.addoption("--without-cache", action="store_true", help="Don't use a sqlite cache for network requests")
+    parser.addoption("--with-biolink", action="store_true", help="Include tests marked as for the biolink model")
 
 
-def pytest_collection_modifyitems(config, items: List[pytest.Item]):
+def pytest_collection_modifyitems(config, items: list[pytest.Item]):
     if not config.getoption("--with-slow"):
         skip_slow = pytest.mark.skip(reason="need --with-slow option to run")
         for item in items:
             if item.get_closest_marker("slow"):
                 item.add_marker(skip_slow)
+
+    if not config.getoption("--with-biolink"):
+        skip_biolink = pytest.mark.skip(reason="need --with-biolink option to run")
+        for item in items:
+            if item.get_closest_marker("biolink"):
+                item.add_marker(skip_biolink)
 
     if not config.getoption("--with-network"):
         skip_network = pytest.mark.skip(reason="need --with-network option to run")
@@ -242,6 +252,28 @@ def pytest_sessionstart(session: pytest.Session):
     tests.WITH_OUTPUT = session.config.getoption("--with-output")
     if session.config.getoption("--generate-snapshots"):
         tests.DEFAULT_MISMATCH_ACTION = "MismatchAction.Ignore"
+
+    _monkeypatch_pyshex()
+
+
+def _monkeypatch_pyshex():
+    import sys
+    import typing
+    from importlib.metadata import version
+    from types import ModuleType
+    from typing import TextIO
+
+    if version("pyshexc") != "0.9.1":
+        raise RuntimeError(
+            "Pyshex has been updated, remove this monkeypatch:\n"
+            "- remove this function\n"
+            "- remove the call to `_monkeypatch_pyshex in `pytest_sessionstart`\n"
+            "- remove the skipif mark on test_notebooks/test_nodebooks.py:test_redo_notebook\n"
+        )
+    typing_io = ModuleType("io")
+    typing_io.TextIO = TextIO
+    typing.io = typing_io
+    sys.modules["typing.io"] = typing_io
 
 
 def pytest_assertrepr_compare(config, op, left, right):
@@ -287,7 +319,7 @@ class MockImportErrorFinder(MetaPathFinder):
     """
 
     def __init__(self, module: str, *args, **kwargs):
-        super(MockImportErrorFinder, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.module = module
 
     def find_spec(self, fullname, path, target):
