@@ -22,6 +22,7 @@ from typing import (
     Union
 )
 
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
 from jsonasobj2 import (
     JsonObj,
     as_dict
@@ -31,8 +32,11 @@ from linkml_runtime.linkml_model.meta import (
     PermissibleValue,
     PvFormulaOptions
 )
+
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.jsonasobj2 import as_dict
+from linkml_runtime.utils.metamodelcore import Bool, empty_list
 from linkml_runtime.utils.formatutils import (
     camelcase,
     sfx,

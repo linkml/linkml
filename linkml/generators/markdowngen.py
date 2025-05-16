@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from typing import Any, Callable, Optional, Union
 
 import click
-from jsonasobj2 import JsonObj, values
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
@@ -15,6 +14,7 @@ from linkml_runtime.linkml_model.meta import (
     TypeDefinition,
 )
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
+from linkml_runtime.utils.jsonasobj2 import JsonObj, values
 
 from linkml._version import __version__
 from linkml.generators.yumlgen import YumlGenerator

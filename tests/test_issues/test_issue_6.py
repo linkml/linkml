@@ -1,5 +1,5 @@
 import pytest
-from jsonasobj2 import loads
+from linkml_runtime.utils.jsonasobj2 import loads
 from rdflib import Namespace
 
 from linkml.generators.shexgen import ShExGenerator

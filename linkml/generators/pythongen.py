@@ -136,13 +136,6 @@ class PythonGenerator(Generator):
             + Import(module="dataclasses")
             + Import(module="re")
             + Import(
-                module="jsonasobj2",
-                objects=[
-                    ObjectImport(name="JsonObj"),
-                    ObjectImport(name="as_dict"),
-                ],
-            )
-            + Import(
                 module="typing",
                 objects=[
                     ObjectImport(name="Optional"),
@@ -182,6 +175,13 @@ class PythonGenerator(Generator):
         # linkml imports
         all_imports = (
             all_imports
+            + Import(
+                module="linkml_runtime.utils.jsonasobj2",
+                objects=[
+                    ObjectImport(name="JsonObj"),
+                    ObjectImport(name="as_dict"),
+                ],
+            )
             + Import(
                 module="linkml_runtime.utils.slot",
                 objects=[
