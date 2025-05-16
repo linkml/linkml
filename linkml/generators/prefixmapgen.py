@@ -5,7 +5,7 @@ Generate JSON-LD contexts
 
 import os
 from dataclasses import dataclass, field
-from typing import Dict, Optional, Set, Union
+from typing import Optional, Union
 
 import click
 from jsonasobj2 import JsonObj, as_json
@@ -30,10 +30,10 @@ class PrefixGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
-    emit_prefixes: Set[str] = field(default_factory=lambda: set())
+    emit_prefixes: set[str] = field(default_factory=lambda: set())
     default_ns: str = None
-    context_body: Dict = field(default_factory=lambda: dict())
-    slot_class_maps: Dict = field(default_factory=lambda: dict())
+    context_body: dict = field(default_factory=lambda: dict())
+    slot_class_maps: dict = field(default_factory=lambda: dict())
     base: Optional[Union[str, Namespace]] = None
 
     def __post_init__(self):
@@ -74,7 +74,7 @@ class PrefixGenerator(Generator):
             context[k] = v
 
         if self.format == "tsv":
-            mapping: Dict = {}  # prefix to IRI mapping
+            mapping: dict = {}  # prefix to IRI mapping
             for prefix in sorted(self.emit_prefixes):
                 mapping[prefix] = self.namespaces[prefix]
 

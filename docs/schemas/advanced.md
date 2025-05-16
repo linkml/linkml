@@ -206,3 +206,8 @@ Documentation of the expression language is available [here](../schemas/expressi
 
 See the developer documentation on [inference](../developers/inference) for
 details of how to use this in code.
+
+## URI or CURIE as a range
+In some cases, you may want to use a URI or CURIE as a range. To do this,
+create a class with `class_uri` set to the URI or CURIE and use that class
+as the range.

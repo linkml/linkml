@@ -5,6 +5,7 @@ import pytest
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
     OWL,
+    PANDERA_POLARS_CLASS,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SHACL,
@@ -126,7 +127,7 @@ def test_basic_class_inheritance(framework, description, cls: str, object, is_va
             "attributes": {
                 SLOT_S1: {
                     "_mappings": {
-                        PYDANTIC: "s1: Optional[str] = Field(None",
+                        PYDANTIC: "s1: Optional[str] = Field(default=None",
                         PYTHON_DATACLASSES: "s1: Optional[str] = None",
                     }
                 },
@@ -145,6 +146,8 @@ def test_basic_class_inheritance(framework, description, cls: str, object, is_va
         },
     }
     expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     if cls == CLASS_D and parent_is_abstract:
         is_valid = False
         if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL, SHACL]:
@@ -260,7 +263,7 @@ def test_mixins(framework, description, cls, object, is_valid):
             "attributes": {
                 SLOT_S1: {
                     "_mappings": {
-                        PYDANTIC: "s1: Optional[str] = Field(None",
+                        PYDANTIC: "s1: Optional[str] = Field(default=None",
                         PYTHON_DATACLASSES: "s1: Optional[str] = None",
                     }
                 },
@@ -304,6 +307,8 @@ def test_mixins(framework, description, cls, object, is_valid):
         if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL, SHACL]:
             # currently lax about prohibiting instantiating mixins
             expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         description.replace(" ", "_"),
@@ -389,6 +394,9 @@ def test_refine_attributes(framework, description, cls, object, is_valid):
         classes=classes,
         core_elements=["is_a", "attributes"],
     )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         description.replace(" ", "_"),
@@ -396,6 +404,7 @@ def test_refine_attributes(framework, description, cls, object, is_valid):
         object,
         is_valid,
         target_class=cls,
+        expected_behavior=expected_behavior,
         description="pattern",
     )
 
@@ -523,9 +532,13 @@ def test_slot_usage(framework, description, cls: str, object, is_valid):
         },
     }
     expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     if description == "minimum_value inheritance":
         if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE, SHACL]:
             expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     schema = validated_schema(
         test_slot_usage,
         "default",
@@ -636,6 +649,8 @@ def test_basic_slot_inheritance(
     }
 
     expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
         if schema_name == "rMAX":
             # range constraints are not enforced in these frameworks
@@ -742,9 +757,13 @@ def test_abstract_classes(
     for c in abstract_classes:
         classes[c]["abstract"] = True
     expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     if not valid and target_class in abstract_classes:
         if framework != JSON_SCHEMA:
             expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     schema = validated_schema(
         test_abstract_classes,
         f"abstract_{'_'.join(abstract_classes)}",

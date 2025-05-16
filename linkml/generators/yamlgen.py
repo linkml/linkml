@@ -1,6 +1,4 @@
-"""Validate linkml input and optionally emit completely resolved biolink yaml output
-
-"""
+"""Validate linkml input and optionally emit completely resolved biolink yaml output"""
 
 import os
 from dataclasses import dataclass

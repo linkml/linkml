@@ -25,7 +25,7 @@ standards for structuring data such as JSON-Schema, Protocol Buffers
    json-schema
    protobuf
    graphql
-   
+
 
 Linked Data Standards
 ---------------------
@@ -64,8 +64,8 @@ published on static hosting sites.
    yuml
    plantumlgen
    project-generator
-   
-   
+
+
 Language Specific
 -----------------
 
@@ -92,7 +92,7 @@ Generators specific to database frameworks. Currently only SQL databases.
 
    sqltable
    sqlalchemy
-             
+
 Others
 ------
 
@@ -107,6 +107,7 @@ Others
    excel
    csv
    yaml
+   pandera
 
 Common
 ------

@@ -236,7 +236,7 @@ slots:
     multivalued: true
   organizations:
     range: Organization
-    inlined_as_list: true
+    inlined_as_list: false
     inlined: true
     multivalued: true
     

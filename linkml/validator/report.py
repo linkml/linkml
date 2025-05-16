@@ -1,7 +1,7 @@
 import textwrap
 from enum import Enum
 from pprint import pformat
-from typing import Any, List, Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -32,7 +32,7 @@ class ValidationResult(BaseModel):
     instance: Optional[Any] = None
     instance_index: Optional[int] = None
     instantiates: Optional[str] = None
-    context: List[str] = []
+    context: list[str] = []
 
     # The source object that caused this validation result
     source: Any = Field(None, description="The source of this validation result", exclude=True)
@@ -48,8 +48,6 @@ class ValidationReport(BaseModel):
     A report object.
     """
 
-    results: List[ValidationResult]
-
     def raise_(self):
         """
         If any results, raise them as a :class:`.ValidationError`
@@ -58,3 +56,5 @@ class ValidationReport(BaseModel):
             res = textwrap.indent("\n".join(str(res) for res in self.results), "  ")
             msg = f"Error(s) validating data: \n{res}"
             raise ValidationError(msg)
+    results: list[ValidationResult]
+

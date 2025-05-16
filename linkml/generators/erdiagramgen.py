@@ -1,7 +1,7 @@
 import os
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Optional, Set, Union
+from typing import Optional, Union
 
 import click
 import pydantic
@@ -75,7 +75,7 @@ class Entity(pydantic.BaseModel):
     """Entity in an ER diagram."""
 
     name: str
-    attributes: List[Attribute] = []
+    attributes: list[Attribute] = []
 
     def __str__(self):
         attrs = "\n".join([str(a) for a in self.attributes])
@@ -97,8 +97,8 @@ class Relationship(pydantic.BaseModel):
 class ERDiagram(pydantic.BaseModel):
     """Represents an Diagram of Entities and Relationships"""
 
-    entities: List[Entity] = []
-    relationships: List[Relationship] = []
+    entities: list[Entity] = []
+    relationships: list[Relationship] = []
 
     def __str__(self):
         ents = "\n".join([str(e) for e in self.entities])
@@ -160,7 +160,7 @@ class ERDiagramGenerator(Generator):
 
     def serialize_classes(
         self,
-        class_names: List[Union[str, ClassDefinitionName]],
+        class_names: list[Union[str, ClassDefinitionName]],
         follow_references=False,
         max_hops: int = None,
         include_upstream: bool = False,
@@ -220,7 +220,7 @@ class ERDiagramGenerator(Generator):
         else:
             return er
 
-    def add_upstream_class(self, class_name: ClassDefinitionName, targets: Set[str], diagram: ERDiagram) -> None:
+    def add_upstream_class(self, class_name: ClassDefinitionName, targets: set[str], diagram: ERDiagram) -> None:
         sv = self.schemaview
         cls = sv.get_class(class_name)
         entity = Entity(name=camelcase(cls.name))
@@ -308,6 +308,7 @@ class ERDiagramGenerator(Generator):
     default=False,
     help="If True, follow references even if not inlined",
 )
+@click.option("--format", "-f", default="markdown", type=click.Choice(ERDiagramGenerator.valid_formats))
 @click.option("--max-hops", default=None, type=click.INT, help="Maximum number of hops")
 @click.option("--classes", "-c", multiple=True, help="List of classes to serialize")
 @click.option("--include-upstream", is_flag=True, help="Include upstream classes")
@@ -315,7 +316,7 @@ class ERDiagramGenerator(Generator):
 @click.command(name="erdiagram")
 def cli(
     yamlfile,
-    classes: List[str],
+    classes: list[str],
     max_hops: Optional[int],
     follow_references: bool,
     include_upstream: bool = False,

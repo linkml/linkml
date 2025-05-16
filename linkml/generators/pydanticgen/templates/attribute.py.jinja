@@ -1,4 +1,4 @@
-{{name}}: {{ range }} = Field({{ field }}
+{{name}}: {{ range }} = Field(default={{ field }}
 {%- if title != None %}, title="{{title}}"{% endif -%}
 {%- if description %}, description="""{{description}}"""{% endif -%}
 {%- if equals_number != None %}

@@ -6,7 +6,7 @@ import os
 from csv import DictWriter
 from dataclasses import dataclass
 from io import StringIO
-from typing import List, Optional, Set
+from typing import Optional
 
 import click
 from linkml_runtime.linkml_model.meta import ClassDefinition, ClassDefinitionName
@@ -36,7 +36,7 @@ class CsvGenerator(Generator):
     sep: Optional[str] = None
     """Separator for columns"""
 
-    closure: Optional[Set[ClassDefinitionName]] = None
+    closure: Optional[set[ClassDefinitionName]] = None
     """List of classes to include in output"""
 
     writer: Optional[DictWriter] = None
@@ -57,7 +57,7 @@ class CsvGenerator(Generator):
             out = "\n".join([out, f"# version: {self.schema.version}"])
         return out
 
-    def visit_schema(self, classes: List[ClassDefinitionName] = None, **_) -> None:
+    def visit_schema(self, classes: list[ClassDefinitionName] = None, **_) -> None:
         # Note: classes comes from the "root" argument
         self.closure = set()
 

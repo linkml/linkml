@@ -2,7 +2,8 @@
 Lifestyle methods mixin
 """
 
-from typing import Iterable, TypeVar
+from collections.abc import Iterable
+from typing import TypeVar
 
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
