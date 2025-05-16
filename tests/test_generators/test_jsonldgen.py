@@ -81,7 +81,7 @@ def test_class_uri(input_path):
             if str(p) not in class_properties.keys():
                 class_properties[str(p)] = str(o)
             else:
-                if type(class_properties[str(p)]) == "str":
+                if isinstance(class_properties[str(p)], str):
                     single_item = class_properties[str(p)]
                     class_properties[str(p)] = [single_item]
                 class_properties[str(p)].append(str(o))
