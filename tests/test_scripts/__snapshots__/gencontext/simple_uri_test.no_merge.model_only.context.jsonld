@@ -1,16 +1,17 @@
 {
    "@context": {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "@vocab": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/",
       "tag": {
-         "@type": "@id",
+         "@type": "xsd:anyURI",
          "@id": "linkml:tag"
       },
       "value": {
-         "@type": "@id",
+         "@type": "linkml:Any",
          "@id": "linkml:value"
       },
       "extensions": {
-         "@type": "@id",
+         "@type": "linkml:Extension",
          "@id": "linkml:extensions"
       },
       "state": {

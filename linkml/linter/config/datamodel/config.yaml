@@ -38,7 +38,7 @@ classes:
       configured by a configuration file. 
     attributes:
       no_empty_title:
-        range: RuleConfig
+        range: NoEmptyTitleConfig
         description: >-
           Disallow empty titles on schema elements. Autofix will transform the element's
           name into a title.
@@ -141,8 +141,14 @@ classes:
         multivalued: true
         description: >-
           Default: []
-          All elements except the ones with names specified in this list will be checked 
-        
+          All elements except the ones with names specified in this list will be checked
+      exclude_type:
+        range: MetamodelElementTypeEnum
+        multivalued: true
+        description: >-
+          Default: []
+          Elements of all types (ClassDefinition, SlotDefinition, EnumDefinition, PermissibleValue, etc.) except the types specified in this list will be checked
+
   StandardNamingConfig:
     description: >-
       Additional configuration options for the `standard_naming` rule
@@ -153,6 +159,24 @@ classes:
         description: >-
           Default: false
           If true, permissible values will be checked for snake_case, otherwise UPPER_SNAKE
+      exclude_type:
+        range: MetamodelElementTypeEnum
+        multivalued: true
+        description: >-
+          Default: []
+          Elements of all types (ClassDefinition, SlotDefinition, EnumDefinition, PermissibleValue, etc.) except the types specified in this list will be checked
+      class_pattern:
+        range: string
+        required: false
+        description: >
+          If specified, permissible format pattern for classes can be provided either as one of the following:
+          snake, uppersnake, camel, uppercamel, kebab or as regular expression (e.g. "[a-z][_a-z0-9]+" for snake case)
+      slot_pattern:
+        range: string
+        required: false
+        description: >
+          If specified, permissible format pattern for slots can be provided either as one of the following:
+          snake, uppersnake, camel, uppercamel, kebab or as regular expression (e.g. "[a-z][_a-z0-9]+" for snake case)
 
   CanonicalPrefixesConfig:
     description: >-
@@ -167,6 +191,18 @@ classes:
           The list of context names which will be loaded by the `prefixmaps` library to do the 
           validation. The order of names is meaningful and will be preserved. See:  
           https://github.com/linkml/prefixmaps#usage
+
+  NoEmptyTitleConfig:
+    description: >-
+      Additional configuration options for the no_empty_title rule
+    is_a: RuleConfig
+    attributes:
+      exclude_type:
+        range: MetamodelElementTypeEnum
+        multivalued: true
+        description: >-
+          Default: []
+          Elements of all types (ClassDefinition, SlotDefinition, EnumDefinition, PermissibleValue, etc.) except the types specified in this list will be checked 
 
 enums:
   ExtendableConfigs:
@@ -184,3 +220,15 @@ enums:
         description: A violation of a rule at this level is a minor issue that should be fixed
       error:
         description: A violation of a rule at this level is a major issue that must be fixed
+  MetamodelElementTypeEnum:
+    description: >-
+      The permissible values for the exclude_type slot
+    permissible_values:
+      class_definition:
+        meaning: linkml:ClassDefinition
+      enum_definition:
+        meaning: linkml:EnumDefinition
+      permissible_value:
+        meaning: linkml:PermissibleValue
+      slot_definition:
+        meaning: linkml:SlotDefinition

@@ -181,22 +181,22 @@
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",
     {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "m": {
         "@id": "http://example.org/test/uriandcurie",
         "@prefix": true
       },
       "shex": "http://www.w3.org/ns/shex#",
-      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "@vocab": "http://example.org/test/uriandcurie",
       "hasCurie": {
-        "@type": "@id",
+        "@type": "xsd:anyURI",
         "@id": "hasCurie"
       },
       "hasNcName": {
         "@id": "hasNcName"
       },
       "hasURI": {
-        "@type": "@id",
+        "@type": "xsd:anyURI",
         "@id": "hasURI"
       },
       "id": "@id",

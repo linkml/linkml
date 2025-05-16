@@ -288,11 +288,11 @@ slots:
     description: A muti-valued string name 's1', no alias,  domain of 'root_class'
     from_schema: http://example.org/multi_usages
     slot_uri: http://example.org/multi_usages/s1
-    multivalued: true
     owner: root_class
     domain_of:
     - root_class
     range: string
+    multivalued: true
   child_class1_s1:
     name: child_class1_s1
     definition_uri: http://example.org/multi_usages/s1
@@ -301,7 +301,6 @@ slots:
     is_a: s1
     domain: child_class1
     slot_uri: http://example.org/multi_usages/s1
-    multivalued: true
     alias: s1
     owner: child_class1
     domain_of:
@@ -309,6 +308,7 @@ slots:
     is_usage_slot: true
     usage_slot_name: s1
     range: boolean
+    multivalued: true
   child_class2_s1:
     name: child_class2_s1
     definition_uri: http://example.org/multi_usages/s1
@@ -317,7 +317,6 @@ slots:
     is_a: child_class1_s1
     domain: child_class2
     slot_uri: http://example.org/multi_usages/s1
-    multivalued: true
     alias: s1
     owner: child_class2
     domain_of:
@@ -325,6 +324,7 @@ slots:
     is_usage_slot: true
     usage_slot_name: s1
     range: integer
+    multivalued: true
   child_class3_s1:
     name: child_class3_s1
     definition_uri: http://example.org/multi_usages/s1
@@ -334,7 +334,6 @@ slots:
     is_a: child_class2_s1
     domain: child_class3
     slot_uri: http://example.org/multi_usages/s1
-    multivalued: true
     alias: s1
     owner: child_class3
     domain_of:
@@ -342,6 +341,7 @@ slots:
     is_usage_slot: true
     usage_slot_name: s1
     range: integer
+    multivalued: true
 classes:
   root_class:
     name: root_class

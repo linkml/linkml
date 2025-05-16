@@ -26,7 +26,7 @@ persons:
 #      street: 1 foo street
 #      city: foo city
 organizations:
-  - id: ROR:1
+  ROR:1:
     name: foo
 
   

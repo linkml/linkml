@@ -18,13 +18,15 @@ OUTPUT_DIR = THIS_DIR / "output"
 @pytest.mark.parametrize("abstract", [False, True])
 @pytest.mark.parametrize("default_range", [None, "string", "Any"])
 @pytest.mark.parametrize("preserve_class_is_a", [False, True])
-def test_simple(default_range, preserve_class_is_a, abstract):
+@pytest.mark.parametrize("force_any_of", [False, True])
+def test_simple(default_range, preserve_class_is_a, abstract, force_any_of):
     """
     Test with a simple schema structure involving inheritance.
 
     :param default_range:
     :param preserve_class_is_a:
     :param abstract:
+    :param force_any_of:
     :return:
     """
     sb = SchemaBuilder()
@@ -38,29 +40,37 @@ def test_simple(default_range, preserve_class_is_a, abstract):
     sb.add_defaults()
     sb.schema.default_range = default_range
     tr.set_schema(sb.schema)
-    flat_schema = tr.transform()
-    # print(yaml_dumper.dumps(flat_schema))
+    flat_schema = tr.transform(force_any_of=force_any_of)
     thing = flat_schema.classes["Thing"]
     actual_default_range = default_range if default_range != "Any" else None
-    assert thing.attributes["name"].range == actual_default_range
+    if not force_any_of:
+        assert thing.attributes["name"].range == actual_default_range
+    else:
+        assert len(thing.attributes["name"].any_of) == 1
+        assert thing.attributes["name"].any_of[0].range == actual_default_range
     person = flat_schema.classes["Person"]
-    assert person.attributes["age"].range == "integer"
+    if not force_any_of:
+        assert person.attributes["age"].range == "integer"
+    else:
+        assert len(person.attributes["age"].any_of) == 1
+        assert person.attributes["age"].any_of[0].range == "integer"
     if preserve_class_is_a:
         assert "id" not in person.attributes
     else:
         assert person.attributes["id"].identifier is True
-        assert person.attributes["name"].range == actual_default_range
-        assert person.attributes["name"].required is True
+        if not force_any_of:
+            assert person.attributes["name"].range == actual_default_range
+            assert person.attributes["name"].required is True
     sb.add_class("Organization", is_a="Thing")
     sb.add_class("Container", slots=[SlotDefinition("entities", range="Thing", multivalued=True)])
     tr.set_schema(sb.schema)
     flat_schema = tr.transform()
-    # print(yaml_dumper.dumps(flat_schema))
     container = flat_schema.classes["Container"]
     entities_att = container.attributes["entities"]
     if preserve_class_is_a:
         # range is preserved
-        assert entities_att.range == "Thing"
+        if not force_any_of:
+            assert entities_att.range == "Thing"
     else:
         # when fully unrolled a non-leaf class as range becomes as any_of ranges
         assert entities_att.range is None
@@ -77,6 +87,13 @@ def test_simple(default_range, preserve_class_is_a, abstract):
 @pytest.mark.parametrize("default_range", [None, "string", "Any"])
 @pytest.mark.parametrize("preserve_class_is_a", [False, True])
 def test_unrestricted_range(default_range, preserve_class_is_a):
+    """
+    Test a schema with unrestricted ranges at slot level.
+
+    :param default_range:
+    :param preserve_class_is_a:
+    :return:
+    """
     sb = SchemaBuilder()
     sb.add_class("Thing", slots=["id", "name", "a_number", "foo"])
     sb.add_class(
@@ -94,7 +111,6 @@ def test_unrestricted_range(default_range, preserve_class_is_a):
     sb.schema.default_range = default_range
     tr.set_schema(sb.schema)
     flat_schema = tr.transform(simplify=True)
-    print(yaml_dumper.dumps(flat_schema))
     thing = flat_schema.classes["Thing"]
     person = flat_schema.classes["Person"]
     assert person.attributes["age"].range == "integer", "direct assertion"
@@ -128,9 +144,9 @@ def test_unrestricted_range(default_range, preserve_class_is_a):
             raise ValueError(f"Unexpected default_range: {default_range}")
 
 
-def test_unsatifiable():
+def test_unsatisfiable():
     """
-    Test a schema that is unsatisfiable.
+    Test a schema that is unsatisfiable, e.g. when maximum/minimum value ranges do not intersect.
 
     Tests for:
 
@@ -139,7 +155,7 @@ def test_unsatifiable():
     """
     sb = SchemaBuilder()
     sb.add_class("Thing", slots=["id", "name"])
-    sb.add_class("Person", slots={"age": {"range": "integer"}}, is_a="Thing")
+    sb.add_class("Person", slots={"age": {"range": "integer"}, "pets": {"multivalued": True}}, is_a="Thing")
     sb.add_class("Person2", is_a="Person", slot_usage={"age": {"range": "string"}})
     tr = LogicalModelTransformer()
     sb.add_defaults()
@@ -158,6 +174,64 @@ def test_unsatifiable():
     assert sb.schema.slots["age"].minimum_value == 0, "check direct assignment"
     with pytest.raises(UnsatisfiableAttribute):
         _ = tr.transform()
+
+
+@pytest.mark.parametrize(
+    "person_min,person_max,person2_min,person2_max",
+    [
+        (0, 5, 1, 3),
+        (2, None, None, 1),
+        (None, None, None, None),
+        (1, 1, 1, 1),
+        (2, 1, None, None),
+        (None, None, 2, 1),
+    ],
+)
+def test_cardinality(person_min, person_max, person2_min, person2_max):
+    """
+    Test a schema that is unsatisfiable via min/max cardinality
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Thing", slots=["id", "name"])
+    sb.add_class(
+        "Person",
+        slots={"pets": {"multivalued": True, "minimum_cardinality": person_min, "maximum_cardinality": person_max}},
+        is_a="Thing",
+    )
+    sb.add_class(
+        "Person2",
+        is_a="Person",
+        slot_usage={"pets": {"minimum_cardinality": person2_min, "maximum_cardinality": person2_max}},
+    )
+    tr = LogicalModelTransformer()
+    sb.add_defaults()
+    tr.set_schema(sb.schema)
+    if person_min is None:
+        entailed_person2_min = person2_min
+    elif person2_min is None:
+        entailed_person2_min = person_min
+    else:
+        entailed_person2_min = max(person_min, person2_min)
+    if person_max is None:
+        entailed_person2_max = person2_max
+    elif person2_max is None:
+        entailed_person2_max = person_max
+    else:
+        entailed_person2_max = min(person_max, person2_max)
+    if entailed_person2_max is None or entailed_person2_min is None:
+        satisfiable = True
+    else:
+        satisfiable = entailed_person2_min <= entailed_person2_max
+    if satisfiable:
+        s2 = tr.transform()
+        entailed_att = s2.classes["Person2"].attributes["pets"]
+        assert (entailed_att.minimum_cardinality, entailed_att.maximum_cardinality) == (
+            entailed_person2_min,
+            entailed_person2_max,
+        )
+    else:
+        with pytest.raises(UnsatisfiableAttribute):
+            _ = tr.transform()
 
 
 def test_type_inheritance():
@@ -188,14 +262,12 @@ def test_type_inheritance():
         is_a="Thing",
         slot_usage={"id": {"range": "PersonCodeType"}, "age": {"maximum_value": 200}},
     )
-    # print(yaml_dumper.dumps(sb.schema))
     sb.add_defaults()
     tr = LogicalModelTransformer()
     tr.set_schema(sb.schema)
     # flat_schema = tr.transform(simplify=False)
     # print(yaml_dumper.dumps(flat_schema))
     flat_schema = tr.transform(simplify=True)
-    # print(yaml_dumper.dumps(flat_schema))
     p = flat_schema.classes["Person"]
     id_slot = p.attributes["id"]
     assert id_slot.range == "PersonCodeType"
@@ -217,6 +289,8 @@ def test_type_inheritance():
 def test_any_of_with_required(preserve_class_is_a, pattern, multivalued, inlined, inlined_as_list):
     """
     Test a schema that uses any_of.
+
+    The schema includes a slot manufactured_by that is a list of either Organization or Person.
 
     :param preserve_class_is_a:
     :param pattern:
@@ -264,8 +338,8 @@ def test_any_of_with_required(preserve_class_is_a, pattern, multivalued, inlined
     sb.add_defaults()
     tr.set_schema(sb.schema)
     flat_schema = tr.transform()
-    # print(yaml_dumper.dumps(flat_schema))
     device = flat_schema.classes["Device"]
+
     manufactured_by = device.attributes["manufactured_by"]
     py_field = tr.attribute_as_python_field(manufactured_by)
     any_of = manufactured_by.any_of
@@ -283,15 +357,33 @@ def test_any_of_with_required(preserve_class_is_a, pattern, multivalued, inlined
             assert py_field in [
                 "manufactured_by: Union[Organization, Optional[Person]]",
                 "manufactured_by: Union[Optional[Person], Organization]",
-            ]
+            ], "unexpected for multivalued=False"
         else:
             # assert py_field == "xx"
-            assert "Collection" in py_field
+            assert "Collection" in py_field, f"expected Collection for multivalued; attr={manufactured_by.multivalued}"
     else:
         assert {"Organization", "Company"} == {c.range for c in required_expr.any_of}
         assert {"Person", "Employee"} == {c.range for c in non_required_expr.any_of}
         assert "Employee" in py_field
         # assert "xx" == py_field
+
+
+def test_simple_union_with_constraint():
+    sb = SchemaBuilder()
+    sb.add_slot(
+        SlotDefinition(
+            name="string_and_min_number", any_of=[{"range": "string"}, {"range": "integer", "minimum_value": 5}]
+        )
+    )
+    sb.add_class("A", slots=["id", "string_and_min_number"])
+    sb.add_defaults()
+    sv = SchemaView(sb.schema)
+    flattener = LogicalModelTransformer(sv)
+    new_schema = flattener.transform()
+    print("## NEW SCHEMA")
+    print(yaml_dumper.dumps(new_schema))
+    py_def = flattener.attribute_as_python_field(new_schema.classes["A"].attributes["string_and_min_number"])
+    print(py_def)
 
 
 @pytest.mark.parametrize("specify_redundant", [False, True])
@@ -388,7 +480,7 @@ def test_deep_schema(specify_redundant, preserve_class_is_a):
         sb.add_class(cn, is_a=p, slot_usage=[slot_usage], mixins=mixins, slots=slots, **extra)
     sb.add_defaults()
     schema = sb.schema
-    local_id = f"SR{specify_redundant}-PCI{preserve_class_is_a}"
+    # local_id = f"SR{specify_redundant}-PCI{preserve_class_is_a}"
     # print(yaml_dumper.dump(schema, f"/tmp/asserted-schema-{local_id}.yaml"))
     sv = SchemaView(schema)
     flattener = LogicalModelTransformer(sv, preserve_class_is_a=preserve_class_is_a)
@@ -397,7 +489,7 @@ def test_deep_schema(specify_redundant, preserve_class_is_a):
     # print(yaml_dumper.dumps(new_schema))
     # print(yaml_dumper.dump(new_schema, f"/tmp/trSCHEMA-{local_id}.yaml"))
     flattener.simplify(new_schema)
-    _dump_schema(new_schema, local_id)
+    # _dump_schema(new_schema, local_id)
     # print(yaml_dumper.dump(new_schema, f"/tmp/trSIMPLIFIED-{local_id}.yaml"))
     class_C = new_schema.classes["C"]
     class_C1 = new_schema.classes["C1"]

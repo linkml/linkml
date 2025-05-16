@@ -42,6 +42,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinxcontrib.mermaid',
+    'sphinxcontrib.programoutput',
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
     'myst_nb',
@@ -123,7 +124,10 @@ nb_execution_show_tb = True
 # myst
 myst_heading_anchors = 3
 myst_enable_extensions = [
-    "fieldlist"
+    "attrs_inline",
+    "attrs_block",
+    "fieldlist",
+    "colon_fence"
 ]
 
 # Jinja

@@ -5,10 +5,10 @@
       "source": "curie_prefix_matching.yaml"
    },
    "@context": {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "curietest": "http://example.org/tests/curietest/",
       "p1": "http://example.org/prefixes/a/b/",
       "p2": "http://example.org/prefixes/a/b/c/",
-      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "@vocab": "http://example.org/tests/curietest/",
       "C1": {
          "@id": "p1:/c/c1"

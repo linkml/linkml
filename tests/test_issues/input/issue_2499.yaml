@@ -1,0 +1,23 @@
+id: http://example.com/dataset
+name: Dataset
+prefixes:
+  linkml: https://w3id.org/linkml/
+  schema: http://schema.org/
+imports:
+  - linkml:types
+
+classes:
+  Thing:
+    tree_root: True
+    slots:
+      - identifier
+
+slots:
+  identifier:
+    identifier: True
+    required: True
+    title: URI Identifier
+    slot_uri: schema:identifier
+    range: uriorcurie
+    structured_pattern:
+      syntax: '^(https?://|(mailto|tel):)\w+$'

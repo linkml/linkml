@@ -49,7 +49,7 @@ Now generate the classes using the `gen-java` command
 
 .. code-block:: bash
 
-    gen-java --package org.biolink.model --output_directory org/biolink/model biolink-model.yaml
+    gen-java --package org.biolink.model --output-directory org/biolink/model biolink-model.yaml
 
 Finally, fetch the Lombok jar, build the java classes and package into a jar file
 
@@ -93,5 +93,5 @@ The alternate template for the generator can be specified with the `--template_f
 
 .. code-block::
 
-   gen-java --package org.biolink.model --output_directory org/biolink/model \
+   gen-java --package org.biolink.model --output-directory org/biolink/model \
             --template_file example_template.java.jinja2 biolink-model.yaml

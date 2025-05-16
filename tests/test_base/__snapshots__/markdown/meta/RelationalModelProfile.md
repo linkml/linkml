@@ -25,6 +25,7 @@ URI: [linkml:RelationalModelProfile](https://w3id.org/linkml/RelationalModelProf
 
  * [attributes](attributes.md) - Inline definition of slots
  * [classes](classes.md) - An index to the collection of all class definitions in the schema
+ * [enum_binding➞range](enum_binding_range.md)
  * [identifier](identifier.md) - True means that the key slot(s) uniquely identifies the elements. There can be at most one identifier or key per container
  * [key](key.md) - True means that the key slot(s) uniquely identify the elements within a single container
  * [name](name.md) - the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.

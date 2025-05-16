@@ -12,7 +12,7 @@ import rdflib
 
 from tests.test_compliance.helper import (
     JSONLD_CONTEXT,
-    PYDANTIC,
+    PANDERA_POLARS_CLASS,
     SHACL,
     SQL_DDL_SQLITE,
     ValidationBehavior,
@@ -195,9 +195,8 @@ def test_import(
     if data_name == "conflict_s2":
         pytest.skip("Behavior TBD")
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if slot_2_alias or slot_1_alias:
-        if framework == PYDANTIC:
-            expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data_name,
@@ -327,6 +326,8 @@ def test_import_metamodel(framework, valid):
     if framework == SQL_DDL_SQLITE:
         pytest.skip("sqla issue")
     expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     data_name = f"my_derived_schema_{valid}"
     instance = {
         "id": f"http://example.org/my-derived-schema-{valid}",

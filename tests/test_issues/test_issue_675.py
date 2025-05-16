@@ -76,7 +76,7 @@ classes:
 
 def test_ifabsent():
     """
-    Tests pythongenerator with ifabsent_functions.
+    Tests pythongenerator
 
     See: https://github.com/linkml/linkml/issues/1333
     """
@@ -115,7 +115,7 @@ def test_ifabsent():
 @pytest.mark.skip("TODO: https://github.com/linkml/linkml/issues/1334")
 def test_ifabsent_pydantic():
     """
-    Tests pydantic generator with ifabsent_functions.
+    Tests pydantic generator.
 
     See: https://github.com/linkml/linkml/issues/1334
     """

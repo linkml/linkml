@@ -16,21 +16,13 @@ assignees: ''
 
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+**What is your feature request?**
+A clear and concise description of what you'd like LinkML to do that it doesn't do yet. (Not a bug - a new feature)
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
-
-**How important is this feature?** Select from the options below:
+**How important is this feature to you?** Select from the options below:
 • Low - it's an enhancement but not crucial for work
 • Medium - can do work without it; but it's important (e.g. to save time or for convenience)
 • Important - it's a blocker and can't do work without it
 
-**When will use cases depending on this become relevant?** Select from the options below:
-• Short-term - 2-4 weeks
-• Mid-term - 2-4 months
-• Long-term - 6 months - 1 year
-
 **Additional context**
-Add any other context or screenshots about the feature request here.
+Add any other context about your feature request here.

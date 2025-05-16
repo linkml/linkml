@@ -1,0 +1,30 @@
+id: https://w3id.org/linkml/examples/cardinality
+name: test_multivalued_slot_cardinality
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://w3id.org/linkml/examples/cardinality/
+imports:
+  - linkml:types
+default_range: string
+default_prefix: ex
+
+classes:
+  VariableClass:
+    slots:
+      - list_min_max_size
+
+  ExactClass:
+    slots:
+      - list_exact_size
+
+slots:
+  list_min_max_size:
+    range: integer
+    multivalued: true
+    minimum_cardinality: 2
+    maximum_cardinality: 5
+
+  list_exact_size:
+    range: integer
+    multivalued: true
+    exact_cardinality: 3

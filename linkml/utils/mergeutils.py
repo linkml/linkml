@@ -1,7 +1,10 @@
 import dataclasses
 import logging
+import os
 from copy import deepcopy
-from typing import Dict, List, Optional, Union, cast
+from pathlib import Path
+from typing import Optional, Union, cast
+from urllib.parse import urlparse
 
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
@@ -18,6 +21,8 @@ from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.yamlutils import extended_str
 from rdflib import URIRef
 
+logger = logging.getLogger(__name__)
+
 
 def merge_schemas(
     target: SchemaDefinition,
@@ -31,7 +36,7 @@ def merge_schemas(
     if target.license is None:
         target.license = mergee.license
 
-    target.imports += [imp for imp in mergee.imports if imp not in target.imports]
+    resolve_merged_imports(target, mergee, imported_from)
     set_from_schema(mergee)
 
     if namespaces:
@@ -72,7 +77,7 @@ def merge_namespaces(target: SchemaDefinition, mergee: SchemaDefinition, namespa
             # We cannot resolve this to an absolute path, so we have to assume that
             # this prefix is already defined correctly in the target
             if prefix.prefix_prefix not in namespaces:
-                logging.info(
+                logger.info(
                     "Adding an unadjusted relative prefix for %s from %s, "
                     + "as the prefix is not yet defined, even as we cannot adjust it relative to the final file. "
                     + "If it cannot be resolved, add the prefix definition to the input schema!",
@@ -85,7 +90,7 @@ def merge_namespaces(target: SchemaDefinition, mergee: SchemaDefinition, namespa
                     prefix.prefix_prefix in target.prefixes
                     and target.prefixes[prefix.prefix_prefix].prefix_reference != prefix.prefix_reference
                 ):
-                    logging.info(
+                    logger.info(
                         "Ignoring different relative prefix for %s from %s, "
                         + "as we cannot adjust it relative to the final file. "
                         + "Assuming the first found location is correct: %s!",
@@ -123,8 +128,8 @@ def set_from_schema(schema: SchemaDefinition) -> None:
 
 
 def merge_dicts(
-    target: Dict[str, Element],
-    source: Dict[str, Element],
+    target: dict[str, Element],
+    source: dict[str, Element],
     imported_from: str,
     imported_from_uri: str,
     merge_imports: bool,
@@ -148,7 +153,7 @@ def merge_dicts(
 def merge_slots(
     target: Union[SlotDefinition, TypeDefinition],
     source: Union[SlotDefinition, TypeDefinition],
-    skip: List[Union[SlotDefinitionName, TypeDefinitionName]] = None,
+    skip: list[Union[SlotDefinitionName, TypeDefinitionName]] = None,
     inheriting: bool = True,
 ) -> None:
     """
@@ -230,3 +235,46 @@ def merge_enums(
     """
     # TODO: Finish enumeration merge code
     pass
+
+
+def resolve_merged_imports(
+    target: SchemaDefinition, mergee: SchemaDefinition, imported_from: Optional[str] = None
+) -> None:
+    """Merge the imports in source into target
+
+    :param target: Containing schema
+    :param mergee: mergee
+    :param imported_from: file that the mergee was imported from
+    :param at_end: True means add mergee to the end.  False to the front
+    """
+
+    for imp in mergee.imports:
+        if imp is None:
+            continue
+
+        # Skip if already imported
+        if imp in target.imports:
+            continue
+
+        # Leave as-is if the import has a scheme (e.g. http://)
+        elif urlparse(imp).scheme:
+            target.imports.append(imp)
+            continue
+
+        # Leave as-is if the import is an absolute path
+        elif Path(imp).is_absolute():
+            target.imports.append(imp)
+            continue
+
+        # Adjust relative imports to be relative to the importing file
+        elif imp.startswith("."):
+            if imported_from is None:
+                logger.warning(f"Cannot resolve relative import: {imp}")
+                target.imports.append(imp)
+            else:
+                resolved_imp = os.path.normpath(str(Path(imported_from).parent / Path(imp)))
+                target.imports.append(resolved_imp)
+
+        # By default, add the import as-is
+        else:
+            target.imports.append(imp)

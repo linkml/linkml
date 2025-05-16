@@ -8,6 +8,7 @@ from linkml_runtime.utils.compile_python import compile_python
 from linkml.generators.pythongen import PythonGenerator
 
 
+@pytest.mark.pythongen
 def test_pattern_1(input_path, snapshot):
     """Test the pattern enhancement"""
     device = "/dev/tty.Bluetooth-Incoming-Port"
@@ -31,6 +32,7 @@ def test_pattern_1(input_path, snapshot):
     assert dev1.device == device
 
 
+@pytest.mark.pythongen
 @pytest.mark.xfail
 def test_pattern_exception(input_path):
     """

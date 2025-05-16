@@ -6,18 +6,22 @@ import rdflib
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
     OWL,
+    PANDERA_POLARS_CLASS,
     PYDANTIC,
     PYTHON_DATACLASSES,
+    SHACL,
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
     validated_schema,
 )
-from tests.test_compliance.test_compliance import CLASS_C, CLASS_D, CORE_FRAMEWORKS, SLOT_ID, SLOT_S1
+from tests.test_compliance.test_compliance import CLASS_C, CLASS_D, CORE_FRAMEWORKS, ENUM_E, PV_1, SLOT_ID, SLOT_S1
+
+FUZZ_STR = "a b_c!@#$%^&*_+{}|:<>?[]()'\""
 
 
 @pytest.mark.parametrize(
-    "schema_name,range,ifabsent,data_name,initial_value,expected,schema_valid,valid",
+    "schema_name,range,ifabsent,data_name,initial_value,expected,schema_valid,valid,skip_for",
     [
         ("str", "string", "string(x)", "no_value", None, "x", True, True),
         ("str", "string", "string(x)", "has_value", "y", "y", True, True),
@@ -28,10 +32,48 @@ from tests.test_compliance.test_compliance import CLASS_C, CLASS_D, CORE_FRAMEWO
         ("bnode", "nodeidentifier", "bnode", "no_value", None, rdflib.BNode, True, True),
         ("D", CLASS_D, "string(p1)", "no_value", None, "p1", False, True),
         ("inconsistent", "integer", "string(x)", "has_value", None, "x", True, False),
+        # Skip Python, Pydantic and Shacl frameworks because this incompatibility is not possible with the processor
+        (
+            "incompat_string",
+            "integer",
+            "string(x)",
+            "has_value",
+            None,
+            None,
+            True,
+            False,
+            [PYTHON_DATACLASSES, PYDANTIC, PANDERA_POLARS_CLASS],
+        ),
+        (
+            "incompat_bool",
+            "boolean",
+            "string(x)",
+            "has_value",
+            None,
+            None,
+            True,
+            False,
+            [PYTHON_DATACLASSES, PYDANTIC, SHACL, PANDERA_POLARS_CLASS],
+        ),
+        (
+            "incompat_float",
+            "float",
+            "string(x)",
+            "has_value",
+            None,
+            None,
+            True,
+            False,
+            [PYTHON_DATACLASSES, PYDANTIC, SHACL, PANDERA_POLARS_CLASS],
+        ),
+        ("fuzz_str", "string", f"string({FUZZ_STR})", "has_value", None, FUZZ_STR, True, True, []),
+        # ("enum", ENUM_E, f"(EnumName({PV_1})", "has_value", None, PV_1, True, True),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_ifabsent(framework, schema_name, range, ifabsent, data_name, initial_value, expected, schema_valid, valid):
+def test_ifabsent(
+    framework, schema_name, range, ifabsent, data_name, initial_value, expected, schema_valid, valid, skip_for
+):
     """
     Tests behavior of ifabsent (defaults).
 
@@ -44,6 +86,10 @@ def test_ifabsent(framework, schema_name, range, ifabsent, data_name, initial_va
     :param expected: expected value (not used)
     :return:
     """
+
+    if framework in skip_for:
+        return
+
     classes = {
         CLASS_C: {
             "attributes": {
@@ -54,10 +100,15 @@ def test_ifabsent(framework, schema_name, range, ifabsent, data_name, initial_va
             }
         }
     }
+    enums = {}
+    if range == ENUM_E:
+        enums = {ENUM_E: {"permissible_values": {PV_1: {}}}}
     if range == CLASS_D:
         classes[CLASS_D] = {"attributes": {SLOT_ID: {"range": "string", "identifier": True}}}
     try:
-        schema = validated_schema(test_ifabsent, schema_name, framework, classes=classes, core_elements=["ifabsent"])
+        schema = validated_schema(
+            test_ifabsent, schema_name, framework, classes=classes, enums=enums, core_elements=["ifabsent"]
+        )
     except ValueError as e:
         if schema_valid:
             raise e

@@ -1,7 +1,7 @@
 import logging
 import os
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Optional
 
 import click
 from jinja2 import Template
@@ -18,6 +18,9 @@ from linkml_runtime.utils.schemaview import SchemaView
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments
+
+logger = logging.getLogger(__name__)
+
 
 type_map = {
     "str": "string",
@@ -120,7 +123,7 @@ class TypescriptGenerator(OOCodeGenerator):
     gen_type_utils: bool = False
     include_induced_slots: bool = False
 
-    def serialize(self) -> str:
+    def serialize(self, output=None) -> str:
         """Serialize a schema to typescript string"""
 
         sv: SchemaView = self.schemaview
@@ -132,6 +135,9 @@ class TypescriptGenerator(OOCodeGenerator):
             view=self.schemaview,
             enums=enums,
         )
+        if output is not None:
+            with open(output, "w") as out:
+                out.write(out_str)
         return out_str
 
     @staticmethod
@@ -207,7 +213,7 @@ class TypescriptGenerator(OOCodeGenerator):
                 elif t.typeof and t.typeof in type_map:
                     tsrange = type_map[t.typeof]
                 else:
-                    logging.warning(f"Unknown type.base: {t.name}")
+                    logger.warning(f"Unknown type.base: {t.name}")
                 if slot.multivalued:
                     tsrange = f"{tsrange}[]"
                 return tsrange
@@ -241,12 +247,12 @@ class TypescriptGenerator(OOCodeGenerator):
                 elif t.typeof and t.typeof in type_map:
                     return type_init_map[t.typeof]
                 else:
-                    logging.warning(f"Unknown type.base: {t.name}")
+                    logger.warning(f"Unknown type.base: {t.name}")
                 return "null"
             return "null"
 
     @staticmethod
-    def parents(cls: ClassDefinition) -> List[ClassDefinitionName]:
+    def parents(cls: ClassDefinition) -> list[ClassDefinitionName]:
         if cls.is_a:
             parents = [cls.is_a]
         else:
@@ -256,7 +262,7 @@ class TypescriptGenerator(OOCodeGenerator):
     def default_value_for_type(self, typ: str) -> str:
         pass
 
-    def required_slots(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
+    def required_slots(self, cls: ClassDefinition) -> list[SlotDefinitionName]:
         return [s for s in self.schemaview.class_slots(cls.name) if self.schemaview.induced_slot(s, cls.name).required]
 
 
@@ -264,8 +270,9 @@ class TypescriptGenerator(OOCodeGenerator):
 @click.version_option(__version__, "-V", "--version")
 @click.option("--gen-type-utils/", "-u", help="Generate Type checking utils", is_flag=True)
 @click.option("--include-induced-slots/", help="Generate slots induced through inheritance", is_flag=True)
+@click.option("--output", type=click.Path(dir_okay=False))
 @click.command()
-def cli(yamlfile, gen_type_utils=False, include_induced_slots=False, **args):
+def cli(yamlfile, gen_type_utils=False, include_induced_slots=False, output=None, **args):
     """Generate typescript interfaces and types
 
     See https://github.com/linkml/linkml-runtime.js
@@ -273,7 +280,9 @@ def cli(yamlfile, gen_type_utils=False, include_induced_slots=False, **args):
     gen = TypescriptGenerator(
         yamlfile, gen_type_utils=gen_type_utils, include_induced_slots=include_induced_slots, **args
     )
-    print(gen.serialize())
+    serialized = gen.serialize(output=output)
+    if output is None:
+        print(serialized)
 
 
 if __name__ == "__main__":

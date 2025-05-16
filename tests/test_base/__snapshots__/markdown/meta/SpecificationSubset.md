@@ -12,6 +12,7 @@ URI: [linkml:SpecificationSubset](https://w3id.org/linkml/SpecificationSubset)
 
  * [ClassDefinition](ClassDefinition.md) - an element whose instances are complex objects that may have slot-value assignments
  * [ClassRule](ClassRule.md) - A rule that applies to instances of a class
+ * [EnumBinding](EnumBinding.md) - A binding of a slot or a class to a permissible value from an enumeration.
  * [EnumDefinition](EnumDefinition.md) - an element whose instances must be drawn from a specified set of permissible values
  * [MatchQuery](MatchQuery.md) - A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that  matches on properties of the external concepts.
  * [PermissibleValue](PermissibleValue.md) - a permissible value, accompanied by intended text and an optional mapping to a concept URI
@@ -22,6 +23,7 @@ URI: [linkml:SpecificationSubset](https://w3id.org/linkml/SpecificationSubset)
  * [SlotDefinition](SlotDefinition.md) - an element that describes how instances are related to other instances
  * [SubsetDefinition](SubsetDefinition.md) - an element that can be used to group other metamodel elements
  * [TypeDefinition](TypeDefinition.md) - an element that whose instances are atomic scalar values that can be mapped to primitive types
+ * [TypeMapping](TypeMapping.md) - Represents how a slot or type can be serialized to a format.
  * [UniqueKey](UniqueKey.md) - a collection of slots whose values uniquely identify an instance of a class
 
 ### Mixins
@@ -38,6 +40,8 @@ URI: [linkml:SpecificationSubset](https://w3id.org/linkml/SpecificationSubset)
  * [attributes](attributes.md) - Inline definition of slots
  * [base](base.md) - python base type in the LinkML runtime that implements this type definition
  * [bidirectional](bidirectional.md) - in addition to preconditions entailing postconditions, the postconditions entail the preconditions
+ * [bindings](bindings.md) - A collection of enum bindings that specify how a slot can be bound to a permissible value from an enumeration.
+ * [binds_value_of](binds_value_of.md) - A path to a slot that is being bound to a permissible value from an enumeration.
  * [class_definition➞disjoint_with](class_definition_disjoint_with.md)
  * [class_definition➞is_a](class_definition_is_a.md) - A primary parent class from which inheritable metaslots are propagated
  * [class_definition➞mixins](class_definition_mixins.md) - A collection of secondary parent mixin classes from which inheritable metaslots are propagated
@@ -58,6 +62,7 @@ URI: [linkml:SpecificationSubset](https://w3id.org/linkml/SpecificationSubset)
  * [disjoint_with](disjoint_with.md) - Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances
  * [domain](domain.md) - defines the type of the subject of the slot.  Given the following slot definition
  * [elseconditions](elseconditions.md) - an expression that must hold for an instance of the class, if the preconditions no not hold
+ * [enum_binding➞range](enum_binding_range.md)
  * [enum_range](enum_range.md) - An inlined enumeration
  * [enum_uri](enum_uri.md) - URI of the enum that provides a semantic interpretation of the element in a linked data context. The URI may come from any namespace and may be shared between schemas
  * [enums](enums.md) - An index to the collection of all enum definitions in the schema
@@ -73,7 +78,7 @@ URI: [linkml:SpecificationSubset](https://w3id.org/linkml/SpecificationSubset)
  * [id_prefixes](id_prefixes.md) - An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix
  * [identifier](identifier.md) - True means that the key slot(s) uniquely identifies the elements. There can be at most one identifier or key per container
  * [identifier_pattern](identifier_pattern.md) - A regular expression that is used to obtain a set of identifiers from a source_ontology to construct a set of permissible values
- * [ifabsent](ifabsent.md) - function that provides a default value for the slot.  Possible values for this slot are defined in linkml.utils.ifabsent_functions.default_library:
+ * [ifabsent](ifabsent.md) - function that provides a default value for the slot.
  * [implicit_prefix](implicit_prefix.md) - Causes the slot value to be interpreted as a uriorcurie after prefixing with this string
  * [imports](imports.md) - A list of schemas that are to be included in this schema
  * [inapplicable](inapplicable.md) - true means that values for this slot must not be present
@@ -106,6 +111,7 @@ URI: [linkml:SpecificationSubset](https://w3id.org/linkml/SpecificationSubset)
  * [multivalued](multivalued.md) - true means that slot can have more than one value and should be represented using a list or collection structure.
  * [name](name.md) - the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
  * [none_of](none_of.md) - holds if none of the expressions hold
+ * [obligation_level](obligation_level.md) - The level of obligation or recommendation strength for a metadata element
  * [open_world](open_world.md) - if true, the the postconditions may be omitted in instance data, but it is valid for an inference engine to add these
  * [partial_match](partial_match.md) - if not true then the pattern must match the whole string, as if enclosed in ^...$
  * [path_expression➞all_of](path_expression_all_of.md)
@@ -181,4 +187,5 @@ URI: [linkml:SpecificationSubset](https://w3id.org/linkml/SpecificationSubset)
 
 ### Enums
 
+ * [obligation_level_enum](obligation_level_enum.md) - The level of obligation or recommendation strength for a metadata element
  * [pv_formula_options](pv_formula_options.md) - The formula used to generate the set of permissible values from the code_set values

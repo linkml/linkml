@@ -109,3 +109,5 @@ Pipfile.lock
 
 # User defined
 .vscode/*
+
+http_cache.sqlite

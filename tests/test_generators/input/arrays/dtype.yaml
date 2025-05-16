@@ -1,0 +1,42 @@
+id: dype_array
+name: dtype_array
+title: dtype_array
+description:
+  handling special dtype cases :)
+imports:
+  - linkml:types
+
+types:
+  Uint8:
+    repr: np.uint8
+
+classes:
+  MyClass:
+    description: A class used in an array
+    attributes:
+      x:
+        range: integer
+        ifabsent: integer(1)
+      y:
+        range: float
+        ifabsent: float(1.5)
+
+  UnionDtype:
+    attributes:
+      array:
+        any_of:
+          - range: integer
+          - range: float
+        array: {}
+
+  NumpyDtype:
+    attributes:
+      array:
+        range: Uint8
+        array: {}
+
+  ClassDtype:
+    attributes:
+      array:
+        range: MyClass
+        array: {}

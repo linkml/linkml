@@ -9,10 +9,11 @@ import shutil
 import subprocess
 import tempfile
 from collections import defaultdict
+from collections.abc import Iterator
 from copy import copy, deepcopy
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Tuple, Type, Union
+from typing import Any, Callable, Optional, Union
 
 import linkml_runtime
 import pydantic
@@ -27,7 +28,9 @@ from linkml_runtime.loaders import rdflib_loader
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.yamlutils import YAMLRoot
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+
+from linkml.transformers.logical_model_transformer import UnsatisfiableAttribute
 
 try:
     from yaml import CSafeDumper as SafeDumper
@@ -52,6 +55,8 @@ from linkml.utils.sqlutils import SQLStore
 from linkml.validator import JsonschemaValidationPlugin, Validator
 from linkml.validator.plugins.shacl_validation_plugin import ShaclValidationPlugin
 
+logger = logging.getLogger(__name__)
+
 THIS_DIR = Path(__file__).parent
 OUTPUT_DIR = THIS_DIR / "output"
 
@@ -59,6 +64,7 @@ SCHEMA_NAME = str
 FRAMEWORK = str  ## pydantic, java, etc
 
 PYDANTIC_ROOT_CLASS = "ConfiguredBaseModel"
+PANDERA_ROOT_CLASS = "pla.DataFrameModel, _LinkmlPanderaValidator"
 PYTHON_DATACLASSES_ROOT_CLASS = "YAMLRoot"
 PYDANTIC = "pydantic"
 PYDANTIC_STRICT = "pydantic_strict"  ## TODO: https://docs.pydantic.dev/latest/usage/types/strict_types/
@@ -71,10 +77,11 @@ JSONLD_CONTEXT = "jsonld_context"
 JSONLD = "jsonld"
 SQL_ALCHEMY_IMPERATIVE = "sqlalchemy_imperative"
 SQL_ALCHEMY_DECLARATIVE = "sqlalchemy_declarative"
+PANDERA_POLARS_CLASS = "pandera_polars_class"
 SQL_DDL_SQLITE = "sql_ddl_sqlite"
 SQL_DDL_POSTGRES = "sql_ddl_postgres"
 OWL = "owl"
-GENERATORS: Dict[FRAMEWORK, Union[Type[Generator], Tuple[Type[Generator], Dict[str, Any]]]] = {
+GENERATORS: dict[FRAMEWORK, Union[type[Generator], tuple[type[Generator], dict[str, Any]]]] = {
     PYDANTIC: generators.PydanticGenerator,
     PYTHON_DATACLASSES: generators.PythonGenerator,
     JAVA: generators.JavaGenerator,
@@ -91,6 +98,7 @@ GENERATORS: Dict[FRAMEWORK, Union[Type[Generator], Tuple[Type[Generator], Dict[s
         generators.SQLAlchemyGenerator,
         {"template": sqlalchemygen.TemplateEnum.DECLARATIVE},
     ),
+    PANDERA_POLARS_CLASS: generators.PanderaGenerator,
     SQL_DDL_SQLITE: (generators.SQLTableGenerator, {"dialect": "sqlite"}),
     SQL_DDL_POSTGRES: (generators.SQLTableGenerator, {"dialect": "postgresql"}),
     OWL: (
@@ -130,13 +138,12 @@ class Feature(BaseModel):
     A category of tests that can be implemented by multiple frameworks.
     """
 
+    model_config = ConfigDict(use_enum_values=True)
+
     name: str
     description: str
-    implementations: Dict[FRAMEWORK, ValidationBehavior]
+    implementations: dict[FRAMEWORK, ValidationBehavior]
     num_tests: int = 0
-
-    class Config:
-        use_enum_values = True
 
     def set_framework_behavior(self, framework: FRAMEWORK, behavior: ValidationBehavior) -> ValidationBehavior:
         if framework not in self.implementations:
@@ -161,27 +168,27 @@ class Feature(BaseModel):
 class FeatureSet(BaseModel):
     """A collection of features."""
 
-    features: List[Feature]
+    features: list[Feature]
 
 
-cached_generator_output: Dict[Tuple[SCHEMA_NAME, FRAMEWORK], Tuple[Generator, str, Optional[Path]]] = {}
+cached_generator_output: dict[tuple[SCHEMA_NAME, FRAMEWORK], tuple[Generator, str, Optional[Path]]] = {}
 """Cache generators and their outputs to avoid repeated computation."""
 
-all_test_results: List[DataCheck] = []
+all_test_results: list[DataCheck] = []
 """Result of each data check."""
 
-feature_dict: Dict[str, Feature] = {}
+feature_dict: dict[str, Feature] = {}
 """Map from test name to feature."""
 
-schema_name_to_feature: Dict[str, str] = {}
+schema_name_to_feature: dict[str, str] = {}
 """Map from schema name to feature."""
 
-schema_name_to_metamodel_elements: Dict[SCHEMA_NAME, List[str]] = {}
+schema_name_to_metamodel_elements: dict[SCHEMA_NAME, list[str]] = {}
 """Map from schema name all metamodels used in that schema."""
 
 
-def _as_tsv(rows: List[Dict], path: Union[str, Path]) -> str:
-    logging.info(f"Writing report to {path}")
+def _as_tsv(rows: list[dict], path: Union[str, Path]) -> str:
+    logger.info(f"Writing report to {path}")
     fn = f"{path}.tsv"
     if rows:
         fieldnames = []
@@ -202,7 +209,7 @@ def report():
 
     Note: some of these are subject to change
     """
-    logging.info(f"Generating reports for {len(all_test_results)} tests")
+    logger.info(f"Generating reports for {len(all_test_results)} tests")
     fset = FeatureSet(features=list(feature_dict.values()))
     suffix = "" if len(fset.features) > 5 else "_partial"
     summary_base_name = f"summary{suffix}"
@@ -261,8 +268,8 @@ def _get_metamodel_elements(obj: Any) -> Iterator[str]:
 
 
 def _generate_framework_output(
-    schema: Dict, framework: str, mappings: List = None
-) -> Tuple[Generator, str, Optional[Path]]:
+    schema: dict, framework: str, mappings: list = None
+) -> tuple[Generator, str, Optional[Path]]:
     """
     Compile a schema using a framework (e.g. jsonschema generation).
 
@@ -280,7 +287,7 @@ def _generate_framework_output(
         if mappings is None:
             # this should only happen when executing individual pytest combos
             mappings = []
-            logging.warning(f"No mappings for {pair} - called out of order?")
+            logger.warning(f"No mappings for {pair} - called out of order?")
         gen_class = GENERATORS[framework]
         if isinstance(gen_class, tuple):
             gen_class, gen_args = gen_class
@@ -297,7 +304,7 @@ def _generate_framework_output(
             for root, _dirs, files in os.walk(temp_dir.name):
                 for file in files:
                     path = os.path.join(root, file)
-                    with open(path, "r") as stream:
+                    with open(path) as stream:
                         output += stream.read()
         else:
             output = gen.serialize()
@@ -331,14 +338,14 @@ def _generate_framework_output(
                 else:
                     raise AssertionError
     else:
-        logging.debug(f"Reusing {len(cached_generator_output.items())}")
+        logger.debug(f"Reusing {len(cached_generator_output.items())}")
     return cached_generator_output[pair]
 
 
-TRIPLE = Tuple[rdflib.URIRef, rdflib.URIRef, Union[rdflib.URIRef, rdflib.Literal]]
+TRIPLE = tuple[rdflib.URIRef, rdflib.URIRef, Union[rdflib.URIRef, rdflib.Literal]]
 
 
-def compare_rdf(expected: Union[str, List[TRIPLE]], actual: str, subsumes: bool = False) -> Optional[Set]:
+def compare_rdf(expected: Union[str, list[TRIPLE]], actual: str, subsumes: bool = False) -> Optional[set]:
     """
     Compares two rdf serializations.
 
@@ -372,7 +379,7 @@ def compare_rdf(expected: Union[str, List[TRIPLE]], actual: str, subsumes: bool 
         return triples_expected.union(triples_actual).difference(triples_expected.intersection(triples_actual))
 
 
-def _obj_within_obj(expected: Dict, actual: Dict) -> bool:
+def _obj_within_obj(expected: dict, actual: dict) -> bool:
     """
     Check if the expected object is within the actual object.
 
@@ -394,7 +401,7 @@ def _obj_within_obj(expected: Dict, actual: Dict) -> bool:
     return False
 
 
-def _schema_out_path(schema: Dict, parent=False) -> Path:
+def _schema_out_path(schema: dict, parent=False) -> Path:
     """
     Get the output path for a schema.
 
@@ -416,7 +423,8 @@ def _schema_out_path(schema: Dict, parent=False) -> Path:
 
 @lru_cache
 def _get_linkml_types() -> dict:
-    type_schema = yaml.safe_load(open(linkml_runtime.SCHEMA_DIRECTORY / "types.yaml"))
+    with open(linkml_runtime.SCHEMA_DIRECTORY / "types.yaml") as tfile:
+        type_schema = yaml.safe_load(tfile)
     for typ in type_schema.get("types", {}).values():
         typ["from_schema"] = "https://w3id.org/linkml/types"
     return type_schema
@@ -425,18 +433,19 @@ def _get_linkml_types() -> dict:
 def _make_schema(
     test: Callable,
     name: str,
-    schema: Dict = None,
-    classes: Dict = None,
-    slots: Dict = None,
-    types: Dict = None,
-    prefixes: Dict = None,
-    core_elements: List = None,
+    schema: dict = None,
+    classes: dict = None,
+    slots: dict = None,
+    types: dict = None,
+    prefixes: dict = None,
+    core_elements: list = None,
     post_process: Callable = None,
     merge_type_imports=True,
-    imported_schemas: List[Dict] = None,
-    mappings: Optional[Dict[str, Any]] = None,
+    imported_schemas: list[dict] = None,
+    mappings: Optional[dict[str, Any]] = None,
+    unsatisfiable: bool = False,
     **kwargs,
-) -> Tuple[Dict, List]:
+) -> tuple[dict, list]:
     """
     Create a schema for use in testing.
 
@@ -556,10 +565,24 @@ def _make_schema(
 
     if not schema["name"]:
         raise ValueError(f"Schema name not set: {schema}")
+
+    if tests.WITH_LOGICAL_MODEL_TRANSFORMER:
+        from linkml.transformers.logical_model_transformer import LogicalModelTransformer
+
+        tr = LogicalModelTransformer()
+        tr.set_schema(SchemaDefinition(**schema))
+        try:
+            tr.transform()
+        except UnsatisfiableAttribute as e:
+            if unsatisfiable:
+                pass
+            else:
+                raise e
+
     return schema, mappings
 
 
-def validated_schema(test: Callable, local_name: str, framework: str, **kwargs) -> Dict:
+def validated_schema(test: Callable, local_name: str, framework: str, **kwargs) -> dict:
     """
     Generate a schema and validate it using the given framework.
 
@@ -601,7 +624,7 @@ def validated_schema(test: Callable, local_name: str, framework: str, **kwargs) 
     return schema
 
 
-def _extract_mappings(schema: Dict) -> Iterator[Tuple[Dict, List]]:
+def _extract_mappings(schema: dict) -> Iterator[tuple[dict, list]]:
     """
     Extract key-values injected into the schema to represent expected outputs per generator.
 
@@ -622,7 +645,7 @@ def _extract_mappings(schema: Dict) -> Iterator[Tuple[Dict, List]]:
         pass
 
 
-def _as_compact_yaml(obj: Union[YAMLRoot, BaseModel, Dict]) -> str:
+def _as_compact_yaml(obj: Union[YAMLRoot, BaseModel, dict]) -> str:
     if isinstance(obj, dict):
         ys = yaml.dump(_clean_dict(obj), sort_keys=False, Dumper=SafeDumper)
         ys = ys.replace("{}", "")
@@ -630,7 +653,7 @@ def _as_compact_yaml(obj: Union[YAMLRoot, BaseModel, Dict]) -> str:
     return yaml_dumper.dumps(obj)
 
 
-def _objects_are_equal(obj1: Union[YAMLRoot, BaseModel, Dict], obj2: Union[YAMLRoot, BaseModel, Dict]) -> bool:
+def _objects_are_equal(obj1: Union[YAMLRoot, BaseModel, dict], obj2: Union[YAMLRoot, BaseModel, dict]) -> bool:
     y1 = _as_compact_yaml(obj1)
     y2 = _as_compact_yaml(obj2)
     return y1 == y2
@@ -655,7 +678,7 @@ def _clean_dict(value: Any):
         return value
 
 
-_sql_store_cache: Dict[str, SQLStore] = {}
+_sql_store_cache: dict[str, SQLStore] = {}
 
 
 def _get_sql_store(schema) -> SQLStore:
@@ -673,16 +696,16 @@ def _get_sql_store(schema) -> SQLStore:
 
 
 def check_data(
-    schema: Dict,
+    schema: dict,
     data_name: str,
     framework: FRAMEWORK,
-    object_to_validate: Dict,
+    object_to_validate: dict,
     valid: bool,
     should_warn: bool = False,
-    expected_behavior: Union[ValidationBehavior, Tuple[ValidationBehavior, str]] = ValidationBehavior.IMPLEMENTS,
+    expected_behavior: Union[ValidationBehavior, tuple[ValidationBehavior, str]] = ValidationBehavior.IMPLEMENTS,
     target_class: str = None,
     description: str = None,
-    coerced: Dict = None,
+    coerced: dict = None,
     exclude_rdf=False,
     instance_check_call: Callable = None,
 ):
@@ -746,7 +769,7 @@ def check_data(
         ValidationBehavior.NOT_APPLICABLE,
         ValidationBehavior.FALSE_POSITIVE,
     ]:
-        logging.warning(f"Skipping test for {expected_behavior}")
+        logger.warning(f"Skipping test for {expected_behavior}")
     else:
         gen, output, output_path = _generate_framework_output(schema, framework)
         if isinstance(gen, (PydanticGenerator, PythonGenerator)):
@@ -755,7 +778,7 @@ def check_data(
             # coercion detection and output of repaired objects
             mod = compile_python(output)
             py_cls = getattr(mod, target_class)
-            logging.info(f"Validating {py_cls} against {object_to_validate}// {expected_behavior} {valid}")
+            logger.info(f"Validating {py_cls} against {object_to_validate}// {expected_behavior} {valid}")
             py_inst = None
             if valid:
                 py_inst = py_cls(**object_to_validate)
@@ -772,16 +795,16 @@ def check_data(
                                 coerced
                             ), f"coerced {py_inst} != {coerced}"
                         else:
-                            logging.warning(f"INCOMPLETE TEST: did not check coerced: {py_inst}")
+                            logger.warning(f"INCOMPLETE TEST: did not check coerced: {py_inst}")
                 else:
                     if isinstance(gen, PydanticGenerator):
                         with pytest.raises(pydantic.ValidationError):
                             py_inst = py_cls(**object_to_validate)
-                            logging.info(f"Unexpectedly instantiated {py_inst} from {object_to_validate}")
+                            logger.info(f"Unexpectedly instantiated {py_inst} from {object_to_validate}")
                     else:
                         with pytest.raises(Exception):
                             py_inst = py_cls(**object_to_validate)
-                            logging.info(f"Unexpectedly instantiated {py_inst}")
+                            logger.info(f"Unexpectedly instantiated {py_inst}")
             if py_inst is not None:
                 # assert roundtripped.items() == object_to_validate.items()
                 if valid and not exclude_rdf:
@@ -792,8 +815,11 @@ def check_data(
                     assert instance_check_call(py_inst)
             logging.info(f"fwk: {framework}, cls: {target_class}, inst: {object_to_validate}, valid: {valid}")
 
+
         elif isinstance(gen, JsonSchemaGenerator):
             plugins = [JsonschemaValidationPlugin(closed=True, include_range_class_descendants=False)]
+        elif isinstance(gen, GENERATORS[PANDERA_POLARS_CLASS]):
+            check_data_pandera(schema, output, target_class, object_to_validate, expected_behavior, valid)
         elif isinstance(gen, ContextGenerator):
             context_dir = _schema_out_path(schema) / "generated" / "jsonld_context.context.jsonld"
             if not context_dir.exists() and tests.WITH_OUTPUT:
@@ -808,12 +834,16 @@ def check_data(
             g = rdflib.Graph()
             g.parse(data=json.dumps(json_object, indent=2, sort_keys=True, ensure_ascii=False), format="json-ld")
             if not valid and expected_behavior == ValidationBehavior.IMPLEMENTS:
-                logging.info(f"Skipping validation for {jsonld_path}")
+                logger.info(f"Skipping validation for {jsonld_path}")
         elif isinstance(gen, OwlSchemaGenerator):
             # TODO: make this a validator
             if not exclude_rdf:
                 ttl_path = out_dir / f"{data_name}.ttl"
-                _convert_data_to_rdf(schema, object_to_validate, target_class, ttl_path)
+                try:
+                    _convert_data_to_rdf(schema, object_to_validate, target_class, ttl_path)
+                except Exception as e:
+                    if valid:
+                        raise e
                 # if not ttl_path.exists():
                 #    raise ValueError(f"Could not convert {object_to_validate} to RDF")
                 coherent = robot_check_coherency(ttl_path, output_path, str(ttl_path) + ".reasoned.owl")
@@ -838,7 +868,11 @@ def check_data(
             expected_behavior = ValidationBehavior.UNTESTED
         elif framework == SQL_DDL_SQLITE:
             # TODO: make this a validator
-            endpoint = _get_sql_store(schema)
+            try:
+                endpoint = _get_sql_store(schema)
+            except Exception as e:
+                if not valid:
+                    raise e
             endpoint.db_exists(force=True)
             py_cls = endpoint.native_module.__dict__[target_class]
             if valid:
@@ -849,7 +883,7 @@ def check_data(
                     py_obj = py_cls(**object_to_validate)
                     endpoint.dump(py_obj)
         else:
-            logging.warning(f"Unsupported generator {gen}")
+            logger.warning(f"Unsupported generator {gen}")
             expected_behavior = ValidationBehavior.UNTESTED
     if plugins:
         validator = Validator(
@@ -859,17 +893,20 @@ def check_data(
         # validator = JsonSchemaDataValidator(schema=yaml.dump(schema))
         # errors = list(validator.iter_validate_dict(_clean_dict(object_to_validate), target_class, closed=True))
 
-        errors = list(validator.iter_results(clean_null_terms(object_to_validate), target_class))
-        logging.info(f"Expecting {valid}, Validating {object_to_validate} against {target_class}, errors: {errors}")
+        try:
+            errors = list(validator.iter_results(clean_null_terms(object_to_validate), target_class))
+        except Exception as e:
+            errors = [e]
+        logger.info(f"Expecting {valid}, Validating {object_to_validate} against {target_class}, errors: {errors}")
         if valid:
             assert errors == [], f"Errors found in json schema validation: {errors}"
         else:
             if expected_behavior == ValidationBehavior.ACCEPTS:
-                logging.info("Does not flag exception for borderline case (e.g. matching an int to a float)")
+                logger.info("Does not flag exception for borderline case (e.g. matching an int to a float)")
             else:
                 assert errors != [], "Expected errors in json schema validation, but none found"
         if should_warn:
-            logging.warning("TODO: check for warnings")
+            logger.warning("TODO: check for warnings")
     feature.set_framework_behavior(framework, expected_behavior)
     if not valid:
         all_test_results.append(
@@ -882,6 +919,25 @@ def check_data(
                 notes=str(notes),
             )
         )
+
+
+def check_data_pandera(schema, output, target_class, object_to_validate, expected_behavior, valid):
+    pl = pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
+    mod = compile_python(output)
+    py_cls = getattr(mod, target_class)
+    polars_schema = py_cls.generate_polars_schema(object_to_validate)
+
+    logger.info(
+        f"Validating {target_class} against {object_to_validate} / {expected_behavior} / "
+        f"{valid}\n\n{yaml.dump(schema)}\n\n{output}"
+    )
+
+    try:
+        dataframe_to_validate = pl.DataFrame(object_to_validate, schema=polars_schema, strict=False)
+        py_cls.validate(dataframe_to_validate, lazy=True)
+    except Exception as e:
+        if valid:
+            raise e
 
 
 def clean_null_terms(d):
@@ -901,7 +957,7 @@ def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_pa
     try:
         py_inst = py_cls(**instance)
     except Exception as e:
-        logging.info(f"Could not instantiate {py_cls} from {instance}; exception: {e}")
+        logger.info(f"Could not instantiate {py_cls} from {instance}; exception: {e}")
         return None
     schemaview = SchemaView(SchemaDefinition(**schema))
     g = rdflib_dumper.as_rdf_graph(
@@ -916,9 +972,10 @@ def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_pa
     ttl_output = g.serialize(format="turtle")
     g = rdflib.Graph()
     g.parse(data=ttl_output, format="turtle")
-    roundtripped = rdflib_loader.load(ttl_output, target_class=py_cls, schemaview=schemaview)
+    _roundtripped = rdflib_loader.load(ttl_output, target_class=py_cls, schemaview=schemaview)
     if tests.WITH_OUTPUT:
-        yaml_dumper.dump(roundtripped, to_file=ttl_path)
+        with open(ttl_path, "w", encoding="utf-8") as stream:
+            stream.write(ttl_output)
     return g
 
 
@@ -989,17 +1046,17 @@ def robot_check_coherency(
         # print(f"Running robot: {' '.join(cmd)}")
         result = subprocess.run(cmd, check=True, capture_output=True, text=True)
         if result.stderr:
-            logging.warning(result.stderr)
+            logger.warning(result.stderr)
         return True
     except subprocess.CalledProcessError as e:
-        logging.info(f"Robot call failed, likely unsatisfiable: {e}")
+        logger.info(f"Robot call failed, likely unsatisfiable: {e}")
         return False
 
 
-TREE_NODE = Tuple[int]
+TREE_NODE = tuple[int]
 
 
-def generate_tree_nodes(depth=3, num_siblings=2, path: List[int] = None) -> Iterator[TREE_NODE]:
+def generate_tree_nodes(depth=3, num_siblings=2, path: list[int] = None) -> Iterator[TREE_NODE]:
     """
     Generate a tree of data names, with depth `depth`.
 
@@ -1015,7 +1072,7 @@ def generate_tree_nodes(depth=3, num_siblings=2, path: List[int] = None) -> Iter
             yield from generate_tree_nodes(depth=depth - 1, num_siblings=num_siblings, path=path + [i])
 
 
-def generate_tree(depth=3, num_siblings=2, prefix="N") -> Iterator[Tuple[str, List[str]]]:
+def generate_tree(depth=3, num_siblings=2, prefix="N") -> Iterator[tuple[str, list[str]]]:
     """
     Generate a tree of data names, with depth `depth`.
 

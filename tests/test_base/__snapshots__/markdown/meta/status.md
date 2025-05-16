@@ -28,6 +28,7 @@ URI: [linkml:status](https://w3id.org/linkml/status)
  * [Definition](Definition.md)
  * [DimensionExpression](DimensionExpression.md)
  * [Element](Element.md)
+ * [EnumBinding](EnumBinding.md)
  * [EnumDefinition](EnumDefinition.md)
  * [ImportExpression](ImportExpression.md)
  * [PathExpression](PathExpression.md)
@@ -38,6 +39,7 @@ URI: [linkml:status](https://w3id.org/linkml/status)
  * [StructuredAlias](StructuredAlias.md)
  * [SubsetDefinition](SubsetDefinition.md)
  * [TypeDefinition](TypeDefinition.md)
+ * [TypeMapping](TypeMapping.md)
  * [UniqueKey](UniqueKey.md)
 
 ## Other properties
@@ -46,7 +48,7 @@ URI: [linkml:status](https://w3id.org/linkml/status)
 | --- | --- | --- |
 | **Aliases:** | | workflow status |
 | **Mappings:** | | bibo:status |
-| **Examples:** | | Example(value='bibo:draft', description=None, object=None) |
+| **Examples:** | | Example({'value': 'bibo:draft'}) |
 | **In Subsets:** | | BasicSubset |
 | **See also:** | | [https://www.hl7.org/fhir/valueset-publication-status.html](https://www.hl7.org/fhir/valueset-publication-status.html) |
 |  | | [https://www.hl7.org/fhir/versions.html#std-process](https://www.hl7.org/fhir/versions.html#std-process) |

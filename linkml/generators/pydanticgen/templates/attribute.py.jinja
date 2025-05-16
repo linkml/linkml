@@ -1,4 +1,4 @@
-{{name}}: {{ annotations['python_range'].value }} = Field({{ field }}
+{{name}}: {{ range }} = Field(default={{ field }}
 {%- if title != None %}, title="{{title}}"{% endif -%}
 {%- if description %}, description="""{{description}}"""{% endif -%}
 {%- if equals_number != None %}
@@ -7,10 +7,12 @@
     {%- if minimum_value != None %}, ge={{minimum_value}}{% endif -%}
     {%- if maximum_value != None %}, le={{maximum_value}}{% endif -%}
 {%- endif -%}
-{%- if meta != None -%}
-    {%- if pydantic_ver == 1 -%}
-    , linkml_meta = {{ meta | pprint | indent(width=8) }}
-    {% else -%}
+{%- if multivalued and exact_cardinality != None -%}
+    , min_length={{exact_cardinality}}, max_length={{exact_cardinality}}
+{%- elif multivalued -%}
+    {%- if minimum_cardinality != None %}, min_length={{minimum_cardinality}}{% endif -%}
+    {%- if maximum_cardinality != None %}, max_length={{maximum_cardinality}}{% endif -%}
+{%- endif -%}
+{%- if meta -%}
     , json_schema_extra = { "linkml_meta": {{ meta | pprint | indent(width=8) }} }
-    {%- endif -%}
 {%- endif -%})
