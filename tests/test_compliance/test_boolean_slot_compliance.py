@@ -1744,7 +1744,7 @@ def test_slot_boolean_with_expressions(
     framework, schema_name, range, op, expression1, expression2, data_name, value, is_valid, unsatisfiable
 ):
     """
-    Tests behavior of any_of for slot expressions.
+    Tests behavior of boolean operators for slot expressions.
 
     :param framework: generator to test
     :param schema_name: unique name of generated schema
@@ -1847,6 +1847,61 @@ def test_slot_boolean_with_expressions(
         expected_behavior=expected_behavior,
         description=f"validity {is_valid} check for value {value}",
         exclude_rdf=exclude_rdf,
+    )
+
+
+@pytest.mark.parametrize(
+    "schema_name,slot1_expression,slot2_expression,data_name,value,is_valid",
+    [
+        ("mixed", {"range": "string"}, {"range": "integer", "multivalued": True}, "t1", {SLOT_S1: "x"}, True),
+        ("mixed", {"range": "string"}, {"range": "integer", "multivalued": True}, "t2", {SLOT_S1: [1, 2]}, True),
+        ("mixed", {"range": "string"}, {"range": "integer", "multivalued": True}, "t1", {SLOT_S1: ["x"]}, False),
+        ("mixed", {"range": "string"}, {"range": "integer", "multivalued": True}, "t2", {SLOT_S1: 1}, False),
+    ],
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_any_of_mixed_cardinality(
+    framework, schema_name, slot1_expression, slot2_expression, data_name, value, is_valid
+):
+    """
+    Tests behavior of any_of when cardinality is mixed.
+    """
+    pytest.skip("not yet implemented - see https://github.com/orgs/linkml/discussions/2154")
+    classes = {
+        CLASS_ANY: {
+            "class_uri": "linkml:Any",
+        },
+        CLASS_C: {
+            "attributes": {
+                SLOT_S1: {
+                    "any_of": [
+                        slot1_expression,
+                        slot2_expression,
+                    ],
+                    "range": "Any",
+                },
+            },
+        },
+    }
+
+    schema = validated_schema(
+        test_any_of_mixed_cardinality,
+        schema_name,
+        framework,
+        classes=classes,
+        core_elements=["any_of"],
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    check_data(
+        schema,
+        f"{schema_name}-{data_name}",
+        framework,
+        {SLOT_S1: value},
+        is_valid,
+        target_class=CLASS_C,
+        expected_behavior=expected_behavior,
+        description=f"validity {is_valid} check for value {value}",
+        exclude_rdf=False,
     )
 
 
