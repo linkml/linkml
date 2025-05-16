@@ -1,7 +1,7 @@
 import logging
 import os
 from dataclasses import dataclass
-from typing import Callable, List
+from typing import Callable
 
 import click
 from jsonasobj2 import JsonObj, as_dict
@@ -258,7 +258,7 @@ class ShaclGenerator(Generator):
         else:
             logger.error(f"No URI for type {rt.name}")
 
-    def _and_equals_string(self, g: Graph, func: Callable, values: List) -> None:
+    def _and_equals_string(self, g: Graph, func: Callable, values: list) -> None:
         pv_node = BNode()
         Collection(
             g,
@@ -273,7 +273,7 @@ class ShaclGenerator(Generator):
         annotations = item.annotations
         # item could be a class, slot or type
         # annotation type could be dict (on types) or JsonObj (on slots)
-        if type(annotations) == JsonObj:
+        if type(annotations) is JsonObj:
             annotations = as_dict(annotations)
         for a in annotations.values():
             # If ':' is in the tag, treat it as a CURIE, otherwise string Literal
@@ -283,7 +283,7 @@ class ShaclGenerator(Generator):
                 N_predicate = Literal(a["tag"], datatype=XSD.string)
             # If the value is a string and ':' is in the value, treat it as a CURIE,
             # otherwise treat as Literal with derived XSD datatype
-            if type(a["value"]) == extended_str and ":" in a["value"]:
+            if type(a["value"]) is extended_str and ":" in a["value"]:
                 N_object = URIRef(sv.expand_curie(a["value"]))
             else:
                 N_object = Literal(a["value"], datatype=self._getXSDtype(a["value"]))
@@ -292,19 +292,19 @@ class ShaclGenerator(Generator):
 
     def _getXSDtype(self, value):
         value_type = type(value)
-        if value_type == bool:
+        if value_type is bool:
             return XSD.boolean
-        elif value_type == extended_str:
+        elif value_type is extended_str:
             return XSD.string
-        elif value_type == extended_int:
+        elif value_type is extended_int:
             return XSD.integer
-        elif value_type == extended_float:
+        elif value_type is extended_float:
             # TODO: distinguish between xsd:decimal and xsd:double?
             return XSD.decimal
         else:
             return None
 
-    def _and_equals_string(self, g: Graph, func: Callable, values: List) -> None:
+    def _and_equals_string(self, g: Graph, func: Callable, values: list) -> None:
         pv_node = BNode()
         Collection(
             g,

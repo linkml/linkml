@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, List, Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -28,7 +28,7 @@ class ValidationResult(BaseModel):
     instance: Optional[Any] = None
     instance_index: Optional[int] = None
     instantiates: Optional[str] = None
-    context: List[str] = []
+    context: list[str] = []
 
     # The source object that caused this validation result
     source: Any = Field(None, description="The source of this validation result", exclude=True)
@@ -41,4 +41,4 @@ class ValidationReport(BaseModel):
     A report object.
     """
 
-    results: List[ValidationResult]
+    results: list[ValidationResult]

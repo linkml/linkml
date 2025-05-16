@@ -3,14 +3,14 @@ import logging
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 import click
 from jinja2 import Environment, FileSystemLoader
 from linkml_runtime.linkml_model.meta import Element, SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView
 
-from linkml.generators.docgen import DocGenerator, customize_environment
+from linkml.generators.docgen import DocGenerator
 from linkml.utils.generator import Generator, shared_arguments
 
 
@@ -33,7 +33,7 @@ class MermaidClassDiagramGenerator(Generator):
 
     directory: Optional[str] = None  # output directory with generated markdown files
     template_file: Optional[str] = None  # custom/default jinja template for class diagrams
-    classes: List[str] = field(default_factory=list)  # optional subset of classes
+    classes: list[str] = field(default_factory=list)  # optional subset of classes
 
     def __post_init__(self):
         super().__post_init__()
@@ -59,7 +59,8 @@ class MermaidClassDiagramGenerator(Generator):
         template_name = os.path.basename(self.template_file)
         loader = FileSystemLoader(template_folder)
         env = Environment(loader=loader)
-        customize_environment(env)
+        temp_doc_gen = DocGenerator(self.schema, mergeimports=self.mergeimports)
+        temp_doc_gen.customize_environment(env)
 
         template = env.get_template(template_name)
 

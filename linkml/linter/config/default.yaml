@@ -1,6 +1,7 @@
 rules:
   no_empty_title:
     level: disabled
+    exclude_type: []
   permissible_values_format:
     level: disabled
     format: uppersnake
@@ -12,6 +13,7 @@ rules:
     level: disabled
     include: []
     exclude: []
+    exclude_type: []
   no_xsd_int_type:
     level: disabled
   no_invalid_slot_usage:
@@ -19,6 +21,7 @@ rules:
   standard_naming:
     level: disabled
     permissible_values_upper_case: false
+    exclude_type: []
   canonical_prefixes:
     level: disabled
     prefixmaps_contexts:

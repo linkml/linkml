@@ -18,7 +18,7 @@ def test_template_dir(input_path):
 attr: attr_1
 range: Optional[Union[int, str]]
 attr: attr_2
-range: Optional[List[float]]"""
+range: Optional[list[float]]"""
         in result.stdout
     )
 

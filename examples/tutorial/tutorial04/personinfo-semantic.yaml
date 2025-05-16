@@ -1,12 +1,15 @@
 id: https://w3id.org/linkml/examples/personinfo
 name: personinfo
-prefixes:                                  ## Note are adding 3 new ones here
+prefixes:
   linkml: https://w3id.org/linkml/
-  schema: http://schema.org/
+  schema: http://schema.org/               ## define a prefix for schema.org
   personinfo: https://w3id.org/linkml/examples/personinfo/
   ORCID: https://orcid.org/
 imports:
   - linkml:types
+default_curi_maps:
+  - semweb_context
+default_prefix: personinfo
 default_range: string
 
 classes:

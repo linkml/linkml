@@ -3,7 +3,7 @@ import os
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Optional
 
 import click
 from jinja2 import Template
@@ -137,7 +137,7 @@ class SparqlGenerator(Generator):
     uses_schemaloader = False
 
     # ObjectVars
-    named_graphs: Optional[List[str]] = None
+    named_graphs: Optional[list[str]] = None
     limit: Optional[int] = None
     sparql: Optional[str] = None
 
@@ -172,7 +172,7 @@ class SparqlGenerator(Generator):
         return self.sparql
 
     @staticmethod
-    def split_sparql(sparql: str) -> Dict[str, str]:
+    def split_sparql(sparql: str) -> dict[str, str]:
         lines = sparql.split("\n")
         prolog = ""
         queries = defaultdict(str)

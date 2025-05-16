@@ -8,6 +8,7 @@ from tests.test_compliance.helper import (
     JSON_SCHEMA,
     JSONLD_CONTEXT,
     OWL,
+    PANDERA_POLARS_CLASS,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SHACL,
@@ -64,6 +65,7 @@ SUBSET_SS = "Subset1"
 CORE_FRAMEWORKS = [
     pytest.param(PYTHON_DATACLASSES, marks=[pytest.mark.pythongen]),
     pytest.param(PYDANTIC, marks=[pytest.mark.pydanticgen]),
+    pytest.param(PANDERA_POLARS_CLASS, marks=[pytest.mark.panderagen]),
     pytest.param(JAVA, marks=[pytest.mark.javagen]),
     pytest.param(JSON_SCHEMA, marks=[pytest.mark.jsonschemagen]),
     pytest.param(SHACL, marks=[pytest.mark.shaclgen]),

@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any, Optional, Union
 
 import jsonpatch
 import yaml
@@ -8,7 +8,7 @@ from linkml_runtime.utils.formatutils import remove_empty_items
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 
-def compare_dicts(expected: Dict[str, Any], actual: Dict[str, Any]) -> Optional[str]:
+def compare_dicts(expected: dict[str, Any], actual: dict[str, Any]) -> Optional[str]:
     """
     Compare two dicts
     :param expected: expected yaml -- can either be yaml text or a file name
@@ -20,7 +20,7 @@ def compare_dicts(expected: Dict[str, Any], actual: Dict[str, Any]) -> Optional[
 
 
 def compare_yaml(
-    expected: Union[str, Dict, Path], actual: Union[str, Dict, Path], remove_empty: bool = False
+    expected: Union[str, dict, Path], actual: Union[str, dict, Path], remove_empty: bool = False
 ) -> Optional[str]:
     if isinstance(expected, (str, Path)):
         with open(expected) as expected_stream:

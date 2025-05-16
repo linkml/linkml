@@ -2,6 +2,7 @@ import pytest
 
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
+    PANDERA_POLARS_CLASS,
     PYDANTIC,
     PYTHON_DATACLASSES,
     ValidationBehavior,
@@ -112,6 +113,8 @@ def test_designates_type(framework, description, type_range, object, is_valid, o
     if override_uri:
         for cn, cls in classes.items():
             cls["class_uri"] = f"altns:{cn}"
+    if framework == PANDERA_POLARS_CLASS:
+        pytest.skip("PanderaGen class ranges are not implemented")
     schema = validated_schema(
         test_designates_type,
         f"R{type_range}_override{override_uri}_ab{'_'.join(abstract_classes)}",

@@ -288,8 +288,8 @@ classes:
         - ontology namespace
         - synonyms
         - secondary ids
-    id_prefixes:
-       - SO
+     id_prefixes:
+        - SO
 
 
 slots:
@@ -628,6 +628,34 @@ To see examples, Biolink uses id_prefixes extensively. For example, the [Molecul
 
 For more, see [URIs and Mappings](https://linkml.io/linkml/schemas/uris-and-mappings.html)
 
+## How to use the `alias` metamodel construct?
+
+The [alias](https://linkml.io/linkml-model/latest/docs/alias/) construct from the metamodel is an element that can be asserted on slot definitions in the schema. If *alias* is asserted on a slot and the slot is asserted on a class then, we would need to use the alias name to refer to the slot in the instance file (CSV/TSV, YAML, JSON, etc.).
+
+For example:
+
+Snippet of schema file:
+
+```yaml
+classes:
+  Sample:
+    slots:
+      - id
+      - altitude
+slots:
+  altitude_in_meters:
+    alias: alt_in_m
+    unit:
+      ucum_code: m
+```
+
+Instance file (as YAML):
+
+```yaml
+- id: EX-123
+  alt_in_m: 5
+```
+
 ## When is it important to have mappings?
 
 Any element in a LinkML schema can have any number of *mappings* associated with it
@@ -669,3 +697,99 @@ Depending on the answer, LinkML has different modeling constructs to help you, i
 - [inlining](../schemas/inlining), which determines how relationships are serialized in formats like JSON
 
 Other more advanced constructs are also possible to allow you to treat relationships as first-class entities.
+
+## Can LinkML handle punning?
+
+### Punning in OWL
+In OWL, punning refers to the practice of using the same entity name in different roles—sometimes as a class and sometimes as an individual. This flexibility allows an entity to be treated as both a class (concept) and an individual (instance), depending on the context in which it is used. However, this can lead to ambiguities if not handled carefully.
+
+### Punning in LinkML
+In LinkML, there is no explicit support for punning. However, we can simulate this behavior by using the same name for both classes and slots, with the understanding that this might introduce ambiguity. Below is an example where we "pun" the name of a class and a slot, replicating a common OWL punning scenario where the entity serves both as a class and a property.
+
+### Example Scenario: "Author" as a Class and Property
+Let’s imagine a scenario where we define an "Author" both as a class (representing a person or entity who writes books) and as a property (representing the relationship between a book and its author).
+
+#### In OWL
+This could look like:
+
+```turtle
+:Author rdf:type owl:Class .
+:author rdf:type owl:ObjectProperty ;
+    rdfs:label "author" ;
+    rdfs:range :Author ;
+    skos:inScheme <https://example.org/schema> .
+```
+Here, `:Author` is a class representing authors, and `:author` is an object property linking books to authors.
+
+
+#### In LinkML
+We don't directly support this kind of punning. However, we can simulate it by reusing the name "author" for both the class and the slot. Below are two approaches to achieving this:
+
+* Approach 1: Using `uriorcurie` for Class Reference
+```yaml
+classes:
+  Author:
+    slots:
+      - id
+      - name
+  Book:
+    slots:
+      - author  # Reference to the "Author" class
+slots:
+  author:
+    range: uriorcurie  # This points to the URI of the "Author" class
+  id:
+    identifier: true
+  name:
+```
+In this example, the `author` slot in the `Book` class refers to an identifier of the `Author` class. The `range: uriorcurie` indicates that this slot is expected to hold an identifier (CURIE) for an author.
+
+* Approach 2: Using Direct Class Reference
+```yaml
+classes:
+  Author:
+    slots:
+      - id
+      - name
+  Book:
+    slots:
+      - author  # Use "author" slot in the Book class
+slots:
+  author:
+    range: Author  # Direct reference to the Author class
+  id:
+    identifier: true
+  name:
+```
+In this example, we reference the `Author` class directly in the range of the `author` slot for the `Book` class. While this introduces potential ambiguity (because `author` is both a slot and a class name), it works if we're careful with the context in which it's used.
+
+### Potential Pitfalls
+While this mimics punning, there are some caveats to keep in mind:
+
+#### Ambiguity
+If a class and a slot share the same name, it can lead to confusion. In the above example, the term "author" could be interpreted either as a class or as a property, depending on context.
+
+#### Best Practices Warning
+Many LinkML generators will issue warnings when you have overlapping class and slot names, as it’s generally considered a bad practice. For instance:
+
+```kotlin
+WARNING:linkml.utils.generator:Overlapping slot and class names: author
+```
+#### Serialization
+Despite the potential issues with overlapping names, the LinkML-to-OWL serialization will correctly generate an object property and a class with the same name:
+```turtle
+test:author a owl:ObjectProperty ;
+    rdfs:label "author" ;
+    rdfs:range test:author ;
+    skos:inScheme <https://w3id.org/test/test-model> .
+
+test:author a owl:Class ;
+    rdfs:label "author" ;
+```
+This serialization may work fine in OWL, but the model could be harder to read or reason about, especially when debugging or collaborating across teams.
+
+### Final Considerations
+
+* Clarity and Readability: If punning is crucial for your model, it’s important to document your reasoning and ensure all stakeholders understand the use of shared names. In LinkML, using different names for classes and slots, even if slightly different (e.g., `AuthorClass` and `AuthorSlot`), might help to avoid confusion.
+
+* Tools and Validation: Be mindful of validation warnings that arise from naming overlaps. If you must use the same name, you may want to ensure that the generators or tools you use can handle this without generating errors or ambiguous interpretations.

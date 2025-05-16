@@ -3,7 +3,7 @@
 import os
 import urllib.parse as urlparse
 from dataclasses import dataclass, field
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 import click
 from jsonasobj import as_json as as_json_1
@@ -40,9 +40,9 @@ class ShExGenerator(Generator):
 
     # ObjectVars
     shex: Schema = field(default_factory=lambda: Schema())  # ShEx Schema being generated
-    shapes: List = field(default_factory=lambda: [])
+    shapes: list = field(default_factory=lambda: [])
     shape: Optional[Shape] = None  # Current shape being defined
-    list_shapes: List[IRIREF] = field(default_factory=lambda: [])  # Shapes that have been defined as lists
+    list_shapes: list[IRIREF] = field(default_factory=lambda: [])  # Shapes that have been defined as lists
 
     def __post_init__(self):
         super().__post_init__()

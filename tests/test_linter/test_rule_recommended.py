@@ -72,3 +72,54 @@ def test_exclude():
     messages = [p.message for p in problems]
     assert "Class 'MyClass' does not have recommended slot 'description'" in messages
     assert "Enum 'MyEnum' does not have recommended slot 'description'" in messages
+
+
+def test_class_violation_allowed():
+    config = RecommendedRuleConfig(
+        level=RuleLevel.error.text,
+        exclude_type=["class_definition"],
+    )
+
+    builder = SchemaBuilder()
+    builder.add_class("MyClass")
+
+    rule = RecommendedRule(config)
+
+    problems = list(rule.check(SchemaView(builder.schema)))
+
+    assert len(problems) == 0
+
+
+def test_slot_violation_allowed():
+    config = RecommendedRuleConfig(
+        level=RuleLevel.error.text,
+        exclude_type=["slot_definition"],
+    )
+
+    builder = SchemaBuilder()
+    builder.add_slot("my_slot")
+
+    rule = RecommendedRule(config)
+
+    problems = list(rule.check(SchemaView(builder.schema)))
+
+    assert len(problems) == 0
+
+
+def test_enum_violation_allowed():
+    config = RecommendedRuleConfig(
+        level=RuleLevel.error.text,
+        exclude_type=["enum_definition"],
+    )
+
+    builder = SchemaBuilder()
+    builder.add_enum("MyEnum")
+
+    rule = RecommendedRule(config)
+
+    problems = list(rule.check(SchemaView(builder.schema)))
+
+    assert len(problems) == 0
+
+
+# todo PVs are not checked for recommended fields yet

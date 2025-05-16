@@ -1,6 +1,6 @@
 from linkml_runtime import SchemaView
 
-from linkml.linter.config.datamodel.config import RuleConfig, RuleLevel
+from linkml.linter.config.datamodel.config import NoEmptyTitleConfig, RuleConfig, RuleLevel
 from linkml.linter.rules import NoEmptyTitleRule
 from linkml.utils.schema_builder import SchemaBuilder
 
@@ -26,3 +26,54 @@ def test_elements_with_empty_title():
     assert "Slot 'a_slot' has no title" in messages
     assert "Enum 'AnEnum' has no title" in messages
     assert "Type 'a_type' has no title" in messages
+
+
+def test_class_violation_allowed():
+    config = NoEmptyTitleConfig(
+        level=RuleLevel.error.text,
+        exclude_type=["class_definition"],
+    )
+
+    rule = NoEmptyTitleRule(config)
+
+    builder = SchemaBuilder()
+    builder.add_class("MyClass")
+
+    problems = list(rule.check(SchemaView(builder.schema)))
+
+    assert len(problems) == 0
+
+
+def test_slot_violation_allowed():
+    config = NoEmptyTitleConfig(
+        level=RuleLevel.error.text,
+        exclude_type=["slot_definition"],
+    )
+
+    rule = NoEmptyTitleRule(config)
+
+    builder = SchemaBuilder()
+    builder.add_slot("my_slot")
+
+    problems = list(rule.check(SchemaView(builder.schema)))
+
+    assert len(problems) == 0
+
+
+def test_enum_violation_allowed():
+    config = NoEmptyTitleConfig(
+        level=RuleLevel.error.text,
+        exclude_type=["enum_definition"],
+    )
+
+    rule = NoEmptyTitleRule(config)
+
+    builder = SchemaBuilder()
+    builder.add_enum("MyEnum")
+
+    problems = list(rule.check(SchemaView(builder.schema)))
+
+    assert len(problems) == 0
+
+
+# todo PVs are not checked for titles yet

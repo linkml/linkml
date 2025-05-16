@@ -62,24 +62,18 @@ Let's deliberately introduce some bad data to make sure our validator is working
 
 bad-data.yaml:
 
-```yaml
-persons:
-  - id: ORCID:1234
-    full_name: Clark Kent
-    age: 90
-    phone: 1-800-kryptonite
-  - id: ORCID:5678
-    age: 33
+```{literalinclude} ../../examples/tutorial/tutorial03/bad-data.yaml
+:language: yaml
 ```
 
-Running the following command:
+Running the following command will result in errors printed to the console:
 
 <!-- FAIL -->
 ```bash
 linkml-validate -s personinfo.yaml bad-data.yaml
 ```
 
-Will result in:
+Output:
 
 ```text
 [ERROR] [bad-data.yaml/0] '1-800-kryptonite' does not match '^[\\d\\(\\)\\-]+$' in /persons/0/phone
@@ -92,15 +86,8 @@ Let's fix the second issue.
 
 better-data.yaml:
 
-```yaml
-persons:
-  - id: ORCID:1234
-    full_name: Clark Kent
-    age: 90
-    phone: 1-800-kryptonite
-  - id: ORCID:5678
-    full_name: Lois Lane
-    age: 33
+```{literalinclude} ../../examples/tutorial/tutorial03/better-data.yaml
+:language: yaml
 ```
 
 <!-- FAIL -->
@@ -108,7 +95,7 @@ persons:
 linkml-validate -s personinfo.yaml better-data.yaml
 ```
 
-Will result in:
+Output:
 
 ```text
 [ERROR] [better-data.yaml/0] '1-800-kryptonite' does not match '^[\\d\\(\\)\\-]+$' in /persons/0/phone
@@ -137,6 +124,7 @@ gen-json-schema personinfo.yaml --top-class Container > personinfo.schema.json
 
 You can then use the `jsonschema` command that comes with the python library (any jsonschema validator will do here)
 
+<!-- Note: this will actually fail when executed because 'bad-data.json' does not exist. -->
 <!-- FAIL -->
 ```bash
 jsonschema -i bad-data.json personinfo.schema.json
