@@ -2,6 +2,7 @@ import logging
 import os
 import pathlib
 import sys
+from typing import TYPE_CHECKING
 
 import click
 import yaml
@@ -10,10 +11,12 @@ from linkml_runtime.utils import inference_utils
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.inference_utils import infer_all_slot_values
 from linkml_runtime.utils.schemaview import SchemaView
+from linkml_runtime.utils.yamlutils import remove_empty_items
 
+from linkml import validator
 from linkml._version import __version__
 from linkml.generators.pythongen import PythonGenerator
-from linkml.utils import datautils, validation
+from linkml.utils import datautils
 from linkml.utils.datautils import (
     _get_context,
     _get_format,
@@ -24,6 +27,9 @@ from linkml.utils.datautils import (
     infer_index_slot,
     infer_root_class,
 )
+
+if TYPE_CHECKING:
+    from linkml_runtime.utils.yamlutils import YAMLRoot
 
 logger = logging.getLogger(__name__)
 
@@ -143,7 +149,7 @@ def cli(
         target_class = infer_root_class(sv)
     if target_class is None:
         raise Exception("target class not specified and could not be inferred")
-    py_target_class = python_module.__dict__[target_class]
+    py_target_class: "YAMLRoot" = python_module.__dict__[target_class]
     input_format = _get_format(input, input_format)
     loader = get_loader(input_format)
 
@@ -168,8 +174,7 @@ def cli(
     if validate:
         if schema is None:
             raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
-        # TODO: use validator framework
-        validation.validate_object(obj, schema)
+        validator.validate(remove_empty_items(obj), schema=schema, target_class=target_class, raise_=True)
 
     output_format = _get_format(output, output_format, default="json")
     if output_format == "json-ld":
