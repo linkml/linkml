@@ -17,9 +17,3 @@ URI: [linkml:Anything](https://w3id.org/linkml/Anything)
 
 ## Attributes
 
-
-## Other properties
-
-|  |  |  |
-| --- | --- | --- |
-| **Mappings:** | | linkml:Any |

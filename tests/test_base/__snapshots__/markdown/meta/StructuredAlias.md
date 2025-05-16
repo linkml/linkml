@@ -264,9 +264,3 @@ URI: [linkml:StructuredAlias](https://w3id.org/linkml/StructuredAlias)
      * Description: Keywords or tags used to describe the element
      * Range: [String](types/String.md)
      * in subsets: (BasicSubset)
-
-## Other properties
-
-|  |  |  |
-| --- | --- | --- |
-| **Mappings:** | | skosxl:Label |

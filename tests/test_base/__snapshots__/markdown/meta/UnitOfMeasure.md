@@ -40,9 +40,3 @@ URI: [linkml:UnitOfMeasure](https://w3id.org/linkml/UnitOfMeasure)
      * Range: [Uriorcurie](types/Uriorcurie.md)
  * [iec61360code](iec61360code.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)
-
-## Other properties
-
-|  |  |  |
-| --- | --- | --- |
-| **Mappings:** | | qudt:Unit |
