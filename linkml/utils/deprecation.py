@@ -206,7 +206,7 @@ DEPRECATIONS = (
     Deprecation(
         name="pydanticgen-v1",
         deprecated_in=SemVer.from_str("1.7.5"),
-        removed_in=SemVer.from_str("1.8.0"),
+        removed_in=SemVer.from_str("1.10.0"),
         message="Support for generating Pydantic v1.*.* models with pydanticgen is deprecated",
         recommendation="Migrate any existing models to Pydantic v2",
         issue=1925,
@@ -214,7 +214,7 @@ DEPRECATIONS = (
     Deprecation(
         name="pydantic-v1",
         deprecated_in=SemVer.from_str("1.7.5"),
-        removed_in=SemVer.from_str("1.9.0"),
+        removed_in=SemVer.from_str("1.10.0"),
         message=(
             "LinkML will set a dependency of pydantic>=2 and become incompatible "
             "with packages with pydantic<2 as a runtime dependency"
@@ -225,12 +225,38 @@ DEPRECATIONS = (
     Deprecation(
         name="validators",
         deprecated_in=SemVer.from_str("1.8.6"),
-        removed_in=SemVer.from_str("1.9.0"),
+        removed_in=SemVer.from_str("1.10.0"),
         message=(
             "linkml.validators and linkml.utils.validation are the older versions "
             "of linkml.validator and have unmaintained, duplicated functionality"
         ),
         recommendation="Update to use linkml.validator",
+    ),
+    Deprecation(
+        name="gen-markdown",
+        # the last update to any code in markdowngen.py was in v1.9.1
+        # we can start considering it as deprecated from this version
+        deprecated_in=SemVer.from_str("1.9.1"),
+        removed_in=SemVer.from_str("1.10.0"),
+        message=(
+            "gen-markdown has been deprecated in favor of gen-doc, which is the new "
+            "de-facto generator for generating markdown documentation files (with "
+            "embedded mermaid class diagrams) from a LinkML schema"
+        ),
+        recommendation="Update to use `gen-doc`",
+    ),
+    Deprecation(
+        name="gen-yuml",
+        # the last update to any code in yumlgen.py was in v1.8.7
+        # we can start considering it as deprecated from this version
+        deprecated_in=SemVer.from_str("1.8.7"),
+        removed_in=SemVer.from_str("1.10.0"),
+        message=(
+            "gen-yuml has been deprecated and is no longer supported. "
+            "It has been replaced by more feature-rich diagram generators such as "
+            "gen-doc (embedded mermaid diagrams), gen-plantuml, gen-mermaid-class-diagram, and gen-erdiagram."
+        ),
+        recommendation="Update to use `gen-doc`, `gen-plantuml`, `gen-mermaid-class-diagram`, or `gen-erdiagram`",
     ),
 )  # type: tuple[Deprecation, ...]
 

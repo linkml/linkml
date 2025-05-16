@@ -1,7 +1,10 @@
 import dataclasses
 import logging
+import os
 from copy import deepcopy
-from typing import Dict, List, Optional, Union, cast
+from pathlib import Path
+from typing import Optional, Union, cast
+from urllib.parse import urlparse
 
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
@@ -33,7 +36,7 @@ def merge_schemas(
     if target.license is None:
         target.license = mergee.license
 
-    target.imports += [imp for imp in mergee.imports if imp not in target.imports]
+    resolve_merged_imports(target, mergee, imported_from)
     set_from_schema(mergee)
 
     if namespaces:
@@ -125,8 +128,8 @@ def set_from_schema(schema: SchemaDefinition) -> None:
 
 
 def merge_dicts(
-    target: Dict[str, Element],
-    source: Dict[str, Element],
+    target: dict[str, Element],
+    source: dict[str, Element],
     imported_from: str,
     imported_from_uri: str,
     merge_imports: bool,
@@ -150,7 +153,7 @@ def merge_dicts(
 def merge_slots(
     target: Union[SlotDefinition, TypeDefinition],
     source: Union[SlotDefinition, TypeDefinition],
-    skip: List[Union[SlotDefinitionName, TypeDefinitionName]] = None,
+    skip: list[Union[SlotDefinitionName, TypeDefinitionName]] = None,
     inheriting: bool = True,
 ) -> None:
     """
@@ -232,3 +235,46 @@ def merge_enums(
     """
     # TODO: Finish enumeration merge code
     pass
+
+
+def resolve_merged_imports(
+    target: SchemaDefinition, mergee: SchemaDefinition, imported_from: Optional[str] = None
+) -> None:
+    """Merge the imports in source into target
+
+    :param target: Containing schema
+    :param mergee: mergee
+    :param imported_from: file that the mergee was imported from
+    :param at_end: True means add mergee to the end.  False to the front
+    """
+
+    for imp in mergee.imports:
+        if imp is None:
+            continue
+
+        # Skip if already imported
+        if imp in target.imports:
+            continue
+
+        # Leave as-is if the import has a scheme (e.g. http://)
+        elif urlparse(imp).scheme:
+            target.imports.append(imp)
+            continue
+
+        # Leave as-is if the import is an absolute path
+        elif Path(imp).is_absolute():
+            target.imports.append(imp)
+            continue
+
+        # Adjust relative imports to be relative to the importing file
+        elif imp.startswith("."):
+            if imported_from is None:
+                logger.warning(f"Cannot resolve relative import: {imp}")
+                target.imports.append(imp)
+            else:
+                resolved_imp = os.path.normpath(str(Path(imported_from).parent / Path(imp)))
+                target.imports.append(resolved_imp)
+
+        # By default, add the import as-is
+        else:
+            target.imports.append(imp)

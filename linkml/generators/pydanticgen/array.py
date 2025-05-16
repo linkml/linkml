@@ -3,10 +3,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import (
     ClassVar,
-    Iterable,
-    List,
     Optional,
-    Type,
     TypeVar,
     Union,
 )
@@ -40,14 +37,13 @@ class ArrayRepresentation(Enum):
 _BOUNDED_ARRAY_FIELDS = ("exact_number_dimensions", "minimum_number_dimensions", "maximum_number_dimensions")
 
 _T = TypeVar("_T")
-AnyShapeArray = TypeAliasType("AnyShapeArray", Iterable[Union[_T, Iterable["AnyShapeArray[_T]"]]], type_params=(_T,))
+AnyShapeArray = TypeAliasType("AnyShapeArray", list[Union[_T, "AnyShapeArray[_T]"]], type_params=(_T,))
 
 _AnyShapeArrayImports = (
     Imports()
     + Import(
         module="typing",
         objects=[
-            ObjectImport(name="Iterable"),
             ObjectImport(name="TypeVar"),
             ObjectImport(name="Union"),
         ],
@@ -64,7 +60,7 @@ _AnyShapeArrayImports = (
 _AnyShapeArrayInjects = [
     '_T = TypeVar("_T")',
     """AnyShapeArray = TypeAliasType(
-    "AnyShapeArray", Iterable[Union[_T, Iterable["AnyShapeArray[_T]"]]], type_params=(_T,)
+    "AnyShapeArray", list[Union[_T, "AnyShapeArray[_T]"]], type_params=(_T,)
 )""",
 ]
 
@@ -161,11 +157,9 @@ class ArrayValidator:
         """
         if array.minimum_number_dimensions is not None and array.maximum_number_dimensions is None and array.dimensions:
             raise ValidationError(
-                (
-                    "Cannot specify a minimum_number_dimensions while maximum is None while using labeled dimensions - "
-                    "either use exact_number_dimensions > len(dimensions) for extra parameterized dimensions or set "
-                    "maximum_number_dimensions explicitly to False for unbounded dimensions"
-                )
+                "Cannot specify a minimum_number_dimensions while maximum is None while using labeled dimensions - "
+                "either use exact_number_dimensions > len(dimensions) for extra parameterized dimensions or set "
+                "maximum_number_dimensions explicitly to False for unbounded dimensions"
             )
 
     @staticmethod
@@ -256,7 +250,7 @@ class ArrayRangeGenerator(ABC):
         return any([getattr(self.array, arr_field, None) is not None for arr_field in _BOUNDED_ARRAY_FIELDS])
 
     @classmethod
-    def get_generator(cls, repr: ArrayRepresentation) -> Type["ArrayRangeGenerator"]:
+    def get_generator(cls, repr: ArrayRepresentation) -> type["ArrayRangeGenerator"]:
         """Get the generator class for a given array representation"""
         for subclass in cls.__subclasses__():
             if repr in (subclass.REPR, subclass.REPR.value):
@@ -293,7 +287,7 @@ class ListOfListsArray(ArrayRangeGenerator):
 
     @staticmethod
     def _list_of_lists(dimensions: int, dtype: str) -> str:
-        return ("List[" * dimensions) + dtype + ("]" * dimensions)
+        return ("list[" * dimensions) + dtype + ("]" * dimensions)
 
     @staticmethod
     def _parameterized_dimension(dimension: DimensionExpression, dtype: str) -> RangeResult:
@@ -306,7 +300,7 @@ class ListOfListsArray(ArrayRangeGenerator):
             dmax = dimension.maximum_cardinality
         else:
             # TODO: handle labels for labeled but unshaped arrays
-            return RangeResult(range="List[" + dtype + "]")
+            return RangeResult(range="list[" + dtype + "]")
 
         items = []
         if dmin is not None:
@@ -341,7 +335,7 @@ class ListOfListsArray(ArrayRangeGenerator):
 
     def _bounded_dimensions(self, array: ArrayExpression) -> RangeResult:
         """
-        A nested series of ``List[]`` ranges with :attr:`.dtype` at the center.
+        A nested series of ``list[]`` ranges with :attr:`.dtype` at the center.
 
         When an array expression allows for a range of dimensions, each set of ``List`` s is joined by a ``Union`` .
         """
@@ -357,13 +351,13 @@ class ListOfListsArray(ArrayRangeGenerator):
         ):
             return self._any_shape()
         elif array.maximum_number_dimensions:
-            # e.g., if min = 2, max = 3, range = Union[List[List[dtype]], List[List[List[dtype]]]]
+            # e.g., if min = 2, max = 3, range = Union[list[list[dtype]], list[list[list[dtype]]]]
             min_dims = array.minimum_number_dimensions if array.minimum_number_dimensions is not None else 1
             ranges = [self._list_of_lists(i, self.dtype) for i in range(min_dims, array.maximum_number_dimensions + 1)]
             return RangeResult(range="Union[" + ", ".join(ranges) + "]")
         else:
             # min specified with no max
-            # e.g., if min = 3, range = List[List[AnyShapeArray[dtype]]]
+            # e.g., if min = 3, range = list[list[AnyShapeArray[dtype]]]
             return RangeResult(
                 range=self._list_of_lists(array.minimum_number_dimensions - 1, self._any_shape().range),
                 injected_classes=_AnyShapeArrayInjects,
@@ -415,7 +409,7 @@ class ListOfListsArray(ArrayRangeGenerator):
 
             if array.minimum_number_dimensions:
                 # some minimum anonymous dimensions but unlimited max dimensions
-                # e.g., if min = 3, len(dim) = 2, then res.range = List[Union[AnyShapeArray[dtype], dtype]]
+                # e.g., if min = 3, len(dim) = 2, then res.range = list[Union[AnyShapeArray[dtype], dtype]]
                 # res.range will be wrapped with the 2 labeled dimensions later
                 res.range = self._list_of_lists(array.minimum_number_dimensions - len(array.dimensions), res.range)
 
@@ -433,13 +427,13 @@ class ListOfListsArray(ArrayRangeGenerator):
 
         # Wrap inner dimension with labeled dimension
         # e.g., if dimensions = [{min_card: 3}, {min_card: 2}]
-        # and res.range = List[Union[AnyShapeArray[dtype], dtype]]
+        # and res.range = list[Union[AnyShapeArray[dtype], dtype]]
         # (min 3 dims, no max dims)
         # then the final range = conlist(
         #     min_length=3,
         #     item_type=conlist(
         #         min_length=2,
-        #         item_type=List[Union[AnyShapeArray[dtype], dtype]]
+        #         item_type=list[Union[AnyShapeArray[dtype], dtype]]
         #     )
         # )
         for dim in reversed(array.dimensions):
@@ -473,7 +467,7 @@ class NumpydanticArray(ArrayRangeGenerator):
         return result
 
     @staticmethod
-    def ndarray_annotation(shape: Optional[List[Union[int, str]]] = None, dtype: Optional[str] = None) -> str:
+    def ndarray_annotation(shape: Optional[list[Union[int, str]]] = None, dtype: Optional[str] = None) -> str:
         """
         Make a stringified :class:`numpydantic.NDArray` annotation for a given shape
         and dtype.

@@ -1,7 +1,7 @@
 import os
 import re
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional, Set, Union
+from typing import Any, Callable, Optional, Union
 
 import click
 from linkml_runtime.linkml_model.meta import (
@@ -18,6 +18,7 @@ from linkml_runtime.utils.jsonasobj2 import JsonObj, values
 
 from linkml._version import __version__
 from linkml.generators.yumlgen import YumlGenerator
+from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.typereferences import References
 
@@ -31,7 +32,23 @@ class MarkdownGenerator(Generator):
     additionally, an index.md is generated that links everything together.
 
     The markdown is suitable for deployment as a MkDocs or Sphinx site
+
+    .. admonition:: Deprecated
+        :class: warning
+
+            The MarkdownGenerator class is being deprecated in favor of DocGenerator which can
+            be found at the following path – `linkml/generators/docgen.py`. Going forward, DocGenerator
+            which can be invoked using the `gen-doc` command will be the preferred way to generate
+            Markdown documentation files for LinkML schemas.
+
+            .. deprecated:: v1.9.1
+
+            Recommendation: Update to use `gen-doc`
     """
+
+    def __post_init__(self) -> None:
+        deprecation_warning("gen-markdown")
+        super().__post_init__()
 
     # ClassVars
     generatorname = os.path.basename(__file__)
@@ -44,20 +61,20 @@ class MarkdownGenerator(Generator):
     # ObjectVars
     directory: Optional[str] = None
     image_directory: Optional[str] = None
-    classes: Set[ClassDefinitionName] = None
+    classes: set[ClassDefinitionName] = None
     image_dir: bool = False
     index_file: str = "index.md"
     noimages: bool = False
     noyuml: bool = False
     no_types_dir: bool = False
     warn_on_exist: bool = False
-    gen_classes: Optional[Set[ClassDefinitionName]] = None
+    gen_classes: Optional[set[ClassDefinitionName]] = None
     gen_classes_neighborhood: Optional[References] = None
 
     def visit_schema(
         self,
         directory: str = None,
-        classes: Set[ClassDefinitionName] = None,
+        classes: set[ClassDefinitionName] = None,
         image_dir: bool = False,
         index_file: str = "index.md",
         noimages: bool = False,
@@ -267,10 +284,8 @@ class MarkdownGenerator(Generator):
 
             items.append(self.header(2, "Domain and Range"))
             items.append(
-                (
-                    f"{self.class_link(slot.domain)} &#8594;{self.predicate_cardinality(slot)} "
-                    f"{self.class_type_link(slot.range)}"
-                )
+                f"{self.class_link(slot.domain)} &#8594;{self.predicate_cardinality(slot)} "
+                f"{self.class_type_link(slot.range)}"
             )
 
             items.append(self.header(2, "Parents"))
@@ -374,7 +389,7 @@ class MarkdownGenerator(Generator):
 
         def prop_list(
             title: str,
-            entries: Union[List, Dict],
+            entries: Union[list, dict],
             formatter: Optional[Callable[[Element], str]] = None,
         ) -> Optional[str]:
             if formatter is None:
@@ -457,7 +472,7 @@ class MarkdownGenerator(Generator):
         #       - related mappings
         #       - deprecated element has exact replacement
         #       - deprecated element has possible replacement
-        if type(obj) == EnumDefinition:
+        if type(obj) is EnumDefinition:
             items.insert(0, enum_list("Permissible Values", obj))
             items.insert(1, "\n")
 
@@ -801,7 +816,13 @@ def pad_heading(text: str) -> str:
 @click.option("--warnonexist", is_flag=True, help="Warn if output file already exists")
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, map_fields, dir, img, index_file, notypesdir, warnonexist, **kwargs):
-    """Generate markdown documentation of a LinkML model"""
+    """Generate markdown documentation of a LinkML model.
+
+    .. warning::
+        `gen-markdown` is deprecated. Please use `gen-doc` instead.
+    """
+    deprecation_warning("gen-markdown")
+
     gen = MarkdownGenerator(yamlfile, no_types_dir=notypesdir, warn_on_exist=warnonexist, **kwargs)
     if map_fields is not None:
         gen.metamodel_name_map = {}

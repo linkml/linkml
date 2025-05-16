@@ -13,6 +13,7 @@ from rdflib import OWL, RDF
 import tests.test_compliance.helper as helper
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
+    PANDERA_POLARS_CLASS,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SQL_DDL_POSTGRES,
@@ -106,6 +107,8 @@ def test_enum(framework, enum_name, enum_desc, pvs, value, include_meaning):
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if framework == SQL_DDL_SQLITE and not is_valid:
         # SQLite does not support enums
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
         expected_behavior = ValidationBehavior.INCOMPLETE
     if pvs == [] and framework not in [JSON_SCHEMA]:
         # only JSON Schema and pydantic1 supports empty enums
@@ -332,6 +335,8 @@ def test_permissible_value_typing(framework, enum_name, enums, data_name, data, 
     if framework == SQL_DDL_SQLITE and not is_valid:
         # SQLite does not support enums
         expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data_name,
@@ -432,6 +437,8 @@ def test_enum_hierarchy(framework, use_mixins, include_meaning, propagate_down, 
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if framework == SQL_DDL_SQLITE and not is_valid:
         # SQLite does not support enums
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
