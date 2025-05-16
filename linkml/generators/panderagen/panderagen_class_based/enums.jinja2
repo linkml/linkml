@@ -1,0 +1,9 @@
+{%- macro enum_parameter(slot) -%}
+    {%- if slot.annotations['permissible_values']|length > 0 -%}
+        dtype_kwargs={"categories":(
+        {%- for pv in slot.annotations['permissible_values'] -%}
+            '{{ pv }}',
+        {%- endfor -%}
+        )}
+    {%- endif -%}
+{%- endmacro -%}

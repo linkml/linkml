@@ -32,7 +32,6 @@ settings:
   unit.length: "(centimeter|meter|inch)"
   unit.weight: "(kg|g|lbs|stone)"
   email: "\\S+@\\S+{\\.\\w}+"
-  
 #==================================
 # Classes                         #
 #==================================
@@ -44,6 +43,7 @@ classes:
       - name
       - height
       - email
+      - nicknames
 
 #==================================
 # Slots                           #
@@ -56,6 +56,11 @@ slots:
     pattern: "^P\\d{7}"    ## simple pattern. Note {}s are NOT interpolated
   name:
     range: string
+    pattern: "^[A-Z0-9]\\w+.*$"
+  nicknames:
+    range: string
+    pattern: "^[A-Z0-9]\\w+.*$"
+    multivalued: true
   email:
     range: EmailString
   height:
@@ -82,5 +87,3 @@ types:
       syntax: "{email}"
       interpolated: true
       partial_match: false  ## implicit ^...$
-    
-      

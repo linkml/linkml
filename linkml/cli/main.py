@@ -24,6 +24,7 @@ from linkml.generators.linkmlgen import cli as gen_linkml
 from linkml.generators.markdowngen import cli as gen_markdown
 from linkml.generators.namespacegen import cli as gen_namespaces
 from linkml.generators.owlgen import cli as gen_owl
+from linkml.generators.panderagen import cli as gen_pandera
 from linkml.generators.plantumlgen import cli as gen_plantuml
 from linkml.generators.prefixmapgen import cli as gen_prefix_map
 from linkml.generators.projectgen import cli as gen_project
@@ -110,6 +111,7 @@ generate.add_command(gen_plantuml, name="plantuml")
 generate.add_command(gen_proto, name="proto")
 generate.add_command(gen_python, name="python")
 generate.add_command(gen_pydantic, name="pydantic")
+generate.add_command(gen_pandera, name="pandera")
 generate.add_command(gen_rdf, name="rdf")
 generate.add_command(gen_shex, name="shex")
 generate.add_command(gen_shacl, name="shacl")

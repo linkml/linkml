@@ -1,5 +1,6 @@
 import os
 import sys
+from importlib.metadata import version
 from io import StringIO
 
 import nbformat
@@ -30,13 +31,18 @@ def force_rewrite_comparator(expected: str, actual: str) -> str:
     sys.platform == "win32",
     reason="charset failure on windows in github actions. See https://github.com/linkml/linkml/issues/314",
 )
+@pytest.mark.skipif(
+    version("pyshexc") == "0.9.1",
+    reason="notebooks execute in their own environment, so we can't monkeypatch pyshexc's python3.13 incompatibility "
+    "without ruining the notebook",
+)
 @pytest.mark.parametrize(
     "nbname",
     [filename for filename in os.listdir(NBBASEDIR) if not filename.startswith(".") and filename.endswith(".ipynb")],
 )
 def test_redo_notebook(nbname, ep):
     # The information on how to do this comes from: http://tritemio.github.io/smbits/2016/01/02/execute-notebooks/
-    with open(os.path.join(NBBASEDIR, nbname), "r", encoding="utf-8") as nbf:
+    with open(os.path.join(NBBASEDIR, nbname), encoding="utf-8") as nbf:
         nb = nbformat.read(nbf, as_version=4)
     ep.preprocess(nb, dict(metadata=dict(path=NBBASEDIR)))
 
