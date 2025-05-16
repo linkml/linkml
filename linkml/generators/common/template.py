@@ -5,7 +5,7 @@ See :mod:`.linkml.generators.pydanticgen.template` for example implementation
 """
 
 from copy import copy
-from typing import Any, ClassVar, Dict, List, Optional, Union
+from typing import Any, ClassVar, Optional, Union
 
 from jinja2 import Environment
 from pydantic import BaseModel
@@ -27,7 +27,7 @@ class TemplateModel(BaseModel):
     template: ClassVar[str]
     _environment: ClassVar[Environment]
 
-    meta_exclude: ClassVar[List[str]] = None
+    meta_exclude: ClassVar[list[str]] = None
 
     def render(self, environment: Optional[Environment] = None, **kwargs) -> str:
         """
@@ -62,7 +62,7 @@ class TemplateModel(BaseModel):
         return copy(cls._environment)
 
     @classmethod
-    def exclude_from_meta(cls: "TemplateModel") -> List[str]:
+    def exclude_from_meta(cls: "TemplateModel") -> list[str]:
         """
         Attributes in the source definition to exclude from linkml_meta
         """
@@ -73,9 +73,9 @@ class TemplateModel(BaseModel):
 
 
 def _render(
-    item: Union[TemplateModel, Any, List[Union[Any, TemplateModel]], Dict[str, Union[Any, TemplateModel]]],
+    item: Union[TemplateModel, Any, list[Union[Any, TemplateModel]], dict[str, Union[Any, TemplateModel]]],
     environment: Environment,
-) -> Union[str, List[str], Dict[str, str]]:
+) -> Union[str, list[str], dict[str, str]]:
     if isinstance(item, TemplateModel):
         return item.render(environment)
     elif isinstance(item, list):

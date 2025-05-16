@@ -1,9 +1,10 @@
 import logging
 import os
 from collections import OrderedDict
+from collections.abc import Iterator, Mapping
 from copy import deepcopy
 from pathlib import Path
-from typing import Dict, Iterator, List, Mapping, Optional, Set, TextIO, Tuple, Union, cast
+from typing import Optional, TextIO, Union, cast
 from urllib.parse import urlparse
 
 from jsonasobj2 import values
@@ -71,7 +72,7 @@ class SchemaLoader:
                 source_file_size=source_file_size,
             )
         # Map from URI to source and version tuple
-        self.loaded: OrderedDict[str, Tuple[str, str]] = {
+        self.loaded: OrderedDict[str, tuple[str, str]] = {
             self.schema.id: (self.schema.source_file, self.schema.version)
         }
         self.base_dir = self._get_base_dir(base_dir)
@@ -82,7 +83,7 @@ class SchemaLoader:
         self.source_file_size = source_file_size
         self.synopsis: Optional[SchemaSynopsis] = None
         self.schema_location: Optional[str] = None
-        self.schema_defaults: Dict[str, str] = {}  # Map from schema URI to default namespace
+        self.schema_defaults: dict[str, str] = {}  # Map from schema URI to default namespace
         self.merge_modules = mergeimports
         self.emit_metadata = emit_metadata
 
@@ -281,7 +282,7 @@ class SchemaLoader:
                     self.raise_value_error(f"Slot {slot.name}.inverse ({slot.inverse}) is not defined")
 
         # Update slots with parental information
-        merged_slots: List[SlotDefinitionName] = []
+        merged_slots: list[SlotDefinitionName] = []
         for slot in self.schema.slots.values():
             if not slot.from_schema:
                 slot.from_schema = self.schema.id
@@ -306,12 +307,12 @@ class SchemaLoader:
                 cls.from_schema = self.schema.id
 
         # Merge class with its mixins and the like
-        merged_classes: List[ClassDefinitionName] = []
+        merged_classes: list[ClassDefinitionName] = []
         for cls in self.schema.classes.values():
             self.merge_class(cls, merged_classes)
 
         # Update types with parental information
-        merged_types: List[TypeDefinitionName] = []
+        merged_types: list[TypeDefinitionName] = []
         for typ in self.schema.types.values():
             if not typ.base and not typ.typeof:
                 self.raise_value_error(
@@ -466,7 +467,7 @@ class SchemaLoader:
                     )
 
         # Check for duplicate class and type names
-        def check_dups(s1: Set[ElementName], s2: Set[ElementName]) -> Tuple[List[ElementName], str]:
+        def check_dups(s1: set[ElementName], s2: set[ElementName]) -> tuple[list[ElementName], str]:
             if s1.isdisjoint(s2):
                 return [], ""
 
@@ -616,13 +617,13 @@ class SchemaLoader:
                 self.raise_value_error(f"Subset: {subset} is not defined", subset)
         return self.schema
 
-    def validate_item_names(self, typ: str, names: List[str]) -> None:
+    def validate_item_names(self, typ: str, names: list[str]) -> None:
         # TODO: add a more rigorous syntax check for item names
         for name in names:
             if ":" in name:
                 raise self.raise_value_error(f'{typ}: "{name}" - ":" not allowed in identifier', name)
 
-    def merge_enum(self, enum: EnumDefinition, merged_enums: List[EnumDefinitionName]) -> None:
+    def merge_enum(self, enum: EnumDefinition, merged_enums: list[EnumDefinitionName]) -> None:
         """
         Merge parent enumeration information into target enum
 
@@ -641,7 +642,7 @@ class SchemaLoader:
                         enum.is_a,
                     )
 
-    def merge_slot(self, slot: SlotDefinition, merged_slots: List[SlotDefinitionName]) -> None:
+    def merge_slot(self, slot: SlotDefinition, merged_slots: list[SlotDefinitionName]) -> None:
         """
         Merge parent slot information into target slot
 
@@ -673,7 +674,7 @@ class SchemaLoader:
                     self.raise_value_error(f'Slot: "{slot.name}" - unknown mixin reference: {mixin}', mixin)
             merged_slots.append(slot.name)
 
-    def merge_class(self, cls: ClassDefinition, merged_classes: List[ClassDefinitionName]) -> None:
+    def merge_class(self, cls: ClassDefinition, merged_classes: list[ClassDefinitionName]) -> None:
         """
         Merge parent class information into target class
 
@@ -704,8 +705,8 @@ class SchemaLoader:
         Slot usages can be used to completely define slots.  Iterate over the class hierarchy finding all slot
         definitions that are introduced strictly as usages and add them to the slots component
         """
-        visited: Set[ClassDefinitionName] = set()
-        visited_usages: Set[SlotDefinitionName] = set()  # Slots that are or will be mangled
+        visited: set[ClassDefinitionName] = set()
+        visited_usages: set[SlotDefinitionName] = set()  # Slots that are or will be mangled
 
         def located_aliased_parent_slot(owning_class: ClassDefinition, usage_slot: SlotDefinition) -> bool:
             """Determine whether we are overriding an attributes style slot in the parent class
@@ -839,7 +840,7 @@ class SchemaLoader:
                         if new_val:
                             setattr(new_slot, metaslot_name, new_val)
 
-    def merge_type(self, typ: TypeDefinition, merged_types: List[TypeDefinitionName]) -> None:
+    def merge_type(self, typ: TypeDefinition, merged_types: list[TypeDefinitionName]) -> None:
         """
         Merge parent type information into target type
         :param typ: target type
@@ -858,7 +859,7 @@ class SchemaLoader:
                     )
             merged_types.append(typ.name)
 
-    def schema_errors(self) -> List[str]:
+    def schema_errors(self) -> list[str]:
         return self.synopsis.errors() if self.synopsis else ["resolve() must be run before error check"]
 
     def slot_definition_for(self, slotname: SlotDefinitionName, cls: ClassDefinition) -> Optional[SlotDefinition]:
