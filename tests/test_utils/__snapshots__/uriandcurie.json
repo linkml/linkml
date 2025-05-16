@@ -160,6 +160,9 @@
       "name": "C1",
       "definition_uri": "http://example.org/test/uriandcurieC1",
       "from_schema": "http://example.org/test/uriandcurie",
+      "exact_mappings": [
+        "http://example.org/test/uriandcurieC1"
+      ],
       "slots": [
         "id",
         "hasCurie",
@@ -168,7 +171,6 @@
         "id2"
       ],
       "slot_usage": {},
-      "class_uri": "http://example.org/test/uriandcurieC1",
       "@type": "ClassDefinition"
     }
   ],

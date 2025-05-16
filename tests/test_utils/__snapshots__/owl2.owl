@@ -40,41 +40,41 @@ meta:C1 a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "c1" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty meta:dataslot ],
-        [ a owl:Restriction ;
             owl:allValuesFrom meta:string ;
             owl:onProperty meta:annotslot2 ],
         [ a owl:Restriction ;
             owl:maxCardinality 1 ;
             owl:onProperty meta:dataslot ],
         [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty meta:objslot ],
+        [ a owl:Restriction ;
             owl:allValuesFrom meta:string ;
             owl:onProperty meta:dataslot ],
         [ a owl:Restriction ;
             owl:minCardinality 0 ;
-            owl:onProperty meta:objslot ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty meta:objslot ],
+            owl:onProperty meta:dataslot ],
         [ a owl:Restriction ;
             owl:allValuesFrom meta:C2 ;
-            owl:onProperty meta:objslot ],
+            owl:onProperty meta:annotslot ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty meta:annotslot ],
         [ a owl:Restriction ;
             owl:maxCardinality 1 ;
             owl:onProperty meta:annotslot2 ],
         [ a owl:Restriction ;
             owl:minCardinality 0 ;
-            owl:onProperty meta:annotslot ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty meta:annotslot ],
+            owl:onProperty meta:annotslot2 ],
         [ a owl:Restriction ;
             owl:allValuesFrom meta:C2 ;
-            owl:onProperty meta:annotslot ],
+            owl:onProperty meta:objslot ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty meta:objslot ],
         [ a owl:Restriction ;
             owl:minCardinality 0 ;
-            owl:onProperty meta:annotslot2 ] ;
+            owl:onProperty meta:annotslot ] ;
     skos:inScheme <http://example.org/owl2> .
 
 meta:C2 a owl:Class,

@@ -6,10 +6,10 @@
 <https://example.org/this/personinfo> a linkml:SchemaDefinition ;
     sh:declare [ sh:namespace xsd: ;
             sh:prefix "xsd" ],
-        [ sh:namespace <https://example.org/other/> ;
-            sh:prefix "other" ],
         [ sh:namespace <https://example.org/this/> ;
             sh:prefix "this" ],
+        [ sh:namespace <https://example.org/other/> ;
+            sh:prefix "other" ],
         [ sh:namespace linkml: ;
             sh:prefix "linkml" ] ;
     linkml:classes <https://example.org/this/C1>,
@@ -71,17 +71,17 @@
     linkml:uri xsd:string .
 
 <https://example.org/this/C2> a linkml:ClassDefinition ;
+    skos:exactMatch <https://example.org/this/C2> ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
     linkml:attributes <https://example.org/this/a> ;
-    linkml:class_uri <https://example.org/this/C2> ;
     linkml:definition_uri <https://example.org/this/C2> ;
     linkml:slot_usage [ ] ;
     linkml:slots <https://example.org/this/c2__a> .
 
 <https://example.org/this/C3> a linkml:ClassDefinition ;
+    skos:exactMatch <https://example.org/this/C3> ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
     linkml:attributes <https://example.org/this/a> ;
-    linkml:class_uri <https://example.org/this/C3> ;
     linkml:definition_uri <https://example.org/this/C3> ;
     linkml:slot_usage [ ] ;
     linkml:slots <https://example.org/this/c3__a> .
@@ -96,9 +96,9 @@
     linkml:slot_uri <other:a> .
 
 <https://example.org/this/C1> a linkml:ClassDefinition ;
+    skos:exactMatch <https://example.org/this/C1> ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
     linkml:attributes <https://example.org/this/a> ;
-    linkml:class_uri <https://example.org/this/C1> ;
     linkml:definition_uri <https://example.org/this/C1> ;
     linkml:slot_usage [ ] ;
     linkml:slots <https://example.org/this/c1__a> .
