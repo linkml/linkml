@@ -2,6 +2,11 @@ import pytest
 
 
 @pytest.fixture
+def personinfo_path(input_path):
+    return str(input_path("personinfo.yaml"))
+
+
+@pytest.fixture
 def type_hierarchy_schema_str():
     return """
 id: http://example.org

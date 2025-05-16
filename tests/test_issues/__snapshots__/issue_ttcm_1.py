@@ -8,20 +8,54 @@
 
 import dataclasses
 import re
-from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
-from datetime import date, datetime
-from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
+from datetime import (
+    date,
+    datetime,
+    time
+)
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    List,
+    Optional,
+    Union
+)
 
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from rdflib import Namespace, URIRef
+from jsonasobj2 import (
+    JsonObj,
+    as_dict
+)
+from linkml_runtime.linkml_model.meta import (
+    EnumDefinition,
+    PermissibleValue,
+    PvFormulaOptions
+)
 from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.formatutils import (
+    camelcase,
+    sfx,
+    underscore
+)
+from linkml_runtime.utils.metamodelcore import (
+    bnode,
+    empty_dict,
+    empty_list
+)
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.yamlutils import (
+    YAMLRoot,
+    extended_float,
+    extended_int,
+    extended_str
+)
+from rdflib import (
+    Namespace,
+    URIRef
+)
+
 from linkml_runtime.linkml_model.annotations import Annotation, AnnotationTag
 from linkml_runtime.linkml_model.extensions import Extension, ExtensionTag
 from linkml_runtime.linkml_model.types import String
@@ -29,9 +63,6 @@ from linkml_runtime.utils.metamodelcore import Curie, NCName, URI, URIorCURIE, X
 
 metamodel_version = "1.7.0"
 version = None
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
@@ -461,14 +492,14 @@ class VERSIONTAG(ValueSet):
 
 
 
-@dataclass
+@dataclass(repr=False)
 class ResourceDescription(YAMLRoot):
     """
     ResourceDescription represents the shared characteristics common to both abstract and resource version
     descriptions. ResourceDescription is an abstract type and, as such, cannot be directly created. Resource
     descriptions are Changeable, meaning that they have identity and can be created, updated, and deleted.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["ResourceDescription"]
     class_class_curie: ClassVar[str] = "tccm:ResourceDescription"
@@ -478,15 +509,15 @@ class ResourceDescription(YAMLRoot):
     about: Union[str, ExternalURI] = None
     resourceID: Union[str, LocalIdentifier] = None
     formalName: Optional[str] = None
-    keyword: Optional[Union[str, List[str]]] = empty_list()
+    keyword: Optional[Union[str, list[str]]] = empty_list()
     resourceSynopsis: Optional[str] = None
-    additionalDocumentation: Optional[Union[Union[str, PersistentURI], List[Union[str, PersistentURI]]]] = empty_list()
+    additionalDocumentation: Optional[Union[Union[str, PersistentURI], list[Union[str, PersistentURI]]]] = empty_list()
     rights: Optional[str] = None
     alternateID: Optional[str] = None
-    extensions: Optional[Union[Dict[Union[str, ExtensionTag], Union[dict, Extension]], List[Union[dict, Extension]]]] = empty_dict()
-    annotations: Optional[Union[Dict[Union[str, AnnotationTag], Union[dict, Annotation]], List[Union[dict, Annotation]]]] = empty_dict()
+    extensions: Optional[Union[dict[Union[str, ExtensionTag], Union[dict, Extension]], list[Union[dict, Extension]]]] = empty_dict()
+    annotations: Optional[Union[dict[Union[str, AnnotationTag], Union[dict, Annotation]], list[Union[dict, Annotation]]]] = empty_dict()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.about):
             self.MissingRequiredField("about")
         if not isinstance(self.about, ExternalURI):
@@ -524,12 +555,12 @@ class ResourceDescription(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class SourceAndNotation(YAMLRoot):
     """
     Format and notation that some or all the releases (versions) of this resource are published in
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["SourceAndNotation"]
     class_class_curie: ClassVar[str] = "tccm:SourceAndNotation"
@@ -541,7 +572,7 @@ class SourceAndNotation(YAMLRoot):
     sourceLanguage: Optional[Union[dict, "OntologyLanguageReference"]] = None
     sourceDocumentSyntax: Optional[Union[dict, "OntologySyntaxReference"]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.sourceAndNotationDescription is not None and not isinstance(self.sourceAndNotationDescription, str):
             self.sourceAndNotationDescription = str(self.sourceAndNotationDescription)
 
@@ -557,12 +588,12 @@ class SourceAndNotation(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class AbstractResourceDescription(ResourceDescription):
     """
     The description of the characteristics of a resource that are independent of the resource content.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["AbstractResourceDescription"]
     class_class_curie: ClassVar[str] = "tccm:AbstractResourceDescription"
@@ -572,9 +603,9 @@ class AbstractResourceDescription(ResourceDescription):
     about: Union[str, ExternalURI] = None
     resourceID: Union[str, LocalIdentifier] = None
     releaseDocumentation: Optional[str] = None
-    releaseFormat: Optional[Union[Union[dict, SourceAndNotation], List[Union[dict, SourceAndNotation]]]] = empty_list()
+    releaseFormat: Optional[Union[Union[dict, SourceAndNotation], list[Union[dict, SourceAndNotation]]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.releaseDocumentation is not None and not isinstance(self.releaseDocumentation, str):
             self.releaseDocumentation = str(self.releaseDocumentation)
 
@@ -585,13 +616,13 @@ class AbstractResourceDescription(ResourceDescription):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ResourceVersionDescription(ResourceDescription):
     """
     Information about the source, format, release date, version identifier, etc. of a specific version of an abstract
     resource.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["ResourceVersionDescription"]
     class_class_curie: ClassVar[str] = "tccm:ResourceVersionDescription"
@@ -607,7 +638,7 @@ class ResourceVersionDescription(ResourceDescription):
     officialReleaseDate: Optional[Union[str, XSDDateTime]] = None
     officialActivationDate: Optional[Union[str, XSDDateTime]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.documentURI is not None and not isinstance(self.documentURI, DocumentURI):
             self.documentURI = DocumentURI(self.documentURI)
 
@@ -629,14 +660,14 @@ class ResourceVersionDescription(ResourceDescription):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class NameAndMeaningReference(YAMLRoot):
     """
     A NameAndMeaningReference consists of a local identifier that references a unique meaning within the context of a
     given domain in a TCCM service instance and a globally unique URI that identifies the intended meaning of the
     identifier.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["NameAndMeaningReference"]
     class_class_curie: ClassVar[str] = "tccm:NameAndMeaningReference"
@@ -647,7 +678,7 @@ class NameAndMeaningReference(YAMLRoot):
     uri: Optional[Union[str, ExternalURI]] = None
     href: Optional[Union[str, RenderingURI]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.name):
             self.MissingRequiredField("name")
         if not isinstance(self.name, LocalIdentifier):
@@ -662,12 +693,12 @@ class NameAndMeaningReference(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class AssociationReference(NameAndMeaningReference):
     """
     A name or identifier that uniquely names an association instance in a code system.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["AssociationReference"]
     class_class_curie: ClassVar[str] = "tccm:AssociationReference"
@@ -676,14 +707,14 @@ class AssociationReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class BindingQualifierReference(NameAndMeaningReference):
     """
     A reference to an entity that describes the role that a given value set binding plays for a concept domain. T
     ypical values represent “overall,” “minimum” or “maximum,” the significance of which can be found in H L7 Version
     3 documentation.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["BindingQualifierReference"]
     class_class_curie: ClassVar[str] = "tccm:BindingQualifierReference"
@@ -692,12 +723,12 @@ class BindingQualifierReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class CaseSignificanceReference(NameAndMeaningReference):
     """
     A reference to an entity that describes significance of the case in term or designation.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["CaseSignificanceReference"]
     class_class_curie: ClassVar[str] = "tccm:CaseSignificanceReference"
@@ -706,13 +737,13 @@ class CaseSignificanceReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class CodeSystemCategoryReference(NameAndMeaningReference):
     """
     A reference to information about a paradigm model used to create an ontology (a.k.a. knowledge representation
     paradigm).
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["CodeSystemCategoryReference"]
     class_class_curie: ClassVar[str] = "tccm:CodeSystemCategoryReference"
@@ -721,12 +752,12 @@ class CodeSystemCategoryReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class CodeSystemReference(NameAndMeaningReference):
     """
     A reference to a code system or ontology.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["CodeSystemReference"]
     class_class_curie: ClassVar[str] = "tccm:CodeSystemReference"
@@ -735,12 +766,12 @@ class CodeSystemReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class CodeSystemVersionReference(NameAndMeaningReference):
     """
     A reference to a specific version of code system and, if known, the code system which it is a version of.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["CodeSystemVersionReference"]
     class_class_curie: ClassVar[str] = "tccm:CodeSystemVersionReference"
@@ -750,19 +781,19 @@ class CodeSystemVersionReference(NameAndMeaningReference):
     name: Union[str, LocalIdentifier] = None
     codeSystem: Optional[Union[dict, CodeSystemReference]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.codeSystem is not None and not isinstance(self.codeSystem, CodeSystemReference):
             self.codeSystem = CodeSystemReference(**as_dict(self.codeSystem))
 
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ConceptDomainReference(NameAndMeaningReference):
     """
     A reference to a concept domain.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["ConceptDomainReference"]
     class_class_curie: ClassVar[str] = "tccm:ConceptDomainReference"
@@ -771,12 +802,12 @@ class ConceptDomainReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class ContextReference(NameAndMeaningReference):
     """
     A reference to a realm or context.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["ContextReference"]
     class_class_curie: ClassVar[str] = "tccm:ContextReference"
@@ -785,12 +816,12 @@ class ContextReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class DesignationFidelityReference(NameAndMeaningReference):
     """
     A reference to a description about designation faithfulness or accuracy.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["DesignationFidelityReference"]
     class_class_curie: ClassVar[str] = "tccm:DesignationFidelityReference"
@@ -799,12 +830,12 @@ class DesignationFidelityReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class DesignationTypeReference(NameAndMeaningReference):
     """
     A reference to a designation type or form such as “short name,” “abbreviation,” “eponym.”
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["DesignationTypeReference"]
     class_class_curie: ClassVar[str] = "tccm:DesignationTypeReference"
@@ -813,12 +844,12 @@ class DesignationTypeReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class FormalityLevelReference(NameAndMeaningReference):
     """
     A reference to a description of the relative formality an ontology.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["FormalityLevelReference"]
     class_class_curie: ClassVar[str] = "tccm:FormalityLevelReference"
@@ -827,12 +858,12 @@ class FormalityLevelReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class FormatReference(NameAndMeaningReference):
     """
     A reference to a particular way that information is encoded for storage or transmission.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["FormatReference"]
     class_class_curie: ClassVar[str] = "tccm:FormatReference"
@@ -841,12 +872,12 @@ class FormatReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class LanguageReference(NameAndMeaningReference):
     """
     A reference to a spoken or written human language.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["LanguageReference"]
     class_class_curie: ClassVar[str] = "tccm:LanguageReference"
@@ -855,12 +886,12 @@ class LanguageReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class MapCorrelationReference(NameAndMeaningReference):
     """
     A reference to a way that the source and target in a map can be related or assessed.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["MapCorrelationReference"]
     class_class_curie: ClassVar[str] = "tccm:MapCorrelationReference"
@@ -869,12 +900,12 @@ class MapCorrelationReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class MapReference(NameAndMeaningReference):
     """
     A reference to an abstract map.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["MapReference"]
     class_class_curie: ClassVar[str] = "tccm:MapReference"
@@ -883,12 +914,12 @@ class MapReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class MapVersionReference(NameAndMeaningReference):
     """
     A reference to a map version and the corresponding map, if known.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["MapVersionReference"]
     class_class_curie: ClassVar[str] = "tccm:MapVersionReference"
@@ -898,19 +929,19 @@ class MapVersionReference(NameAndMeaningReference):
     name: Union[str, LocalIdentifier] = None
     map: Optional[Union[dict, MapReference]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.map is not None and not isinstance(self.map, MapReference):
             self.map = MapReference(**as_dict(self.map))
 
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class MatchAlgorithmReference(NameAndMeaningReference):
     """
     A reference to an algorithm used for selecting and filtering data.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["MatchAlgorithmReference"]
     class_class_curie: ClassVar[str] = "tccm:MatchAlgorithmReference"
@@ -919,12 +950,12 @@ class MatchAlgorithmReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class ModelAttributeReference(NameAndMeaningReference):
     """
     A reference to an attribute defined in the CTS2 specification.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["ModelAttributeReference"]
     class_class_curie: ClassVar[str] = "tccm:ModelAttributeReference"
@@ -933,13 +964,13 @@ class ModelAttributeReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class NamespaceReference(NameAndMeaningReference):
     """
     A reference to a conceptual space that groups identifiers to avoid conflict with items that have the same name but
     different meanings.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["NamespaceReference"]
     class_class_curie: ClassVar[str] = "tccm:NamespaceReference"
@@ -948,12 +979,12 @@ class NamespaceReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class OntologyDomainReference(NameAndMeaningReference):
     """
     A reference to a subject domain for an ontology.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["OntologyDomainReference"]
     class_class_curie: ClassVar[str] = "tccm:OntologyDomainReference"
@@ -962,12 +993,12 @@ class OntologyDomainReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class OntologyEngineeringMethodologyReference(NameAndMeaningReference):
     """
     A reference to a method model that can be used to create an ontology.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["OntologyEngineeringMethodologyReference"]
     class_class_curie: ClassVar[str] = "tccm:OntologyEngineeringMethodologyReference"
@@ -976,12 +1007,12 @@ class OntologyEngineeringMethodologyReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class OntologyEngineeringToolReference(NameAndMeaningReference):
     """
     A reference to a tool that can be used to create an ontology.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["OntologyEngineeringToolReference"]
     class_class_curie: ClassVar[str] = "tccm:OntologyEngineeringToolReference"
@@ -990,12 +1021,12 @@ class OntologyEngineeringToolReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class OntologyLanguageReference(NameAndMeaningReference):
     """
     A reference to a language in which an ontology may be implemented.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["OntologyLanguageReference"]
     class_class_curie: ClassVar[str] = "tccm:OntologyLanguageReference"
@@ -1004,12 +1035,12 @@ class OntologyLanguageReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class OntologySyntaxReference(NameAndMeaningReference):
     """
     A reference to a syntax in which an ontology may be represented.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["OntologySyntaxReference"]
     class_class_curie: ClassVar[str] = "tccm:OntologySyntaxReference"
@@ -1018,12 +1049,12 @@ class OntologySyntaxReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class OntologyTaskReference(NameAndMeaningReference):
     """
     A reference to a purpose for which an ontology can be designed.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["OntologyTaskReference"]
     class_class_curie: ClassVar[str] = "tccm:OntologyTaskReference"
@@ -1032,12 +1063,12 @@ class OntologyTaskReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class OntologyTypeReference(NameAndMeaningReference):
     """
     A reference to the nature of the content of an ontology.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["OntologyTypeReference"]
     class_class_curie: ClassVar[str] = "tccm:OntologyTypeReference"
@@ -1046,14 +1077,14 @@ class OntologyTypeReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class PredicateReference(YAMLRoot):
     """
     An EntityReference that serves the role of predicate. Note that this varies slightly from the base class of
     NameAndMeaningReference because the name attribute is a namespace/name combination rather than a simple name
     scoped exclusively by the domain.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["PredicateReference"]
     class_class_curie: ClassVar[str] = "tccm:PredicateReference"
@@ -1065,7 +1096,7 @@ class PredicateReference(YAMLRoot):
     href: Optional[Union[str, RenderingURI]] = None
     designation: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.uri):
             self.MissingRequiredField("uri")
         if not isinstance(self.uri, ExternalURI):
@@ -1085,12 +1116,12 @@ class PredicateReference(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ReasoningAlgorithmReference(NameAndMeaningReference):
     """
     A reference to a formal algorithm for making inferences about an ontology.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["ReasoningAlgorithmReference"]
     class_class_curie: ClassVar[str] = "tccm:ReasoningAlgorithmReference"
@@ -1099,13 +1130,13 @@ class ReasoningAlgorithmReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class RoleReference(NameAndMeaningReference):
     """
     A reference to a role that an individual, organization, or bibliographic reference can play in the construction of
     a resource or resource component.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["RoleReference"]
     class_class_curie: ClassVar[str] = "tccm:RoleReference"
@@ -1114,13 +1145,13 @@ class RoleReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class SourceAndRoleReference(NameAndMeaningReference):
     """
     A reference to a source that also includes the role that the source played and/or fixes the particular chapter,
     page, or other element within the reference.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["SourceAndRoleReference"]
     class_class_curie: ClassVar[str] = "tccm:SourceAndRoleReference"
@@ -1130,19 +1161,19 @@ class SourceAndRoleReference(NameAndMeaningReference):
     name: Union[str, LocalIdentifier] = None
     role: Optional[Union[dict, RoleReference]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.role is not None and not isinstance(self.role, RoleReference):
             self.role = RoleReference(**as_dict(self.role))
 
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class SourceReference(NameAndMeaningReference):
     """
     A reference to an individual, organization of bibliographic reference.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["SourceReference"]
     class_class_curie: ClassVar[str] = "tccm:SourceReference"
@@ -1151,12 +1182,12 @@ class SourceReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class StatusReference(NameAndMeaningReference):
     """
     A reference to a state in an external ontology authoring workflow.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["StatusReference"]
     class_class_curie: ClassVar[str] = "tccm:StatusReference"
@@ -1165,12 +1196,12 @@ class StatusReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class ValueSetDefinitionReference(NameAndMeaningReference):
     """
     A reference to a set of rules for constructing a value set along with the corresponding value set if known.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["ValueSetDefinitionReference"]
     class_class_curie: ClassVar[str] = "tccm:ValueSetDefinitionReference"
@@ -1179,12 +1210,12 @@ class ValueSetDefinitionReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class ValueSetReference(NameAndMeaningReference):
     """
     A reference to a named set of entity references.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["ValueSetReference"]
     class_class_curie: ClassVar[str] = "tccm:ValueSetReference"
@@ -1193,12 +1224,12 @@ class ValueSetReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class VersionTagReference(NameAndMeaningReference):
     """
     A reference to a tag that can be assigned to versionable resources within the context of a service implementation.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["VersionTagReference"]
     class_class_curie: ClassVar[str] = "tccm:VersionTagReference"
@@ -1224,13 +1255,13 @@ slots.formalName = Slot(uri=TCCM.formalName, name="formalName", curie=TCCM.curie
                    model_uri=TCCM.formalName, domain=None, range=Optional[str])
 
 slots.keyword = Slot(uri=TCCM.keyword, name="keyword", curie=TCCM.curie('keyword'),
-                   model_uri=TCCM.keyword, domain=None, range=Optional[Union[str, List[str]]])
+                   model_uri=TCCM.keyword, domain=None, range=Optional[Union[str, list[str]]])
 
 slots.resourceSynopsis = Slot(uri=TCCM.resourceSynopsis, name="resourceSynopsis", curie=TCCM.curie('resourceSynopsis'),
                    model_uri=TCCM.resourceSynopsis, domain=None, range=Optional[str])
 
 slots.additionalDocumentation = Slot(uri=TCCM.additionalDocumentation, name="additionalDocumentation", curie=TCCM.curie('additionalDocumentation'),
-                   model_uri=TCCM.additionalDocumentation, domain=None, range=Optional[Union[Union[str, PersistentURI], List[Union[str, PersistentURI]]]])
+                   model_uri=TCCM.additionalDocumentation, domain=None, range=Optional[Union[Union[str, PersistentURI], list[Union[str, PersistentURI]]]])
 
 slots.rights = Slot(uri=TCCM.rights, name="rights", curie=TCCM.curie('rights'),
                    model_uri=TCCM.rights, domain=None, range=Optional[str])
@@ -1254,7 +1285,7 @@ slots.releaseDocumentation = Slot(uri=TCCM.releaseDocumentation, name="releaseDo
                    model_uri=TCCM.releaseDocumentation, domain=None, range=Optional[str])
 
 slots.releaseFormat = Slot(uri=TCCM.releaseFormat, name="releaseFormat", curie=TCCM.curie('releaseFormat'),
-                   model_uri=TCCM.releaseFormat, domain=None, range=Optional[Union[Union[dict, SourceAndNotation], List[Union[dict, SourceAndNotation]]]])
+                   model_uri=TCCM.releaseFormat, domain=None, range=Optional[Union[Union[dict, SourceAndNotation], list[Union[dict, SourceAndNotation]]]])
 
 slots.documentURI = Slot(uri=TCCM.documentURI, name="documentURI", curie=TCCM.curie('documentURI'),
                    model_uri=TCCM.documentURI, domain=None, range=Optional[Union[str, DocumentURI]])
@@ -1305,13 +1336,13 @@ slots.ResourceDescription_formalName = Slot(uri=TCCM.formalName, name="ResourceD
                    model_uri=TCCM.ResourceDescription_formalName, domain=ResourceDescription, range=Optional[str])
 
 slots.ResourceDescription_keyword = Slot(uri=TCCM.keyword, name="ResourceDescription_keyword", curie=TCCM.curie('keyword'),
-                   model_uri=TCCM.ResourceDescription_keyword, domain=ResourceDescription, range=Optional[Union[str, List[str]]])
+                   model_uri=TCCM.ResourceDescription_keyword, domain=ResourceDescription, range=Optional[Union[str, list[str]]])
 
 slots.ResourceDescription_resourceSynopsis = Slot(uri=TCCM.resourceSynopsis, name="ResourceDescription_resourceSynopsis", curie=TCCM.curie('resourceSynopsis'),
                    model_uri=TCCM.ResourceDescription_resourceSynopsis, domain=ResourceDescription, range=Optional[str])
 
 slots.ResourceDescription_additionalDocumentation = Slot(uri=TCCM.additionalDocumentation, name="ResourceDescription_additionalDocumentation", curie=TCCM.curie('additionalDocumentation'),
-                   model_uri=TCCM.ResourceDescription_additionalDocumentation, domain=ResourceDescription, range=Optional[Union[Union[str, PersistentURI], List[Union[str, PersistentURI]]]])
+                   model_uri=TCCM.ResourceDescription_additionalDocumentation, domain=ResourceDescription, range=Optional[Union[Union[str, PersistentURI], list[Union[str, PersistentURI]]]])
 
 slots.ResourceDescription_rights = Slot(uri=TCCM.rights, name="ResourceDescription_rights", curie=TCCM.curie('rights'),
                    model_uri=TCCM.ResourceDescription_rights, domain=ResourceDescription, range=Optional[str])
@@ -1335,7 +1366,7 @@ slots.AbstractResourceDescription_releaseDocumentation = Slot(uri=TCCM.releaseDo
                    model_uri=TCCM.AbstractResourceDescription_releaseDocumentation, domain=AbstractResourceDescription, range=Optional[str])
 
 slots.AbstractResourceDescription_releaseFormat = Slot(uri=TCCM.releaseFormat, name="AbstractResourceDescription_releaseFormat", curie=TCCM.curie('releaseFormat'),
-                   model_uri=TCCM.AbstractResourceDescription_releaseFormat, domain=AbstractResourceDescription, range=Optional[Union[Union[dict, SourceAndNotation], List[Union[dict, SourceAndNotation]]]])
+                   model_uri=TCCM.AbstractResourceDescription_releaseFormat, domain=AbstractResourceDescription, range=Optional[Union[Union[dict, SourceAndNotation], list[Union[dict, SourceAndNotation]]]])
 
 slots.ResourceVersionDescription_documentURI = Slot(uri=TCCM.documentURI, name="ResourceVersionDescription_documentURI", curie=TCCM.curie('documentURI'),
                    model_uri=TCCM.ResourceVersionDescription_documentURI, domain=ResourceVersionDescription, range=Optional[Union[str, DocumentURI]])

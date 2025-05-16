@@ -23,6 +23,7 @@ URI: [linkml:range](https://w3id.org/linkml/range)
 
 ## Children
 
+ *  [enum_binding➞range](enum_binding_range.md)
 
 ## Used by
 

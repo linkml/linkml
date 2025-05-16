@@ -1,11 +1,12 @@
 import importlib.util
 import logging
 import os
+from collections.abc import Iterable, Iterator
 from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Dict, Iterable, Iterator, List, Optional, Tuple, Union
+from typing import Optional, Union
 
 import click
 from jinja2 import Environment, FileSystemLoader, Template
@@ -50,10 +51,17 @@ DIALECT = MarkdownDialect
 MAX_CHARS_IN_TABLE = 80
 MAX_RANK = 1000
 
+SCHEMA_SUBFOLDER = "schemas"
+CLASS_SUBFOLDER = "classes"
+SLOT_SUBFOLDER = "slots"
+ENUM_SUBFOLDER = "enums"
+TYPE_SUBFOLDER = "types"
+SUBSET_SUBFOLDER = "subsets"
+
 
 def enshorten(input):
     """
-    Custom filter to truncate any long text intended to go in a table,
+    Custom filters to truncate any long text intended to go in a table
     and to remove anything after a newline"""
     if input is None:
         return ""
@@ -68,8 +76,11 @@ def enshorten(input):
     return input
 
 
-def customize_environment(env: Environment):
-    env.filters["enshorten"] = enshorten
+def text_to_web(input) -> str:
+    """Custom filter to convert multi-line text strings into a suitable format for web/markdown output."""
+    if input is None:
+        return ""
+    return "<br>".join(input.strip().split("\n"))
 
 
 def _ensure_ranked(elements: Iterable[Element]):
@@ -128,7 +139,7 @@ class DocGenerator(Generator):
     """markdown dialect (e.g MyST, Python)"""
     sort_by: str = "name"
     visit_all_class_slots = False
-    template_mappings: Dict[str, str] = None
+    template_mappings: dict[str, str] = None
     directory: str = None
     """directory in which to write documents"""
 
@@ -144,6 +155,12 @@ class DocGenerator(Generator):
     include_top_level_diagram: bool = False
     """Whether the index page should include a schema diagram"""
 
+    subfolder_type_separation: bool = False
+    """Whether each type (class, slot, etc.) should be put in separate subfolder for navigation purposes"""
+
+    truncate_descriptions: bool = True
+    """Whether to truncate long (multi-line) descriptions down to a single line."""
+
     example_directory: Optional[str] = None
     example_runner: ExampleRunner = field(default_factory=lambda: ExampleRunner())
 
@@ -154,6 +171,7 @@ class DocGenerator(Generator):
     use_slot_uris: bool = False
     use_class_uris: bool = False
     hierarchical_class_view: bool = False
+    render_imports: bool = False
 
     def __post_init__(self):
         dialect = self.dialect
@@ -205,7 +223,11 @@ class DocGenerator(Generator):
             self.logger.debug(f"  Generating doc for {schema_name}")
             imported_schema = sv.schema_map.get(schema_name)
             out_str = template.render(gen=self, schema=imported_schema, schemaview=sv, **template_vars)
-            self._write(out_str, directory, imported_schema.name)
+            self._write(
+                out_str,
+                f"{directory}/{SCHEMA_SUBFOLDER}" if self.subfolder_type_separation else directory,
+                imported_schema.name,
+            )
         self.logger.debug("Processing Classes...")
         template = self._get_template("class")
         for cn, c in sv.all_classes().items():
@@ -214,7 +236,7 @@ class DocGenerator(Generator):
             n = self.name(c)
             self.logger.debug(f"  Generating doc for {n}")
             out_str = template.render(gen=self, element=c, schemaview=sv, **template_vars)
-            self._write(out_str, directory, n)
+            self._write(out_str, f"{directory}/{CLASS_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
         self.logger.debug("Processing Slots...")
         template = self._get_template("slot")
         for sn, s in sv.all_slots().items():
@@ -224,7 +246,7 @@ class DocGenerator(Generator):
             self.logger.debug(f"  Generating doc for {n}")
             s = sv.induced_slot(sn)
             out_str = template.render(gen=self, element=s, schemaview=sv, **template_vars)
-            self._write(out_str, directory, n)
+            self._write(out_str, f"{directory}/{SLOT_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
         self.logger.debug("Processing Enums...")
         template = self._get_template("enum")
         for en, e in sv.all_enums().items():
@@ -233,7 +255,7 @@ class DocGenerator(Generator):
             n = self.name(e)
             self.logger.debug(f"  Generating doc for {n}")
             out_str = template.render(gen=self, element=e, schemaview=sv, **template_vars)
-            self._write(out_str, directory, n)
+            self._write(out_str, f"{directory}/{ENUM_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
         self.logger.debug("Processing Types...")
         template = self._get_template("type")
         for tn, t in sv.all_types().items():
@@ -243,7 +265,7 @@ class DocGenerator(Generator):
             self.logger.debug(f"  Generating doc for {n}")
             t = sv.induced_type(tn)
             out_str = template.render(gen=self, element=t, schemaview=sv, **template_vars)
-            self._write(out_str, directory, n)
+            self._write(out_str, f"{directory}/{TYPE_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
         self.logger.debug("Processing Subsets...")
         template = self._get_template("subset")
         for _, s in sv.all_subsets().items():
@@ -252,7 +274,7 @@ class DocGenerator(Generator):
             n = self.name(s)
             self.logger.debug(f"  Generating doc for {n}")
             out_str = template.render(gen=self, element=s, schemaview=sv, **template_vars)
-            self._write(out_str, directory, n)
+            self._write(out_str, f"{directory}/{SUBSET_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
 
     def _write(self, out_str: str, directory: str, name: str) -> None:
         """
@@ -298,7 +320,7 @@ class DocGenerator(Generator):
             # TODO: relative paths
             # loader = FileSystemLoader()
             env = Environment()
-            customize_environment(env)
+            self.customize_environment(env)
             return env.get_template(path)
         else:
             base_file_name = f"{element_type}.{self._file_suffix()}.jinja2"
@@ -316,7 +338,7 @@ class DocGenerator(Generator):
                 folder = os.path.join(package_dir, "docgen", "")
             loader = FileSystemLoader(folder)
             env = Environment(loader=loader)
-            customize_environment(env)
+            self.customize_environment(env)
             return env.get_template(base_file_name)
 
     def schema_title(self) -> str:
@@ -368,6 +390,10 @@ class DocGenerator(Generator):
         if isinstance(element, (EnumDefinition, SubsetDefinition)):
             # TODO: fix schema view to handle URIs for enums and subsets
             return self.name(element)
+
+        if self.subfolder_type_separation:
+            return self.schemaview.get_uri(element, expand=expand, use_element_type=True)
+
         return self.schemaview.get_uri(element, expand=expand)
 
     def uri_link(self, element: Union[Element, str]) -> str:
@@ -384,13 +410,19 @@ class DocGenerator(Generator):
         curie = self.uri(element, expand=False)
         return f"[{curie}]({uri})"
 
-    def link(self, e: Union[Definition, DefinitionName]) -> str:
+    def link(self, e: Union[Definition, DefinitionName], index_link: bool = False) -> str:
         """
         Render an element as a hyperlink
 
         :param e:
+        :param index_link: Whether this is a link for the index page or not
         :return:
         """
+        if index_link:
+            subfolder = ""
+        else:
+            subfolder = "../"
+
         if e is None:
             return "NONE"
         if not isinstance(e, Definition):
@@ -401,24 +433,47 @@ class DocGenerator(Generator):
             if self.use_class_uris:
                 curie = self.schemaview.get_uri(e)
                 if curie is not None:
-                    return self._markdown_link(n=curie.split(":")[1], name=e.name)
-            return self._markdown_link(camelcase(e.name))
+                    return self._markdown_link(
+                        n=curie.split(":")[1],
+                        name=e.name,
+                        subfolder=subfolder + CLASS_SUBFOLDER if self.subfolder_type_separation else None,
+                    )
+            return self._markdown_link(
+                camelcase(e.name),
+                subfolder=subfolder + CLASS_SUBFOLDER if self.subfolder_type_separation else None,
+            )
         elif isinstance(e, EnumDefinition):
-            return self._markdown_link(camelcase(e.name))
+            return self._markdown_link(
+                camelcase(e.name),
+                subfolder=subfolder + ENUM_SUBFOLDER if self.subfolder_type_separation else None,
+            )
         elif isinstance(e, SlotDefinition):
             if self.use_slot_uris:
                 curie = self.schemaview.get_uri(e)
                 if curie is not None:
-                    return self._markdown_link(n=curie.split(":")[1], name=e.name)
-            return self._markdown_link(underscore(e.name))
+                    return self._markdown_link(
+                        n=curie.split(":")[1],
+                        name=e.name,
+                        subfolder=subfolder + SLOT_SUBFOLDER if self.subfolder_type_separation else None,
+                    )
+            return self._markdown_link(
+                underscore(e.name),
+                subfolder=subfolder + SLOT_SUBFOLDER if self.subfolder_type_separation else None,
+            )
         elif isinstance(e, TypeDefinition):
-            return self._markdown_link(camelcase(e.name))
+            return self._markdown_link(
+                camelcase(e.name),
+                subfolder=subfolder + TYPE_SUBFOLDER if self.subfolder_type_separation else None,
+            )
         elif isinstance(e, SubsetDefinition):
-            return self._markdown_link(camelcase(e.name))
+            return self._markdown_link(
+                camelcase(e.name),
+                subfolder=subfolder + SUBSET_SUBFOLDER if self.subfolder_type_separation else None,
+            )
         else:
             return e.name
 
-    def links(self, e_list: List[DefinitionName]) -> List[str]:
+    def links(self, e_list: list[DefinitionName]) -> list[str]:
         """Render list of element documentation pages as hyperlinks.
 
         :param e_list: list of elements
@@ -477,7 +532,7 @@ class DocGenerator(Generator):
         mixins=True,
         descriptions=False,
         focus: DefinitionName = None,
-    ) -> Tuple[str, int]:
+    ) -> tuple[str, int]:
         sv = self.schemaview
         if element.is_a:
             pre, depth = self._tree(
@@ -637,7 +692,7 @@ class DocGenerator(Generator):
         else:
             return "mermaid"
 
-    def mermaid_diagram(self, class_names: List[Union[str, ClassDefinitionName]] = None) -> str:
+    def mermaid_diagram(self, class_names: list[Union[str, ClassDefinitionName]] = None) -> str:
         """
         Render a mermaid diagram for a set of classes
 
@@ -706,8 +761,7 @@ class DocGenerator(Generator):
         """
         elts = self.schemaview.class_induced_slots(class_name)
         _ensure_ranked(elts)
-        for e in elts:
-            yield e
+        yield from elts
 
     def all_class_objects(self) -> Iterator[ClassDefinition]:
         """
@@ -716,10 +770,9 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_classes(imports=self.mergeimports).values()
+        elts = self.schemaview.all_classes(imports=self.render_imports).values()
         _ensure_ranked(elts)
-        for e in elts:
-            yield e
+        yield from elts
 
     def all_slot_objects(self) -> Iterator[SlotDefinition]:
         """
@@ -728,10 +781,9 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_slots(imports=self.mergeimports).values()
+        elts = self.schemaview.all_slots(imports=self.render_imports).values()
         _ensure_ranked(elts)
-        for e in elts:
-            yield e
+        yield from elts
 
     def all_type_objects(self) -> Iterator[TypeDefinition]:
         """
@@ -740,12 +792,11 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_types(imports=self.mergeimports).values()
+        elts = self.schemaview.all_types(imports=self.render_imports).values()
         _ensure_ranked(elts)
-        for e in elts:
-            yield e
+        yield from elts
 
-    def all_type_object_names(self) -> List[TypeDefinitionName]:
+    def all_type_object_names(self) -> list[TypeDefinitionName]:
         return [t.name for t in list(self.all_type_objects())]
 
     def all_enum_objects(self) -> Iterator[EnumDefinition]:
@@ -755,10 +806,9 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_enums(imports=self.mergeimports).values()
+        elts = self.schemaview.all_enums(imports=self.render_imports).values()
         _ensure_ranked(elts)
-        for e in elts:
-            yield e
+        yield from elts
 
     def all_subset_objects(self) -> Iterator[SubsetDefinition]:
         """
@@ -767,12 +817,11 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_subsets(imports=self.mergeimports).values()
+        elts = self.schemaview.all_subsets(imports=self.render_imports).values()
         _ensure_ranked(elts)
-        for e in elts:
-            yield e
+        yield from elts
 
-    def class_hierarchy_as_tuples(self) -> Iterator[Tuple[int, ClassDefinitionName]]:
+    def class_hierarchy_as_tuples(self) -> Iterator[tuple[int, ClassDefinitionName]]:
         """
         Generate a hierarchical representation of all classes in the schema
 
@@ -791,7 +840,7 @@ class DocGenerator(Generator):
         :return: tuples (depth: int, cls: ClassDefinitionName)
         """
         sv = self.schemaview
-        roots = sv.class_roots(mixins=False, imports=self.mergeimports)
+        roots = sv.class_roots(mixins=False, imports=self.render_imports)
 
         # by default the classes are sorted alphabetically
         roots = sorted(roots, key=str.casefold, reverse=True)
@@ -805,7 +854,7 @@ class DocGenerator(Generator):
             depth, class_name = stack.pop()
             yield depth, class_name
             children = sorted(
-                sv.class_children(class_name=class_name, mixins=False, imports=self.mergeimports),
+                sv.class_children(class_name=class_name, mixins=False, imports=self.render_imports),
                 key=str.casefold,
                 reverse=True,
             )
@@ -836,7 +885,7 @@ class DocGenerator(Generator):
         return slot
 
     @staticmethod
-    def get_direct_slot_names(cls: ClassDefinition) -> List[SlotDefinitionName]:
+    def get_direct_slot_names(cls: ClassDefinition) -> list[SlotDefinitionName]:
         """Fetch list of all own attributes of a class, i.e.,
         all slot names of slots that belong to the domain of a class.
 
@@ -845,7 +894,7 @@ class DocGenerator(Generator):
         """
         return cls.slots + list(cls.attributes.keys())
 
-    def get_direct_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
+    def get_direct_slots(self, cls: ClassDefinition) -> list[SlotDefinition]:
         """Fetch list of all own attributes of a class, i.e.,
         all slots that belong to the domain of a class.
 
@@ -856,7 +905,7 @@ class DocGenerator(Generator):
             self.inject_slot_info(self.schemaview.induced_slot(sn, cls.name)) for sn in self.get_direct_slot_names(cls)
         ]
 
-    def get_indirect_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
+    def get_indirect_slots(self, cls: ClassDefinition) -> list[SlotDefinition]:
         """Fetch list of all inherited attributes of a class, i.e.,
         all slots that belong to the domain of a class.
 
@@ -873,7 +922,7 @@ class DocGenerator(Generator):
 
     def get_slot_inherited_from(
         self, class_name: ClassDefinitionName, slot_name: SlotDefinitionName
-    ) -> List[ClassDefinitionName]:
+    ) -> list[ClassDefinitionName]:
         """Get the name of the class that a given slot is inherited from.
 
         :param class_name: name of the class whose slot we are checking
@@ -885,7 +934,7 @@ class DocGenerator(Generator):
         ancestors = sv.class_ancestors(class_name)
         return list(set(induced_slot.domain_of).intersection(ancestors))
 
-    def get_mixin_inherited_slots(self, cls: ClassDefinition) -> Dict[str, List[str]]:
+    def get_mixin_inherited_slots(self, cls: ClassDefinition) -> dict[str, list[str]]:
         """Fetch list of all slots acquired through mixing.
 
         :param cls: class for which we want to determine the mixed in slots
@@ -900,7 +949,7 @@ class DocGenerator(Generator):
 
         return mixed_in_slots
 
-    def example_object_blobs(self, class_name: str) -> List[Tuple[str, str]]:
+    def example_object_blobs(self, class_name: str) -> list[tuple[str, str]]:
         """Fetch list of all examples of a class.
 
         :param class_name: class for which we want to determine the examples
@@ -916,13 +965,19 @@ class DocGenerator(Generator):
                 objs.append((stem, f.read()))
         return objs
 
+    def customize_environment(self, env: Environment):
+        if self.truncate_descriptions:
+            env.filters["enshorten"] = enshorten
+        else:
+            env.filters["enshorten"] = text_to_web
+
 
 @shared_arguments(DocGenerator)
 @click.option(
     "--directory",
     "-d",
     required=True,
-    help="Folder to which document files are written",
+    help="Path to the directory where you want the Markdown files to be written to",
 )
 @click.option("--index-name", default="index", show_default=True, help="Name of the index document.")
 @click.option("--dialect", help="Dialect or 'flavor' of Markdown used.")
@@ -949,7 +1004,7 @@ class DocGenerator(Generator):
     show_default=True,
     help="Generating metamodel. Only use this for generating meta.py",
 )
-@click.option("--template-directory", help="Folder in which custom templates are kept")
+@click.option("--template-directory", help="Path to the directory with custom jinja2 templates")
 @click.option(
     "--use-slot-uris/--no-use-slot-uris",
     default=False,
@@ -966,6 +1021,12 @@ class DocGenerator(Generator):
     help="Render class table on index page in a hierarchically indented view",
 )
 @click.option(
+    "--render-imports/--no-render-imports",
+    default=False,
+    show_default=True,
+    help="Render also the documentation of elements from imported schemas",
+)
+@click.option(
     "--example-directory",
     help="Folder in which example files are found. These are used to make inline examples",
 )
@@ -977,8 +1038,21 @@ Include LinkML Schema outside of imports mechanism.  Helpful in including deprec
 YAML, and including it when necessary but not by default (e.g. in documentation or for backwards compatibility)
 """,
 )
+@click.option(
+    "--subfolder-type-separation/--no-subfolder-type-separation",
+    default=False,
+    help="Separate type (class, slot, etc.) outputs in different subfolders for navigation purposes",
+)
+@click.option(
+    "--truncate-descriptions",
+    default=True,
+    show_default=True,
+    help="""
+Whether to truncate long (potentially spanning multiple lines) descriptions of classes, slots, etc., in the docs.
+Set to true for truncated descriptions, and false to display full descriptions.""",
+)
 @click.version_option(__version__, "-V", "--version")
-@click.command()
+@click.command(name="doc")
 def cli(
     yamlfile,
     directory,
@@ -988,6 +1062,9 @@ def cli(
     use_slot_uris,
     use_class_uris,
     hierarchical_class_view,
+    subfolder_type_separation,
+    render_imports,
+    truncate_descriptions,
     **args,
 ):
     """Generate documentation folder from a LinkML YAML schema
@@ -1018,6 +1095,9 @@ def cli(
         use_class_uris=use_class_uris,
         hierarchical_class_view=hierarchical_class_view,
         index_name=index_name,
+        subfolder_type_separation=subfolder_type_separation,
+        render_imports=render_imports,
+        truncate_descriptions=truncate_descriptions,
         **args,
     )
     print(gen.serialize())

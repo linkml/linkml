@@ -1,6 +1,4 @@
-"""Validate linkml input and optionally emit completely resolved biolink yaml output
-
-"""
+"""Validate linkml input and optionally emit completely resolved biolink yaml output"""
 
 import os
 from dataclasses import dataclass
@@ -36,7 +34,7 @@ class YAMLGenerator(Generator):
 
 
 @shared_arguments(YAMLGenerator)
-@click.command()
+@click.command(name="yaml")
 @click.option(
     "--raw/--no-raw",
     default=False,

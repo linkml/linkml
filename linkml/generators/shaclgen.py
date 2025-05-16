@@ -1,11 +1,11 @@
 import logging
 import os
 from dataclasses import dataclass
-from typing import Callable, List
+from typing import Callable
 
 import click
 from jsonasobj2 import JsonObj, as_dict
-from linkml_runtime.linkml_model.meta import ElementName
+from linkml_runtime.linkml_model.meta import ClassDefinition, ElementName
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import TypedNode, extended_float, extended_int, extended_str
@@ -14,9 +14,11 @@ from rdflib.collection import Collection
 from rdflib.namespace import RDF, SH, XSD
 
 from linkml._version import __version__
-from linkml.generators.shacl.ifabsent_processor import IfAbsentProcessor
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
+from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -28,6 +30,8 @@ class ShaclGenerator(Generator):
     """parameterized suffix to be appended. No suffix per default."""
     include_annotations: bool = False
     """True means include all class / slot / type annotations in generated Node or Property shapes"""
+    exclude_imports: bool = False
+    """If True, elements from imported ontologies won't be included in the generator's output"""
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
@@ -56,12 +60,12 @@ class ShaclGenerator(Generator):
         g = Graph()
         g.bind("sh", SH)
 
-        ifabsent_processor = IfAbsentProcessor(sv)
+        ifabsent_processor = ShaclIfAbsentProcessor(sv)
 
         for pfx in self.schema.prefixes.values():
             g.bind(str(pfx.prefix_prefix), pfx.prefix_reference)
 
-        for c in sv.all_classes().values():
+        for c in sv.all_classes(imports=not self.exclude_imports).values():
 
             def shape_pv(p, v):
                 if v is not None:
@@ -73,6 +77,7 @@ class ShaclGenerator(Generator):
                 class_uri_with_suffix += self.suffix
             shape_pv(RDF.type, SH.NodeShape)
             shape_pv(SH.targetClass, class_uri)  # TODO
+
             if self.closed:
                 if c.mixin or c.abstract:
                     shape_pv(SH.closed, Literal(False))
@@ -84,9 +89,9 @@ class ShaclGenerator(Generator):
                 shape_pv(SH.name, Literal(c.title))
             if c.description is not None:
                 shape_pv(SH.description, Literal(c.description))
-            list_node = BNode()
-            Collection(g, list_node, [RDF.type])
-            shape_pv(SH.ignoredProperties, list_node)
+
+            shape_pv(SH.ignoredProperties, self._build_ignored_properties(g, c))
+
             if c.annotations and self.include_annotations:
                 self._add_annotations(shape_pv, c)
             order = 0
@@ -113,10 +118,20 @@ class ShaclGenerator(Generator):
                 order += 1
                 prop_pv_literal(SH.name, s.title)
                 prop_pv_literal(SH.description, s.description)
-                if not s.multivalued:
-                    prop_pv_literal(SH.maxCount, 1)
-                if s.required:
+                # minCount
+                if s.minimum_cardinality:
+                    prop_pv_literal(SH.minCount, s.minimum_cardinality)
+                elif s.exact_cardinality:
+                    prop_pv_literal(SH.minCount, s.exact_cardinality)
+                elif s.required:
                     prop_pv_literal(SH.minCount, 1)
+                # maxCount
+                if s.maximum_cardinality:
+                    prop_pv_literal(SH.maxCount, s.maximum_cardinality)
+                elif s.exact_cardinality:
+                    prop_pv_literal(SH.maxCount, s.exact_cardinality)
+                elif not s.multivalued:
+                    prop_pv_literal(SH.maxCount, 1)
                 prop_pv_literal(SH.minInclusive, s.minimum_value)
                 prop_pv_literal(SH.maxInclusive, s.maximum_value)
 
@@ -126,7 +141,7 @@ class ShaclGenerator(Generator):
                     # slot definition, as both are mapped to sh:in in SHACL
                     if s.equals_string or s.equals_string_in:
                         error = "'equals_string'/'equals_string_in' and 'any_of' are mutually exclusive"
-                        raise ValueError(f'{TypedNode.yaml_loc(s, suffix="")} {error}')
+                        raise ValueError(f'{TypedNode.yaml_loc(str(s), suffix="")} {error}')
 
                     or_node = BNode()
                     prop_pv(SH["or"], or_node)
@@ -195,8 +210,6 @@ class ShaclGenerator(Generator):
                         add_simple_data_type(prop_pv, r)
                     if s.pattern:
                         prop_pv(SH.pattern, Literal(s.pattern))
-                    if s.annotations and self.include_annotations:
-                        self._add_annotations(prop_pv, s)
                     if s.equals_string:
                         # Map equal_string and equal_string_in to sh:in
                         self._and_equals_string(g, prop_pv, [s.equals_string])
@@ -204,7 +217,12 @@ class ShaclGenerator(Generator):
                         # Map equal_string and equal_string_in to sh:in
                         self._and_equals_string(g, prop_pv, s.equals_string_in)
 
-                ifabsent_processor.process_slot(prop_pv, s, class_uri)
+                if s.annotations and self.include_annotations:
+                    self._add_annotations(prop_pv, s)
+
+                default_value = ifabsent_processor.process_slot(s, c)
+                if default_value:
+                    prop_pv(SH.defaultValue, default_value)
 
         return g
 
@@ -238,9 +256,9 @@ class ShaclGenerator(Generator):
             if rt.annotations and self.include_annotations:
                 self._add_annotations(func, rt)
         else:
-            logging.error(f"No URI for type {rt.name}")
+            logger.error(f"No URI for type {rt.name}")
 
-    def _and_equals_string(self, g: Graph, func: Callable, values: List) -> None:
+    def _and_equals_string(self, g: Graph, func: Callable, values: list) -> None:
         pv_node = BNode()
         Collection(
             g,
@@ -255,7 +273,7 @@ class ShaclGenerator(Generator):
         annotations = item.annotations
         # item could be a class, slot or type
         # annotation type could be dict (on types) or JsonObj (on slots)
-        if type(annotations) == JsonObj:
+        if type(annotations) is JsonObj:
             annotations = as_dict(annotations)
         for a in annotations.values():
             # If ':' is in the tag, treat it as a CURIE, otherwise string Literal
@@ -265,7 +283,7 @@ class ShaclGenerator(Generator):
                 N_predicate = Literal(a["tag"], datatype=XSD.string)
             # If the value is a string and ':' is in the value, treat it as a CURIE,
             # otherwise treat as Literal with derived XSD datatype
-            if type(a["value"]) == extended_str and ":" in a["value"]:
+            if type(a["value"]) is extended_str and ":" in a["value"]:
                 N_object = URIRef(sv.expand_curie(a["value"]))
             else:
                 N_object = Literal(a["value"], datatype=self._getXSDtype(a["value"]))
@@ -274,19 +292,19 @@ class ShaclGenerator(Generator):
 
     def _getXSDtype(self, value):
         value_type = type(value)
-        if value_type == bool:
+        if value_type is bool:
             return XSD.boolean
-        elif value_type == extended_str:
+        elif value_type is extended_str:
             return XSD.string
-        elif value_type == extended_int:
+        elif value_type is extended_int:
             return XSD.integer
-        elif value_type == extended_float:
+        elif value_type is extended_float:
             # TODO: distinguish between xsd:decimal and xsd:double?
             return XSD.decimal
         else:
             return None
 
-    def _and_equals_string(self, g: Graph, func: Callable, values: List) -> None:
+    def _and_equals_string(self, g: Graph, func: Callable, values: list) -> None:
         pv_node = BNode()
         Collection(
             g,
@@ -294,6 +312,31 @@ class ShaclGenerator(Generator):
             [Literal(v) for v in values],
         )
         func(SH["in"], pv_node)
+
+    def _build_ignored_properties(self, g: Graph, c: ClassDefinition) -> BNode:
+        def collect_child_properties(class_name: str, output: set) -> None:
+            for childName in self.schemaview.class_children(class_name, imports=True, mixins=False, is_a=True):
+                output.update(
+                    {
+                        URIRef(self.schemaview.get_uri(prop, expand=True))
+                        for prop in self.schemaview.class_slots(childName)
+                    }
+                )
+                collect_child_properties(childName, output)
+
+        child_properties = set()
+        collect_child_properties(c.name, child_properties)
+
+        class_slot_uris = {
+            URIRef(self.schemaview.get_uri(prop, expand=True)) for prop in self.schemaview.class_slots(c.name)
+        }
+        ignored_properties = child_properties.difference(class_slot_uris)
+
+        list_node = BNode()
+        ignored_properties.add(RDF.type)
+        Collection(g, list_node, list(ignored_properties))
+
+        return list_node
 
 
 def add_simple_data_type(func: Callable, r: ElementName) -> None:
@@ -303,7 +346,7 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
 
 
 @shared_arguments(ShaclGenerator)
-@click.command()
+@click.command(name="shacl")
 @click.option(
     "--closed/--non-closed",
     default=True,
@@ -322,6 +365,13 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     default=False,
     show_default=True,
     help="Use --include-annotations to include annotations of slots, types, and classes in the generated SHACL shapes.",
+)
+@click.option(
+    "--exclude-imports/--include-imports",
+    default=False,
+    show_default=True,
+    help="Use --exclude-imports to exclude imported elements from the generated SHACL shapes. This is useful when "
+    "extending a substantial ontology to avoid large output files.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):

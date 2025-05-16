@@ -7,6 +7,8 @@ from linkml.generators.jsonschemagen import cli
 
 from ..conftest import KITCHEN_SINK_PATH
 
+pytestmark = pytest.mark.jsonschemagen
+
 
 def test_help():
     runner = CliRunner()

@@ -13,6 +13,7 @@ from rdflib import OWL, RDF
 import tests.test_compliance.helper as helper
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
+    PANDERA_POLARS_CLASS,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SQL_DDL_POSTGRES,
@@ -107,6 +108,8 @@ def test_enum(framework, enum_name, enum_desc, pvs, value, include_meaning):
     if framework == SQL_DDL_SQLITE and not is_valid:
         # SQLite does not support enums
         expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     if pvs == [] and framework not in [JSON_SCHEMA]:
         # only JSON Schema and pydantic1 supports empty enums
         # (pydantiggen will generate a string extension, but
@@ -124,32 +127,6 @@ def test_enum(framework, enum_name, enum_desc, pvs, value, include_meaning):
         expected_behavior=expected_behavior,
         description="enum",
     )
-
-
-ANN_NAMED_INDIVIDUAL = {
-    "annotations": {
-        "tag": "implements",
-        "value": ["owl:NamedIndividual"],
-    }
-}
-ANN_CLASS = {
-    "annotations": {
-        "tag": "implements",
-        "value": ["owl:Class"],
-    }
-}
-ANN_OBJECT_PROPERTY = {
-    "annotations": {
-        "tag": "implements",
-        "value": ["owl:ObjectProperty"],
-    }
-}
-ANN_LITERAL = {
-    "annotations": {
-        "tag": "implements",
-        "value": ["rdfs:Literal"],
-    }
-}
 
 
 @pytest.mark.parametrize(
@@ -221,8 +198,8 @@ ANN_LITERAL = {
             {
                 ENUM_E: {
                     "permissible_values": {
-                        "X": ANN_NAMED_INDIVIDUAL,
-                        "Y": ANN_NAMED_INDIVIDUAL,
+                        "X": {"implements": ["owl:NamedIndividual"]},
+                        "Y": {"implements": ["owl:NamedIndividual"]},
                     },
                     "_mappings": {
                         helper.OWL: [
@@ -268,7 +245,7 @@ ANN_LITERAL = {
                     "implements": ["owl:NamedIndividual"],
                     "permissible_values": {
                         "X": {},
-                        "Y": ANN_CLASS,
+                        "Y": {"implements": ["owl:Class"]},
                     },
                     "_mappings": {
                         helper.OWL: [
@@ -302,8 +279,8 @@ ANN_LITERAL = {
             {
                 ENUM_E: {
                     "permissible_values": {
-                        "X": ANN_LITERAL,
-                        "Y": ANN_LITERAL,
+                        "X": {"implements": ["rdfs:Literal"]},
+                        "Y": {"implements": ["rdfs:Literal"]},
                     },
                 },
             },
@@ -316,7 +293,15 @@ ANN_LITERAL = {
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_permissible_value_typing(framework, enum_name, enums, data_name, data, is_valid):
     """
-    Tests typing of permissible values
+    Tests typing of permissible values.
+
+    This test is primarily for the OWL generator. When mapping to OWL, there is a choice
+    of how to represent enums and permissible values. By default, a PV is mapped to an IRI
+    representing an owl:Class; if the PV `meaning` metaslot is specified, then this is
+    used for the IRI, otherwise one is generated.
+
+    The schema author can influence this behavior using by specifying what OWL type the PV
+    implements.
 
     :param framework:
     :param enum_name:
@@ -349,6 +334,8 @@ def test_permissible_value_typing(framework, enum_name, enums, data_name, data, 
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if framework == SQL_DDL_SQLITE and not is_valid:
         # SQLite does not support enums
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
@@ -450,6 +437,8 @@ def test_enum_hierarchy(framework, use_mixins, include_meaning, propagate_down, 
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if framework == SQL_DDL_SQLITE and not is_valid:
         # SQLite does not support enums
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,

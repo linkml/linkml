@@ -9,7 +9,7 @@ See the golr-views directory in this repo for examples
 
 import os
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Optional
 
 import click
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
@@ -26,7 +26,7 @@ class GOLRField(YAMLRoot):
     id: str
     description: str
     display_name: str
-    property: List = empty_list()
+    property: list = empty_list()
     cardinality: Optional[str] = None
 
 
@@ -38,7 +38,7 @@ class GOLRClass(YAMLRoot):
     display_name: str
     document_category: str
     weight: int
-    fields: List[GOLRField] = empty_list()
+    fields: list[GOLRField] = empty_list()
 
 
 @dataclass
@@ -101,7 +101,7 @@ class GolrSchemaGenerator(Generator):
 
 
 @shared_arguments(GolrSchemaGenerator)
-@click.command()
+@click.command(name="golr-views")
 @click.option("--dir", "-d", default="golr-views", show_default=True, help="Output directory")
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, dir=None, **args):

@@ -4,7 +4,7 @@ For general info about how to contribute to LinkML, please see [FAQ: Contributin
 
 ## Development Environment Setup
 
-LinkML is developed with [Python](https://www.python.org/) and uses [Poetry](https://python-poetry.org/) for dependency management and packaging. If you have not used Poetry before refer to the [Poetry documentation](https://python-poetry.org/docs/master/#installation/) for installation instructions.
+LinkML is developed with [Python](https://www.python.org/) and uses [Poetry](https://python-poetry.org/) (version >= 2.0) for dependency management and packaging. If you have not used Poetry before refer to the [Poetry documentation](https://python-poetry.org/docs/#installation/) for installation instructions.
 
 Then clone the repository and install the development dependencies:
 
@@ -86,8 +86,8 @@ DEFAULT_LOG_LEVEL_TEXT: ERROR
 * To ignore the changed files run the shell script `hide_test_changes.sh`.
 * To reset all test output files back to original state use the shell script `checkout_outputs.sh`.
 
-
 ### IDE Tips
+
 PyCharm, IntelliJ:
 
 To run a single test:
@@ -140,25 +140,11 @@ New tests in any directory should be written using pytest.
 
   **Warning**: snapshot testing can be very powerful, but it can also lead to brittle tests. You should **seriously consider alternatives** before writing this type of test.
 
-  If you make a change that intentionally causes some output to not match the saved snapshot file(s), you should update the snapshots by running `pytest` with the `--generate-snapshots` flag. You should try to run only a single or small group of tests with this flag (as opposed to the entire test suite). The updated snapshot files should be checked in to Git alongside your other code changes.
+  If you make a change that intentionally causes some output to not match the saved snapshot file(s), you should update the snapshots by running `pytest` with the `--generate-snapshots` flag. You should try to run only a single or small group of tests with this flag (as opposed to the entire test suite). An exception to this rule is when preparing a new minor version of linkml after the metamodel changes, changes to the metamodel can have many (inconsequential) changes to multiple snapshots.
+  The updated snapshot files should be checked in to Git alongside your other code changes.
 
-### Testing multiple Pydantic versions
-
-LinkML both generates and depends on Pydantic. [Pydantic V2](https://docs.pydantic.dev/2.4/migration/) brought a number of breaking changes, but we intend to support both V1 and V2. By default, the `PydanticGenerator` class will generate code compatible with the version of Pydantic that is installed in your environment. This can be overridden by explicitly setting the `pydantic_version` field.
-
-As of March 2024, our default development environment specifies Pydantic 2 (as determined by the `poetry.lock` file). But since we also support Pydantic 1 (as specified in `pyproject.toml`), it is important to test with Pydantic 1 in your environment. To facilitate that there is a `tox` environment called `pydantic1`. To run all tests with Pydantic 1 installed:
-
-```shell
-poetry run tox -e pydantic1
-```
-
-Additional arguments will be passed to `pytest`. For example, to run a specific test:
-
-```shell
-poetry run tox -e pydantic1 -- -- tests/test_compliance/test_core_compliance.py
-```
-
-Our main GitHub Actions testing workflow will also automatically perform at least one test run with Pydantic 1 in the environment.
+  Debugging tip: sometimes a snapshot-based test may fail on GitHub actions, but may appear to pass locally. This can happen if the test is marked as a slow test,
+in which case you may need to use `--generate-snapshots` in combination with `--with-slow` (see below).
 
 ## Code formatting and linting
 
@@ -236,4 +222,3 @@ insight into your work and allows them to provide feedback early on.
 
 - [FAQ: Contributing](../faq/contributing.md) - General info about how to contribute to LinkML.
 - [Deprecation](../developers/deprecation.md) - Handling deprecations
-

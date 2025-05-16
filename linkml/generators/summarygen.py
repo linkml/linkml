@@ -1,6 +1,4 @@
-"""Generate Summary Spreadsheets
-
-"""
+"""Generate Summary Spreadsheets"""
 
 import os
 from csv import DictWriter
@@ -88,7 +86,7 @@ class SummaryGenerator(Generator):
 
 @shared_arguments(SummaryGenerator)
 @click.version_option(__version__, "-V", "--version")
-@click.command()
+@click.command(name="summary")
 def cli(yamlfile, **args):
     """Generate TSV summary files for viewing in Excel and the like"""
     print(SummaryGenerator(yamlfile, **args).serialize(**args))

@@ -1,6 +1,7 @@
+from collections.abc import Iterator
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Iterator, List, Optional, TextIO, Union
+from typing import Any, Optional, TextIO, Union
 
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.loaders import yaml_loader
@@ -27,7 +28,7 @@ class Validator:
     def __init__(
         self,
         schema: Union[str, dict, TextIO, Path, SchemaDefinition],
-        validation_plugins: Optional[List[ValidationPlugin]] = None,
+        validation_plugins: Optional[list[ValidationPlugin]] = None,
         *,
         strict: bool = False,
     ) -> None:
@@ -48,7 +49,7 @@ class Validator:
         :param instance: The instance to validate
         :param target_class: Name of the class within the schema to validate
             against. If ``None``, the class will be inferred from the schema by
-            looked for a class with ``tree_root: true``. Defaults to ``None``.
+            looking for a class with ``tree_root: true``. Defaults to ``None``.
         :return: A validation report
         :rtype: ValidationReport
         """
@@ -61,7 +62,7 @@ class Validator:
             which provides the instances to validate
         :param target_class: Name of the class within the schema to validate
             against. If ``None``, the class will be inferred from the schema by
-            looked for a class with ``tree_root: true``. Defaults to ``None``.
+            looking for a class with ``tree_root: true``. Defaults to ``None``.
         :return: A validation report
         :rtype: ValidationReport
         """
@@ -73,7 +74,7 @@ class Validator:
         :param instance: The instance to validate
         :param target_class: Name of the class within the schema to validate
             against. If ``None``, the class will be inferred from the schema by
-            looked for a class with ``tree_root: true``. Defaults to ``None``.
+            looking for a class with ``tree_root: true``. Defaults to ``None``.
         :return: Iterator over validation results
         :rtype: Iterator[ValidationResult]
         """
@@ -89,7 +90,7 @@ class Validator:
             which provides the instances to validate
         :param target_class: Name of the class within the schema to validate
             against. If ``None``, the class will be inferred from the schema by
-            looked for a class with ``tree_root: true``. Defaults to ``None``.
+            looking for a class with ``tree_root: true``. Defaults to ``None``.
         :return: Iterator over validation results
         :rtype: Iterator[ValidationResult]
         """

@@ -5,9 +5,9 @@
       "source": "simple_types.yaml"
    },
    "@context": {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "simple_types": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/includes/simple_types/",
       "slotpfx": "http://samples.r.us/slot/",
-      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "@vocab": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/includes/simple_types/"
    }
 }

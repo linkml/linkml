@@ -5,6 +5,7 @@
       "source": "issue_344.yaml"
    },
    "@context": {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "GO": {
          "@id": "http://purl.obolibrary.org/obo/GO_",
          "@prefix": true

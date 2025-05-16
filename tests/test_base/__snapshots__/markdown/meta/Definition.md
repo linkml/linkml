@@ -22,8 +22,8 @@ URI: [linkml:Definition](https://w3id.org/linkml/Definition)
 
  *  **[Definition](Definition.md)** *[apply_to](apply_to.md)*  <sub>0..\*</sub>  **[Definition](Definition.md)**
  *  **[Definition](Definition.md)** *[disjoint_with](disjoint_with.md)*  <sub>0..\*</sub>  **[Definition](Definition.md)**
- *  **[Definition](Definition.md)** *[is_a](is_a.md)*  <sub>0..1</sub>  **[Definition](Definition.md)**
- *  **[Definition](Definition.md)** *[mixins](mixins.md)*  <sub>0..\*</sub>  **[Definition](Definition.md)**
+ *  **None** *[is_a](is_a.md)*  <sub>0..1</sub>  **[Definition](Definition.md)**
+ *  **None** *[mixins](mixins.md)*  <sub>0..\*</sub>  **[Definition](Definition.md)**
  *  **[SlotDefinition](SlotDefinition.md)** *[owner](owner.md)*  <sub>0..1</sub>  **[Definition](Definition.md)**
 
 ## Attributes

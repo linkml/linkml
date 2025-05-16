@@ -11,8 +11,10 @@ schema:
   slots:
     alpha_slot:
       range: alpha
+      required: true
     beta_slot:
       range: beta
+      required: true
 
   classes:
     Test:
