@@ -1860,7 +1860,9 @@ def test_slot_boolean_with_expressions(
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_any_of_mixed_cardinality(framework, schema_name, slot1_expression, slot2_expression, data_name, value, is_valid):
+def test_any_of_mixed_cardinality(
+    framework, schema_name, slot1_expression, slot2_expression, data_name, value, is_valid
+):
     """
     Tests behavior of any_of when cardinality is mixed.
     """
@@ -1901,6 +1903,7 @@ def test_any_of_mixed_cardinality(framework, schema_name, slot1_expression, slot
         description=f"validity {is_valid} check for value {value}",
         exclude_rdf=False,
     )
+
 
 @pytest.mark.parametrize(
     "value",
