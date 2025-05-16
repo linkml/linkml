@@ -55,7 +55,9 @@ def test_class_uri(input_path):
         assert class_info["uri"] in classes_jsonld.keys()
         assert "class_uri" not in classes_jsonld[class_info["uri"]].keys()
         assert "exact_mappings" in classes_jsonld[class_info["uri"]].keys()
-        assert class_info["class_uri"] in classes_jsonld[class_info["uri"]]["exact_mappings"]
+        assert schema_view.expand_curie(class_info["class_uri"]) in [
+            schema_view.expand_curie(m) for m in classes_jsonld[class_info["uri"]]["exact_mappings"]
+        ]
 
     # check generated RDF against following expectation:
     # [...]
