@@ -1,6 +1,9 @@
+import pytest
+
 from linkml.generators.pythongen import PythonGenerator
 
 
+@pytest.mark.pythongen
 def test_enum_import(input_path, snapshot):
     """Enum reference isn't getting merged on module import"""
     # env.generate_single_file('file1.py',

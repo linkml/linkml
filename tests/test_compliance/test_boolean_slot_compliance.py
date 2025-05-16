@@ -8,6 +8,7 @@ from tests.test_compliance.helper import (
     JSON_SCHEMA,
     JSONLD_CONTEXT,
     OWL,
+    PANDERA_POLARS_CLASS,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SHACL,
@@ -131,7 +132,8 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
         }
         classes[CLASS_C]["attributes"][SLOT_S1]["range"] = CLASS_ANY
         classes[CLASS_C]["attributes"][SLOT_S1]["_mappings"][JSONLD_CONTEXT][SLOT_S1]["@type"] = "linkml:Any"
-
+    if framework == PANDERA_POLARS_CLASS:
+        pytest.skip("PanderaGen does not implement class ranged slots.")
     schema = validated_schema(
         test_slot_any_of,
         f"DefaultRangeEQ_{default_range}_AnyTypeEQ_{use_any_type}",
@@ -141,7 +143,7 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
         core_elements=["any_of", "range"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
+    if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE, PANDERA_POLARS_CLASS]:
         expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == JSON_SCHEMA:
         # if use_default_range and not is_valid:
@@ -424,7 +426,7 @@ def test_cardinality_in_exactly_one_of(framework, data_name, instance, is_valid)
         core_elements=["exactly_one_of", "minimum_value", "maximum_value"],
     )
     expected_behavior = ValidationBehavior.INCOMPLETE
-    if framework == JSON_SCHEMA:
+    if framework in [JSON_SCHEMA, PANDERA_POLARS_CLASS]:
         # TODO: this should be possible in json schema
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
@@ -582,7 +584,7 @@ def test_equals_string(framework, range, multivalued, value_is_multivalued, valu
     # Declare behavior
     # --------------------------------------------------
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework in (PYTHON_DATACLASSES, SQL_DDL_SQLITE):
+    if framework in (PYTHON_DATACLASSES, SQL_DDL_SQLITE, PANDERA_POLARS_CLASS):
         # frameworks that haven't implemented equals_string
         pytest.skip(f"{framework} has not implemented equals_string")
 
@@ -685,7 +687,7 @@ def test_equals_string_in(framework, range, multivalued, value_is_multivalued, v
     # Declare behavior
     # --------------------------------------------------
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework in (PYTHON_DATACLASSES, SQL_DDL_SQLITE):
+    if framework in (PYTHON_DATACLASSES, SQL_DDL_SQLITE, PANDERA_POLARS_CLASS):
         pytest.skip(f"{framework} has not implemented equals_string_in")
     if framework in (OWL,):
         # RDF/OWL does not distinguish between scalars and sets of size one.
@@ -1298,6 +1300,8 @@ def test_class_boolean_with_expressions(
         pytest.skip("Class Any not supported in this test")
     if framework == SHACL:
         pytest.skip("shaclgen does not support boolean expressions yet")
+    if framework == PANDERA_POLARS_CLASS:
+        pytest.skip("panderagen does not support boolean expressions yet")
     if s1_range.endswith("*"):
         s1_multivalued = True
         s1_range = s1_range[:-1]
@@ -1360,6 +1364,8 @@ def test_class_boolean_with_expressions(
         core_elements=["any_of", "ClassDefinition"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     if not is_valid and framework not in [OWL]:
         expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == OWL:
@@ -1738,7 +1744,7 @@ def test_slot_boolean_with_expressions(
     framework, schema_name, range, op, expression1, expression2, data_name, value, is_valid, unsatisfiable
 ):
     """
-    Tests behavior of any_of for slot expressions.
+    Tests behavior of boolean operators for slot expressions.
 
     :param framework: generator to test
     :param schema_name: unique name of generated schema
@@ -1753,6 +1759,8 @@ def test_slot_boolean_with_expressions(
     """
     if framework == SHACL:
         pytest.skip("shaclgen does not support boolean expressions yet")
+    elif framework == PANDERA_POLARS_CLASS:
+        pytest.skip("panderagen does not support boolean expressions yet")
     if range.endswith("*"):
         multivalued = True
         range = range[:-1]
@@ -1843,6 +1851,61 @@ def test_slot_boolean_with_expressions(
 
 
 @pytest.mark.parametrize(
+    "schema_name,slot1_expression,slot2_expression,data_name,value,is_valid",
+    [
+        ("mixed", {"range": "string"}, {"range": "integer", "multivalued": True}, "t1", {SLOT_S1: "x"}, True),
+        ("mixed", {"range": "string"}, {"range": "integer", "multivalued": True}, "t2", {SLOT_S1: [1, 2]}, True),
+        ("mixed", {"range": "string"}, {"range": "integer", "multivalued": True}, "t1", {SLOT_S1: ["x"]}, False),
+        ("mixed", {"range": "string"}, {"range": "integer", "multivalued": True}, "t2", {SLOT_S1: 1}, False),
+    ],
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_any_of_mixed_cardinality(
+    framework, schema_name, slot1_expression, slot2_expression, data_name, value, is_valid
+):
+    """
+    Tests behavior of any_of when cardinality is mixed.
+    """
+    pytest.skip("not yet implemented - see https://github.com/orgs/linkml/discussions/2154")
+    classes = {
+        CLASS_ANY: {
+            "class_uri": "linkml:Any",
+        },
+        CLASS_C: {
+            "attributes": {
+                SLOT_S1: {
+                    "any_of": [
+                        slot1_expression,
+                        slot2_expression,
+                    ],
+                    "range": "Any",
+                },
+            },
+        },
+    }
+
+    schema = validated_schema(
+        test_any_of_mixed_cardinality,
+        schema_name,
+        framework,
+        classes=classes,
+        core_elements=["any_of"],
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    check_data(
+        schema,
+        f"{schema_name}-{data_name}",
+        framework,
+        {SLOT_S1: value},
+        is_valid,
+        target_class=CLASS_C,
+        expected_behavior=expected_behavior,
+        description=f"validity {is_valid} check for value {value}",
+        exclude_rdf=False,
+    )
+
+
+@pytest.mark.parametrize(
     "value",
     [1, 10, 15, 20, 21],
 )
@@ -1915,7 +1978,7 @@ def test_min_max(framework, min_val, max_val, equals_number: Optional[int], valu
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if equals_number is not None and is_valid:
         is_valid = equals_number == value
-    if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
+    if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE, PANDERA_POLARS_CLASS]:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
@@ -1961,6 +2024,9 @@ def test_preconditions(framework, s1, s2, is_valid):
     """
     if framework == SHACL:
         pytest.skip("shaclgen does not support rules yet")
+    if framework == PANDERA_POLARS_CLASS:
+        pytest.skip("panderagen does not support rules yet")
+
     classes = {
         CLASS_C: {
             "description": "if s1 is either 0 or 10, s2 cannot be either 0 or 10",
@@ -2381,7 +2447,7 @@ def test_union_of(framework, data_name, value, is_valid):
         core_elements=["union_of", "range"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
+    if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE, PANDERA_POLARS_CLASS]:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
@@ -2423,6 +2489,8 @@ def test_value_presence_in_rules(framework, multivalued, data_name, instance, is
     """
     if framework == SHACL:
         pytest.skip("shaclgen does not support boolean expressions yet")
+    if framework == PANDERA_POLARS_CLASS:
+        pytest.skip("panderagen does not support boolean expressions yet")
     classes = {
         CLASS_C: {
             "attributes": {
@@ -2593,7 +2661,7 @@ def test_membership(framework, name, quantification, expression, instance, is_va
     if framework == OWL and quantification == "has_member" and not is_valid:
         # OWL is open world, existential checks succeed without closure axioms
         expected_behavior = ValidationBehavior.INCOMPLETE
-    if framework in [SHACL, SQL_DDL_SQLITE]:
+    if framework in [SHACL, SQL_DDL_SQLITE, PANDERA_POLARS_CLASS]:
         expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == OWL and name == "all_obj_members_equals_string" and not is_valid:
         # This test case relies on punning, as s1 is used as both an OP and DP,

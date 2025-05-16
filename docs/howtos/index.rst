@@ -20,4 +20,5 @@ Some of these guides are works in progress
    model-property-graphs
    generate-ai-prompts
    deprecating-elements
+   ontologies-as-values
 

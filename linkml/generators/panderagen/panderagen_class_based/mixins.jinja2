@@ -1,0 +1,26 @@
+{#-
+  Jinja2 Template for a mixin class used by the Linkml/Pandera class-based model
+  Inline generation avoids dependencies on LinkML in the generated code.
+
+-#}
+class _LinkmlPanderaValidator:
+
+    @classmethod
+    def generate_polars_schema(cls, object_to_validate) -> dict:
+        """Creates a nested PolaRS schema suitable for loading the object_to_validate.
+        Optional columns that are not present in the data are omitted.
+        This approach is only suitable to enable the test fixtures.
+        """
+        polars_schema = {}
+
+        for column_name, column in cls.to_schema().columns.items():
+            dtype = column.properties["dtype"]
+            required = column.properties["required"]
+
+            if required or column_name in object_to_validate:
+                if dtype.type == pl.Struct:
+                    pass
+                else:
+                    polars_schema[column_name] = dtype.type
+
+        return polars_schema

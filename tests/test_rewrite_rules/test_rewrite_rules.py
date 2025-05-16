@@ -1,7 +1,7 @@
 import logging
 import os
 from dataclasses import dataclass
-from typing import List, Optional, Set, Tuple, Union
+from typing import Optional, Union
 from urllib.parse import urljoin
 
 import pytest
@@ -32,7 +32,7 @@ class TestEntry:
     accept_header: Optional[str] = None
 
 
-def build_test_entry_set(input_url: Namespace, model: str) -> List[TestEntry]:
+def build_test_entry_set(input_url: Namespace, model: str) -> list[TestEntry]:
     return [
         TestEntry(input_url, f"docs/{model}"),
         TestEntry(input_url, f"linkml_model/model/schema/{model}.yaml", "text/yaml"),
@@ -59,13 +59,13 @@ def generate_fixture_lists():
     mapping = Namespace(linkml + "mapping/")
     meta = Namespace(linkml + "meta/")
 
-    meta_entries: List[TestEntry] = []
+    meta_entries: list[TestEntry] = []
     meta_entries += build_test_entry_set(types, "types")
     meta_entries += build_test_entry_set(mappings, "mappings")
     meta_entries += build_test_entry_set(extensions, "extensions")
     meta_entries += build_test_entry_set(annotations, "annotations")
 
-    vocab_entries: List[TestEntry] = [
+    vocab_entries: list[TestEntry] = [
         TestEntry(type_["index"], "docs/type/index"),
         TestEntry(type_.Element, "linkml_model/model/schema/type/Element.yaml/Element.yaml", "text/yaml"),
         TestEntry(type_.Element, "linkml_model/rdf/type/Element.ttl/Element.ttl", "text/turtle"),
@@ -73,7 +73,7 @@ def generate_fixture_lists():
         TestEntry(mapping["index"], "docs/mapping/index"),
     ]
 
-    meta_model_entries: List[TestEntry] = [
+    meta_model_entries: list[TestEntry] = [
         TestEntry(metas, "docs/meta"),
         TestEntry(metas, "linkml_model/model/schema/meta.yaml", "text/yaml"),
         TestEntry(metas, "linkml_model/rdf/meta.ttl", "text/turtle"),
@@ -84,7 +84,7 @@ def generate_fixture_lists():
         TestEntry(linkml + "context.jsonld", "linkml_model/jsonld/context.jsonld"),
         TestEntry(linkml + "contextn.jsonld", "contextn.jsonld"),
     ]
-    meta_vocab_entries: List[TestEntry] = [
+    meta_vocab_entries: list[TestEntry] = [
         TestEntry(meta.Element, "docs/meta/Element"),
         TestEntry(meta.slot, "docs/meta/slot"),
         TestEntry(meta.Element, "linkml_model/model/schema/meta/Element.yaml/Element.yaml", "text/yaml"),
@@ -108,7 +108,7 @@ def fail_on_error():
 
 
 @pytest.fixture(scope="class")
-def results() -> Set[Tuple[str, str, str]]:
+def results() -> set[tuple[str, str, str]]:
     return set()  # from, to, format
 
 
@@ -130,7 +130,7 @@ fixture_lists = generate_fixture_lists()
         pytest.param(fixture_lists["meta_vocab_entries"], id="meta_vocab_entries"),
     ],
 )
-def test_rewrite_rules(entries: List[TestEntry], results, fail_on_error) -> None:
+def test_rewrite_rules(entries: list[TestEntry], results, fail_on_error) -> None:
     def test_it(e: TestEntry, accept_header: str) -> bool:
         expected = urljoin(GITHUB_IO_BASE, e.expected_url)
         resp = requests.head(e.input_url, headers={"accept": accept_header}, verify=False)

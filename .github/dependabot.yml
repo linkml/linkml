@@ -1,0 +1,26 @@
+# Please see the documentation for all configuration options:
+# https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+
+  # Activate after migration to uv as package manager
+  # - package-ecosystem: "uv"
+  #   directories:
+  #     - "/"
+  #   schedule:
+  #     interval: "weekly"
+  #     day: "sunday"
+  #   groups:
+  #     # Individual pull requests for major/minor updates and grouped for patch updates
+  #     angular:
+  #       applies-to: version-updates
+  #       patterns:
+  #         - "*"
+  #       update-types:
+  #         - "patch"
+  #   open-pull-requests-limit: 10
