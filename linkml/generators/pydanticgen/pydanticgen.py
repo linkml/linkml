@@ -538,6 +538,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         """
         sv = self.schemaview
         slot_values = defaultdict(dict)
+        ifabsent_processor = PythonIfAbsentProcessor(sv)
         for class_def in sv.all_classes().values():
             for slot_name in sv.class_slots(class_def.name):
                 slot = sv.induced_slot(slot_name, class_def.name)
@@ -555,7 +556,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                     if slot.ifabsent == "bnode":
                         value = 'default_factory=lambda: "_:" + uuid.uuid4().hex'
                     else:
-                        value = ifabsent_value_declaration(slot.ifabsent, sv, class_def, slot)
+                        value = ifabsent_processor.process_slot(slot, class_def)
                     slot_values[camelcase(class_def.name)][slot.name] = value
                 # Multivalued slots that are either not inlined (just an identifier) or are
                 # inlined as lists should get default_factory list, if they're inlined but
@@ -592,7 +593,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             has_identifier_slot = True
         return has_identifier_slot
 
-    def get_class_isa_plus_mixins(self) -> Dict[str, List[str]]:
+    def get_class_isa_plus_mixins(self) -> dict[str, list[str]]:
 
         if self._predefined_slot_values is None:
             sv = self.schemaview

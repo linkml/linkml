@@ -815,7 +815,6 @@ def check_data(
                     assert instance_check_call(py_inst)
             logging.info(f"fwk: {framework}, cls: {target_class}, inst: {object_to_validate}, valid: {valid}")
 
-
         elif isinstance(gen, JsonSchemaGenerator):
             plugins = [JsonschemaValidationPlugin(closed=True, include_range_class_descendants=False)]
         elif isinstance(gen, GENERATORS[PANDERA_POLARS_CLASS]):

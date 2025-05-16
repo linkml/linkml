@@ -126,6 +126,7 @@ def test_ifabsent(
         if framework == OWL:
             pytest.skip("this fails at the RDF generation stage, due to incompatible types")
     exclude_rdf = True
+
     def instance_check_call(obj):
         if ifabsent == "class_curie":
             return True
@@ -134,6 +135,7 @@ def test_ifabsent(
                 return getattr(obj, SLOT_S1).startswith("_:")
             return getattr(obj, SLOT_S1) == expected
         return True
+
     if ifabsent == "bnode":
         if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
             pytest.skip("TODO: fix bug in metamodelcore")
