@@ -1,7 +1,7 @@
 import logging
 import os
 from dataclasses import dataclass
-from typing import Callable, List
+from typing import Callable
 
 import click
 from jsonasobj2 import JsonObj, as_dict
@@ -30,6 +30,8 @@ class ShaclGenerator(Generator):
     """parameterized suffix to be appended. No suffix per default."""
     include_annotations: bool = False
     """True means include all class / slot / type annotations in generated Node or Property shapes"""
+    exclude_imports: bool = False
+    """If True, elements from imported ontologies won't be included in the generator's output"""
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
@@ -63,7 +65,7 @@ class ShaclGenerator(Generator):
         for pfx in self.schema.prefixes.values():
             g.bind(str(pfx.prefix_prefix), pfx.prefix_reference)
 
-        for c in sv.all_classes().values():
+        for c in sv.all_classes(imports=not self.exclude_imports).values():
 
             def shape_pv(p, v):
                 if v is not None:
@@ -256,7 +258,7 @@ class ShaclGenerator(Generator):
         else:
             logger.error(f"No URI for type {rt.name}")
 
-    def _and_equals_string(self, g: Graph, func: Callable, values: List) -> None:
+    def _and_equals_string(self, g: Graph, func: Callable, values: list) -> None:
         pv_node = BNode()
         Collection(
             g,
@@ -271,7 +273,7 @@ class ShaclGenerator(Generator):
         annotations = item.annotations
         # item could be a class, slot or type
         # annotation type could be dict (on types) or JsonObj (on slots)
-        if type(annotations) == JsonObj:
+        if type(annotations) is JsonObj:
             annotations = as_dict(annotations)
         for a in annotations.values():
             # If ':' is in the tag, treat it as a CURIE, otherwise string Literal
@@ -281,7 +283,7 @@ class ShaclGenerator(Generator):
                 N_predicate = Literal(a["tag"], datatype=XSD.string)
             # If the value is a string and ':' is in the value, treat it as a CURIE,
             # otherwise treat as Literal with derived XSD datatype
-            if type(a["value"]) == extended_str and ":" in a["value"]:
+            if type(a["value"]) is extended_str and ":" in a["value"]:
                 N_object = URIRef(sv.expand_curie(a["value"]))
             else:
                 N_object = Literal(a["value"], datatype=self._getXSDtype(a["value"]))
@@ -290,19 +292,19 @@ class ShaclGenerator(Generator):
 
     def _getXSDtype(self, value):
         value_type = type(value)
-        if value_type == bool:
+        if value_type is bool:
             return XSD.boolean
-        elif value_type == extended_str:
+        elif value_type is extended_str:
             return XSD.string
-        elif value_type == extended_int:
+        elif value_type is extended_int:
             return XSD.integer
-        elif value_type == extended_float:
+        elif value_type is extended_float:
             # TODO: distinguish between xsd:decimal and xsd:double?
             return XSD.decimal
         else:
             return None
 
-    def _and_equals_string(self, g: Graph, func: Callable, values: List) -> None:
+    def _and_equals_string(self, g: Graph, func: Callable, values: list) -> None:
         pv_node = BNode()
         Collection(
             g,
@@ -363,6 +365,13 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     default=False,
     show_default=True,
     help="Use --include-annotations to include annotations of slots, types, and classes in the generated SHACL shapes.",
+)
+@click.option(
+    "--exclude-imports/--include-imports",
+    default=False,
+    show_default=True,
+    help="Use --exclude-imports to exclude imported elements from the generated SHACL shapes. This is useful when "
+    "extending a substantial ontology to avoid large output files.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):

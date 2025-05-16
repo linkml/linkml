@@ -113,3 +113,70 @@ def test_standard_naming_class_pattern(schema_view):
     assert "Permissible value of Enum 'GoodEnumUpperPV' has name 'GREAT_UPPER_PV'" in messages
     assert "Permissible value of Enum 'GoodEnumBadUpperPV' has name 'GOOD_UPPER_PV'" in messages
     assert "Enum has name 'bad_enum'" in messages
+
+
+def test_class_violation_allowed():
+    config = StandardNamingConfig(
+        level=RuleLevel.error.text,
+        exclude_type=["class_definition"],
+    )
+
+    builder = SchemaBuilder()
+    builder.add_class("my class")
+
+    rule = StandardNamingRule(config)
+
+    print("\n")
+    print(rule.config)
+
+    problems = list(rule.check(SchemaView(builder.schema)))
+
+    assert len(problems) == 0
+
+
+def test_slot_violation_allowed():
+    config = StandardNamingConfig(
+        level=RuleLevel.error.text,
+        exclude_type=["slot_definition"],
+    )
+
+    builder = SchemaBuilder()
+    builder.add_slot("my slot")
+
+    rule = StandardNamingRule(config)
+
+    problems = list(rule.check(SchemaView(builder.schema)))
+
+    assert len(problems) == 0
+
+
+def test_enum_violation_allowed():
+    config = StandardNamingConfig(
+        level=RuleLevel.error.text,
+        exclude_type=["enum_definition"],
+    )
+
+    builder = SchemaBuilder()
+    builder.add_enum("my enum")
+
+    rule = StandardNamingRule(config)
+
+    problems = list(rule.check(SchemaView(builder.schema)))
+
+    assert len(problems) == 0
+
+
+def test_pv_violation_allowed():
+    config = StandardNamingConfig(
+        level=RuleLevel.error.text,
+        exclude_type=["permissible_value"],
+    )
+
+    builder = SchemaBuilder()
+    builder.add_enum("MyEnum", permissible_values=["pv 1"])
+
+    rule = StandardNamingRule(config)
+
+    problems = list(rule.check(SchemaView(builder.schema)))
+
+    assert len(problems) == 0
