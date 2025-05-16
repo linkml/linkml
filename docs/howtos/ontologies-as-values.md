@@ -88,7 +88,7 @@ come from a standard resource - these are just pieces of data.
 However, this isn't quite satisfactory - it allows the data provider to put any free text they like in.
 We would like to constrain both `gene` and `phenotype` to be identifiers.
 
-We can do this by specifying a [https://w3id.org/linkml/range](range):
+We can do this by specifying a [range](https://w3id.org/linkml/range):
 
 ```yaml
 classes:
@@ -100,7 +100,7 @@ classes:
        range: uriorcurie
 ```
 
-We can constrain it further still, by including a regexp [https://w3id.org/linkml/pattern](pattern):
+We can constrain it further still, by including a regexp [pattern](https://w3id.org/linkml/pattern):
 
 ```yaml
 classes:
@@ -121,7 +121,7 @@ So far so good. But what if we want to have a data model where we
 can communicate information about the genes and phenotypes themselves,
 rather than forcing the client to do an external lookup?
 
-Let's go one step further, and make a [https://w3id.org/linkml/ClassDefinition](class) for gene and phenotype:
+Let's go one step further, and make a [class](https://w3id.org/linkml/ClassDefinition) for gene and phenotype:
 
 ```yaml
 classes:
@@ -173,7 +173,7 @@ classes:
     - HP
 ```
 
-Note we are taking advantage of the [https://w3id.org/linkml/id_prefixes](id_prefixes) metaslot, but
+Note we are taking advantage of the `id_prefixes` metaslot, but
 strictly speaking this is weaker than the previous regular expression pattern.
 
 ### Adding a container
@@ -248,7 +248,7 @@ Let's do that here, by adding a `parents` slot in the schema:
       slot_uri: rdfs:subClassOf
 ```
 
-Note we could call this whatever we like. We include a [https://w3id.org/linkml/slot_uri](slot_uri) declaration
+Note we could call this whatever we like. We include a [slot_uri](https://w3id.org/linkml/slot_uri) declaration
 to indicate that this is equivalent to `rdfs:subClassOf`.
 
 This modified schema allows data like:
@@ -363,7 +363,7 @@ parent_concept: NCBITaxon:9605
 Note here that in the LinkML model, our __classes__ are
 *IndividualOrganism*, *Species*, *Genus*, (and potentially other
 ranks, and a generic grouping of these). Our __instances__ are
-Napolean, Homo sapiens, Homo.
+Napoleon, Homo sapiens, Homo.
 
 When we translate the YAML above to RDF we get:
 
@@ -441,21 +441,21 @@ model. Formally, concepts like "Homo sapiens" are not in the *domain of discours
 
 Individual organisms like Napoleon (Q517 in Wikidata) instantiate the classes in the hierarchy:
 
-```rdf
+```
 wikidata:Q517 rdf:type NCBITaxon:9606 .
 NCBITaxon:9606 rdfs:subClassOf NCBITaxon:9605
 ```
 
 Compare to the RDF serialization of the LinkML instances:
 
-```rdf
+```
 wikidata:Q517 my:species NCBITaxon:9606 .
 NCBITaxon:9606 my:parent_concept NCBITaxon:9605
 ```
         
 In this case, `rdf:type` corresponds roughly to the `species` attribute in the LinkML model. It's not quite the same, as we might have the following OWL:
 
-```rdf
+```
 wikidata:Q517 rdf:type NCBITaxon:9605 .  ## Homo
 ```
 
@@ -466,7 +466,7 @@ taxon node ID rather than any other taxon ID.
 In the RDF model we might even have:
 
 
-```rdf
+```
 wikidata:Q517 rdf:type My:HistoricPerson .
 My:HistoricPerson rdfs:subClassOf NCBITaxon:9606 .
 ```
@@ -516,7 +516,7 @@ classes:
 
 The LinkML instances now serialize as:
 
-```rdf
+```
 wikidata:Q517 rdf:type NCBITaxon:1 .
 wikidata:Q517 rdf:type NCBITaxon:9606 .
 NCBITaxon:9606 rdf:type my:Species .
