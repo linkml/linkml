@@ -1,4 +1,4 @@
-from typing import Iterable
+from collections.abc import Iterable
 
 import pytest
 from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition

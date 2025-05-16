@@ -9,7 +9,7 @@ import os
 import urllib.parse as urlparse
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Optional
 
 import click
 from linkml_runtime.linkml_model import SchemaDefinition
@@ -36,7 +36,7 @@ class RDFGenerator(Generator):
 
     # ObjectVars
     emit_metadata: bool = False
-    context: List[str] = None
+    context: list[str] = None
     original_schema: SchemaDefinition = None
     """See https://github.com/linkml/linkml/issues/871"""
 

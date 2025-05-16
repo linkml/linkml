@@ -40,6 +40,8 @@ classes:
         range: Inlined
         multivalued: true
         inlined_as_list: true
+      rec_2:
+        recommended: true
 """
 
 
@@ -52,7 +54,7 @@ def validation_context():
 def test_valid_instance(validation_context):
     """Valid data should not yield any results"""
     plugin = RecommendedSlotsPlugin()
-    instance = {"rec": "foo"}
+    instance = {"rec": "foo", "rec_2": "bar"}
     result_iter = plugin.process(instance, validation_context)
     with pytest.raises(StopIteration):
         next(result_iter)
@@ -64,6 +66,7 @@ def test_missing_recommended_on_target_class(validation_context):
     instance = {"nonrec": "foo"}
     result_iter = plugin.process(instance, validation_context)
     assert next(result_iter).message == "Slot 'rec' is recommended on class 'Object' in /"
+    assert next(result_iter).message == "Slot 'rec_2' is recommended on class 'Object' in /"
     with pytest.raises(StopIteration):
         next(result_iter)
 
@@ -71,9 +74,10 @@ def test_missing_recommended_on_target_class(validation_context):
 def test_missing_recommended_on_nested_class(validation_context):
     """Data missing a recommended slot on a nested object should yield a result"""
     plugin = RecommendedSlotsPlugin()
-    instance = {"rec": "foo", "nested": {"nonrec": "foo"}}
+    instance = {"rec": "foo", "nested": {"nonrec": "foo"}, "rec_2": "bar"}
     result_iter = plugin.process(instance, validation_context)
     assert next(result_iter).message == "Slot 'rec' is recommended on class 'Object' in /nested"
+    assert next(result_iter).message == "Slot 'rec_2' is recommended on class 'Object' in /nested"
     with pytest.raises(StopIteration):
         next(result_iter)
 
@@ -86,7 +90,7 @@ def test_incorrect_type_in_slot(validation_context):
     always get correct types.
     """
     plugin = RecommendedSlotsPlugin()
-    instance = {"rec": "foo", "nested": "this is the wrong type"}
+    instance = {"rec": "foo", "rec_2": "bar", "nested": "this is the wrong type"}
     result_iter = plugin.process(instance, validation_context)
     with pytest.raises(StopIteration):
         next(result_iter)
@@ -98,10 +102,34 @@ def test_missing_recommended_inlined(validation_context):
     plugin = RecommendedSlotsPlugin()
     instance = {
         "rec": "foo",
+        "rec_2": "foo",
         "nested_inline": {"a": {"value1": "1"}, "b": {"value1": "2"}, "c": {"value2": "3"}},
     }
     result_iter = plugin.process(instance, validation_context)
     assert next(result_iter).message == "Slot 'value1' is recommended on class 'Inlined' in /nested_inline/c"
+    with pytest.raises(StopIteration):
+        next(result_iter)
+
+
+def test_incorrect_type_in_multivalued_slot(validation_context):
+    """Data with non-inlined multivalued slot with class as range should not yield results.
+
+    Type checking is not the responsibility of this plugin. But we want to make
+    sure that the implementation of this plugin doesn't implicitly assume it will
+    always get correct types."""
+
+    plugin = RecommendedSlotsPlugin()
+    instance = {
+        "rec": "foo",
+        "rec_2": "foo",
+        "nested_inline": [
+            {"id": "a", "value1": "1"},
+            {"id": "b", "value1": "2"},
+            {"id": "c", "value2": "3"},
+        ],
+        "nested_inline_list": {"a": {"value1": "1"}, "b": {"value1": "2"}, "c": {"value2": "3"}},
+    }
+    result_iter = plugin.process(instance, validation_context)
     with pytest.raises(StopIteration):
         next(result_iter)
 
@@ -112,6 +140,7 @@ def test_missing_recommended_inlined_as_list(validation_context):
     plugin = RecommendedSlotsPlugin()
     instance = {
         "rec": "foo",
+        "rec_2": "foo",
         "nested_inline_list": [
             {"id": "a", "value1": "1"},
             {"id": "b", "value1": "2"},
@@ -121,4 +150,39 @@ def test_missing_recommended_inlined_as_list(validation_context):
     result_iter = plugin.process(instance, validation_context)
     assert next(result_iter).message == "Slot 'value1' is recommended on class 'Inlined' in /nested_inline_list/2"
     with pytest.raises(StopIteration):
+        next(result_iter)
+
+
+def test_missing_recommended_multiple_inlined(validation_context):
+    """Data missing recommended slots on multiple nested inlined objects should yield a result"""
+
+    plugin = RecommendedSlotsPlugin()
+    instance = {
+        "rec": "foo",
+        "rec_2": "foo",
+        "nested_inline": {"a": {"value1": "1"}, "b": {"value1": "2"}, "c": {"value2": "3"}},
+        "nested_inline_list": [
+            {"id": "a", "value1": "1"},
+            {"id": "b", "value1": "2"},
+            {"id": "c", "value2": "3"},
+        ],
+    }
+    result_iter = plugin.process(instance, validation_context)
+    assert next(result_iter).message == "Slot 'value1' is recommended on class 'Inlined' in /nested_inline/c"
+    assert next(result_iter).message == "Slot 'value1' is recommended on class 'Inlined' in /nested_inline_list/2"
+    with pytest.raises(StopIteration):
+        next(result_iter)
+
+
+def test_missing_recommended_last_slot_with_nested_objects(validation_context):
+    """Data with nested objects missing the last recommended slot in a schema should yield a result"""
+
+    plugin = RecommendedSlotsPlugin()
+    instance = {
+        "nested": {"rec": "foo", "rec_2": "bar", "nested_inline_list": [{"id": "a", "value1": "1"}]},
+        "rec": "foo",
+    }
+    result_iter = plugin.process(instance, validation_context)
+    with pytest.raises(StopIteration):
+        assert next(result_iter).message == "Slot 'rec_2' is recommended on class 'Object' in /"
         next(result_iter)

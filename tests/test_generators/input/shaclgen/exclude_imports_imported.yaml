@@ -1,0 +1,19 @@
+id: https://example.org/exclude_imports_imported
+name: test_exclude_imports_imported
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+imports:
+  - linkml:types
+default_range: string
+default_prefix: ex
+
+classes:
+  BaseClass:
+    description: A basic class to be extended
+    slots:
+      - baseProperty
+
+slots:
+  baseProperty:
+    range: integer

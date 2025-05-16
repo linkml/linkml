@@ -1,6 +1,7 @@
+from collections.abc import Iterator
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Iterator, List, Optional, TextIO, Union
+from typing import Any, Optional, TextIO, Union
 
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.loaders import yaml_loader
@@ -27,7 +28,7 @@ class Validator:
     def __init__(
         self,
         schema: Union[str, dict, TextIO, Path, SchemaDefinition],
-        validation_plugins: Optional[List[ValidationPlugin]] = None,
+        validation_plugins: Optional[list[ValidationPlugin]] = None,
         *,
         strict: bool = False,
     ) -> None:

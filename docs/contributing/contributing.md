@@ -4,7 +4,7 @@ For general info about how to contribute to LinkML, please see [FAQ: Contributin
 
 ## Development Environment Setup
 
-LinkML is developed with [Python](https://www.python.org/) and uses [Poetry](https://python-poetry.org/) for dependency management and packaging. If you have not used Poetry before refer to the [Poetry documentation](https://python-poetry.org/docs/master/#installation/) for installation instructions.
+LinkML is developed with [Python](https://www.python.org/) and uses [Poetry](https://python-poetry.org/) (version >= 2.0) for dependency management and packaging. If you have not used Poetry before refer to the [Poetry documentation](https://python-poetry.org/docs/#installation/) for installation instructions.
 
 Then clone the repository and install the development dependencies:
 
@@ -86,8 +86,8 @@ DEFAULT_LOG_LEVEL_TEXT: ERROR
 * To ignore the changed files run the shell script `hide_test_changes.sh`.
 * To reset all test output files back to original state use the shell script `checkout_outputs.sh`.
 
-
 ### IDE Tips
+
 PyCharm, IntelliJ:
 
 To run a single test:
@@ -222,4 +222,3 @@ insight into your work and allows them to provide feedback early on.
 
 - [FAQ: Contributing](../faq/contributing.md) - General info about how to contribute to LinkML.
 - [Deprecation](../developers/deprecation.md) - Handling deprecations
-

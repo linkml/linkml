@@ -62,7 +62,7 @@ Instances of this class *should* have identifiers with one of the following pref
 {% for a in element.annotations -%}
 {%- if a|string|first != '_' -%}
 | {{ a }} | {{ element.annotations[a].value }} |
-{%- endif -%}
+{% endif -%}
 {% endfor %}
 {% endif %}
 

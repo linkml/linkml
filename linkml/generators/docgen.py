@@ -1,11 +1,12 @@
 import importlib.util
 import logging
 import os
+from collections.abc import Iterable, Iterator
 from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Dict, Iterable, Iterator, List, Optional, Tuple, Union
+from typing import Optional, Union
 
 import click
 from jinja2 import Environment, FileSystemLoader, Template
@@ -60,7 +61,7 @@ SUBSET_SUBFOLDER = "subsets"
 
 def enshorten(input):
     """
-    Custom filter to truncate any long text intended to go in a table,
+    Custom filters to truncate any long text intended to go in a table
     and to remove anything after a newline"""
     if input is None:
         return ""
@@ -75,8 +76,11 @@ def enshorten(input):
     return input
 
 
-def customize_environment(env: Environment):
-    env.filters["enshorten"] = enshorten
+def text_to_web(input) -> str:
+    """Custom filter to convert multi-line text strings into a suitable format for web/markdown output."""
+    if input is None:
+        return ""
+    return "<br>".join(input.strip().split("\n"))
 
 
 def _ensure_ranked(elements: Iterable[Element]):
@@ -135,7 +139,7 @@ class DocGenerator(Generator):
     """markdown dialect (e.g MyST, Python)"""
     sort_by: str = "name"
     visit_all_class_slots = False
-    template_mappings: Dict[str, str] = None
+    template_mappings: dict[str, str] = None
     directory: str = None
     """directory in which to write documents"""
 
@@ -153,6 +157,9 @@ class DocGenerator(Generator):
 
     subfolder_type_separation: bool = False
     """Whether each type (class, slot, etc.) should be put in separate subfolder for navigation purposes"""
+
+    truncate_descriptions: bool = True
+    """Whether to truncate long (multi-line) descriptions down to a single line."""
 
     example_directory: Optional[str] = None
     example_runner: ExampleRunner = field(default_factory=lambda: ExampleRunner())
@@ -313,7 +320,7 @@ class DocGenerator(Generator):
             # TODO: relative paths
             # loader = FileSystemLoader()
             env = Environment()
-            customize_environment(env)
+            self.customize_environment(env)
             return env.get_template(path)
         else:
             base_file_name = f"{element_type}.{self._file_suffix()}.jinja2"
@@ -331,7 +338,7 @@ class DocGenerator(Generator):
                 folder = os.path.join(package_dir, "docgen", "")
             loader = FileSystemLoader(folder)
             env = Environment(loader=loader)
-            customize_environment(env)
+            self.customize_environment(env)
             return env.get_template(base_file_name)
 
     def schema_title(self) -> str:
@@ -383,6 +390,10 @@ class DocGenerator(Generator):
         if isinstance(element, (EnumDefinition, SubsetDefinition)):
             # TODO: fix schema view to handle URIs for enums and subsets
             return self.name(element)
+
+        if self.subfolder_type_separation:
+            return self.schemaview.get_uri(element, expand=expand, use_element_type=True)
+
         return self.schemaview.get_uri(element, expand=expand)
 
     def uri_link(self, element: Union[Element, str]) -> str:
@@ -462,7 +473,7 @@ class DocGenerator(Generator):
         else:
             return e.name
 
-    def links(self, e_list: List[DefinitionName]) -> List[str]:
+    def links(self, e_list: list[DefinitionName]) -> list[str]:
         """Render list of element documentation pages as hyperlinks.
 
         :param e_list: list of elements
@@ -521,7 +532,7 @@ class DocGenerator(Generator):
         mixins=True,
         descriptions=False,
         focus: DefinitionName = None,
-    ) -> Tuple[str, int]:
+    ) -> tuple[str, int]:
         sv = self.schemaview
         if element.is_a:
             pre, depth = self._tree(
@@ -681,7 +692,7 @@ class DocGenerator(Generator):
         else:
             return "mermaid"
 
-    def mermaid_diagram(self, class_names: List[Union[str, ClassDefinitionName]] = None) -> str:
+    def mermaid_diagram(self, class_names: list[Union[str, ClassDefinitionName]] = None) -> str:
         """
         Render a mermaid diagram for a set of classes
 
@@ -750,8 +761,7 @@ class DocGenerator(Generator):
         """
         elts = self.schemaview.class_induced_slots(class_name)
         _ensure_ranked(elts)
-        for e in elts:
-            yield e
+        yield from elts
 
     def all_class_objects(self) -> Iterator[ClassDefinition]:
         """
@@ -762,8 +772,7 @@ class DocGenerator(Generator):
         """
         elts = self.schemaview.all_classes(imports=self.render_imports).values()
         _ensure_ranked(elts)
-        for e in elts:
-            yield e
+        yield from elts
 
     def all_slot_objects(self) -> Iterator[SlotDefinition]:
         """
@@ -774,8 +783,7 @@ class DocGenerator(Generator):
         """
         elts = self.schemaview.all_slots(imports=self.render_imports).values()
         _ensure_ranked(elts)
-        for e in elts:
-            yield e
+        yield from elts
 
     def all_type_objects(self) -> Iterator[TypeDefinition]:
         """
@@ -786,10 +794,9 @@ class DocGenerator(Generator):
         """
         elts = self.schemaview.all_types(imports=self.render_imports).values()
         _ensure_ranked(elts)
-        for e in elts:
-            yield e
+        yield from elts
 
-    def all_type_object_names(self) -> List[TypeDefinitionName]:
+    def all_type_object_names(self) -> list[TypeDefinitionName]:
         return [t.name for t in list(self.all_type_objects())]
 
     def all_enum_objects(self) -> Iterator[EnumDefinition]:
@@ -801,8 +808,7 @@ class DocGenerator(Generator):
         """
         elts = self.schemaview.all_enums(imports=self.render_imports).values()
         _ensure_ranked(elts)
-        for e in elts:
-            yield e
+        yield from elts
 
     def all_subset_objects(self) -> Iterator[SubsetDefinition]:
         """
@@ -813,10 +819,9 @@ class DocGenerator(Generator):
         """
         elts = self.schemaview.all_subsets(imports=self.render_imports).values()
         _ensure_ranked(elts)
-        for e in elts:
-            yield e
+        yield from elts
 
-    def class_hierarchy_as_tuples(self) -> Iterator[Tuple[int, ClassDefinitionName]]:
+    def class_hierarchy_as_tuples(self) -> Iterator[tuple[int, ClassDefinitionName]]:
         """
         Generate a hierarchical representation of all classes in the schema
 
@@ -880,7 +885,7 @@ class DocGenerator(Generator):
         return slot
 
     @staticmethod
-    def get_direct_slot_names(cls: ClassDefinition) -> List[SlotDefinitionName]:
+    def get_direct_slot_names(cls: ClassDefinition) -> list[SlotDefinitionName]:
         """Fetch list of all own attributes of a class, i.e.,
         all slot names of slots that belong to the domain of a class.
 
@@ -889,7 +894,7 @@ class DocGenerator(Generator):
         """
         return cls.slots + list(cls.attributes.keys())
 
-    def get_direct_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
+    def get_direct_slots(self, cls: ClassDefinition) -> list[SlotDefinition]:
         """Fetch list of all own attributes of a class, i.e.,
         all slots that belong to the domain of a class.
 
@@ -900,7 +905,7 @@ class DocGenerator(Generator):
             self.inject_slot_info(self.schemaview.induced_slot(sn, cls.name)) for sn in self.get_direct_slot_names(cls)
         ]
 
-    def get_indirect_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
+    def get_indirect_slots(self, cls: ClassDefinition) -> list[SlotDefinition]:
         """Fetch list of all inherited attributes of a class, i.e.,
         all slots that belong to the domain of a class.
 
@@ -917,7 +922,7 @@ class DocGenerator(Generator):
 
     def get_slot_inherited_from(
         self, class_name: ClassDefinitionName, slot_name: SlotDefinitionName
-    ) -> List[ClassDefinitionName]:
+    ) -> list[ClassDefinitionName]:
         """Get the name of the class that a given slot is inherited from.
 
         :param class_name: name of the class whose slot we are checking
@@ -929,7 +934,7 @@ class DocGenerator(Generator):
         ancestors = sv.class_ancestors(class_name)
         return list(set(induced_slot.domain_of).intersection(ancestors))
 
-    def get_mixin_inherited_slots(self, cls: ClassDefinition) -> Dict[str, List[str]]:
+    def get_mixin_inherited_slots(self, cls: ClassDefinition) -> dict[str, list[str]]:
         """Fetch list of all slots acquired through mixing.
 
         :param cls: class for which we want to determine the mixed in slots
@@ -944,7 +949,7 @@ class DocGenerator(Generator):
 
         return mixed_in_slots
 
-    def example_object_blobs(self, class_name: str) -> List[Tuple[str, str]]:
+    def example_object_blobs(self, class_name: str) -> list[tuple[str, str]]:
         """Fetch list of all examples of a class.
 
         :param class_name: class for which we want to determine the examples
@@ -960,13 +965,19 @@ class DocGenerator(Generator):
                 objs.append((stem, f.read()))
         return objs
 
+    def customize_environment(self, env: Environment):
+        if self.truncate_descriptions:
+            env.filters["enshorten"] = enshorten
+        else:
+            env.filters["enshorten"] = text_to_web
+
 
 @shared_arguments(DocGenerator)
 @click.option(
     "--directory",
     "-d",
     required=True,
-    help="Folder to which document files are written",
+    help="Path to the directory where you want the Markdown files to be written to",
 )
 @click.option("--index-name", default="index", show_default=True, help="Name of the index document.")
 @click.option("--dialect", help="Dialect or 'flavor' of Markdown used.")
@@ -993,7 +1004,7 @@ class DocGenerator(Generator):
     show_default=True,
     help="Generating metamodel. Only use this for generating meta.py",
 )
-@click.option("--template-directory", help="Folder in which custom templates are kept")
+@click.option("--template-directory", help="Path to the directory with custom jinja2 templates")
 @click.option(
     "--use-slot-uris/--no-use-slot-uris",
     default=False,
@@ -1032,6 +1043,14 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
     default=False,
     help="Separate type (class, slot, etc.) outputs in different subfolders for navigation purposes",
 )
+@click.option(
+    "--truncate-descriptions",
+    default=True,
+    show_default=True,
+    help="""
+Whether to truncate long (potentially spanning multiple lines) descriptions of classes, slots, etc., in the docs.
+Set to true for truncated descriptions, and false to display full descriptions.""",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="doc")
 def cli(
@@ -1045,6 +1064,7 @@ def cli(
     hierarchical_class_view,
     subfolder_type_separation,
     render_imports,
+    truncate_descriptions,
     **args,
 ):
     """Generate documentation folder from a LinkML YAML schema
@@ -1077,6 +1097,7 @@ def cli(
         index_name=index_name,
         subfolder_type_separation=subfolder_type_separation,
         render_imports=render_imports,
+        truncate_descriptions=truncate_descriptions,
         **args,
     )
     print(gen.serialize())

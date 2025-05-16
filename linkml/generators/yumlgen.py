@@ -6,7 +6,7 @@ https://yuml.me/diagram/scruffy/class/samples
 
 import os
 from dataclasses import dataclass
-from typing import Callable, List, Optional, Set, cast
+from typing import Callable, Optional, cast
 
 import click
 import requests
@@ -15,6 +15,7 @@ from linkml_runtime.utils.formatutils import camelcase, underscore
 from rdflib import Namespace
 
 from linkml import REQUESTS_TIMEOUT
+from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 
 yuml_is_a = "^-"
@@ -34,27 +35,51 @@ YUML = Namespace(yuml_base + yuml_scale + yuml_dir + yuml_class)
 
 @dataclass
 class YumlGenerator(Generator):
+    """
+    .. admonition:: Deprecated
+        :class: warning
+
+            The `yuml` generator is being deprecated and is no longer supported.
+
+            Going forward, we recommend using one of the following alternatives that offer improved visualization
+            capabilities:
+
+            - `gen-doc` – Generates documentation with **embedded Mermaid class diagrams**.
+            - `gen-plantuml` – Produces **PlantUML diagrams**.
+            - `gen-mermaid-class-diagram` – Creates **standalone Mermaid class diagrams**.
+            - `gen-erdiagram` – For **Entity-Relationship (ER) diagrams**.
+
+            .. deprecated:: v1.8.7
+
+            Recommendation: Migrate to one of the supported generators listed above.
+
+    """
+
+    def __post_init__(self) -> None:
+        deprecation_warning("gen-yuml")
+        super().__post_init__()
+
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["yuml", "png", "pdf", "jpg", "json", "svg"]
     visit_all_class_slots = False
 
-    referenced: Optional[Set[ClassDefinitionName]] = None  # List of classes that have to be emitted
-    generated: Optional[Set[ClassDefinitionName]] = None  # List of classes that have been emitted
-    box_generated: Optional[Set[ClassDefinitionName]] = None  # Class boxes that have been emitted
-    associations_generated: Optional[Set[ClassDefinitionName]] = None  # Classes with associations generated
-    focus_classes: Optional[Set[ClassDefinitionName]] = None  # Classes to be completely filled
-    gen_classes: Optional[Set[ClassDefinitionName]] = None  # Classes to be generated
+    referenced: Optional[set[ClassDefinitionName]] = None  # List of classes that have to be emitted
+    generated: Optional[set[ClassDefinitionName]] = None  # List of classes that have been emitted
+    box_generated: Optional[set[ClassDefinitionName]] = None  # Class boxes that have been emitted
+    associations_generated: Optional[set[ClassDefinitionName]] = None  # Classes with associations generated
+    focus_classes: Optional[set[ClassDefinitionName]] = None  # Classes to be completely filled
+    gen_classes: Optional[set[ClassDefinitionName]] = None  # Classes to be generated
     output_file_name: Optional[str] = None  # Location of output file if directory used
 
-    classes: Set[ClassDefinitionName] = None
+    classes: set[ClassDefinitionName] = None
     directory: Optional[str] = None
     diagram_name: Optional[str] = None
     load_image: bool = True
 
     def visit_schema(
         self,
-        classes: Set[ClassDefinitionName] = None,
+        classes: set[ClassDefinitionName] = None,
         directory: Optional[str] = None,
         diagram_name: Optional[str] = None,
         load_image: bool = True,
@@ -75,7 +100,7 @@ class YumlGenerator(Generator):
             self.gen_classes = self.synopsis.roots.classrefs
         self.referenced = self.gen_classes
         self.generated = set()
-        yumlclassdef: List[str] = []
+        yumlclassdef: list[str] = []
         while self.referenced.difference(self.generated):
             cn = sorted(list(self.referenced.difference(self.generated)), reverse=True)[0]
             self.generated.add(cn)
@@ -87,6 +112,7 @@ class YumlGenerator(Generator):
 
         file_suffix = ".svg" if self.format == "yuml" else "." + self.format
         file_name = diagram_name or camelcase(sorted(classes)[0] if classes else self.schema.name)
+
         if directory:
             self.output_file_name = os.path.join(
                 directory,
@@ -115,7 +141,7 @@ class YumlGenerator(Generator):
         @param cn:
         @return:
         """
-        slot_defs: List[str] = []
+        slot_defs: list[str] = []
         if cn not in self.box_generated and (not self.focus_classes or cn in self.focus_classes):
             cls = self.schema.classes[cn]
             for slot in self.filtered_cls_slots(cn, all_slots=True, filtr=lambda s: s.range not in self.schema.classes):
@@ -142,7 +168,7 @@ class YumlGenerator(Generator):
 
         # NOTE: YUML diagrams draw in the opposite order in which they are created, so we work from bottom to top and
         # from right to left
-        assocs: List[str] = []
+        assocs: list[str] = []
         if cn not in self.associations_generated and (not self.focus_classes or cn in self.focus_classes):
             cls = self.schema.classes[cn]
 
@@ -222,7 +248,7 @@ class YumlGenerator(Generator):
         cn: ClassDefinitionName,
         all_slots: bool = True,
         filtr: Callable[[SlotDefinition], bool] = lambda: True,
-    ) -> List[SlotDefinition]:
+    ) -> list[SlotDefinition]:
         """Return the set of slots associated with the class that meet the filter criteria.  Slots will be returned
         in defining order, with class slots returned last
 
@@ -274,7 +300,13 @@ class YumlGenerator(Generator):
     help="Name of the diagram in the output directory (without suffix!)",
 )
 def cli(yamlfile, **args):
-    """Generate a UML representation of a LinkML model"""
+    """Generate a yUML representation of a LinkML model
+
+    .. warning::
+        `gen-yuml` is deprecated. Please use `gen-doc`, `gen-plantuml` or `gen-mermaid-class-diagram`.
+    """
+    deprecation_warning("gen-yuml")
+
     print(YumlGenerator(yamlfile, **args).serialize(**args), end="")
 
 

@@ -1,5 +1,6 @@
 import logging
 from io import StringIO
+from pathlib import Path
 
 import pytest
 from jsonasobj2 import as_json
@@ -37,6 +38,17 @@ def test_imports(input_path, snapshot):
     loader = SchemaLoader(input_path("base.yaml"))
     assert as_json(loader.resolve()) == snapshot("base.json")
     assert loader.synopsis.errors() == []
+
+
+def test_imports_relative(input_path):
+    loader = SchemaLoader(input_path("relative_import_test/main.yaml"))
+    loader.resolve()
+    normalized_imports = [Path(p).as_posix() for p in loader.schema.imports]
+    assert normalized_imports == [
+        "child/index",
+        "child/grandchild/index",
+        "child/grandchild/greatgrandchild/index",
+    ]
 
 
 @pytest.mark.skip(reason="Re-enable this once we get fully migrated")

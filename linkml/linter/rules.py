@@ -1,7 +1,8 @@
 import re
 from abc import ABC, abstractmethod
-from functools import lru_cache
-from typing import Callable, Iterable, List
+from collections.abc import Iterable
+from functools import cache
+from typing import Callable
 
 from linkml_runtime.linkml_model import ClassDefinition, ClassDefinitionName, Element, SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView
@@ -55,8 +56,14 @@ class LinterRule(ABC):
 class NoEmptyTitleRule(LinterRule):
     id = "no_empty_title"
 
+    # todo PVs are not checked for titles yet
+
     def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
+        excluded_types = [t.text if hasattr(t, "text") else str(t) for t in getattr(self.config, "exclude_type", [])]
         for e in schema_view.all_elements(imports=False).values():
+            element_type_name = type(e).class_name
+            if element_type_name in excluded_types:
+                continue
             if fix and e.title is None:
                 title = e.name.replace("_", " ")
                 title = self.uncamel(title).lower()
@@ -89,8 +96,8 @@ class PermissibleValuesFormatRule(LinterRule):
                     yield LinterProblem(f"{self.format_element(enum_def)} has permissible value '{value}'")
 
 
-@lru_cache(maxsize=None)
-def _get_recommended_metamodel_slots() -> List[str]:
+@cache
+def _get_recommended_metamodel_slots() -> list[str]:
     meta_schema_view = SchemaView(LOCAL_METAMODEL_YAML_FILE)
     recommended_meta_slots = []
     for class_name in meta_schema_view.all_classes(imports=False).keys():
@@ -104,15 +111,21 @@ def _get_recommended_metamodel_slots() -> List[str]:
 class RecommendedRule(LinterRule):
     id = "recommended"
 
+    # todo PVs are not checked for recommended fields yet
+
     def __init__(self, config: RecommendedRuleConfig) -> None:
         self.config = config
 
     def check(self, schema_view: SchemaView, fix: bool = False):
         recommended_meta_slots = _get_recommended_metamodel_slots()
+        excluded_types = [t.text if hasattr(t, "text") else str(t) for t in getattr(self.config, "exclude_type", [])]
         for element_name, element_definition in schema_view.all_elements(imports=False).items():
+            element_type_name = type(element_definition).class_name
             if self.config.include and element_name not in self.config.include:
                 continue
             if element_name in self.config.exclude:
+                continue
+            if element_type_name in excluded_types:
                 continue
             for meta_slot_name, meta_slot_value in vars(element_definition).items():
                 key = f"{element_definition.class_name}__{meta_slot_name}"
@@ -153,7 +166,7 @@ class TreeRootClassRule(LinterRule):
         must_have_identifier=False,
         slot_name_func: Callable = None,
         convert_camel_case=False,
-    ) -> List[SlotDefinition]:
+    ) -> list[SlotDefinition]:
         """
         Adds index slots to a container pointing at all top-level classes
 
@@ -216,6 +229,7 @@ class StandardNamingRule(LinterRule):
         self.config = config
 
     def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
+        excluded_types = [t.text if hasattr(t, "text") else str(t) for t in getattr(self.config, "exclude_type", [])]
         class_pattern = (
             self.PATTERNS["uppercamel"]
             if not self.config.class_pattern
@@ -232,24 +246,29 @@ class StandardNamingRule(LinterRule):
             self.PATTERNS["uppersnake"] if self.config.permissible_values_upper_case else self.PATTERNS["snake"]
         )
 
-        for class_name in schema_view.all_classes(imports=False).keys():
-            if class_pattern.fullmatch(class_name) is None:
-                yield LinterProblem(f"Class has name '{class_name}'")
+        if "class_definition" not in excluded_types:
+            for class_name in schema_view.all_classes(imports=False).keys():
+                if class_pattern.fullmatch(class_name) is None:
+                    yield LinterProblem(f"Class has name '{class_name}'")
 
-        for slot_name in schema_view.all_slots(imports=False).keys():
-            if slot_pattern.fullmatch(slot_name) is None:
-                yield LinterProblem(f"Slot has name '{slot_name}'")
+        if "slot_definition" not in excluded_types:
+            for slot_name in schema_view.all_slots(imports=False).keys():
+                if slot_pattern.fullmatch(slot_name) is None:
+                    yield LinterProblem(f"Slot has name '{slot_name}'")
 
         for enum_name, enum_definition in schema_view.all_enums(imports=False).items():
-            if enum_pattern.fullmatch(enum_name) is None:
-                yield LinterProblem(f"Enum has name '{enum_name}'")
 
-            for permissible_value_name in enum_definition.permissible_values.keys():
-                if permissible_value_pattern.fullmatch(permissible_value_name) is None:
-                    yield LinterProblem(
-                        f"Permissible value of {self.format_element(enum_definition)} "
-                        f"has name '{permissible_value_name}'"
-                    )
+            if "enum_definition" not in excluded_types:
+                if enum_pattern.fullmatch(enum_name) is None:
+                    yield LinterProblem(f"Enum has name '{enum_name}'")
+
+            if "permissible_value" not in excluded_types:
+                for permissible_value_name in enum_definition.permissible_values.keys():
+                    if permissible_value_pattern.fullmatch(permissible_value_name) is None:
+                        yield LinterProblem(
+                            f"Permissible value of {self.format_element(enum_definition)} "
+                            f"has name '{permissible_value_name}'"
+                        )
 
 
 class CanonicalPrefixesRule(LinterRule):

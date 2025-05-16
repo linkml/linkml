@@ -33,7 +33,6 @@ from linkml_runtime.linkml_model.meta import (
     PvFormulaOptions
 )
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.formatutils import (
     camelcase,
@@ -62,9 +61,6 @@ from rdflib import (
 metamodel_version = "1.7.0"
 version = None
 
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
-
 # Namespaces
 EX = CurieNamespace('ex', 'http://example.org/')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
@@ -81,7 +77,7 @@ class MyClass(YAMLRoot):
     """
     Annotations as tag value pairs. Note that altLabel is defined in the default namespace, not in the SKOS namespace
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EX["MyClass"]
     class_class_curie: ClassVar[str] = "ex:MyClass"
@@ -94,7 +90,7 @@ class MyClass2(YAMLRoot):
     -> This form of annotations is a tag/value format, which allows annotations to be annotated. Note, however, that
     the annotation source is NOT a CURIE, rather just a string.
     """
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EX["MyClass2"]
     class_class_curie: ClassVar[str] = "ex:MyClass2"

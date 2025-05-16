@@ -24,16 +24,23 @@ from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum
             OwlSchemaGenerator,
             ".owl",
             {},
-            marks=pytest.mark.skipif(
-                platform.system() == "Windows",
-                reason="prefix expansion issue. see: https://github.com/RDFLib/rdflib/issues/2606",
-            ),
+            marks=[
+                pytest.mark.skipif(
+                    platform.system() == "Windows",
+                    reason="prefix expansion issue. see: https://github.com/RDFLib/rdflib/issues/2606",
+                ),
+                pytest.mark.owlgen,
+            ],
         ),
-        (RDFGenerator, ".ttl", {"context": LOCAL_METAMODEL_LDCONTEXT_FILE}),
-        (ContextGenerator, ".context.jsonld", {"base": METAMODEL_NAMESPACE}),
-        (JSONLDGenerator, ".json", {"base": METAMODEL_NAMESPACE}),
-        (PythonGenerator, ".py", {}),
-        (SQLAlchemyGenerator, ".sqla.py", {"template": TemplateEnum.DECLARATIVE}),
+        pytest.param(RDFGenerator, ".ttl", {"context": LOCAL_METAMODEL_LDCONTEXT_FILE}, marks=pytest.mark.rdfgen),
+        pytest.param(
+            ContextGenerator, ".context.jsonld", {"base": METAMODEL_NAMESPACE}, marks=pytest.mark.jsonldcontextgen
+        ),
+        pytest.param(JSONLDGenerator, ".json", {"base": METAMODEL_NAMESPACE}, marks=pytest.mark.jsonldgen),
+        pytest.param(PythonGenerator, ".py", {}, marks=pytest.mark.pythongen),
+        pytest.param(
+            SQLAlchemyGenerator, ".sqla.py", {"template": TemplateEnum.DECLARATIVE}, marks=pytest.mark.sqlalchemygen
+        ),
     ],
 )
 def test_metamodel(generator, extension, serialize_kwargs, temp_dir, snapshot):
