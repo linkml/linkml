@@ -81,7 +81,7 @@ classes:
       attribute3:
         any_of:
           - range: DiagnosisType
-          - range: EmploymentEventType1
+          - range: EmploymentEventType
 
   AnyOfMix:
     attributes:
@@ -89,7 +89,7 @@ classes:
         any_of:
           - range: integer
           - range: Person
-          - range: EmploymentEventType1
+          - range: EmploymentEventType
 
   EqualsString:
     attributes:
@@ -222,10 +222,15 @@ classes:
       - related to
       - type
       - cordialness
+    slot_usage:
+      cordialness:
+        range: CordialnessEnum
 
   FamilialRelationship:
     rank: 5
     is_a: Relationship
+    slots:
+      - cordialness
     slot_usage:
       type:
         range: FamilialRelationshipType
@@ -233,6 +238,8 @@ classes:
       related to:
         range: Person
         required: true
+      cordialness:
+        # required: true
 
   BirthEvent:
     is_a: Event
@@ -245,25 +252,12 @@ classes:
     slots:
       - employed at
       - type
-      - cordialness
     slot_usage:
       type:
         any_of:
-          - range: EmploymentEventType1
-          - range: EmploymentEventType2
+          - range: CordialnessEnum
+          - range: EmploymentEventType
         required: false
-    rules:
-      - preconditions:
-          slot_conditions:
-            type:
-              any_of:
-                - equals_string: HIRE
-                - equals_string: PROMOTION
-        postconditions:
-          slot_conditions:
-            cordialness:
-              equals_string: heartfelt
-        description: a person's level of cordialness given an employment event
 
   MedicalEvent:
     is_a: Event
@@ -436,7 +430,6 @@ slots:
   life_status:
     range: LifeStatusEnum
   cordialness:
-    range: CordialnessEnum
   altitude:
     range: decimal
 
@@ -449,7 +442,7 @@ enums:
   DiagnosisType:
     permissible_values:
       TODO:
-  EmploymentEventType1:
+  EmploymentEventType:
     description: codes for different kinds of employment/HR related events
     aliases:
       - HR code
@@ -467,15 +460,6 @@ enums:
       TRANSFER:
         meaning: bizcodes:004
         description: transfer internally
-  EmploymentEventType2:
-    description: codes for another set of employment/HR related events
-    permissible_values:
-      SALARY_HIKE:
-        meaning: bizcodes:005
-        description: increase in base salary
-      PERFORMANCE_REVIEW:
-        meaning: bizcodes:006
-        description: equivalent of a corporate performance improvement plan (PIP)
   other codes:
     permissible_values:
       a b:
@@ -493,6 +477,3 @@ enums:
         description: spiteful
       indifferent:
         description: not overly friendly nor obnoxiously spiteful
-
-
-
