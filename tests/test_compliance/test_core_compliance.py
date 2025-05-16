@@ -746,7 +746,7 @@ def ensafeify(name: str):
         ("C", "C", "S1", "S1", "t1"),
         ("c", "C", "S1", "S1", "t1"),
         ("C", "C", "s 1", "s_1", "t 1"),
-        ("C", "C", "1s", "1s", "T1"),
+        ("C", "C", "1s", "one_s", "T1"),
     ],
 )
 def test_non_standard_names(framework, class_name, safe_class_name, slot_name, safe_slot_name, type_name):
@@ -766,6 +766,7 @@ def test_non_standard_names(framework, class_name, safe_class_name, slot_name, s
             "attributes": {
                 slot_name: {
                     "range": type_name,
+                    "alias": safe_slot_name,
                 },
                 # SLOT_S1: {
                 #    "range": class_name,
