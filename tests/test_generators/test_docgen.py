@@ -6,7 +6,6 @@ Note that docgen replaces markdowngen
 
 import logging
 import os
-import platform
 from collections import Counter
 from collections.abc import Generator
 from copy import copy
@@ -20,9 +19,6 @@ from linkml_runtime.utils.schemaview import SchemaView
 from linkml.generators.docgen import DocGenerator
 
 logger = logging.getLogger(__name__)
-
-
-WINDOWS = platform.system() == "Windows"
 
 
 def assert_mdfile_does_not_contain(*args, **kwargs) -> None:
@@ -583,9 +579,7 @@ def test_docgen_multiline_everything_class_page(
     gen.serialize(directory=str(tmp_path))
 
     slot_type = "[xsd:string](http://www.w3.org/2001/XMLSchema#string)"
-    if WINDOWS:
-        slot_type = "[xsd:string](xsd:string)"
-
+    
     # check the table in the populated class file, ClassMultiLinePreserveWhitespace.md
     class_file = tmp_path / f"Class{UC_NAMES[MULTI_LINE_WS]}.md"
     with class_file.open() as fh:
