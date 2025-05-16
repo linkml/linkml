@@ -1190,7 +1190,7 @@ Available templates to override:
 )
 @click.option(
     "--meta",
-    type=click.Choice([k for k in MetadataMode]),
+    type=click.Choice([k.value for k in MetadataMode]),
     default="auto",
     help="How to include linkml schema metadata in generated pydantic classes. "
     "See docs for MetadataMode for full description of choices. "
