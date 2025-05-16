@@ -1,7 +1,10 @@
+from unittest.mock import patch
+
+from click.testing import CliRunner
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SlotDefinition
 
-from linkml.generators.typescriptgen import TypescriptGenerator
+from linkml.generators.typescriptgen import TypescriptGenerator, cli
 from linkml.utils.schema_builder import SchemaBuilder
 
 
@@ -97,3 +100,23 @@ def test_output_option(kitchen_sink_path, tmp_path):
 
     tss.serialize(output=tmp_path / "kitchen_sink.ts")
     assert (tmp_path / "kitchen_sink.ts").exists()
+
+
+def test_cli_print_stdout_without_output(kitchen_sink_path):
+    # assert that print is called when output is None
+
+    runner = CliRunner()
+    with patch("builtins.print") as mock_print:
+        result = runner.invoke(cli, [kitchen_sink_path])
+        assert result.exit_code == 0
+        mock_print.assert_called_once()
+
+
+def test_cli_no_print_with_output(kitchen_sink_path, tmp_path):
+    # assert that print is not called when output is set
+
+    runner = CliRunner()
+    with patch("builtins.print") as mock_print:
+        result = runner.invoke(cli, [kitchen_sink_path, "--output", tmp_path / "kitchen_sink.ts"])
+        assert result.exit_code == 0
+        mock_print.assert_not_called()

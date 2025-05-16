@@ -5,14 +5,7 @@ Models for intermediate build results
 """
 
 import dataclasses
-from abc import abstractmethod
-from typing import Any, TypeVar
-
-try:
-    from typing import Annotated
-except ImportError:
-    from typing_extensions import Annotated
-
+from typing import Annotated, Any, TypeVar
 
 from linkml_runtime.linkml_model import (
     ClassDefinition,
@@ -57,11 +50,11 @@ class BuildResult(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    @abstractmethod
     def merge(self, other: T) -> T:
         """
         Build results should have some means of merging results of a like kind
         """
+        raise NotImplementedError("This build result doesn't know how to merge!")
 
 
 class SchemaResult(BuildResult):

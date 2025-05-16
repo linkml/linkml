@@ -1,10 +1,28 @@
+"""
+This module executes and evaluates code blocks in tutorial markdown files.
+Command line usage example: `python -m linkml.utils.execute_tutorial -d /tmp/tutorial/ docs/intro/tutorial01.md`
+
+It requires that the code blocks have the following format:
+- A code block containing file contents that should be written to a file for testing should be preceded by a line
+whose text is the file name (no spaces) and a colon.
+- A code block containing expected output should be preceded by a line whose text is a single word containing the
+text "output" (case insensitive) and a colon.
+- A code block containing a command that is expected to fail should be preceded by a line that starts with
+"<!-- fail" (case insensitive).
+- A code block containing commands that should not be executed should be preceded by a line that starts with
+"<!-- no_execute" (case insensitive).
+- The code block starts with a line containing three backticks. It can then contain either the language name
+(e.g., `bash`, `python`, etc.) or `{literalinclude}` followed by a file path. If using `{literalinclude}`,
+the next line should contain the language tag (e.g., `:language: python`).
+- The code block ends with a line containing three backticks.
+"""
+
 import logging
 import re
 import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path, PurePath
-from typing import List
 
 import click
 
@@ -13,8 +31,9 @@ from linkml._version import __version__
 logger = logging.getLogger(__name__)
 
 re_decl = re.compile(r"^(\S+):$")
-re_start_yaml = re.compile(r"^```(\w+)$")
-re_end_yaml = re.compile(r"^```$")
+re_start_code_block = re.compile(r"^```(\w+)$")  # does not include literalinclude blocks
+re_literalinclude = re.compile(r"^```\{literalinclude\} (.+)$")
+re_end_code_block = re.compile(r"^```$")
 re_html_comment = re.compile(r"^<!-- (.+) -->")
 
 
@@ -26,8 +45,8 @@ class Block:
     output: str = None
     error: str = None
     expected_fail: bool = None
-    prior_lines: List[str] = None
-    annotations: List[str] = None
+    prior_lines: list[str] = None
+    annotations: list[str] = None
 
     def is_file_block(self) -> bool:
         return self.title and "." in self.title
@@ -39,7 +58,7 @@ class Block:
         return self.category == "bash"
 
 
-def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
+def execute_blocks(directory: str, blocks: list[Block]) -> list[str]:
     """
     Execute the code blocks embedded in a tutorial
 
@@ -59,8 +78,9 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
     for block in blocks:
         write_lines(block.prior_lines)
         logger.info(f"# Block: {block.category} {block.title}")
-        if block.is_file_block():
+        if block.is_file_block() and not block.is_bash():
             path = PurePath(directory, block.title)
+            logger.info(f"Writing to: {path}")
             with open(path, "w", encoding="UTF-8") as stream:
                 stream.write(block.content)
         elif block.is_bash():
@@ -83,7 +103,7 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
             block.output = r.stdout.decode("utf-8")
             if outpath:
                 with open(outpath, "w", encoding="UTF-8") as stream:
-                    logger.info(f"WRITING {len(block.output)} TO = {outpath}")
+                    logger.info(f"WRITING {len(block.output)} CHARS TO = {outpath}")
                     stream.write(block.output)
             block.error = r.stderr.decode("utf-8")
             logger.info(f"OUT [sample] = {block.output[0:30]}")
@@ -117,14 +137,14 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
     return errs
 
 
-def write_lines(lines: List[str]) -> None:
+def write_lines(lines: list[str]) -> None:
     for line in lines:
         print(f"+++ {line}")
 
 
-def parse_file_to_blocks(input) -> List[Block]:
+def parse_file_to_blocks(input) -> list[Block]:
     """
-    Parses a markdown tutorial file to code blacks to be executed
+    Parses a markdown tutorial file to code blocks to be executed
 
     :param input:
     :return:
@@ -151,9 +171,9 @@ def parse_file_to_blocks(input) -> List[Block]:
             m = re_decl.match(line)
             if m:
                 fn = m.group(1)
-                print(f"FILE={fn}")
+                print(f"TITLE={fn}")
             else:
-                m = re_start_yaml.match(line)
+                m = re_start_code_block.match(line)
                 if m:
                     curr_block = Block(
                         category=m.group(1),
@@ -166,12 +186,53 @@ def parse_file_to_blocks(input) -> List[Block]:
                     prior_lines = []
                     anns = []
                 else:
-                    prior_lines += [line]
+                    m = re_literalinclude.match(line)
+                    if m and fn:
+                        # Handle literalinclude directive
+                        file_path = m.group(1).strip()
+                        # Look ahead and extract language from the language tag
+                        language = "yaml"  # Default to yaml if no language tag is found
+                        if lines and lines[0].strip().startswith(":language:"):
+                            language_line = lines[0].strip()
+                            language = language_line.split(":language:")[1].strip()
+                            lines = lines[1:]
+                        # Skip end of code block
+                        if lines and lines[0].strip() == "```":
+                            lines = lines[1:]
+                        else:
+                            logger.warning(
+                                f"Expected end of code block after literalinclude, but found: {lines[0].strip()}"
+                            )
+
+                        # Convert relative path to absolute path
+                        input_dir = Path(input).parent
+                        abs_path = input_dir / file_path
+
+                        try:
+                            with open(abs_path) as f:
+                                file_content = f.read()
+
+                            # Create a block for this file
+                            file_block = Block(
+                                category=language,  # Use the extracted language
+                                title=fn,
+                                expected_fail=expected_fail,
+                                content=file_content,
+                                annotations=anns,
+                                prior_lines=prior_lines,
+                            )
+                            blocks.append(file_block)
+                            prior_lines = []
+                            anns = []
+                        except Exception as e:
+                            logger.error(f"Failed to read included file {abs_path}: {e}")
+                    else:
+                        prior_lines += [line]
         else:
             # in block
             fn = None
             expected_fail = False
-            m = re_end_yaml.match(line)
+            m = re_end_code_block.match(line)
             if m:
                 blocks.append(curr_block)
                 curr_block = None

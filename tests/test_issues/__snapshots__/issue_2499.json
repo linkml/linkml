@@ -1,0 +1,36 @@
+{
+    "$defs": {
+        "Thing": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "identifier": {
+                    "pattern": "^(https?://|(mailto|tel):)\\w+$",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "identifier"
+            ],
+            "title": "Thing",
+            "type": "object"
+        }
+    },
+    "$id": "http://example.com/dataset",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "additionalProperties": true,
+    "description": "",
+    "metamodel_version": "1.7.0",
+    "properties": {
+        "identifier": {
+            "pattern": "^(https?://|(mailto|tel):)\\w+$",
+            "type": "string"
+        }
+    },
+    "required": [
+        "identifier"
+    ],
+    "title": "Dataset",
+    "type": "object",
+    "version": null
+}

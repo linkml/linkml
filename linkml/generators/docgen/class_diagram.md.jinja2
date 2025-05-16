@@ -1,8 +1,10 @@
 {% macro slot_relationship(element, slot) %}
-    {% set range_element = gen.name(schemaview.get_element(slot.range)) %}
-    {% set relation_label = gen.name(slot) %}
-    {{ gen.name(element) }} --> "{{ gen.cardinality(slot) }}" {{ range_element }} : {{ relation_label }}
-    click {{ range_element }} href "../{{ range_element }}"
+    {% if slot.range is not none %}
+        {% set range_element = gen.name(schemaview.get_element(slot.range)) %}
+        {% set relation_label = gen.name(slot) %}
+        {{ gen.name(element) }} --> "{{ gen.cardinality(slot) }}" {{ range_element }} : {{ relation_label }}
+        click {{ range_element }} href "../{{ range_element }}"
+    {% endif %}
 {% endmacro %}
 
 {% if schemaview.class_parents(element.name) and schemaview.class_children(element.name) %}
@@ -22,7 +24,7 @@
       
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
-        {% if s.range not in gen.all_type_object_names() %}
+        {% if s.range is not none and s.range not in gen.all_type_object_names() %}
           {{ slot_relationship(element, s) }}
         {% endif %}
       {% endfor %}
@@ -38,7 +40,7 @@
       {% endfor %}
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
-        {% if s.range not in gen.all_type_object_names() %}
+        {% if s.range is not none and s.range not in gen.all_type_object_names() %}
           {{ slot_relationship(element, s) }}
         {% endif %}
       {% endfor %}
@@ -54,7 +56,7 @@
       {% endfor %}
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
-        {% if s.range not in gen.all_type_object_names() %}
+        {% if s.range is not none and s.range not in gen.all_type_object_names() %}
           {{ slot_relationship(element, s) }}
         {% endif %}
       {% endfor %}
@@ -66,7 +68,7 @@
     click {{ gen.name(element) }} href "../{{gen.name(element)}}"
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
-        {% if s.range not in gen.all_type_object_names() %}
+        {% if s.range is not none and s.range not in gen.all_type_object_names() %}
           {{ slot_relationship(element, s) }}
         {% endif %}
       {% endfor %}

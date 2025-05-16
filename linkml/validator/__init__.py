@@ -60,7 +60,7 @@ def validate(
         otherwise it should be a ``SchemaDefinition`` instance.
     :param target_class: Name of the class within the schema to validate
         against. If ``None``, the class will be inferred from the schema by
-        looked for a class with ``tree_root: true``. Defaults to ``None``.
+        looking for a class with ``tree_root: true``. Defaults to ``None``.
     :param strict: If ``True``, validation will stop after the first validation
         error is found, Otherwise all validation problems will be reported.
         Defaults to ``False``.
@@ -99,7 +99,7 @@ def validate_file(
         otherwise it should be a ``SchemaDefinition`` instance.
     :param target_class: Name of the class within the schema to validate
         against. If ``None``, the class will be inferred from the schema by
-        looked for a class with ``tree_root: true``. Defaults to ``None``.
+        looking for a class with ``tree_root: true``. Defaults to ``None``.
     :param strict: If ``True``, validation will stop after the first validation
         error is found, Otherwise all validation problems will be reported.
         Defaults to ``False``.

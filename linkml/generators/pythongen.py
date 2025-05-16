@@ -2,11 +2,12 @@ import keyword
 import logging
 import os
 import re
+from collections.abc import Iterator
 from copy import copy
 from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType
-from typing import Callable, Dict, Iterator, List, Optional, Set, Tuple, Union
+from typing import Callable, Optional, Union
 
 import click
 from linkml_runtime import SchemaView
@@ -29,6 +30,7 @@ from rdflib import URIRef
 
 import linkml
 from linkml._version import __version__
+from linkml.generators.pydanticgen.template import Import, Imports, ObjectImport
 from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
 
@@ -127,13 +129,114 @@ class PythonGenerator(Generator):
                 self.emit_prefixes.add(type_prefix)
 
     def gen_schema(self) -> str:
-        # The metamodel uses Enumerations to define itself, so don't import if we are generating the metamodel
-        enumimports = (
-            ""
-            if self.genmeta
-            else "from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions\n"
+        all_imports = Imports()
+        # generic imports
+        all_imports = (
+            all_imports
+            + Import(module="dataclasses")
+            + Import(module="re")
+            + Import(
+                module="jsonasobj2",
+                objects=[
+                    ObjectImport(name="JsonObj"),
+                    ObjectImport(name="as_dict"),
+                ],
+            )
+            + Import(
+                module="typing",
+                objects=[
+                    ObjectImport(name="Optional"),
+                    ObjectImport(name="List"),
+                    ObjectImport(name="Union"),
+                    ObjectImport(name="Dict"),
+                    ObjectImport(name="ClassVar"),
+                    ObjectImport(name="Any"),
+                ],
+            )
+            + Import(
+                module="dataclasses",
+                objects=[
+                    ObjectImport(name="dataclass"),
+                ],
+            )
+            + Import(
+                module="datetime",
+                objects=[
+                    ObjectImport(name="date"),
+                    ObjectImport(name="datetime"),
+                    ObjectImport(name="time"),
+                ],
+            )
         )
-        handlerimport = "from linkml_runtime.utils.enumerations import EnumDefinitionImpl"
+
+        # The metamodel uses Enumerations to define itself, so don't import if we are generating the metamodel
+        if not self.genmeta:
+            all_imports = all_imports + Import(
+                module="linkml_runtime.linkml_model.meta",
+                objects=[
+                    ObjectImport(name="EnumDefinition"),
+                    ObjectImport(name="PermissibleValue"),
+                    ObjectImport(name="PvFormulaOptions"),
+                ],
+            )
+        # linkml imports
+        all_imports = (
+            all_imports
+            + Import(
+                module="linkml_runtime.utils.slot",
+                objects=[
+                    ObjectImport(name="Slot"),
+                ],
+            )
+            + Import(
+                module="linkml_runtime.utils.metamodelcore",
+                objects=[
+                    ObjectImport(name="empty_list"),
+                    ObjectImport(name="empty_dict"),
+                    ObjectImport(name="bnode"),
+                ],
+            )
+            + Import(
+                module="linkml_runtime.utils.yamlutils",
+                objects=[
+                    ObjectImport(name="YAMLRoot"),
+                    ObjectImport(name="extended_str"),
+                    ObjectImport(name="extended_float"),
+                    ObjectImport(name="extended_int"),
+                ],
+            )
+            + Import(
+                module="linkml_runtime.utils.formatutils",
+                objects=[
+                    ObjectImport(name="camelcase"),
+                    ObjectImport(name="underscore"),
+                    ObjectImport(name="sfx"),
+                ],
+            )
+        )
+
+        # handler import
+        all_imports = all_imports + Import(
+            module="linkml_runtime.utils.enumerations", objects=[ObjectImport(name="EnumDefinitionImpl")]
+        )
+        # other imports
+        all_imports = (
+            all_imports
+            + Import(
+                module="rdflib",
+                objects=[
+                    ObjectImport(name="Namespace"),
+                    ObjectImport(name="URIRef"),
+                ],
+            )
+            + Import(
+                module="linkml_runtime.utils.curienamespace",
+                objects=[
+                    ObjectImport(name="CurieNamespace"),
+                ],
+            )
+        )
+
         split_description = ""
         if self.schema.description:
             split_description = "\n#   ".join(d for d in self.schema.description.split("\n") if d is not None)
@@ -151,28 +254,11 @@ class PythonGenerator(Generator):
 # description: {split_description}
 # license: {be(self.schema.license)}
 
-import dataclasses
-import re
-from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
-from dataclasses import dataclass
-from datetime import date, datetime, time
-{enumimports}
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
-{handlerimport}
-from rdflib import Namespace, URIRef
-from linkml_runtime.utils.curienamespace import CurieNamespace
+{all_imports.render()}
 {self.gen_imports()}
 
 metamodel_version = "{self.schema.metamodel_version}"
 version = {'"' + self.schema.version + '"' if self.schema.version else None}
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 {self.gen_namespaces()}
@@ -198,7 +284,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         list_ents = [f"from {k} import {', '.join(v)}" for k, v in self.gen_import_list().items()]
         return "\n".join(list_ents)
 
-    def gen_import_list(self) -> Dict[str, List[str]]:
+    def gen_import_list(self) -> dict[str, list[str]]:
         """
         Generate a list of types to import
 
@@ -208,7 +294,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         class ImportList:
             def __init__(self, schema_location: str):
                 self.schema_location = schema_location
-                self.v: Dict[str, Set[str]] = {}
+                self.v: dict[str, set[str]] = {}
 
             def add_element(self, e: Element) -> None:
                 if e.imported_from:
@@ -230,7 +316,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 else:
                     innerself.v.setdefault(". " + path, set()).add(name)
 
-            def values(self) -> Dict[str, List[str]]:
+            def values(self) -> dict[str, list[str]]:
                 return {k: sorted(self.v[k]) for k in sorted(self.v.keys())}
 
         def add_type_ref(typ: TypeDefinition) -> None:
@@ -421,7 +507,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             if slot.inherited:
                 inherited_slots.append(slot.alias if slot.alias else slotname)
         inherited_slots_str = ", ".join([f'"{underscore(s)}"' for s in inherited_slots])
-        return f"\n\t_inherited_slots: ClassVar[List[str]] = [{inherited_slots_str}]\n"
+        return f"\n\t_inherited_slots: ClassVar[list[str]] = [{inherited_slots_str}]\n"
 
     def gen_class_meta(self, cls: ClassDefinition) -> str:
         if not self.gen_classvars:
@@ -544,7 +630,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         slot: SlotDefinition,
         cls: Optional[ClassDefinition],
         positional_allowed: bool,
-    ) -> Tuple[str, Optional[str]]:
+    ) -> tuple[str, Optional[str]]:
         """
         Return the range type including initializers, etc.
         Generate a class variable declaration for the supplied slot.  Note: the positional_allowed attribute works,
@@ -569,33 +655,33 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             if num_elements == 1:
                 if slot.required:
                     return (
-                        f"Union[List[{base_key}], Dict[{base_key}, {range_type}]]",
+                        f"Union[list[{base_key}], dict[{base_key}, {range_type}]]",
                         dflt,
                     )
                 else:
                     return (
-                        f"Optional[Union[List[{base_key}], Dict[{base_key}, {range_type}]]]",
+                        f"Optional[Union[list[{base_key}], dict[{base_key}, {range_type}]]]",
                         dflt,
                     )
             else:
                 if slot.required:
                     return (
-                        f"Union[Dict[{base_key}, {range_type}], List[{range_type}]]",
+                        f"Union[dict[{base_key}, {range_type}], list[{range_type}]]",
                         dflt,
                     )
                 else:
                     return (
-                        f"Optional[Union[Dict[{base_key}, {range_type}], List[{range_type}]]]",
+                        f"Optional[Union[dict[{base_key}, {range_type}], list[{range_type}]]]",
                         dflt,
                     )
 
         # All other cases
         if slot.multivalued:
             if slot.required:
-                return f"Union[{range_type}, List[{range_type}]]", (None if positional_allowed else "None")
+                return f"Union[{range_type}, list[{range_type}]]", (None if positional_allowed else "None")
             else:
                 return (
-                    f"Optional[Union[{range_type}, List[{range_type}]]]",
+                    f"Optional[Union[{range_type}, list[{range_type}]]]",
                     "empty_list()",
                 )
         elif slot.required:
@@ -603,7 +689,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         else:
             return f"Optional[{range_type}]", "None"
 
-    def class_reference_type(self, slot: SlotDefinition, cls: Optional[ClassDefinition]) -> Tuple[str, str, str]:
+    def class_reference_type(self, slot: SlotDefinition, cls: Optional[ClassDefinition]) -> tuple[str, str, str]:
         """
         Return the type of slot referencing a class
 
@@ -625,7 +711,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         return str(self.gen_class_reference(rangelist)), prox_type, prox_type_name
 
     @staticmethod
-    def gen_class_reference(rangelist: List[str]) -> str:
+    def gen_class_reference(rangelist: list[str]) -> str:
         """
         Return a basic or a union type depending on the number of elements in range list
 
@@ -672,7 +758,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         return (
             (
                 f"""
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         {post_inits_line}
         super().__post_init__(**kwargs)
         {post_inits_post_super_line}"""
@@ -683,7 +769,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
     # sort classes such that if C is a child of P then C appears after P in the list
     @staticmethod
-    def _sort_classes(clist: List[ClassDefinition]) -> List[ClassDefinition]:
+    def _sort_classes(clist: list[ClassDefinition]) -> list[ClassDefinition]:
         clist = list(clist)
         slist = []  # sorted
         while len(clist) > 0:
@@ -731,7 +817,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         :param cls: class to generate constructor for
         :return: python constructor
         """
-        rlines: List[str] = []
+        rlines: list[str] = []
         designators = [x for x in self.domain_slots(cls) if x.designates_type]
         if len(designators) > 0:
             descendants = self.schemaview.class_descendants(cls.name)
@@ -786,7 +872,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
     def gen_postinit(self, cls: ClassDefinition, slot: SlotDefinition) -> Optional[str]:
         """Generate python post init rules for slot in class"""
-        rlines: List[str] = []
+        rlines: list[str] = []
 
         if slot.range in self.schema.classes:
             if self.is_class_unconstrained(self.schema.classes[slot.range]):
@@ -836,7 +922,15 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             ):
                 rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}()")
             else:
-                if (
+                if slot.range in self.schema.enums and slot.ifabsent:
+                    # `ifabsent` for an enumeration cannot be assigned to
+                    # the dataclass field default, because it would be a
+                    # mutable. `python_ifabsent_processor.py` can specify
+                    # the default as string and here that string gets
+                    # converted into an object attribute invocation
+                    # TODO: fix according https://github.com/linkml/linkml/pull/2329#discussion_r1797534588
+                    rlines.append(f"\tself.{aliased_slot_name} = getattr({slot.range}, self.{aliased_slot_name})")
+                elif (
                     (self.class_identifier(slot.range) and not slot.inlined)
                     or slot.range in self.schema.types
                     or slot.range in self.schema.enums
@@ -916,7 +1010,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 if first_hit_only:
                     break
 
-    def primary_keys_for(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
+    def primary_keys_for(self, cls: ClassDefinition) -> list[SlotDefinitionName]:
         """Return the primary key for cls.
 
         Note: At the moment we return at most one entry.  At some point, keys will be expanded to support
@@ -966,7 +1060,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 return False  # Occurs before
         return True
 
-    def python_uri_for(self, uriorcurie: Union[str, URIRef]) -> Tuple[str, Optional[str]]:
+    def python_uri_for(self, uriorcurie: Union[str, URIRef]) -> tuple[str, Optional[str]]:
         """Return the python form of uriorcurie
         :param uriorcurie:
         :return: URI and CURIE form

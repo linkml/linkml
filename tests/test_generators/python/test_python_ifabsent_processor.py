@@ -375,6 +375,37 @@ def test_uri_default_value():
     )
 
 
+def test_enum_no_default_value():
+    schema = (
+        base_schema
+        + """
+      - name: presence
+        range: PresenceEnum
+      - name: invalidPresence
+        range: PresenceEnum
+
+enums:
+  PresenceEnum:
+    permissible_values:
+      Present:
+        description: It's there.
+      Missing:
+        description: It's not there.
+    """
+    )
+    schema_view = SchemaView(schema)
+
+    processor = PythonIfAbsentProcessor(schema_view)
+
+    assert (
+        processor.process_slot(
+            schema_view.all_slots()[SlotDefinitionName("presence")],
+            schema_view.all_classes()[ClassDefinitionName("Student")],
+        )
+        is None
+    )
+
+
 def test_enum_default_value():
     schema = (
         base_schema
@@ -404,7 +435,7 @@ enums:
             schema_view.all_slots()[SlotDefinitionName("presence")],
             schema_view.all_classes()[ClassDefinitionName("Student")],
         )
-        == "PresenceEnum.Missing"
+        == "'Missing'"
     )
 
     with pytest.raises(ValueError) as e:
@@ -485,3 +516,21 @@ def test_default_range_default_value():
     processor = PythonIfAbsentProcessor(sv)
     result = processor.process_slot(slot, cls)
     assert result == '"float"'
+
+@pytest.mark.parametrize("cls_name", ["Inheritance", "Base"])
+def test_custom_types(cls_name, input_path):
+    """
+    Custom types should have their defaults correctly resolved against
+    their ancestors or bases
+    """
+    schema = input_path("ifabsent_custom_types.yaml")
+    sv = SchemaView(schema)
+
+    cls = sv.induced_class(cls_name)
+    processor = PythonIfAbsentProcessor(sv)
+    for attr_name, attr in cls.attributes.items():
+        default = processor.process_slot(attr, cls)
+        if "value" not in attr.annotations:
+            continue
+        assert default == attr.annotations["value"].value
+

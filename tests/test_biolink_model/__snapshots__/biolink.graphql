@@ -1,5 +1,205 @@
 # metamodel_version: 1.7.0
 # version: 3.1.2
+enum CausalMechanismQualifierEnum
+  {
+    binding
+    inhibition
+    antibody_inhibition
+    antagonism
+    molecular_channel_blockage
+    inverse_agonism
+    negative_allosteric_modulation
+    agonism
+    molecular_channel_opening
+    positive_allosteric_modulation
+    potentiation
+    activation
+    inducer
+    transcriptional_regulation
+    signaling_mediated_control
+    stabilization
+    stimulation
+    releasing_activity
+  }
+
+enum ChemicalEntityDerivativeEnum
+  {
+    metabolite
+  }
+
+enum ChemicalOrGeneOrGeneProductFormOrVariantEnum
+  {
+    genetic_variant_form
+    modified_form
+    loss_of_function_variant_form
+    gain_of_function_variant_form
+    polymorphic_form
+    snp_form
+    analog_form
+  }
+
+enum DirectionQualifierEnum
+  {
+    increased
+    upregulated
+    decreased
+    downregulated
+  }
+
+enum DrugAvailabilityEnum
+  {
+    over_the_counter
+    prescription
+  }
+
+enum DrugDeliveryEnum
+  {
+    inhalation
+    oral
+    absorption_through_the_skin
+    intravenous_injection
+  }
+
+enum DruggableGeneCategoryEnum
+  {
+    tclin
+    tbio
+    tchem
+    tdark
+  }
+
+enum FDAApprovalStatusEnum
+  {
+    discovery_and_development_phase
+    preclinical_research_phase
+    fda_clinical_research_phase
+    fda_review_phase_4
+    fda_post_market_safety_review
+    fda_clinical_research_phase_1
+    fda_clinical_research_phase_2
+    fda_clinical_research_phase_3
+    fda_clinical_research_phase_4
+    fda_fast_track
+    fda_breakthrough_therapy
+    fda_accelerated_approval
+    fda_priority_review
+    regular_fda_approval
+    post_approval_withdrawal
+  }
+
+enum FDAIDAAdverseEventEnum
+  {
+    life_threatening_adverse_event
+    serious_adverse_event
+    suspected_adverse_reaction
+    unexpected_adverse_event
+  }
+
+enum GeneOrGeneProductOrChemicalEntityAspectEnum
+  {
+    activity_or_abundance
+    abundance
+    activity
+    expression
+    synthesis
+    degradation
+    cleavage
+    hydrolysis
+    metabolic_processing
+    mutation_rate
+    stability
+    folding
+    localization
+    transport
+    secretion
+    uptake
+    molecular_modification
+    acetylation
+    acylation
+    alkylation
+    amination
+    carbamoylation
+    ethylation
+    glutathionylation
+    glycation
+    glycosylation
+    glucuronidation
+    n_linked_glycosylation
+    o_linked_glycosylation
+    hydroxylation
+    lipidation
+    farnesylation
+    geranoylation
+    myristoylation
+    palmitoylation
+    prenylation
+    methylation
+    nitrosation
+    nucleotidylation
+    phosphorylation
+    ribosylation
+    ADP__HYPHEN_MINUS__ribosylation
+    sulfation
+    sumoylation
+    ubiquitination
+    oxidation
+    reduction
+    carboxylation
+  }
+
+enum GeneOrGeneProductOrChemicalPartQualifierEnum
+  {
+    __3_prime_utr
+    __5_prime_utr
+    polya_tail
+    promoter
+    enhancer
+    exon
+    intron
+  }
+
+enum LogicalInterpretationEnum
+  {
+    some_some
+    all_some
+    inverse_all_some
+  }
+
+enum PhaseEnum
+  {
+    __0
+    __1
+    __2
+  }
+
+enum ReactionDirectionEnum
+  {
+    left_to_right
+    right_to_left
+    bidirectional
+    neutral
+  }
+
+enum ReactionSideEnum
+  {
+    left
+    right
+  }
+
+enum SequenceEnum
+  {
+    na
+    aa
+  }
+
+enum StrandEnum
+  {
+    __PLUS_SIGN__
+    __HYPHEN_MINUS__
+    __FULL_STOP__
+    __QUESTION_MARK__
+  }
+
 type Activity implements ActivityAndBehavior
   {
     id: String!

@@ -8,27 +8,58 @@
 
 import dataclasses
 import re
-from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
-from datetime import date, datetime, time
-from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
+from datetime import (
+    date,
+    datetime,
+    time
+)
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    List,
+    Optional,
+    Union
+)
 
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from rdflib import Namespace, URIRef
+from jsonasobj2 import (
+    JsonObj,
+    as_dict
+)
+from linkml_runtime.linkml_model.meta import (
+    EnumDefinition,
+    PermissibleValue,
+    PvFormulaOptions
+)
 from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.formatutils import (
+    camelcase,
+    sfx,
+    underscore
+)
+from linkml_runtime.utils.metamodelcore import (
+    bnode,
+    empty_dict,
+    empty_list
+)
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.yamlutils import (
+    YAMLRoot,
+    extended_float,
+    extended_int,
+    extended_str
+)
+from rdflib import (
+    Namespace,
+    URIRef
+)
+
 from linkml_runtime.utils.metamodelcore import Bool, Curie, Decimal, ElementIdentifier, NCName, NodeIdentifier, URI, URIorCURIE, XSDDate, XSDDateTime, XSDTime
 
 metamodel_version = "1.7.0"
 version = None
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
@@ -210,7 +241,7 @@ class ObjectRange1Id(NamedThingId):
 
 @dataclass(repr=False)
 class NamedThing(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://example.com/test14/NamedThing")
     class_class_curie: ClassVar[str] = None
@@ -222,7 +253,7 @@ class NamedThing(YAMLRoot):
     subject: Union[str, NamedThingId] = None
     object: Union[str, NamedThingId] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, NamedThingId):
@@ -248,7 +279,7 @@ class NamedThing(YAMLRoot):
 
 @dataclass(repr=False)
 class MixinOwner(NamedThing):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://example.com/test14/MixinOwner")
     class_class_curie: ClassVar[str] = None
@@ -261,7 +292,7 @@ class MixinOwner(NamedThing):
     subject: Union[str, SubjectRange1Id] = None
     sex_qualifier: Optional[Union[str, NamedThingId]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, MixinOwnerId):
@@ -280,7 +311,7 @@ class MixinOwner(NamedThing):
 
 @dataclass(repr=False)
 class SubjectRange1(NamedThing):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://example.com/test14/SubjectRange1")
     class_class_curie: ClassVar[str] = None
@@ -292,7 +323,7 @@ class SubjectRange1(NamedThing):
     subject: Union[str, NamedThingId] = None
     object: Union[str, NamedThingId] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, SubjectRange1Id):
@@ -303,7 +334,7 @@ class SubjectRange1(NamedThing):
 
 @dataclass(repr=False)
 class ObjectRange1(NamedThing):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://example.com/test14/ObjectRange1")
     class_class_curie: ClassVar[str] = None
@@ -315,7 +346,7 @@ class ObjectRange1(NamedThing):
     subject: Union[str, NamedThingId] = None
     object: Union[str, NamedThingId] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, ObjectRange1Id):
@@ -326,7 +357,7 @@ class ObjectRange1(NamedThing):
 
 @dataclass(repr=False)
 class MixinClass(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = URIRef("https://example.com/test14/MixinClass")
     class_class_curie: ClassVar[str] = None
@@ -336,7 +367,7 @@ class MixinClass(YAMLRoot):
     object: Union[str, ObjectRange1Id] = None
     sex_qualifier: Optional[Union[str, NamedThingId]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.object):
             self.MissingRequiredField("object")
         if not isinstance(self.object, ObjectRange1Id):

@@ -1,7 +1,15 @@
 import abc
 import re
+import sys
 from abc import ABC
 from typing import Any, Optional, Tuple, Union
+
+
+if sys.version_info < (3, 10):
+    from typing_extensions import TypeAlias
+else:
+    from typing import TypeAlias
+
 
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import (
@@ -18,6 +26,7 @@ from linkml_runtime.linkml_model import (
     String,
     Time,
     Uri,
+    types,
 )
 from linkml_runtime.linkml_model.types import (
     Curie,
@@ -31,6 +40,34 @@ from linkml_runtime.linkml_model.types import (
     Uriorcurie,
 )
 
+TYPES_TYPE: TypeAlias = Union[
+    type[Boolean],
+    type[Curie],
+    type[Date],
+    type[DateOrDatetime],
+    type[Datetime],
+    type[Decimal],
+    type[Double],
+    type[Float],
+    type[Integer],
+    type[Jsonpath],
+    type[Jsonpointer],
+    type[Ncname],
+    type[Nodeidentifier],
+    type[Objectidentifier],
+    type[Sparqlpath],
+    type[String],
+    type[Time],
+    type[Uri],
+    type[Uriorcurie],
+]
+
+TYPES = [
+    t
+    for t in types.__dict__.values()
+    if isinstance(t, type) and t.__module__ == types.__name__ and hasattr(t, "type_name")
+]
+
 
 class IfAbsentProcessor(ABC):
     """
@@ -39,7 +76,7 @@ class IfAbsentProcessor(ABC):
     See `<https://w3id.org/linkml/ifabsent>`_.
     """
 
-    ifabsent_regex = re.compile("""(?:(?P<type>\w+)\()?[\"\']?(?P<default_value>[^\(\)\"\')]*)[\"\']?\)?""")
+    ifabsent_regex = re.compile(r"""(?:(?P<type>\w+)\()?[\"\']?(?P<default_value>[^\(\)\"\')]*)[\"\']?\)?""")
 
     URI_SPECIAL_CASES = ("class_uri", "slot_uri")
     CURIE_SPECIAL_CASES = ("class_curie", "slot_curie")
@@ -69,9 +106,14 @@ class IfAbsentProcessor(ABC):
             return self._map_default_range_special_case(ifabsent_default_value, slot, cls)
 
         if slot.range == String.type_name:
+
+        base_type = self._base_type(slot.range)
+
+        if base_type is String:
+
             return self.map_string_default_value(ifabsent_default_value, slot, cls)
 
-        if slot.range == Boolean.type_name:
+        if base_type is Boolean:
             if re.match(r"^[Tt]rue$", ifabsent_default_value):
                 return self.map_boolean_true_default_value(slot, cls)
             elif re.match(r"^[Ff]alse$", ifabsent_default_value):
@@ -82,19 +124,19 @@ class IfAbsentProcessor(ABC):
                     f"value"
                 )
 
-        if slot.range == Integer.type_name:
+        if base_type is Integer:
             return self.map_integer_default_value(ifabsent_default_value, slot, cls)
 
-        if slot.range == Float.type_name:
+        if base_type is Float:
             return self.map_float_default_value(ifabsent_default_value, slot, cls)
 
-        if slot.range == Double.type_name:
+        if base_type is Double:
             return self.map_double_default_value(ifabsent_default_value, slot, cls)
 
-        if slot.range == Decimal.type_name:
+        if base_type is Decimal:
             return self.map_decimal_default_value(ifabsent_default_value, slot, cls)
 
-        if slot.range == Time.type_name:
+        if base_type is Time:
             match = re.match(r"^(\d{2}):(\d{2}):(\d{2}).*$", ifabsent_default_value)
             if match:
                 return self.map_time_default_value(match[1], match[2], match[3], slot, cls)
@@ -104,7 +146,7 @@ class IfAbsentProcessor(ABC):
                 )
 
         # TODO manage timezones and offsets
-        if slot.range == Date.type_name:
+        if base_type is Date:
             match = re.match(r"^(\d{4})-(\d{2})-(\d{2})$", ifabsent_default_value)
             if match:
                 return self.map_date_default_value(match[1], match[2], match[3], slot, cls)
@@ -114,7 +156,7 @@ class IfAbsentProcessor(ABC):
                 )
 
         # TODO manage timezones and offsets
-        if slot.range == Datetime.type_name:
+        if base_type is Datetime:
             match = re.match(r"^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}).*$", ifabsent_default_value)
             if match:
                 return self.map_datetime_default_value(
@@ -127,7 +169,7 @@ class IfAbsentProcessor(ABC):
                 )
 
         # TODO manage timezones and offsets
-        if slot.range == DateOrDatetime.type_name:
+        if base_type is DateOrDatetime:
             match = re.match(r"^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}):(\d{2}))?.*$", ifabsent_default_value)
             if match and (match[4] is None or match[5] is None or match[6] is None):
                 return self.map_date_default_value(match[1], match[2], match[3], slot, cls)
@@ -141,31 +183,31 @@ class IfAbsentProcessor(ABC):
                     f"datetime value"
                 )
 
-        if slot.range == Uri.type_name:
+        if base_type is Uri:
             return self.map_uri_default_value(ifabsent_default_value, slot, cls)
 
-        if slot.range == Curie.type_name:
+        if base_type is Curie:
             return self.map_curie_default_value(ifabsent_default_value, slot, cls)
 
-        if slot.range == Uriorcurie.type_name:
+        if base_type is Uriorcurie:
             return self.map_uri_or_curie_default_value(ifabsent_default_value, slot, cls)
 
-        if slot.range == Ncname.type_name:
+        if base_type is Ncname:
             return self.map_nc_name_default_value(ifabsent_default_value, slot, cls)
 
-        if slot.range == Objectidentifier.type_name:
+        if base_type is Objectidentifier:
             return self.map_object_identifier_default_value(ifabsent_default_value, slot, cls)
 
-        if slot.range == Nodeidentifier.type_name:
+        if base_type is Nodeidentifier:
             return self.map_node_identifier_default_value(ifabsent_default_value, slot, cls)
 
-        if slot.range == Jsonpointer.type_name:
+        if base_type is Jsonpointer:
             return self.map_json_pointer_default_value(ifabsent_default_value, slot, cls)
 
-        if slot.range == Jsonpath.type_name:
+        if base_type is Jsonpath:
             return self.map_json_path_default_value(ifabsent_default_value, slot, cls)
 
-        if slot.range == Sparqlpath.type_name:
+        if base_type is Sparqlpath:
             return self.map_sparql_path_default_value(ifabsent_default_value, slot, cls)
 
         # -----------------------
@@ -179,6 +221,46 @@ class IfAbsentProcessor(ABC):
                         return self.map_enum_default_value(enum_name, permissible_value_name, slot, cls)
 
         raise ValueError(f"The ifabsent value `{slot.ifabsent}` of the `{slot.name}` slot could not be processed")
+
+    def _base_type(self, range_: str) -> Optional[TYPES_TYPE]:
+        """
+        Find the linkml base type that corresponds to either a matching type_name or custom type
+
+        First check for an explicit match of the range == TypeDefinition.type_name
+        Then check for explicit inheritance via typeof
+        Finally check for implicit matching via matching base
+
+        Don't raise here, just return None in case another method of resolution like enums are
+        available
+        """
+        # first check for matching type using type_name - ie. range is already a base type
+
+        for typ in TYPES:
+            if range_ == typ.type_name:
+                return typ
+
+        # if we're not a type, return None to indicate that, e.g. if an enum's permissible_value
+        if range_ not in self.schema_view.all_types(imports=True):
+            return
+
+        # then check explicit descendents of types
+        # base types do not inherit from one another, so the last ancestor is always a base type
+        # if it is inheriting from a base type
+        ancestor = self.schema_view.type_ancestors(range_)[-1]
+        for typ in TYPES:
+            if ancestor == typ.type_name:
+                return typ
+
+        # finally check if we have a matching base
+        induced_typ = self.schema_view.induced_type(range_)
+        if induced_typ.repr is None and induced_typ.base is None:
+            return None
+        for typ in TYPES:
+            # types always inherit from a single type, and that type is their base
+            # our range can match it with repr or base
+            typ_base = typ.__mro__[1].__name__
+            if typ_base == induced_typ.base:
+                return typ
 
     @abc.abstractmethod
     def map_custom_default_values(

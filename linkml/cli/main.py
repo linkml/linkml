@@ -8,6 +8,7 @@ import click
 
 from linkml._version import __version__
 from linkml.generators.csvgen import cli as gen_csv
+from linkml.generators.dbmlgen import cli as gen_dbml
 from linkml.generators.docgen import cli as gen_doc
 from linkml.generators.dotgen import cli as gen_graphviz
 from linkml.generators.erdiagramgen import cli as gen_erdiagram
@@ -23,6 +24,7 @@ from linkml.generators.linkmlgen import cli as gen_linkml
 from linkml.generators.markdowngen import cli as gen_markdown
 from linkml.generators.namespacegen import cli as gen_namespaces
 from linkml.generators.owlgen import cli as gen_owl
+from linkml.generators.panderagen import cli as gen_pandera
 from linkml.generators.plantumlgen import cli as gen_plantuml
 from linkml.generators.prefixmapgen import cli as gen_prefix_map
 from linkml.generators.projectgen import cli as gen_project
@@ -109,6 +111,7 @@ generate.add_command(gen_plantuml, name="plantuml")
 generate.add_command(gen_proto, name="proto")
 generate.add_command(gen_python, name="python")
 generate.add_command(gen_pydantic, name="pydantic")
+generate.add_command(gen_pandera, name="pandera")
 generate.add_command(gen_rdf, name="rdf")
 generate.add_command(gen_shex, name="shex")
 generate.add_command(gen_shacl, name="shacl")
@@ -125,6 +128,7 @@ generate.add_command(gen_project, name="project")
 generate.add_command(gen_excel, name="excel")
 generate.add_command(gen_sssom, name="sssom")
 generate.add_command(gen_linkml, name="linkml")
+generate.add_command(gen_dbml, name="dbml")
 
 # Dev helpers
 dev.add_command(run_tutorial, name="tutorial")
