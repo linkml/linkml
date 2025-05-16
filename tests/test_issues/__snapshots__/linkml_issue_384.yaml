@@ -309,19 +309,19 @@ slots:
     definition_uri: https://w3id.org/linkml/examples/personinfo/parent
     from_schema: https://w3id.org/linkml/examples/personinfo
     slot_uri: ex:parent
-    multivalued: true
     range: Thing
+    multivalued: true
     inlined: true
   person__aliases:
     name: person__aliases
     from_schema: https://w3id.org/linkml/examples/personinfo
     slot_uri: ex:aliases
-    multivalued: true
     alias: aliases
     owner: Person
     domain_of:
     - Person
     range: string
+    multivalued: true
   person__phone:
     name: person__phone
     from_schema: https://w3id.org/linkml/examples/personinfo
@@ -348,12 +348,12 @@ slots:
       attribute that is local to person
     from_schema: https://w3id.org/linkml/examples/personinfo
     slot_uri: ex:aliases
-    multivalued: false
     alias: aliases
     owner: GeoObject
     domain_of:
     - GeoObject
     range: string
+    multivalued: false
   geoObject__age:
     name: geoObject__age
     comments:
@@ -392,7 +392,6 @@ slots:
     is_a: parent
     domain: Person
     slot_uri: ex:parent
-    multivalued: true
     alias: parent
     owner: Person
     domain_of:
@@ -400,6 +399,7 @@ slots:
     is_usage_slot: true
     usage_slot_name: parent
     range: Person
+    multivalued: true
     inlined: true
   Organization_full_name:
     name: Organization_full_name
@@ -424,7 +424,6 @@ slots:
     is_a: parent
     domain: Organization
     slot_uri: ex:parent
-    multivalued: true
     alias: parent
     owner: Organization
     domain_of:
@@ -432,6 +431,7 @@ slots:
     is_usage_slot: true
     usage_slot_name: parent
     range: Organization
+    multivalued: true
     inlined: true
 classes:
   Thing:

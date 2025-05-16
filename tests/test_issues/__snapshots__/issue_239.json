@@ -12,7 +12,10 @@
                     "items": {
                         "$ref": "#/$defs/IssueTypes"
                     },
-                    "type": "array"
+                    "type": [
+                        "array",
+                        "null"
+                    ]
                 }
             },
             "required": [

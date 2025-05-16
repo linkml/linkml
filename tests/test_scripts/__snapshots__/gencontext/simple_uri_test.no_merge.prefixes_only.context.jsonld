@@ -1,5 +1,6 @@
 {
    "@context": {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "bar": {
          "@id": "http://samples.r.us/bar_",
          "@prefix": true

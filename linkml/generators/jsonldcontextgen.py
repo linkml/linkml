@@ -6,7 +6,7 @@ Generate JSON-LD contexts
 import os
 import re
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional, Set, Union
+from typing import Any, Optional, Union
 
 import click
 from jsonasobj2 import JsonObj, as_json
@@ -18,11 +18,9 @@ from rdflib import SKOS, XSD, Namespace
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
-URI_RANGES = (XSD.anyURI, SHEX.nonliteral, SHEX.bnode, SHEX.iri)
-
+URI_RANGES = (SHEX.nonliteral, SHEX.bnode, SHEX.iri)
 
 ENUM_CONTEXT = {
-    "@vocab": "@null",
     "text": "skos:notation",
     "description": "skos:prefLabel",
     "meaning": "@id",
@@ -41,10 +39,10 @@ class ContextGenerator(Generator):
     file_extension = "context.jsonld"
 
     # ObjectVars
-    emit_prefixes: Set[str] = field(default_factory=lambda: set())
+    emit_prefixes: set[str] = field(default_factory=lambda: set())
     default_ns: str = None
-    context_body: Dict = field(default_factory=lambda: dict())
-    slot_class_maps: Dict = field(default_factory=lambda: dict())
+    context_body: dict = field(default_factory=lambda: dict())
+    slot_class_maps: dict = field(default_factory=lambda: dict())
     emit_metadata: bool = False
     model: Optional[bool] = True
     base: Optional[Union[str, Namespace]] = None
@@ -99,7 +97,7 @@ class ContextGenerator(Generator):
             comments.generation_date = self.schema.generation_date
             comments.source = self.schema.source_file
             context.comments = comments
-        context_content = {}
+        context_content = {"xsd": "http://www.w3.org/2001/XMLSchema#"}
         if base:
             base = str(base)
             if "://" not in base:
@@ -148,7 +146,13 @@ class ContextGenerator(Generator):
             slot_def = {}
             if not slot.usage_slot_name:
                 any_of_ranges = [any_of_el.range for any_of_el in slot.any_of]
-                if slot.range in self.schema.classes or any(rng in self.schema.classes for rng in any_of_ranges):
+                if slot.range in self.schema.classes:
+                    range_class_uri = self.schema.classes[slot.range].class_uri
+                    if range_class_uri and slot.inlined:
+                        slot_def["@type"] = range_class_uri
+                    else:
+                        slot_def["@type"] = "@id"
+                elif any(rng in self.schema.classes for rng in any_of_ranges):
                     slot_def["@type"] = "@id"
                 elif slot.range in self.schema.enums:
                     slot_def["@context"] = ENUM_CONTEXT
@@ -193,6 +197,7 @@ class ContextGenerator(Generator):
         elif not uri_prefix or is_default_namespace:
             definition["@id"] = uri_suffix
         else:
+
             definition["@id"] = (uri_prefix + ":" + uri_suffix) if uri_prefix else uri
 
         if uri_prefix and not is_default_namespace:
@@ -203,7 +208,7 @@ class ContextGenerator(Generator):
 
 
 @shared_arguments(ContextGenerator)
-@click.command()
+@click.command(name="jsonld-context")
 @click.option("--base", help="Base URI for model")
 @click.option(
     "--prefixes/--no-prefixes",

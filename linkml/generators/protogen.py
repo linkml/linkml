@@ -69,7 +69,7 @@ class ProtoGenerator(Generator):
 
 @shared_arguments(ProtoGenerator)
 @click.version_option(__version__, "-V", "--version")
-@click.command()
+@click.command(name="proto")
 def cli(yamlfile, **args):
     """Generate proto representation of LinkML model"""
     print(ProtoGenerator(yamlfile, **args).serialize(**args))

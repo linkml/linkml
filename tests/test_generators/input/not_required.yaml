@@ -1,0 +1,123 @@
+id: not_required
+name: not_required
+title: not_required
+description: |
+  Test cases for all the ways things can be not required.
+  
+  For jsonschemagen: 
+  Non-required slots should allow a `null` type in addition to not being required,
+  so that data that has the key present with no value validate correctly
+imports:
+  - linkml:types
+
+classes:
+  Optionals:
+    slots:
+      - scalar
+      - multi
+      - is_inlined_as_list
+      - is_inlined_as_dict
+      - is_any_of
+      - any_of_multivalued
+      - class_range
+      - class_range_multivalued
+      - class_range_inlined
+      - class_range_required
+      - class_range_required_multivalued
+      - class_range_required_inlined
+      - class_range_id
+      - class_range_id_multivalued
+      - class_range_id_inlined
+  OtherClassOptional:
+    attributes:
+      whatever:
+        range: string
+        required: false
+  OtherClassRequired:
+    attributes:
+      whatever:
+        range: string
+        required: true
+  OtherClassID:
+    description: Classes with ID slots are handled specially by many generators
+    attributes:
+      id:
+        range: string
+        identifier: true
+        required: true
+      whatever:
+        range: string
+        required: true
+
+slots:
+  scalar:
+    range: string
+    required: false
+  multi:
+    range: integer
+    multivalued: true
+    required: false
+  is_inlined_as_list:
+    range: string
+    inlined: true
+    inlined_as_list: true
+    multivalued: true
+    required: false
+  is_inlined_as_dict:
+    range: string
+    inlined: true
+    inlined_as_list: false
+    multivalued: true
+    required: false
+  is_any_of:
+    any_of:
+      - range: string
+      - range: integer
+    required: false
+  any_of_multivalued:
+    any_of:
+      - range: string
+      - range: integer
+    required: false
+    multivalued: true
+  class_range:
+    range: OtherClassOptional
+    required: false
+  class_range_multivalued:
+    range: OtherClassOptional
+    multivalued: true
+    required: false
+  class_range_inlined:
+    range: OtherClassOptional
+    multivalued: true
+    inlined: true
+    required: false
+  class_range_required:
+    description: |
+      There seems to be some special behavior in jsonschemagen for when a range class has a required slot or not,
+      maybe it's fair to say this is a pretty defensive set of test cases.
+    range: OtherClassRequired
+    required: false
+  class_range_required_multivalued:
+    range: OtherClassRequired
+    multivalued: true
+    required: false
+  class_range_required_inlined:
+    range: OtherClassRequired
+    multivalued: true
+    inlined: true
+    required: false
+  class_range_id:
+    range: OtherClassID
+    required: false
+  class_range_id_multivalued:
+    range: OtherClassID
+    multivalued: true
+    required: false
+  class_range_id_inlined:
+    range: OtherClassID
+    multivalued: true
+    inlined: true
+    required: false
+
+

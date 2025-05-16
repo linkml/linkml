@@ -1,7 +1,7 @@
 import logging
 import os
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Optional
 
 import click
 from jinja2 import Template
@@ -10,6 +10,8 @@ from linkml_runtime.utils.formatutils import camelcase, underscore
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
+
+logger = logging.getLogger(__name__)
 
 type_map = {
     "str": "string",
@@ -175,11 +177,11 @@ class GolangGenerator(Generator):
                 if t.base and t.base in type_map:
                     return type_map[t.base]
                 else:
-                    logging.warning(f"Unknown type.base: {t.name}")
+                    logger.warning(f"Unknown type.base: {t.name}")
             return "string"
 
     @staticmethod
-    def parents(cls: ClassDefinition) -> List[ClassDefinitionName]:
+    def parents(cls: ClassDefinition) -> list[ClassDefinitionName]:
         if cls.is_a:
             parents = [cls.is_a]
         else:
@@ -189,7 +191,7 @@ class GolangGenerator(Generator):
 
 @shared_arguments(GolangGenerator)
 @click.version_option(__version__, "-V", "--version")
-@click.command()
+@click.command(name="golang")
 def cli(yamlfile, **args):
     """Generate Golang types
 

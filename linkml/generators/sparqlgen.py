@@ -3,7 +3,7 @@ import os
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Optional
 
 import click
 from jinja2 import Template
@@ -13,6 +13,8 @@ from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
+
+logger = logging.getLogger(__name__)
 
 template = """
 {% for pfxn, pfx in schema.prefixes.items() -%}
@@ -135,7 +137,7 @@ class SparqlGenerator(Generator):
     uses_schemaloader = False
 
     # ObjectVars
-    named_graphs: Optional[List[str]] = None
+    named_graphs: Optional[list[str]] = None
     limit: Optional[int] = None
     sparql: Optional[str] = None
 
@@ -150,7 +152,7 @@ class SparqlGenerator(Generator):
         extra = ""
         if named_graphs is not None:
             extra += f'FILTER( ?graph in ( {",".join(named_graphs)} ))'
-        logging.info(f"Named Graphs = {named_graphs} // extra={extra}")
+        logger.info(f"Named Graphs = {named_graphs} // extra={extra}")
         if limit is not None and isinstance(limit, int):
             limit = f"LIMIT {limit}"
         else:
@@ -170,7 +172,7 @@ class SparqlGenerator(Generator):
         return self.sparql
 
     @staticmethod
-    def split_sparql(sparql: str) -> Dict[str, str]:
+    def split_sparql(sparql: str) -> dict[str, str]:
         lines = sparql.split("\n")
         prolog = ""
         queries = defaultdict(str)
@@ -188,7 +190,7 @@ class SparqlGenerator(Generator):
 
 
 @shared_arguments(SparqlGenerator)
-@click.command()
+@click.command(name="sparql")
 @click.option("--dir", "-d", help="Directory in which queries will be deposited")
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, dir, **kwargs):

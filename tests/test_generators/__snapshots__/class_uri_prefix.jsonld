@@ -5,6 +5,7 @@
       "source": "jsonld_context_class_uri_prefix.yaml"
    },
    "@context": {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "linkml": "https://w3id.org/linkml/",
       "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
       "sparc": "http://uri.interlex.org/tgbugs/uris/readable/sparc/",

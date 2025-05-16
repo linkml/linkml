@@ -297,12 +297,12 @@ slots:
     is_a: extensions
     domain: annotatable
     slot_uri: linkml:annotations
-    multivalued: true
     owner: annotation
     domain_of:
     - annotatable
     - annotation
     range: annotation
+    multivalued: true
     inlined: true
   extensions:
     name: extensions
@@ -312,12 +312,12 @@ slots:
     imported_from: linkml:extensions
     domain: extensible
     slot_uri: linkml:extensions
-    multivalued: true
     owner: extensible
     domain_of:
     - extension
     - extensible
     range: extension
+    multivalued: true
     inlined: true
   extension_tag:
     name: extension_tag
@@ -337,6 +337,10 @@ slots:
   extension_value:
     name: extension_value
     definition_uri: https://w3id.org/linkml/extension_value
+    annotations:
+      simple_dict_value:
+        tag: simple_dict_value
+        value: true
     description: the actual annotation
     from_schema: https://w3id.org/linkml/extensions
     imported_from: linkml:extensions

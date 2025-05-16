@@ -4,7 +4,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List, Tuple, Type
+from typing import Any
 
 import click
 import yaml
@@ -26,11 +26,13 @@ from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.utils.cli_utils import log_level_option
 from linkml.utils.generator import Generator
 
+logger = logging.getLogger(__name__)
+
 PATH_FSTRING = str
 GENERATOR_NAME = str
-ARG_DICT = Dict[str, Any]
-CONFIG_TUPLE = Tuple[Type[Generator], PATH_FSTRING, ARG_DICT]
-GEN_MAP: Dict[GENERATOR_NAME, CONFIG_TUPLE]
+ARG_DICT = dict[str, Any]
+CONFIG_TUPLE = tuple[type[Generator], PATH_FSTRING, ARG_DICT]
+GEN_MAP: dict[GENERATOR_NAME, CONFIG_TUPLE]
 GEN_MAP = {
     "graphql": (GraphqlGenerator, "graphql/{name}.graphql", {}),
     "jsonldcontext": (ContextGenerator, "jsonld/{name}.context.jsonld", {}),
@@ -61,16 +63,16 @@ GEN_MAP = {
 }
 
 
-@lru_cache()
+@lru_cache
 def get_local_imports(schema_path: str, dir: str):
-    logging.info(f"GETTING IMPORTS = {schema_path}")
+    logger.info(f"GETTING IMPORTS = {schema_path}")
     all_imports = [schema_path]
     with open(schema_path) as stream:
         with open(schema_path) as stream:
             schema = yaml.safe_load(stream)
             for imp in schema.get("imports", []):
                 imp_path = os.path.join(dir, imp) + ".yaml"
-                logging.info(f" IMP={imp} //  path={imp_path}")
+                logger.info(f" IMP={imp} //  path={imp_path}")
                 if os.path.isfile(imp_path):
                     all_imports += get_local_imports(imp_path, dir)
     return all_imports
@@ -83,9 +85,9 @@ class ProjectConfiguration:
     """
 
     directory: str = "tmp"
-    generator_args: Dict[GENERATOR_NAME, ARG_DICT] = field(default_factory=lambda: defaultdict(dict))
-    includes: List[str] = None
-    excludes: List[str] = None
+    generator_args: dict[GENERATOR_NAME, ARG_DICT] = field(default_factory=lambda: defaultdict(dict))
+    includes: list[str] = None
+    excludes: list[str] = None
     mergeimports: bool = None
 
 
@@ -105,23 +107,23 @@ class ProjectGenerator:
             all_schemas = [schema_path]
         else:
             all_schemas = get_local_imports(schema_path, os.path.dirname(schema_path))
-        logging.debug(f"ALL_SCHEMAS = {all_schemas}")
+        logger.debug(f"ALL_SCHEMAS = {all_schemas}")
         for gen_name, (gen_cls, gen_path_fmt, default_gen_args) in GEN_MAP.items():
             if config.includes is not None and config.includes != [] and gen_name not in config.includes:
-                logging.info(f"Skipping {gen_name} as not in inclusion list: {config.includes}")
+                logger.info(f"Skipping {gen_name} as not in inclusion list: {config.includes}")
                 continue
             if config.excludes is not None and gen_name in config.excludes:
-                logging.info(f"Skipping {gen_name} as it is in exclusion list")
+                logger.info(f"Skipping {gen_name} as it is in exclusion list")
                 continue
-            logging.info(f"Generating: {gen_name}")
+            logger.info(f"Generating: {gen_name}")
             for local_path in all_schemas:
-                logging.info(f" SCHEMA: {local_path}")
+                logger.info(f" SCHEMA: {local_path}")
                 name = os.path.basename(local_path).replace(".yaml", "")
                 gen_path = gen_path_fmt.format(name=name)
                 gen_path_full = f"{config.directory}/{gen_path}"
                 parts = gen_path_full.split("/")
                 parent_dir = "/".join(parts[0:-1])
-                logging.info(f" PARENT={parent_dir}")
+                logger.info(f" PARENT={parent_dir}")
                 Path(parent_dir).mkdir(parents=True, exist_ok=True)
                 gen_path_full = "/".join(parts)
                 all_gen_args = {
@@ -143,13 +145,13 @@ class ProjectGenerator:
                     if isinstance(v, str):
                         v = v.format(name=name, parent=parent_dir)
                     serialize_args[k] = v
-                logging.info(f" {gen_name} ARGS: {serialize_args}")
+                logger.info(f" {gen_name} ARGS: {serialize_args}")
                 gen_dump = gen.serialize(**serialize_args)
 
                 if gen_name != "excel":
                     if parts[-1] != "":
                         # markdowngen does not write to a file
-                        logging.info(f"  WRITING TO: {gen_path_full}")
+                        logger.info(f"  WRITING TO: {gen_path_full}")
                         with open(gen_path_full, "w", encoding="UTF-8") as stream:
                             stream.write(gen_dump)
                 else:
@@ -159,7 +161,7 @@ class ProjectGenerator:
                     gen.serialize(**serialize_args)
 
 
-@click.command()
+@click.command(name="project")
 @click.option(
     "--dir",
     "-d",
@@ -186,8 +188,8 @@ class ProjectGenerator:
 def cli(
     yamlfile,
     dir,
-    exclude: List[str],
-    include: List[str],
+    exclude: list[str],
+    include: list[str],
     config_file,
     mergeimports,
     generator_arguments: str,
@@ -249,7 +251,7 @@ def cli(
             project_config.generator_args = yaml.safe_load(generator_arguments)
         except Exception:
             raise Exception("Argument must be a valid YAML blob")
-        logging.info(f"generator args: {project_config.generator_args}")
+        logger.info(f"generator args: {project_config.generator_args}")
     if dir is not None:
         project_config.directory = dir
     project_config.mergeimports = mergeimports

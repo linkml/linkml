@@ -16,7 +16,14 @@
             "description": "",
             "properties": {
                 "courses": {
-                    "$ref": "#/$defs/Course"
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Course"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 },
                 "name": {
                     "description": "Any name"

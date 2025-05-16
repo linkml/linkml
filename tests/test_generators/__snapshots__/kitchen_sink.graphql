@@ -1,0 +1,288 @@
+# metamodel_version: 1.7.0
+enum CordialnessEnum
+  {
+    heartfelt
+    hateful
+    indifferent
+  }
+
+enum DiagnosisType
+  {
+    TODO
+  }
+
+enum EmploymentEventType
+  {
+    HIRE
+    FIRE
+    PROMOTION
+    TRANSFER
+  }
+
+enum FamilialRelationshipType
+  {
+    SIBLING_OF
+    PARENT_OF
+    CHILD_OF
+  }
+
+enum KitchenStatus
+  {
+    DIRTY
+    CLEAN
+  }
+
+enum LifeStatusEnum
+  {
+    LIVING
+    DEAD
+    UNKNOWN
+  }
+
+enum OtherCodes
+  {
+    a_b
+  }
+
+type Activity
+  {
+    id: String!
+    startedAtTime: Date
+    endedAtTime: Date
+    wasInformedBy: Activity
+    wasAssociatedWith: Agent
+    used: String
+    description: String
+  }
+
+type Address
+  {
+    street: String
+    city: String
+    altitude: Decimal
+  }
+
+type Agent
+  {
+    id: String!
+    actedOnBehalfOf: Agent
+    wasInformedBy: Activity
+  }
+
+type AnyObject
+  {
+  }
+
+type AnyOfClasses
+  {
+    attribute2: String
+  }
+
+type AnyOfEnums
+  {
+    attribute3: String
+  }
+
+type AnyOfMix
+  {
+    attribute4: String
+  }
+
+type AnyOfSimpleType
+  {
+    attribute1: String
+  }
+
+type BirthEvent
+  {
+    startedAtTime: Date
+    endedAtTime: Date
+    isCurrent: Boolean
+    metadata: AnyObject
+    inLocation: Place
+  }
+
+type ClassWithSpaces
+  {
+    slotWithSpace1: String
+  }
+
+type CodeSystem
+  {
+    id: String!
+    name: String
+  }
+
+type Company
+  {
+    id: String!
+    name: String
+    aliases: [String]
+    ceo: Person
+  }
+
+type Concept
+  {
+    id: String!
+    name: String
+    inCodeSystem: CodeSystem
+  }
+
+type Dataset
+  {
+    metadata: AnyObject
+    persons: [Person]
+    companies: [Company]
+    activities: [Activity]
+    codeSystems: [CodeSystem]
+  }
+
+type DiagnosisConcept
+  {
+    id: String!
+    name: String
+    inCodeSystem: CodeSystem
+  }
+
+type EmploymentEvent
+  {
+    startedAtTime: Date
+    endedAtTime: Date
+    isCurrent: Boolean
+    metadata: AnyObject
+    employedAt: Company
+    type: String
+  }
+
+type EqualsString
+  {
+    attribute5: String
+  }
+
+type EqualsStringIn
+  {
+    attribute6: String
+  }
+
+type Event
+  {
+    startedAtTime: Date
+    endedAtTime: Date
+    isCurrent: Boolean
+    metadata: AnyObject
+  }
+
+type FakeClass
+  {
+    testAttribute: String
+  }
+
+type FamilialRelationship
+  {
+    startedAtTime: Date
+    endedAtTime: Date
+    cordialness: String
+    type: FamilialRelationshipType!
+    relatedTo: Person!
+  }
+
+interface Friend
+  {
+    name: String
+  }
+
+interface HasAliases
+  {
+    aliases: [String]
+  }
+
+type MarriageEvent implements WithLocation
+  {
+    startedAtTime: Date
+    endedAtTime: Date
+    isCurrent: Boolean
+    metadata: AnyObject
+    marriedTo: Person
+    inLocation: Place
+  }
+
+type MedicalEvent
+  {
+    startedAtTime: Date
+    endedAtTime: Date
+    isCurrent: Boolean
+    metadata: AnyObject
+    inLocation: Place
+    diagnosis: DiagnosisConcept
+    procedure: ProcedureConcept
+  }
+
+type Organization implements HasAliases
+  {
+    id: String!
+    name: String
+    aliases: [String]
+  }
+
+type Person implements HasAliases
+  {
+    id: String!
+    name: String
+    hasEmploymentHistory: [EmploymentEvent]
+    hasFamilialRelationships: [FamilialRelationship]
+    hasMedicalHistory: [MedicalEvent]
+    ageInYears: Integer
+    addresses: [Address]
+    hasBirthEvent: BirthEvent
+    speciesName: String
+    stomachCount: Integer
+    isLiving: LifeStatusEnum
+    aliases: [String]
+  }
+
+type Place implements HasAliases
+  {
+    id: String!
+    name: String
+    aliases: [String]
+  }
+
+type ProcedureConcept
+  {
+    id: String!
+    name: String
+    inCodeSystem: CodeSystem
+  }
+
+type Relationship
+  {
+    startedAtTime: Date
+    endedAtTime: Date
+    relatedTo: String
+    type: String
+    cordialness: CordialnessEnum
+  }
+
+type SubSubClass2
+  {
+    slotWithSpace1: String
+    slotWithSpace2: ClassWithSpaces
+  }
+
+type SubclassTest
+  {
+    slotWithSpace1: String
+    slotWithSpace2: ClassWithSpaces
+  }
+
+type TubSubClass1
+  {
+    slotWithSpace1: String
+    slotWithSpace2: ClassWithSpaces
+  }
+
+interface WithLocation
+  {
+    inLocation: Place
+  }
+

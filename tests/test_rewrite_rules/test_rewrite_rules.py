@@ -2,7 +2,7 @@ import os
 import sys
 import unittest
 from dataclasses import dataclass
-from typing import List, Optional, Set, Tuple, Union
+from typing import Optional, Union
 
 import requests
 from rdflib import Namespace, URIRef
@@ -30,7 +30,7 @@ class TestEntry:
     accept_header: Optional[str] = None
 
 
-def build_test_entry_set(input_url: Namespace, model: str) -> List[TestEntry]:
+def build_test_entry_set(input_url: Namespace, model: str) -> list[TestEntry]:
     return [
         TestEntry(input_url, f"includes/{model}"),
         TestEntry(input_url, f"includes/{model}.yaml", "text/yaml"),
@@ -59,14 +59,14 @@ class TestLists:
         self.mapping = Namespace(self.linkml + "mapping/")
         self.meta = Namespace(self.linkml + "meta/")
 
-        self.meta_entries: List[TestEntry] = []
+        self.meta_entries: list[TestEntry] = []
 
         self.meta_entries += build_test_entry_set(self.types, "types")
         self.meta_entries += build_test_entry_set(self.mappings, "mappings")
         self.meta_entries += build_test_entry_set(self.extensions, "extensions")
         self.meta_entries += build_test_entry_set(self.annotations, "annotations")
 
-        self.vocab_entries: List[TestEntry] = [
+        self.vocab_entries: list[TestEntry] = [
             TestEntry(self.type["index"], "docs/types/index"),
             TestEntry(self.type.Element, "docs/types/Element.yaml", "text/yaml"),
             TestEntry(self.type.Element, "docs/types/Element.ttl", "text/turtle"),
@@ -74,7 +74,7 @@ class TestLists:
             TestEntry(self.mapping["index"], "docs/mappings/index"),
         ]
 
-        self.meta_model_entries: List[TestEntry] = [
+        self.meta_model_entries: list[TestEntry] = [
             TestEntry(self.metas, "meta"),
             TestEntry(self.metas, "meta.yaml", "text/yaml"),
             TestEntry(self.metas, "meta.ttl", "text/turtle"),
@@ -85,7 +85,7 @@ class TestLists:
             TestEntry(self.linkml + "context.jsonld", "context.jsonld"),
             TestEntry(self.linkml + "contextn.jsonld", "contextn.jsonld"),
         ]
-        self.meta_vocab_entries: List[TestEntry] = [
+        self.meta_vocab_entries: list[TestEntry] = [
             TestEntry(self.meta.Element, "docs/Element"),
             TestEntry(self.meta.slot, "docs/slot"),
             TestEntry(self.meta.Element, "docs/Element.yaml", "text/yaml"),
@@ -102,7 +102,7 @@ FAIL_ON_ERROR = True
 @unittest.skipIf(SKIP_REWRITE_RULES, SKIP_REWRITE_RULES_REASON)
 class RewriteRuleTestCase(unittest.TestCase):
     SERVER = DEFAULT_SERVER  # Can be overwritten with a startup parameter
-    results: Set[Tuple[str, str, str]] = None
+    results: set[tuple[str, str, str]] = None
 
     @classmethod
     def setUpClass(cls):
@@ -118,7 +118,7 @@ class RewriteRuleTestCase(unittest.TestCase):
     def record_results(self, from_url: str, accept_header, to_url: str) -> None:
         self.results.add((from_url, to_url, accept_header.split(",")[0]))
 
-    def rule_test(self, entries: List[TestEntry]) -> None:
+    def rule_test(self, entries: list[TestEntry]) -> None:
         def test_it(e: TestEntry, accept_header: str) -> bool:
             expected = github_io + e.expected_url
             resp = requests.head(e.input_url, headers={"accept": accept_header}, verify=False)

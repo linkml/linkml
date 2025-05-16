@@ -29,6 +29,7 @@ def test_help():
         (["--metauris"], "metashexn.shex"),
     ],
 )
+@pytest.mark.network
 def test_meta(arguments, snapshot_file, snapshot):
     """Generate various forms of the metamodel in ShEx"""
     runner = CliRunner()

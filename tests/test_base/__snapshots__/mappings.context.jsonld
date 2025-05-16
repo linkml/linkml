@@ -5,6 +5,7 @@
       "source": "mappings.yaml"
    },
    "@context": {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "IAO": {
          "@id": "http://purl.obolibrary.org/obo/IAO_",
          "@prefix": true
@@ -14,38 +15,37 @@
       "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
       "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
       "skos": "http://www.w3.org/2004/02/skos/core#",
-      "xsd": "http://www.w3.org/2001/XMLSchema#",
       "@vocab": "https://w3id.org/linkml/",
       "broad_mappings": {
-         "@type": "@id",
+         "@type": "xsd:anyURI",
          "@id": "skos:broadMatch"
       },
       "close_mappings": {
-         "@type": "@id",
+         "@type": "xsd:anyURI",
          "@id": "skos:closeMatch"
       },
       "deprecated_element_has_exact_replacement": {
-         "@type": "@id",
+         "@type": "xsd:anyURI",
          "@id": "deprecated_element_has_exact_replacement"
       },
       "deprecated_element_has_possible_replacement": {
-         "@type": "@id",
+         "@type": "xsd:anyURI",
          "@id": "deprecated_element_has_possible_replacement"
       },
       "exact_mappings": {
-         "@type": "@id",
+         "@type": "xsd:anyURI",
          "@id": "skos:exactMatch"
       },
       "mappings": {
-         "@type": "@id",
+         "@type": "xsd:anyURI",
          "@id": "skos:mappingRelation"
       },
       "narrow_mappings": {
-         "@type": "@id",
+         "@type": "xsd:anyURI",
          "@id": "skos:narrowMatch"
       },
       "related_mappings": {
-         "@type": "@id",
+         "@type": "xsd:anyURI",
          "@id": "skos:relatedMatch"
       },
       "@base": "https://w3id.org/linkml/"

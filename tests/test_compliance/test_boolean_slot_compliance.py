@@ -8,6 +8,7 @@ from tests.test_compliance.helper import (
     JSON_SCHEMA,
     JSONLD_CONTEXT,
     OWL,
+    PANDERA_POLARS_CLASS,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SHACL,
@@ -88,16 +89,13 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
     :param use_default_range: if True, the default range will be included in addition to any_of.
     :return:
     """
-    expected_json_schema = {"s1": {"anyOf": [{"$ref": "#/$defs/D"}, {"type": "integer"}]}}
+    expected_json_schema = {"s1": {"anyOf": [{"$ref": "#/$defs/D"}, {"type": "integer"}, {"type": "null"}]}}
     if use_default_range and not use_any_type:
         # default_range is set to string, any no explicit range set.
         # in this case the schema is violating monotonicity.
         # TODO: undesired behavior, see https://github.com/linkml/linkml/issues/1483
         expected_json_schema["s1"]["type"] = "string"
-    if use_any_type:
-        # Using an explicit type (even if Any) *should* block the application of the default range
-        # TODO: undesired behavior, see https://github.com/linkml/linkml/issues/1483
-        expected_json_schema["s1"]["$ref"] = "#/$defs/Any"
+
     classes = {
         CLASS_D: {
             "attributes": {
@@ -118,7 +116,7 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
                     "_mappings": {
                         PYDANTIC: f"{SLOT_S1}: Optional[Union[D, int]]",
                         JSON_SCHEMA: expected_json_schema,
-                        JSONLD_CONTEXT: {"s1": {"@id": "s1", "@type": "@id"}},
+                        JSONLD_CONTEXT: {SLOT_S1: {"@id": SLOT_S1, "@type": "@id"}},
                     },
                 },
             },
@@ -133,7 +131,9 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
             "class_uri": "linkml:Any",
         }
         classes[CLASS_C]["attributes"][SLOT_S1]["range"] = CLASS_ANY
-
+        classes[CLASS_C]["attributes"][SLOT_S1]["_mappings"][JSONLD_CONTEXT][SLOT_S1]["@type"] = "linkml:Any"
+    if framework == PANDERA_POLARS_CLASS:
+        pytest.skip("PanderaGen does not implement class ranged slots.")
     schema = validated_schema(
         test_slot_any_of,
         f"DefaultRangeEQ_{default_range}_AnyTypeEQ_{use_any_type}",
@@ -143,7 +143,7 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
         core_elements=["any_of", "range"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
+    if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE, PANDERA_POLARS_CLASS]:
         expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == JSON_SCHEMA:
         # if use_default_range and not is_valid:
@@ -426,7 +426,7 @@ def test_cardinality_in_exactly_one_of(framework, data_name, instance, is_valid)
         core_elements=["exactly_one_of", "minimum_value", "maximum_value"],
     )
     expected_behavior = ValidationBehavior.INCOMPLETE
-    if framework == JSON_SCHEMA:
+    if framework in [JSON_SCHEMA, PANDERA_POLARS_CLASS]:
         # TODO: this should be possible in json schema
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
@@ -514,6 +514,246 @@ def test_class_any_of(framework, data_name, s1value, s2value, is_valid):
         target_class=CLASS_C,
         expected_behavior=expected_behavior,
         description=f"validity {is_valid} check for value {s1value}, {s2value}",
+        # exclude_rdf=True,
+    )
+
+
+@pytest.mark.parametrize("value", ("EQUALS_STRING", "NOT_EQUALS_STRING"))
+@pytest.mark.parametrize("value_is_multivalued", (True, False, "wrong"))
+@pytest.mark.parametrize("multivalued", (True, False))
+@pytest.mark.parametrize(
+    "range",
+    ("string", "integer"),
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_equals_string(framework, range, multivalued, value_is_multivalued, value):
+    """
+    Base test for `equals_string`
+
+    A slot with equals_string must have
+    * range: string
+    * value equal to the specified value
+
+    the equals_string value is hardcoded in the test, no need to vary that.
+    validity is calculated within the test as well.
+
+    Args:
+        value: test data
+        value_is_multivalued: whether the value should be
+            * multiplied as a list (True)
+            * left as is (False)
+            * made a list with an incorrect value ("wrong")
+        multivalued: whether the slot definition is multivalued
+        range: range of the slot
+    """
+    # --------------------------------------------------
+    # Create value
+    # --------------------------------------------------
+    EQUALS_STRING = "EQUALS_STRING"
+
+    if value_is_multivalued == "wrong":
+        value = [value, "SOMETHING ELSE"]
+    elif value_is_multivalued:
+        value = [value] * 3
+
+    # --------------------------------------------------
+    # Decide validity
+    # --------------------------------------------------
+    ACCEPT_WRONG_TYPE = (PYDANTIC,)
+    COERCE_SCALAR = (
+        SHACL,
+        OWL,
+    )
+
+    schema_generation_failure = False
+    if range != "string" and framework not in ACCEPT_WRONG_TYPE:
+        valid = False
+        schema_generation_failure = True
+    else:
+        if multivalued:
+            if not value_is_multivalued and framework not in COERCE_SCALAR:
+                valid = False
+            elif value_is_multivalued:
+                valid = all([v == EQUALS_STRING for v in value])
+            else:
+                valid = value == EQUALS_STRING
+        else:
+            valid = value == EQUALS_STRING
+
+    # --------------------------------------------------
+    # Declare behavior
+    # --------------------------------------------------
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework in (PYTHON_DATACLASSES, SQL_DDL_SQLITE, PANDERA_POLARS_CLASS):
+        # frameworks that haven't implemented equals_string
+        pytest.skip(f"{framework} has not implemented equals_string")
+
+    slots = {SLOT_S1: {"range": range, "multivalued": multivalued, "equals_string": EQUALS_STRING}}
+    classes = {CLASS_C: {"slots": [SLOT_S1]}}
+    key = f"equals_string-multivalued{multivalued}-value_is_multivalued{value_is_multivalued}-range{range}"
+
+    # --------------------------------------------------
+    # Run test
+    # --------------------------------------------------
+
+    # Frameworks that use SchemaLoader will fail at generation time if the range is not string
+    try:
+        schema = validated_schema(
+            test_equals_string,
+            key,
+            framework,
+            classes=classes,
+            slots=slots,
+            core_elements=["equals_string", "ClassDefinition"],
+        )
+    except ValueError as e:
+        if not schema_generation_failure:
+            raise e
+        else:
+            return
+    check_data(
+        schema,
+        key,
+        framework,
+        {SLOT_S1: value},
+        valid,
+        target_class=CLASS_C,
+        expected_behavior=expected_behavior,
+        description=f"validity {valid} check for value {value}",
+        # exclude_rdf=True,
+    )
+
+
+@pytest.mark.parametrize("value", ("EQUALS_STRING_A", "NOT_EQUALS_STRING"))
+@pytest.mark.parametrize("value_is_multivalued", (True, False, "wrong"))
+@pytest.mark.parametrize("multivalued", (True, False))
+@pytest.mark.parametrize(
+    "range",
+    ("string", "integer"),
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_equals_string_in(framework, range, multivalued, value_is_multivalued, value):
+    """
+    Base test for `equals_string_in`
+
+    A slot with equals_string_in must have
+    * range: string
+    * value equal to one of the specified values
+
+    the equals_string value is hardcoded in the test, no need to vary that.
+    validity is calculated within the test as well.
+
+    Args:
+        value: test data
+        value_is_multivalued: whether the value should be
+            * multiplied as a list (True)
+            * left as-is (False)
+            * made a list with an incorrect value ("wrong")
+        multivalued: whether the slot definition is multivalued
+        range: range of the slot
+    """
+    # --------------------------------------------------
+    # Create value
+    # --------------------------------------------------
+    EQUALS_STRING_IN = ["EQUALS_STRING_A", "EQUALS_STRING_B"]
+
+    if value_is_multivalued == "wrong":
+        value = [value, "SOMETHING ELSE"]
+    elif value_is_multivalued:
+        value = [value] * 3
+
+    # --------------------------------------------------
+    # Decide validity
+    # --------------------------------------------------
+    ACCEPT_WRONG_TYPE = (PYDANTIC,)
+    COERCE_SCALAR = (SHACL,)
+
+    schema_generation_failure = False
+    if range != "string" and framework not in ACCEPT_WRONG_TYPE:
+        valid = False
+        schema_generation_failure = True
+    else:
+        if multivalued:
+            if not value_is_multivalued and framework not in COERCE_SCALAR:
+                valid = False
+            elif value_is_multivalued:
+                valid = all([v in EQUALS_STRING_IN for v in value])
+            else:
+                valid = value in EQUALS_STRING_IN
+        else:
+            valid = value in EQUALS_STRING_IN
+
+    # --------------------------------------------------
+    # Declare behavior
+    # --------------------------------------------------
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework in (PYTHON_DATACLASSES, SQL_DDL_SQLITE, PANDERA_POLARS_CLASS):
+        pytest.skip(f"{framework} has not implemented equals_string_in")
+    if framework in (OWL,):
+        # RDF/OWL does not distinguish between scalars and sets of size one.
+        if multivalued and not value_is_multivalued:
+            expected_behavior = ValidationBehavior.INCOMPLETE
+
+    slots = {SLOT_S1: {"range": range, "multivalued": multivalued, "equals_string_in": EQUALS_STRING_IN}}
+    classes = {CLASS_C: {"slots": [SLOT_S1]}}
+    key = f"equals_string_in-multivalued{multivalued}-value_is_multivalued{value_is_multivalued}-range{range}"
+
+    expected_owl = (
+        "@prefix ex: <http://example.org/> ."
+        "@prefix linkml: <https://w3id.org/linkml/> ."
+        "@prefix owl: <http://www.w3.org/2002/07/owl#> ."
+        "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
+        "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ."
+        "@prefix schema1: <http://schema.org/> ."
+        "@prefix shex: <http://www.w3.org/ns/shex#> ."
+        "@prefix skos: <http://www.w3.org/2004/02/skos/core#> ."
+        "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> ."
+        ""
+        "ex:C a owl:Class ;"
+        '    rdfs:label "C" ;'
+        "    rdfs:subClassOf [ a owl:Restriction ;"
+        "            owl:maxCardinality 1 ;"
+        "            owl:onProperty ex:s1 ],"
+        "        [ a owl:Restriction ;"
+        "            owl:minCardinality 0 ;"
+        "            owl:onProperty ex:s1 ],"
+        "        [ a owl:Restriction ;"
+        "            owl:allValuesFrom [ a rdfs:Datatype ;"
+        "                    owl:intersectionOf ( xsd:string [ a rdfs:Datatype ;"
+        '                                owl:oneOf ( "EQUALS_STRING_A" "EQUALS_STRING_B" ) ] ) ] ;'
+        "            owl:onProperty ex:s1 ] ."
+    )
+    if multivalued is False and range == "string":
+        classes[CLASS_C]["_mappings"] = {OWL: expected_owl}
+
+    # --------------------------------------------------
+    # Run test
+    # --------------------------------------------------
+
+    # Frameworks that use SchemaLoader will fail at generation time if the range is not string
+    try:
+        schema = validated_schema(
+            test_equals_string_in,
+            key,
+            framework,
+            classes=classes,
+            slots=slots,
+            core_elements=["equals_string_in", "ClassDefinition"],
+        )
+    except ValueError as e:
+        if not schema_generation_failure:
+            raise e
+        else:
+            return
+    check_data(
+        schema,
+        key,
+        framework,
+        {SLOT_S1: value},
+        valid,
+        target_class=CLASS_C,
+        expected_behavior=expected_behavior,
+        description=f"validity {valid} check for value {value}",
         # exclude_rdf=True,
     )
 
@@ -1060,6 +1300,8 @@ def test_class_boolean_with_expressions(
         pytest.skip("Class Any not supported in this test")
     if framework == SHACL:
         pytest.skip("shaclgen does not support boolean expressions yet")
+    if framework == PANDERA_POLARS_CLASS:
+        pytest.skip("panderagen does not support boolean expressions yet")
     if s1_range.endswith("*"):
         s1_multivalued = True
         s1_range = s1_range[:-1]
@@ -1122,6 +1364,8 @@ def test_class_boolean_with_expressions(
         core_elements=["any_of", "ClassDefinition"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     if not is_valid and framework not in [OWL]:
         expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == OWL:
@@ -1146,7 +1390,7 @@ def test_class_boolean_with_expressions(
 
 
 @pytest.mark.parametrize(
-    "schema_name,range,op,expression1,expression2,data_name,value,is_valid",
+    "schema_name,range,op,expression1,expression2,data_name,value,is_valid,unsatisfiable",
     [
         # any-type
         (
@@ -1158,6 +1402,7 @@ def test_class_boolean_with_expressions(
             "matches_one",
             "x",
             True,
+            False,
         ),
         (
             "any_of_anytype",
@@ -1167,6 +1412,7 @@ def test_class_boolean_with_expressions(
             {"range": "string", "equals_string": "y"},
             "matches_none",
             "z",
+            False,
             False,
         ),
         (
@@ -1178,6 +1424,7 @@ def test_class_boolean_with_expressions(
             "matches_str",
             "x",
             True,
+            False,
         ),
         (
             "mixed",
@@ -1188,6 +1435,7 @@ def test_class_boolean_with_expressions(
             "matches_int",
             8,
             True,
+            False,
         ),
         (
             "mixed",
@@ -1198,23 +1446,94 @@ def test_class_boolean_with_expressions(
             "matches_none",
             1,
             False,
+            False,
         ),
-        ("mixed_cls_int", "Any", "any_of", {"range": CLASS_D}, {"range": "integer"}, "matches_int", 1, True),
-        ("mixed_cls_int", "Any", "any_of", {"range": CLASS_D}, {"range": "integer"}, "matches_obj", "test:x", True),
-        ("mixed_enum_int", "Any", "any_of", {"range": ENUM_E}, {"range": "integer"}, "matches_int", 1, True),
-        ("mixed_enum_int", "Any", "any_of", {"range": ENUM_E}, {"range": "integer"}, "matches_pv", PV_1, True),
-        ("mixed_enum_int", "Any", "any_of", {"range": ENUM_E}, {"range": "integer"}, "matches_none", "z", False),
-        ("mixed_all_of_enum_enum", "Any", "all_of", {"range": ENUM_E}, {"range": ENUM_F}, "matches_pv", PV_2, True),
-        ("mixed_all_of_enum_enum", "Any", "all_of", {"range": ENUM_E}, {"range": ENUM_F}, "matches_pv", PV_1, False),
-        ("mixed_all_of_enum_enum", "Any", "all_of", {"range": ENUM_E}, {"range": ENUM_F}, "matches_pv", PV_3, False),
-        ("mixed_all_of_enum_enum", "Any", "all_of", {"range": ENUM_E}, {"range": ENUM_F}, "matches_pv", "z", False),
+        ("mixed_cls_int", "Any", "any_of", {"range": CLASS_D}, {"range": "integer"}, "matches_int", 1, True, False),
+        (
+            "mixed_cls_int",
+            "Any",
+            "any_of",
+            {"range": CLASS_D},
+            {"range": "integer"},
+            "matches_obj",
+            "test:x",
+            True,
+            False,
+        ),
+        ("mixed_enum_int", "Any", "any_of", {"range": ENUM_E}, {"range": "integer"}, "matches_int", 1, True, False),
+        ("mixed_enum_int", "Any", "any_of", {"range": ENUM_E}, {"range": "integer"}, "matches_pv", PV_1, True, False),
+        ("mixed_enum_int", "Any", "any_of", {"range": ENUM_E}, {"range": "integer"}, "matches_none", "z", False, False),
+        (
+            "mixed_all_of_enum_enum",
+            "Any",
+            "all_of",
+            {"range": ENUM_E},
+            {"range": ENUM_F},
+            "matches_pv",
+            PV_2,
+            True,
+            True,
+        ),
+        (
+            "mixed_all_of_enum_enum",
+            "Any",
+            "all_of",
+            {"range": ENUM_E},
+            {"range": ENUM_F},
+            "matches_pv",
+            PV_1,
+            False,
+            True,
+        ),
+        (
+            "mixed_all_of_enum_enum",
+            "Any",
+            "all_of",
+            {"range": ENUM_E},
+            {"range": ENUM_F},
+            "matches_pv",
+            PV_3,
+            False,
+            True,
+        ),
+        (
+            "mixed_all_of_enum_enum",
+            "Any",
+            "all_of",
+            {"range": ENUM_E},
+            {"range": ENUM_F},
+            "matches_pv",
+            "z",
+            False,
+            True,
+        ),
         # mixed cardinality; not yet allowed at expression level
         # ("todo, "string", "any_of", {"multivalued": True}, {"multivalued": False}, "match_sv", "x", True),
         # ("todo", "string", "any_of", {"multivalued": True}, {"multivalued": False}, "match_mv", ["x"], True),
         # strings
-        ("any_of_streq", "string", "any_of", {"equals_string": "x"}, {"equals_string": "y"}, "none", None, True),
-        ("any_of_streq", "string", "any_of", {"equals_string": "x"}, {"equals_string": "y"}, "matches", "x", True),
-        ("any_of_streq", "string", "any_of", {"equals_string": "x"}, {"equals_string": "y"}, "no_matches", "z", False),
+        ("any_of_streq", "string", "any_of", {"equals_string": "x"}, {"equals_string": "y"}, "none", None, True, False),
+        (
+            "any_of_streq",
+            "string",
+            "any_of",
+            {"equals_string": "x"},
+            {"equals_string": "y"},
+            "matches",
+            "x",
+            True,
+            False,
+        ),
+        (
+            "any_of_streq",
+            "string",
+            "any_of",
+            {"equals_string": "x"},
+            {"equals_string": "y"},
+            "no_matches",
+            "z",
+            False,
+            False,
+        ),
         # list of strings
         (
             "any_of_streq_MV",
@@ -1225,6 +1544,7 @@ def test_class_boolean_with_expressions(
             "none",
             None,
             True,
+            False,
         ),
         (
             "any_of_streq_MV",
@@ -1235,6 +1555,7 @@ def test_class_boolean_with_expressions(
             "one",
             ["y", "z"],
             False,
+            False,
         ),
         (
             "any_of_streq_MV",
@@ -1244,6 +1565,7 @@ def test_class_boolean_with_expressions(
             {"equals_string_in": ["y", "a"]},
             "neither",
             ["z"],
+            False,
             False,
         ),
         # strings, object reference
@@ -1256,6 +1578,7 @@ def test_class_boolean_with_expressions(
             "none",
             None,
             True,
+            False,
         ),
         (
             "any_of_streq_ref",
@@ -1266,6 +1589,7 @@ def test_class_boolean_with_expressions(
             "match",
             "TEST:x",
             True,
+            False,
         ),
         (
             "any_of_streq_ref",
@@ -1276,27 +1600,148 @@ def test_class_boolean_with_expressions(
             "neither",
             "TEST:z",
             False,
+            False,
         ),
         # ints, all_of
-        ("all_of_min_min_INT", "integer", "all_of", {"minimum_value": 10}, {"minimum_value": 20}, "none", None, True),
-        ("all_of_min_min_INT", "integer", "all_of", {"minimum_value": 10}, {"minimum_value": 20}, "both", 20, True),
-        ("all_of_min_min_INT", "integer", "all_of", {"minimum_value": 10}, {"minimum_value": 20}, "one", 10, False),
-        ("all_of_min_min_INT", "integer", "all_of", {"minimum_value": 10}, {"minimum_value": 20}, "neither", 0, False),
+        (
+            "all_of_min_min_INT",
+            "integer",
+            "all_of",
+            {"minimum_value": 10},
+            {"minimum_value": 20},
+            "none",
+            None,
+            True,
+            False,
+        ),
+        (
+            "all_of_min_min_INT",
+            "integer",
+            "all_of",
+            {"minimum_value": 10},
+            {"minimum_value": 20},
+            "both",
+            20,
+            True,
+            False,
+        ),
+        (
+            "all_of_min_min_INT",
+            "integer",
+            "all_of",
+            {"minimum_value": 10},
+            {"minimum_value": 20},
+            "one",
+            10,
+            False,
+            False,
+        ),
+        (
+            "all_of_min_min_INT",
+            "integer",
+            "all_of",
+            {"minimum_value": 10},
+            {"minimum_value": 20},
+            "neither",
+            0,
+            False,
+            False,
+        ),
         # ints, none_of
-        ("none_of_min_min_INT", "integer", "none_of", {"minimum_value": 10}, {"minimum_value": 20}, "none", None, True),
-        ("none_of_min_min_INT", "integer", "none_of", {"minimum_value": 10}, {"minimum_value": 20}, "both", 20, False),
-        ("none_of_min_min_INT", "integer", "none_of", {"minimum_value": 10}, {"minimum_value": 20}, "first", 10, False),
-        ("none_of_min_min_INT", "integer", "none_of", {"minimum_value": 10}, {"minimum_value": 20}, "neither", 0, True),
+        (
+            "none_of_min_min_INT",
+            "integer",
+            "none_of",
+            {"minimum_value": 10},
+            {"minimum_value": 20},
+            "none",
+            None,
+            True,
+            False,
+        ),
+        (
+            "none_of_min_min_INT",
+            "integer",
+            "none_of",
+            {"minimum_value": 10},
+            {"minimum_value": 20},
+            "both",
+            20,
+            False,
+            False,
+        ),
+        (
+            "none_of_min_min_INT",
+            "integer",
+            "none_of",
+            {"minimum_value": 10},
+            {"minimum_value": 20},
+            "first",
+            10,
+            False,
+            False,
+        ),
+        (
+            "none_of_min_min_INT",
+            "integer",
+            "none_of",
+            {"minimum_value": 10},
+            {"minimum_value": 20},
+            "neither",
+            0,
+            True,
+            False,
+        ),
         # ints, any_of
-        ("any_of_min_min_INT", "integer", "any_of", {"minimum_value": 10}, {"minimum_value": 20}, "none", None, True),
-        ("any_of_min_min_INT", "integer", "any_of", {"minimum_value": 10}, {"minimum_value": 20}, "both", 20, True),
-        ("any_of_min_min_INT", "integer", "any_of", {"minimum_value": 10}, {"minimum_value": 20}, "first", 10, True),
-        ("any_of_min_min_INT", "integer", "any_of", {"minimum_value": 10}, {"minimum_value": 20}, "neither", 0, False),
+        (
+            "any_of_min_min_INT",
+            "integer",
+            "any_of",
+            {"minimum_value": 10},
+            {"minimum_value": 20},
+            "none",
+            None,
+            True,
+            False,
+        ),
+        (
+            "any_of_min_min_INT",
+            "integer",
+            "any_of",
+            {"minimum_value": 10},
+            {"minimum_value": 20},
+            "both",
+            20,
+            True,
+            False,
+        ),
+        (
+            "any_of_min_min_INT",
+            "integer",
+            "any_of",
+            {"minimum_value": 10},
+            {"minimum_value": 20},
+            "first",
+            10,
+            True,
+            False,
+        ),
+        (
+            "any_of_min_min_INT",
+            "integer",
+            "any_of",
+            {"minimum_value": 10},
+            {"minimum_value": 20},
+            "neither",
+            0,
+            False,
+            False,
+        ),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_slot_boolean_with_expressions(
-    framework, schema_name, range, op, expression1, expression2, data_name, value, is_valid
+    framework, schema_name, range, op, expression1, expression2, data_name, value, is_valid, unsatisfiable
 ):
     """
     Tests behavior of boolean operators for slot expressions.
@@ -1314,6 +1759,8 @@ def test_slot_boolean_with_expressions(
     """
     if framework == SHACL:
         pytest.skip("shaclgen does not support boolean expressions yet")
+    elif framework == PANDERA_POLARS_CLASS:
+        pytest.skip("panderagen does not support boolean expressions yet")
     if range.endswith("*"):
         multivalued = True
         range = range[:-1]
@@ -1368,6 +1815,7 @@ def test_slot_boolean_with_expressions(
         slots=slots,
         enums=enums,
         core_elements=["any_of", "ClassDefinition"],
+        unsatisfiable=unsatisfiable,
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if not is_valid and framework not in [OWL, JSON_SCHEMA]:
@@ -1489,7 +1937,9 @@ def test_min_max(framework, min_val, max_val, equals_number: Optional[int], valu
                     "equals_number": equals_number,
                     "_mappings": {
                         PYDANTIC: (
-                            f"{SLOT_S1}: int = Field(..., ge={min_val}, le={max_val}" if not equals_number else ""
+                            f"{SLOT_S1}: int = Field(default=..., ge={min_val}, le={max_val}"
+                            if not equals_number
+                            else ""
                         )
                     },
                 },
@@ -1520,11 +1970,12 @@ def test_min_max(framework, min_val, max_val, equals_number: Optional[int], valu
         classes=classes,
         core_elements=["minimum_value", "maximum_value", "range"],
         comments=comments,
+        unsatisfiable=not satisfiable,
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if equals_number is not None and is_valid:
         is_valid = equals_number == value
-    if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
+    if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE, PANDERA_POLARS_CLASS]:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
@@ -1570,6 +2021,9 @@ def test_preconditions(framework, s1, s2, is_valid):
     """
     if framework == SHACL:
         pytest.skip("shaclgen does not support rules yet")
+    if framework == PANDERA_POLARS_CLASS:
+        pytest.skip("panderagen does not support rules yet")
+
     classes = {
         CLASS_C: {
             "description": "if s1 is either 0 or 10, s2 cannot be either 0 or 10",
@@ -1990,7 +2444,7 @@ def test_union_of(framework, data_name, value, is_valid):
         core_elements=["union_of", "range"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
+    if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE, PANDERA_POLARS_CLASS]:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
@@ -2032,6 +2486,8 @@ def test_value_presence_in_rules(framework, multivalued, data_name, instance, is
     """
     if framework == SHACL:
         pytest.skip("shaclgen does not support boolean expressions yet")
+    if framework == PANDERA_POLARS_CLASS:
+        pytest.skip("panderagen does not support boolean expressions yet")
     classes = {
         CLASS_C: {
             "attributes": {
@@ -2202,7 +2658,7 @@ def test_membership(framework, name, quantification, expression, instance, is_va
     if framework == OWL and quantification == "has_member" and not is_valid:
         # OWL is open world, existential checks succeed without closure axioms
         expected_behavior = ValidationBehavior.INCOMPLETE
-    if framework in [SHACL, SQL_DDL_SQLITE]:
+    if framework in [SHACL, SQL_DDL_SQLITE, PANDERA_POLARS_CLASS]:
         expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == OWL and name == "all_obj_members_equals_string" and not is_valid:
         # This test case relies on punning, as s1 is used as both an OP and DP,

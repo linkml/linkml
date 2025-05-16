@@ -82,31 +82,40 @@ def test_alias(framework, class_uri, slot_uri, slot_alias, type_uri, data_name, 
     class_uriref = SCHEMA.C if class_uri else EX.C
     type_uriref = SCHEMA.T if type_uri else EX.T
     expected_slot_name = slot_alias if slot_alias else SLOT_S1
+    expected_class_name = CLASS_C
     dc_type_expected = "class T(Integer):"
     if type_uri:
         dc_type_expected += "    type_class_uri = SCHEMA.T"
     else:
         dc_type_expected += "    type_class_uri = XSD.integer"
+    expected_class_jsonld_context = {
+        expected_class_name: {
+            "@id": expected_class_name,
+        },
+    }
+    if class_uri:
+        expected_class_jsonld_context[expected_class_name]["@id"] = class_uri
     classes = {
         CLASS_C: {
             "class_uri": class_uri,
             "slots": [SLOT_S1],
             "_mappings": {
                 OWL: [(class_uriref, RDF.type, OWLNS.Class)],
-                PYDANTIC: "s1: Optional[int]",  ## May change in future, does not current support aliases
+                PYDANTIC: f"{expected_slot_name}: Optional[int]",
                 PYTHON_DATACLASSES: f"{expected_slot_name}: Optional[Union[int, T]]",
+                JSONLD_CONTEXT: expected_class_jsonld_context,
             },
         },
     }
     # TODO: add typeof inference to ContextGenerator
-    expected_jsonld_context = {
+    expected_slot_jsonld_context = {
         expected_slot_name: {
             "@id": expected_slot_name,
             "@type": type_uri if type_uri else "xsd:integer",
         },
     }
     if slot_uri:
-        expected_jsonld_context[expected_slot_name]["@id"] = slot_uri
+        expected_slot_jsonld_context[expected_slot_name]["@id"] = slot_uri
     slots = {
         SLOT_S1: {
             "alias": slot_alias,
@@ -114,7 +123,7 @@ def test_alias(framework, class_uri, slot_uri, slot_alias, type_uri, data_name, 
             "range": TYPE_T,
             "_mappings": {
                 OWL: [(prop_uriref, RDF.type, OWLNS.DatatypeProperty)],
-                JSONLD_CONTEXT: expected_jsonld_context,
+                JSONLD_CONTEXT: expected_slot_jsonld_context,
             },
         },
     }
@@ -140,9 +149,6 @@ def test_alias(framework, class_uri, slot_uri, slot_alias, type_uri, data_name, 
         core_elements=["alias", "class_uri", "slot_uri"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if slot_alias:
-        if framework == PYDANTIC:
-            expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data_name,

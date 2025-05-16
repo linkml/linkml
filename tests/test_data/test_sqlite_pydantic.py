@@ -1,6 +1,5 @@
 import yaml
 from linkml_runtime.dumpers import yaml_dumper
-from pydantic.version import VERSION
 from sqlalchemy.orm import sessionmaker
 
 from linkml.utils.sqlutils import SQLStore
@@ -49,10 +48,7 @@ def test_sqlite_store(person, person_pydantic, tmp_outputs):
     # 4a: first test load_all, diff to original data should be empty
     [returned_container] = endpoint.load_all(target_class=mod.Container)
 
-    if VERSION[0] == "1":
-        returned_dict = returned_container.dict(exclude_none=True)
-    else:
-        returned_dict = returned_container.model_dump(exclude_none=True)
+    returned_dict = returned_container.model_dump(exclude_none=True)
 
     # Fix when this is fixed https://github.com/linkml/linkml/issues/999
     with open(tmp_outputs["data"], "w") as stream:

@@ -1,5 +1,6 @@
 """Constants for compliance tests. See README.md for more information."""
 
+import pytest
 import rdflib
 
 from tests.test_compliance.helper import (
@@ -7,6 +8,7 @@ from tests.test_compliance.helper import (
     JSON_SCHEMA,
     JSONLD_CONTEXT,
     OWL,
+    PANDERA_POLARS_CLASS,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SHACL,
@@ -45,6 +47,7 @@ SLOT_S2 = "s2"
 SLOT_S3 = "s3"
 SLOT_S4 = "s4"
 SLOT_ID = "id"
+SLOT_KEY = "k"
 SLOT_S1a = "s1a"
 SLOT_S1b = "s1b"
 EXAMPLE_STRING_VALUE_1 = "foo"
@@ -60,17 +63,18 @@ PV_3 = "pv3"
 SUBSET_SS = "Subset1"
 
 CORE_FRAMEWORKS = [
-    PYTHON_DATACLASSES,
-    PYDANTIC,
-    JAVA,
-    JSON_SCHEMA,
-    SHACL,
-    SHEX,
+    pytest.param(PYTHON_DATACLASSES, marks=[pytest.mark.pythongen]),
+    pytest.param(PYDANTIC, marks=[pytest.mark.pydanticgen]),
+    pytest.param(PANDERA_POLARS_CLASS, marks=[pytest.mark.panderagen]),
+    pytest.param(JAVA, marks=[pytest.mark.javagen]),
+    pytest.param(JSON_SCHEMA, marks=[pytest.mark.jsonschemagen]),
+    pytest.param(SHACL, marks=[pytest.mark.shaclgen]),
+    pytest.param(SHEX, marks=[pytest.mark.shexgen]),
     # JSONLD,
-    JSONLD_CONTEXT,
+    pytest.param(JSONLD_CONTEXT, marks=[pytest.mark.jsonldcontextgen]),
     #    SQL_ALCHEMY_IMPERATIVE,
     #    SQL_ALCHEMY_DECLARATIVE,
-    SQL_DDL_SQLITE,
-    SQL_DDL_POSTGRES,
-    OWL,
+    pytest.param(SQL_DDL_SQLITE, marks=[pytest.mark.sqlddlgen]),
+    pytest.param(SQL_DDL_POSTGRES, marks=[pytest.mark.sqlddlpostgresgen]),
+    pytest.param(OWL, marks=[pytest.mark.owlgen]),
 ]

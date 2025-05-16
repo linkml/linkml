@@ -1,4 +1,4 @@
-# Subset: {{ gen.name(element) }}
+# Subset: {{ gen.name(element) }} {% if element.deprecated %} <span style="color: red;"><strong> (DEPRECATED) </strong> {% endif %}
 
 {%- if header -%}
 {{ header }}

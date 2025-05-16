@@ -6,7 +6,10 @@
             "properties": {
                 "a": {
                     "description": "this-a in the context of C1",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "title": "C1",
@@ -18,7 +21,10 @@
             "properties": {
                 "a": {
                     "description": "this-a in the context of C2",
-                    "type": "integer"
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
                 }
             },
             "title": "C2",
@@ -29,7 +35,14 @@
             "description": "",
             "properties": {
                 "a": {
-                    "$ref": "#/$defs/C1",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/C1"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "other-a in the context of C3"
                 }
             },

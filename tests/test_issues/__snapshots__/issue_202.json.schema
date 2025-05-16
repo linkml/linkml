@@ -6,7 +6,10 @@
             "properties": {
                 "latitude": {
                     "description": "angular coordinate measured positive north from the equator.",
-                    "type": "number"
+                    "type": [
+                        "number",
+                        "null"
+                    ]
                 }
             },
             "title": "GeospatialDDCoordLocation",

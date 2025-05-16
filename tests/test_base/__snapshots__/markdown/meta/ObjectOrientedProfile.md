@@ -24,6 +24,7 @@ URI: [linkml:ObjectOrientedProfile](https://w3id.org/linkml/ObjectOrientedProfil
  * [class_definition➞is_a](class_definition_is_a.md) - A primary parent class from which inheritable metaslots are propagated
  * [class_definition➞mixins](class_definition_mixins.md) - A collection of secondary parent mixin classes from which inheritable metaslots are propagated
  * [classes](classes.md) - An index to the collection of all class definitions in the schema
+ * [enum_binding➞range](enum_binding_range.md)
  * [enums](enums.md) - An index to the collection of all enum definitions in the schema
  * [is_a](is_a.md) - A primary parent class or slot from which inheritable metaslots are propagated from. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded
  * [mixin](mixin.md) - Indicates the class or slot is intended to be inherited from without being an is_a parent. mixins should not be inherited from using is_a, except by other mixins.

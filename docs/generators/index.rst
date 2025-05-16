@@ -19,13 +19,13 @@ standards for structuring data such as JSON-Schema, Protocol Buffers
 (ProtoBuf), and GraphQL.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Contents:
 
    json-schema
    protobuf
    graphql
-   
+
 
 Linked Data Standards
 ---------------------
@@ -36,7 +36,7 @@ schemas, can be translated directly into RDF, or they can be mapped to
 OWL, or translated to shape languages such as ShEx and SHACL.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Contents:
 
    jsonld-context
@@ -55,7 +55,7 @@ including UML class diagrams and markdown websites that can be easily
 published on static hosting sites.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Contents:
 
    markdown
@@ -64,8 +64,8 @@ published on static hosting sites.
    yuml
    plantumlgen
    project-generator
-   
-   
+
+
 Language Specific
 -----------------
 
@@ -73,7 +73,7 @@ These will generate object models that are particular to specific
 languages such as Python, Javascript, or Java.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Contents:
 
    python
@@ -87,17 +87,17 @@ Database
 Generators specific to database frameworks. Currently only SQL databases.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Contents:
 
    sqltable
    sqlalchemy
-             
+
 Others
 ------
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Contents:
 
    linkml
@@ -107,3 +107,15 @@ Others
    excel
    csv
    yaml
+   pandera
+
+Common
+------
+
+Classes and utilities used by all generators
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Common:
+
+   common/index

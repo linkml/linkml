@@ -1,0 +1,19 @@
+id: https://w3id.org/linkml/examples/boolean_constraints
+name: test_boolean_constraints
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://w3id.org/linkml/examples/boolean_constraints/
+imports:
+  - linkml:types
+default_range: string
+default_prefix: ex
+
+classes:
+  AnyOfSimpleType:
+    attributes:
+      attribute1:
+        any_of:
+          - range: string
+          - range: integer
+        annotations:
+          resting: supine

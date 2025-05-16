@@ -1,9 +1,6 @@
 import pytest
-from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml.validator.plugins.pydantic_validation_plugin import PydanticValidationPlugin
-
-IS_PYDANTIC_V1 = PYDANTIC_VERSION[0] == "1"
 
 
 @pytest.mark.parametrize(
@@ -19,7 +16,7 @@ IS_PYDANTIC_V1 = PYDANTIC_VERSION[0] == "1"
         ({"id": "1", "full_name": "Person One", "aliases": "Person 1"}, False, False),
         ({"id": "1", "full_name": ["Person One"]}, False, False),
         ({"id": ["1"], "full_name": "Person One"}, False, False),
-        ({"id": "1", "full_name": 1, "age": 100}, True if IS_PYDANTIC_V1 else False, False),
+        ({"id": "1", "full_name": 1, "age": 100}, False, False),
         ({"id": "1", "full_name": 1, "age": "one hundred"}, False, False),
         ({"full_name": "Person One"}, False, False),
         # TODO
