@@ -61,9 +61,33 @@ classes:
     slot_usage:
       primary_email:
         pattern: "^\\S+@[\\S+\\.]+\\S+"
+    attributes:
+      pet:
+        exactly_one_of:
+          - range: Dog
+          - range: Cat
+        inlined: true
     in_subset:
       - basic_subset
-  
+
+  Dog:
+    is_a: NamedThing
+    attributes:
+      name:
+      breed:
+        range: string
+
+  Cat:
+    is_a: NamedThing
+    attributes:
+      name:
+      breed:
+        range: string
+      nip:
+        range: string
+        required: true
+
+
   HasAliases:
     description: >-
       A mixin applied to any class that can have aliases/alternateNames
@@ -154,8 +178,8 @@ classes:
     slots:
       - in_location
 
+
   Container:
-    tree_root: true
     slots:
       - persons
       - organizations
