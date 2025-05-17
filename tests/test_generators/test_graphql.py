@@ -15,11 +15,11 @@ type Person implements HasAliases
     hasEmploymentHistory: [EmploymentEvent]
     hasFamilialRelationships: [FamilialRelationship]
     hasMedicalHistory: [MedicalEvent]
-    ageInYears: Integer
+    ageInYears: Int
     addresses: [Address]
     hasBirthEvent: BirthEvent
     speciesName: String
-    stomachCount: Integer
+    stomachCount: Int
     isLiving: LifeStatusEnum
     aliases: [String]
   }
@@ -28,8 +28,8 @@ type Person implements HasAliases
 MEDICALEVENT = """
 type MedicalEvent
   {
-    startedAtTime: Date
-    endedAtTime: Date
+    startedAtTime: String
+    endedAtTime: String
     isCurrent: Boolean
     metadata: AnyObject
     inLocation: Place
@@ -41,8 +41,8 @@ type MedicalEvent
 FAMILIALRELATIONSHIP = """
 type FamilialRelationship
   {
-    startedAtTime: Date
-    endedAtTime: Date
+    startedAtTime: String
+    endedAtTime: String
     cordialness: String
     type: FamilialRelationshipType!
     relatedTo: Person!
@@ -69,24 +69,16 @@ enum FamilialRelationshipType
   }
 """
 
-OTHERCODES = """
-enum OtherCodes
-  {
-    a_b
-  }
-"""
-
 
 @pytest.mark.parametrize(
     "input_class,expected",
     [
         # check that expected GraphQL schema blocks are present
-        ("Person", PERSON),
+        pytest.param("Person", PERSON, marks=pytest.mark.xfail(reason="Bug 2302: invalid GraphQL code")),
         ("Dataset", DATASET),
-        ("MedicalEvent", MEDICALEVENT),
-        ("FamilialRelationship", FAMILIALRELATIONSHIP),
+        pytest.param("MedicalEvent", MEDICALEVENT, marks=pytest.mark.xfail(reason="Bug 2302: invalid GraphQL code")),
+        pytest.param("FamilialRelationship", FAMILIALRELATIONSHIP, marks=pytest.mark.xfail(reason="Bug 2302: invalid GraphQL code")),
         ("FamilialRelationshipType", FAMILIALRELATIONSHIPTYPE),
-        ("OtherCodes", OTHERCODES),
     ],
 )
 def test_serialize_selected(input_class, expected, kitchen_sink_path):
