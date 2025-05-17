@@ -74,10 +74,10 @@ enum FamilialRelationshipType
     "input_class,expected",
     [
         # check that expected GraphQL schema blocks are present
-        pytest.param("Person", PERSON, marks=pytest.mark.xfail(reason="Bug 2302: invalid GraphQL code")),
+        ("Person", PERSON),
         ("Dataset", DATASET),
-        pytest.param("MedicalEvent", MEDICALEVENT, marks=pytest.mark.xfail(reason="Bug 2302: invalid GraphQL code")),
-        pytest.param("FamilialRelationship", FAMILIALRELATIONSHIP, marks=pytest.mark.xfail(reason="Bug 2302: invalid GraphQL code")),
+        ("MedicalEvent", MEDICALEVENT),
+        ("FamilialRelationship", FAMILIALRELATIONSHIP),
         ("FamilialRelationshipType", FAMILIALRELATIONSHIPTYPE),
     ],
 )
@@ -96,7 +96,6 @@ def test_snapshot(kitchen_sink_path, snapshot):
     assert generated == snapshot("kitchen_sink.graphql")
 
 
-@pytest.mark.xfail(reason="Bug 2302: invalid GraphQL code")
 def test_graphql_validity(kitchen_sink_path):
     generator = GraphqlGenerator(kitchen_sink_path)
     generated = generator.serialize()
