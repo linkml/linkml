@@ -1,6 +1,11 @@
+import logging
+
 import pytest
+from graphql import parse
 
 from linkml.generators.graphqlgen import GraphqlGenerator
+
+logger = logging.getLogger(__name__)
 
 PERSON = """
 type Person implements HasAliases
@@ -97,3 +102,22 @@ def test_snapshot(kitchen_sink_path, snapshot):
     generator = GraphqlGenerator(kitchen_sink_path)
     generated = generator.serialize()
     assert generated == snapshot("kitchen_sink.graphql")
+
+
+@pytest.mark.xfail(reason="Bug 2302: invalid GraphQL code")
+def test_graphql_validity(kitchen_sink_path):
+    generator = GraphqlGenerator(kitchen_sink_path)
+    generated = generator.serialize()
+    logger.info("\nGenerated GraphQL schema:")
+    logger.info("vvvvvv Start GraphQL vvvvvv")
+    logger.info(generated)
+    logger.info("^^^^^^^ End GraphQL ^^^^^^^")
+    try:
+        parse(generated)
+    except Exception as ex:
+        pytest.fail(
+            "Generated GraphQL appears to be wrong, it cannot be parsed!\n"
+            + "vvvvvv Start Error Message vvvvvv\n"
+            + f"{str(ex)}\n"
+            + "^^^^^^^ End Error Message ^^^^^^^"
+        )
