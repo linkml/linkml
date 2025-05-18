@@ -21,10 +21,10 @@
     {%- endif -%}
 {% endmacro %}
 
-# Slot: {{ title }} {% if element.deprecated %} <span style="color: red;"><strong> (DEPRECATED) </strong> {% endif %}
+# Slot: {{ title }} {% if element.deprecated %} <span style="color: red;"><strong> (DEPRECATED) </strong></span> {% endif %}
 
 {%- if header -%}
-{{header}}
+{{ header }}
 {%- endif -%}
 
 {% if element.description %}
@@ -66,7 +66,6 @@ Alias: {{ element.alias }}
 
 {% endif %}
 
-
 {% if schemaview.is_mixin(element.name) %}
 ## Mixin Usage
 
@@ -95,12 +94,11 @@ Alias: {{ element.alias }}
 * Maximum Value: {{ element.maximum_value|int }}
 {% endif -%}
 {% if element.pattern %}
-* Regex pattern: {{ '`' }}{{  element.pattern }}{{ '`' }}
+* Regex pattern: {{ '`' }}{{ element.pattern }}{{ '`' }}
 {% endif -%}
 {% if schemaview.is_mixin(element.name) %}
 * Mixin: {{ element.mixin }}
 {% endif -%}
-
 
 {% if schemaview.usage_index().get(element.name) %}
 ## Usages
@@ -108,7 +106,7 @@ Alias: {{ element.alias }}
 | used by | used in | type | used |
 | ---  | --- | --- | --- |
 {% for usage in schemaview.usage_index().get(element.name) -%}
-| {{gen.link(usage.used_by)}} | {{gen.link(usage.slot)}} | {{usage.metaslot}} | {{ gen.link(usage.used) }} |
+| {{ gen.link(usage.used_by) }} | {{ gen.link(usage.slot) }} | {{ usage.metaslot }} | {{ gen.link(usage.used) }} |
 {% endfor %}
 {% endif %}
 
@@ -123,5 +121,5 @@ Alias: {{ element.alias }}
 </details>
 
 {%- if footer -%}
-{{footer}}
+{{ footer }}
 {%- endif -%}
