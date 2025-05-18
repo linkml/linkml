@@ -6,7 +6,6 @@
 {%- endfor %}
 {% endif %}
 
-
 {% if element.examples %}
 ## Examples
 
@@ -21,7 +20,7 @@
 ## Comments
 
 {% for x in element.comments -%}
-* {{x}}
+* {{ x }}
 {% endfor %}
 {% endif -%}
 
@@ -29,7 +28,7 @@
 ## TODOs
 
 {% for x in element.todos -%}
-* {{x}}
+* {{ x }}
 {% endfor %}
 {% endif -%}
 
@@ -48,11 +47,10 @@
 
 Instances of this class *should* have identifiers with one of the following prefixes:
 {% for p in element.id_prefixes %}
-* {{p}}
+* {{ p }}
 {% endfor %}
 
 {% endif %}
-
 
 {% if element.annotations %}
 ### Annotations
