@@ -640,6 +640,9 @@ def test_imports(schema_view_with_imports: SchemaView) -> None:
     assert view.get_uri("TestClass", use_element_type=True) == "core:class/TestClass"
     assert view.get_uri("name", use_element_type=True) == "core:slot/name"
 
+    assert view.get_uri("OrganismType") == "ks:OrganismType"
+    assert view.get_uri("OrganismType", use_element_type=True) == "ks:enum/OrganismType"
+
     assert view.get_uri("string") == "xsd:string"
 
     # dynamic enums
@@ -1263,11 +1266,11 @@ def test_uris_without_default_prefix() -> None:
     view = SchemaView(schema_definition)
     view.add_class(ClassDefinition(name="TestClass", from_schema="https://example.org/another#"))
     view.add_slot(SlotDefinition(name="test_slot", from_schema="https://example.org/another#"))
+    view.add_enum(EnumDefinition(name="tEsT_enum", from_schema="https://example.org/another#"))
 
     assert view.get_uri("TestClass", imports=True) == "https://example.org/test#TestClass"
     assert view.get_uri("test_slot", imports=True) == "https://example.org/test#test_slot"
-
-
+    assert view.get_uri("tEsT_enum", imports=True) == "https://example.org/test#tEsT_enum"
 """
 merge_schema tests: https://github.com/linkml/linkml/issues/1143
 """
@@ -1476,3 +1479,4 @@ def test_class_name_mappings() -> None:
     assert set(view.all_slots()) == set(slot_names)
     assert set(view.slot_name_mappings()) == set(slot_names.values())
     assert {snm_def.name: snm for snm, snm_def in view.slot_name_mappings().items()} == slot_names
+
