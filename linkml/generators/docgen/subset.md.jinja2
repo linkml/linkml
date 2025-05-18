@@ -98,7 +98,7 @@ URI: {{ gen.link(element) }}
 | Enumeration | Description |
 | --- | --- |
 {% for e in enums_in_subset|sort(attribute='name') -%}
-{%- if element.name in e.in_subset %}
+{% if element.name in e.in_subset -%}
 | {{ gen.link(e) }} | {{ e.description|enshorten }} |
 {%- endif %}
 {% endfor %}
