@@ -139,9 +139,9 @@ jobs:
         working-directory: linkml
         run: poetry add ../linkml-runtime
 
-      - name: Install linkml
+      - name: Update environment according to lockfile
         working-directory: linkml
-        run: poetry install --no-interaction -E tests
+        run: poetry sync --no-interaction --all-extras
 
       - name: print linkml-runtime version
         working-directory: linkml
@@ -150,6 +150,3 @@ jobs:
       - name: run tests
         working-directory: linkml
         run: poetry run python -m pytest --with-slow
-
-
-
