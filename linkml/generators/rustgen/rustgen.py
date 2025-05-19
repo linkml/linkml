@@ -52,10 +52,10 @@ PYTHON_TO_RUST = {
     "str": "String",
     "bool": "bool",
     "Bool": "bool",
-    "XSDDate": "String",
-    "date": "String",
-    "XSDDateTime": "String",
-    "datetime": "String",
+    "XSDDate": "NaiveDate",
+    "date": "NaiveDate",
+    "XSDDateTime": "NaiveDateTime",
+    "datetime": "NaiveDateTime",
     # "Decimal": "dec",
     "Decimal": "f64",
 }
@@ -64,32 +64,23 @@ Mapping from python types to rust types.
 
 .. todo::
 
-    - Add datetime/time
     - Add numpy types
+    - make an enum wrapper for naivedatetime and datetime<fixedoffset> that can represent both of them
 
 """
-
-PYTHON_TO_PYO3 = {
-    "XSDDate": "Py<PyDate>",
-    "date": "Py<PyDate>",
-    "XSDDateTime": "PyDateTime",
-    "datetime": "PyDateTime",
-}
 
 PROTECTED_NAMES = ("type", "typeof", "abstract")
 
 RUST_IMPORTS = {
     "dec": Import(module="rust_decimal", version="1.36", objects=[ObjectImport(name="dec")]),
-    "PyDateTime": Import(module="pyo3::types", version="0.23.0", objects=[ObjectImport(name="PyDateTime")]),
-    "PyDate": Import(module="pyo3::types", version="0.23.0", objects=[ObjectImport(name="PyDate")]),
+    "NaiveDate": Import(module="chrono", version="0.4.41", objects= [ObjectImport(name="NaiveDate")]),
+    "NaiveDateTime": Import(module="chrono", version="0.4.41", objects= [ObjectImport(name="NaiveDateTime")]),
 }
-RUST_IMPORTS["Py<PyDate>"] = RUST_IMPORTS["PyDate"]
 
 DEFAULT_IMPORTS = Imports(
     imports=[
         Import(module="std::collections", objects=[ObjectImport(name="HashMap")]),
         # Import(module="std::fmt", objects=[ObjectImport(name="Display")]),
-        Import(module="pyo3::prelude::*", version="0.23.0"),
     ]
 )
 
@@ -100,8 +91,15 @@ SERDE_IMPORTS = Imports(
             version="1.0",
             features=["derive"],
             objects=[ObjectImport(name="Serialize"), ObjectImport(name="Deserialize")],
+            feature_flag="serde",
         ),
-        Import(module="serde_yml", version="0.0.12"),
+        Import(module="serde_yml", version="0.0.12", feature_flag="serde"),
+    ]
+)
+
+PYTHON_IMPORTS = Imports(
+    imports = [
+        Import(module="pyo3", version="0.25.0", objects=[ObjectImport(name="prelude::*")], feature_flag="pyo3", features=["chrono"]),
     ]
 )
 
@@ -131,8 +129,6 @@ def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, pyo3: boo
     # FIXME: Raise here once we have implemented all base types
     if rsrange is None:
         rsrange = PYTHON_TO_RUST[str]
-    elif pyo3 and rsrange in PYTHON_TO_PYO3:
-        rsrange = PYTHON_TO_PYO3[pyo3]
     elif rsrange in PYTHON_TO_RUST:
         rsrange = PYTHON_TO_RUST[rsrange]
     return rsrange
@@ -410,10 +406,10 @@ class RustGenerator(Generator, LifecycleMixin):
         classes = self.after_generate_classes(classes, sv)
 
         imports = DEFAULT_IMPORTS.model_copy()
+        imports += PYTHON_IMPORTS
+        imports += SERDE_IMPORTS
         for result in [*enums, *slots, *classes]:
             imports += result.imports
-        if self.serde:
-            imports += SERDE_IMPORTS
 
         # TODO: get imports from all results
 

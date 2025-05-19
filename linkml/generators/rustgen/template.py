@@ -38,6 +38,8 @@ class Import(Import_, RustTemplateModel):
     """Version specifier to use in Cargo.toml"""
     features: Optional[list[str]] = None
     """Features to require in Cargo.toml"""
+    ## whether this import should be behind a feature flag
+    feature_flag: Optional[str] = None
 
 
 class Imports(Imports_, RustTemplateModel):
@@ -58,7 +60,25 @@ class RustProperty(RustTemplateModel):
     class_range: bool = False
     recursive: bool = False
     inlined: bool = False
+    inlined_as_list: bool = False
     is_key_value: bool = False
+
+    @computed_field
+    def rustrange(self) -> str:
+        tp = self.type_
+        if self.recursive:
+            tp = f"Box<{tp}>"
+        if self.multivalued:
+            if self.inlined:
+                tp = f"HashMap<String, {tp}>"
+            elif self.inlined_as_list:
+                tp = f"Vec<{tp}>"
+            return f"Vec<String>"
+        elif not self.required:
+            return f"Option<{tp}>"
+        else:
+            return tp
+
 
 class AsKeyValue(RustTemplateModel):
     """
@@ -163,16 +183,25 @@ class RustCargo(RustTemplateModel):
     pyo3_version: str = "0.21.1"
     imports: Imports = Imports()
 
+    @computed_field
+    def cratefeatures(self) -> dict[str, list[str]]:
+        feature_flags = {}
+        for i in self.imports.imports:
+            assert isinstance(i, Import)
+            if i.feature_flag is not None:
+                if i.feature_flag not in feature_flags:
+                    feature_flags[i.feature_flag] = [i.module]
+                else:
+                    feature_flags[i.feature_flag].append(i.module)
+        return feature_flags
+
+
+
     @field_validator("name", mode="after")
     @classmethod
     def snake_case_name(cls, value: str) -> str:
         return underscore(value)
 
-    @field_validator("imports", mode="after")
-    @classmethod
-    def remove_pyo3(cls, v: Imports) -> Imports:
-        """Remove pyo3, it's handled separately"""
-        return Imports(imports=[i for i in v.imports if not i.module.startswith("pyo3")])
 
     def render(self, environment: Optional[Environment] = None, **kwargs) -> str:
         if environment is None:
