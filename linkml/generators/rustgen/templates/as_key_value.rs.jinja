@@ -1,4 +1,4 @@
-{% if serde %}
+#[cfg(feature = "serde")]
 impl serde_utils::InlinedPair for {{ name }} {
     type Key   = {{ key_property_type }};
     type Value = {{ value_property_type }};
@@ -7,4 +7,3 @@ impl serde_utils::InlinedPair for {{ name }} {
         Self { {{ key_property_name }}: k, {{  value_property_name }}: v }
     }
 }
-{% endif %}
