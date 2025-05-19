@@ -73,8 +73,8 @@ PROTECTED_NAMES = ("type", "typeof", "abstract")
 
 RUST_IMPORTS = {
     "dec": Import(module="rust_decimal", version="1.36", objects=[ObjectImport(name="dec")]),
-    "NaiveDate": Import(module="chrono", version="0.4.41", objects= [ObjectImport(name="NaiveDate")]),
-    "NaiveDateTime": Import(module="chrono", version="0.4.41", objects= [ObjectImport(name="NaiveDateTime")]),
+    "NaiveDate": Import(module="chrono", features=["serde"], version="0.4.41", objects= [ObjectImport(name="NaiveDate")]),
+    "NaiveDateTime": Import(module="chrono", features=["serde"], version="0.4.41", objects= [ObjectImport(name="NaiveDateTime")]),
 }
 
 DEFAULT_IMPORTS = Imports(
@@ -99,7 +99,8 @@ SERDE_IMPORTS = Imports(
 
 PYTHON_IMPORTS = Imports(
     imports = [
-        Import(module="pyo3", version="0.25.0", objects=[ObjectImport(name="prelude::*")], feature_flag="pyo3", features=["chrono"]),
+        Import(module="pyo3", version="0.25.0", objects=[ObjectImport(name="prelude::*"), ObjectImport(name="FromPyObject")], feature_flag="pyo3", features=["chrono"]),
+        # Import(module="serde_pyobject", version="0.6.1", objects=[], feature_flag="pyo3", features=[]),
     ]
 )
 
@@ -360,6 +361,7 @@ class RustGenerator(Generator, LifecycleMixin):
             imports=imports,
             pyo3_version=self.pyo3_version,
             pyo3=self.pyo3,
+            serde=self.serde,
         )
 
     def generate_pyproject(self) -> RustPyProject:
