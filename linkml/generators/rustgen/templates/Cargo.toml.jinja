@@ -24,8 +24,15 @@ crate-type = ["cdylib"]
 
 
 [features]
-
-default = []
+{% if pyo3 and serde %}
+default = ["pyo3", "serde"]
+{% elif pyo3 %}
+default = ["pyo3"]
+{% elif serde %}
+default = ["serde"]
+{% else %}
+default = ["serde", "pyo3"]
+{% endif %}
 {% for k,v in cratefeatures.items() %}
 {{ k }} = [{% for i in v %}"dep:{{ i }}"{% if not loop.last %}, {% endif %}{% endfor %}]
 {% endfor %}

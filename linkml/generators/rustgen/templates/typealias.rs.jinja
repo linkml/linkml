@@ -7,12 +7,34 @@
 ]
 {%- endif -%}
 {%- if type_ | length > 1 -%}
-#[derive(Debug, Clone, PartialEq)]
-pub enum {{ name }}_range {
-{%- for t in type_ -%}
-    {{ t }}({{ t }}){% if not loop.last %}, {% endif %}
-{%- endfor -%}
+
+{{ range_enum }}
+
+#[cfg(feature = "pyo3")]
+impl<'py> IntoPyObject<'py> for Box<{{ name }}_range>
+{
+    type Target = PyAny;
+    type Output = Bound<'py, Self::Target>;
+    type Error = PyErr;
+    fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+        (*self).into_pyobject(py).map(move |x| x.into_any())
+    }
 }
+
+#[cfg(feature = "pyo3")]
+impl<'py> FromPyObject<'py> for Box<{{ name }}_range> {
+    fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+        if let Ok(val) = ob.extract::<{{ name }}_range>() {
+            return Ok(Box::new(val));
+        }
+        Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+            "invalid {{ name}}_range",
+        ))
+    }
+}
+
+
+
 {% if multivalued %}
 pub type {{ name }} = Vec<{{ name }}_range>;
 {%- else -%}
