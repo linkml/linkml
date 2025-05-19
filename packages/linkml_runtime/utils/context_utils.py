@@ -6,6 +6,12 @@ from typing import Optional, Union, Any, Callable
 import yaml
 from jsonasobj2 import JsonObj, loads
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from linkml_runtime.utils.namespaces import Namespaces
+
+
 CONTEXT_TYPE = Union[str, dict, JsonObj]
 CONTEXTS_PARAM_TYPE = Optional[Union[CONTEXT_TYPE, list[CONTEXT_TYPE]]]
 
@@ -50,7 +56,7 @@ def merge_contexts(contexts: CONTEXTS_PARAM_TYPE = None, base: Optional[Any] = N
         JsonObj(**{"@context": context_list[0] if len(context_list) == 1 else context_list})
 
 
-def map_import(importmap: dict[str, str], namespaces: Callable[[None], "Namespaces"], imp: Any) -> str:
+def map_import(importmap: dict[str, str], namespaces: Callable[[], "Namespaces"], imp: Any) -> str:
     """
     lookup an import in an importmap.
 
@@ -73,7 +79,8 @@ def map_import(importmap: dict[str, str], namespaces: Callable[[None], "Namespac
             else:
                 sname = os.path.join(expanded_prefix, lname)
     sname = importmap.get(sname, sname)  # Import map may use CURIE
-    sname = str(namespaces().uri_for(sname)) if ':' in sname else sname
+    if ':' in sname and not ":\\" in sname:  # Don't interpret Windows paths as CURIEs
+        sname = str(namespaces().uri_for(sname))
     return importmap.get(sname, sname)  # It may also use URI or other forms
 
 
@@ -103,7 +110,7 @@ def parse_import_map(map_: Optional[Union[str, dict[str, str], TextIOWrapper]],
     if base:
         outmap = dict()
         for k, v in rval.items():
-            if ':' not in v:
+            if ':' not in v or ":\\" in v:  # Don't interpret Windows paths as CURIEs
                 v = os.path.join(os.path.abspath(base), v)
             outmap[k] = v
         rval = outmap
