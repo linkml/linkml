@@ -649,7 +649,22 @@ def _render(
     environment: Environment,
 ) -> Union[str, list[str], dict[str, str]]:
     if isinstance(item, TemplateModel):
-        return item.render(environment)
+        class _Stringified:
+            def __init__(self, wrappee, stringrepr):
+                self.wrappee = wrappee
+                self.stringrepr = stringrepr
+            
+            def __getattribute__(self, name):
+                if name in ("wrappee", "stringrepr"):
+                    return object.__getattribute__(self, name)
+                return getattr(self.wrappee, name)
+            
+            def __repr__(self):
+                return self.stringrepr
+            
+            
+        s = item.render(environment)
+        return _Stringified(item, s)
     elif isinstance(item, list):
         return [_render(i, environment) for i in item]
     elif isinstance(item, dict):

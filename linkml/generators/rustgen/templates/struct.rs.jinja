@@ -1,30 +1,28 @@
-{% if pyo3 %}
-#[pyclass(unsendable)]
-#[derive(Clone)]
-{% endif %}
-{% if serde %}
-#[derive(Serialize, Deserialize)]
-{% endif %}
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "pyo3", pyclass(unsendable))]
 pub struct {{ name }} {
 {% for property in properties %}
 {% filter indent(width=4, first=True, blank=False) %}
-{% if pyo3 %}#[pyo3(get, set)]{% endif %}
+#[cfg_attr(feature = "pyo3", pyo3(get, set))]
 {{ property }}
 {%- if not loop.last -%},{{ '\n' }}{% else %}{{ '\n' }}{%- endif -%}
 {% endfilter %}
 {% endfor %}
 }
 
-{% if pyo3 %}
-#[pymethods]
+{% if properties | length > 0 %}
+
+#[cfg_attr(feature = "pyo3", pymethods)]
 impl {{ name }} {
-    #[new]
-    pub fn new({% for property in properties %}{{ property }}{% if not loop.last %},{% endif %}{% endfor %}) -> Self {
+    #[cfg_attr(feature="pyo3", new)]
+    pub fn new({% for property in properties %}{{ property.name }}: {{ property.rustrange }}{% if not loop.last %},{% endif %}{% endfor %}) -> Self {
         {{ name }}{ {% for p in property_names %}{{ p }}{% if not loop.last %},{% endif %}{% endfor %} }
     }
 }
+
 {% endif %}
+
 
 {% if as_key_value %}
 {{ as_key_value }}
