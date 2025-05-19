@@ -6,10 +6,18 @@
 {%- endfor -%}
 ]
 {%- endif -%}
-pub type {{ name }} = {% if multivalued and class_range and pyo3 -%}
-    Vec<Py<{{ type_ }}>>
-{%- elif multivalued -%}
-    Vec<{{ type_ }}>
+{%- if type_ | length > 1 -%}
+pub enum {{ name }}_range {
+{%- for t in type_ -%}
+    {{ t }}({{ t }}){% if not loop.last %}, {% endif %}
+{%- endfor -%}
+}
+{% if multivalued %}
+pub type {{ name }} = Vec<{{ name }}_range>;
 {%- else -%}
-    {{ type_ }}
-{%- endif -%};
+pub type {{ name }} = {{ name }}_range;
+{%- endif -%}
+{%- else -%}
+pub type {{ name }} = {%- if multivalued %} Vec<{{ type_[0] }}>
+{%- else %} {{ type_[0] }}{%- endif -%};
+{% endif %}

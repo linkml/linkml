@@ -1,4 +1,4 @@
-from typing import ClassVar, Optional
+from typing import ClassVar, Optional, List
 
 from jinja2 import Environment, PackageLoader
 from linkml_runtime.utils.formatutils import underscore
@@ -54,7 +54,7 @@ class RustProperty(RustTemplateModel):
     template: ClassVar[str] = "property.rs.jinja"
 
     name: str
-    type_: str
+    type_: List[str] # might be a union type, so list length > 1
     required: bool
     multivalued: Optional[bool] = False
     class_range: bool = False
@@ -62,22 +62,38 @@ class RustProperty(RustTemplateModel):
     inlined: bool = False
     inlined_as_list: bool = False
     is_key_value: bool = False
+    has_slot_usage: bool = False
+    class_name: Optional[str] = None
 
     @computed_field
     def rustrange(self) -> str:
         tp = self.type_
-        if self.recursive:
+        if len(tp) > 1:
+            if self.has_slot_usage:
+                tp = f"{self.class_name}::{self.name}_range"
+            else:
+                tp = f"{self.name}_range"
+        else:
+            tp = tp[0]
+        if self.class_range and not self.inlined and not self.inlined_as_list:
+            tp = "String"
+        if self.recursive and tp != "String":
             tp = f"Box<{tp}>"
         if self.multivalued:
             if self.inlined:
                 tp = f"HashMap<String, {tp}>"
+                return tp
             elif self.inlined_as_list:
                 tp = f"Vec<{tp}>"
-            return f"Vec<String>"
+                return tp
+            else:
+                return f"Vec<String>"
         elif not self.required:
             return f"Option<{tp}>"
         else:
             return tp
+        
+
 
 
 class AsKeyValue(RustTemplateModel):
@@ -132,7 +148,7 @@ class RustTypeAlias(RustTemplateModel):
     template: ClassVar[str] = "typealias.rs.jinja"
 
     name: str
-    type_: str
+    type_: List[str]
     description: Optional[str] = None
     multivalued: Optional[bool] = False
     class_range: bool = False
