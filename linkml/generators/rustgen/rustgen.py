@@ -443,8 +443,7 @@ class RustGenerator(Generator, LifecycleMixin):
 
         if mode == "crate":
             extra_files = {}
-            if self.serde:
-                extra_files["serde_utils"] = SerdeUtilsFile()
+            extra_files["serde_utils"] = SerdeUtilsFile()
             cargo = self.generate_cargo(imports)
             pyproject = self.generate_pyproject()
             res = CrateResult(cargo=cargo, file=file, pyproject=pyproject, source=sv.schema, extra_files=extra_files)
