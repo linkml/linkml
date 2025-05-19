@@ -70,7 +70,7 @@ class RustProperty(RustTemplateModel):
         tp = self.type_
         if len(tp) > 1:
             if self.has_slot_usage:
-                tp = f"{self.class_name}::{self.name}_range"
+                tp = f"{self.class_name}Slots::{self.name}_range"
             else:
                 tp = f"{self.name}_range"
         else:

@@ -7,6 +7,7 @@
 ]
 {%- endif -%}
 {%- if type_ | length > 1 -%}
+#[derive(Debug, Clone, PartialEq)]
 pub enum {{ name }}_range {
 {%- for t in type_ -%}
     {{ t }}({{ t }}){% if not loop.last %}, {% endif %}

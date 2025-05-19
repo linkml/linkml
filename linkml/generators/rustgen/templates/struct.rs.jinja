@@ -1,4 +1,4 @@
-mod {{ name }}_slots {
+mod {{ name }}Slots {
 {% for property in properties %}
     {% if property.type_ | length > 1 and property.has_slot_usage %}
     pub enum {{ property.name }}_range {
