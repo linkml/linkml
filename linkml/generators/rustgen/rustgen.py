@@ -196,7 +196,7 @@ class RustGenerator(Generator, LifecycleMixin):
         res = TypeResult(
             source=type_,
             type_=RustTypeAlias(
-                name=get_name(type_), type_=get_rust_type(type_.base, self.schemaview, self.pyo3), pyo3=self.pyo3
+                name=get_name(type_), type_=[get_rust_type(type_.base, self.schemaview, self.pyo3)], pyo3=self.pyo3
             ),
             imports=self.get_imports(type_),
         )
@@ -223,14 +223,20 @@ class RustGenerator(Generator, LifecycleMixin):
         Generate a slot as a struct field
         """
         slot = self.before_generate_slot(slot, self.schemaview)
+        class_range = slot.range in self.schemaview.all_classes()
+        type_ = [get_rust_type(slot.range, self.schemaview, self.pyo3)]
+        if class_range:
+            descendants = self.schemaview.class_descendants(slot.range)
+            type_ = [get_rust_type(d, self.schemaview, self.pyo3) for d in descendants]
+            
         slot = SlotResult(
             source=slot,
             slot=RustTypeAlias(
                 name=get_name(slot),
-                type_=get_rust_type(slot.range, self.schemaview, self.pyo3),
+                type_=type_,
                 multivalued=slot.multivalued,
                 pyo3=self.pyo3,
-                class_range=slot.range in self.schemaview.all_classes(),
+                class_range=class_range,
             ),
             imports=self.get_imports(slot),
         )
@@ -315,11 +321,17 @@ class RustGenerator(Generator, LifecycleMixin):
 
         is_recursive = attr.range == cls.name or reference_recursive
 
+        type_=[get_rust_type(attr.range, self.schemaview, self.pyo3)]
+        if is_class_range:
+            descendants = self.schemaview.class_descendants(attr.range)
+            type_ = [get_rust_type(d, self.schemaview, self.pyo3) for d in descendants]
+        
+
         res = AttributeResult(
             source=attr,
             attribute=RustProperty(
                 name=get_name(attr),
-                type_=get_rust_type(attr.range, self.schemaview, self.pyo3),
+                type_=type_,
                 required=bool(attr.required),
                 multivalued=attr.multivalued,
                 class_range=is_class_range,
@@ -327,7 +339,10 @@ class RustGenerator(Generator, LifecycleMixin):
                 serde=self.serde,
                 recursive=is_recursive,
                 inlined=bool(attr.inlined and not attr.inlined_as_list),
+                inlined_as_list=bool(attr.inlined_as_list),
                 is_key_value=is_key_value,
+                has_slot_usage=attr.name in cls.slot_usage.keys(),
+                class_name=get_name(cls),
             ),
             imports=self.get_imports(attr),
         )
