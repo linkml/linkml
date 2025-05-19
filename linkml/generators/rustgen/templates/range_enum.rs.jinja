@@ -1,0 +1,36 @@
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub enum {{ name }}_range {
+{%- for t in type_ -%}
+    {{ t }}({{ t }}){% if not loop.last %}, {% endif %}
+{%- endfor -%}
+}
+
+#[cfg(feature = "pyo3")]
+impl<'py> FromPyObject<'py> for {{ name }}_range {
+    fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+{% for t in type_ %}
+        if let Ok(val) = ob.extract::<{{ t }}>() {
+            return Ok({{ name }}_range::{{ t }}(val));
+        }
+{%- endfor -%}
+        Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+            "invalid {{ name}}_range",
+        ))
+    }
+}
+
+#[cfg(feature = "pyo3")]
+impl<'py> IntoPyObject<'py> for {{ name }}_range {
+    type Target = PyAny;
+    type Output = Bound<'py, Self::Target>;
+    type Error = PyErr;
+
+    fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+        match self {
+{% for t in type_ %}
+            {{ name }}_range::{{ t }}(val) => val.into_pyobject(py).map(move |b| b.into_any()),
+{% endfor %}
+        }
+    }
+}

@@ -14,11 +14,10 @@ mod {{ name }}Slots {
 
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[cfg_attr(feature = "pyo3", pyclass(subclass))]
+#[cfg_attr(feature = "pyo3", pyclass(subclass, get_all, set_all))]
 pub struct {{ name }} {
 {% for property in properties %}
 {% filter indent(width=4, first=True, blank=False) %}
-#[cfg_attr(feature = "pyo3", pyo3(get, set))]
 {{ property }}
 {%- if not loop.last -%},{{ '\n' }}{% else %}{{ '\n' }}{%- endif -%}
 {% endfilter %}
@@ -27,13 +26,39 @@ pub struct {{ name }} {
 
 {% if properties | length > 0 %}
 
-#[cfg_attr(feature = "pyo3", pymethods)]
+#[cfg(feature = "pyo3")]
+#[pymethods]
 impl {{ name }} {
-    #[cfg_attr(feature="pyo3", new)]
+    #[new]
     pub fn new({% for property in properties %}{{ property.name }}: {{ property.rustrange }}{% if not loop.last %},{% endif %}{% endfor %}) -> Self {
         {{ name }}{ {% for p in property_names %}{{ p }}{% if not loop.last %},{% endif %}{% endfor %} }
     }
 }
+
+#[cfg(feature = "pyo3")]
+impl<'py> IntoPyObject<'py> for Box<{{ name }}>
+{
+    type Target = PyAny;
+    type Output = Bound<'py, Self::Target>;
+    type Error = PyErr;
+    fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+        (*self).into_pyobject(py).map(move |x| x.into_any())
+    }
+}
+
+#[cfg(feature = "pyo3")]
+impl<'py> FromPyObject<'py> for Box<{{ name }}> {
+    fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+        if let Ok(val) = ob.extract::<{{ name }}>() {
+            return Ok(Box::new(val));
+        }
+        Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+            "invalid {{ name}}",
+        ))
+    }
+}
+
+
 
 {% endif %}
 

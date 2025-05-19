@@ -153,6 +153,13 @@ class RustTypeAlias(RustTemplateModel):
     multivalued: Optional[bool] = False
     class_range: bool = False
 
+    @computed_field
+    def range_enum(self) -> str:
+        """
+        The name of the range enum for this type alias
+        """
+        return RangeEnum(name=self.name, type_= self.type_)
+
     @field_validator("attributes", mode="before")
     @classmethod
     def attr_values_as_strings(cls, value: dict[str, any]) -> dict[str, str]:
@@ -185,6 +192,14 @@ class RustFile(RustTemplateModel):
         """Names of all the structs we have!"""
         return [c.name for c in self.structs]
 
+
+class RangeEnum(RustTemplateModel):
+    """
+    A range enum!
+     """
+    template: ClassVar[str] = "range_enum.rs.jinja"
+    name: str
+    type_: List[str]
 
 class RustCargo(RustTemplateModel):
     """
