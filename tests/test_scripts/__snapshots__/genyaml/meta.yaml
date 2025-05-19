@@ -1660,8 +1660,6 @@ classes:
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/AnyObject
     description: Example of unconstrained class
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
-    mappings:
-    - linkml:Any
     class_uri: linkml:Any
   activity:
     name: activity
@@ -1684,8 +1682,6 @@ classes:
     definition_uri: https://w3id.org/linkml/tests/core/Agent
     description: a provence-generating agent
     from_schema: https://w3id.org/linkml/tests/core
-    mappings:
-    - prov:Agent
     slots:
     - id
     - acted on behalf of
