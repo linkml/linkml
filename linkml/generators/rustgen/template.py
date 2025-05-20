@@ -108,9 +108,9 @@ class AsKeyValue(RustTemplateModel):
     name: str
     key_property_name: str
     key_property_type: str
-    value_property_name: Optional[str] = None
+    value_property_name: str
     value_property_type: str
-    key_attrib_in_value: Optional[str] = None
+    can_convert_from_primitive: bool = False
     
 
 class RustStruct(RustTemplateModel):
