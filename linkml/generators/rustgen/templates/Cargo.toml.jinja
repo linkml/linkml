@@ -5,7 +5,11 @@ edition = "{{ edition }}"
 
 [lib]
 name = "{{ name }}"
+{% if pyo3 %}
 crate-type = ["cdylib"]
+{% else %}
+crate-type = ["lib"]
+{% endif %}
 
 [dependencies]
 {% for i in imports %}
