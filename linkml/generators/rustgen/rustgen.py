@@ -95,6 +95,8 @@ SERDE_IMPORTS = Imports(
         ),
         Import(module="serde-value", version="0.7.0", objects=[ObjectImport(name="Value")]),
         Import(module="serde_yml", version="0.0.12", feature_flag="serde"),
+        Import(module="serde_path_to_error", version = "0.1.17", objects=[], feature_flag="serde"),
+
     ]
 )
 
@@ -279,14 +281,13 @@ class RustGenerator(Generator, LifecycleMixin):
     def generate_class_as_key_value(self, cls: ClassDefinition) -> Optional[AsKeyValue]:
         induced_attrs = [self.schemaview.induced_slot(sn, cls.name) for sn in self.schemaview.class_slots(cls.name)]
         key_attr = None
-        identifier_attr = None
         value_attrs = []
         for attr in induced_attrs:
             if attr.identifier:
-                if identifier_attr is not None:
+                if key_attr is not None:
                     ## multiple identifiers --> don't know what to do!
                     return None
-                identifier_attr = attr
+                key_attr = attr
             if attr.key:
                 if key_attr is not None:
                     ## multiple keys --> don't know what to do!
@@ -294,25 +295,14 @@ class RustGenerator(Generator, LifecycleMixin):
                 key_attr = attr
             else:
                 value_attrs.append(attr)
-        if key_attr is not None and len(value_attrs) == 1:
+        if key_attr is not None and len(value_attrs) >= 1:
             return AsKeyValue(
                     name=get_name(cls),
                     key_property_name=get_name(key_attr),
                     key_property_type=get_rust_type(key_attr.range, self.schemaview, self.pyo3),
                     value_property_name=get_name(value_attrs[0]),
                     value_property_type=get_rust_type(value_attrs[0].range, self.schemaview, self.pyo3),
-                    serde=self.serde,
-                    pyo3=self.pyo3,
-            )
-        if identifier_attr is not None and len(value_attrs) > 1:
-            key_attr = identifier_attr
-            return AsKeyValue(
-                    name=get_name(cls),
-                    key_property_name=get_name(key_attr),
-                    key_property_type=get_rust_type(key_attr.range, self.schemaview, self.pyo3),
-                    value_property_name=None,
-                    key_attrib_in_value=get_name(key_attr),
-                    value_property_type="Value",
+                    can_convert_from_primitive = len(value_attrs) == 1,
                     serde=self.serde,
                     pyo3=self.pyo3,
             )
@@ -332,11 +322,19 @@ class RustGenerator(Generator, LifecycleMixin):
 
         reference_recursive = False
         is_key_value = False
+        inlined = False
+        inlined_as_list = False
         if is_class_range:
             induced_range = self.schemaview.induced_class(attr.range)
-            is_key_value = (attr.inlined is True) and (self.generate_class_as_key_value(induced_range) is not None)
+            has_key_value = (self.generate_class_as_key_value(induced_range) is not None)
+            is_key_value =has_key_value
             attr_ranges = [attr.range for attr in induced_range.attributes.values()]
             reference_recursive = cls.name in attr_ranges
+            inlined = (attr.inlined and not attr.inlined_as_list) or False
+            inlined_as_list = attr.inlined_as_list or False
+            if not has_key_value:
+                inlined_as_list = True
+                inlined = False
 
         is_recursive = attr.range == cls.name or reference_recursive
 
@@ -344,6 +342,8 @@ class RustGenerator(Generator, LifecycleMixin):
         if is_class_range:
             descendants = self.schemaview.class_descendants(attr.range)
             type_ = [get_rust_type(d, self.schemaview, self.pyo3) for d in descendants]
+        
+        
         
 
         res = AttributeResult(
@@ -357,8 +357,8 @@ class RustGenerator(Generator, LifecycleMixin):
                 pyo3=self.pyo3,
                 serde=self.serde,
                 recursive=is_recursive,
-                inlined=bool(attr.inlined and not attr.inlined_as_list),
-                inlined_as_list=bool(attr.inlined_as_list),
+                inlined=inlined,
+                inlined_as_list=inlined_as_list,
                 is_key_value=is_key_value,
                 has_slot_usage=attr.name in cls.slot_usage.keys(),
                 class_name=get_name(cls),
