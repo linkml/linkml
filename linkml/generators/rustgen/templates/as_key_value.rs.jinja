@@ -2,8 +2,19 @@
 impl serde_utils::InlinedPair for {{ name }} {
     type Key   = {{ key_property_type }};
     type Value = {{ value_property_type }};
+    type Error = String;
 
-    fn from_pair(k: Self::Key, v: Self::Value) -> Self {
-        Self { {{ key_property_name }}: k, {{  value_property_name }}: v }
+    fn from_pair(k: Self::Key, v: Self::Value) -> Result<Self,Self::Error> {
+{% if key_attrib_in_value %}
+        let mut map = match v {
+            Value::Map(m) => m,
+            _ => return Err("ClassDefinition must be a mapping".into()),
+        };
+        map.insert(Value::String("{{key_attrib_in_value}}".into()), Value::String(k));
+        let x = Self::deserialize(Value::Map(map).into_deserializer());
+        x.map_err(|e| e.to_string())
+{% else %}
+        Ok(Self { {{ key_property_name }}: k, {{  value_property_name }}: v })
+{% endif %}
     }
 }
