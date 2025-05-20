@@ -66,6 +66,10 @@ class RustProperty(RustTemplateModel):
     class_name: Optional[str] = None
 
     @computed_field
+    def hasdefault(self) -> bool:
+        return self.multivalued or not self.required
+
+    @computed_field
     def rustrange(self) -> str:
         tp = self.type_
         if len(tp) > 1:
@@ -104,8 +108,9 @@ class AsKeyValue(RustTemplateModel):
     name: str
     key_property_name: str
     key_property_type: str
-    value_property_name: str
+    value_property_name: Optional[str] = None
     value_property_type: str
+    key_attrib_in_value: Optional[str] = None
     
 
 class RustStruct(RustTemplateModel):

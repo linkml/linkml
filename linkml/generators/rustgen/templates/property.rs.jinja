@@ -1,4 +1,7 @@
 {%- if is_key_value -%}
-#[cfg_attr(feature = "serde", serde(deserialize_with = "serde_utils::deserialize_inlined_dict_map"))]
+#[cfg_attr(feature = "serde", serde(deserialize_with = "serde_utils::deserialize_inlined_dict_map{% if recursive %}_box{% endif %}"))]
 {%- endif -%}
+{% if hasdefault %}
+#[cfg_attr(feature = "serde", serde(default))]
+{% endif %}
 pub {{ name }}: {{ rustrange }}

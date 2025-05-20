@@ -90,9 +90,10 @@ SERDE_IMPORTS = Imports(
             module="serde",
             version="1.0",
             features=["derive"],
-            objects=[ObjectImport(name="Serialize"), ObjectImport(name="Deserialize")],
+            objects=[ObjectImport(name="Serialize"), ObjectImport(name="Deserialize"), ObjectImport(name="de::IntoDeserializer")],
             feature_flag="serde",
         ),
+        Import(module="serde-value", version="0.7.0", objects=[ObjectImport(name="Value")]),
         Import(module="serde_yml", version="0.0.12", feature_flag="serde"),
     ]
 )
@@ -278,8 +279,14 @@ class RustGenerator(Generator, LifecycleMixin):
     def generate_class_as_key_value(self, cls: ClassDefinition) -> Optional[AsKeyValue]:
         induced_attrs = [self.schemaview.induced_slot(sn, cls.name) for sn in self.schemaview.class_slots(cls.name)]
         key_attr = None
+        identifier_attr = None
         value_attrs = []
         for attr in induced_attrs:
+            if attr.identifier:
+                if identifier_attr is not None:
+                    ## multiple identifiers --> don't know what to do!
+                    return None
+                identifier_attr = attr
             if attr.key:
                 if key_attr is not None:
                     ## multiple keys --> don't know what to do!
@@ -297,8 +304,18 @@ class RustGenerator(Generator, LifecycleMixin):
                     serde=self.serde,
                     pyo3=self.pyo3,
             )
-            return kv
-            
+        if identifier_attr is not None and len(value_attrs) > 1:
+            key_attr = identifier_attr
+            return AsKeyValue(
+                    name=get_name(cls),
+                    key_property_name=get_name(key_attr),
+                    key_property_type=get_rust_type(key_attr.range, self.schemaview, self.pyo3),
+                    value_property_name=None,
+                    key_attrib_in_value=get_name(key_attr),
+                    value_property_type="Value",
+                    serde=self.serde,
+                    pyo3=self.pyo3,
+            )
         return None
                 
 
