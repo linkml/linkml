@@ -1,4 +1,4 @@
-{%- if is_key_value and serde -%}
+{%- if is_key_value -%}
 #[cfg_attr(feature = "serde", serde(deserialize_with = "serde_utils::deserialize_inlined_dict_map"))]
 {%- endif -%}
 pub {{ name }}: {{ rustrange }}
