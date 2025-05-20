@@ -1,14 +1,17 @@
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Deserializer};
 #[cfg(feature = "serde")]
+use serde::de::Error;
+#[cfg(feature = "serde")]
 use std::collections::{BTreeMap, HashMap};
 
 #[cfg(feature = "serde")]
 pub trait InlinedPair: Sized {
     type Key: std::hash::Hash + Eq + serde::de::DeserializeOwned + Clone + Ord;
     type Value: serde::de::DeserializeOwned;
+    type Error: std::fmt::Display;
 
-    fn from_pair(k: Self::Key, v: Self::Value) -> Self;
+    fn from_pair(k: Self::Key, v: Self::Value) -> Result<Self, Self::Error>;
 }
 
 #[cfg(feature = "serde")]
@@ -18,8 +21,11 @@ where
     T: InlinedPair,
 {
     let raw: BTreeMap<T::Key, T::Value> = BTreeMap::deserialize(de)?;
+    raw.into_iter().map(|(k, v)| {
+        let obj = T::from_pair(k.clone(), v).map_err(D::Error::custom)?;
+        Ok(obj)
+    }).collect()
 
-    Ok(raw.into_iter().map(|(k, v)| T::from_pair(k, v)).collect())
 }
 
 #[cfg(feature = "serde")]
@@ -32,11 +38,28 @@ where
 {
     let raw: HashMap<T::Key, T::Value> = HashMap::deserialize(de)?;
 
-    Ok(raw
-        .into_iter()
+    raw.into_iter()
         .map(|(k, v)| {
-            let obj = T::from_pair(k.clone(), v);
-            (k, obj)
+            let obj = T::from_pair(k.clone(), v).map_err(D::Error::custom)?;
+            Ok((k, obj))
         })
-        .collect())
+        .collect()
+}
+
+#[cfg(feature = "serde")]
+pub fn deserialize_inlined_dict_map_box<'de, D, T>(
+    de: D,
+) -> Result<HashMap<T::Key, Box<T>>, D::Error>
+where
+    D: Deserializer<'de>,
+    T: InlinedPair,
+{
+    // call the existing helper …
+    deserialize_inlined_dict_map::<D, T>(de)
+        // …and wrap every value in a Box
+        .map(|map| map
+            .into_iter()
+            .map(|(k, v)| (k, Box::new(v)))
+            .collect()
+        )
 }
