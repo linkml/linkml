@@ -1,6 +1,8 @@
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Deserializer};
 #[cfg(feature = "serde")]
+use serde_value::{Value, ValueDeserializer};
+#[cfg(feature = "serde")]
 use serde::de::Error;
 #[cfg(feature = "serde")]
 use std::collections::{BTreeMap, HashMap};
@@ -11,7 +13,9 @@ pub trait InlinedPair: Sized {
     type Value: serde::de::DeserializeOwned;
     type Error: std::fmt::Display;
 
-    fn from_pair(k: Self::Key, v: Self::Value) -> Result<Self, Self::Error>;
+    fn from_pair_mapping(k: Self::Key, v: Value) -> Result<Self,Self::Error>;
+    fn from_pair_simple(k: Self::Key, v: Self::Value) -> Result<Self,Self::Error>;
+    fn extract_key(&self) -> &Self::Key;
 }
 
 #[cfg(feature = "serde")]
@@ -22,7 +26,7 @@ where
 {
     let raw: BTreeMap<T::Key, T::Value> = BTreeMap::deserialize(de)?;
     raw.into_iter().map(|(k, v)| {
-        let obj = T::from_pair(k.clone(), v).map_err(D::Error::custom)?;
+        let obj = T::from_pair_simple(k.clone(), v).map_err(D::Error::custom)?;
         Ok(obj)
     }).collect()
 
@@ -34,16 +38,64 @@ pub fn deserialize_inlined_dict_map<'de, D, T>(
 ) -> Result<HashMap<T::Key, T>, D::Error>
 where
     D: Deserializer<'de>,
-    T: InlinedPair,
+    T: InlinedPair + Deserialize<'de>,
 {
-    let raw: HashMap<T::Key, T::Value> = HashMap::deserialize(de)?;
 
-    raw.into_iter()
-        .map(|(k, v)| {
-            let obj = T::from_pair(k.clone(), v).map_err(D::Error::custom)?;
-            Ok((k, obj))
-        })
-        .collect()
+    // Parse into a generic AST once
+    let ast: Value = Value::deserialize(de)?;
+
+    match ast {
+        // ---------- { key : value } form ----------
+        Value::Map(m) => {
+            let mut out = HashMap::with_capacity(m.len());
+            for (k_ast, v_ast) in m {
+                // 1) convert key and value separately
+                let key: T::Key = Deserialize::deserialize(
+                    ValueDeserializer::<D::Error>::new(k_ast)
+                ).map_err(D::Error::custom)?;
+
+
+                // ----------------- decide by the *value* shape
+                let obj = match v_ast {
+                    // ① full object (mapping) → deserialize directly
+                    Value::Map(_) => {
+                        let m: Value = Deserialize::deserialize(
+                            ValueDeserializer::<D::Error>::new(v_ast)
+                        ).map_err(D::Error::custom)?;
+                        T::from_pair_mapping(key.clone(), m).map_err(D::Error::custom)?
+                    }
+                    other => {
+                        let prim: T::Value = Deserialize::deserialize(
+                            ValueDeserializer::<D::Error>::new(other)
+                        ).map_err(D::Error::custom)?;
+                        T::from_pair_simple(key.clone(), prim).map_err(D::Error::custom)?
+                    }
+                };
+
+
+                out.insert(key, obj);
+            }
+            Ok(out)
+        }
+
+        // ---------- [ value, … ] form -------------
+        Value::Seq(seq) => {
+            let mut out = HashMap::with_capacity(seq.len());
+            for v_ast in seq {
+                let val: T = Deserialize::deserialize(
+                    ValueDeserializer::<D::Error>::new(v_ast)
+                ).map_err(D::Error::custom)?;
+
+                let key = val.extract_key().clone();
+                if out.insert(key, val).is_some() {
+                    return Err(D::Error::custom("duplicate key"));
+                }
+            }
+            Ok(out)
+        }
+
+        _ => Err(D::Error::custom("expected mapping or sequence")),
+    }
 }
 
 #[cfg(feature = "serde")]
@@ -52,7 +104,7 @@ pub fn deserialize_inlined_dict_map_box<'de, D, T>(
 ) -> Result<HashMap<T::Key, Box<T>>, D::Error>
 where
     D: Deserializer<'de>,
-    T: InlinedPair,
+    T: InlinedPair + Deserialize<'de>,
 {
     // call the existing helper …
     deserialize_inlined_dict_map::<D, T>(de)
