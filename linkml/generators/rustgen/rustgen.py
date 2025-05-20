@@ -168,6 +168,7 @@ class RustGenerator(Generator, LifecycleMixin):
     generatorversion = "0.0.2"
     valid_formats = ["rust"]
     file_extension = "rs"
+    crate_name: Optional[str] = None
 
     pyo3: bool = True
     """Generate pyO3 bindings for the rust defs"""
@@ -356,7 +357,7 @@ class RustGenerator(Generator, LifecycleMixin):
         """
         version = self.schemaview.schema.version if self.schemaview.schema.version is not None else "0.0.0"
         return RustCargo(
-            name=self.schemaview.schema.name,
+            name=self.crate_name if self.crate_name is not None else self.schemaview.schema.name,
             version=version,
             imports=imports,
             pyo3_version=self.pyo3_version,
