@@ -14,7 +14,7 @@ pub trait InlinedPair: Sized {
     type Error: std::fmt::Display;
 
     fn from_pair_mapping(k: Self::Key, v: Value) -> Result<Self,Self::Error>;
-    fn from_pair_simple(k: Self::Key, v: Self::Value) -> Result<Self,Self::Error>;
+    fn from_pair_simple(k: Self::Key, v: Value) -> Result<Self,Self::Error>;
     fn extract_key(&self) -> &Self::Key;
 }
 
@@ -24,9 +24,9 @@ where
     D: Deserializer<'de>,
     T: InlinedPair,
 {
-    let raw: BTreeMap<T::Key, T::Value> = BTreeMap::deserialize(de)?;
+    let raw: BTreeMap<T::Key, Value> = BTreeMap::deserialize(de)?;
     raw.into_iter().map(|(k, v)| {
-        let obj = T::from_pair_simple(k.clone(), v).map_err(D::Error::custom)?;
+        let obj = T::from_pair_mapping(k.clone(), v).map_err(D::Error::custom)?;
         Ok(obj)
     }).collect()
 
@@ -65,10 +65,7 @@ where
                         T::from_pair_mapping(key.clone(), m).map_err(D::Error::custom)?
                     }
                     other => {
-                        let prim: T::Value = Deserialize::deserialize(
-                            ValueDeserializer::<D::Error>::new(other)
-                        ).map_err(D::Error::custom)?;
-                        T::from_pair_simple(key.clone(), prim).map_err(D::Error::custom)?
+                        T::from_pair_simple(key.clone(), other).map_err(D::Error::custom)?
                     }
                 };
 
