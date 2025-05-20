@@ -111,6 +111,7 @@ class AsKeyValue(RustTemplateModel):
     value_property_name: str
     value_property_type: str
     can_convert_from_primitive: bool = False
+    can_convert_from_empty: bool = False
     
 
 class RustStruct(RustTemplateModel):

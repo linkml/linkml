@@ -282,19 +282,22 @@ class RustGenerator(Generator, LifecycleMixin):
         induced_attrs = [self.schemaview.induced_slot(sn, cls.name) for sn in self.schemaview.class_slots(cls.name)]
         key_attr = None
         value_attrs = []
+        value_args_no_default = []
         for attr in induced_attrs:
             if attr.identifier:
                 if key_attr is not None:
                     ## multiple identifiers --> don't know what to do!
                     return None
                 key_attr = attr
-            if attr.key:
+            elif attr.key:
                 if key_attr is not None:
                     ## multiple keys --> don't know what to do!
                     return None
                 key_attr = attr
             else:
                 value_attrs.append(attr)
+                if attr.required and not attr.multivalued:
+                    value_args_no_default.append(attr)
         if key_attr is not None and len(value_attrs) >= 1:
             return AsKeyValue(
                     name=get_name(cls),
@@ -302,7 +305,8 @@ class RustGenerator(Generator, LifecycleMixin):
                     key_property_type=get_rust_type(key_attr.range, self.schemaview, self.pyo3),
                     value_property_name=get_name(value_attrs[0]),
                     value_property_type=get_rust_type(value_attrs[0].range, self.schemaview, self.pyo3),
-                    can_convert_from_primitive = len(value_attrs) == 1,
+                    can_convert_from_primitive = len(value_args_no_default) <= 1,
+                    can_convert_from_empty = len(value_args_no_default) == 0,
                     serde=self.serde,
                     pyo3=self.pyo3,
             )
