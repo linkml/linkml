@@ -6,53 +6,65 @@ from linkml.generators.docgen import DocGenerator
 from tests.test_generators.test_docgen import assert_mdfile_contains
 
 
-def test_class_rules_documentation(input_path, tmp_path):
+def test_class_rules_section_rendering(input_path, tmp_path):
     """
-    Tests that class rules are properly documented in markdown output
-    for the Pokemon schema
+    Tests that the contents of the ## Rules section are rendered properly
+    in the Markdown output/class documentation pages of the supplied Pokemon
+    schema in linkml_issue_1731.yaml.
     """
     schema_path = str(input_path("linkml_issue_1731.yaml"))
     gen = DocGenerator(schema_path, mergeimports=True)
     gen.serialize(directory=str(tmp_path))
 
+    pokemon_class_md_file = tmp_path / "Pokemon.md"
+
     # Check that the Rules section exists in Pokemon documentation
-    assert_mdfile_contains(tmp_path / "Pokemon.md", "## Rules", after="## Slots")
+    assert_mdfile_contains(pokemon_class_md_file, "## Rules", after="## Slots")
 
     # Check that the rules table is properly structured
     assert_mdfile_contains(
-        tmp_path / "Pokemon.md",
+        pokemon_class_md_file,
         "| Rule Applied | Preconditions | Postconditions | Elseconditions |",
         after="## Rules",
     )
 
     # Check for preconditions showing Water type
     assert_mdfile_contains(
-        tmp_path / "Pokemon.md",
+        pokemon_class_md_file,
         "Water",
         after="| Rule Applied | Preconditions | Postconditions | Elseconditions |",
     )
 
     # Check that postconditions correctly show strong_against and weak_against
     assert_mdfile_contains(
-        tmp_path / "Pokemon.md",
+        pokemon_class_md_file,
         "Fire",
         after="| Rule Applied | Preconditions | Postconditions | Elseconditions |",
     )
     assert_mdfile_contains(
-        tmp_path / "Pokemon.md",
+        pokemon_class_md_file,
         "Rock",
         after="| Rule Applied | Preconditions | Postconditions | Elseconditions |",
     )
     assert_mdfile_contains(
-        tmp_path / "Pokemon.md",
+        pokemon_class_md_file,
         "Electric",
         after="| Rule Applied | Preconditions | Postconditions | Elseconditions |",
     )
     assert_mdfile_contains(
-        tmp_path / "Pokemon.md",
+        pokemon_class_md_file,
         "Grass",
         after="| Rule Applied | Preconditions | Postconditions | Elseconditions |",
     )
+
+
+def test_classrule_to_dict_view_method(input_path, tmp_path):
+    """
+    Unit tests for classrule_to_dict_view() in linkml/generators/docgen.py.
+    """
+    schema_path = str(input_path("linkml_issue_1731.yaml"))
+    gen = DocGenerator(schema_path, mergeimports=True)
+    gen.serialize(directory=str(tmp_path))
 
     # Test the specific methods for rule processing
     pokemon_class = gen.schemaview.get_class("Pokemon")
