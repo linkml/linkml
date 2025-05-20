@@ -579,7 +579,7 @@ def test_docgen_multiline_everything_class_page(
     gen.serialize(directory=str(tmp_path))
 
     slot_type = "[xsd:string](http://www.w3.org/2001/XMLSchema#string)"
-    
+
     # check the table in the populated class file, ClassMultiLinePreserveWhitespace.md
     class_file = tmp_path / f"Class{UC_NAMES[MULTI_LINE_WS]}.md"
     with class_file.open() as fh:
