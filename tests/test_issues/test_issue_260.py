@@ -1,6 +1,9 @@
+import pytest
+
 from linkml.generators.pythongen import PythonGenerator
 
 
+@pytest.mark.pythongen
 def test_local_imports(input_path, snapshot):
     """Check the local import behavior"""
     test_dir = "issue_260"

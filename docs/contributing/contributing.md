@@ -4,7 +4,7 @@ For general info about how to contribute to LinkML, please see [FAQ: Contributin
 
 ## Development Environment Setup
 
-LinkML is developed with [Python](https://www.python.org/) and uses [Poetry](https://python-poetry.org/) for dependency management and packaging. If you have not used Poetry before refer to the [Poetry documentation](https://python-poetry.org/docs/master/#installation/) for installation instructions.
+LinkML is developed with [Python](https://www.python.org/) and uses [Poetry](https://python-poetry.org/) (version >= 2.0) for dependency management and packaging. If you have not used Poetry before refer to the [Poetry documentation](https://python-poetry.org/docs/#installation/) for installation instructions.
 
 Then clone the repository and install the development dependencies:
 
@@ -86,8 +86,8 @@ DEFAULT_LOG_LEVEL_TEXT: ERROR
 * To ignore the changed files run the shell script `hide_test_changes.sh`.
 * To reset all test output files back to original state use the shell script `checkout_outputs.sh`.
 
-
 ### IDE Tips
+
 PyCharm, IntelliJ:
 
 To run a single test:
@@ -108,11 +108,6 @@ To run all tests:
 ### Unittest to pytest conversion
 
 As of August 2023 this project has started converting its test suite from being based on the native [unittest module](https://docs.python.org/3/library/unittest.html) to being based on [pytest](https://docs.pytest.org/en/stable/index.html). Because of the presence of both styles of test in the codebase, it is recommended that you always use `pytest` to run tests.
-
-Currently, the following test directories have been entirely converted to pytest:
-
-* `tests/test_compliance`
-* `tests/test_issues`
 
 New tests in any directory should be written using pytest.
 
@@ -144,7 +139,36 @@ New tests in any directory should be written using pytest.
   The updated snapshot files should be checked in to Git alongside your other code changes.
 
   Debugging tip: sometimes a snapshot-based test may fail on GitHub actions, but may appear to pass locally. This can happen if the test is marked as a slow test,
-in which case you may need to use `--generate-snapshots` in combination with `--with-slow` (see below).
+  in which case you may need to use `--generate-snapshots` in combination with `--with-slow` (see below).
+
+### Testing linkml PRs with development versions of linkml-runtime
+
+`linkml` is tightly coupled to upstream `linkml-runtime`.
+
+In some circumstances, paired changes need to be made against *both* `linkml` and `linkml-runtime`.
+Then testing with the last release of `linkml-runtime` is insufficient.
+
+In such cases, you can specify that your PR needs to be tested with a specific linkml-runtime branch and repository.
+Specifying this information in the first two lines of your pull request´s opening message like this:
+
+> upstream_repo: user-or-org-name/linkml-runtime<BR>
+> upstream_branch: some-complicated-feature
+>
+> Hey everyone ... (PR continues)
+
+The order of the lines with `upstream_repo` and `upstream_branch` tags does not matter,
+but they must be the first two lines of the pull request comment.
+
+Maintainers can also specify upstream branches to test against when dispatching the `test_with_unreleased_runtime` workflow manually via the GUI prompt.
+
+Testing against an unverified upstream branch is not necessarily dangerous.
+The [input is stored as a variable first and not executed as untrusted code](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable).
+But maintainers should take care to verify that the upstream branch and repo are correct and expected given the context of the PR.
+
+### Testing linkml-runtime PRs against any upstream linkml repository/branch
+
+For linkml-runtime a similar action as above is available allowing you to select a linkml repository to test against.
+For more see [linkml-runtime/CONRBUTING](https://github.com/linkml/linkml-runtime/blob/main/CONTRIBUTING.md).
 
 ## Code formatting and linting
 
@@ -222,4 +246,3 @@ insight into your work and allows them to provide feedback early on.
 
 - [FAQ: Contributing](../faq/contributing.md) - General info about how to contribute to LinkML.
 - [Deprecation](../developers/deprecation.md) - Handling deprecations
-

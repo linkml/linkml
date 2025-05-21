@@ -7,14 +7,12 @@
 #              single user or agent
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
 from dataclasses import dataclass
-from typing import Any, ClassVar, Dict, List, Optional, Union
+from typing import Any, ClassVar, Optional, Union
 
 from jsonasobj2 import as_dict
 from linkml_runtime.linkml_model.types import String
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.metamodelcore import Bool, XSDDateTime, empty_dict, empty_list
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
@@ -22,9 +20,6 @@ from rdflib import URIRef
 
 metamodel_version = "1.7.0"
 version = None
-
-# Overwrite dataclasses _init_fn to add **kwargs in __init__
-dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 CSVW = CurieNamespace("csvw", "http://www.w3.org/ns/csvw#")
@@ -84,7 +79,7 @@ class Project(YAMLRoot):
     A project consists of a single root schema
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = WORKSPACE.Project
     class_class_curie: ClassVar[str] = "workspace:Project"
@@ -98,18 +93,18 @@ class Project(YAMLRoot):
     schema: Optional[Union[dict, Any]] = None
     description: Optional[str] = None
     source_schema_path: Optional[Union[str, FileSystemPath]] = None
-    data_files: Optional[Union[Union[str, FileSystemPath], List[Union[str, FileSystemPath]]]] = empty_list()
+    data_files: Optional[Union[Union[str, FileSystemPath], list[Union[str, FileSystemPath]]]] = empty_list()
     source_google_sheet_docs: Optional[
         Union[
-            Dict[Union[str, GoogleSheetsDocId], Union[dict, "GoogleSheetsDoc"]],
-            List[Union[dict, "GoogleSheetsDoc"]],
+            dict[Union[str, GoogleSheetsDocId], Union[dict, "GoogleSheetsDoc"]],
+            list[Union[dict, "GoogleSheetsDoc"]],
         ]
     ] = empty_dict()
     project_directory: Optional[Union[str, FileSystemPath]] = None
     external_project_path: Optional[Union[str, FileSystemPath]] = None
     last_saved: Optional[Union[str, XSDDateTime]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.name):
             self.MissingRequiredField("name")
         if not isinstance(self.name, ProjectName):
@@ -159,7 +154,7 @@ class GoogleSheetsDoc(YAMLRoot):
     A google sheets document can contain multiple individual sheets
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = WORKSPACE.GoogleSheetsDoc
     class_class_curie: ClassVar[str] = "workspace:GoogleSheetsDoc"
@@ -167,9 +162,9 @@ class GoogleSheetsDoc(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = WORKSPACE.GoogleSheetsDoc
 
     id: Union[str, GoogleSheetsDocId] = None
-    sheet_ids: Optional[Union[str, List[str]]] = empty_list()
+    sheet_ids: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, GoogleSheetsDocId):
@@ -184,7 +179,7 @@ class GoogleSheetsDoc(YAMLRoot):
 
 @dataclass
 class GitHubAccount(YAMLRoot):
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = WORKSPACE.GitHubAccount
     class_class_curie: ClassVar[str] = "workspace:GitHubAccount"
@@ -194,7 +189,7 @@ class GitHubAccount(YAMLRoot):
     username: Optional[str] = None
     password: Optional[str] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.username is not None and not isinstance(self.username, str):
             self.username = str(self.username)
 
@@ -210,7 +205,7 @@ class Workspace(YAMLRoot):
     A workspace is a collection of projects managed locally on a file system
     """
 
-    _inherited_slots: ClassVar[List[str]] = []
+    _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = WORKSPACE.Workspace
     class_class_curie: ClassVar[str] = "workspace:Workspace"
@@ -219,15 +214,15 @@ class Workspace(YAMLRoot):
 
     projects: Optional[
         Union[
-            Dict[Union[str, ProjectName], Union[dict, Project]],
-            List[Union[dict, Project]],
+            dict[Union[str, ProjectName], Union[dict, Project]],
+            list[Union[dict, Project]],
         ]
     ] = empty_dict()
     github_account: Optional[Union[dict, GitHubAccount]] = None
     projects_directory: Optional[Union[str, FileSystemPath]] = None
     autosync: Optional[Union[bool, Bool]] = None
 
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         self._normalize_inlined_as_list(slot_name="projects", slot_type=Project, key_name="name", keyed=True)
 
         if self.github_account is not None and not isinstance(self.github_account, GitHubAccount):
@@ -319,7 +314,7 @@ slots.project__data_files = Slot(
     curie=WORKSPACE.curie("data_files"),
     model_uri=WORKSPACE.project__data_files,
     domain=None,
-    range=Optional[Union[Union[str, FileSystemPath], List[Union[str, FileSystemPath]]]],
+    range=Optional[Union[Union[str, FileSystemPath], list[Union[str, FileSystemPath]]]],
 )
 
 slots.project__source_google_sheet_docs = Slot(
@@ -330,8 +325,8 @@ slots.project__source_google_sheet_docs = Slot(
     domain=None,
     range=Optional[
         Union[
-            Dict[Union[str, GoogleSheetsDocId], Union[dict, GoogleSheetsDoc]],
-            List[Union[dict, GoogleSheetsDoc]],
+            dict[Union[str, GoogleSheetsDocId], Union[dict, GoogleSheetsDoc]],
+            list[Union[dict, GoogleSheetsDoc]],
         ]
     ],
 )
@@ -378,7 +373,7 @@ slots.googleSheetsDoc__sheet_ids = Slot(
     curie=WORKSPACE.curie("sheet_ids"),
     model_uri=WORKSPACE.googleSheetsDoc__sheet_ids,
     domain=None,
-    range=Optional[Union[str, List[str]]],
+    range=Optional[Union[str, list[str]]],
 )
 
 slots.gitHubAccount__username = Slot(
@@ -407,8 +402,8 @@ slots.workspace__projects = Slot(
     domain=None,
     range=Optional[
         Union[
-            Dict[Union[str, ProjectName], Union[dict, Project]],
-            List[Union[dict, Project]],
+            dict[Union[str, ProjectName], Union[dict, Project]],
+            list[Union[dict, Project]],
         ]
     ],
 )

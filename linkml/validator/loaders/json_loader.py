@@ -1,4 +1,5 @@
-from typing import Any, Iterator
+from collections.abc import Iterator
+from typing import Any
 
 from linkml_runtime.loaders import json_loader
 
