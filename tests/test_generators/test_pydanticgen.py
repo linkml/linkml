@@ -1507,7 +1507,7 @@ def test_template_render():
         recursive: Optional["TestTemplate"] = None
 
     templates = {
-        "inner.jinja": """inner_value: {{ value }}""",
+        "inner.jinja": """'inner_value: {{ value }}'""",
         "test.jinja": """a_list: {{ a_list }}
 a_dict: {{ a_dict }}
 a_value: {{ a_value }}
