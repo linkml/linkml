@@ -1,5 +1,4 @@
 import sys
-from collections.abc import Generator
 from importlib.util import find_spec
 from typing import Any, ClassVar, Literal, Optional, Union, get_args
 
@@ -262,7 +261,6 @@ class PydanticClass(PydanticTemplateModel):
         return self.attributes
 
 
-
 class Import(Import_, PydanticTemplateModel):
     """
     A python module, or module and classes to be imported.
@@ -294,7 +292,6 @@ class Import(Import_, PydanticTemplateModel):
     """
 
     template: ClassVar[str] = "imports.py.jinja"
-
 
     @computed_field
     def group(self) -> IMPORT_GROUPS:
@@ -366,7 +363,6 @@ class ConditionalImport(ConditionalImport_, PydanticTemplateModel):
         return "conditional"
 
 
-
 class Imports(Imports_, PydanticTemplateModel):
     """
     Container class for imports that can handle merging!
@@ -405,7 +401,6 @@ class Imports(Imports_, PydanticTemplateModel):
     group_order: tuple[str, ...] = get_args(IMPORT_GROUPS)
     """Order in which to sort imports by their :attr:`.Import.group`"""
 
-
     @computed_field
     def import_groups(self) -> list[IMPORT_GROUPS]:
         """
@@ -430,7 +425,6 @@ class Imports(Imports_, PydanticTemplateModel):
         for i in imports:
             i.sort()
         self.imports = imports
-
 
 
 class PydanticModule(PydanticTemplateModel):
