@@ -14,7 +14,7 @@ from linkml_runtime.linkml_model import (
     SlotDefinition,
     TypeDefinition,
 )
-from pydantic import BaseModel, ConfigDict, GetCoreSchemaHandler, GetPydanticSchema
+from pydantic import BaseModel, ConfigDict, GetPydanticSchema
 from pydantic_core import core_schema
 
 T = TypeVar("T", bound="BuildResult", covariant=True)
@@ -22,6 +22,7 @@ Tsv = TypeVar("Tsv", bound=Definition, covariant=True)
 
 
 SkipValidation = Annotated[Tsv, GetPydanticSchema(lambda tp, handler: core_schema.any_schema())]
+
 
 class BuildResult(BaseModel):
     """
