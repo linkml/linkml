@@ -1,11 +1,11 @@
-pub {{ name }}: {% if multivalued and class_range and pyo3 -%}
-    Vec<Py<{{ type_ }}>>
-{%- elif multivalued and not inlined -%}
-    Vec<{{ type_ }}>
-{%- elif multivalued and inlined -%}
-    HashMap<String, {{ type_ }}>
-{%- elif recursive -%}
-    Box<{{ type_ }}>
-{%- else -%}
-    {{ type_ }}
+{%- if is_key_value -%}
+{% if inline_mode == "list" %}
+#[cfg_attr(feature = "serde", serde(deserialize_with = "serde_utils::deserialize_inlined_dict_list{% if recursive %}_box{% endif %}"))]
+{% elif inline_mode == "mapping" %}
+#[cfg_attr(feature = "serde", serde(deserialize_with = "serde_utils::deserialize_inlined_dict_map{% if recursive %}_box{% endif %}"))]
+{% endif %}
 {%- endif -%}
+{% if hasdefault %}
+#[cfg_attr(feature = "serde", serde(default))]
+{% endif %}
+pub {{ name }}: {{ type_ }}

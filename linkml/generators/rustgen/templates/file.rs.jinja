@@ -1,4 +1,9 @@
 #![allow(non_camel_case_types)]
+
+#[cfg(feature = "serde")]
+mod serde_utils;
+mod poly;
+
 {{ imports }}
 
 // Types
@@ -27,6 +32,7 @@
 
 
 {% if pyo3 %}
+#[cfg(feature = "pyo3")]
 #[pymodule]
 #[pyo3(name="{{ name }}")]
 fn {{ name }}(m: &Bound<'_, PyModule>) -> PyResult<()> {

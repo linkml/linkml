@@ -1,3 +1,4 @@
+from typing import Dict
 from linkml.generators.common.build import (
     BuildResult,
     SchemaResult,
@@ -15,6 +16,7 @@ from linkml.generators.rustgen.template import (
     RustCargo,
     RustEnum,
     RustFile,
+    RustTemplateModel,
     RustProperty,
     RustPyProject,
     RustStruct,
@@ -62,7 +64,6 @@ class AttributeResult(RustBuildResult, SlotResult_):
     """
     A field within a rust struct
     """
-
     attribute: RustProperty
 
 
@@ -81,6 +82,7 @@ class CrateResult(RustBuildResult, SchemaResult):
 
     cargo: RustCargo
     file: RustFile
+    extra_files: Dict[str, RustTemplateModel]
     pyproject: RustPyProject
 
 

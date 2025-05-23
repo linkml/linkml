@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from typing import Literal, Optional, Union, overload
 
@@ -10,11 +11,12 @@ from linkml_runtime.linkml_model.meta import (
     SlotDefinition,
     TypeDefinition,
 )
-from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.formatutils import camelcase, underscore, uncamelcase
 from linkml_runtime.utils.schemaview import OrderedBy, SchemaView
 
 from linkml.generators.common.lifecycle import LifecycleMixin
 from linkml.generators.common.template import ObjectImport
+from linkml.generators.common.type_designators import get_accepted_type_designator_values, get_type_designator_value
 from linkml.generators.rustgen.build import (
     AttributeResult,
     ClassResult,
@@ -24,17 +26,26 @@ from linkml.generators.rustgen.build import (
     SlotResult,
     TypeResult,
 )
+
+
+
 from linkml.generators.rustgen.template import (
     Import,
     Imports,
     RustCargo,
     RustEnum,
     RustFile,
+    PolyFile,
+    SerdeUtilsFile,
     RustProperty,
+    AsKeyValue,
     RustPyProject,
     RustStruct,
     RustTemplateModel,
     RustTypeAlias,
+    RustStructOrSubtypeEnum,
+    SlotRangeAsUnion,
+    RustClassModule,
 )
 from linkml.utils.generator import Generator
 
@@ -50,10 +61,10 @@ PYTHON_TO_RUST = {
     "str": "String",
     "bool": "bool",
     "Bool": "bool",
-    "XSDDate": "String",
-    "date": "String",
-    "XSDDateTime": "String",
-    "datetime": "String",
+    "XSDDate": "NaiveDate",
+    "date": "NaiveDate",
+    "XSDDateTime": "NaiveDateTime",
+    "datetime": "NaiveDateTime",
     # "Decimal": "dec",
     "Decimal": "f64",
 }
@@ -62,32 +73,23 @@ Mapping from python types to rust types.
 
 .. todo::
 
-    - Add datetime/time
     - Add numpy types
+    - make an enum wrapper for naivedatetime and datetime<fixedoffset> that can represent both of them
 
 """
-
-PYTHON_TO_PYO3 = {
-    "XSDDate": "Py<PyDate>",
-    "date": "Py<PyDate>",
-    "XSDDateTime": "PyDateTime",
-    "datetime": "PyDateTime",
-}
 
 PROTECTED_NAMES = ("type", "typeof", "abstract")
 
 RUST_IMPORTS = {
     "dec": Import(module="rust_decimal", version="1.36", objects=[ObjectImport(name="dec")]),
-    "PyDateTime": Import(module="pyo3::types", version="0.23.0", objects=[ObjectImport(name="PyDateTime")]),
-    "PyDate": Import(module="pyo3::types", version="0.23.0", objects=[ObjectImport(name="PyDate")]),
+    "NaiveDate": Import(module="chrono", features=["serde"], version="0.4.41", objects= [ObjectImport(name="NaiveDate")]),
+    "NaiveDateTime": Import(module="chrono", features=["serde"], version="0.4.41", objects= [ObjectImport(name="NaiveDateTime")]),
 }
-RUST_IMPORTS["Py<PyDate>"] = RUST_IMPORTS["PyDate"]
 
 DEFAULT_IMPORTS = Imports(
     imports=[
         Import(module="std::collections", objects=[ObjectImport(name="HashMap")]),
         # Import(module="std::fmt", objects=[ObjectImport(name="Display")]),
-        Import(module="pyo3::prelude::*", version="0.23.0"),
     ]
 )
 
@@ -97,11 +99,69 @@ SERDE_IMPORTS = Imports(
             module="serde",
             version="1.0",
             features=["derive"],
-            objects=[ObjectImport(name="Serialize"), ObjectImport(name="Deserialize")],
+            objects=[ObjectImport(name="Serialize"), ObjectImport(name="Deserialize"), ObjectImport(name="de::IntoDeserializer")],
+            feature_flag="serde",
         ),
-        Import(module="serde_yml", version="0.0.12"),
+        Import(module="serde-value", version="0.7.0", objects=[ObjectImport(name="Value")]),
+        Import(module="serde_yml", version="0.0.12", feature_flag="serde", alias="_"),
+        Import(module="serde_path_to_error", version = "0.1.17", objects=[], feature_flag="serde"),
+
     ]
 )
+
+PYTHON_IMPORTS = Imports(
+    imports = [
+        Import(module="pyo3", version="0.25.0", objects=[ObjectImport(name="prelude::*"), ObjectImport(name="FromPyObject")], feature_flag="pyo3", features=["chrono"]),
+        # Import(module="serde_pyobject", version="0.6.1", objects=[], feature_flag="pyo3", features=[]),
+    ]
+)
+
+class SlotInlineMode(Enum):
+    IDENTIFIER = "identifier" ## not inlined at all, just has the identifier
+    SINGLE_VALUE = "single_value"
+    MAPPING = "mapping"
+    LIST = "list"
+
+
+def get_key_or_identifier_slot(cls: ClassDefinition, sv: SchemaView) -> Optional[SlotDefinition]:
+    induced_slots = sv.class_induced_slots(cls.name)
+    for slot in induced_slots:
+        if slot.identifier or slot.key:
+            return slot
+    return None
+
+def get_inline_mode(s: SlotDefinition, sv: SchemaView) -> SlotInlineMode:
+    class_range = s.range in sv.all_classes()
+    multivalued = s.multivalued
+    if not class_range:
+        return SlotInlineMode.LIST if multivalued else SlotInlineMode.SINGLE_VALUE
+    if s.inlined_as_list:
+        return SlotInlineMode.LIST
+    key_slot = get_key_or_identifier_slot(sv.get_class(s.range), sv)
+    if key_slot is None:
+        return SlotInlineMode.SINGLE_VALUE if not multivalued else SlotInlineMode.LIST
+    elif s.inlined:
+        return SlotInlineMode.MAPPING
+    else:
+        return SlotInlineMode.IDENTIFIER
+
+
+def can_contain_reference_to_class(s: SlotDefinition, cls: ClassDefinition, sv: SchemaView) -> bool:
+    ref_name = cls.name
+    seen_classes = set()
+    classes_to_check = [s.range]
+    while len(classes_to_check) > 0:
+        a_class = classes_to_check.pop()
+        seen_classes.add(a_class)
+        if not a_class in sv.all_classes():
+            continue
+        if a_class == ref_name:
+            return True
+        induced_class = sv.induced_class(a_class)
+        for attr in induced_class.attributes.values():
+            if attr.range not in seen_classes:
+                classes_to_check.append(attr.range)
+    return False
 
 
 def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, pyo3: bool = False) -> str:
@@ -124,16 +184,48 @@ def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, pyo3: boo
         if tdef := sv.all_types().get(t, None):
             rsrange = get_rust_type(tdef, sv, pyo3)
         elif t in sv.all_classes():
-            rsrange = get_name(sv.get_class(t))
+            c = sv.get_class(t)
+            rsrange = get_name(c)
+            descendants = sv.class_descendants(t)
+            if len(descendants) > 1:
+                rsrange += "OrSubtype"
 
     # FIXME: Raise here once we have implemented all base types
     if rsrange is None:
         rsrange = PYTHON_TO_RUST[str]
-    elif pyo3 and rsrange in PYTHON_TO_PYO3:
-        rsrange = PYTHON_TO_PYO3[pyo3]
     elif rsrange in PYTHON_TO_RUST:
         rsrange = PYTHON_TO_RUST[rsrange]
     return rsrange
+
+
+def get_rust_range(cls: ClassDefinition, s: SlotDefinition, sv: SchemaView, range: Optional[str] = None) -> str:
+    range = range if range is not None else s.range
+    boxing_needed = False
+    inline_mode = get_inline_mode(s, sv)
+    base_type = get_rust_type(range, sv, True)
+    all_ranges = sv.slot_range_as_union(s)
+    if len(all_ranges) > 1:
+        base_type = underscore(uncamelcase(cls.name)) + "_utl::" + get_name(s) + "_range"
+
+
+    if inline_mode == SlotInlineMode.IDENTIFIER:
+        base_type = "String"
+    else:
+        if can_contain_reference_to_class(s, cls, sv):
+            boxing_needed = True
+
+    if boxing_needed:
+        base_type = f"Box<{base_type}>"
+    
+    if inline_mode == SlotInlineMode.MAPPING:
+        base_type = f"HashMap<String, {base_type}>"
+    elif inline_mode == SlotInlineMode.LIST or s.multivalued:
+        base_type = f"Vec<{base_type}>"
+
+    if not s.required and not s.multivalued:
+        base_type = f"Option<{base_type}>"
+
+    return base_type
 
 
 def protect_name(v: str) -> str:
@@ -169,6 +261,7 @@ class RustGenerator(Generator, LifecycleMixin):
     generatorversion = "0.0.2"
     valid_formats = ["rust"]
     file_extension = "rs"
+    crate_name: Optional[str] = None
 
     pyo3: bool = True
     """Generate pyO3 bindings for the rust defs"""
@@ -225,14 +318,17 @@ class RustGenerator(Generator, LifecycleMixin):
         Generate a slot as a struct field
         """
         slot = self.before_generate_slot(slot, self.schemaview)
+        class_range = slot.range in self.schemaview.all_classes()
+        type_ = get_rust_type(slot.range, self.schemaview, self.pyo3)
+            
         slot = SlotResult(
             source=slot,
             slot=RustTypeAlias(
                 name=get_name(slot),
-                type_=get_rust_type(slot.range, self.schemaview, self.pyo3),
+                type_=type_,
                 multivalued=slot.multivalued,
                 pyo3=self.pyo3,
-                class_range=slot.range in self.schemaview.all_classes(),
+                class_range=class_range,
             ),
             imports=self.get_imports(slot),
         )
@@ -246,6 +342,18 @@ class RustGenerator(Generator, LifecycleMixin):
         cls = self.before_generate_class(cls, self.schemaview)
         induced_attrs = [self.schemaview.induced_slot(sn, cls.name) for sn in self.schemaview.class_slots(cls.name)]
         induced_attrs = self.before_generate_slots(induced_attrs, self.schemaview)
+        slot_range_unions = []
+        for a in induced_attrs:
+            ranges = self.schemaview.slot_range_as_union(a)
+            if len(ranges) > 1:
+                slot_range_unions.append(SlotRangeAsUnion(slot_name=get_name(a), ranges=[get_rust_type(r, self.schemaview, True) for r in ranges]))
+                
+        cls_mod = RustClassModule(
+            class_name=get_name(cls),
+            class_name_snakecase= underscore(uncamelcase(cls.name)),
+            slot_ranges=slot_range_unions,
+        )
+
         attributes = [self.generate_attribute(attr, cls) for attr in induced_attrs]
         attributes = self.after_generate_slots(attributes, self.schemaview)
 
@@ -259,6 +367,9 @@ class RustGenerator(Generator, LifecycleMixin):
                 unsendable=unsendable,
                 pyo3=self.pyo3,
                 serde=self.serde,
+                as_key_value=self.generate_class_as_key_value(cls),
+                struct_or_subtype_enum=self.gen_struct_or_subtype_enum(cls),
+                class_module=cls_mod,
             ),
         )
         # merge imports
@@ -267,6 +378,63 @@ class RustGenerator(Generator, LifecycleMixin):
 
         res = self.after_generate_class(res, self.schemaview)
         return res
+    
+    def gen_struct_or_subtype_enum(self, cls: ClassDefinition) -> Optional[RustStructOrSubtypeEnum]:
+        descendants = self.schemaview.class_descendants(cls.name)
+        td = self.schemaview.get_type_designator_slot(cls.name)
+        td_mapping = {}
+        if td is not None:
+            for d in descendants:
+                d_class = self.schemaview.get_class(d)
+                values = get_accepted_type_designator_values(self.schemaview, td, d_class)
+                td_mapping[d] = values
+        if len(descendants) > 1:
+            return RustStructOrSubtypeEnum(
+                enum_name=get_name(cls) + "OrSubtype",
+                struct_names=[get_name(self.schemaview.get_class(d)) for d in descendants],
+                type_designator_name=get_name(td) if td else None,
+                as_key_value=get_key_or_identifier_slot(cls, self.schemaview) is not None,
+                type_designators = td_mapping,
+            )
+        return None
+
+
+
+    def generate_class_as_key_value(self, cls: ClassDefinition) -> Optional[AsKeyValue]:
+        induced_attrs = [self.schemaview.induced_slot(sn, cls.name) for sn in self.schemaview.class_slots(cls.name)]
+        key_attr = None
+        value_attrs = []
+        value_args_no_default = []
+
+        for attr in induced_attrs:
+            if attr.identifier:
+                if key_attr is not None:
+                    ## multiple identifiers --> don't know what to do!
+                    return None
+                key_attr = attr
+            elif attr.key:
+                if key_attr is not None:
+                    ## multiple keys --> don't know what to do!
+                    return None
+                key_attr = attr
+            else:
+                value_attrs.append(attr)
+                if attr.required and not attr.multivalued:
+                    value_args_no_default.append(attr)
+        if key_attr is not None:
+            return AsKeyValue(
+                    name=get_name(cls),
+                    key_property_name=get_name(key_attr),
+                    key_property_type=get_rust_type(key_attr.range, self.schemaview, self.pyo3),
+                    value_property_name=get_name(value_attrs[0]),
+                    value_property_type=get_rust_type(value_attrs[0].range, self.schemaview, self.pyo3),
+                    can_convert_from_primitive = len(value_args_no_default) <= 1,
+                    can_convert_from_empty = len(value_args_no_default) == 0,
+                    serde=self.serde,
+                    pyo3=self.pyo3,
+            )
+        return None
+                
 
     def generate_attribute(self, attr: SlotDefinition, cls: ClassDefinition) -> AttributeResult:
         """
@@ -274,33 +442,23 @@ class RustGenerator(Generator, LifecycleMixin):
         """
         attr = self.before_generate_slot(attr, self.schemaview)
         is_class_range = attr.range in self.schemaview.all_classes()
-
-        # -------
-        # check for circular class -> slot -> class -> slot -> class recursion
-        # FIXME: split this up lol
-
-        reference_recursive = False
-        if is_class_range:
-            induced_range = self.schemaview.induced_class(attr.range)
-            attr_ranges = [attr.range for attr in induced_range.attributes.values()]
-            reference_recursive = cls.name in attr_ranges
-
-        is_recursive = attr.range == cls.name or reference_recursive
-
+        inline_mode = get_inline_mode(attr, self.schemaview)
+        range = get_rust_range(cls, attr, self.schemaview)
         res = AttributeResult(
             source=attr,
             attribute=RustProperty(
                 name=get_name(attr),
-                type_=get_rust_type(attr.range, self.schemaview, self.pyo3),
+                inline_mode=inline_mode.value,
+                type_=range,
                 required=bool(attr.required),
-                multivalued=attr.multivalued,
-                class_range=is_class_range,
+                multivalued=True if attr.multivalued else False,
+                is_key_value=is_class_range and self.generate_class_as_key_value(self.schemaview.get_class(attr.range)) is not None,
                 pyo3=self.pyo3,
-                recursive=is_recursive,
-                inlined=bool(attr.inlined and not attr.inlined_as_list),
+                serde=self.serde,
             ),
             imports=self.get_imports(attr),
         )
+
         res = self.after_generate_slot(res, self.schemaview)
         return res
 
@@ -310,11 +468,12 @@ class RustGenerator(Generator, LifecycleMixin):
         """
         version = self.schemaview.schema.version if self.schemaview.schema.version is not None else "0.0.0"
         return RustCargo(
-            name=self.schemaview.schema.name,
+            name=self.crate_name if self.crate_name is not None else self.schemaview.schema.name,
             version=version,
             imports=imports,
             pyo3_version=self.pyo3_version,
             pyo3=self.pyo3,
+            serde=self.serde,
         )
 
     def generate_pyproject(self) -> RustPyProject:
@@ -376,10 +535,10 @@ class RustGenerator(Generator, LifecycleMixin):
         classes = self.after_generate_classes(classes, sv)
 
         imports = DEFAULT_IMPORTS.model_copy()
+        imports += PYTHON_IMPORTS
+        imports += SERDE_IMPORTS
         for result in [*enums, *slots, *classes]:
             imports += result.imports
-        if self.serde:
-            imports += SERDE_IMPORTS
 
         # TODO: get imports from all results
 
@@ -391,12 +550,16 @@ class RustGenerator(Generator, LifecycleMixin):
             enums=[e.enum for e in enums],
             structs=[c.cls for c in classes],
             pyo3=self.pyo3,
+            serde=self.serde,
         )
 
         if mode == "crate":
+            extra_files = {}
+            extra_files["serde_utils"] = SerdeUtilsFile()
+            extra_files["poly"] = PolyFile(imports=imports)
             cargo = self.generate_cargo(imports)
             pyproject = self.generate_pyproject()
-            res = CrateResult(cargo=cargo, file=file, pyproject=pyproject, source=sv.schema)
+            res = CrateResult(cargo=cargo, file=file, pyproject=pyproject, source=sv.schema, extra_files=extra_files)
             return res
         else:
             res = FileResult(file=file, source=sv.schema)
@@ -449,6 +612,13 @@ class RustGenerator(Generator, LifecycleMixin):
         lib_file = src_dir / "lib.rs"
         with open(lib_file, "w") as lfile:
             lfile.write(rust_file)
+
+        for (k,f) in rendered.extra_files.items():
+            extra_file = f.render(self.template_environment)
+            extra_file_name = f"{k}.rs"
+            extra_file_path = src_dir / extra_file_name
+            with open(extra_file_path, "w") as ef:
+                ef.write(extra_file)
 
         return rust_file
 

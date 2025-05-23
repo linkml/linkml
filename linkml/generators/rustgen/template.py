@@ -1,8 +1,8 @@
-from typing import ClassVar, Optional
+from typing import ClassVar, Optional, List
 
 from jinja2 import Environment, PackageLoader
 from linkml_runtime.utils.formatutils import underscore
-from pydantic import Field, computed_field, field_validator
+from pydantic import Field, computed_field, field_validator, BaseModel
 
 from linkml.generators.common.template import Import as Import_
 from linkml.generators.common.template import Imports as Imports_
@@ -38,6 +38,8 @@ class Import(Import_, RustTemplateModel):
     """Version specifier to use in Cargo.toml"""
     features: Optional[list[str]] = None
     """Features to require in Cargo.toml"""
+    ## whether this import should be behind a feature flag
+    feature_flag: Optional[str] = None
 
 
 class Imports(Imports_, RustTemplateModel):
@@ -50,22 +52,59 @@ class RustProperty(RustTemplateModel):
     """
 
     template: ClassVar[str] = "property.rs.jinja"
-
+    inline_mode: str
     name: str
-    type_: str
+    type_: str # might be a union type, so list length > 1
     required: bool
-    multivalued: Optional[bool] = False
-    class_range: bool = False
-    recursive: bool = False
-    inlined: bool = False
+    multivalued: bool = False
+    is_key_value: bool = False
 
+    @computed_field
+    def hasdefault(self) -> bool:
+        return self.multivalued or not self.required
+        
 
+class AsKeyValue(RustTemplateModel):
+    """
+    A key-value representation for this struct
+    """
+    template: ClassVar[str] = "as_key_value.rs.jinja"
+    name: str
+    key_property_name: str
+    key_property_type: str
+    value_property_name: str
+    value_property_type: str
+    can_convert_from_primitive: bool = False
+    can_convert_from_empty: bool = False
+
+class RustStructOrSubtypeEnum(RustTemplateModel):
+    template: ClassVar[str] = "struct_or_subtype_enum.rs.jinja"
+    enum_name: str
+    struct_names: list[str]    
+    as_key_value: bool = False
+    type_designator_field: Optional[str] = None
+    type_designators: dict[str, str]
+
+class SlotRangeAsUnion(RustTemplateModel):
+    """
+    A union of ranges!
+    """
+    template: ClassVar[str] = "slot_range_as_union.rs.jinja"
+    slot_name: str
+    ranges: list[str]
+
+class RustClassModule(RustTemplateModel):
+    class_name: str
+    class_name_snakecase: str
+    template: ClassVar[str] = "class_module.rs.jinja"
+    slot_ranges: List[SlotRangeAsUnion]
 class RustStruct(RustTemplateModel):
     """
     A struct!
     """
 
     template: ClassVar[str] = "struct.rs.jinja"
+    class_module : Optional[RustClassModule] = None
 
     name: str
     bases: Optional[list[str]] = None
@@ -74,6 +113,12 @@ class RustStruct(RustTemplateModel):
     """
     properties: list[RustProperty] = Field(default_factory=list)
     unsendable: bool = False
+    as_key_value: Optional[AsKeyValue] = None
+    struct_or_subtype_enum: Optional[RustStructOrSubtypeEnum] = None
+
+    @computed_field()
+    def property_names_and_types(self) -> dict[str, str]:
+        return [(p.name, p.type_) for p in self.properties]
 
     @computed_field()
     def property_names(self) -> list[str]:
@@ -91,6 +136,7 @@ class RustEnum(RustTemplateModel):
     items: list[str]
 
 
+
 class RustTypeAlias(RustTemplateModel):
     """
     A type alias used to represent slots
@@ -103,11 +149,24 @@ class RustTypeAlias(RustTemplateModel):
     description: Optional[str] = None
     multivalued: Optional[bool] = False
     class_range: bool = False
+    slot_range_as_union: Optional[SlotRangeAsUnion] = None
 
     @field_validator("attributes", mode="before")
     @classmethod
     def attr_values_as_strings(cls, value: dict[str, any]) -> dict[str, str]:
         return {k: str(v) for k, v in value.items()}
+
+
+class SerdeUtilsFile(RustTemplateModel):
+    """
+    A file containing utility functions for serde serialization/deserialization
+    """
+
+    template: ClassVar[str] = "serde_utils.rs.jinja"
+
+class PolyFile(RustTemplateModel):
+    template: ClassVar[str] = "poly.rs.jinja"
+    imports: Imports = Imports()
 
 
 class RustFile(RustTemplateModel):
@@ -130,6 +189,14 @@ class RustFile(RustTemplateModel):
         return [c.name for c in self.structs]
 
 
+class RangeEnum(RustTemplateModel):
+    """
+    A range enum!
+     """
+    template: ClassVar[str] = "range_enum.rs.jinja"
+    name: str
+    type_: List[str]
+
 class RustCargo(RustTemplateModel):
     """
     A Cargo.toml file
@@ -143,16 +210,25 @@ class RustCargo(RustTemplateModel):
     pyo3_version: str = "0.21.1"
     imports: Imports = Imports()
 
+    @computed_field
+    def cratefeatures(self) -> dict[str, list[str]]:
+        feature_flags = {}
+        for i in self.imports.imports:
+            assert isinstance(i, Import)
+            if i.feature_flag is not None:
+                if i.feature_flag not in feature_flags:
+                    feature_flags[i.feature_flag] = [i.module]
+                else:
+                    feature_flags[i.feature_flag].append(i.module)
+        return feature_flags
+
+
+
     @field_validator("name", mode="after")
     @classmethod
     def snake_case_name(cls, value: str) -> str:
         return underscore(value)
 
-    @field_validator("imports", mode="after")
-    @classmethod
-    def remove_pyo3(cls, v: Imports) -> Imports:
-        """Remove pyo3, it's handled separately"""
-        return Imports(imports=[i for i in v.imports if not i.module.startswith("pyo3")])
 
     def render(self, environment: Optional[Environment] = None, **kwargs) -> str:
         if environment is None:
