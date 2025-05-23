@@ -19,6 +19,33 @@ pub trait InlinedPair: Sized {
 }
 
 #[cfg(feature = "serde")]
+impl<T> InlinedPair for Box<T>
+where
+    T: InlinedPair + ?Sized,           // allow unsized boxes too
+{
+    type Key   = T::Key;
+    type Value = T::Value;
+    type Error = T::Error;
+
+    #[inline]
+    fn from_pair_mapping(k: Self::Key, v: Value) -> Result<Self, Self::Error> {
+        T::from_pair_mapping(k, v).map(|x| Box::new(x))
+    }
+
+    #[inline]
+    fn from_pair_simple(k: Self::Key, v: Value) -> Result<Self, Self::Error>  {
+        T::from_pair_simple(k, v).map(|x| Box::new(x))
+    }
+
+    #[inline]
+    fn extract_key(&self) -> &Self::Key {
+        T::extract_key(self)
+     }
+
+}
+
+
+#[cfg(feature = "serde")]
 pub fn deserialize_inlined_dict_list<'de, D, T>(de: D) -> Result<Vec<T>, D::Error>
 where
     D: Deserializer<'de>,

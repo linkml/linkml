@@ -62,30 +62,7 @@ class RustProperty(RustTemplateModel):
     @computed_field
     def hasdefault(self) -> bool:
         return self.multivalued or not self.required
-
-    @computed_field
-    def rustrange(self) -> str:
-        tp = self.type_
-        if self.class_range and not self.inlined and not self.inlined_as_list:
-            tp = "String"
-        if self.recursive and tp != "String":
-            tp = f"Box<{tp}>"
-        if self.multivalued:
-            if self.inlined:
-                tp = f"HashMap<String, {tp}>"
-                return tp
-            elif self.inlined_as_list:
-                tp = f"Vec<{tp}>"
-                return tp
-            else:
-                return f"Vec<String>"
-        elif not self.required:
-            return f"Option<{tp}>"
-        else:
-            return tp
         
-
-
 
 class AsKeyValue(RustTemplateModel):
     """
@@ -103,7 +80,10 @@ class AsKeyValue(RustTemplateModel):
 class RustStructOrSubtypeEnum(RustTemplateModel):
     template: ClassVar[str] = "struct_or_subtype_enum.rs.jinja"
     enum_name: str
-    struct_names: List[str]    
+    struct_names: list[str]    
+    as_key_value: bool = False
+    type_designator_field: Optional[str] = None
+    type_designators: dict[str, str]
 
 class RustStruct(RustTemplateModel):
     """

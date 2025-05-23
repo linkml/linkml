@@ -16,6 +16,7 @@ from linkml_runtime.utils.schemaview import OrderedBy, SchemaView
 
 from linkml.generators.common.lifecycle import LifecycleMixin
 from linkml.generators.common.template import ObjectImport
+from linkml.generators.common.type_designators import get_accepted_type_designator_values, get_type_designator_value
 from linkml.generators.rustgen.build import (
     AttributeResult,
     ClassResult,
@@ -25,6 +26,9 @@ from linkml.generators.rustgen.build import (
     SlotResult,
     TypeResult,
 )
+
+
+
 from linkml.generators.rustgen.template import (
     Import,
     Imports,
@@ -137,7 +141,8 @@ def get_inline_mode(s: SlotDefinition, sv: SchemaView) -> SlotInlineMode:
         return SlotInlineMode.MAPPING
     else:
         return SlotInlineMode.IDENTIFIER
-    
+
+
 def can_contain_reference_to_class(s: SlotDefinition, cls: ClassDefinition, sv: SchemaView) -> bool:
     ref_name = cls.name
     seen_classes = set()
@@ -193,7 +198,6 @@ def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, pyo3: boo
 def get_rust_range(cls: ClassDefinition, s: SlotDefinition, sv: SchemaView) -> str:
     boxing_needed = False
     inline_mode = get_inline_mode(s, sv)
-    
     base_type = get_rust_type(s.range, sv, True)
     if inline_mode == SlotInlineMode.IDENTIFIER:
         base_type = "String"
@@ -208,7 +212,7 @@ def get_rust_range(cls: ClassDefinition, s: SlotDefinition, sv: SchemaView) -> s
     
     if inline_mode == SlotInlineMode.MAPPING:
         base_type = f"HashMap<String, {base_type}>"
-    elif inline_mode == SlotInlineMode.LIST:
+    elif inline_mode == SlotInlineMode.LIST or s.multivalued:
         base_type = f"Vec<{base_type}>"
 
     return base_type
@@ -354,10 +358,20 @@ class RustGenerator(Generator, LifecycleMixin):
     
     def gen_struct_or_subtype_enum(self, cls: ClassDefinition) -> Optional[RustStructOrSubtypeEnum]:
         descendants = self.schemaview.class_descendants(cls.name)
+        td = self.schemaview.get_type_designator_slot(cls.name)
+        td_mapping = {}
+        if td is not None:
+            for d in descendants:
+                d_class = self.schemaview.get_class(d)
+                values = get_accepted_type_designator_values(self.schemaview, td, d_class)
+                td_mapping[d] = values
         if len(descendants) > 1:
             return RustStructOrSubtypeEnum(
                 enum_name=get_name(cls) + "OrSubtype",
                 struct_names=[get_name(self.schemaview.get_class(d)) for d in descendants],
+                type_designator_name=get_name(td) if td else None,
+                as_key_value=get_key_or_identifier_slot(cls, self.schemaview) is not None,
+                type_designators = td_mapping,
             )
         return None
 
@@ -368,6 +382,7 @@ class RustGenerator(Generator, LifecycleMixin):
         key_attr = None
         value_attrs = []
         value_args_no_default = []
+
         for attr in induced_attrs:
             if attr.identifier:
                 if key_attr is not None:
@@ -383,7 +398,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 value_attrs.append(attr)
                 if attr.required and not attr.multivalued:
                     value_args_no_default.append(attr)
-        if key_attr is not None and len(value_attrs) >= 1:
+        if key_attr is not None:
             return AsKeyValue(
                     name=get_name(cls),
                     key_property_name=get_name(key_attr),
@@ -410,7 +425,7 @@ class RustGenerator(Generator, LifecycleMixin):
             source=attr,
             attribute=RustProperty(
                 name=get_name(attr),
-                inline_mode=str(inline_mode),
+                inline_mode=inline_mode.value,
                 type_=range,
                 required=bool(attr.required),
                 multivalued=True if attr.multivalued else False,
