@@ -164,6 +164,11 @@ class SerdeUtilsFile(RustTemplateModel):
 
     template: ClassVar[str] = "serde_utils.rs.jinja"
 
+class PolyFile(RustTemplateModel):
+    template: ClassVar[str] = "poly.rs.jinja"
+    imports: Imports = Imports()
+
+
 class RustFile(RustTemplateModel):
     """
     A whole rust file!

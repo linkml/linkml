@@ -35,6 +35,7 @@ from linkml.generators.rustgen.template import (
     RustCargo,
     RustEnum,
     RustFile,
+    PolyFile,
     SerdeUtilsFile,
     RustProperty,
     AsKeyValue,
@@ -555,6 +556,7 @@ class RustGenerator(Generator, LifecycleMixin):
         if mode == "crate":
             extra_files = {}
             extra_files["serde_utils"] = SerdeUtilsFile()
+            extra_files["poly"] = PolyFile(imports=imports)
             cargo = self.generate_cargo(imports)
             pyproject = self.generate_pyproject()
             res = CrateResult(cargo=cargo, file=file, pyproject=pyproject, source=sv.schema, extra_files=extra_files)
