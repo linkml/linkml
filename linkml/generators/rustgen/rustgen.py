@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from typing import Literal, Optional, Union, overload
 
@@ -37,6 +38,7 @@ from linkml.generators.rustgen.template import (
     RustStruct,
     RustTemplateModel,
     RustTypeAlias,
+    RustStructOrSubtypeEnum,
 )
 from linkml.utils.generator import Generator
 
@@ -107,6 +109,52 @@ PYTHON_IMPORTS = Imports(
     ]
 )
 
+class SlotInlineMode(Enum):
+    IDENTIFIER = "identifier" ## not inlined at all, just has the identifier
+    SINGLE_VALUE = "single_value"
+    MAPPING = "mapping"
+    LIST = "list"
+
+
+def get_key_or_identifier_slot(cls: ClassDefinition, sv: SchemaView) -> Optional[SlotDefinition]:
+    induced_slots = sv.class_induced_slots(cls.name)
+    for slot in induced_slots:
+        if slot.identifier or slot.key:
+            return slot
+    return None
+
+def get_inline_mode(s: SlotDefinition, sv: SchemaView) -> SlotInlineMode:
+    class_range = s.range in sv.all_classes()
+    multivalued = s.multivalued
+    if not class_range:
+        return SlotInlineMode.LIST if multivalued else SlotInlineMode.SINGLE_VALUE
+    if s.inlined_as_list:
+        return SlotInlineMode.LIST
+    key_slot = get_key_or_identifier_slot(sv.get_class(s.range), sv)
+    if key_slot is None:
+        return SlotInlineMode.SINGLE_VALUE if not multivalued else SlotInlineMode.LIST
+    elif s.inlined:
+        return SlotInlineMode.MAPPING
+    else:
+        return SlotInlineMode.IDENTIFIER
+    
+def can_contain_reference_to_class(s: SlotDefinition, cls: ClassDefinition, sv: SchemaView) -> bool:
+    ref_name = cls.name
+    seen_classes = set()
+    classes_to_check = [s.range]
+    while len(classes_to_check) > 0:
+        a_class = classes_to_check.pop()
+        seen_classes.add(a_class)
+        if not a_class in sv.all_classes():
+            continue
+        if a_class == ref_name:
+            return True
+        induced_class = sv.induced_class(a_class)
+        for attr in induced_class.attributes.values():
+            if attr.range not in seen_classes:
+                classes_to_check.append(attr.range)
+    return False
+
 
 def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, pyo3: bool = False) -> str:
     """
@@ -128,7 +176,11 @@ def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, pyo3: boo
         if tdef := sv.all_types().get(t, None):
             rsrange = get_rust_type(tdef, sv, pyo3)
         elif t in sv.all_classes():
-            rsrange = get_name(sv.get_class(t))
+            c = sv.get_class(t)
+            rsrange = get_name(c)
+            descendants = sv.class_descendants(t)
+            if len(descendants) > 1:
+                rsrange += "OrSubtype"
 
     # FIXME: Raise here once we have implemented all base types
     if rsrange is None:
@@ -136,6 +188,30 @@ def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, pyo3: boo
     elif rsrange in PYTHON_TO_RUST:
         rsrange = PYTHON_TO_RUST[rsrange]
     return rsrange
+
+
+def get_rust_range(cls: ClassDefinition, s: SlotDefinition, sv: SchemaView) -> str:
+    boxing_needed = False
+    inline_mode = get_inline_mode(s, sv)
+    
+    base_type = get_rust_type(s.range, sv, True)
+    if inline_mode == SlotInlineMode.IDENTIFIER:
+        base_type = "String"
+    else:
+        if can_contain_reference_to_class(s, cls, sv):
+            boxing_needed = True
+    if not s.required and not s.multivalued:
+        base_type = f"Option<{base_type}>"
+
+    if boxing_needed:
+        base_type = f"Box<{base_type}>"
+    
+    if inline_mode == SlotInlineMode.MAPPING:
+        base_type = f"HashMap<String, {base_type}>"
+    elif inline_mode == SlotInlineMode.LIST:
+        base_type = f"Vec<{base_type}>"
+
+    return base_type
 
 
 def protect_name(v: str) -> str:
@@ -201,7 +277,7 @@ class RustGenerator(Generator, LifecycleMixin):
         res = TypeResult(
             source=type_,
             type_=RustTypeAlias(
-                name=get_name(type_), type_=[get_rust_type(type_.base, self.schemaview, self.pyo3)], pyo3=self.pyo3
+                name=get_name(type_), type_=get_rust_type(type_.base, self.schemaview, self.pyo3), pyo3=self.pyo3
             ),
             imports=self.get_imports(type_),
         )
@@ -229,10 +305,7 @@ class RustGenerator(Generator, LifecycleMixin):
         """
         slot = self.before_generate_slot(slot, self.schemaview)
         class_range = slot.range in self.schemaview.all_classes()
-        type_ = [get_rust_type(slot.range, self.schemaview, self.pyo3)]
-        if class_range:
-            descendants = self.schemaview.class_descendants(slot.range)
-            type_ = [get_rust_type(d, self.schemaview, self.pyo3) for d in descendants]
+        type_ = get_rust_type(slot.range, self.schemaview, self.pyo3)
             
         slot = SlotResult(
             source=slot,
@@ -269,6 +342,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 pyo3=self.pyo3,
                 serde=self.serde,
                 as_key_value=self.generate_class_as_key_value(cls),
+                struct_or_subtype_enum=self.gen_struct_or_subtype_enum(cls),
             ),
         )
         # merge imports
@@ -278,6 +352,17 @@ class RustGenerator(Generator, LifecycleMixin):
         res = self.after_generate_class(res, self.schemaview)
         return res
     
+    def gen_struct_or_subtype_enum(self, cls: ClassDefinition) -> Optional[RustStructOrSubtypeEnum]:
+        descendants = self.schemaview.class_descendants(cls.name)
+        if len(descendants) > 1:
+            return RustStructOrSubtypeEnum(
+                enum_name=get_name(cls) + "OrSubtype",
+                struct_names=[get_name(self.schemaview.get_class(d)) for d in descendants],
+            )
+        return None
+
+
+
     def generate_class_as_key_value(self, cls: ClassDefinition) -> Optional[AsKeyValue]:
         induced_attrs = [self.schemaview.induced_slot(sn, cls.name) for sn in self.schemaview.class_slots(cls.name)]
         key_attr = None
@@ -319,56 +404,23 @@ class RustGenerator(Generator, LifecycleMixin):
         """
         attr = self.before_generate_slot(attr, self.schemaview)
         is_class_range = attr.range in self.schemaview.all_classes()
-
-        # -------
-        # check for circular class -> slot -> class -> slot -> class recursion
-        # FIXME: split this up lol
-
-        reference_recursive = False
-        is_key_value = False
-        inlined = False
-        inlined_as_list = False
-        if is_class_range:
-            induced_range = self.schemaview.induced_class(attr.range)
-            has_key_value = (self.generate_class_as_key_value(induced_range) is not None)
-            is_key_value =has_key_value
-            attr_ranges = [attr.range for attr in induced_range.attributes.values()]
-            reference_recursive = cls.name in attr_ranges
-            inlined = (attr.inlined and not attr.inlined_as_list) or False
-            inlined_as_list = attr.inlined_as_list or False
-            if not has_key_value:
-                inlined_as_list = True
-                inlined = False
-
-        is_recursive = attr.range == cls.name or reference_recursive
-
-        type_=[get_rust_type(attr.range, self.schemaview, self.pyo3)]
-        if is_class_range:
-            descendants = self.schemaview.class_descendants(attr.range)
-            type_ = [get_rust_type(d, self.schemaview, self.pyo3) for d in descendants]
-        
-        
-        
-
+        inline_mode = get_inline_mode(attr, self.schemaview)
+        range = get_rust_range(cls, attr, self.schemaview)
         res = AttributeResult(
             source=attr,
             attribute=RustProperty(
                 name=get_name(attr),
-                type_=type_,
+                inline_mode=str(inline_mode),
+                type_=range,
                 required=bool(attr.required),
-                multivalued=attr.multivalued,
-                class_range=is_class_range,
+                multivalued=True if attr.multivalued else False,
+                is_key_value=is_class_range and self.generate_class_as_key_value(self.schemaview.get_class(attr.range)) is not None,
                 pyo3=self.pyo3,
                 serde=self.serde,
-                recursive=is_recursive,
-                inlined=inlined,
-                inlined_as_list=inlined_as_list,
-                is_key_value=is_key_value,
-                has_slot_usage=attr.name in cls.slot_usage.keys(),
-                class_name=get_name(cls),
             ),
             imports=self.get_imports(attr),
         )
+
         res = self.after_generate_slot(res, self.schemaview)
         return res
 
