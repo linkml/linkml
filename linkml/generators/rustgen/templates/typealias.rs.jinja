@@ -8,3 +8,8 @@
 {%- endif -%}
 pub type {{ name }} = {%- if multivalued %} Vec<{{ type_ }}>
 {%- else %} {{ type_ }}{%- endif -%};
+
+
+{% if slot_range_as_union %}
+{{ slot_range_as_union }}
+{% endif %}
