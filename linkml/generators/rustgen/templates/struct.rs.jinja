@@ -1,17 +1,3 @@
-mod {{ name }}_slots {
-{% for property in properties %}
-    {% if property.type_ | length > 1 and property.has_slot_usage %}
-    pub enum {{ property.name }}_range {
-    {% for t in property.type_ %}
-        {{ t }}({{ t }}){% if not loop.last %}, {% endif %}
-
-    {% endfor %}
-    
-    }
-    {% endif %}
-{% endfor %}
-}
-
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[cfg_attr(feature = "pyo3", pyclass(subclass, get_all, set_all))]
