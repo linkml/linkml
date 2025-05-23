@@ -1,7 +1,16 @@
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+{% if type_designator_field %}
+#[serde(tag = "{{ type_designator_field }}")]
+{% else %}
+#[serde(untagged)]
+{% endif %}
 pub enum {{ enum_name }} {
 {%- for t in struct_names -%}
+    {% if type_designator_field  %}
+    {% set tds = type_designators[t] %}
+    #[serde(rename = "{{ tds[0] }}",  {% for t in tds[1:] %} alias="{{ t }}", {% endfor %} )] 
+    {% endif %}
     {{ t }}({{ t }}){% if not loop.last %}, {% endif %}
 {%- endfor -%}
 }
@@ -58,3 +67,38 @@ impl<'py> FromPyObject<'py> for Box<{{ enum_name }}> {
         ))
     }
 }
+
+{% if as_key_value %}
+#[cfg(feature = "serde")]
+impl serde_utils::InlinedPair for {{enum_name}} {
+    type Key       = String;
+    type Value     = serde_value::Value;
+    type Error     = String;
+
+    fn from_pair_mapping(k: Self::Key, v: Self::Value) -> Result<Self, Self::Error> {
+        {% for t in struct_names %}
+        if let Ok(x) = <{{t}} as serde_utils::InlinedPair>::from_pair_mapping(k.clone(), v.clone()) {
+            return Ok({{enum_name}}::{{t}}(x));
+        }
+        {% endfor %}
+        Err("none of the variants matched the mapping form".into())
+    }
+
+    fn from_pair_simple(k: Self::Key, v: Self::Value) -> Result<Self, Self::Error> {
+        {% for t in struct_names %}
+        if let Ok(x) = <{{t}} as serde_utils::InlinedPair>::from_pair_simple(k.clone(), v.clone()) {
+            return Ok({{enum_name}}::{{t}}(x));
+        }
+        {% endfor %}
+        Err("none of the variants support the primitive form".into())
+    }
+
+    fn extract_key(&self) -> &Self::Key {
+        match self {
+        {% for t in struct_names %}
+            {{enum_name}}::{{t}}(inner) => inner.extract_key(),
+        {% endfor %}
+        }
+    }
+}
+{% endif %}

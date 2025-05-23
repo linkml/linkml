@@ -1,8 +1,7 @@
-{%- if multivalued and is_key_value and (type_ | length == 1) and (inlined or inlined_as_list) -%}
-// {{ inlined_as_list }} {{ inlined }}
-{% if inlined_as_list %}
+{%- if is_key_value -%}
+{% if inline_mode == "list" %}
 #[cfg_attr(feature = "serde", serde(deserialize_with = "serde_utils::deserialize_inlined_dict_list{% if recursive %}_box{% endif %}"))]
-{% else %}
+{% elif inline_mode == "mapping" %}
 #[cfg_attr(feature = "serde", serde(deserialize_with = "serde_utils::deserialize_inlined_dict_map{% if recursive %}_box{% endif %}"))]
 {% endif %}
 {%- endif -%}
