@@ -1,4 +1,4 @@
-mod {{ name }}Slots {
+mod {{ name }}_slots {
 {% for property in properties %}
     {% if property.type_ | length > 1 and property.has_slot_usage %}
     pub enum {{ property.name }}_range {
@@ -30,8 +30,8 @@ pub struct {{ name }} {
 #[pymethods]
 impl {{ name }} {
     #[new]
-    pub fn new({% for property in properties %}{{ property.name }}: {{ property.rustrange }}{% if not loop.last %},{% endif %}{% endfor %}) -> Self {
-        {{ name }}{ {% for p in property_names %}{{ p }}{% if not loop.last %},{% endif %}{% endfor %} }
+    pub fn new({% for (n, t) in property_names_and_types %}{{ n }}: {{ t }}{% if not loop.last  %}, {% endif %}{% endfor %}) -> Self {
+        {{ name }}{{ "{" }}{% for (p, _) in property_names_and_types %}{{ p }}{% if not loop.last %}, {% endif %}{% endfor %}{{ "}" }}
     }
 }
 
@@ -65,4 +65,8 @@ impl<'py> FromPyObject<'py> for Box<{{ name }}> {
 
 {% if as_key_value %}
 {{ as_key_value }}
+{% endif %}
+
+{% if struct_or_subtype_enum %}
+{{ struct_or_subtype_enum }}
 {% endif %}

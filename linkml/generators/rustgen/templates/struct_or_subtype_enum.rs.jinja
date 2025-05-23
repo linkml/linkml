@@ -1,0 +1,60 @@
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub enum {{ enum_name }} {
+{%- for t in struct_names -%}
+    {{ t }}({{ t }}){% if not loop.last %}, {% endif %}
+{%- endfor -%}
+}
+
+#[cfg(feature = "pyo3")]
+impl<'py> FromPyObject<'py> for {{ enum_name }} {
+    fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+{% for t in struct_names %}
+        if let Ok(val) = ob.extract::<{{ t }}>() {
+            return Ok({{ enum_name }}::{{ t }}(val));
+        }
+{%- endfor -%}
+        Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+            "invalid {{ enum_name }}",
+        ))
+    }
+}
+
+#[cfg(feature = "pyo3")]
+impl<'py> IntoPyObject<'py> for {{ enum_name }} {
+    type Target = PyAny;
+    type Output = Bound<'py, Self::Target>;
+    type Error = PyErr;
+
+    fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+        match self {
+{% for t in struct_names %}
+            {{ enum_name }}::{{ t }}(val) => val.into_pyobject(py).map(move |b| b.into_any()),
+{% endfor %}
+        }
+    }
+}
+
+
+#[cfg(feature = "pyo3")]
+impl<'py> IntoPyObject<'py> for Box<{{ enum_name }}>
+{
+    type Target = PyAny;
+    type Output = Bound<'py, Self::Target>;
+    type Error = PyErr;
+    fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+        (*self).into_pyobject(py).map(move |x| x.into_any())
+    }
+}
+
+#[cfg(feature = "pyo3")]
+impl<'py> FromPyObject<'py> for Box<{{ enum_name }}> {
+    fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+        if let Ok(val) = ob.extract::<{{ enum_name }}>() {
+            return Ok(Box::new(val));
+        }
+        Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+            "invalid {{ enum_name }}",
+        ))
+    }
+}

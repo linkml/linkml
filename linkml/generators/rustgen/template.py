@@ -52,18 +52,12 @@ class RustProperty(RustTemplateModel):
     """
 
     template: ClassVar[str] = "property.rs.jinja"
-
+    inline_mode: str
     name: str
-    type_: List[str] # might be a union type, so list length > 1
+    type_: str # might be a union type, so list length > 1
     required: bool
-    multivalued: Optional[bool] = False
-    class_range: bool = False
-    recursive: bool = False
-    inlined: bool = False
-    inlined_as_list: bool = False
+    multivalued: bool = False
     is_key_value: bool = False
-    has_slot_usage: bool = False
-    class_name: Optional[str] = None
 
     @computed_field
     def hasdefault(self) -> bool:
@@ -72,13 +66,6 @@ class RustProperty(RustTemplateModel):
     @computed_field
     def rustrange(self) -> str:
         tp = self.type_
-        if len(tp) > 1:
-            if self.has_slot_usage:
-                tp = f"{self.class_name}Slots::{self.name}_range"
-            else:
-                tp = f"{self.name}_range"
-        else:
-            tp = tp[0]
         if self.class_range and not self.inlined and not self.inlined_as_list:
             tp = "String"
         if self.recursive and tp != "String":
@@ -112,7 +99,11 @@ class AsKeyValue(RustTemplateModel):
     value_property_type: str
     can_convert_from_primitive: bool = False
     can_convert_from_empty: bool = False
-    
+
+class RustStructOrSubtypeEnum(RustTemplateModel):
+    template: ClassVar[str] = "struct_or_subtype_enum.rs.jinja"
+    enum_name: str
+    struct_names: List[str]    
 
 class RustStruct(RustTemplateModel):
     """
@@ -129,6 +120,11 @@ class RustStruct(RustTemplateModel):
     properties: list[RustProperty] = Field(default_factory=list)
     unsendable: bool = False
     as_key_value: Optional[AsKeyValue] = None
+    struct_or_subtype_enum: Optional[RustStructOrSubtypeEnum] = None
+
+    @computed_field()
+    def property_names_and_types(self) -> dict[str, str]:
+        return [(p.name, p.type_) for p in self.properties]
 
     @computed_field()
     def property_names(self) -> list[str]:
@@ -154,17 +150,10 @@ class RustTypeAlias(RustTemplateModel):
     template: ClassVar[str] = "typealias.rs.jinja"
 
     name: str
-    type_: List[str]
+    type_: str
     description: Optional[str] = None
     multivalued: Optional[bool] = False
     class_range: bool = False
-
-    @computed_field
-    def range_enum(self) -> str:
-        """
-        The name of the range enum for this type alias
-        """
-        return RangeEnum(name=self.name, type_= self.type_)
 
     @field_validator("attributes", mode="before")
     @classmethod
