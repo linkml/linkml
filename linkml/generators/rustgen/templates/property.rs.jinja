@@ -9,4 +9,4 @@
 {% if hasdefault %}
 #[cfg_attr(feature = "serde", serde(default))]
 {% endif %}
-pub {{ name }}: {{ rustrange }}
+pub {{ name }}: {{ type_ }}
