@@ -77,7 +77,7 @@ impl serde_utils::InlinedPair for {{enum_name}} {
 
     fn from_pair_mapping(k: Self::Key, v: Self::Value) -> Result<Self, Self::Error> {
         {% for t in struct_names %}
-        if let Ok(x) = <{{t}} as serde_utils::InlinedPair>::from_pair_mapping(k.clone(), v.clone()) {
+        if let Ok(x) = {{t}}::from_pair_mapping(k.clone(), v.clone()) {
             return Ok({{enum_name}}::{{t}}(x));
         }
         {% endfor %}
@@ -86,7 +86,7 @@ impl serde_utils::InlinedPair for {{enum_name}} {
 
     fn from_pair_simple(k: Self::Key, v: Self::Value) -> Result<Self, Self::Error> {
         {% for t in struct_names %}
-        if let Ok(x) = <{{t}} as serde_utils::InlinedPair>::from_pair_simple(k.clone(), v.clone()) {
+        if let Ok(x) = {{t}}::from_pair_simple(k.clone(), v.clone()) {
             return Ok({{enum_name}}::{{t}}(x));
         }
         {% endfor %}
