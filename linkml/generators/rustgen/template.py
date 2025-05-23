@@ -85,12 +85,26 @@ class RustStructOrSubtypeEnum(RustTemplateModel):
     type_designator_field: Optional[str] = None
     type_designators: dict[str, str]
 
+class SlotRangeAsUnion(RustTemplateModel):
+    """
+    A union of ranges!
+    """
+    template: ClassVar[str] = "slot_range_as_union.rs.jinja"
+    slot_name: str
+    ranges: list[str]
+
+class RustClassModule(RustTemplateModel):
+    class_name: str
+    class_name_snakecase: str
+    template: ClassVar[str] = "class_module.rs.jinja"
+    slot_ranges: List[SlotRangeAsUnion]
 class RustStruct(RustTemplateModel):
     """
     A struct!
     """
 
     template: ClassVar[str] = "struct.rs.jinja"
+    class_module : Optional[RustClassModule] = None
 
     name: str
     bases: Optional[list[str]] = None
@@ -122,6 +136,7 @@ class RustEnum(RustTemplateModel):
     items: list[str]
 
 
+
 class RustTypeAlias(RustTemplateModel):
     """
     A type alias used to represent slots
@@ -134,6 +149,7 @@ class RustTypeAlias(RustTemplateModel):
     description: Optional[str] = None
     multivalued: Optional[bool] = False
     class_range: bool = False
+    slot_range_as_union: Optional[SlotRangeAsUnion] = None
 
     @field_validator("attributes", mode="before")
     @classmethod

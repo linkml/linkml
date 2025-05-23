@@ -1,3 +1,7 @@
+{% if class_module %}
+{{ class_module }}
+{% endif %}
+
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[cfg_attr(feature = "pyo3", pyclass(subclass, get_all, set_all))]

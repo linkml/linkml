@@ -11,7 +11,7 @@ from linkml_runtime.linkml_model.meta import (
     SlotDefinition,
     TypeDefinition,
 )
-from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.formatutils import camelcase, underscore, uncamelcase
 from linkml_runtime.utils.schemaview import OrderedBy, SchemaView
 
 from linkml.generators.common.lifecycle import LifecycleMixin
@@ -43,6 +43,8 @@ from linkml.generators.rustgen.template import (
     RustTemplateModel,
     RustTypeAlias,
     RustStructOrSubtypeEnum,
+    SlotRangeAsUnion,
+    RustClassModule,
 )
 from linkml.utils.generator import Generator
 
@@ -195,10 +197,16 @@ def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, pyo3: boo
     return rsrange
 
 
-def get_rust_range(cls: ClassDefinition, s: SlotDefinition, sv: SchemaView) -> str:
+def get_rust_range(cls: ClassDefinition, s: SlotDefinition, sv: SchemaView, range: Optional[str] = None) -> str:
+    range = range if range is not None else s.range
     boxing_needed = False
     inline_mode = get_inline_mode(s, sv)
-    base_type = get_rust_type(s.range, sv, True)
+    base_type = get_rust_type(range, sv, True)
+    all_ranges = sv.slot_range_as_union(s)
+    if len(all_ranges) > 1:
+        base_type = underscore(uncamelcase(cls.name)) + "_utl::" + get_name(s) + "_range"
+
+
     if inline_mode == SlotInlineMode.IDENTIFIER:
         base_type = "String"
     else:
@@ -332,6 +340,18 @@ class RustGenerator(Generator, LifecycleMixin):
         cls = self.before_generate_class(cls, self.schemaview)
         induced_attrs = [self.schemaview.induced_slot(sn, cls.name) for sn in self.schemaview.class_slots(cls.name)]
         induced_attrs = self.before_generate_slots(induced_attrs, self.schemaview)
+        slot_range_unions = []
+        for a in induced_attrs:
+            ranges = self.schemaview.slot_range_as_union(a)
+            if len(ranges) > 1:
+                slot_range_unions.append(SlotRangeAsUnion(slot_name=get_name(a), ranges=[get_rust_type(r, self.schemaview, True) for r in ranges]))
+                
+        cls_mod = RustClassModule(
+            class_name=get_name(cls),
+            class_name_snakecase= underscore(uncamelcase(cls.name)),
+            slot_ranges=slot_range_unions,
+        )
+
         attributes = [self.generate_attribute(attr, cls) for attr in induced_attrs]
         attributes = self.after_generate_slots(attributes, self.schemaview)
 
@@ -347,6 +367,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 serde=self.serde,
                 as_key_value=self.generate_class_as_key_value(cls),
                 struct_or_subtype_enum=self.gen_struct_or_subtype_enum(cls),
+                class_module=cls_mod,
             ),
         )
         # merge imports
