@@ -212,8 +212,6 @@ def get_rust_range(cls: ClassDefinition, s: SlotDefinition, sv: SchemaView, rang
     else:
         if can_contain_reference_to_class(s, cls, sv):
             boxing_needed = True
-    if not s.required and not s.multivalued:
-        base_type = f"Option<{base_type}>"
 
     if boxing_needed:
         base_type = f"Box<{base_type}>"
@@ -222,6 +220,9 @@ def get_rust_range(cls: ClassDefinition, s: SlotDefinition, sv: SchemaView, rang
         base_type = f"HashMap<String, {base_type}>"
     elif inline_mode == SlotInlineMode.LIST or s.multivalued:
         base_type = f"Vec<{base_type}>"
+
+    if not s.required and not s.multivalued:
+        base_type = f"Option<{base_type}>"
 
     return base_type
 
