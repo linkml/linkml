@@ -102,7 +102,7 @@ SERDE_IMPORTS = Imports(
             feature_flag="serde",
         ),
         Import(module="serde-value", version="0.7.0", objects=[ObjectImport(name="Value")]),
-        Import(module="serde_yml", version="0.0.12", feature_flag="serde"),
+        Import(module="serde_yml", version="0.0.12", feature_flag="serde", alias="_"),
         Import(module="serde_path_to_error", version = "0.1.17", objects=[], feature_flag="serde"),
 
     ]
