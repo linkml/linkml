@@ -164,9 +164,24 @@ class SerdeUtilsFile(RustTemplateModel):
 
     template: ClassVar[str] = "serde_utils.rs.jinja"
 
+class PolyTraitImpl(RustTemplateModel):
+    template : ClassVar[str] = "poly_trait_impl.rs.jinja"
+    name: str
+    struct_name: str
+
+
+class PolyTrait(RustTemplateModel):
+    template : ClassVar[str] = "poly_trait.rs.jinja"
+    name: str
+    impls: List[PolyTraitImpl]
+
+
 class PolyFile(RustTemplateModel):
     template: ClassVar[str] = "poly.rs.jinja"
     imports: Imports = Imports()
+    traits: List[PolyTrait]
+
+
 
 
 class RustFile(RustTemplateModel):
