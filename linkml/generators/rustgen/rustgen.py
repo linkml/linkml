@@ -36,6 +36,8 @@ from linkml.generators.rustgen.template import (
     RustEnum,
     RustFile,
     PolyFile,
+    PolyTrait,
+    PolyTraitImpl,
     SerdeUtilsFile,
     RustProperty,
     AsKeyValue,
@@ -534,6 +536,8 @@ class RustGenerator(Generator, LifecycleMixin):
         classes = [self.generate_class(c) for c in classes]
         classes = self.after_generate_classes(classes, sv)
 
+        poly_traits = [self.gen_poly_trait(sv.get_class(c)) for c in sv.all_classes(ordered_by=OrderedBy.INHERITANCE)]
+
         imports = DEFAULT_IMPORTS.model_copy()
         imports += PYTHON_IMPORTS
         imports += SERDE_IMPORTS
@@ -556,7 +560,7 @@ class RustGenerator(Generator, LifecycleMixin):
         if mode == "crate":
             extra_files = {}
             extra_files["serde_utils"] = SerdeUtilsFile()
-            extra_files["poly"] = PolyFile(imports=imports)
+            extra_files["poly"] = PolyFile(imports=imports, traits=poly_traits)
             cargo = self.generate_cargo(imports)
             pyproject = self.generate_pyproject()
             res = CrateResult(cargo=cargo, file=file, pyproject=pyproject, source=sv.schema, extra_files=extra_files)
@@ -564,6 +568,14 @@ class RustGenerator(Generator, LifecycleMixin):
         else:
             res = FileResult(file=file, source=sv.schema)
             return res
+
+    def gen_poly_trait(self, cls: ClassDefinition) -> PolyTrait:
+        impls = []
+        class_name = get_name(cls)
+        for sc in self.schemaview.class_descendants(cls.name):
+            impls.append(PolyTraitImpl(name=class_name, struct_name=get_name(self.schemaview.get_class(sc))))
+        return PolyTrait(name=class_name, impls=impls)
+
 
     def serialize(self, output: Optional[Path] = None, mode: Optional[RUST_MODES] = None, force: bool = False) -> str:
         """
