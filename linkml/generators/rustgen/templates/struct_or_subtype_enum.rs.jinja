@@ -15,6 +15,10 @@ pub enum {{ enum_name }} {
 {%- endfor -%}
 }
 
+{% for t in struct_names %}
+impl From<{{ t }}>   for {{ enum_name }} { fn from(x: {{ t }})   -> Self { Self::{{ t }}(x) } }
+{% endfor %}
+
 #[cfg(feature = "pyo3")]
 impl<'py> FromPyObject<'py> for {{ enum_name }} {
     fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
