@@ -148,5 +148,6 @@ jobs:
         run: poetry run python -c 'from importlib.metadata import version; print(version("linkml-runtime"))'
 
       - name: run tests
+        continue-on-error: true
         working-directory: linkml
-        run: poetry run python -m pytest --with-slow
+        run: python .github/workflows/scripts/report_unreleased_linkml_runtime.py poetry run python -m pytest --with-slow
