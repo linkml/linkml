@@ -48,6 +48,7 @@ from linkml.generators.rustgen.template import (
     RustStructOrSubtypeEnum,
     SlotRangeAsUnion,
     RustClassModule,
+    PolyTraitProperty,
 )
 from linkml.utils.generator import Generator
 
@@ -61,6 +62,7 @@ PYTHON_TO_RUST = {
     "int": "isize",
     "float": "f64",
     "str": "String",
+    "String": "String",
     "bool": "bool",
     "Bool": "bool",
     "XSDDate": "NaiveDate",
@@ -166,7 +168,7 @@ def can_contain_reference_to_class(s: SlotDefinition, cls: ClassDefinition, sv: 
     return False
 
 
-def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, pyo3: bool = False) -> str:
+def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, pyo3: bool = False, crate_ref: Optional[str] = None) -> str:
     """
     Get the rust type from a given linkml type
     """
@@ -197,6 +199,8 @@ def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, pyo3: boo
         rsrange = PYTHON_TO_RUST[str]
     elif rsrange in PYTHON_TO_RUST:
         rsrange = PYTHON_TO_RUST[rsrange]
+    elif crate_ref is not None:
+        rsrange = f"{crate_ref}::{rsrange}"
     return rsrange
 
 
@@ -572,9 +576,30 @@ class RustGenerator(Generator, LifecycleMixin):
     def gen_poly_trait(self, cls: ClassDefinition) -> PolyTrait:
         impls = []
         class_name = get_name(cls)
+        attribs = self.schemaview.class_induced_slots(cls.name)
+        superclass_name = cls.is_a
+        superclass = self.schemaview.get_class(superclass_name) if superclass_name is not None else None
+        if superclass is not None:
+            attribs_sc = self.schemaview.class_induced_slots(superclass_name)
+            attribs = [a for a in attribs if a.name not in [sc.name for sc in attribs_sc]]
+        
+        rust_attribs = []
+        for a in attribs:
+            n = get_name(a)
+            tp = get_rust_type(a.range, self.schemaview, self.pyo3, crate_ref="crate")
+            srau = self.schemaview.slot_range_as_union(a)
+            class_range = False
+            has_subclasses = False
+            if len(srau) == 1:
+                if srau[0] in self.schemaview.all_classes():
+                    has_subclasses = len(self.schemaview.class_descendants(srau[0])) > 1
+                    class_range = True
+                    tp = get_name(self.schemaview.get_class(srau[0]))
+            rust_attribs.append(PolyTraitProperty(name=n, type_=tp, class_range=class_range and has_subclasses))
+            
         for sc in self.schemaview.class_descendants(cls.name):
             impls.append(PolyTraitImpl(name=class_name, struct_name=get_name(self.schemaview.get_class(sc))))
-        return PolyTrait(name=class_name, impls=impls)
+        return PolyTrait(name=class_name, impls=impls, attrs=rust_attribs, superclass_name = get_name(superclass) if superclass is not None else None)
 
 
     def serialize(self, output: Optional[Path] = None, mode: Optional[RUST_MODES] = None, force: bool = False) -> str:

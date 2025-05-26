@@ -170,10 +170,19 @@ class PolyTraitImpl(RustTemplateModel):
     struct_name: str
 
 
+class PolyTraitProperty(RustTemplateModel):
+    template: ClassVar[str] = "poly_trait_property.rs.jinja"
+    name: str
+    class_range: bool
+    type_: str
+
 class PolyTrait(RustTemplateModel):
     template : ClassVar[str] = "poly_trait.rs.jinja"
     name: str
+    attrs: List[PolyTraitProperty]
+    superclass_name: Optional[str] = None
     impls: List[PolyTraitImpl]
+
 
 
 class PolyFile(RustTemplateModel):
