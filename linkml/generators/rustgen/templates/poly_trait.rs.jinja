@@ -1,6 +1,7 @@
-pub trait {{ name}} {
+pub trait {{ name}}{% if superclass_name %}: {{superclass_name}}{%endif%}  {
 
-{% for attr in attributes %}
+{% for attr in attrs %}
+{{ attr }}
 {% endfor %}
 
 }

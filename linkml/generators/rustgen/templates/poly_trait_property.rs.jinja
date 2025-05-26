@@ -1,0 +1,7 @@
+    fn {{ name }}(&self) -> &{% if class_range %}impl {% endif %}{{ type_ }};
+    fn {{ name }}_mut(&mut self) -> &mut {% if class_range %}impl {% endif %}{{ type_ }};
+{% if class_range %}
+    fn set_{{ name }}<E>(&mut self, value: E) where E: Into<{{ type_ }}OrSubtype>;
+{% else %}
+    fn set_{{ name }}(&mut self, value: {{ type_ }});
+{% endif %}
