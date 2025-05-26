@@ -173,6 +173,7 @@ def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, pyo3: boo
     Get the rust type from a given linkml type
     """
     rsrange = None
+    no_add_crate = False
 
     if isinstance(t, TypeDefinition):
         rsrange = t.base
@@ -182,11 +183,13 @@ def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, pyo3: boo
 
         elif rsrange is None and t.typeof is not None:
             # A type with no base type,
+            no_add_crate = True
             rsrange = get_rust_type(sv.get_type(t.typeof), sv, pyo3)
 
     elif isinstance(t, str):
         if tdef := sv.all_types().get(t, None):
             rsrange = get_rust_type(tdef, sv, pyo3)
+            no_add_crate = True
         elif t in sv.all_classes():
             c = sv.get_class(t)
             rsrange = get_name(c)
@@ -199,7 +202,7 @@ def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, pyo3: boo
         rsrange = PYTHON_TO_RUST[str]
     elif rsrange in PYTHON_TO_RUST:
         rsrange = PYTHON_TO_RUST[rsrange]
-    elif crate_ref is not None:
+    elif crate_ref is not None and not no_add_crate:
         rsrange = f"{crate_ref}::{rsrange}"
     return rsrange
 
@@ -594,7 +597,8 @@ class RustGenerator(Generator, LifecycleMixin):
                 if srau[0] in self.schemaview.all_classes():
                     has_subclasses = len(self.schemaview.class_descendants(srau[0])) > 1
                     class_range = True
-                    tp = get_name(self.schemaview.get_class(srau[0]))
+                    if has_subclasses:
+                        tp = get_name(self.schemaview.get_class(srau[0]))
             rust_attribs.append(PolyTraitProperty(name=n, type_=tp, class_range=class_range and has_subclasses))
             
         for sc in self.schemaview.class_descendants(cls.name):
