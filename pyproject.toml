@@ -182,6 +182,7 @@ requests-cache = "^1.2.0"
 mock = "^5.1.0"
 testcontainers = "3.7.1"
 jsonpatch = "^1.33"
+pytest-json-report = "^1.5.0"
 
 [tool.poetry.group.docs]
 optional = true
