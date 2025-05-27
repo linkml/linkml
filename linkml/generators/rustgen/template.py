@@ -53,7 +53,7 @@ class RustRange(BaseModel):
         if self.containerType == ContainerType.LIST:
             if not setter:
                 #tp = f"poly_containers::ListView<{tp}>"
-                tp = f"impl AsRef<[{tp}]> + '_"
+                tp = f"impl poly_containers::SeqRef<{tp}>"
             else:
                 tp = f"&Vec<{tp}>"
         elif self.containerType == ContainerType.MAPPING:
@@ -63,10 +63,13 @@ class RustRange(BaseModel):
                 tp = f"&HashMap<String, {tp}>"
         else:
             convert_ref = True
-        if not setter and convert_ref:
+        if not setter and convert_ref and (not self.optional or (self.is_class_range and not self.is_reference)):
             tp = f"&{tp}"
         if self.optional and self.containerType is None:
-            tp = f"Option<{tp}>"
+            if self.is_class_range and not self.is_reference:
+                tp = f"Option<{tp}>"
+            else:
+                tp = f"&Option<{tp}>"
         
         return tp
     
