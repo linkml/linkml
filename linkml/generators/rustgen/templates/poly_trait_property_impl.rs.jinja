@@ -1,3 +1,14 @@
-    fn {{ name}}(&self) -> &{{ type_getter }} {
+    fn {{ name}}(&self) -> {{ type_getter }} {
+{%  if range.box_needed %}
+// {{ ct }}
+{% if ct == 'list' %}
+        return poly_containers::ListView::new(&self.{{ name }});
+{% elif ct == "mapping" %}
+        return poly_containers::MapView::new(&self.{{ name }});
+{% else %}
+        return &self.{{ name }}.as_deref();
+{% endif %}
+{% else %}
         return &self.{{ name }};
+{% endif %}
     }
