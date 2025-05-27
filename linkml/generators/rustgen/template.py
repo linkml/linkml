@@ -130,6 +130,7 @@ class RustProperty(RustTemplateModel):
 
     template: ClassVar[str] = "property.rs.jinja"
     inline_mode: str
+    container_mode: str
     name: str
     type_: RustRange # might be a union type, so list length > 1
     required: bool
