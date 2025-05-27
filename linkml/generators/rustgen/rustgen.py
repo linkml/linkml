@@ -50,6 +50,7 @@ from linkml.generators.rustgen.template import (
     RustClassModule,
     PolyTraitProperty,
     PolyTraitPropertyImpl,
+    PolyContainersFile,
     RustRange, ContainerType,
 )
 from linkml.utils.generator import Generator
@@ -228,6 +229,7 @@ def get_rust_range_info(cls: ClassDefinition, s: SlotDefinition, sv: SchemaView,
         child_ranges=sub_ranges if len(sub_ranges) > 1 else None,
         box_needed=inline_mode != SlotInlineMode.IDENTIFIER and can_contain_reference_to_class(s, cls, sv),
         is_class_range=all_ranges[0] in sv.all_classes() if len(all_ranges) == 1 else False,
+        is_reference=inline_mode == SlotInlineMode.IDENTIFIER,
         has_class_subtypes= len(sv.class_descendants(all_ranges[0])) > 1 if len(all_ranges) == 1 and all_ranges[0] in sv.all_classes() else False,
         type_ = underscore(uncamelcase(cls.name)) + "_utl::" + get_name(s) + "_range" if len(sub_ranges) > 1 else ("String" if inline_mode == SlotInlineMode.IDENTIFIER else get_rust_type(s.range, sv, True, crate_ref))
     )
@@ -564,6 +566,7 @@ class RustGenerator(Generator, LifecycleMixin):
             extra_files = {}
             extra_files["serde_utils"] = SerdeUtilsFile()
             extra_files["poly"] = PolyFile(imports=imports, traits=poly_traits)
+            extra_files["poly_containers"] = PolyContainersFile()
             cargo = self.generate_cargo(imports)
             pyproject = self.generate_pyproject()
             res = CrateResult(cargo=cargo, file=file, pyproject=pyproject, source=sv.schema, extra_files=extra_files)
@@ -590,7 +593,13 @@ class RustGenerator(Generator, LifecycleMixin):
             
         for sc in self.schemaview.class_descendants(cls.name):
             sco = self.schemaview.get_class(sc)
-            ptis = [PolyTraitPropertyImpl(name = a.name, range = a.range, struct_name=get_name(sco)) for a in rust_attribs]
+            induced_slots = self.schemaview.class_induced_slots(cls.name)
+            def find_slot(n: str):
+                for s in induced_slots:
+                    if s.name == n:
+                        return s
+                return None
+            ptis = [PolyTraitPropertyImpl(name = get_name(a), range = get_rust_range_info(sco, find_slot(a.name), self.schemaview), struct_name=get_name(sco)) for a in attribs]
             impls.append(PolyTraitImpl(name=class_name, struct_name=get_name(sco), attrs=ptis))
         return PolyTrait(name=class_name, impls=impls, attrs=rust_attribs, superclass_name = get_name(superclass) if superclass is not None else None)
 

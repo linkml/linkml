@@ -19,6 +19,7 @@ class RustRange(BaseModel):
     containerType: Optional[ContainerType] = None
     has_default: bool = False
     is_class_range: bool = False
+    is_reference: bool = False
     box_needed: bool = False
     has_class_subtypes: bool = False
     child_ranges: Optional[List["RustRange"]] = None
@@ -27,7 +28,8 @@ class RustRange(BaseModel):
     def type_for_field(self):
         tp = self.type_
         if self.has_class_subtypes:
-            tp = f"{tp}OrSubtype"
+            if not self.is_reference:
+                tp = f"{tp}OrSubtype"
         if self.box_needed:
             tp = f"Box<{tp}>"
         if self.containerType == ContainerType.LIST:
@@ -41,21 +43,31 @@ class RustRange(BaseModel):
     def type_for_trait(self, crateref: Optional[str], setter: bool=False):
         tp = self.type_
         if self.is_class_range and not self.has_class_subtypes and not setter:
-            if crateref:
+            if crateref and not self.is_reference:
                 tp = f"{crateref}::{tp}"
-        if self.has_class_subtypes:
-            if setter:
-                tp = f"{tp}OrSubtype"
-            else:
-                tp = f"impl {tp}"
-        if self.is_class_range and setter:
+        if self.has_class_subtypes and not self.is_reference:
+            tp = f"{tp}OrSubtype"
+        if self.is_class_range and setter and not self.is_reference:
             tp = "E"
+        convert_ref = False
         if self.containerType == ContainerType.LIST:
-            tp = f"Vec<{tp}>"
+            if not setter:
+                #tp = f"poly_containers::ListView<{tp}>"
+                tp = f"impl AsRef<[{tp}]> + '_"
+            else:
+                tp = f"&Vec<{tp}>"
         elif self.containerType == ContainerType.MAPPING:
-            tp = f"HashMap<String, {tp}>"
+            if not setter:
+                tp = f"impl poly_containers::MapRef<String,{tp}>"
+            else:
+                tp = f"&HashMap<String, {tp}>"
+        else:
+            convert_ref = True
+        if not setter and convert_ref:
+            tp = f"&{tp}"
         if self.optional and self.containerType is None:
             tp = f"Option<{tp}>"
+        
         return tp
     
     
@@ -65,7 +77,6 @@ class RustRange(BaseModel):
             return f"Into<{tp}>"
         return None
         
-    
     
 
 class RustTemplateModel(TemplateModel):
@@ -88,6 +99,10 @@ class RustTemplateModel(TemplateModel):
     Whether serde serialization/deserialization annotations should be added.
     """
     attributes: dict[str, str] = Field(default_factory=dict)
+
+class PolyContainersFile(RustTemplateModel):
+
+    template: ClassVar[str] = "poly_containers.rs.jinja"
 
 
 class Import(Import_, RustTemplateModel):
@@ -271,6 +286,13 @@ class PolyTraitPropertyImpl(RustTemplateModel):
         Whether this range is a class range
         """
         return self.range.is_class_range
+
+    @computed_field
+    def ct(self) -> str:
+        """
+        The container type for this range, if any
+        """
+        return self.range.containerType.value if self.range.containerType else "None"
     
     @computed_field
     def type_getter(self) -> str:
