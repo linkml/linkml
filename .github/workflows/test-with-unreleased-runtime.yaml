@@ -147,7 +147,27 @@ jobs:
         working-directory: linkml
         run: poetry run python -c 'from importlib.metadata import version; print(version("linkml-runtime"))'
 
-      - name: run tests
+      - name: Run tests and report failures
         continue-on-error: true
+        id: test_with_unreleased_linkml_runtime
+        shell: bash
+        env:
+          PYTHONIOENCODING: utf-8
         working-directory: linkml
-        run: python .github/workflows/scripts/report_unreleased_linkml_runtime.py poetry run python -m pytest --with-slow
+        # "sed -e '$a\' ..." needed to ensure that 'EOF' is preceeded by a newline
+        run: |
+          python .github/workflows/scripts/report_unreleased_linkml_runtime.py poetry run python -m pytest --with-slow
+          cat ./test-results_unreleased-linkml-runtime.md
+          {
+            echo 'test_results_unreleased_linkml_runtime<<EOF'
+            echo '# OS: ${{ matrix.os }} - Python version: ${{ matrix.python-version }}'
+            sed -e '$a\' ./test-results_unreleased-linkml-runtime.md
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Add or update PR comment
+        uses: phulsechinmay/rewritable-pr-comment@v0.3.0
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_IDENTIFIER: test-results_unreleased-linkml-runtime-${{ matrix.os }}-${{ matrix.python-version }}
+          message: ${{ steps.test_with_unreleased_linkml_runtime.outputs.test_results_unreleased_linkml_runtime }}
