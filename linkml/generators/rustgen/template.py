@@ -1,5 +1,6 @@
 from typing import ClassVar, Optional, List
 
+from enum import Enum
 from jinja2 import Environment, PackageLoader
 from linkml_runtime.utils.formatutils import underscore
 from pydantic import Field, computed_field, field_validator, BaseModel
@@ -8,6 +9,64 @@ from linkml.generators.common.template import Import as Import_
 from linkml.generators.common.template import Imports as Imports_
 from linkml.generators.common.template import TemplateModel, _render
 
+
+class ContainerType(Enum):
+    LIST = "list"
+    MAPPING = "mapping"
+
+class RustRange(BaseModel):
+    optional: bool = False
+    containerType: Optional[ContainerType] = None
+    has_default: bool = False
+    is_class_range: bool = False
+    box_needed: bool = False
+    has_class_subtypes: bool = False
+    child_ranges: Optional[List["RustRange"]] = None
+    type_: str
+    
+    def type_for_field(self):
+        tp = self.type_
+        if self.has_class_subtypes:
+            tp = f"{tp}OrSubtype"
+        if self.box_needed:
+            tp = f"Box<{tp}>"
+        if self.containerType == ContainerType.LIST:
+            tp = f"Vec<{tp}>"
+        elif self.containerType == ContainerType.MAPPING:
+            tp = f"HashMap<String, {tp}>"
+        if self.optional and self.containerType is None:
+            tp = f"Option<{tp}>"
+        return tp
+    
+    def type_for_trait(self, crateref: Optional[str], setter: bool=False):
+        tp = self.type_
+        if self.is_class_range and not self.has_class_subtypes and not setter:
+            if crateref:
+                tp = f"{crateref}::{tp}"
+        if self.has_class_subtypes:
+            if setter:
+                tp = f"{tp}OrSubtype"
+            else:
+                tp = f"impl {tp}"
+        if self.is_class_range and setter:
+            tp = "E"
+        if self.containerType == ContainerType.LIST:
+            tp = f"Vec<{tp}>"
+        elif self.containerType == ContainerType.MAPPING:
+            tp = f"HashMap<String, {tp}>"
+        if self.optional and self.containerType is None:
+            tp = f"Option<{tp}>"
+        return tp
+    
+    
+    def type_bound_for_setter(self, crateref: Optional[str]) -> Optional[str]:
+        if self.is_class_range:
+            tp = self.type_
+            return f"Into<{tp}>"
+        return None
+        
+    
+    
 
 class RustTemplateModel(TemplateModel):
     """
@@ -54,10 +113,17 @@ class RustProperty(RustTemplateModel):
     template: ClassVar[str] = "property.rs.jinja"
     inline_mode: str
     name: str
-    type_: str # might be a union type, so list length > 1
+    type_: RustRange # might be a union type, so list length > 1
     required: bool
     multivalued: bool = False
     is_key_value: bool = False
+    
+    @computed_field
+    def type_for_field(self) -> str:
+        """
+        The type of this field, as it would be used in a struct definition
+        """
+        return self.type_.type_for_field()
 
     @computed_field
     def hasdefault(self) -> bool:
@@ -118,7 +184,7 @@ class RustStruct(RustTemplateModel):
 
     @computed_field()
     def property_names_and_types(self) -> dict[str, str]:
-        return [(p.name, p.type_) for p in self.properties]
+        return [(p.name, p.type_.type_for_field()) for p in self.properties]
 
     @computed_field()
     def property_names(self) -> list[str]:
@@ -164,17 +230,70 @@ class SerdeUtilsFile(RustTemplateModel):
 
     template: ClassVar[str] = "serde_utils.rs.jinja"
 
-class PolyTraitImpl(RustTemplateModel):
-    template : ClassVar[str] = "poly_trait_impl.rs.jinja"
-    name: str
-    struct_name: str
 
 
 class PolyTraitProperty(RustTemplateModel):
     template: ClassVar[str] = "poly_trait_property.rs.jinja"
     name: str
-    class_range: bool
-    type_: str
+    range: RustRange
+    
+    @computed_field
+    def class_range(self) -> bool:
+        """
+        Whether this range is a class range
+        """
+        return self.range.is_class_range
+    
+    @computed_field
+    def type_getter(self) -> str:
+        return self.range.type_for_trait(setter=False, crateref="crate")
+    
+    @computed_field
+    def type_setter(self) -> str:
+        return self.range.type_for_trait(setter=True, crateref="crate")
+    
+    @computed_field
+    def type_bound(self) -> Optional[str]:
+        """
+        The type bound for the setter method
+        """
+        return self.range.type_bound_for_setter(crateref="crate")
+
+
+class PolyTraitPropertyImpl(RustTemplateModel):
+    template: ClassVar[str] = "poly_trait_property_impl.rs.jinja"
+    name: str
+    range: RustRange
+    struct_name: str      
+    @computed_field
+    def class_range(self) -> bool:
+        """
+        Whether this range is a class range
+        """
+        return self.range.is_class_range
+    
+    @computed_field
+    def type_getter(self) -> str:
+        return self.range.type_for_trait(setter=False, crateref="crate")
+    
+    @computed_field
+    def type_setter(self) -> str:
+        return self.range.type_for_trait(setter=True, crateref="crate")
+    
+    @computed_field
+    def type_bound(self) -> Optional[str]:
+        """
+        The type bound for the setter method
+        """
+        return self.range.type_bound_for_setter(crateref="crate")
+
+
+class PolyTraitImpl(RustTemplateModel):
+    template : ClassVar[str] = "poly_trait_impl.rs.jinja"
+    name: str
+    struct_name: str
+    attrs: List[PolyTraitPropertyImpl]
+        
 
 class PolyTrait(RustTemplateModel):
     template : ClassVar[str] = "poly_trait.rs.jinja"

@@ -1,7 +1,7 @@
-    fn {{ name }}(&self) -> &{% if class_range %}impl {% endif %}{{ type_ }};
-    fn {{ name }}_mut(&mut self) -> &mut {% if class_range %}impl {% endif %}{{ type_ }};
-{% if class_range %}
-    fn set_{{ name }}<E>(&mut self, value: E) where E: Into<{{ type_ }}OrSubtype>;
+    fn {{ name }}(&self) -> &{{ type_getter }};
+    fn {{ name }}_mut(&mut self) -> &mut {{ type_getter }};
+{% if type_bound %}
+    fn set_{{ name }}<E>(&mut self, value: {{ type_setter }}) where E: {{ type_bound }};
 {% else %}
-    fn set_{{ name }}(&mut self, value: {{ type_ }});
+    fn set_{{ name }}(&mut self, value: {{ type_setter }});
 {% endif %}
