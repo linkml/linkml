@@ -321,12 +321,38 @@ class PolyTraitImpl(RustTemplateModel):
     attrs: List[PolyTraitPropertyImpl]
         
 
+
+class PolyTraitPropertyMatch(RustTemplateModel):
+    template: ClassVar[str] = "poly_trait_property_match.rs.jinja"
+    name: str
+    range: RustRange
+    struct_name: str
+    cases: List[str]
+
+    @computed_field
+    def is_container(self) -> bool:
+        """
+        Whether this property is a container type
+        """
+        return self.range.containerType is not None
+
+    @computed_field
+    def type_getter(self) -> str:
+        return self.range.type_for_trait(setter=False, crateref="crate")
+
+class PolyTraitImplForSubtypeEnum(RustTemplateModel):
+    template: ClassVar[str] = "poly_trait_impl_orsubtype.rs.jinja"
+    enum_name: str
+    name: str
+    attrs: List[PolyTraitPropertyMatch]
+
 class PolyTrait(RustTemplateModel):
     template : ClassVar[str] = "poly_trait.rs.jinja"
     name: str
     attrs: List[PolyTraitProperty]
-    superclass_name: Optional[str] = None
+    superclass_names: List[str]
     impls: List[PolyTraitImpl]
+    subtypes: List[PolyTraitImplForSubtypeEnum]
 
 
 
@@ -334,7 +360,6 @@ class PolyFile(RustTemplateModel):
     template: ClassVar[str] = "poly.rs.jinja"
     imports: Imports = Imports()
     traits: List[PolyTrait]
-
 
 
 

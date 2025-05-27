@@ -50,6 +50,8 @@ from linkml.generators.rustgen.template import (
     RustClassModule,
     PolyTraitProperty,
     PolyTraitPropertyImpl,
+    PolyTraitImplForSubtypeEnum,
+    PolyTraitPropertyMatch,
     PolyContainersFile,
     RustRange, ContainerType,
 )
@@ -603,10 +605,15 @@ class RustGenerator(Generator, LifecycleMixin):
         impls = []
         class_name = get_name(cls)
         attribs = self.schemaview.class_induced_slots(cls.name)
-        superclass_name = cls.is_a
-        superclass = self.schemaview.get_class(superclass_name) if superclass_name is not None else None
-        if superclass is not None:
-            attribs_sc = self.schemaview.class_induced_slots(superclass_name)
+        superclass_names = []
+        if cls.is_a is not None:
+            superclass_names.append(cls.is_a)
+        for m in cls.mixins:
+            superclass_names.append(m)
+        
+        superclasses = [self.schemaview.get_class(sn) for sn in superclass_names if sn is not None]
+        for superclass in superclasses:
+            attribs_sc = self.schemaview.class_induced_slots(superclass.name)
             attribs = [a for a in attribs if a.name not in [sc.name for sc in attribs_sc]]
         
         rust_attribs = []
@@ -615,6 +622,8 @@ class RustGenerator(Generator, LifecycleMixin):
             ri = get_rust_range_info(cls, a, self.schemaview)
             rust_attribs.append(PolyTraitProperty(name=n, range=ri))
             
+            
+        subtype_impls = []
         for sc in self.schemaview.class_descendants(cls.name):
             sco = self.schemaview.get_class(sc)
             induced_slots = self.schemaview.class_induced_slots(cls.name)
@@ -625,7 +634,12 @@ class RustGenerator(Generator, LifecycleMixin):
                 return None
             ptis = [PolyTraitPropertyImpl(name = get_name(a), range = get_rust_range_info(sco, find_slot(a.name), self.schemaview), struct_name=get_name(sco)) for a in attribs]
             impls.append(PolyTraitImpl(name=class_name, struct_name=get_name(sco), attrs=ptis))
-        return PolyTrait(name=class_name, impls=impls, attrs=rust_attribs, superclass_name = get_name(superclass) if superclass is not None else None)
+            has_subtypes = len(self.schemaview.class_descendants(sc)) > 1
+            if has_subtypes:
+                cases = [get_name(self.schemaview.get_class(x)) for x in self.schemaview.class_descendants(sc)]
+                matches = [PolyTraitPropertyMatch(name=get_name(a), range = get_rust_range_info(sco, find_slot(a.name), self.schemaview), cases=cases, struct_name=f"{get_name(sco)}OrSubtype") for a in attribs]
+                subtype_impls.append(PolyTraitImplForSubtypeEnum(name=class_name, enum_name=f"{get_name(sco)}OrSubtype",attrs=matches))
+        return PolyTrait(name=class_name, impls=impls, attrs=rust_attribs, superclass_names = [get_name(scla) for scla in superclasses], subtypes=subtype_impls)
 
 
     def serialize(self, output: Optional[Path] = None, mode: Optional[RUST_MODES] = None, force: bool = False) -> str:
