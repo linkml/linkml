@@ -10,11 +10,19 @@ use std::{
  *  Immutable view
  * ------------------------------------------------------------------- */
 
-pub struct ListView<'a, T> {
+ pub struct ListView<'a, T> {
     inner: &'a [Box<T>],
 }
 
+type ViewIter<'a, T> =
+    std::iter::Map<
+        std::slice::Iter<'a, Box<T>>,
+        fn(&'a Box<T>) -> &'a T,
+    >;
+
+
 impl<'a, T> ListView<'a, T> {
+
     pub fn len(&self) -> usize        { self.inner.len() }
     pub fn is_empty(&self) -> bool    { self.inner.is_empty() }
 
@@ -27,7 +35,7 @@ impl<'a, T> ListView<'a, T> {
     }
 
 
-    pub fn iter(&self) -> impl Iterator<Item = &T> + '_ {
+    pub fn iter(&self) -> ViewIter<'a, T> {
         self.inner.iter().map(debox)
     }
 }
@@ -195,7 +203,7 @@ impl<'a, K: Eq + Hash, V> IntoIterator for &'a MapViewMut<'a, K, V> {
 }
 
 
-pub trait MapRef<K, V> {
+pub trait MapRef<'l, K, V> {
     fn get(&self, k: &K) -> Option<&V>;
     fn len(&self) -> usize;
     fn is_empty(&self) -> bool { self.len() == 0 }
@@ -207,21 +215,15 @@ pub trait MapRef<K, V> {
         V: 'a;
 
     fn iter(&self) -> Self::Iter<'_>;
-}
 
-
-/* ---- impl for the real HashMap ---------------------------------- */
-impl<K: std::hash::Hash + Eq, V> MapRef<K, V> for std::collections::HashMap<K, V> {
-    fn get(&self, k: &K) -> Option<&V> { self.get(k) }
-    fn len(&self) -> usize { self.len() }
-
-    type Iter<'a> = std::collections::hash_map::Iter<'a, K, V> where K: 'a, V: 'a;
-    fn iter(&self) -> Self::Iter<'_> { self.iter() }
+    fn to_any(self) -> MapAny<'l, K, V>
+    where
+        Self: Sized;        // keeps it object-safe enough for static dispatch
 }
 
 
 /* NEW — borrowed map */
-impl<'a, K: Eq + Hash, V> MapRef<K, V> for &'a HashMap<K, V> {
+impl<'a, K: Eq + Hash, V> MapRef<'a, K, V> for &'a HashMap<K, V> {
     fn get(&self, k: &K) -> Option<&V> { (*self).get(k) }
     fn len(&self) -> usize             { (*self).len() }
 
@@ -231,13 +233,19 @@ impl<'a, K: Eq + Hash, V> MapRef<K, V> for &'a HashMap<K, V> {
         K: 'b,
         V: 'b;
 
-    fn iter(&self) -> Self::Iter<'_> {
+    fn iter(&self) -> Self::Iter<'a> {
         (*self).iter()
+    }
+    fn to_any(self) -> MapAny<'a, K, V>
+    where
+        Self: Sized
+     {
+        MapAny::Hash(self)
     }
 }
 
 /* ---- impl for your borrowing MapView ---------------------------- */
-impl<'a, K: std::hash::Hash + Eq, V> MapRef<K, V> for MapView<'a, K, V> {
+impl<'a, K: std::hash::Hash + Eq, V> MapRef<'a, K, V> for MapView<'a, K, V> {
     fn get(&self, k: &K) -> Option<&V> { self.inner.get(k).map(|b| &**b) }
     fn len(&self) -> usize { self.inner.len() }
 
@@ -251,11 +259,17 @@ impl<'a, K: std::hash::Hash + Eq, V> MapRef<K, V> for MapView<'a, K, V> {
         fn as_pair<'b, K, V>((k, v): (&'b K, &'b Box<V>)) -> (&'b K, &'b V) { (k, &**v) }
         self.inner.iter().map(as_pair)
     }
+    fn to_any(self) -> MapAny<'a, K, V>
+    where
+        Self: Sized
+     {
+        MapAny::View(MapView { inner : self.inner })
+    }
 }
 
 
 
-pub trait SeqRef<T> {
+pub trait SeqRef<'l, T> {
     /// Immutable iterator (`for x in seq.iter()`)
     type Iter<'a>: Iterator<Item = &'a T> + ExactSizeIterator
     where
@@ -269,34 +283,157 @@ pub trait SeqRef<T> {
     fn get(&self, i: usize) -> Option<&T>;
 
     /// Borrowing iterator
-    fn iter(&self) -> Self::Iter<'_>;
+    fn iter(&self) -> Self::Iter<'l>;
 
     /// Convenience
     fn is_empty(&self) -> bool { self.len() == 0 }
+
+    fn to_any(self) -> ListAny<'l, T>
+    where
+        Self: Sized;
 }
 
 
-impl<T> SeqRef<T> for Vec<T> {
-    type Iter<'a> = slice::Iter<'a, T> where T: 'a;
-
-    fn len(&self) -> usize              { Vec::len(self) }
-    fn get(&self, i: usize) -> Option<&T> { self.as_slice().get(i) }
-    fn iter(&self) -> Self::Iter<'_>    { self.as_slice().iter() }
-}
-
-impl<T> SeqRef<T> for &Vec<T> {
+impl<'l, T> SeqRef<'l, T> for &'l Vec<T> {
     type Iter<'a> = slice::Iter<'a, T> where T: 'a, Self: 'a;
 
     fn len(&self) -> usize              { Vec::len(self) }
     fn get(&self, i: usize) -> Option<&T> { self.as_slice().get(i) }
-    fn iter(&self) -> Self::Iter<'_>    { self.as_slice().iter() }
+    fn iter(&self) -> Self::Iter<'l>    { self.as_slice().iter() }
+    fn to_any(self) -> ListAny<'l, T>
+    where
+        Self: Sized,
+    {
+        ListAny::Vec(self)
+    }
 }
 
 
-impl<'a, T> SeqRef<T> for ListView<'a, T> {
+impl<'a, T> SeqRef<'a, T> for ListView<'a, T> {
     type Iter<'b> = Iter<'b, T> where Self: 'b, T: 'b;
 
     fn len(&self) -> usize              { self.inner.len() }
     fn get(&self, i: usize) -> Option<&T> { self.inner.get(i).map(debox) }
-    fn iter(&self) -> Self::Iter<'_>    { self.inner.iter().map(debox) }
+    fn iter(&self) -> Self::Iter<'a>    { self.inner.iter().map(debox) }
+    fn to_any(self) -> ListAny<'a, T>
+    where
+        Self: Sized,
+    {
+        ListAny::View(ListView { inner:  self.inner })
+    }
+}
+
+pub enum MapAny<'a, K, V> {
+    Hash(&'a std::collections::HashMap<K, V>),   // &HashMap
+    View(MapView<'a, K, V>),               // MapView (already borrows)
+}
+
+impl<'a, K: Eq + std::hash::Hash, V> MapRef<'a, K, V>
+    for MapAny<'a, K, V>
+{
+    type Iter<'b> =
+        std::boxed::Box<dyn Iterator<Item = (&'b K, &'b V)> + 'b>
+        where Self: 'b, K: 'b, V: 'b;
+
+    fn len(&self) -> usize {
+        match self {
+            Self::Hash(m) => m.len(),
+            Self::View(v) => v.len(),
+        }
+    }
+    fn get(&self, k: &K) -> Option<&V> {
+        match self {
+            Self::Hash(m) => m.get(k),
+            Self::View(v) => v.get(k),
+        }
+    }
+    fn iter(&self) -> Self::Iter<'_> {
+        match self {
+            Self::Hash(m) => Box::new(m.iter()),
+            Self::View(v) => Box::new(v.iter()),
+        }
+    }
+    fn to_any(self) -> MapAny<'a, K, V>
+        where
+            Self: Sized,
+             {
+        match self {
+            Self::Hash(m) => MapAny::Hash(m),
+            Self::View(v) => MapAny::View(v),
+         }
+    }
+}
+
+
+pub enum ListIter<'a, T> {
+    Vec  (std::slice::Iter<'a, T>),
+    View (ViewIter<'a, T>),
+}
+
+impl<'a, T> Iterator for ListIter<'a, T> {
+    type Item = &'a T;
+    fn next(&mut self) -> Option<Self::Item> {
+        match self {
+            Self::Vec(it)  => it.next(),
+            Self::View(it) => it.next(),
+        }
+    }
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        match self {
+            Self::Vec(it)  => it.size_hint(),
+            Self::View(it) => it.size_hint(),
+        }
+    }
+}
+
+impl<'a, T> ExactSizeIterator for ListIter<'a, T> {
+    fn len(&self) -> usize {
+        match self {
+            Self::Vec(it)  => it.len(),
+            Self::View(it) => it.len(),
+        }
+    }
+}
+
+pub enum ListAny<'a, T> {
+    Vec(&'a Vec<T>),                  // &Vec<T>
+    View(ListView<'a, T>),        // ListView (already borrows)
+}
+
+/* ------------------------------------------------------------------ *
+ *  SeqRef implementation
+ * ------------------------------------------------------------------ */
+impl<'a, T> SeqRef<'a, T> for ListAny<'a, T> {
+    type Iter<'x> = ListIter<'x, T> where Self: 'x, T: 'x; 
+    //type Iter<'b> =
+    //    std::boxed::Box<dyn Iterator<Item = &'b T> + ExactSizeIterator + 'b>
+    //    where Self: 'b, T: 'b;
+
+    fn len(&self) -> usize {
+        match self {
+            Self::Vec(v)  => v.len(),
+            Self::View(v) => v.len(),
+        }
+    }
+    fn get(&self, i: usize) -> Option<&T> {
+        match self {
+            Self::Vec(v)  => v.get(i),
+            Self::View(v) => v.get(i),
+        }
+    }
+    fn iter(&self) -> Self::Iter<'a> {
+        match self {
+            Self::Vec(v)  => ListIter::Vec(v.iter()),
+            Self::View(v) => ListIter::View(v.iter()),
+        }
+    }
+    fn to_any(self) -> ListAny<'a, T>
+    where
+        Self: Sized,
+         { 
+            match self {
+                Self::Vec(v)  => ListAny::Vec(v),
+                Self::View(v) => ListAny::View(v),
+            }
+          }
 }
