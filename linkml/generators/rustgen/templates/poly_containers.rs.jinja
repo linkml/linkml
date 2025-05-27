@@ -253,3 +253,50 @@ impl<'a, K: std::hash::Hash + Eq, V> MapRef<K, V> for MapView<'a, K, V> {
     }
 }
 
+
+
+pub trait SeqRef<T> {
+    /// Immutable iterator (`for x in seq.iter()`)
+    type Iter<'a>: Iterator<Item = &'a T> + ExactSizeIterator
+    where
+        Self: 'a,
+        T: 'a;
+
+    /// Number of elements
+    fn len(&self) -> usize;
+
+    /// Immutable indexing
+    fn get(&self, i: usize) -> Option<&T>;
+
+    /// Borrowing iterator
+    fn iter(&self) -> Self::Iter<'_>;
+
+    /// Convenience
+    fn is_empty(&self) -> bool { self.len() == 0 }
+}
+
+
+impl<T> SeqRef<T> for Vec<T> {
+    type Iter<'a> = slice::Iter<'a, T> where T: 'a;
+
+    fn len(&self) -> usize              { Vec::len(self) }
+    fn get(&self, i: usize) -> Option<&T> { self.as_slice().get(i) }
+    fn iter(&self) -> Self::Iter<'_>    { self.as_slice().iter() }
+}
+
+impl<T> SeqRef<T> for &Vec<T> {
+    type Iter<'a> = slice::Iter<'a, T> where T: 'a, Self: 'a;
+
+    fn len(&self) -> usize              { Vec::len(self) }
+    fn get(&self, i: usize) -> Option<&T> { self.as_slice().get(i) }
+    fn iter(&self) -> Self::Iter<'_>    { self.as_slice().iter() }
+}
+
+
+impl<'a, T> SeqRef<T> for ListView<'a, T> {
+    type Iter<'b> = Iter<'b, T> where Self: 'b, T: 'b;
+
+    fn len(&self) -> usize              { self.inner.len() }
+    fn get(&self, i: usize) -> Option<&T> { self.inner.get(i).map(debox) }
+    fn iter(&self) -> Self::Iter<'_>    { self.inner.iter().map(debox) }
+}
