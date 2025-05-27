@@ -123,11 +123,15 @@ PYTHON_IMPORTS = Imports(
     ]
 )
 
-class SlotInlineMode(Enum):
-    IDENTIFIER = "identifier" ## not inlined at all, just has the identifier
+class SlotContainerMode(Enum):
     SINGLE_VALUE = "single_value"
     MAPPING = "mapping"
     LIST = "list"
+
+class SlotInlineMode(Enum):
+    INLINE = "inline"
+    PRIMITIVE = "primitive"
+    REFERENCE = "reference"
 
 
 def get_key_or_identifier_slot(cls: ClassDefinition, sv: SchemaView) -> Optional[SlotDefinition]:
@@ -137,20 +141,38 @@ def get_key_or_identifier_slot(cls: ClassDefinition, sv: SchemaView) -> Optional
             return slot
     return None
 
-def get_inline_mode(s: SlotDefinition, sv: SchemaView) -> SlotInlineMode:
+
+def get_identifier_slot(cls: ClassDefinition, sv: SchemaView) -> Optional[SlotDefinition]:
+    induced_slots = sv.class_induced_slots(cls.name)
+    for slot in induced_slots:
+        if slot.identifier:
+            return slot
+    return None
+
+
+def get_inline_mode(s: SlotDefinition, sv: SchemaView) -> tuple[SlotContainerMode, SlotInlineMode]:
     class_range = s.range in sv.all_classes()
-    multivalued = s.multivalued
     if not class_range:
-        return SlotInlineMode.LIST if multivalued else SlotInlineMode.SINGLE_VALUE
-    if s.inlined_as_list:
-        return SlotInlineMode.LIST
+        return (SlotContainerMode.LIST if s.multivalued else SlotContainerMode.SINGLE_VALUE, SlotInlineMode.PRIMITIVE)
+    if s.multivalued and s.inlined_as_list:
+        return (SlotContainerMode.LIST, SlotInlineMode.INLINE)
     key_slot = get_key_or_identifier_slot(sv.get_class(s.range), sv)
-    if key_slot is None:
-        return SlotInlineMode.SINGLE_VALUE if not multivalued else SlotInlineMode.LIST
-    elif s.inlined:
-        return SlotInlineMode.MAPPING
+    identifier_slot = get_identifier_slot(sv.get_class(s.range), sv)
+    inlined = s.inlined
+    if identifier_slot is None:
+        inlined = True ## can only inline if identifier slot is none
+
+    if not s.multivalued:
+        return (SlotContainerMode.SINGLE_VALUE, SlotInlineMode.INLINE if inlined else SlotInlineMode.REFERENCE)
+    
+    if not inlined:
+        return (SlotContainerMode.LIST, SlotInlineMode.REFERENCE)
+    
+    if key_slot is not None:
+        return (SlotContainerMode.MAPPING, SlotInlineMode.INLINE)
     else:
-        return SlotInlineMode.IDENTIFIER
+        return (SlotContainerMode.LIST, SlotInlineMode.INLINE)
+        
 
 
 def can_contain_reference_to_class(s: SlotDefinition, cls: ClassDefinition, sv: SchemaView) -> bool:
@@ -212,27 +234,28 @@ def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, pyo3: boo
 
 
 def get_rust_range_info(cls: ClassDefinition, s: SlotDefinition, sv: SchemaView, crate_ref: Optional[str] = None) -> RustRange:
-    inline_mode = get_inline_mode(s, sv)
+    (container_mode, inline_mode) = get_inline_mode(s, sv)
     all_ranges = sv.slot_range_as_union(s)
     sub_ranges = [
-        RustRange(type_="String" if inline_mode == SlotInlineMode.IDENTIFIER else get_rust_type(r, sv, True, crate_ref), 
+        RustRange(type_="String" if inline_mode == SlotInlineMode.REFERENCE else get_rust_type(r, sv, True, crate_ref), 
                   is_class_range = r in sv.all_classes(),
                   has_class_subtypes= len(sv.class_descendants(r)) > 1 if r in sv.all_classes() else False,
                   )
         for r in all_ranges
     ]
     
-    return RustRange(
+    res = RustRange(
         optional=not s.required,
         has_default = not (s.required or False) or (s.multivalued or False),
-        containerType= ContainerType.LIST if inline_mode == SlotInlineMode.LIST else ContainerType.MAPPING if inline_mode == SlotInlineMode.MAPPING else None,
+        containerType= ContainerType.LIST if container_mode == SlotContainerMode.LIST else ContainerType.MAPPING if container_mode == SlotContainerMode.MAPPING else None,
         child_ranges=sub_ranges if len(sub_ranges) > 1 else None,
-        box_needed=inline_mode != SlotInlineMode.IDENTIFIER and can_contain_reference_to_class(s, cls, sv),
+        box_needed=inline_mode == SlotInlineMode.INLINE and can_contain_reference_to_class(s, cls, sv),
         is_class_range=all_ranges[0] in sv.all_classes() if len(all_ranges) == 1 else False,
-        is_reference=inline_mode == SlotInlineMode.IDENTIFIER,
+        is_reference=inline_mode == SlotInlineMode.REFERENCE,
         has_class_subtypes= len(sv.class_descendants(all_ranges[0])) > 1 if len(all_ranges) == 1 and all_ranges[0] in sv.all_classes() else False,
-        type_ = underscore(uncamelcase(cls.name)) + "_utl::" + get_name(s) + "_range" if len(sub_ranges) > 1 else ("String" if inline_mode == SlotInlineMode.IDENTIFIER else get_rust_type(s.range, sv, True, crate_ref))
+        type_ = underscore(uncamelcase(cls.name)) + "_utl::" + get_name(s) + "_range" if len(sub_ranges) > 1 else ("String" if inline_mode == SlotInlineMode.REFERENCE else get_rust_type(s.range, sv, True, crate_ref))
     )
+    return res
     
 
 def protect_name(v: str) -> str:
@@ -449,13 +472,14 @@ class RustGenerator(Generator, LifecycleMixin):
         """
         attr = self.before_generate_slot(attr, self.schemaview)
         is_class_range = attr.range in self.schemaview.all_classes()
-        inline_mode = get_inline_mode(attr, self.schemaview)
+        (container_mode, inline_mode) = get_inline_mode(attr, self.schemaview)
         range = get_rust_range_info(cls, attr, self.schemaview)
         res = AttributeResult(
             source=attr,
             attribute=RustProperty(
                 name=get_name(attr),
                 inline_mode=inline_mode.value,
+                container_mode=container_mode.value,
                 type_=range,
                 required=bool(attr.required),
                 multivalued=True if attr.multivalued else False,
