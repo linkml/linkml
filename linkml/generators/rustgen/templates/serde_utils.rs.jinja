@@ -120,3 +120,23 @@ where
         _ => Err(D::Error::custom("expected mapping or sequence")),
     }
 }
+
+pub fn deserialize_primitive_list_or_single_value<'de, D, T>(
+    deserializer:  D
+) -> Result<Vec<T>, D::Error> where D: Deserializer<'de>, T: Deserialize<'de> {
+    let ast: Value = Value::deserialize(deserializer)?;
+    match ast {
+        Value::Seq(seq) => {
+            seq.into_iter()
+                .map(|v| T::deserialize(ValueDeserializer::<D::Error>::new(v)))
+                .collect()
+        }
+        Value::Unit => Ok(vec![]),
+        other => {
+            let single_value: T = Deserialize::deserialize(
+                ValueDeserializer::<D::Error>::new(other)
+            ).map_err(D::Error::custom)?;
+            Ok(vec![single_value])
+        }
+    }
+}
