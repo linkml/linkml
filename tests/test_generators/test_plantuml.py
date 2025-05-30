@@ -170,8 +170,8 @@ def test_generate_svg(tmp_path, kitchen_sink_path, kroki_url):
     groups = svg_dom.getElementsByTagName("g")
     for group in groups:
         id = group.getAttribute("id")
-        if id.startswith("elem_"):
-            class_name = id[len("elem_") :]
+        if id.startswith("entity_"):
+            class_name = id[len("entity_") :]
             classes_list.append(class_name)
         if id.startswith("link_"):
             link_name = id[len("link_") :]
