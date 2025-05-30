@@ -310,157 +310,6 @@ def is_relationship_class(schema_dict, class_name):
     
     return False
 
-def convert_linkml_to_kuzu(schema_yaml):
-    """
-    Convert a LinkML schema in YAML format to KuzuDB tables.
-    """
-    # Parse the schema
-    schema_dict = yaml.safe_load(schema_yaml)
-    
-    # Storage for our generated tables
-    tables = {}
-    
-    # Process all classes in the schema
-    for class_name, class_def in schema_dict.get("classes", {}).items():
-        # Skip abstract classes
-        if class_def.get("abstract", False):
-            continue
-            
-        # Get fields from class attributes
-        fields = []
-        primary_key = None
-        
-        # Determine if this is a node or relationship class
-        is_rel = is_relationship_class(schema_dict, class_name)
-        
-        # Get all slots for this class, including inherited ones
-        slots = class_def.induced_slots
-
-        # Process slots differently based on class type
-        if is_rel:
-            # For relationship classes, we need to extract subject and object
-            # to create the FROM/TO relationship
-            relationships = []
-            subject_range = None
-            object_range = None
-            
-            for slot_name, slot_def in slots.items():
-                # Check the slot_uri to determine the role, regardless of the slot name
-                if slot_def.get("slot_uri") == "rdf:subject":
-                    # Get the range of the subject slot
-                    subject_range = slot_def.get("range")
-                    continue
-                elif slot_def.get("slot_uri") == "rdf:object":
-                    # Get the range of the object slot
-                    object_range = slot_def.get("range")
-                    continue
-                elif slot_def.get("slot_uri") == "rdf:predicate":
-                    # Skip predicate as it's part of the statement structure
-                    continue
-                
-                # For all other slots, create fields
-                slot_range = slot_def.get("range", "string")
-                field_type = LINKML_TO_KUZU_TYPE_MAP.get(slot_range, KuzuFieldTypeEnum.STRING)
-                field = KuzuField(name=slot_name, type=field_type)
-                fields.append(field)
-            
-            # Add relationship if subject and object ranges were found
-            if subject_range and object_range:
-                relationships.append(KuzuRelationship(
-                    from_table=subject_range, 
-                    to_table=object_range
-                ))
-            
-            # Create relationship table
-            tables[class_name] = KuzuRelTable(
-                name=class_name,
-                fields=fields,
-                relationships=relationships
-            )
-        else:
-            # First identify the primary key by looking for identifier: true
-            primary_key = None
-            for slot_name, slot_def in slots.items():
-                if slot_def.get("identifier", False):
-                    primary_key = slot_name
-                    break
-                    
-            # Process all slots as fields
-            for slot_name, slot_def in slots.items():
-                # Skip slots from abstract parent classes that have no range
-                if "range" not in slot_def:
-                    continue
-                
-                # Map the type and create the field
-                slot_range = slot_def.get("range", "string")
-                field_type = LINKML_TO_KUZU_TYPE_MAP.get(slot_range, KuzuFieldTypeEnum.STRING)
-                field = KuzuField(name=slot_name, type=field_type)
-                fields.append(field)
-            
-            # If no primary key was found, use the first field or create an id field
-            if primary_key is None:
-                if fields:
-                    # Use the first field as primary key
-                    primary_key = fields[0].name
-                else:
-                    # Create an id field if no fields exist
-                    primary_key = "id"
-                    id_field = KuzuField(name="id", type=KuzuFieldTypeEnum.STRING)
-                    fields.append(id_field)
-            # If primary key was found but field wasn't created (no range)
-            elif not any(field.name == primary_key for field in fields):
-                # Create a string field for the primary key
-                pk_field = KuzuField(name=primary_key, type=KuzuFieldTypeEnum.STRING)
-                fields.append(pk_field)
-            
-            # Create node table
-            tables[class_name] = KuzuNodeTable(
-                name=class_name,
-                fields=fields,
-                primary_key=primary_key
-            )
-    
-    return list(tables.values())
-
-# Sample tables for documentation and testing
-example_tables = tables
-
-
-"""
-This implementation demonstrates how to convert a LinkML schema
-into KuzuDB models. Key aspects of this approach:
-
-1. Using `class_uri: rdf:Statement` to identify relationship classes
-   - Any class with this URI (or inheriting from such a class) is treated as a relationship
-   - The standard RDF reification model is used to define edges
-
-2. Decoupling field names from their roles using slot_uri
-   - Fields with `slot_uri: rdf:subject` determine the FROM table, regardless of field name
-   - Fields with `slot_uri: rdf:object` determine the TO table, regardless of field name
-   - Fields with `slot_uri: rdf:predicate` represent the relationship type
-   - This allows for more intuitive field naming like "from_node" instead of "subject"
-
-3. Extracting relationship information based on roles
-   - The range of the subject slot becomes the FROM table
-   - The range of the object slot becomes the TO table
-   - Additional properties on the relationship class become fields on the relationship table
-
-4. Node tables are created from classes that don't inherit from rdf:Statement
-
-In a real implementation, additional logic would be needed to:
-
-1. Support all LinkML type mappings and constraints
-2. Handle complex slot definitions and multivalued properties
-3. Support inlined classes and other advanced LinkML features
-4. Properly handle LinkML imports and multiple inheritance
-5. Implement validation of the generated tables against the KuzuDB constraints
-
-This integration allows modelers to define both nodes and edges in LinkML, with all its 
-rich typing, constraints, and tools, then generate the appropriate KuzuDB DDL
-for implementation in a property graph database.
-"""
-
-
 class KuzuGenerator(Generator):
     """
     A generator that creates KuzuDB schema from a LinkML model.
@@ -477,6 +326,8 @@ class KuzuGenerator(Generator):
     generatorversion = "0.1.0"
     valid_formats = ["kuzu", "kuzudb"]
     file_extension = "kuzu"
+    node_classes = None
+    relationship_classes = None
     
     # Python keywords to avoid for identifiers
     PYTHON_KEYWORDS = {
@@ -486,9 +337,20 @@ class KuzuGenerator(Generator):
         'not', 'or', 'pass', 'raise', 'return', 'try', 'while', 'with', 'yield'
     }
     
-    def __init__(self, schema, **kwargs):
-        super(KuzuGenerator, self).__init__(schema, **kwargs)        
-        self.schemaview = SchemaView(self.schema)
+    def __init__(self, 
+                 schema, 
+                 node_classes: Optional[List[str]] = None,
+                 relationship_classes: Optional[List[str]] = None,
+                 subject_slot: Optional[str] = None,
+                 object_slot: Optional[str] = None,
+                 ):
+        
+        # super(KuzuGenerator, self).__init__(schema)        
+        self.schemaview = SchemaView(schema)
+        self.node_classes = list(node_classes)
+        self.relationship_classes = list(relationship_classes)
+        self.subject_slot = subject_slot
+        self.object_slot = object_slot
         
     def _sanitize_identifier(self, name: str) -> str:
         """
@@ -528,6 +390,10 @@ class KuzuGenerator(Generator):
     #TODO: use instantiates slot rather than class_uri to determine relationship / subject / edge    
     def _is_relationship_class(self, class_name: str) -> bool:
         """Determines if a class is a relationship class by checking for rdf:Statement"""
+        # skip the inference if the class has been explicitly marked as a relationship class
+        if class_name in self.relationship_classes:
+            return True        
+
         try:
             cls = self.schemaview.get_class(class_name)
             if cls is None:
@@ -554,144 +420,158 @@ class KuzuGenerator(Generator):
         
         # Process all classes in the schema that aren't abstract
         all_classes = self.schemaview.all_classes()
+
         if isinstance(all_classes, list):
             # If all_classes returns a list, convert it to a dict
             all_classes = {cls.name: cls for cls in all_classes}
-            
-        for class_name, class_def in all_classes.items():
+
+        print("node classes: ", self.node_classes)
+        print("relationship classes: ", self.relationship_classes)
+
+        # reduce all_classes to only node and relationship classes
+        classes_to_generate = {c.name: c for c in all_classes.values() if c.name in self.node_classes or c.name in self.relationship_classes}
+
+        for class_name, class_def in classes_to_generate.items():
+
             if class_def.abstract:
+                print(f"Skipping abstract class: {class_name}")
                 continue
                 
             # Determine if this is a node or relationship class
-            is_rel = self._is_relationship_class(class_name)
-            
-            # Get fields from class attributes
-            fields = []
-            primary_key = None
-            
+            is_rel = self._is_relationship_class(class_name) or class_name in self.relationship_classes
+                        
             # Process slots differently based on class type
             if is_rel:
-                # For relationship classes, create a relationship table
-                relationships = []
-                subject_range = None
-                object_range = None
-                
-                # Process each slot in the class
-                try:
-                    slots = self.schemaview.class_induced_slots(class_name)
-                    if isinstance(slots, list):
-                        # Convert list to dict for consistent processing
-                        slots = {slot.name: slot for slot in slots}
-                except Exception:
-                    # If we can't get slots, use an empty dict
-                    slots = {}
-                    
-                for slot_name, slot_def in slots.items():
-                    # Check the slot_uri to determine the role
-                    try:
-                        if slot_def.slot_uri == "rdf:subject":
-                            # Get the range of the subject slot
-                            subject_range = slot_def.range
-                            continue
-                        elif slot_def.slot_uri == "rdf:object":
-                            # Get the range of the object slot
-                            object_range = slot_def.range
-                            continue
-                        elif slot_def.slot_uri == "rdf:predicate":
-                            # Skip predicate slot
-                            continue
-                    except AttributeError:
-                        # If slot doesn't have slot_uri, just treat as a regular field
-                        pass
-                    
-                    # For all other slots, create fields
-                    field_type = self._get_kuzu_type(slot_def.range)
-                    # Ensure field name is a valid identifier
-                    sanitized_slot_name = self._sanitize_identifier(slot_name)
-                    field = KuzuField(name=sanitized_slot_name, type=field_type)
-                    fields.append(field)
-                
-                # Add relationship if subject and object ranges were found
-                if subject_range and object_range:
-                    # Ensure from_table and to_table are valid identifiers
-                    sanitized_from_table = self._sanitize_identifier(subject_range)
-                    sanitized_to_table = self._sanitize_identifier(object_range)
-                    relationships.append(KuzuRelationship(
-                        from_table=sanitized_from_table, 
-                        to_table=sanitized_to_table
-                    ))
-                
-                # Create relationship table
-                if relationships:
-                    # Ensure table name is a valid identifier
-                    sanitized_class_name = self._sanitize_identifier(class_name)
-                    tables.append(KuzuRelTable(
-                        name=sanitized_class_name,
-                        fields=fields,
-                        relationships=relationships
-                    ))
+                tables.append(self._generate_relationship_table(class_def))
             else:
-                # For node classes, create a node table
-                # Get slots with error handling
-                try:
-                    slots = self.schemaview.class_induced_slots(class_name)
-                    if isinstance(slots, list):
-                        # Convert list to dict for consistent processing
-                        slots = {slot.name: slot for slot in slots}
-                except Exception:
-                    # If we can't get slots, use an empty dict
-                    slots = {}
-                
-                # First identify the primary key
-                for slot_name, slot_def in slots.items():
-                    try:
-                        if slot_def.identifier:
-                            primary_key = slot_name
-                            break
-                    except AttributeError:
-                        continue
-                        
-                # Process all slots as fields
-                for slot_name, slot_def in slots.items():
-                    try:
-                        field_type = self._get_kuzu_type(slot_def.range)
-                        # Ensure field name is a valid identifier
-                        sanitized_slot_name = self._sanitize_identifier(slot_name)
-                        field = KuzuField(name=sanitized_slot_name, type=field_type)
-                        fields.append(field)
-                    except (AttributeError, TypeError):
-                        # Use string as default type if range is missing
-                        # Ensure field name is a valid identifier
-                        sanitized_slot_name = self._sanitize_identifier(slot_name)
-                        field = KuzuField(name=sanitized_slot_name, type=KuzuFieldTypeEnum.STRING)
-                        fields.append(field)
-                
-                # If no primary key found, use first field or create id field
-                if primary_key is None:
-                    if fields:
-                        primary_key = fields[0].name
-                    else:
-                        primary_key = "id"
-                        id_field = KuzuField(name="id", type=KuzuFieldTypeEnum.STRING)
-                        fields.append(id_field)
-                # If primary key was found but field wasn't created
-                elif not any(field.name == self._sanitize_identifier(primary_key) for field in fields):
-                    sanitized_pk = self._sanitize_identifier(primary_key)
-                    pk_field = KuzuField(name=sanitized_pk, type=KuzuFieldTypeEnum.STRING)
-                    fields.append(pk_field)
-                
-                # Create node table
-                # Ensure table name and primary key are valid identifiers
-                sanitized_class_name = self._sanitize_identifier(class_name)
-                sanitized_primary_key = self._sanitize_identifier(primary_key)
-                tables.append(KuzuNodeTable(
-                    name=sanitized_class_name,
-                    fields=fields,
-                    primary_key=sanitized_primary_key
-                ))
+                tables.append(self._generate_node_table(class_def))
         
         return tables
     
+    def _generate_relationship_table(self, class_definition) -> KuzuRelTable:
+        class_name = class_definition.name
+        relationships = []
+        fields = []
+        subject_range = None
+        object_range = None
+        
+        # Process each slot in the class
+        try:
+            slots = self.schemaview.class_induced_slots(class_name)
+            if isinstance(slots, list):
+                # Convert list to dict for consistent processing
+                slots = {slot.name: slot for slot in slots}
+        except Exception:
+            # If we can't get slots, use an empty dict
+            slots = {}
+            
+        for slot_name, slot_def in slots.items():
+            # Check the slot_uri to determine the role
+            try:
+                if slot_def.slot_uri == "rdf:subject" or slot_name == self.subject_slot:
+                    # Get the range of the subject slot
+                    subject_range = slot_def.range
+                    continue
+                elif slot_def.slot_uri == "rdf:object" or slot_name == self.object_slot:
+                    # Get the range of the object slot
+                    object_range = slot_def.range
+                    continue
+                elif slot_def.slot_uri == "rdf:predicate":
+                    # Skip predicate slot
+                    continue
+            except AttributeError:
+                # If slot doesn't have slot_uri, just treat as a regular field
+                pass
+            
+            # For all other slots, create fields
+            field_type = self._get_kuzu_type(slot_def.range)
+            # Ensure field name is a valid identifier
+            sanitized_slot_name = self._sanitize_identifier(slot_name)
+            field = KuzuField(name=sanitized_slot_name, type=field_type)
+            fields.append(field)
+        
+        # Add relationship if subject and object ranges were found
+        if subject_range and object_range:
+            # Ensure from_table and to_table are valid identifiers
+            sanitized_from_table = self._sanitize_identifier(subject_range)
+            sanitized_to_table = self._sanitize_identifier(object_range)
+            relationships.append(KuzuRelationship(
+                from_table=sanitized_from_table, 
+                to_table=sanitized_to_table
+            ))
+        sanitized_class_name = self._sanitize_identifier(class_name)
+        return KuzuRelTable(
+                name=sanitized_class_name,
+                fields=fields,
+                relationships=relationships
+            )
+    
+
+    def _generate_node_table(self, class_definition) -> KuzuNodeTable:        
+        class_name = class_definition.name
+        fields = []
+        # For node classes, create a node table
+        # Get slots with error handling
+        try:
+            slots = self.schemaview.class_induced_slots(class_name)
+            if isinstance(slots, list):
+                # Convert list to dict for consistent processing
+                slots = {slot.name: slot for slot in slots}
+        except Exception:
+            # If we can't get slots, use an empty dict
+            slots = {}
+        
+        # First identify the primary key
+        for slot_name, slot_def in slots.items():
+            print("slot name: ", slot_name)
+            try:
+                if slot_def.identifier:
+                    primary_key = slot_name
+                    break
+            except AttributeError:
+                continue
+                
+        # Process all slots as fields
+        for slot_name, slot_def in slots.items():
+            try:
+                field_type = self._get_kuzu_type(slot_def.range)
+                # Ensure field name is a valid identifier
+                sanitized_slot_name = self._sanitize_identifier(slot_name)
+                print("slot name: ", slot_name)
+                print("sanitized slot name: ", sanitized_slot_name)
+                field = KuzuField(name=sanitized_slot_name, type=field_type)
+                fields.append(field)
+            except (AttributeError, TypeError):
+                # Use string as default type if range is missing
+                # Ensure field name is a valid identifier
+                sanitized_slot_name = self._sanitize_identifier(slot_name)
+                field = KuzuField(name=sanitized_slot_name, type=KuzuFieldTypeEnum.STRING)
+                fields.append(field)
+        
+        # If no primary key found, use first field or create id field
+        if primary_key is None:
+            if fields:
+                primary_key = fields[0].name
+            else:
+                primary_key = "id"
+                id_field = KuzuField(name="id", type=KuzuFieldTypeEnum.STRING)
+                fields.append(id_field)
+        # If primary key was found but field wasn't created
+        elif not any(field.name == self._sanitize_identifier(primary_key) for field in fields):
+            sanitized_pk = self._sanitize_identifier(primary_key)
+            pk_field = KuzuField(name=sanitized_pk, type=KuzuFieldTypeEnum.STRING)
+            fields.append(pk_field)
+        
+        # Create node table
+        # Ensure table name and primary key are valid identifiers
+        sanitized_class_name = self._sanitize_identifier(class_name)
+        sanitized_primary_key = self._sanitize_identifier(primary_key)
+        return KuzuNodeTable(
+            name=sanitized_class_name,
+            fields=fields,
+            primary_key=sanitized_primary_key
+        )
+
     def _get_kuzu_type(self, range_name: str) -> KuzuFieldTypeEnum:
         """Map LinkML types to KuzuDB types"""
         # Handle None case
@@ -726,16 +606,41 @@ class KuzuGenerator(Generator):
     
     def serialize(self) -> str:
         """Generate KuzuDB DDL statements"""
+        
         tables = self._convert_to_kuzu_tables()
+        print("Generating KuzuDB DDL statements...")
+        print(tables)
         return template.render(tables=tables)
 
 
-@shared_arguments(KuzuGenerator)
+
 @click.command(name="kuzu")
+@click.argument("yamlfile", type=click.Path(exists=True, dir_okay=False, readable=True))
+@click.option(
+    "--node-classes", "-n", multiple=True, help="Node classes to include"
+)
+@click.option(
+    "--relationship-classes", "-r", multiple=True, help="Relationship classes to include"
+)
+@click.option(
+    "--subject-slot", "-s", help="Slot to use as subject in relationships"
+)
+@click.option(
+    "--object-slot", "-o", help="Slot to use as object in relationships"
+)
 @click.version_option(__version__, "-V", "--version")
-def cli(yamlfile, **args):
+def cli(yamlfile, 
+        node_classes: Optional[List[str]] = None, 
+        relationship_classes: Optional[List[str]] = None,
+        subject_slot: Optional[str] = None,
+        object_slot: Optional[str] = None,
+        ):
     """Generate KuzuDB DDL statements to create tables for a LinkML model"""
-    gen = KuzuGenerator(yamlfile, **args)
+    gen = KuzuGenerator(yamlfile, 
+                        node_classes=node_classes, 
+                        relationship_classes=relationship_classes,
+                        subject_slot=subject_slot,
+                        object_slot=object_slot)    
     print(gen.serialize())
 
 
