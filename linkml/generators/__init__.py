@@ -7,6 +7,7 @@ from linkml.generators.javagen import JavaGenerator
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
+from linkml.generators.kuzugen import KuzuGenerator, cli as kuzugen_cli
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.panderagen import PanderaGenerator
 from linkml.generators.pydanticgen import PydanticGenerator
@@ -27,6 +28,7 @@ __all__ = [
     "jsonldcontextgen",
     "jsonldgen",
     "jsonschemagen",
+    "kuzugen",
     "markdowngen",
     "namespacegen",
     "owlgen",
@@ -42,6 +44,7 @@ __all__ = [
     "yamlgen",
     "yumlgen",
     "OwlSchemaGenerator",
+    "KuzuGenerator",
     "PydanticGenerator",
     "PanderaGenerator",
     "PythonGenerator",
