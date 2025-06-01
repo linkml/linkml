@@ -81,7 +81,7 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction --all-extras
       - name: Setup Graphviz
-        uses: ts-graphviz/setup-graphviz@v1
+        uses: ts-graphviz/setup-graphviz@v2
       - name: Generate coverage results
         run: |
           poetry run coverage run -m pytest --with-slow --with-network
