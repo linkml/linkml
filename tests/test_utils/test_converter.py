@@ -18,7 +18,35 @@ def test_help(cli_runner):
     assert "INPUT" in out
 
 
-def test_infer_and_convert(input_path, cli_runner, tmp_path):
+def test_infer(input_path, cli_runner, tmp_path):
+    """
+    Tests using the --infer option to add missing values
+    """
+    schema = input_path("schema_with_inference.yaml")
+    data_in = input_path("data_example.yaml")
+    json_out = tmp_path / "data_example.out.json"
+    result = cli_runner.invoke(cli, ["--infer", "-s", schema, data_in, "-o", json_out])
+    print(f"infer to JSON: {result.output}")
+    assert result.exit_code == 0
+    with open(json_out) as file:
+        obj = json.load(file)
+        persons = obj["persons"]
+        p1 = persons["P:1"]
+        p2 = persons["P:2"]
+        assert p1["is_juvenile"]
+        assert "is_juvenile" not in p2
+        assert p1["age_in_years"] == 10
+        assert p1["age_in_months"] == 120
+        assert p1["age_category"] == "juvenile"
+        assert p1["full_name"] == "first1 last1"
+        assert p2["age_in_years"] == 20
+        assert p2["age_in_months"] == 240
+        assert p2["age_category"] == "adult"
+        assert p2["full_name"] == "first2 last2"
+
+
+@pytest.mark.xfail(reason="Bug 2723: missing intermediate checks")
+def test_convert(input_path, cli_runner, tmp_path):
     """
     Tests using the --infer option to add missing values, and also roundtripping
     through yaml->json->yaml->rdf->json
@@ -28,10 +56,18 @@ def test_infer_and_convert(input_path, cli_runner, tmp_path):
     json_out = tmp_path / "data_example.out.json"
     yaml_out = tmp_path / "data_example.out.yaml"
     rdf_out = tmp_path / "data_example.out.ttl"
-    cli_runner.invoke(cli, ["--infer", "-s", schema, data_in, "-o", json_out])
-    cli_runner.invoke(cli, ["-s", schema, json_out, "-t", "yaml", "-o", yaml_out])
-    cli_runner.invoke(cli, ["-s", schema, yaml_out, "-t", "rdf", "-o", rdf_out])
-    cli_runner.invoke(cli, ["-s", schema, rdf_out, "-t", "json", "-o", json_out])
+    result = cli_runner.invoke(cli, ["--infer", "-s", schema, data_in, "-o", json_out])
+    print(f"infer to JSON: {result.output}")
+    assert result.exit_code == 0
+    result = cli_runner.invoke(cli, ["-s", schema, json_out, "-t", "yaml", "-o", yaml_out])
+    print(f"from JSON to YAML: {result.output}")
+    assert result.exit_code == 0
+    result = cli_runner.invoke(cli, ["-s", schema, yaml_out, "-t", "rdf", "-o", rdf_out])
+    print(f"from YAML to RDF: {result.output}")
+    assert result.exit_code == 0
+    result = cli_runner.invoke(cli, ["-s", schema, rdf_out, "-t", "json", "-o", json_out])
+    print(f"from RDF to JSON: {result.output}")
+    assert result.exit_code == 0
     with open(json_out) as file:
         obj = json.load(file)
         persons = obj["persons"]
