@@ -1,7 +1,6 @@
 
 # Class: NamedThing
 
-
 A generic grouping for any identifiable entity
 
 URI: [personinfo:NamedThing](https://w3id.org/linkml/examples/personinfo/NamedThing)
@@ -37,4 +36,3 @@ URI: [personinfo:NamedThing](https://w3id.org/linkml/examples/personinfo/NamedTh
 |  |  |  |
 | --- | --- | --- |
 | **Close Mappings:** | | schema:Thing |
-

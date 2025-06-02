@@ -61,4 +61,3 @@ slots:
   parent:
     range: Thing
     multivalued: true
-

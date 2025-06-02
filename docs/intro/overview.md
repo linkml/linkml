@@ -10,8 +10,8 @@ LinkML is designed to work in harmony with other frameworks, including
 both semantic RDF-based frameworks, as well as frameworks that are more familiar
 to developers such as JSON.
 
-- Quick links: [ 
-    [Schemas](../schemas/index) | 
+- Quick links: [
+    [Schemas](../schemas/index) |
     [Spec](../specifications/linkml-spec.md) |
     [Slides](https://www.slideshare.net/cmungall/linkml-intro-july-2022pptx) |
     [Notebooks](https://github.com/linkml/linkml/blob/main/notebooks) |
@@ -20,9 +20,9 @@ to developers such as JSON.
     [FAQ: Why LinkML?](../faq/why-linkml.md) |
     [GitHub](https://github.com/linkml/linkml/)
   ]
-- Example schemas: [ 
+- Example schemas: [
   [PersonInfo](https://github.com/linkml/linkml/blob/main/examples/PersonSchema/personinfo.yaml) |
-  [Biolink](https://github.com/biolink/biolink-model/blob/master/biolink-model.yaml) | 
+  [Biolink](https://github.com/biolink/biolink-model/blob/master/biolink-model.yaml) |
   [LinkML](https://github.com/linkml/linkml-model/blob/main/linkml_model/model/schema/meta.yaml) |
   [SSSOM](https://github.com/mapping-commons/sssom/blob/master/src/sssom_schema/schema/sssom_schema.yaml)
   ]
@@ -66,14 +66,14 @@ LinkML offers many features of use to data modelers, while retaining a simple co
 - Classes can be arranged in [inheritance hierarchies](../schemas/inheritance.md)
 - Powerful yet easy to use [Semantic enumerations](../schemas/enums.md) that can optionally be backed by ontologies
 - Create [data models](/schemas/index) that are independent of a database technology
-- Develop machine-actionable reporting standards and data dictionaries 
+- Develop machine-actionable reporting standards and data dictionaries
 - Include rich annotations and [mappings](../schemas/uris-and-mappings.md) as part of a model
 - "Linked Data" ready
    - All schemas have a corresponding JSON-LD context
    - [Compatibility with RDF tooling](../data/rdf), without committing to an RDF stack
    - Compilation to [SHACL](../generators/shacl) and [ShEx](../generators/shex)
    - Export of data models to [OWL Schemas](../generators/owl)
-  
+
 ## A bridge between frameworks
 
 Many frameworks lock you in to a particular view of the world or
@@ -141,4 +141,3 @@ The LinkML schema language is itself [defined in LinkML](https://github.com/link
 ## More examples
 
 See the [examples](../examples) pages
-

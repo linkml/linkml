@@ -19,5 +19,3 @@ To see examples of generator outputs, see
 `PersonSchema <https://github.com/linkml/linkml/tree/main/examples/PersonSchema>`_
 
 See `generators docs <../generators>`_ for a full list of generators
-
-

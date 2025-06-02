@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:founding_date](https://w3id.org/linkml/examples/personinfo/founding_date)
 
 

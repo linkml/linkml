@@ -42,4 +42,3 @@ classes:
       href:
         description: A reference to the "official" description of the entity in the context of the defining code system
         range: RenderingURI
-

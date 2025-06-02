@@ -2,7 +2,7 @@
 
 The Expression Language is a domain-specific language (DSL) that allows for the evaluation of expressions with a syntax similar to Python. It provides a restricted subset of Python's features to ensure safe and controlled execution.
 
-See the [inference documentation](../developers/inference) for details on how to use these at run time. 
+See the [inference documentation](../developers/inference) for details on how to use these at run time.
 
 ## Syntax
 

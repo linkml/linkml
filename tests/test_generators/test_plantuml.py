@@ -22,12 +22,12 @@ MARKDOWN_FOOTER = """
 
 PERSON = """
 class "Person" [[{A person, living or dead}]] {
-    {field} id : string  
-    {field} name : string  
-    {field} age_in_years : integer  
-    {field} species_name : string  
-    {field} stomach_count : integer  
-    {field} is_living : LifeStatusEnum  
+    {field} id : string
+    {field} name : string
+    {field} age_in_years : integer
+    {field} species_name : string
+    {field} stomach_count : integer
+    {field} is_living : LifeStatusEnum
     {field} aliases : string  [0..*]
 }
 """

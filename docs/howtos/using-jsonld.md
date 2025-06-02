@@ -245,10 +245,10 @@ This means that your data modelers can maintain a single schema, and then derive
 
 - JSON-LD contexts
 - JSON-Schema
-- Anything else (e.g. SHACL shape schema) 
+- Anything else (e.g. SHACL shape schema)
 
 For example, a minimal schema might be:
-  
+
 ```yaml
 prefixes:
   schema: http://schema.org/

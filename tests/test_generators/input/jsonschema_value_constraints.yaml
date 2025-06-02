@@ -134,7 +134,7 @@ data_cases:
   - data:
       string_none_of: purple
     error_message: should not be valid under
-  - data: 
+  - data:
       string_none_of: green
     error_message: should not be valid under
   - data:
