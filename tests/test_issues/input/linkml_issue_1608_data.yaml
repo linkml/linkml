@@ -7,4 +7,3 @@ vehicles:
     max_passengers: 5
     type: test_pref:Airplane
     wingspan: 100.0
-
