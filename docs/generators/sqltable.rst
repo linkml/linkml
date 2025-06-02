@@ -14,7 +14,7 @@ Overview
 
 
 
-        
+
 Docs
 ----
 
@@ -30,6 +30,6 @@ Command Line
 Code
 ^^^^
 
-                   
+
 .. autoclass:: SQLTableGenerator
     :members: serialize

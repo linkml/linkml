@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:founding_location](https://w3id.org/linkml/examples/personinfo/founding_location)
 
 

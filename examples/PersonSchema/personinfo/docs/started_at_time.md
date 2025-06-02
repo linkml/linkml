@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:started_at_time](https://w3id.org/linkml/examples/personinfo/started_at_time)
 
 
@@ -30,4 +29,3 @@ None &#8594;  <sub>0..1</sub> [Date](types/Date.md)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | prov:startedAtTime |
-

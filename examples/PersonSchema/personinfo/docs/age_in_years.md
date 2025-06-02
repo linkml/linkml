@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:age_in_years](https://w3id.org/linkml/examples/personinfo/age_in_years)
 
 
@@ -16,7 +15,6 @@ None &#8594;  <sub>0..1</sub> [Integer](types/Integer.md)
 
 ## Children
 
+ *  [Person➞age_in_years](Person_age_in_years.md)
 
 ## Used by
-
- * [Person](Person.md)

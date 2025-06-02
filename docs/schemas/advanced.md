@@ -15,7 +15,7 @@ Note that even if you don't explicitly declare a range, the [default_range](http
 
 In some cases you want to make slots more flexible, for example to allow for arbitrary objects.
 
-The `linkml:Any` states that the range of a slot can be any object. This isn't a builtin type, 
+The `linkml:Any` states that the range of a slot can be any object. This isn't a builtin type,
 but any class in the schema can take on this roll be being declared as `linkml:Any` using `class_uri`:
 
 ```yaml
@@ -37,16 +37,16 @@ classes:
 This means all the following are valid:
 
 ```yaml
-name: person with string metadata 
+name: person with string metadata
 metadata: a string
-```  
+```
 
 ```yaml
 name: person with an object as metadata
 metadata:
   name: a string
   age: an integer
-```  
+```
 
 ```yaml
 name: person with an integer
@@ -97,7 +97,7 @@ Note that the range of `vital_status` is declared as `Any`, which is further con
 
 Currently, it is important to always have a range declaration (even if it is `Any`), because LinkML constraint semantics are
 monotonic (i.e. new constraints can be specified but existing ones cannot be overridden - see [slots](slots.md) for more on this).
-If this range declaration were not explicitly stated, then the `default_range` of string would be applied. 
+If this range declaration were not explicitly stated, then the `default_range` of string would be applied.
 
 In future, LinkML may allow limited forms of non-monotonicity around default ranges, see:
 

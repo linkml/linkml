@@ -662,7 +662,7 @@ classes:
           description: "Another person known by this person"
           type: Person
   ```
-  
+
 #### Serialization Formats and Databases
 - **OWL**
 - **RDFS**

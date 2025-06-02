@@ -20,4 +20,3 @@ An example schema/model to demonstrate use of LinkML. For more examples, see the
 generated via `gen-yuml`:
 
 ![schema](personinfo.png)
- 

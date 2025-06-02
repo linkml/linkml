@@ -24,7 +24,7 @@ Given a definition of a Person class:
 
 .. code-block:: yaml
 
-     
+
     Person:
       is_a: NamedThing
       description: >-
@@ -49,7 +49,7 @@ The generate python looks like this:
 
 .. code-block:: python
 
-             
+
     class Person(NamedThing):
         """
         A person (alive, dead, undead, or fictional).
@@ -77,11 +77,11 @@ Command Line
 .. click:: linkml.generators.pydanticgen:cli
     :prog: gen-pydantic
     :nested: short
-        
+
 Generator
 ---------
 
-        
+
 .. autoclass:: PydanticGenerator
     :members:
 
@@ -263,7 +263,7 @@ See `Schemas/Arrays <arrays>`_
 Additional Notes
 ----------------
 LinkML contains two Python generators. The Pydantic dataclass generator is specifically
-useful for FastAPI, but is newer and less full featured than the standard 
+useful for FastAPI, but is newer and less full featured than the standard
 :doc:`Python generator </generators/python>`.
 
 

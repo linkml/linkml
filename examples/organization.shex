@@ -35,6 +35,3 @@ PREFIX xsd1: <http://example.org/UNKNOWN/xsd/>
        rdf:type [ <Organization> ]
     )
 }
-
-
-

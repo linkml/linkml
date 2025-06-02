@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:postal_code](https://w3id.org/linkml/examples/personinfo/postal_code)
 
 

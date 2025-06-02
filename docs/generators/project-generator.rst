@@ -25,7 +25,6 @@ Command Line
 Code
 ^^^^
 
-                   
+
 .. autoclass:: ProjectGenerator
     :members:
-

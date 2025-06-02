@@ -21,7 +21,7 @@ personinfo.yaml:
 ```yaml
 id: https://w3id.org/linkml/examples/personinfo
 name: personinfo
-prefixes:                                 
+prefixes:
   linkml: https://w3id.org/linkml/
   schema: http://schema.org/
   personinfo: https://w3id.org/linkml/examples/personinfo/
@@ -29,10 +29,10 @@ prefixes:
 imports:
   - linkml:types
 default_range: string
-  
+
 classes:
   Person:
-    class_uri: schema:Person             
+    class_uri: schema:Person
     slots:   ## specified as a list
      - id
      - full_name
@@ -64,7 +64,7 @@ slots:
       other names for the person
   phone:
     pattern: "^[\\d\\(\\)\\-]+$"
-    slot_uri: schema:telephone 
+    slot_uri: schema:telephone
   age:
     range: integer
     minimum_value: 0
@@ -130,4 +130,3 @@ your schema. To do this, make a GitHub Pull Request (PR) on the main
 file, which is here:
 
 [https://github.com/linkml/linkml-registry/blob/main/models.yaml](https://github.com/linkml/linkml-registry/blob/main/models.yaml)
-

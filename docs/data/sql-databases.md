@@ -7,7 +7,7 @@ See [part 9 of the tutorial](../intro/tutorial09) for an introduction.
 ## Storing and retrieving data in SQLite3
 
 See [Using SQL DBs](../developers/using-sql-dbs) in the Developers Guide
-    
+
 ## Mapping from a LinkML model to SQL Schemas
 
 The [SQL Table Generator](../generators/sqltable) can be used to generate SQL DDL (`CREATE TABLE` statements) from a schema.

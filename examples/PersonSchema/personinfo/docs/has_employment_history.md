@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:has_employment_history](https://w3id.org/linkml/examples/personinfo/has_employment_history)
 
 

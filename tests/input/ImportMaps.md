@@ -43,7 +43,7 @@ imports:
   -   ...
 ```
 In the absence of an import mapping, the includes would be resolved to:
-* `https://w3id.org/linkml/types.yaml`  
+* `https://w3id.org/linkml/types.yaml`
 and
 * `https://myserver.org/biolink/includes/mappings.yaml`
 
@@ -55,7 +55,7 @@ If, however, the import mapping file defined previously (`~/some/local/directory
 ```
 
 The imports would, instead, come from:
-* `~/some/local/directory/includes/types.yaml`  
+* `~/some/local/directory/includes/types.yaml`
 and
 * `~/some/local/directory/mappings.yaml`
 
@@ -65,7 +65,7 @@ We maintain two mapping files in the testing framework:
 and
 [tests/input/local_import_map.md]()
 
-Which of these maps 
+Which of these maps
 
 ## Notes
 1) Mapping keys are literal.  As an example, the imports entry in
@@ -73,11 +73,11 @@ Which of these maps
     prefixes:
       p1: https://my.org/includes/
       p2: https://my.org/includes/
-    
+
     imports:
       - p1:types
     ```
-    Will not match _either_ of the entries below.  
+    Will not match _either_ of the entries below.
 
     ```json
     {
@@ -86,20 +86,20 @@ Which of these maps
     }
     ```
 2) Mappings apply to both the base file AND its imports.  Given:
-    
+
 base.yaml
 ```yaml
 imports:
   - linkml:types
   - includes/localtypes
 ```
-    
+
 includes/localtypes.yaml
 ```yaml
 imports:
   - linkml:types
 ```
-   
+
 The following mapping file:
 
 ```json
@@ -118,7 +118,7 @@ imports:
   - includes/types
   - includes/localtypes
 ```
-    
+
 includes/localtypes.yaml
 
 ```yaml
