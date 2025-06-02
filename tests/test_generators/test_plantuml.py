@@ -95,6 +95,11 @@ def test_create_request(input_class, expected, kitchen_sink_path):
     assert plantuml == expected
 
 
+def _normalize_multiline(s):
+    """Strip trailing whitespace from each line for comparison."""
+    return "\n".join(line.rstrip() for line in s.splitlines())
+
+
 @pytest.mark.parametrize(
     "input_class,expected",
     [
@@ -106,7 +111,6 @@ def test_create_request(input_class, expected, kitchen_sink_path):
         ("FamilialRelationship", FAMILIALRELATIONSHIP2PERSON),
     ],
 )
-@pytest.mark.network
 def test_serialize_selected(input_class, expected, kitchen_sink_path, kroki_url):
     """Test serialization of select plantUML class diagrams from schema."""
     generator = PlantumlGenerator(
@@ -117,7 +121,7 @@ def test_serialize_selected(input_class, expected, kitchen_sink_path, kroki_url)
 
     # check that the expected block/relationships are present
     # in class-selected diagrams
-    assert expected in plantuml
+    assert _normalize_multiline(expected) in _normalize_multiline(plantuml)
 
     # make sure that random classes like `MarriageEvent` which
     # have no defined relationships with classes like `FamilialRelationship`
