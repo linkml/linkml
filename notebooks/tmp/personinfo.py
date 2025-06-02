@@ -1,4 +1,4 @@
-from __future__ import annotations 
+from __future__ import annotations
 
 import re
 import sys
@@ -7,8 +7,8 @@ from datetime import (
     datetime,
     time
 )
-from decimal import Decimal 
-from enum import Enum 
+from decimal import Decimal
+from enum import Enum
 from typing import (
     Any,
     ClassVar,
@@ -401,4 +401,3 @@ EmploymentEvent.model_rebuild()
 MedicalEvent.model_rebuild()
 WithLocation.model_rebuild()
 Container.model_rebuild()
-
