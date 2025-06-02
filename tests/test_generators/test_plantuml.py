@@ -95,6 +95,11 @@ def test_create_request(input_class, expected, kitchen_sink_path):
     assert plantuml == expected
 
 
+def _normalize_multiline(s):
+    """Strip trailing whitespace from each line for comparison."""
+    return "\n".join(line.rstrip() for line in s.splitlines())
+
+
 @pytest.mark.parametrize(
     "input_class,expected",
     [
@@ -117,10 +122,7 @@ def test_serialize_selected(input_class, expected, kitchen_sink_path, kroki_url)
 
     # check that the expected block/relationships are present
     # in class-selected diagrams
-    # Strip whitespace from each line to normalize comparison
-    expected_stripped = "\n".join(line.rstrip() for line in expected.splitlines())
-    plantuml_stripped = "\n".join(line.rstrip() for line in plantuml.splitlines())
-    assert expected_stripped in plantuml_stripped
+    assert _normalize_multiline(expected) in _normalize_multiline(plantuml)
 
     # make sure that random classes like `MarriageEvent` which
     # have no defined relationships with classes like `FamilialRelationship`
