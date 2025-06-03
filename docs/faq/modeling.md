@@ -193,6 +193,29 @@ we strongly recommend it. It provides *interoperation hooks* - others with diffe
 data models may have their own enumerations, by making the meaning of each permissible
 value explicit, data can be merged automatically.
 
+### How do I model an enum so that it gets rendered as an IRI in RDF format?
+
+From the schema developers perspective, the `meaning` slot does not _have_ to refer to an existing term from
+an ontology or similar, it can refer to anything at all. Consider this example of an enum with a single
+value, `Not`. 
+
+```
+my_enum:
+  permissible_values:
+    Not:
+      meaning: mynamespace:Not
+```
+
+Without the `meaning` property, the usages of the `Not` enum would be rendered as a string literal in RDF:
+
+```
+"Not"^^xsd:string
+```
+
+However, adding the `meaning` property, you can use _any_ prefix (e.g. `mynamespace:`), including the schema-internal one. 
+So, if you like to have your enum be serialised as an IRI (RDF Resource) in RDF-based serialisations,
+all you need to do is specify the `meaning` slot; if you do not do this, the enum value will be interpreted as a string literal.
+
 ### How do I constrain a slot to a branch of an ontology or a whole ontology?
 
 LinkML basic enums allow you to restrict a value to a fixed set of terms. This works well, if
