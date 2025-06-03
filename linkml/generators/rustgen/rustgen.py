@@ -36,6 +36,8 @@ from linkml.generators.rustgen.template import (
     RustEnum,
     RustFile,
     PolyFile,
+    PolyTrait,
+    PolyTraitImpl,
     SerdeUtilsFile,
     RustProperty,
     AsKeyValue,
@@ -46,6 +48,12 @@ from linkml.generators.rustgen.template import (
     RustStructOrSubtypeEnum,
     SlotRangeAsUnion,
     RustClassModule,
+    PolyTraitProperty,
+    PolyTraitPropertyImpl,
+    PolyTraitImplForSubtypeEnum,
+    PolyTraitPropertyMatch,
+    PolyContainersFile,
+    RustRange, ContainerType,
 )
 from linkml.utils.generator import Generator
 
@@ -59,6 +67,7 @@ PYTHON_TO_RUST = {
     "int": "isize",
     "float": "f64",
     "str": "String",
+    "String": "String",
     "bool": "bool",
     "Bool": "bool",
     "XSDDate": "NaiveDate",
@@ -116,11 +125,15 @@ PYTHON_IMPORTS = Imports(
     ]
 )
 
-class SlotInlineMode(Enum):
-    IDENTIFIER = "identifier" ## not inlined at all, just has the identifier
+class SlotContainerMode(Enum):
     SINGLE_VALUE = "single_value"
     MAPPING = "mapping"
     LIST = "list"
+
+class SlotInlineMode(Enum):
+    INLINE = "inline"
+    PRIMITIVE = "primitive"
+    REFERENCE = "reference"
 
 
 def get_key_or_identifier_slot(cls: ClassDefinition, sv: SchemaView) -> Optional[SlotDefinition]:
@@ -130,20 +143,38 @@ def get_key_or_identifier_slot(cls: ClassDefinition, sv: SchemaView) -> Optional
             return slot
     return None
 
-def get_inline_mode(s: SlotDefinition, sv: SchemaView) -> SlotInlineMode:
+
+def get_identifier_slot(cls: ClassDefinition, sv: SchemaView) -> Optional[SlotDefinition]:
+    induced_slots = sv.class_induced_slots(cls.name)
+    for slot in induced_slots:
+        if slot.identifier:
+            return slot
+    return None
+
+
+def get_inline_mode(s: SlotDefinition, sv: SchemaView) -> tuple[SlotContainerMode, SlotInlineMode]:
     class_range = s.range in sv.all_classes()
-    multivalued = s.multivalued
     if not class_range:
-        return SlotInlineMode.LIST if multivalued else SlotInlineMode.SINGLE_VALUE
-    if s.inlined_as_list:
-        return SlotInlineMode.LIST
+        return (SlotContainerMode.LIST if s.multivalued else SlotContainerMode.SINGLE_VALUE, SlotInlineMode.PRIMITIVE)
+    if s.multivalued and s.inlined_as_list:
+        return (SlotContainerMode.LIST, SlotInlineMode.INLINE)
     key_slot = get_key_or_identifier_slot(sv.get_class(s.range), sv)
-    if key_slot is None:
-        return SlotInlineMode.SINGLE_VALUE if not multivalued else SlotInlineMode.LIST
-    elif s.inlined:
-        return SlotInlineMode.MAPPING
+    identifier_slot = get_identifier_slot(sv.get_class(s.range), sv)
+    inlined = s.inlined
+    if identifier_slot is None:
+        inlined = True ## can only inline if identifier slot is none
+
+    if not s.multivalued:
+        return (SlotContainerMode.SINGLE_VALUE, SlotInlineMode.INLINE if inlined else SlotInlineMode.REFERENCE)
+    
+    if not inlined:
+        return (SlotContainerMode.LIST, SlotInlineMode.REFERENCE)
+    
+    if key_slot is not None:
+        return (SlotContainerMode.MAPPING, SlotInlineMode.INLINE)
     else:
-        return SlotInlineMode.IDENTIFIER
+        return (SlotContainerMode.LIST, SlotInlineMode.INLINE)
+        
 
 
 def can_contain_reference_to_class(s: SlotDefinition, cls: ClassDefinition, sv: SchemaView) -> bool:
@@ -164,11 +195,12 @@ def can_contain_reference_to_class(s: SlotDefinition, cls: ClassDefinition, sv: 
     return False
 
 
-def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, pyo3: bool = False) -> str:
+def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, pyo3: bool = False, crate_ref: Optional[str] = None) -> str:
     """
     Get the rust type from a given linkml type
     """
     rsrange = None
+    no_add_crate = False
 
     if isinstance(t, TypeDefinition):
         rsrange = t.base
@@ -178,55 +210,55 @@ def get_rust_type(t: Union[TypeDefinition, type, str], sv: SchemaView, pyo3: boo
 
         elif rsrange is None and t.typeof is not None:
             # A type with no base type,
+            no_add_crate = True
             rsrange = get_rust_type(sv.get_type(t.typeof), sv, pyo3)
 
     elif isinstance(t, str):
         if tdef := sv.all_types().get(t, None):
             rsrange = get_rust_type(tdef, sv, pyo3)
+            no_add_crate = True
         elif t in sv.all_classes():
             c = sv.get_class(t)
             rsrange = get_name(c)
             descendants = sv.class_descendants(t)
-            if len(descendants) > 1:
-                rsrange += "OrSubtype"
+            #if len(descendants) > 1:
+            #    rsrange += "OrSubtype"
 
     # FIXME: Raise here once we have implemented all base types
     if rsrange is None:
         rsrange = PYTHON_TO_RUST[str]
     elif rsrange in PYTHON_TO_RUST:
         rsrange = PYTHON_TO_RUST[rsrange]
+    elif crate_ref is not None and not no_add_crate:
+        rsrange = f"{crate_ref}::{rsrange}"
     return rsrange
 
 
-def get_rust_range(cls: ClassDefinition, s: SlotDefinition, sv: SchemaView, range: Optional[str] = None) -> str:
-    range = range if range is not None else s.range
-    boxing_needed = False
-    inline_mode = get_inline_mode(s, sv)
-    base_type = get_rust_type(range, sv, True)
+
+def get_rust_range_info(cls: ClassDefinition, s: SlotDefinition, sv: SchemaView, crate_ref: Optional[str] = None) -> RustRange:
+    (container_mode, inline_mode) = get_inline_mode(s, sv)
     all_ranges = sv.slot_range_as_union(s)
-    if len(all_ranges) > 1:
-        base_type = underscore(uncamelcase(cls.name)) + "_utl::" + get_name(s) + "_range"
-
-
-    if inline_mode == SlotInlineMode.IDENTIFIER:
-        base_type = "String"
-    else:
-        if can_contain_reference_to_class(s, cls, sv):
-            boxing_needed = True
-
-    if boxing_needed:
-        base_type = f"Box<{base_type}>"
+    sub_ranges = [
+        RustRange(type_="String" if inline_mode == SlotInlineMode.REFERENCE else get_rust_type(r, sv, True, crate_ref), 
+                  is_class_range = r in sv.all_classes(),
+                  has_class_subtypes= len(sv.class_descendants(r)) > 1 if r in sv.all_classes() else False,
+                  )
+        for r in all_ranges
+    ]
     
-    if inline_mode == SlotInlineMode.MAPPING:
-        base_type = f"HashMap<String, {base_type}>"
-    elif inline_mode == SlotInlineMode.LIST or s.multivalued:
-        base_type = f"Vec<{base_type}>"
-
-    if not s.required and not s.multivalued:
-        base_type = f"Option<{base_type}>"
-
-    return base_type
-
+    res = RustRange(
+        optional=not s.required,
+        has_default = not (s.required or False) or (s.multivalued or False),
+        containerType= ContainerType.LIST if container_mode == SlotContainerMode.LIST else ContainerType.MAPPING if container_mode == SlotContainerMode.MAPPING else None,
+        child_ranges=sub_ranges if len(sub_ranges) > 1 else None,
+        box_needed=inline_mode == SlotInlineMode.INLINE and can_contain_reference_to_class(s, cls, sv),
+        is_class_range=all_ranges[0] in sv.all_classes() if len(all_ranges) == 1 else False,
+        is_reference=inline_mode == SlotInlineMode.REFERENCE,
+        has_class_subtypes= len(sv.class_descendants(all_ranges[0])) > 1 if len(all_ranges) == 1 and all_ranges[0] in sv.all_classes() else False,
+        type_ = underscore(uncamelcase(cls.name)) + "_utl::" + get_name(s) + "_range" if len(sub_ranges) > 1 else ("String" if inline_mode == SlotInlineMode.REFERENCE else get_rust_type(s.range, sv, True, crate_ref))
+    )
+    return res
+    
 
 def protect_name(v: str) -> str:
     """
@@ -442,13 +474,14 @@ class RustGenerator(Generator, LifecycleMixin):
         """
         attr = self.before_generate_slot(attr, self.schemaview)
         is_class_range = attr.range in self.schemaview.all_classes()
-        inline_mode = get_inline_mode(attr, self.schemaview)
-        range = get_rust_range(cls, attr, self.schemaview)
+        (container_mode, inline_mode) = get_inline_mode(attr, self.schemaview)
+        range = get_rust_range_info(cls, attr, self.schemaview)
         res = AttributeResult(
             source=attr,
             attribute=RustProperty(
                 name=get_name(attr),
                 inline_mode=inline_mode.value,
+                container_mode=container_mode.value,
                 type_=range,
                 required=bool(attr.required),
                 multivalued=True if attr.multivalued else False,
@@ -534,6 +567,8 @@ class RustGenerator(Generator, LifecycleMixin):
         classes = [self.generate_class(c) for c in classes]
         classes = self.after_generate_classes(classes, sv)
 
+        poly_traits = [self.gen_poly_trait(sv.get_class(c)) for c in sv.all_classes(ordered_by=OrderedBy.INHERITANCE)]
+
         imports = DEFAULT_IMPORTS.model_copy()
         imports += PYTHON_IMPORTS
         imports += SERDE_IMPORTS
@@ -556,7 +591,8 @@ class RustGenerator(Generator, LifecycleMixin):
         if mode == "crate":
             extra_files = {}
             extra_files["serde_utils"] = SerdeUtilsFile()
-            extra_files["poly"] = PolyFile(imports=imports)
+            extra_files["poly"] = PolyFile(imports=imports, traits=poly_traits)
+            extra_files["poly_containers"] = PolyContainersFile()
             cargo = self.generate_cargo(imports)
             pyproject = self.generate_pyproject()
             res = CrateResult(cargo=cargo, file=file, pyproject=pyproject, source=sv.schema, extra_files=extra_files)
@@ -564,6 +600,47 @@ class RustGenerator(Generator, LifecycleMixin):
         else:
             res = FileResult(file=file, source=sv.schema)
             return res
+
+    def gen_poly_trait(self, cls: ClassDefinition) -> PolyTrait:
+        impls = []
+        class_name = get_name(cls)
+        attribs = self.schemaview.class_induced_slots(cls.name)
+        superclass_names = []
+        if cls.is_a is not None:
+            superclass_names.append(cls.is_a)
+        for m in cls.mixins:
+            superclass_names.append(m)
+        
+        superclasses = [self.schemaview.get_class(sn) for sn in superclass_names if sn is not None]
+        for superclass in superclasses:
+            attribs_sc = self.schemaview.class_induced_slots(superclass.name)
+            attribs = [a for a in attribs if a.name not in [sc.name for sc in attribs_sc]]
+        
+        rust_attribs = []
+        for a in attribs:
+            n = get_name(a)
+            ri = get_rust_range_info(cls, a, self.schemaview)
+            rust_attribs.append(PolyTraitProperty(name=n, range=ri))
+            
+            
+        subtype_impls = []
+        for sc in self.schemaview.class_descendants(cls.name):
+            sco = self.schemaview.get_class(sc)
+            induced_slots = self.schemaview.class_induced_slots(cls.name)
+            def find_slot(n: str):
+                for s in induced_slots:
+                    if s.name == n:
+                        return s
+                return None
+            ptis = [PolyTraitPropertyImpl(name = get_name(a), range = get_rust_range_info(sco, find_slot(a.name), self.schemaview), struct_name=get_name(sco)) for a in attribs]
+            impls.append(PolyTraitImpl(name=class_name, struct_name=get_name(sco), attrs=ptis))
+            has_subtypes = len(self.schemaview.class_descendants(sc)) > 1
+            if has_subtypes:
+                cases = [get_name(self.schemaview.get_class(x)) for x in self.schemaview.class_descendants(sc)]
+                matches = [PolyTraitPropertyMatch(name=get_name(a), range = get_rust_range_info(sco, find_slot(a.name), self.schemaview), cases=cases, struct_name=f"{get_name(sco)}OrSubtype") for a in attribs]
+                subtype_impls.append(PolyTraitImplForSubtypeEnum(name=class_name, enum_name=f"{get_name(sco)}OrSubtype",attrs=matches))
+        return PolyTrait(name=class_name, impls=impls, attrs=rust_attribs, superclass_names = [get_name(scla) for scla in superclasses], subtypes=subtype_impls)
+
 
     def serialize(self, output: Optional[Path] = None, mode: Optional[RUST_MODES] = None, force: bool = False) -> str:
         """

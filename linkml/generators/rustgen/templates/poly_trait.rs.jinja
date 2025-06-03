@@ -1,0 +1,15 @@
+pub trait {{ name}} {% if superclass_names | length > 0 %}:{% endif %}{% for n in superclass_names %} {{n}} {% if not loop.last %} + {% endif %}{%endfor %}  {
+
+{% for attr in attrs %}
+{{ attr }}
+{% endfor %}
+
+}
+
+{% for impl in impls %}
+{{ impl }}
+{% endfor %}
+
+{% for st in subtypes %}
+{{ st }}
+{% endfor %}

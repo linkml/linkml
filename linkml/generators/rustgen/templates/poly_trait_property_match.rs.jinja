@@ -1,0 +1,8 @@
+    fn {{ name}}(&self) -> {{ type_getter }} {
+        match self {
+            {% for c in cases %}
+                {{ struct_name }}::{{c}}(val) => val.{{name}}(){% if is_container %}.to_any(){% endif %},
+            {% endfor %}
+
+        }
+    }

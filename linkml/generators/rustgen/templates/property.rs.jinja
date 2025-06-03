@@ -1,11 +1,13 @@
 {%- if is_key_value -%}
-{% if inline_mode == "list" %}
+{% if container_mode == "list" and inline_mode == "inline" %}
 #[cfg_attr(feature = "serde", serde(deserialize_with = "serde_utils::deserialize_inlined_dict_list{% if recursive %}_box{% endif %}"))]
-{% elif inline_mode == "mapping" %}
+{% elif container_mode == "mapping" and inline_mode == "inline" %}
 #[cfg_attr(feature = "serde", serde(deserialize_with = "serde_utils::deserialize_inlined_dict_map{% if recursive %}_box{% endif %}"))]
 {% endif %}
+{% elif container_mode == "list" and inline_mode == "primitive" %}
+#[cfg_attr(feature = "serde", serde(deserialize_with = "serde_utils::deserialize_primitive_list_or_single_value"))]
 {%- endif -%}
 {% if hasdefault %}
 #[cfg_attr(feature = "serde", serde(default))]
 {% endif %}
-pub {{ name }}: {{ type_ }}
+pub {{ name }}: {{ type_for_field }}
