@@ -59,4 +59,3 @@ slots:
   parent:
     range: c
     multivalued: false
-

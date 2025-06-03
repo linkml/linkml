@@ -24,7 +24,7 @@ prefixes:                                  ## Note are adding 3 new ones here
 imports:
   - linkml:types
 default_range: string
-  
+
 classes:
   Person:
     class_uri: schema:Person              ## reuse schema.org vocabulary
@@ -157,4 +157,3 @@ Outputs:
 ## Next
 
 Next we will look at the *enumerations* feature of LinkML
-

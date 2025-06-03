@@ -38,10 +38,10 @@ prefixes:
 
 imports:
   - linkml:types
-  
+
 default_prefix: example
 default_range: string
-  
+
 classes:
 
   Person:
@@ -122,7 +122,7 @@ Movies:
 
 We are using references rather than [inlining](https://linkml.io/linkml/schemas/inlining.html) here, so although the YAML looks "flat" it is semantically a graph.
 
-These have a natural representation as RDF graphs, with persons and movies being nodes, and the edges being the triples connecting them: 
+These have a natural representation as RDF graphs, with persons and movies being nodes, and the edges being the triples connecting them:
 
 ```turtle
 # node-to-node edges
@@ -229,7 +229,7 @@ The *graph projection* for this schema is
 |-------------------------|---------------------------------------------|
 | Node                    | instance of a (Node) Class                  |
 | Edge                    | instance of an (Edge) Class                 |
-| Predicate (Edge Label)  | (Edge) Class                                | 
+| Predicate (Edge Label)  | (Edge) Class                                |
 | Node Property           | Attribute-Value Assignment on Node instance |
 | Edge Property           | Attribute-Value Assignment on Edge instance |
 
@@ -237,7 +237,7 @@ We made a few design decisions here, but these are not set in stone. For differe
 model differently.
 
 - identifiers
-   - nodes have identifiers, and references to nodes from edges are not inlined. Data providers are expected to mint these. 
+   - nodes have identifiers, and references to nodes from edges are not inlined. Data providers are expected to mint these.
    - edges do not have identifiers. This makes it harder for an edge to reference another edge.
 - vocabulary
    - we use the RDF reification vocabulary for URIs, but we could use anything here.
@@ -321,7 +321,7 @@ edges:
 - subject: PERSON:RZ
   predicate: my:Directed
   object: MOVIE:FG
-```  
+```
 
 Our decision to use classes to represent edge types (which for now we conflate with predicates) has the advantage of allowing fine-grained control over the properties of edges. For example, if we had an edge:
 
@@ -429,7 +429,7 @@ classes:
       object: AnatomicalEntity
   VehicleHasPart:
     is_a: HasPart
-    ...    
+    ...
 ```
 
 Our YAML/JSON objects might look like:
@@ -458,4 +458,3 @@ We are currently exploring options for allow features such as auto-asserting PG 
 
 - [What is RDF-star](https://www.ontotext.com/knowledgehub/fundamentals/what-is-rdf-star/) from GraphDB docs
 - [Property Graphs with LinkML store](https://linkml.io/linkml-store/how-to/Use-Neo4j.html)
-

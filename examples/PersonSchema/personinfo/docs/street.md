@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:street](https://w3id.org/linkml/examples/personinfo/street)
 
 

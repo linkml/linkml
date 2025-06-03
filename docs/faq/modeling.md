@@ -100,7 +100,7 @@ More on enums:
 
 You may want to make the entries in one slot contingent on a different slot. If, for example, you are developing a schema for a toy store that sells wooden horses and frogs. The horses are available in red and green, but the frogs are available in blue and pink.
 
-You can use a [rules block](https://linkml.io/linkml/schemas/advanced.html#rules) to constrain the permissible values for a particular slot dependent on the entry in another slot. 
+You can use a [rules block](https://linkml.io/linkml/schemas/advanced.html#rules) to constrain the permissible values for a particular slot dependent on the entry in another slot.
 
 ```yaml
 classes:
@@ -131,7 +131,7 @@ classes:
 
 enums:
   SpeciesRng:
-    permissible_values: 
+    permissible_values:
       horse:
       frog:
   BluePink:
@@ -170,7 +170,7 @@ classes:
     slots:
        - ...
        - variant type
-        
+
 slots:
   variant type:
     range: variant_type_enum
@@ -178,12 +178,12 @@ slots:
 
 enums:
   variant_type_enum:
-    permissible_values: 
+    permissible_values:
       point_mutation:
           meaning: SO:1000008
       deletion:
           meaning: SO:0000159
-      insertion: 
+      insertion:
           meaning: SO:0000667
 ```
 
@@ -319,7 +319,7 @@ these resources as mappings in enumerations.
 However, the distinction here is frequently blurred, and there are many examples of schemas that
 have been modeled using OWL - e.g. BioPAX, FOAF.
 
-LinkML allows any schema to be translated to OWL using the `gen-owl <https://linkml.io/linkml/generators/owl>`_ 
+LinkML allows any schema to be translated to OWL using the `gen-owl <https://linkml.io/linkml/generators/owl>`_
 generator. There are a number of reasons to do this:
 
 - take advantage of ontology exploration and browsing tools such as BioPortal and Protege
@@ -333,26 +333,26 @@ ontology as LinkML classes, since LinkML is intended for data modeling.
 One option is to use the `linkml-owl <https://linkml.io/linkml-owl>`_ framework to generate OWL
 classes from LinkML *data*
 
-### Are CURIEs used in schema definitions checked for expandability and resolution?  
+### Are CURIEs used in schema definitions checked for expandability and resolution?
 
 No, not at this time.  However, linkml_runtime does have methods to help you expand the CURIEs in your data
 using the prefixes in your model (see: linkml_runtime.utils.namespaces.py) into URIs.  In addition, the
-`curies` [python package](https://github.com/cthoyt/curies/) which provides a standalone CURIE expansion service. 
-There are many ways to check if a URI is resolvable.  One open source python package to do this 
+`curies` [python package](https://github.com/cthoyt/curies/) which provides a standalone CURIE expansion service.
+There are many ways to check if a URI is resolvable.  One open source python package to do this
 is: [LinkChecker](https://pypi.org/project/LinkChecker/).
- 
+
 ### Are CURIEs used in data that validates against a given LinkML schema checked for expandability and resolution?
 
 No, not at this time.  However, linkml_runtime does have methods to help you expand the CURIEs in your data
 using the prefixes in your model (see: linkml_runtime.utils.namespaces.py) into URIs.  Specifying a regular expression
-to constrain the CURIEs in your data to a particular pattern is also possible.  
+to constrain the CURIEs in your data to a particular pattern is also possible.
 See the [regular expression](https://w3id.org/linkml/regular_expression) metaslot.  However, validating a CURIE
-that matches the regular expression, but is invalid in some other way (e.g. is an obsolete ontology term) is not 
+that matches the regular expression, but is invalid in some other way (e.g. is an obsolete ontology term) is not
 currently supported.
 
 ### Is it possible for us to import only a subset of an existing LinkML model?
 
-Not yet, but we are working on a tool to this, please check out 
+Not yet, but we are working on a tool to this, please check out
 [linkml-transformer](https://github.com/linkml/linkml-transformer) for more details.
 
 ### Can I combine dynamic enums using boolean expressions
@@ -488,9 +488,9 @@ classes:
     slots:
        - allele of
   gene:
-     
+
 slots:
-  allele of: 
+  allele of:
      type: uriorcurie
      domain: allele
      range: gene
@@ -509,9 +509,9 @@ classes:
         - subject
         - object
         - predicate
-      
+
 slots:
-  predicate: 
+  predicate:
      range: predicate_enum
   subject:
      range: allele
@@ -540,9 +540,9 @@ classes:
         - subject
         - object
         - predicate
-      
+
 slots:
-  predicate: 
+  predicate:
      range: predicate_enum
      relational_role: PREDICATE
   subject:
@@ -660,10 +660,10 @@ Instance file (as YAML):
 
 Any element in a LinkML schema can have any number of *mappings* associated with it
 
-Mappings are useful in a variety of ways including: 
+Mappings are useful in a variety of ways including:
 
 - they make your data and your schema more FAIR (Findable, Accessible, Reusable, and Interoperable)
-- when people use data that conforms to your model, and integrated with data that conforms to another model, they can use mappings between models to help automate data harmonization.  
+- when people use data that conforms to your model, and integrated with data that conforms to another model, they can use mappings between models to help automate data harmonization.
 - mappings can provide links to other documentation sources for your model, allowing expertise to be shared between projects and not duplicated
 - mappings allow advanced users to reason over your model.
 

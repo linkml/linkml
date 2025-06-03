@@ -67,7 +67,7 @@ stating that this class is an instance of the `Reviewable` metamodel extension c
 ```yaml
 classes:
   Person:
-    instantiates: 
+    instantiates:
       - mymetamodel:Reviewable
     annotations:
       review: A very useful class that is well defined
@@ -100,7 +100,7 @@ Other schema elements can also instantiate the `Reviewable` class:
 ```yaml
 classes:
   Person:
-    instantiates: 
+    instantiates:
       - mymetamodel:Reviewable
     annotations:
       review: A very useful class that is well defined
@@ -153,8 +153,7 @@ Any schema element that instantiates `StrictElement` must have a description:
 ```yaml
 classes:
   Person:
-    instantiates: 
+    instantiates:
       - mymetamodel:StrictElement
     description: A person, living or dead   ## must be provided
 ```
-

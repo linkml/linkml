@@ -71,7 +71,7 @@ enums:
 
 ## Working with Enums in Python
 
-Enumerations are mapped directly to Python enums. See 
+Enumerations are mapped directly to Python enums. See
 
  * [enumerations notebook](https://github.com/linkml/linkml/blob/main/notebooks/enumerations.ipynb)
 

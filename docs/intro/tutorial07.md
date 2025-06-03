@@ -53,7 +53,7 @@ personinfo-with-inheritance.yaml:
 ```yaml
 id: https://w3id.org/linkml/examples/personinfo
 name: personinfo
-prefixes:                                 
+prefixes:
   linkml: https://w3id.org/linkml/
   schema: http://schema.org/
   personinfo: https://w3id.org/linkml/examples/personinfo/
@@ -61,7 +61,7 @@ prefixes:
 imports:
   - linkml:types
 default_range: string
-  
+
 classes:
 
   ## --
@@ -69,17 +69,17 @@ classes:
   ## --
   NamedThing:
     abstract: true     ## should not be instantiated directly
-    slots: 
+    slots:
      - id
      - full_name
     close_mappings:
      - schema:Thing
-  
+
   Person:
     is_a: NamedThing  ## inheritance
     mixins:
       - HasAliases
-    class_uri: schema:Person             
+    class_uri: schema:Person
     slots:            ## note we only have slots specific to people
      - phone
      - age
@@ -95,7 +95,7 @@ classes:
       - HasAliases
     slots:
       - mission_statement
-      
+
   Container:
     tree_root: true
     attributes:
@@ -135,7 +135,7 @@ slots:
       other names for the person
   phone:
     pattern: "^[\\d\\(\\)\\-]+$"
-    slot_uri: schema:telephone 
+    slot_uri: schema:telephone
   age:
     range: integer
     minimum_value: 0
@@ -208,22 +208,22 @@ You can see that even though JSON-Schema doesn't support inheritance, slots from
 
 LinkML gives you the ability to reuse or inherit slots while customizing them for use in a particular class, using `slot_usage`
 
-First let's create a schema where we introduce a new general class `Relationship` 
+First let's create a schema where we introduce a new general class `Relationship`
 
 slot-usage-example.yaml:
 
 ```yaml
 id: https://w3id.org/linkml/examples/personinfo
 name: personinfo
-prefixes:                                 
+prefixes:
   linkml: https://w3id.org/linkml/
 imports:
   - linkml:types
 default_range: string
-  
+
 classes:
   NamedThing:
-    slots: 
+    slots:
      - id
      - full_name
   Person:
@@ -237,7 +237,7 @@ classes:
         multivalued: true
         range: OrganizationalRelationship
         inlined_as_list: true
-    
+
   Organization:
     is_a: NamedThing
 
@@ -258,7 +258,7 @@ classes:
         required: true
       relationship_type:
         range: FamilialRelationshipType
-      
+
 
   OrganizationalRelationship:
     is_a: Relationship
@@ -330,7 +330,7 @@ persons:
 organizations:
   - id: ROR:1
     full_name: Justice League
-```    
+```
 
 ```bash
 linkml-validate data.yaml -s slot-usage-example.yaml

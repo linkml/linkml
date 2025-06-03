@@ -1,3 +1,21 @@
+# metamodel_version: 1.7.0
+enum FamilialRelationshipType
+  {
+    SIBLING_OF
+    PARENT_OF
+    CHILD_OF
+  }
+
+enum GenderType
+  {
+    nonbinary_man
+    nonbinary_woman
+    transgender_woman
+    transgender_man
+    cisgender_man
+    cisgender_woman
+  }
+
 type Address
   {
     street: String
@@ -48,7 +66,6 @@ type FamilialRelationship
   {
     startedAtTime: Date
     endedAtTime: Date
-    relatedTo: String
     type: FamilialRelationshipType!
     relatedTo: Person!
   }
@@ -133,4 +150,3 @@ interface WithLocation
   {
     inLocation: Place
   }
-

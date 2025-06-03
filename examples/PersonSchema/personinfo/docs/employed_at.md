@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:employed_at](https://w3id.org/linkml/examples/personinfo/employed_at)
 
 
