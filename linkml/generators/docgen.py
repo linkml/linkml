@@ -1105,7 +1105,6 @@ class DocGenerator(Generator):
     help="Folder in which example files are found. These are used to make inline examples",
 )
 @click.option(
-    "-d",
     "--include",
     help="""
 Include LinkML Schema outside of imports mechanism.  Helpful in including deprecated classes and slots in a separate
