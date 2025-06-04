@@ -3,14 +3,8 @@
 
 
 
-
 URI: [personinfo:GenderType](https://w3id.org/linkml/examples/personinfo/GenderType)
 
-
-## Other properties
-
-|  |  |  |
-| --- | --- | --- |
 
 ## Permissible Values
 
@@ -22,4 +16,3 @@ URI: [personinfo:GenderType](https://w3id.org/linkml/examples/personinfo/GenderT
 | transgender man |  | GSSO:000372 |  |
 | cisgender man |  | GSSO:000371 |  |
 | cisgender woman |  | GSSO:000385 |  |
-

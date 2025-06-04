@@ -63,7 +63,7 @@ includes a number of automation features using GitHub actions.
 Implementing social workflows through tools like GitHub enhances community engagement.
 Transparent discussion forums, giving credit to contributors, and using issue trackers and discussion boards are crucial for maintaining a dynamic and active contributor base.
 
-Document or reference best practices for contributing to the schema. This includes things such 
+Document or reference best practices for contributing to the schema. This includes things such
 as [keeping issues and pull requests small and atomic](https://codeinthehole.com/tips/advanced-pull-request-crafting/).
 
 ### Establish Project Governance
@@ -77,7 +77,7 @@ Governance should evolve over time to meet the project's needs.
 You may wish to use an existing governance model or community documents as a starting point for your project:
 
 - Bioschemas [community](https://bioschemas.org/community/) and [governance](https://github.com/Bioschemas/governance/blob/master/governance.md) docs
-- [Biolink](https://biolink.github.io/biolink-model/) 
+- [Biolink](https://biolink.github.io/biolink-model/)
 - schema.org [how we work](https://schema.org/docs/howwework.html)
 - [GA4GH Constitution](https://www.ga4gh.org/constitution/)
 - [Bioregistry](https://github.com/biopragmatics/bioregistry/blob/main/docs/GOVERNANCE.md)
@@ -95,7 +95,7 @@ Some things the governance model should cover:
 
 Detailed contribution guidelines, offering various ways to contribute, and hosting projects in neutral spaces increase contributor engagement and recruitment. Projects should be accessible and welcoming to new contributors to ensure longevity and development.
 
-The [LinkML Cookiecutter](https://github.com/linkml/linkml-project-cookiecutter/) provides a template 
+The [LinkML Cookiecutter](https://github.com/linkml/linkml-project-cookiecutter/) provides a template
 for project documents such as a `CONTRIBUTING.md` file and a `CODE_OF_CONDUCT.md` file that can be
 adapted for your project.
 
@@ -126,7 +126,7 @@ Some things that the guide might cover:
     * LinkML allows for a variety of different metadata, but also permits very minimal metadata
     * We recommend defining minimal metadata standards or recommendations for a particular project
     * Consistency is sometimes better than boiling the ocean.
-         - E.g. Adding `mappings` is less valuable if it is only applied to a subset of elements 
+         - E.g. Adding `mappings` is less valuable if it is only applied to a subset of elements
          - It may be better to use fewer elements but more broadly than many elements populated inconsistently
     * Some good defaults:
          - Every element **should** have a `description`

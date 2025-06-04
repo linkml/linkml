@@ -1,7 +1,6 @@
 
 # Class: HasAliases
 
-
 A mixin applied to any class that can have aliases/alternateNames
 
 URI: [personinfo:HasAliases](https://w3id.org/linkml/examples/personinfo/HasAliases)
@@ -13,7 +12,7 @@ URI: [personinfo:HasAliases](https://w3id.org/linkml/examples/personinfo/HasAlia
 
  * [Organization](Organization.md) (mixin)  - An organization such as a company or university
  * [Person](Person.md) (mixin)  - A person (alive, dead, undead, or fictional).
- * [Place](Place.md) (mixin) 
+ * [Place](Place.md) (mixin)
 
 ## Referenced by Class
 

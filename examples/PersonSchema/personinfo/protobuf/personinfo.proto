@@ -1,3 +1,6 @@
+ syntax="proto3";
+ package
+// metamodel_version: 1.7.0
 message Address
  {
   string street = 0
@@ -42,7 +45,6 @@ message FamilialRelationship
  {
   date startedAtTime = 0
   date endedAtTime = 0
-  string relatedTo = 0
   familialRelationshipType type = 0
   person relatedTo = 0
  }

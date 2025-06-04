@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:type](https://w3id.org/linkml/examples/personinfo/type)
 
 

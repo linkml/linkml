@@ -23,14 +23,14 @@ To run:
 
 To use this in combination with the standard python jsonschema
 validator (bundled with linkml):
-   
+
 .. code:: bash
 
    jsonschema -i data/example_personinfo_data.yaml personinfo.schema.json
-   
+
 .. seealso:: :doc:`Data Validation <./../data/validating-data>` for  other
              validation strategies
-             
+
 .. note ::
 
    Note that any JSON that conforms to the derived JSON Schema can be
@@ -57,7 +57,7 @@ are inherited from NamedThing, and `aliases` are inherited from a mixin:
     attributes:
       aliases:
         multivalued: true
-        
+
   Person:
     is_a: NamedThing
     mixins:
@@ -70,7 +70,7 @@ are inherited from NamedThing, and `aliases` are inherited from a mixin:
 (some parts truncated for brevity)
 
 This would generate the following JSON-Schema:
-        
+
 .. code-block:: json
 
       "Person": {
@@ -148,7 +148,7 @@ to a slot definition as follows:
 then the JSON-Schema will use a ``$ref``:
 
 .. code-block:: json
-                
+
             "has_employment_history": {
                "items": {
                   "$ref": "#/definitions/EmploymentEvent"
@@ -162,7 +162,7 @@ identifier, then the reference is by key.
 For example, given:
 
 .. code-block:: yaml
-                
+
   FamilialRelationship:
     is_a: Relationship
     slot_usage:
@@ -176,7 +176,7 @@ identifier for a ``Person`` object:
 the range is treated as a simple string in the JSON-Schema
 
 .. code-block:: json
-                
+
       "FamilialRelationship": {
          "additionalProperties": false,
          "description": "",
@@ -202,7 +202,7 @@ the range is treated as a simple string in the JSON-Schema
       },
 
 Thus the JSON-Schema loses some information that is useful for
-validation, and for understanding of the schema. 
+validation, and for understanding of the schema.
 
 LinkML also supports the ability to inline multivalued slots as
 dictionaries, where the key is the object identifier. See :doc:`Inlining </schemas/inlining>`
@@ -228,7 +228,7 @@ This example schema supports inlining a list of people as a dictionary:
             required: true
           gender:
             range: string
-            required: true                    
+            required: true
 
 The following data is conformant according to LinkML semantics:
 
@@ -320,8 +320,8 @@ This is what the underlying JSON-Schema looks like:
    "title": "example.org",
    "type": "object"
 
-                
-   
+
+
 Patterns
 ^^^^^^^^
 
@@ -335,7 +335,7 @@ See `Regular Expressions
 For example, the following schema fragment
 
 .. code-block:: yaml
-                
+
     classes:
       # ...
       Person:
@@ -390,7 +390,7 @@ translation.
 Example:
 
 .. code-block:: yaml
-                    
+
     classes:
       # ...
       FamilialRelationship:
@@ -403,7 +403,7 @@ Example:
             range: Person
             required: true
       #...
-          
+
     enums:
       FamilialRelationshipType:
         permissible_values:
@@ -418,7 +418,7 @@ Example:
 Generates
 
 .. code-block:: json
-                
+
       "FamilialRelationship": {
          "additionalProperties": false,
          "description": "",
@@ -455,10 +455,10 @@ Generates
          "title": "FamilialRelationshipType",
          "type": "string"
       },
-      
+
 Docs
 ----
-      
+
 Command Line
 ^^^^^^^^^^^^
 
@@ -470,7 +470,6 @@ Code
 ^^^^
 
 .. currentmodule:: linkml.generators.jsonschemagen
-                   
+
 .. autoclass:: JsonSchemaGenerator
     :members: serialize
-

@@ -23,7 +23,7 @@ The formats supported are:
 - TSV/CSV
 
 
-                   
+
 
 JSON Conversion
 ---------------
@@ -45,7 +45,7 @@ YAML Conversion
 YAML serialization is essentially the same as JSON
 
 .. currentmodule:: linkml_runtime.dumpers
-                   
+
 .. autoclass:: YAMLDumper
     :members: dumps, dump
 
@@ -53,7 +53,7 @@ YAML serialization is essentially the same as JSON
 
 .. autoclass:: YAMLLoader
     :members: loads, load, load_any, loads_any
-              
+
 
 RDF Conversion
 --------------
@@ -61,7 +61,7 @@ RDF Conversion
 
 
 .. currentmodule:: linkml_runtime.dumpers
-                   
+
 .. autoclass:: RDFLibDumper
     :members: dumps, dump
 
@@ -69,14 +69,14 @@ RDF Conversion
 
 .. autoclass:: RDFLibLoader
     :members: loads, load, load_any, loads_any
-              
 
-              
+
+
 CSV Conversion
 ---------------
 
 .. currentmodule:: linkml_runtime.dumpers
-                   
+
 .. autoclass:: CSVDumper
     :members: dumps, dump
 

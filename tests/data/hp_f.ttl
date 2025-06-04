@@ -70338,4 +70338,3 @@ obo:HP_0000001 a owl:Class ;
     skos:definition "Root of all terms in the Human Phenotype Ontology." ;
     skos:notation "HP_0000001" ;
     skos:prefLabel "All" .
-

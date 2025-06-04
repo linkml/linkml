@@ -1,7 +1,6 @@
 
 # Class: Organization
 
-
 An organization such as a company or university
 
 URI: [personinfo:Organization](https://w3id.org/linkml/examples/personinfo/Organization)
@@ -55,4 +54,3 @@ URI: [personinfo:Organization](https://w3id.org/linkml/examples/personinfo/Organ
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | schema:Organization |
-

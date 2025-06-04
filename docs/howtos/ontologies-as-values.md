@@ -193,7 +193,7 @@ Let's add a *container* class, to allow us to bundle lists of objects inside a s
       associations:
         range: Association
         inlined_as_list: true  ## not necessary as Association has no id
-      
+
 ```
 
 Our container class allows genes, phenotypes, plus associations between them to be transmitted as a single YAML/JSON object/document.
@@ -423,7 +423,7 @@ Instead there is just a hierarchy of organism OWL classes, increasingly refined:
             * Felis
                 * Felis catus
                     * Russian blue
-            
+
 
 (Intermediate nodes omitted for brevity)
 
@@ -452,7 +452,7 @@ Compare to the RDF serialization of the LinkML instances:
 wikidata:Q517 my:species NCBITaxon:9606 .
 NCBITaxon:9606 my:parent_concept NCBITaxon:9605
 ```
-        
+
 In this case, `rdf:type` corresponds roughly to the `species` attribute in the LinkML model. It's not quite the same, as we might have the following OWL:
 
 ```

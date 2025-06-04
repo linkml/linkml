@@ -9,7 +9,7 @@ Tutorial
 
    tutorial01
    tutorial02
-   tutorial03             
+   tutorial03
    tutorial04
    tutorial05
    tutorial06
@@ -27,7 +27,7 @@ versions:
    - JSON Schema
    - OWL Ontologies
    - Instance data in JSON, TSV/spreadsheets, RDF
-   
+
 * SQL databases
 * Using LinkML to organize spreadsheets
 * Change objects and diffs

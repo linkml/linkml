@@ -381,4 +381,3 @@ language to RDF and back, it may be sufficient to rely on the existing JSON-LD c
 ## Summary
 
 This guide is by its nature high level, and various decisions will be determined by specific features of the target language or even by developer preference. As we gain more experience and port core linkml utilities to more target languages we will update this guide.
-

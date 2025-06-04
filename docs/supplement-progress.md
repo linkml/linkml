@@ -11,18 +11,18 @@ orphan: true
 ### Aim 1. Enhance LinkML software engineering
 We have made many improvements to features and functionality of the core framework, and made it easier for external developers to contribute.
 Auxiliary tools in the LinkML organization (https://github.com/linkml)
-that have been updated significantly in the past year include linkml_runtime (https://github.com/linkml/linkml-runtime) 
+that have been updated significantly in the past year include linkml_runtime (https://github.com/linkml/linkml-runtime)
 with 82 merged pull requests, linkml_model (https://github.com/linkml/linkml-model) with 61 merged pull requests,
 and schemasheets (https://github.com/linkml/schemasheets) with 23 merged pull requests.
-Several new repositories were created in the LinkML organization including: linkml_transformer (https://github.com/linkml/linkml-transformer) 
+Several new repositories were created in the LinkML organization including: linkml_transformer (https://github.com/linkml/linkml-transformer)
 for subsetting and transforming models as they evolve, prefixmaps (https://github.com/linkml/prefixmaps)
-for creating CURIE expansions, and linkml-renderer (https://github.com/linkml/linkml-renderer) for generating visualizations of LinkML compliant data. 
+for creating CURIE expansions, and linkml-renderer (https://github.com/linkml/linkml-renderer) for generating visualizations of LinkML compliant data.
 
 ### Aim 2. Expand the community of LinkML developers and adopters
 We led a successful LinkML workshop at ICBO 2022: International Conference on Biomedical Ontology on 2022-09-25 (https://icbo-conference.github.io/icbo2022/workshops-and-tutorials/#linkml-workshoptutorial).
 
 We have been running monthly LinkML Community Meetings since Dec 2022, drawing ~15-25 participants per month, including members of the community who are outside of our core team.
-At these meetings we host tutorials on new features and have presentations from our community members about their LinkML usage.  
+At these meetings we host tutorials on new features and have presentations from our community members about their LinkML usage.
 
 We also interact with our community on our Slack channel and via a mailing list.
 We have an active bug tracker (https://github.com/linkml/linkml/issues) with issues reported and fixed by both community members and the team,

@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:Event](https://w3id.org/linkml/examples/personinfo/Event)
 
 
@@ -36,4 +35,3 @@ URI: [personinfo:Event](https://w3id.org/linkml/examples/personinfo/Event)
 |  |  |  |
 | --- | --- | --- |
 | **Close Mappings:** | | schema:Event |
-
