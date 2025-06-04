@@ -1,7 +1,7 @@
 # LinkML Project Cookiecutter
 
 To start a new LinkML project, please use the [LinkML Project Cookiecutter](https://github.com/linkml/linkml-project-cookiecutter)
-command line tool.  This tool will generate a LinkML project directory for you, including the directory structure 
+command line tool.  This tool will generate a LinkML project directory for you, including the directory structure
 and commands necessary to build and test your project.  For  step-by-step instructions on using the linkml-project-cookiecutter, please
 [consult the documentation here](https://github.com/linkml/linkml-project-cookiecutter/blob/main/README.md).
 
@@ -21,7 +21,7 @@ poetry shell
 cruft create https://github.com/linkml/linkml-project-cookiecutter
 ```
 
-Answer the prompted questions to customize your project.  More details on the prompts and how to answer 
+Answer the prompted questions to customize your project.  More details on the prompts and how to answer
 them can be found [here](https://github.com/linkml/linkml-project-cookiecutter/blob/main/README.md).
 
 ## Build your LinkML project

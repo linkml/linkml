@@ -25,10 +25,10 @@ To run:
 Translation
 ^^^^^^^^^^^
 
-An example of translating the personinfo schema is shown below. 
+An example of translating the personinfo schema is shown below.
 
 .. code-block:: shex
-   
+
     <NamedThing>  (
         CLOSED {
            (  $<NamedThing_tes> (  schema:name @linkml:String ? ;
@@ -38,7 +38,7 @@ An example of translating the personinfo schema is shown below.
               rdf:type [ <NamedThing> ]
            )
         } OR @<Concept> OR @<Organization> OR @<Person>
-    )    
+    )
     <Person> CLOSED {
         (  $<Person_tes> (  &<NamedThing_tes> ;
               rdf:type [ <NamedThing> ] ? ;
@@ -56,8 +56,8 @@ An example of translating the personinfo schema is shown below.
            ) ;
            rdf:type [ schema:Person ]
         )
-    }   
-             
+    }
+
 Docs
 ----
 
@@ -73,6 +73,6 @@ Command Line
 Code
 ^^^^
 
-                   
+
 .. autoclass:: ShExGenerator
     :members: serialize

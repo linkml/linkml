@@ -17,7 +17,7 @@
 
 ## Generators
 
-Not all of these have API documentation, 
+Not all of these have API documentation,
 try running them with `--help` and see what happens!
 
 - {ref}`gen-jsonld-context <generators/jsonld-context:gen-jsonld-context>`

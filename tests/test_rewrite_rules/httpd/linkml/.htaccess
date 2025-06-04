@@ -75,5 +75,3 @@ RewriteRule ^(meta)$ meta.shex [L]
 
 # Rewrite Base URL
 RewriteRule ^(.*)$ https://linkml.github.io/linkml/$1 [R=302]
-
-

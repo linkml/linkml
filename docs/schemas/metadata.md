@@ -48,8 +48,8 @@ Person:
 ```
 
 In practice, aliases are used to help interpret the model, not as an equivalent name for a class or slot name.
-Downstream tooling could use these aliases to help users query the model for example, but the LinkML tooling does not consider 
-aliases and element names interchangeable. 
+Downstream tooling could use these aliases to help users query the model for example, but the LinkML tooling does not consider
+aliases and element names interchangeable.
 
 ## Structured aliases
 
@@ -121,7 +121,7 @@ prefixes:
   PATO: http://purl.obolibrary.org/obo/UO_
   qudt: http://qudt.org/schema/qudt/
   uom: https://w3id.org/uom/
-    
+
 slots:
   height_in_cm:
     range: float
@@ -131,7 +131,7 @@ slots:
       exact_mappings:
         - UO:0000015 ## centimeter
         - uom:cm
-      has_quantity_kind: PATO:0000119 ## height     
+      has_quantity_kind: PATO:0000119 ## height
 ```
 
 If you must, you can omit any kind of formal description altogether and simply
@@ -159,9 +159,3 @@ and automated data model mapping.
 ## Other metadata slots
 
 See [CommonMetadata](https://w3id.org/linkml/CommonMetadata) for other slots
-
-
-
-
-
-

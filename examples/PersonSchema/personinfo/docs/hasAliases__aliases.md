@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:hasAliases__aliases](https://w3id.org/linkml/examples/personinfo/hasAliases__aliases)
 
 
@@ -29,4 +28,3 @@ None &#8594;  <sub>0..\*</sub> [String](types/String.md)
 |  |  |  |
 | --- | --- | --- |
 | **Exact Mappings:** | | schema:alternateName |
-

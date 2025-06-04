@@ -1,7 +1,6 @@
 
 # Type: datetime
 
-
 The combination of a date and time
 
 URI: [linkml:Datetime](https://w3id.org/linkml/Datetime)
@@ -10,3 +9,9 @@ URI: [linkml:Datetime](https://w3id.org/linkml/Datetime)
 | --- | --- | --- |
 | Root (builtin) type | | **XSDDateTime** |
 | Representation | | str |
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Exact Mappings:** | | schema:DateTime |

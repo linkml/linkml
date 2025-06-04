@@ -23,5 +23,3 @@ type Organization
     name: String
     hasBoss: Manager
   }
-
-

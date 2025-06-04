@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:Address](https://w3id.org/linkml/examples/personinfo/Address)
 
 
@@ -30,4 +29,3 @@ URI: [personinfo:Address](https://w3id.org/linkml/examples/personinfo/Address)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | schema:PostalAddress |
-

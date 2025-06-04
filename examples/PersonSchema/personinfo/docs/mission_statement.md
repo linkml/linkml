@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:mission_statement](https://w3id.org/linkml/examples/personinfo/mission_statement)
 
 
