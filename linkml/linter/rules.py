@@ -4,7 +4,18 @@ from collections.abc import Iterable
 from functools import cache
 from typing import Callable
 
-from linkml_runtime.linkml_model import ClassDefinition, ClassDefinitionName, Element, SlotDefinition
+from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    ClassDefinitionName,
+    Element,
+    ElementName,
+    EnumDefinition,
+    EnumDefinitionName,
+    TypeDefinition,
+    TypeDefinitionName,
+    SlotDefinitionName,
+    SlotDefinition,
+)
 from linkml_runtime.utils.schemaview import SchemaView
 from prefixmaps.io.parser import load_multi_context
 
@@ -208,6 +219,19 @@ class TreeRootClassRule(LinterRule):
         return index_slots
 
 
+class NoUndeclaredSlotsRule(LinterRule):
+    id = "no_undeclared_slots"
+
+    def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
+        all_slots = schema_view.all_slots()
+        for class_name in schema_view.all_classes():
+            for slot_name in schema_view.class_slots(class_name):
+                if slot_name not in all_slots:
+                    yield LinterProblem(
+                        f"Slot '{slot_name}' from class '{class_name}' not found in schema 'slots' declaration."
+                    )
+
+
 class NoInvalidSlotUsageRule(LinterRule):
     id = "no_invalid_slot_usage"
 
@@ -257,7 +281,6 @@ class StandardNamingRule(LinterRule):
                     yield LinterProblem(f"Slot has name '{slot_name}'")
 
         for enum_name, enum_definition in schema_view.all_enums(imports=False).items():
-
             if "enum_definition" not in excluded_types:
                 if enum_pattern.fullmatch(enum_name) is None:
                     yield LinterProblem(f"Enum has name '{enum_name}'")
