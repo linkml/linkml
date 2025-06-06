@@ -1,8 +1,6 @@
 import json
-import os
 
 import pytest
-from yaml import safe_load
 
 from linkml.generators import ContextGenerator, JSONLDGenerator
 from tests.utils.compare_jsonld_context import CompareJsonldContext
@@ -52,17 +50,7 @@ def test_inlined_external_types(input_path, snapshot_path):
 )
 def test_expected_rdf(input_path, schema):
     schema_path = input_path(schema)
-    if os.environ.get("DETAILED_OUTPUT"):
-        print(f"\n‼️‼️‼️ Processing '{schema_path}' ‼️‼️‼️")
-
-    with open(schema_path) as schema_file:
-        schema_yaml = safe_load(schema_file)
-
     # generate the JSON-LD document
     output = JSONLDGenerator(schema_path).serialize()
-    rdf_expects = RdfExpectations(schema_yaml, json.loads(output))
-
-    rdf_expects.expected_id_uri()
-    rdf_expects.expected_namespaces()
-    rdf_expects.expected_classes()
-    rdf_expects.expected_slots()
+    rdf_expects = RdfExpectations(schema_path, json.loads(output))
+    rdf_expects.check_expectations()
