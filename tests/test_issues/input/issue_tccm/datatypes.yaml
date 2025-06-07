@@ -2,7 +2,7 @@ id: https://hotecosystem.org/tccm/datatype
 name: datatypes
 title: Axiomatic data types
 description: >-
-  Ths module identifies the core data types that are used in the TCCM. The term “data type” refers to
+  This module identifies the core data types that are used in the TCCM. The term “data type” refers to
   “a type whose instances are identified only by their value".
 license: https://creativecommons.org/publicdomain/zero/1.0/
 
