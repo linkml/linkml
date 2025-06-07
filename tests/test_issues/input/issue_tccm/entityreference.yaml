@@ -30,7 +30,7 @@ classes:
     description: The URI, namespace/name (if known) and a list of code systems that make assertions about the entity.
     slot_usage:
       about:
-        description: The external, permanant URI by which this entity is known.
+        description: The external, permanent URI by which this entity is known.
         range: PersistentURI
         required: true
       name:

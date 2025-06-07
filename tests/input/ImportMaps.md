@@ -15,7 +15,7 @@ Under the normal mode of operation, the above statements would import:
 2) _\<yaml file location\>_/includes/mappings.yaml
 
 Often, however, we may want to temporarily alter the location of the imported files for testing purposes.  As an example,
-we may have added a new type to `types.yaml` and need to test it locally before it is commited.   Similarly, we may have
+we may have added a new type to `types.yaml` and need to test it locally before it is committed.   Similarly, we may have
 copied the base yaml file but do not want to copy th accompanying files as well.
 
 Import Map files are used to address this problem.  An import map consists of a collection of JSON key/value pairs, where

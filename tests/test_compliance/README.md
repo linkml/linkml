@@ -15,7 +15,7 @@ We use pytest due to its ability to parametrize tests, and in particular generat
 This is important for exhaustive testing of how different constructs combine. See for example the inlining
 tests.
 
-Each test corresponds to a particular linkml construct or feature and is paramaterized by:
+Each test corresponds to a particular linkml construct or feature and is parameterized by:
 
 - schema parameters, that define different combinations of values for the metamodel element
 - data parameters, that define different combinations of test data
@@ -85,7 +85,7 @@ happen too frequently for stable generators.
 ## Adding Tests
 
 When adding a test for a new schema feature, follow the structure of the existing tests.
-These have two blocks: the first generates the schema (possibly from paramaters), and then
+These have two blocks: the first generates the schema (possibly from parameters), and then
 generates output from that schema using different generators using `validated_schema`.
 
 The second part generates test data, and then runs the tests using `check_data`
