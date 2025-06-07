@@ -63,7 +63,7 @@ fields:
     that an implementer can identify.  Performing a rigorous analysis of upstream
     data providers is expected; every effort is made to catalog the most upstream
     source of data in this property.  Only one data source should be declared primary
-    in any association.  "aggregator knowledge source" can be used to caputre non-primary
+    in any association.  "aggregator knowledge source" can be used to capture non-primary
     sources.
   display_name: primary knowledge source
 - id: aggregator_knowledge_source

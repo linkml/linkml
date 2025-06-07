@@ -1359,7 +1359,7 @@ slots:
       to express the statement that “Chemical X causes increased expression of Gene Y”, the core triple is read
       using the fields subject:ChemX, predicate:affects, object:GeneY . . . and the full statement is read using
       the fields subject:ChemX, qualified_predicate:causes, object:GeneY, object_aspect: expression,
-      object_direction:increased. The predicate ‘affects’ is needed for the core triple reading, but doesnt make
+      object_direction:increased. The predicate ‘affects’ is needed for the core triple reading, but doesn't make
       sense in the full statement reading  (because “Chemical X affects increased expression of Gene Y'' is not
       what we mean to say here: it causes increased expression of Gene Y)
 
@@ -3108,7 +3108,7 @@ slots:
       and a condition (a phenotype or disease), where the
       presence of the entity reduces or eliminates some or
       all aspects of the condition.
-    # 'biological entity' currently includes 'exposure event' which covers alot of related ground
+    # 'biological entity' currently includes 'exposure event' which covers a lot of related ground
     domain: named thing
     range: disease or phenotypic feature
     annotations:
@@ -3130,7 +3130,7 @@ slots:
       environmental exposure, or some form of genetic variation)
       and a condition (a phenotype or disease), where the presence
       of the entity worsens some or all aspects of the condition.
-    # 'biological entity' currently includes 'exposure event' which covers alot of related ground
+    # 'biological entity' currently includes 'exposure event' which covers a lot of related ground
     domain: biological entity
     range: disease or phenotypic feature
     annotations:
@@ -3201,7 +3201,7 @@ slots:
       process or chemical entity that is used to treat the condition
     domain: disease or phenotypic feature
     range: chemical or drug or treatment
-    # range: chemical or drug or treatement
+    # range: chemical or drug or treatment
     in_subset:
       - translator_minimal
     inverse: treats
@@ -4934,7 +4934,7 @@ slots:
       The most upstream source of the knowledge expressed in an Association that an
       implementer can identify.  Performing a rigorous analysis of upstream data providers is expected; every effort
       is made to catalog the most upstream source of data in this property.  Only one data source should be declared
-      primary in any association.  "aggregator knowledge source" can be used to caputre non-primary sources.
+      primary in any association.  "aggregator knowledge source" can be used to capture non-primary sources.
     range: information resource
     notes: >-
       For example: a single ChemicalToGene Edge originally curated by ClinicalTrials.org, is aggregated by ChEMBL, then
@@ -5113,7 +5113,7 @@ slots:
   supporting documents:
     is_a: association slot
     description: >-
-      One or more referencable documents that report the statement expressed in an Association, or provide
+      One or more referenceable documents that report the statement expressed in an Association, or provide
       information used as evidence supporting this statement.
     range: uriorcurie
     multivalued: true
@@ -7434,7 +7434,7 @@ classes:
     in_subset:
       - model_organism_database
     narrow_mappings:
-      - SO:0000104 # polypeptide definde in SO conflates protein and polypeptide
+      - SO:0000104 # polypeptide defined in SO conflates protein and polypeptide
       # Amino Acid, Peptide, or Protein
       - STY:T116
       # Amino Acid Sequence

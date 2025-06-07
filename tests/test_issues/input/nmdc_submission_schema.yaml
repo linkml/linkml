@@ -1490,8 +1490,8 @@ enums:
         text: electric light
       desk lamp:
         text: desk lamp
-      flourescent lights:
-        text: flourescent lights
+      fluorescent lights:
+        text: fluorescent lights
       none:
         text: none
   window_mat_enum:
@@ -3543,7 +3543,7 @@ slots:
     required: true
   env_package:
     name: env_package
-    description: Select the MIxS enviromental package that best describes the environment
+    description: Select the MIxS environmental package that best describes the environment
       from which your sample was collected.
     title: environmental package
     examples:
@@ -7940,7 +7940,7 @@ slots:
       occurrence:
         tag: occurrence
         value: '1'
-    description: The phsical condition of the door
+    description: The physical condition of the door
     title: door condition
     examples:
     - value: new
@@ -13789,7 +13789,7 @@ slots:
     description: "Temperature at which a liquid becomes semi solid and loses its flow\
       \ characteristics. In crude oil a high\xAC\u2020pour point\xAC\u2020is generally\
       \ associated with a high paraffin content, typically found in crude deriving\
-      \ from a larger proportion of plant material. (soure: https://en.wikipedia.org/wiki/pour_point)"
+      \ from a larger proportion of plant material. (source: https://en.wikipedia.org/wiki/pour_point)"
     title: pour point
     examples:
     - value: ''
@@ -17795,7 +17795,7 @@ classes:
         comments:
         - Identifiers must be prefixed. IGSNs (http://www.geosamples.org/getigsn)
           are unique and FAIR. UUIDs (https://www.uuidgenerator.net/) are globally
-          unique but not FAIR. These IDs enable linking to derrived analytes and subsamples.
+          unique but not FAIR. These IDs enable linking to derived analytes and subsamples.
         examples:
         - value: IGSN:AU1243
         identifier: true
@@ -20409,7 +20409,7 @@ classes:
         comments:
         - Identifiers must be prefixed. IGSNs (http://www.geosamples.org/getigsn)
           are unique and FAIR. UUIDs (https://www.uuidgenerator.net/) are globally
-          unique but not FAIR. These IDs enable linking to derrived analytes and subsamples.
+          unique but not FAIR. These IDs enable linking to derived analytes and subsamples.
         examples:
         - value: IGSN:AU1243
         identifier: true
@@ -22082,7 +22082,7 @@ classes:
         comments:
         - Identifiers must be prefixed. IGSNs (http://www.geosamples.org/getigsn)
           are unique and FAIR. UUIDs (https://www.uuidgenerator.net/) are globally
-          unique but not FAIR. These IDs enable linking to derrived analytes and subsamples.
+          unique but not FAIR. These IDs enable linking to derived analytes and subsamples.
         examples:
         - value: IGSN:AU1243
         identifier: true
@@ -24969,7 +24969,8 @@ classes:
         comments:
         - Identifiers must be prefixed. IGSNs (http://www.geosamples.org/getigsn)
           are unique and FAIR. UUIDs (https://www.uuidgenerator.net/) are globally
-          unique but not FAIR. These IDs enable linking to derrived analytes and subsamples.
+          unique but not FAIR. These IDs enable linking to derived analytes and subsamples.
+ analytes and subsamples.
         examples:
         - value: IGSN:AU1243
         identifier: true

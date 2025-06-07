@@ -8163,7 +8163,7 @@ biolink:primary_knowledge_source a owl:ObjectProperty,
     rdfs:label "primary knowledge source" ;
     rdfs:range biolink:InformationResource ;
     rdfs:subPropertyOf biolink:knowledge_source ;
-    skos:definition "The most upstream source of the knowledge expressed in an Association that an implementer can identify.  Performing a rigorous analysis of upstream data providers is expected; every effort is made to catalog the most upstream source of data in this property.  Only one data source should be declared primary in any association.  \"aggregator knowledge source\" can be used to caputre non-primary sources." ;
+    skos:definition "The most upstream source of the knowledge expressed in an Association that an implementer can identify.  Performing a rigorous analysis of upstream data providers is expected; every effort is made to catalog the most upstream source of data in this property.  Only one data source should be declared primary in any association.  \"aggregator knowledge source\" can be used to capture non-primary sources." ;
     skos:editorialNote "For example: a single ChemicalToGene Edge originally curated by ClinicalTrials.org, is aggregated by ChEMBL, then  incorporated into the MolePro KP, then sent via TRAPI message to the ARAGORN ARA, and finally sent to  the NCATS ARS. The retrieval path for this Edge is as follows:  ARS--retrieved_from-->  ARAGORN  --retrieved_from-->   MolePro  --retrieved_from--> ChEMBL --retrieved_from-->  ClinicalTrials.gov The \"primary knowledge source\" for this edge is \"infores:clinical-trials-gov\".  \"infores:chembl\" and \"infores:molecular_data_provider\" are listed in the \"aggregator knowledge source\" property." ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> .
 
