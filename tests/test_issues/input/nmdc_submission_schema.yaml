@@ -24970,7 +24970,6 @@ classes:
         - Identifiers must be prefixed. IGSNs (http://www.geosamples.org/getigsn)
           are unique and FAIR. UUIDs (https://www.uuidgenerator.net/) are globally
           unique but not FAIR. These IDs enable linking to derived analytes and subsamples.
- analytes and subsamples.
         examples:
         - value: IGSN:AU1243
         identifier: true
