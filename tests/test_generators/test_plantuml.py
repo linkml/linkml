@@ -117,7 +117,10 @@ def test_serialize_selected(input_class, expected, kitchen_sink_path, kroki_url)
 
     # check that the expected block/relationships are present
     # in class-selected diagrams
-    assert expected in plantuml
+    # Strip whitespace from each line to normalize comparison
+    expected_stripped = '\n'.join(line.rstrip() for line in expected.splitlines())
+    plantuml_stripped = '\n'.join(line.rstrip() for line in plantuml.splitlines())
+    assert expected_stripped in plantuml_stripped
 
     # make sure that random classes like `MarriageEvent` which
     # have no defined relationships with classes like `FamilialRelationship`
