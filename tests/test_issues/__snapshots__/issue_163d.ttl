@@ -9,10 +9,10 @@
 
 ex:example163d a linkml:SchemaDefinition ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
-    sh:declare [ sh:namespace linkml: ;
-            sh:prefix "linkml" ],
-        [ sh:namespace ex: ;
-            sh:prefix "ex" ] ;
+    sh:declare [ sh:namespace ex: ;
+            sh:prefix "ex" ],
+        [ sh:namespace linkml: ;
+            sh:prefix "linkml" ] ;
     linkml:classes ex:C1 ;
     linkml:default_prefix "ex" ;
     linkml:default_range ex:string ;
