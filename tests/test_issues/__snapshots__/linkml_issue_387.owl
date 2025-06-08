@@ -7,13 +7,13 @@
 ex:C1 a owl:Class ;
     rdfs:label "C1" ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty ex:a ],
+        [ a owl:Restriction ;
             owl:allValuesFrom xsd:string ;
             owl:onProperty ex:a ],
         [ a owl:Restriction ;
             owl:minCardinality 0 ;
-            owl:onProperty ex:a ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
             owl:onProperty ex:a ] ;
     skos:inScheme <https://w3id.org/linkml/examples/test> .
 
