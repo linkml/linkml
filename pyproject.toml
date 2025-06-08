@@ -199,7 +199,7 @@ sphinxcontrib-programoutput = "^0.17"
 
 [tool.codespell]
 # TODO: bring in tests in too
-skip = '.git,*.pdf,*.svg,tests/test_biolink_model/__snapshots__/*,tests/data/*,/tests,pyproject.toml,*.dill,poetry.lock,./notebooks/DistributedModels.ipynb,./docs/LinkML-logo/LinkML-Revised-Round-Logo-MASTER-FILE.ai'
+skip = '.git,*.pdf,*.svg,./tests/test_biolink_model/__snapshots__/biolink.schema.json,./tests/test_biolink_model/__snapshots__/*,tests/data/*,/tests,pyproject.toml,*.dill,hp_f.ttl,hp.ttl,poetry.lock,./notebooks/DistributedModels.ipynb,./docs/LinkML-logo/LinkML-Revised-Round-Logo-MASTER-FILE.ai'
 # Ignore table where words could be split across rows
 # Ignore shortcut specifications like [Ff]alse
 ignore-regex = '(\|.*\|.*\|.*\||\[[A-Z][a-z]\][a-z][a-z])'
