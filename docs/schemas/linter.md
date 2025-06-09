@@ -117,7 +117,7 @@ Require a single class with `tree_root: true` and optionally verify that class's
 
 ## Reports
 
-By default, if the `linkml-lint` command identifies violations of the configured rules it will print the files and issues to the terminal. This behavior can be changed with the `--format` and `--output` command line options. 
+By default, if the `linkml-lint` command identifies violations of the configured rules it will print the files and issues to the terminal. This behavior can be changed with the `--format` and `--output` command line options.
 
 The valid values for `--format` are terminal (the default), markdown, json, and tsv.
 
@@ -131,11 +131,11 @@ linkml-lint --format markdown --output linter-results.md myschema.yaml
 
 ## Exit Codes
 
-If the linter does not encounter any rule violations at all it will exit with code `0`. 
+If the linter does not encounter any rule violations at all it will exit with code `0`.
 
 If the linter encounters rule violations with `level: error` it will exit with code `2`. This will be the case regardless of whether there are also rule violations with `level: warning`.
 
-By default, if the linter encounters _only_ rule violations with `level: warning` it will exit with code `1`. This behavior can be changed with command line options. In this scenario, if the `--ignore-warnings` flag is provided the exit code will be `0`. If instead the `--max-warnings <int>` option is passed, the exit code will be `1` or `0` depending on whether the number of warning rule violations is greater than the provided number or not. If both `--ignore-warnings` and `--max-warnings` are used `--ignore-warnings` takes precedence. 
+By default, if the linter encounters _only_ rule violations with `level: warning` it will exit with code `1`. This behavior can be changed with command line options. In this scenario, if the `--ignore-warnings` flag is provided the exit code will be `0`. If instead the `--max-warnings <int>` option is passed, the exit code will be `1` or `0` depending on whether the number of warning rule violations is greater than the provided number or not. If both `--ignore-warnings` and `--max-warnings` are used `--ignore-warnings` takes precedence.
 
 ## API Docs
 
