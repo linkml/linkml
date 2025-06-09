@@ -40,7 +40,7 @@ class GraphqlGenerator(Generator):
 
     def visit_class(self, cls: ClassDefinition) -> str:
         etype = "interface" if (cls.abstract or cls.mixin) and not cls.mixins else "type"
-        mixins = ", ".join([camelcase(mixin) for mixin in cls.mixins])
+        mixins = " & ".join([camelcase(mixin) for mixin in cls.mixins])
         out = f"{etype} {camelcase(cls.name)}" + (f" implements {mixins}" if mixins else "")
         out = "\n".join([out, "  {"])
         return out
