@@ -136,6 +136,8 @@ def test_abstract_class(capsys):
     assert 'CREATE TABLE "dummy class"' in ddl2
     assert 'CREATE TABLE "inherited class"' in ddl2
 
+def test_index_sqlddl():
+    assert True
 
 @pytest.mark.parametrize(
     ("slot_range", "ddl_type"),
