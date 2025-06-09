@@ -139,7 +139,7 @@ slot_usage:
 
 Looking up a particular slot:
 ```bash
-✗ yq e '.classes.Person.is_a' personinfo.yaml | less  
+✗ yq e '.classes.Person.is_a' personinfo.yaml | less
 NamedThing
 ```
 
