@@ -410,6 +410,21 @@ class DocGenerator(Generator):
         curie = self.uri(element, expand=False)
         return f"[{curie}]({uri})"
 
+    def link_mermaid(self, e: Union[Definition, DefinitionName]) -> str:
+        """
+        Return link to insert in mermaid diagrams for a given element
+
+        :param e: element to be linked
+        :return: string with link
+        """
+        # Reuse markdown link generation to avoid code duplication.
+        md_link = self.link(e)
+        if not md_link.endswith(")"):
+            return md_link
+        link = md_link.rsplit("(")[-1][:-1]
+        link = link.removesuffix(".md")
+        return f"../{link}/"
+
     def link(self, e: Union[Definition, DefinitionName], index_link: bool = False) -> str:
         """
         Render an element as a hyperlink
@@ -492,7 +507,7 @@ class DocGenerator(Generator):
             return False
 
     @staticmethod
-    def _markdown_link(n: str, name: str = None, subfolder: str = None) -> str:
+    def _markdown_link(n: str, name: str = "", subfolder: str = "") -> str:
         if subfolder:
             rel_path = f"{subfolder}/{n}"
         else:
