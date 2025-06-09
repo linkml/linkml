@@ -354,11 +354,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">FileSystemLoader</span><span class="p">,</span> <span class="n">Template</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.dumpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">yaml_dumper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.dumpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">json_dumper</span><span class="p">,</span> <span class="n">yaml_dumper</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ClassDefinition</span><span class="p">,</span>
     <span class="n">ClassDefinitionName</span><span class="p">,</span>
@@ -1312,6 +1312,80 @@
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">objs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">stem</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()))</span>
         <span class="k">return</span> <span class="n">objs</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_remove_name_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Recursively removes &#39;name&#39; keys from a JSON object representation.</span>
+
+<span class="sd">        This is used to clean up the output of ClassRule objects. For example, if we had a rule like:</span>
+<span class="sd">        rules:</span>
+<span class="sd">        - title: calibration_standard_if_rt</span>
+<span class="sd">            preconditions:</span>
+<span class="sd">                slot_conditions:</span>
+<span class="sd">                    calibration_target:</span>
+<span class="sd">                        equals_string: retention_index</span>
+
+<span class="sd">        The JSON representation would include redundant &quot;name&quot; keys:</span>
+<span class="sd">        {</span>
+<span class="sd">            &quot;slot_conditions&quot;: {</span>
+<span class="sd">                &quot;name&quot;: &quot;slot_conditions&quot;</span>
+<span class="sd">                &quot;calibration_target&quot;: {</span>
+<span class="sd">                    &quot;name&quot;: &quot;calibration_target&quot;</span>
+<span class="sd">                    &quot;equals_string&quot;: &quot;retention_index&quot;,</span>
+<span class="sd">                },</span>
+<span class="sd">            }</span>
+<span class="sd">        }</span>
+
+<span class="sd">        This function removes those redundant &quot;name&quot; keys to make the output cleaner.</span>
+
+<span class="sd">        :param obj: The object to clean (dict, list, or primitive value)</span>
+<span class="sd">        :return: The same object with all &quot;name&quot; keys removed from dicts</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_name_keys</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">&quot;name&quot;</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_remove_name_keys</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">obj</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">classrule_to_dict_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process all rules (of type ClassRule) asserted on a class.</span>
+
+<span class="sd">        This method iterates through all rules asserted on a class and returns a list of</span>
+<span class="sd">        dictionaries, each containing four pieces of information about a rule:</span>
+<span class="sd">        _title_, _preconditions_, _postconditions_, and _elseconditions_.</span>
+<span class="sd">        These values will be read in the jinja template and formatted into a tabular</span>
+<span class="sd">        view for users to understand the rules applied to the class.</span>
+
+<span class="sd">        Note: This method removes redundant &quot;name&quot; keys which are asserted on some</span>
+<span class="sd">        classes in the Python representation of classes from the metamodel.</span>
+
+<span class="sd">        :param element: LinkML class object with `rules` asserted on it</span>
+<span class="sd">        :return: List of dictionaries with title and &quot;sanitized&quot; conditions for each rule</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">element</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">rule_dicts</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">element</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+            <span class="c1"># TODO: expand this list of ClassRule metaslots based on use case</span>
+            <span class="n">rule_dict</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">rule</span><span class="o">.</span><span class="n">title</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;preconditions&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;postconditions&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;elseconditions&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">}</span>
+
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;preconditions&quot;</span><span class="p">,</span> <span class="s2">&quot;postconditions&quot;</span><span class="p">,</span> <span class="s2">&quot;elseconditions&quot;</span><span class="p">]:</span>
+                <span class="n">condition_obj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">condition_obj</span><span class="p">:</span>
+                    <span class="n">json_obj</span> <span class="o">=</span> <span class="n">json_dumper</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">condition_obj</span><span class="p">)</span>
+                    <span class="n">sanitized_condition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_name_keys</span><span class="p">(</span><span class="n">json_obj</span><span class="p">)</span>
+                    <span class="n">rule_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">sanitized_condition</span>
+
+            <span class="n">rule_dicts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rule_dict</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rule_dicts</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">customize_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="n">Environment</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">truncate_descriptions</span><span class="p">:</span>
