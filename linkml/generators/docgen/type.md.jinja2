@@ -1,4 +1,4 @@
-# Type: {{ gen.name(element) }} {% if element.deprecated %} <span style="color: red;"><strong> (DEPRECATED) </strong> {% endif %}
+# Type: {{ gen.name(element) }} {% if element.deprecated %} <span style="color: red;"><strong> (DEPRECATED) </strong></span> {% endif %}
 
 {% if element.description %}
 {% set element_description_lines = element.description.split('\n') %}
@@ -15,8 +15,7 @@ URI: {{ gen.uri_link(element) }}
 {{ gen.bullet(element, "typeof") }}
 {{ gen.bullet(element, "pattern", backquote=True) }}
 {% if gen.number_value_range(element) %}
-* Numeric Value Range: {{gen.number_value_range(element)}}
+* Numeric Value Range: {{ gen.number_value_range(element) }}
 {% endif %}
 
 {% include "common_metadata.md.jinja2" %}
-
