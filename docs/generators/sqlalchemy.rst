@@ -16,7 +16,7 @@ In principle, two styles of mappings are possible:
    pre-existing object model, such as one created by the existing
    python or pydantic generators
 
-Currently only the Declarative style is fully supported   
+Currently only the Declarative style is fully supported
 
 Overview
 --------
@@ -59,10 +59,10 @@ Given input such as:
         - in_location
         - diagnosis
         - procedure
-          
 
-The generated Python will look like:          
-          
+
+The generated Python will look like:
+
 .. code:: python
 
     class Person(NamedThing):
@@ -70,7 +70,7 @@ The generated Python will look like:
         A person (alive, dead, undead, or fictional).
         """
         __tablename__ = 'Person'
-        
+
         primary_email = Column(Text())
         birth_date = Column(Text())
         age_in_years = Column(Integer())
@@ -89,7 +89,7 @@ The generated Python will look like:
         aliases = association_proxy("aliases_rel", "alias",
                                       creator=lambda x_: Person_alias(alias=x_))
         has_news_events = relationship( "NewsEvent", secondary="Person_has_news_event")
-          
+
 
 The first line of the class is a `Declarative Table
 <https://docs.sqlalchemy.org/en/14/orm/declarative_tables.html>`_
@@ -102,7 +102,7 @@ properties
 section of the SQLA docs.
 
 Note that class slots are "rolled down".
-        
+
 Docs
 ----
 
@@ -118,6 +118,6 @@ Command Line
 Code
 ^^^^
 
-                   
+
 .. autoclass:: SQLAlchemyGenerator
     :members: serialize
