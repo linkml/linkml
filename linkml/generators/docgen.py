@@ -500,7 +500,6 @@ class DocGenerator(Generator):
         return self._is_external(t) and not self.schemaview.schema.id.startswith("https://w3id.org/linkml/")
 
     def _is_external(self, element: Element) -> bool:
-        # note: this is currently incomplete. See: https://github.com/linkml/linkml/issues/782
         if element.from_schema == "https://w3id.org/linkml/types" and not self.genmeta:
             return True
         else:
