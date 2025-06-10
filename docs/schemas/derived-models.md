@@ -13,7 +13,7 @@ Examples of things that can be derived:
     - slot_usage
     - information from parent/ancestor slots
     - information from parent/ancestor classes
-- deriving patterns from structured patterns  
+- deriving patterns from structured patterns
 
 ## Materializing a derived model
 
