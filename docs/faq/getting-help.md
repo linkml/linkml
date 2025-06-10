@@ -22,5 +22,3 @@ have java generators on the way, and can prioritize more on demand!
 ## For python generation, can I use pydantic instead of dataclasses?
 
 Yes, see [gen-pydantic](../generators/pydantic)
-
-
