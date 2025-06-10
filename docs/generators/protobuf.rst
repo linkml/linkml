@@ -42,7 +42,7 @@ are inherited from NamedThing, and `aliases` are inherited from a mixin:
     attributes:
       aliases:
         multivalued: true
-        
+
   Person:
     is_a: NamedThing
     mixins:
@@ -56,7 +56,7 @@ are inherited from NamedThing, and `aliases` are inherited from a mixin:
 (some parts truncated for brevity)
 
 This would generate the following Protobuf:
-        
+
 .. code-block:: proto
 
     // A generic grouping for any identifiable entity
@@ -67,7 +67,7 @@ This would generate the following Protobuf:
       optional description String = 3
       optional image String = 4
      }
-     
+
     // A person (alive, dead, undead, or fictional).
     message Person
      {
@@ -87,10 +87,10 @@ This would generate the following Protobuf:
      }
 
 
-      
+
 Docs
 ----
-      
+
 Command Line
 ^^^^^^^^^^^^
 
@@ -102,7 +102,6 @@ Code
 ^^^^
 
 .. currentmodule:: linkml.generators.protogen
-                   
+
 .. autoclass:: ProtoGenerator
     :members: serialize
-

@@ -7,7 +7,7 @@ Example Output
 --------------
 
 `personinfo.shacl.ttl <https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/shacl/personinfo.shacl.ttl>`_
-             
+
 Overview
 --------
 
@@ -38,7 +38,7 @@ Example Input:
     attributes:
       aliases:
         multivalued: true
-        
+
   Person:
     is_a: NamedThing
     mixins:
@@ -96,6 +96,6 @@ Command Line
 Code
 ^^^^
 
-                   
+
 .. autoclass:: ShaclGenerator
     :members: serialize

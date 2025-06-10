@@ -26,7 +26,7 @@ objects. For example:
 .. code:: python
 
     from personinfo import Person
-    p1 = Person('P1', name='John Smith')          
+    p1 = Person('P1', name='John Smith')
 
 The linkml-runtime framework can be used to serialize these objects to
 JSON, YAML, RDF, and TSV, as well as to load them
@@ -62,7 +62,7 @@ adding inlined objects any of the following can be used:
     event = EmploymentEvent(...)
     # method 1: creation with objects
     p1 = Person('P1', name='John Smith', employment_history=[event])
-    
+
     # method 2: creation with dicts
     p1 = Person('P1', name='John Smith', employment_history=[{...}])
 
@@ -84,16 +84,16 @@ references organization via a non-inlined reference, so the following
 code is generated:
 
 .. code:: python
-          
+
     class OrganizationId(NamedThingId):
 
     ...
-    
+
     @dataclass
     class EmploymentEvent(Event):
 
         employed_at: Optional[Union[str, OrganizationId]] = None
-    
+
 
 Types
 ^^^^^
@@ -105,7 +105,7 @@ For user-defined types, a class is created which inherits from that
 Python base type.
 
 
-    
+
 Code Docs
 ---------
 
@@ -121,7 +121,7 @@ Command Line
 Code
 ^^^^
 
-                   
+
 .. autoclass:: PythonGenerator
     :members: serialize
 
@@ -142,14 +142,14 @@ The elements that control the python for slot generation include
 
 * Whether ``range`` references an instance of a LinkML ``type`` or a LinkML ``class``
 * If the slot range is a ``class``:
-  
+
     - Whether the class has a key (``key: <type>``), an identifier
       (``identifier: <type>``), or neither
     - If the class has a ``key`` or ``identifier``, whether the
        instances are inlined as a dictionary (``inlined: true``),
        inlined as a list (``inlined_as_list: true``) or are referenced
        elsewhere in the model (Default).
-       
+
 * Whether the slot is concrete (``abstract: false``) or abstract
   (``abstract: true`` or ``mixin: true``) (Default: ``false``)
 * Whether a slot is required (``required: true``) or optional
@@ -159,12 +159,12 @@ The elements that control the python for slot generation include
 * The ``ifabsent`` attribute (not covered in this document)
 * The ``default`` value (not covered in this document)
 
-  
+
 These various situations are described more detail below:
 
 1) Slot range is a LinkML ``type`` definition
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   
+
 LinkML type definitions can take one of three forms:
 
 - 1) Builtin python type
@@ -173,11 +173,11 @@ LinkML type definitions can take one of three forms:
 (e.g. 'str', 'int', 'float', etc)           ...``
 
 - 2) Defined type
-  
+
 ``yaml     types:        <type>:           base: <type defined in linkml/linkml_runtime/utils/metamodelcore.py> (e.g. URIorCURIE, Date, NCName, etc)           ...``
 
 3) Inherited type
-   
+
    ``yaml  types:     <type>:        typeof: <parent type>`` Each of
    these are outlined below
 
@@ -443,7 +443,7 @@ class representing the element and the ``repr`` element
 ::
 
        mand_multi_integer: Union[int, List[int]] = None
-       
+
 
 ``XSDDate`` type:
 
@@ -614,13 +614,13 @@ An optional, single element class generates the following code:
            Range is a optional class that contains one non-key/non-identifier element
            """
            ...
-       
+
            v1: Optional[Union[dict, OneElementClass]] = None
-       
+
            def __post_init__(self, **kwargs: Dict[str, Any]):
                if self.v1 is not None and not isinstance(self.v1, OneElementClass):
                    self.v1 = OneElementClass(**self.v1)
-       
+
                super().__post_init__(**kwargs)
 
 ``v1`` can be one of: \* ``None`` - as in indicated by the ``Optional``
@@ -1532,12 +1532,12 @@ or in python as:
 .. code:: python
 
    ktec_examples = OptionalMultivaluedInlinedListIdentifiedThreeElementRange(
-       { 
+       {
            element1: {value: 17, modifier: "2012-03-11"},
            KeyedThreeElementClassKey('element2'): {},
            element3: {name: 'element3', value: 42}
-       }   
-   )  
+       }
+   )
 
 Note that the following is not valid because, while the ``name``
 attribute (the key) is not required, as it has already been established
@@ -1591,8 +1591,8 @@ And the Python equivalent would be:
        [ {name: 'element1', value: 17, modifier: "2012-03-11"},
          {name: KeyedThreeElementClassKey('element2')},
          {name: 'element3', value: 42}
-       ]  
-   )  
+       ]
+   )
 
 We then move on to the generated code:
 
@@ -1720,7 +1720,7 @@ At the moment, the following code is emitted:
    # Slots
    class slots:
        pass
-       
+
        ...
 
    slots.RequiredInlinedKeyedTwoElementRange_v1 = Slot(uri=LISTS_AND_KEYS.v1, name="RequiredInlinedKeyedTwoElementRange_v1", curie=LISTS_AND_KEYS.curie('v1'),
