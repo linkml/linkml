@@ -13,8 +13,8 @@
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/common.css?v=b029f2e4" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/notebooks.css?v=8a1ccf7d" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/common.css?v=95000900" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/notebooks.css?v=1ce917dd" />
     
     
 
@@ -404,7 +404,7 @@ the <code class="docutils literal notranslate"><span class="pre">instantiates</s
 stating that this class is an instance of the <code class="docutils literal notranslate"><span class="pre">Reviewable</span></code> metamodel extension class:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">instantiates</span><span class="p">:</span><span class="w"> </span>
+<span class="w">    </span><span class="nt">instantiates</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mymetamodel:Reviewable</span>
 <span class="w">    </span><span class="nt">annotations</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">review</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A very useful class that is well defined</span>
@@ -431,7 +431,7 @@ attached to schema elements via annotations.</p>
 <p>Other schema elements can also instantiate the <code class="docutils literal notranslate"><span class="pre">Reviewable</span></code> class:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">instantiates</span><span class="p">:</span><span class="w"> </span>
+<span class="w">    </span><span class="nt">instantiates</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mymetamodel:Reviewable</span>
 <span class="w">    </span><span class="nt">annotations</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">review</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A very useful class that is well defined</span>
@@ -477,7 +477,7 @@ intent, but does not yet enforce validation.</p>
 <p>Any schema element that instantiates <code class="docutils literal notranslate"><span class="pre">StrictElement</span></code> must have a description:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">instantiates</span><span class="p">:</span><span class="w"> </span>
+<span class="w">    </span><span class="nt">instantiates</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mymetamodel:StrictElement</span>
 <span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A person, living or dead</span><span class="w">   </span><span class="c1">## must be provided</span>
 </pre></div>

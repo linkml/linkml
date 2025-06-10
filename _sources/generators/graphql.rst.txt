@@ -44,12 +44,12 @@ Inheritance
         hasFamilialRelationships: [FamilialRelationship]
         hasMedicalHistory: [MedicalEvent]
         aliases: [String]
-      }                
+      }
 
-      
+
 Docs
 ----
-      
+
 Command Line
 ^^^^^^^^^^^^
 
@@ -61,7 +61,6 @@ Code
 ^^^^
 
 .. currentmodule:: linkml.generators.graphqlgen
-                   
+
 .. autoclass:: GraphqlGenerator
     :members: serialize
-

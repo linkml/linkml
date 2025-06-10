@@ -28,7 +28,7 @@ specifies how to calculate the value of a slot, as demonstrated here:
           range: boolean
           equals_expression: "{age_in_years} < 18"
 
-The following code will populate missing values:          
+The following code will populate missing values:
 
 .. code-block:: python
 
@@ -48,9 +48,9 @@ String serialization
 For simple string based expressions,
 `string_serialization <https://w3id.org/linkml/string_serialization>`_
 can be used:
-    
+
 .. code-block:: yaml
-  
+
   Address:
     attributes:
       street:
@@ -71,24 +71,22 @@ The following code will populate the full address:
     infer_all_slot_values(p, schemaview=sv)
     print(a.full_address)
 
-    
+
 Configuration
 -------------
 
 .. currentmodule:: linkml_runtime.utils.inference_utils
 
 .. autoclass:: Config
-               
+
 .. autoclass:: Policy
-                   
+
 
 Code
 ----
-          
+
 .. currentmodule:: linkml_runtime.utils.inference_utils
 
 .. autofunction:: infer_slot_value
-                  
-.. autofunction:: infer_all_slot_values
-                   
 
+.. autofunction:: infer_all_slot_values

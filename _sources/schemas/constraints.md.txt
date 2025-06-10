@@ -19,7 +19,7 @@ as a unique key for an isotope:
       - neutron_number
   ChemicalElement:
     is_a: ChemicalEntity
-    
+
   Isotope:
     is_a: ChemicalEntity
     unique_keys:
@@ -119,5 +119,3 @@ Any numeric value can have minimum and maximum values specified
 
 The above describes the core constraint feature. See the [advanced features guide](advanced.md) for more on how
 to write rules and expressions for more expressive constraints.
-
-

@@ -13,8 +13,8 @@
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/common.css?v=b029f2e4" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/notebooks.css?v=8a1ccf7d" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/common.css?v=95000900" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/notebooks.css?v=1ce917dd" />
     
     
 
@@ -460,7 +460,7 @@ text.</p>
 
 <span class="nt">enums</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">SpeciesRng</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span><span class="w"> </span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">horse</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">frog</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">BluePink</span><span class="p">:</span>
@@ -495,7 +495,7 @@ text.</p>
 <span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
 <span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span>
 <span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant type</span>
-<span class="w">        </span>
+
 <span class="nt">slots</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">variant type</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant_type_enum</span>
@@ -503,12 +503,12 @@ text.</p>
 
 <span class="nt">enums</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">variant_type_enum</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span><span class="w"> </span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">point_mutation</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:1000008</span>
 <span class="w">      </span><span class="nt">deletion</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:0000159</span>
-<span class="w">      </span><span class="nt">insertion</span><span class="p">:</span><span class="w"> </span>
+<span class="w">      </span><span class="nt">insertion</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:0000667</span>
 </pre></div>
 </div>
@@ -649,7 +649,7 @@ is: <a class="reference external" href="https://pypi.org/project/LinkChecker/">L
 <h3>Are CURIEs used in data that validates against a given LinkML schema checked for expandability and resolution?<a class="headerlink" href="#are-curies-used-in-data-that-validates-against-a-given-linkml-schema-checked-for-expandability-and-resolution" title="Permalink to this heading">#</a></h3>
 <p>No, not at this time.  However, linkml_runtime does have methods to help you expand the CURIEs in your data
 using the prefixes in your model (see: linkml_runtime.utils.namespaces.py) into URIs.  Specifying a regular expression
-to constrain the CURIEs in your data to a particular pattern is also possible.<br />
+to constrain the CURIEs in your data to a particular pattern is also possible.
 See the <a class="reference external" href="https://w3id.org/linkml/regular_expression">regular expression</a> metaslot.  However, validating a CURIE
 that matches the regular expression, but is invalid in some other way (e.g. is an obsolete ontology term) is not
 currently supported.</p>
@@ -780,9 +780,9 @@ Python keyword, and the generated python code will raise errors. For now the rec
 <span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
 <span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">allele of</span>
 <span class="w">  </span><span class="nt">gene</span><span class="p">:</span>
-<span class="w">     </span>
+
 <span class="nt">slots</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">allele of</span><span class="p">:</span><span class="w"> </span>
+<span class="w">  </span><span class="nt">allele of</span><span class="p">:</span>
 <span class="w">     </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span>
 <span class="w">     </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">allele</span>
 <span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gene</span>
@@ -799,9 +799,9 @@ Python keyword, and the generated python code will raise errors. For now the rec
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">predicate</span>
-<span class="w">      </span>
+
 <span class="nt">slots</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">predicate</span><span class="p">:</span><span class="w"> </span>
+<span class="w">  </span><span class="nt">predicate</span><span class="p">:</span>
 <span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">predicate_enum</span>
 <span class="w">  </span><span class="nt">subject</span><span class="p">:</span>
 <span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">allele</span>
@@ -827,9 +827,9 @@ your classes represent <em>entities</em> and one represents a <em>relationship</
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">predicate</span>
-<span class="w">      </span>
+
 <span class="nt">slots</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">predicate</span><span class="p">:</span><span class="w"> </span>
+<span class="w">  </span><span class="nt">predicate</span><span class="p">:</span>
 <span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">predicate_enum</span>
 <span class="w">     </span><span class="nt">relational_role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PREDICATE</span>
 <span class="w">  </span><span class="nt">subject</span><span class="p">:</span>

@@ -22,4 +22,3 @@ This section of the documentation is aimed primarily at Python developers who wa
    tool-developer-guide
    contributing-code
    deprecation
-

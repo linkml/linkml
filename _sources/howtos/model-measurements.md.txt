@@ -448,7 +448,7 @@ classes:
       quantity_value:
         range: decimal
       quantity_unit:
-      
+
 
 ```
 
@@ -497,7 +497,7 @@ The FHIR *Observation* resource is intended for capturing measurements and subje
 
  - [Observation](https://build.fhir.org/observation.html)
 
-Observations make use of the Quantity resource:   
+Observations make use of the Quantity resource:
 
  - [Quantity datatype](https://build.fhir.org/datatypes.html#Quantity)
 

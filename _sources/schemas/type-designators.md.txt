@@ -41,4 +41,3 @@ specific class is chosen.
 In the above example, the range of the type designator is `string`.
 It could also be `uri`, `curie`, or `uriorcurie`, in which case
 it should match value of the class_uri field normalized to the appropriate form.
-

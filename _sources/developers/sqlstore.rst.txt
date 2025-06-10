@@ -3,9 +3,9 @@ SQLStore
 
 
 .. currentmodule:: linkml.utils.sqlutils
-                   
+
 .. autoclass:: SQLStore
-    :members:                
+    :members:
     :inherited-members:
 
 Command Line
@@ -16,4 +16,3 @@ Command Line
 .. click:: linkml.utils.sqlutils:main
     :prog: linkml-sqldb
     :nested: short
-       
