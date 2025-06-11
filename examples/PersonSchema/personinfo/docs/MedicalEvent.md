@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:MedicalEvent](https://w3id.org/linkml/examples/personinfo/MedicalEvent)
 
 

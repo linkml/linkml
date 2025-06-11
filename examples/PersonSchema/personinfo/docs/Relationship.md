@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:Relationship](https://w3id.org/linkml/examples/personinfo/Relationship)
 
 

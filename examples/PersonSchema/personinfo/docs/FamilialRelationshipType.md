@@ -3,14 +3,8 @@
 
 
 
-
 URI: [personinfo:FamilialRelationshipType](https://w3id.org/linkml/examples/personinfo/FamilialRelationshipType)
 
-
-## Other properties
-
-|  |  |  |
-| --- | --- | --- |
 
 ## Permissible Values
 
@@ -18,5 +12,4 @@ URI: [personinfo:FamilialRelationshipType](https://w3id.org/linkml/examples/pers
 | :--- | :---: | :---: | ---: |
 | SIBLING_OF |  | famrel:01 |  |
 | PARENT_OF |  | famrel:02 |  |
-| CHILD_OF |  | famrel:01 |  |
-
+| CHILD_OF |  | famrel:03 |  |
