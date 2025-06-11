@@ -6,7 +6,7 @@ see_also:
 
 prefixes:
   linkml: https://w3id.org/linkml/
-  
+
 imports:
   - linkml:types
 
@@ -21,4 +21,3 @@ slots:
   1x:
     comments:
       - deliberately use a field that starts with a number
-

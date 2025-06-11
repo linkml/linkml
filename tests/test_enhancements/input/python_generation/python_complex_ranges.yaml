@@ -91,4 +91,3 @@ classes:
         range: integer
       modifier:
         range: date
-

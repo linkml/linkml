@@ -9,4 +9,3 @@ PREFIX WD: <http://example.org/UNKNOWN/WD/>
   dcterms:description "Dimeric fusion protein consisting of the extracellular ligand-binding portion of the human 75 kilodalton (p75) tumor necrosis factor receptor (TNFR) linked to the Fc portion of human IgG1. The Fc component of etanercept contains the CH2 domain, the CH3 domain and hinge region, but not the CH1 domain of IgG1. Etanercept is produced by recombinant DNA technology in a Chinese hamster ovary (CHO) mammalian cell expression system. It consists of 934 amino acids.";
   rdfs:label "Etanercept";
   <https://w3id.org/biolink/vocab/systematic_synonym> "BIOD00052" .
-
