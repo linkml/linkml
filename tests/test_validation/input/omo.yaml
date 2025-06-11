@@ -9,7 +9,7 @@ version: 0.0.1
 default_curi_maps:
   - obo_context
   - semweb_context
-  
+
 prefixes:
   omoschema: http://purl.obolibrary.org/obo/schema/
   obo: http://purl.obolibrary.org/obo/
@@ -23,7 +23,7 @@ prefixes:
   linkml: https://w3id.org/linkml/
   skos: http://www.w3.org/2004/02/skos/core#
   biolink: https://w3id.org/biolink/vocab/
-  sdo: http://schema.org/  
+  sdo: http://schema.org/
   owl: http://www.w3.org/2002/07/owl#
   rdfs: http://www.w3.org/2000/01/rdf-schema#
 
@@ -36,7 +36,7 @@ imports:
 subsets:
   ## we take GO and OBI as two canonical "styles" of ontologies.
   ## these can be thought of similarly to ROBOT profiles
-  
+
   go required subset:
   go recommended subset:
   go permitted subset:
@@ -48,7 +48,7 @@ subsets:
   allotrope permitted subset:
     see_also:
       - https://gitlab.com/allotrope-open-source/allotrope-devops/-/wikis/uploads/Allotrope_Framework_Term_Curation_Style_Guide.pdf
-  
+
 classes:
   Thing:
     abstract: true
@@ -56,14 +56,14 @@ classes:
     slots:
       - deprecated
       - label
-    
+
   OWLNamedEntity:
     aliases:
       - term
     is_a: Thing
     abstract: true
     slots:
-      
+
     # CORE
     - id
     - label
@@ -115,7 +115,7 @@ classes:
     - excluded_subClassOf
     - excluded_synonym
     - should_conform_to
-    
+
     # obsoletion
     - deprecated
     - has_obsolescence_reason
@@ -126,7 +126,7 @@ classes:
     # categorization
     - has_obo_namespace
     - category
-    
+
     - term_tracker_item
     - imported_from
 
@@ -160,7 +160,7 @@ classes:
         range: Class
       closeMatch:
         range: Class
-    
+
   Property:
     abstract: true
     class_uri: rdf:Property
@@ -169,13 +169,13 @@ classes:
     - range
     - is_class_level
     - is_metadata_tag
-      
+
   AnnotationProperty:
     is_a: Property
     class_uri: owl:AnnotationProperty
     slots:
     - shorthand
-    
+
   NamedIndividual:
     is_a: OWLNamedEntity
     class_uri: owl:NamedIndividual
@@ -279,11 +279,11 @@ classes:
     - onProperty
     - someValuesFrom
     - allValuesFrom
-    
+
   ## MIXINS
   Expression:
     mixin: true
-    
+
   ClassExpression:
     is_a: Expression
     mixin: true
@@ -308,7 +308,7 @@ slots:
   # core
   core_property:
     abstract: true
-    
+
   id:
     is_a: core_property
     identifier: true
@@ -331,7 +331,7 @@ slots:
       - SHOULD follow OBO label guidelines
       - MUST be unique within an ontology
 
-      
+
   definition:
     is_a: core_property
     slot_uri: IAO:0000115
@@ -345,7 +345,7 @@ slots:
       - obi required subset
     comments:
       - SHOULD be in aristotelian form
-    
+
   # aliases and synonyms
   match_aspect:
     mixin: true
@@ -378,11 +378,11 @@ slots:
     slot_uri: oio:hasDbXref
     multivalued: true
     range: uriorcurie
-    
+
   # informative for user
   informative_property:
     abstract: true
-    
+
   comment:
     is_a: informative_property
     slot_uri: rdfs:comment
@@ -392,7 +392,7 @@ slots:
   category:
     is_a: informative_property
     slot_uri: biolink:category
-    
+
   image:
     is_a: informative_property
     slot_uri: sdo:image
@@ -449,20 +449,20 @@ slots:
     is_a: informative_property
     slot_uri: foaf:page
     multivalued: true
-    
+
   version_property:
     abstract: true
   versionIRI:
-    is_a: version_property    
+    is_a: version_property
     slot_uri: owl:versionIRI
     multivalued: false
     range: uriorcurie
   versionInfo:
-    is_a: version_property    
+    is_a: version_property
     slot_uri: owl:versionInfo
     multivalued: false
 
-  
+
   # obsoletion and metadata
   obsoletion_related_property:
     abstract: true
@@ -515,7 +515,7 @@ slots:
       - RULE: object must be deprecated
     in_subset:
       - go permitted subset
-    
+
   temporal_interpretation:
     slot_uri: RO:0001900
     multivalued: false
@@ -614,7 +614,7 @@ slots:
   # shortcuts
   shortcut_annotation_property:
     abstract: true
-  
+
   disconnected_from:
     is_a: shortcut_annotation_property
     #slot_uri: obo:envo#disconnected_from
@@ -654,7 +654,7 @@ slots:
     exact_mappings:
     - obo:ncbitaxon/subsets/taxslim#has_rank
     range: Thing
-    
+
   # synonyms and aliases
   alternative_term:
     slot_uri: IAO:0000118
@@ -724,13 +724,13 @@ slots:
     range: Subset
     description: >-
       Maps an ontology element to a subset it belongs to
-    
+
   # reification
-  
+
   reification_predicate:
     abstract: true
-  
-  
+
+
   annotatedProperty:
     is_a: reification_predicate
     slot_uri: owl:annotatedProperty
@@ -974,14 +974,14 @@ slots:
     slot_uri: oio:external_ontology
     multivalued: true
     deprecated: deprecated oboInOwl property
-    
+
   # definition source
   NCIT_P378:
     slot_uri: NCIT:P378
     multivalued: false
     deprecated: use OMO over NCIT
     deprecated_element_has_exact_replacement: definition_source
-    
+
   # Term Type
   NCIT_P383:
     slot_uri: NCIT:P383
@@ -995,7 +995,7 @@ slots:
     multivalued: false
     deprecated: use OMO over NCIT
     deprecated_element_has_exact_replacement: isDefinedBy
-    
+
   ## MIXINS
   annotation property:
     mixin: true
@@ -1015,10 +1015,8 @@ types:
     typeof: string
     description: >-
       A string that provides a human-readable name for an entity
-      
+
   narrative text:
     typeof: string
     description: >-
       A string that provides a human-readable description of something
-
-  

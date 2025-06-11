@@ -47,4 +47,3 @@ classes:
   diagnosis:
     description: An assertion of a disease or disorder
     is_a:
-
