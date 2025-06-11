@@ -3,8 +3,8 @@ name: not_required
 title: not_required
 description: |
   Test cases for all the ways things can be not required.
-  
-  For jsonschemagen: 
+
+  For jsonschemagen:
   Non-required slots should allow a `null` type in addition to not being required,
   so that data that has the key present with no value validate correctly
 imports:
@@ -119,5 +119,3 @@ slots:
     multivalued: true
     inlined: true
     required: false
-
-

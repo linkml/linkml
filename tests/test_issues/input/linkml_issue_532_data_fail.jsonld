@@ -9,7 +9,7 @@
    },
    "@id": "metadata/21547/Car2PIRE_0334",
     "@type": "isam:PhysicalSampleRecord",
-    "relatedResource":[ {   
+    "relatedResource":[ {
         "target": "ark:/21547/Cat2INDO106431.1"
     }]
 }
