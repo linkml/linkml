@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:gender](https://w3id.org/linkml/examples/personinfo/gender)
 
 
@@ -26,4 +25,3 @@ None &#8594;  <sub>0..1</sub> [GenderType](GenderType.md)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | schema:gender |
-

@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:is_current](https://w3id.org/linkml/examples/personinfo/is_current)
 
 

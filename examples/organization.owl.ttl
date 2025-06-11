@@ -152,6 +152,3 @@ meta:SlotDefinition a owl:Class ;
             owl:onDataRange <http://example.org/UNKNOWN/xsd/string> ;
             owl:onProperty meta:topValue ;
             owl:qualifiedCardinality 1 ] .
-
-
-

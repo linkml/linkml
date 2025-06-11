@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:id](https://w3id.org/linkml/examples/personinfo/id)
 
 
@@ -32,4 +31,3 @@ None &#8594;  <sub>1..1</sub> [String](types/String.md)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | schema:identifier |
-

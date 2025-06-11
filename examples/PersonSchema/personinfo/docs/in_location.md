@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:in_location](https://w3id.org/linkml/examples/personinfo/in_location)
 
 
