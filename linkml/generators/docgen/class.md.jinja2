@@ -95,6 +95,33 @@ URI: {{ gen.uri_link(element) }}
 {% endfor %}
 {% endif %}
 
+{% if element.rules %}
+## Rules
+
+{% for rule in gen.classrule_to_dict_view(element) %}
+### {{ rule.title }}
+
+| Rule Applied | Preconditions | Postconditions | Elseconditions |
+|--------------|---------------|----------------|----------------|
+{% for key in rule.preconditions -%}
+| {{ key }} | 
+{%- if rule.preconditions[key] is defined -%}
+```{{ rule.preconditions[key] }}```
+{%- else -%}
+{% endif %} | 
+{%- if rule.postconditions and rule.postconditions[key] is defined -%}
+```{{ rule.postconditions[key] }}```
+{%- else -%}
+{% endif %} | 
+{%- if rule.elseconditions and rule.elseconditions[key] is defined -%}
+```{{ rule.elseconditions[key] }}```
+{%- else -%}
+{% endif %} |
+{% endfor %}
+
+{% endfor %}
+{% endif %}
+
 {% include "common_metadata.md.jinja2" %}
 
 {% if gen.example_object_blobs(element.name) -%}

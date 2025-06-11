@@ -13,7 +13,7 @@ Get the latest version of Python at https://www.python.org/downloads/ or with yo
 You can verify that Python is installed by typing `python` from your shell; you should see something like:
 
 ```bash
-Python 3.9.5 (v3.9.5:0a7dcbdb13, May  3 2021, 13:17:02) 
+Python 3.9.5 (v3.9.5:0a7dcbdb13, May  3 2021, 13:17:02)
 [Clang 6.0 (clang-600.0.57)] on darwin
 Type "help", "copyright", "credits" or "license" for more information.
 >>>
@@ -44,7 +44,7 @@ ellipsis: 5
 ---
 ```
 
-See the [generators](../generators/index.rst) section for more cli entrypoints, or 
+See the [generators](../generators/index.rst) section for more cli entrypoints, or
 [continue to the tutorial](./tutorial.rst)
 
 ## Installation for contributors

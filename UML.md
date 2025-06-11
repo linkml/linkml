@@ -13,10 +13,10 @@ Using the model below as a reference point:
 
 ![Figure 9.10 Properties](images/Properties.png)
 
-Ignoring some irrelevant generalities form the UML model (e.g. data types and interfaces can also have Properties), a 
-**Property** represents an attribute of a **Class**.  Every **Property** is owned by exactly one **Class**. 
+Ignoring some irrelevant generalities form the UML model (e.g. data types and interfaces can also have Properties), a
+**Property** represents an attribute of a **Class**.  Every **Property** is owned by exactly one **Class**.
 Every **Property** can (but doesn't have to) have a name.  Every **Property** has an optional **MultiplicityElement**,
-inherited through ***Structuralfeature*** (below), which defines the lower and upper cardinality of the **Property**. 
+inherited through ***Structuralfeature*** (below), which defines the lower and upper cardinality of the **Property**.
 
 ![Figure 7.1 MultiplicityElement](images/MultiplicityElement.png)
 ![Figure 9.9 Features](images/StructuralFeature.png)
@@ -31,7 +31,7 @@ The above model allows us to make the following assertions about our example:
 * **:prop2** upper **UnlimitedNatural**
 * **:Class 1** ownedAttribute **:prop1**
 
-Note, however, that there *isn't* an ownedAttribute between **:Class 2** and **:prop2**. This is because of  
+Note, however, that there *isn't* an ownedAttribute between **:Class 2** and **:prop2**. This is because of
 navigability -- the arrow goes between **:Class 1** and **:Class 2**, but not the reverse, meaning that instances of
 **:Class 1** "know about" their **:prop 1** links to **:Class 2**, but **:Class 2** instances have no knowledge of
 the reverse.
@@ -39,7 +39,7 @@ the reverse.
 UML adds a second component to make the model complete:
 ![Figure 11.25](images/Association.png)
 
-An **Association** has 2 memberEnds.  In addition, an **Association** owns (ownsEnd) any **Property** that 
+An **Association** has 2 memberEnds.  In addition, an **Association** owns (ownsEnd) any **Property** that
 is not owned by a class.  To complete our model above we add:
 * **:assoc1** name "assoc1"
 * **:assoc1** memberEnd **:prop1*
@@ -49,7 +49,7 @@ is not owned by a class.  To complete our model above we add:
 * **:assoc1** ownedEnd **:prop2**
 * **:assoc2** navigableOwnedEnd **:prop2**
 
-We can now get from **:Class 1** to *ownedAttribute* **:prop 1** to *association* **:assoc1** 
+We can now get from **:Class 1** to *ownedAttribute* **:prop 1** to *association* **:assoc1**
 to *navigableOwnedEnd* **:prop2**.  **:Class 2**, however, is not "aware" of any attributes at all.
 
 ## LinkML Model Equivalent
@@ -145,13 +145,11 @@ This model would result in the following UML instances:
 * **:assoc2** navigableOwnedEnd **:prop2**
 
 This is a rather uncommon situation in the UML world -- it means that *neither* clase is "aware" of the fact that it
-participates in an association, and, as such, validation cannot occur on the class level.  Validation *can*, however, 
+participates in an association, and, as such, validation cannot occur on the class level.  Validation *can*, however,
 occur when presented with an instance of **assoc2** with the following tests being possible:
 
 1) Verify that the ownedEnd named "domain" is an instance of **Class 1**
 2) Verify that all instances of the ownedEnd named "range" are instances of **Class 2**
 3) If `multivalued` is false, verify that there is at most one instance of **assoc2** whose domain is **Class 1**
-3) If `required` is true, *and a closed world assumption*(**!**) verify that there is at least one instance of **assoc2** 
+3) If `required` is true, *and a closed world assumption*(**!**) verify that there is at least one instance of **assoc2**
 whose domain is **Class 1**
-
-
