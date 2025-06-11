@@ -39,4 +39,3 @@ slots:
     any_of:
       - range: S1Any
       - range: S2Any
-

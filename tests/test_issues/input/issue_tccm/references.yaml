@@ -3,12 +3,12 @@ name: references
 title: Decorated value set references
 license: https://creativecommons.org/publicdomain/zero/1.0/
 description: >-
-  his diagram identifies all of the value domains that are used within the TCCM service itself. Each reference has a 
-  domain, which frequently isn’t necessary to carry through to PSMs with strong type systems, a name that serves as a 
-  unique permissible value within the context of the domain, a uri that references the intended meaning of name, and an 
-  optional href that, if present, provides a link to a TCCM EntityDescription that provides definitions, descriptions, 
+  his diagram identifies all of the value domains that are used within the TCCM service itself. Each reference has a
+  domain, which frequently isn’t necessary to carry through to PSMs with strong type systems, a name that serves as a
+  unique permissible value within the context of the domain, a uri that references the intended meaning of name, and an
+  optional href that, if present, provides a link to a TCCM EntityDescription that provides definitions, descriptions,
   etc. of the meaning.
-  
+
   The NameAndMeaningReference pattern represents, at the meta-level, one of the key purposes for a TCCM based service
   to establish lists of value domains (identified here by ReferenceType) from which sets of permissible values and
   meanings can be drawn.
@@ -50,14 +50,14 @@ classes:
     is_a: NameAndMeaningReference
     description: >-
       A name or identifier that uniquely names an association instance in a code system.
-      
+
   BindingQualifierReference:
     is_a: NameAndMeaningReference
     description: >-
       A reference to an entity that describes the role that a given value set binding plays for a concept domain. T
       ypical values represent “overall,” “minimum” or “maximum,” the significance of which can be found in H
       L7 Version 3 documentation.
-      
+
   CaseSignificanceReference:
     is_a: NameAndMeaningReference
     description: >-

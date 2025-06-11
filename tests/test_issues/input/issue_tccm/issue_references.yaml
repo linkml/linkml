@@ -151,7 +151,3 @@ classes:
         description: >-
           The date that this version of the resource is stated by its publishers to go into effect.
         range: DateAndTime
-
-
-
-
