@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:DiagnosisConcept](https://w3id.org/linkml/examples/personinfo/DiagnosisConcept)
 
 

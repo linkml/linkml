@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:EmploymentEvent](https://w3id.org/linkml/examples/personinfo/EmploymentEvent)
 
 

@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:ProcedureConcept](https://w3id.org/linkml/examples/personinfo/ProcedureConcept)
 
 
