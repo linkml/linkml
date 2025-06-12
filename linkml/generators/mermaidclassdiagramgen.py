@@ -90,6 +90,10 @@ class MermaidClassDiagramGenerator(Generator):
         """Returns the canonical name for an element."""
         return element.name
 
+    def link_mermaid(self, element):
+        """Generates a link for the given element."""
+        return f"../{self.name(element)}"
+
     def all_type_object_names(self):
         return list(self.schemaview.all_types().keys())
 
