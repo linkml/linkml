@@ -272,7 +272,7 @@ def test_process_ifabsent_enum():
     - name: presence
       range: PresenceEnum
       ifabsent: PresenceEnum(Missing)
-      
+
 enums:
   PresenceEnum:
     permissible_values:
