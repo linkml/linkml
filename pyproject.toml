@@ -65,6 +65,7 @@ dependencies = [  # Specifier syntax: https://peps.python.org/pep-0631/
     "watchdog >= 0.9.0",
     "typing-extensions >= 4.6.0; python_version < '3.12'",
     "sphinx-click (>=6.0.0)",
+    "pandera[pandas] (>=0.24.0,<0.25.0)",
 ]
 
 [project.optional-dependencies]
