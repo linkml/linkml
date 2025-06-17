@@ -95,7 +95,6 @@ enums:
 
 
 def test_output_option(kitchen_sink_path, tmp_path):
-
     tss = TypescriptGenerator(kitchen_sink_path, mergeimports=True)
 
     tss.serialize(output=tmp_path / "kitchen_sink.ts")

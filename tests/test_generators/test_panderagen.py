@@ -294,7 +294,6 @@ def test_synthetic_dataframe_wrong_datatype(
 def test_synthetic_dataframe_boolean_error(
     pl, pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, drop_column
 ):
-
     # fmt: off
     error_dataframe = (
         big_synthetic_dataframe
