@@ -149,6 +149,7 @@ class SQLTableGenerator(Generator):
     relative_slot_num: bool = False
     default_length_oracle: int = ORACLE_MAX_VARCHAR_LENGTH
     generate_abstract_class_ddl: bool = True
+    autogenerate_pk_index: bool = False
 
     def serialize(self, **kwargs: dict[str, Any]) -> str:
         return self.generate_ddl(**kwargs)
@@ -226,6 +227,7 @@ class SQLTableGenerator(Generator):
                         *args,
                         primary_key=is_pk,
                         nullable=not s.required,
+                        index=(is_pk and self.autogenerate_pk_index)
                     )
                     if include_comments:
                         ddl_str += f"--     * Slot: {sn} Description: {strip_newlines(s.description)}\n"
@@ -361,6 +363,12 @@ class SQLTableGenerator(Generator):
     default=ORACLE_MAX_VARCHAR_LENGTH,
     show_default=True,
     help="Default length of varchar based arguments for oracle dialects",
+)
+@click.option(
+    "--autogenerate_index",
+    default=False,
+    show_default=True,
+    help="Enable the creation of indexes on all columns generated",
 )
 @click.option(
     "--generate_abstract_class_ddl",

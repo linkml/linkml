@@ -136,8 +136,26 @@ def test_abstract_class(capsys):
     assert 'CREATE TABLE "dummy class"' in ddl2
     assert 'CREATE TABLE "inherited class"' in ddl2
 
-def test_index_sqlddl():
-    assert True
+def test_index_sqlddl(capsys):
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("age", range="integer", description="age of person in years"))
+    slots = ["full name", "description", "age"]
+    b.add_class(DUMMY_CLASS, slots, description="My dummy class")
+    b.add_slot("identifier_slot", identifier=True)
+    b.add_slot("key_slot", key=True)
+    b.add_class("ClassWithId", slots=["identifier_slot", "name", "whatever"])
+    b.add_class("ClassWithKey", slots=["key_slot", "key_hole", "Torquay"])
+    b.add_class("ClassWithNowt", slots=["slot_1", "slot_2"])
+    b.add_class("ClassWithItAll", slots=["identifier_slot", "key_slot", "name", "miscellany"])
+    gen = SQLTableGenerator(b.schema, use_foreign_keys=True, autogenerate_pk_index=True)
+    sv = package_schemaview("linkml_runtime.linkml_model.meta")
+    gen2 = SQLTableGenerator(sv.schema, use_foreign_keys=True, autogenerate_pk_index=True)
+    ddl = gen.generate_ddl()
+    ddl2 = gen2.generate_ddl()
+    with capsys.disabled():
+        print(ddl)
+        print(ddl2)
+    assert ddl
 
 @pytest.mark.parametrize(
     ("slot_range", "ddl_type"),
