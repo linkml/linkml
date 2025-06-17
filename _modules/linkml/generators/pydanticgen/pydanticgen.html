@@ -1180,8 +1180,7 @@
             <span class="n">meta</span> <span class="o">=</span> <span class="n">remove_empty_items</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Unknown metadata mode &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata_mode</span><span class="si">}</span><span class="s2">&#39;, needs to be one of &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="p">[</span><span class="n">mode</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">mode</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">MetadataMode</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Unknown metadata mode &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata_mode</span><span class="si">}</span><span class="s2">&#39;, needs to be one of </span><span class="si">{</span><span class="p">[</span><span class="n">mode</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">mode</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">MetadataMode</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
         <span class="n">model</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="n">meta</span>
