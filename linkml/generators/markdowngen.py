@@ -204,7 +204,7 @@ class MarkdownGenerator(Generator):
             if cls.name in self.synopsis.mixinrefs:
                 items.append(self.header(2, f"{mixin_local_name} for"))
                 for mixin in sorted(self.synopsis.mixinrefs[cls.name].classrefs):
-                    items.append(self.bullet(f'{self.class_link(mixin, use_desc=True, after_link="(mixin)")}'))
+                    items.append(self.bullet(f"{self.class_link(mixin, use_desc=True, after_link='(mixin)')}"))
 
             if cls.name in self.synopsis.classrefs:
                 items.append(self.header(2, f"Referenced by {class_local_name}"))
@@ -513,7 +513,9 @@ class MarkdownGenerator(Generator):
             else (
                 underscore(obj.name)
                 if isinstance(obj, SlotDefinition)
-                else underscore(obj.name) if isinstance(obj, EnumDefinition) else camelcase(obj.name)
+                else underscore(obj.name)
+                if isinstance(obj, EnumDefinition)
+                else camelcase(obj.name)
             )
         )
         subdir = "/types" if isinstance(obj, TypeDefinition) and not self.no_types_dir else ""
@@ -548,7 +550,7 @@ class MarkdownGenerator(Generator):
         for example in slot.examples:
             items.append(
                 self.bullet(
-                    f'Example: {getattr(example, "value", " ")} {getattr(example, "description", " ")}',
+                    f"Example: {getattr(example, 'value', ' ')} {getattr(example, 'description', ' ')}",
                     level=1,
                 )
             )
@@ -599,7 +601,7 @@ class MarkdownGenerator(Generator):
 
     def header(self, level: int, txt: str) -> str:
         txt = self.get_metamodel_slot_name(txt)
-        out = f'\n{"#" * level} {txt}\n'
+        out = f"\n{'#' * level} {txt}\n"
         return out
 
     @staticmethod
@@ -608,7 +610,7 @@ class MarkdownGenerator(Generator):
 
     @staticmethod
     def bullet(txt: str, level=0) -> str:
-        return f'{"    " * level} * {txt}'
+        return f"{'    ' * level} * {txt}"
 
     def frontmatter(self, thingtype: str, layout="default") -> str:
         return self.header(1, thingtype)
@@ -674,8 +676,11 @@ class MarkdownGenerator(Generator):
             link_name = obj.name
             link_ref = link_name
         desc = self.desc_for(obj, use_desc)
-        return f"[{link_name}]" f"({link_ref}.{self.format})" + (f" {after_link} " if after_link else "") + (
-            f" - {desc.split(nl)[0]}" if desc else ""
+        return (
+            f"[{link_name}]"
+            f"({link_ref}.{self.format})"
+            + (f" {after_link} " if after_link else "")
+            + (f" - {desc.split(nl)[0]}" if desc else "")
         )
 
     def type_link(

@@ -113,7 +113,6 @@ class DBMLGenerator(Generator):
 
                 # Check if the slot references another class
                 if slot.range in self.schemaview.all_classes():
-
                     # Find the identifier slot of the referenced class
                     identifier_slot_name = next(
                         (

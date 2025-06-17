@@ -474,7 +474,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
     def gen_classdef(self, cls: ClassDefinition) -> str:
         """Generate python definition for class cls"""
 
-        parentref = f'({self.formatted_element_name(cls.is_a, True) if cls.is_a else "YAMLRoot"})'
+        parentref = f"({self.formatted_element_name(cls.is_a, True) if cls.is_a else 'YAMLRoot'})"
         slotdefs = self.gen_class_variables(cls)
         postinits = self.gen_postinits(cls)
         constructor = self.gen_constructor(cls)
@@ -833,8 +833,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                 elif slot_range == "uri":
                     lookup_by_props = ["class_class_uri", "class_model_uri"]
                     td_val_expression = (
-                        f"URIRef({td_val_expression}) if "
-                        f"isinstance({td_val_expression}, str) else {td_val_expression}"
+                        f"URIRef({td_val_expression}) if isinstance({td_val_expression}, str) else {td_val_expression}"
                     )
                 elif slot_range == "uriorcurie":
                     lookup_by_props = ["class_class_curie", "class_class_uri", "class_model_uri"]
@@ -917,8 +916,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                 rlines.append(f"self.{aliased_slot_name} = str(self.{td_value_classvar})")
             elif (
                 # A really weird case -- a class that has no properties
-                slot.range in self.schema.classes
-                and not self.schema.classes[slot.range].slots
+                slot.range in self.schema.classes and not self.schema.classes[slot.range].slots
             ):
                 rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}()")
             else:
@@ -985,7 +983,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             sn = f"self.{aliased_slot_name}"
             rlines.append(f"if not isinstance({sn}, list):")
             rlines.append(f"\t{sn} = [{sn}] if {sn} is not None else []")
-            rlines.append(f"{sn} = [v if isinstance(v, {base_type_name}) " f"else {base_type_name}(v) for v in {sn}]")
+            rlines.append(f"{sn} = [v if isinstance(v, {base_type_name}) else {base_type_name}(v) for v in {sn}]")
         while rlines and copy(rlines[-1]).strip() == "":
             rlines.pop()
         rlines.append("")
@@ -1229,7 +1227,7 @@ class {enum_name}(EnumDefinitionImpl):
         indent_str = (4 + indent) * " "
         pv_attrs = [f'{indent_str}text="{pv_text}"']
         if pv.description:
-            pv_attrs.append(f'{self.process_multiline_string(pv.description, f"{indent_str}description=")}')
+            pv_attrs.append(f"{self.process_multiline_string(pv.description, f'{indent_str}description=')}")
         if pv.meaning:
             pv_meaning = self.namespaces.curie_for(
                 self.namespaces.uri_for(pv.meaning), default_ok=False, pythonform=True
