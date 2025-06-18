@@ -150,6 +150,7 @@ class SQLTableGenerator(Generator):
     default_length_oracle: int = ORACLE_MAX_VARCHAR_LENGTH
     generate_abstract_class_ddl: bool = True
     autogenerate_pk_index: bool = False
+    autogenerate_fk_index: bool = False
 
     def serialize(self, **kwargs: dict[str, Any]) -> str:
         return self.generate_ddl(**kwargs)
@@ -221,13 +222,15 @@ class SQLTableGenerator(Generator):
                         fk = sql_name(self.get_id_or_key(s.range, sv))
                         args = [ForeignKey(fk)]
                     field_type = self.get_sql_range(s, schema)
+                    fk_index_cond = ((s.key or s.identifier) and self.autogenerate_fk_index)
+                    pk_index_cond = (is_pk and self.autogenerate_pk_index)
                     col = Column(
                         sql_name(sn),
                         field_type,
                         *args,
                         primary_key=is_pk,
                         nullable=not s.required,
-                        index=(is_pk and self.autogenerate_pk_index)
+                        index=(fk_index_cond or pk_index_cond)
                     )
                     if include_comments:
                         ddl_str += f"--     * Slot: {sn} Description: {strip_newlines(s.description)}\n"
