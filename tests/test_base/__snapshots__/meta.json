@@ -8691,11 +8691,11 @@
         "@id": "skos:altLabel"
       },
       "all_members": {
-        "@type": "linkml:AnonymousSlotExpression",
+        "@type": "@id",
         "@id": "all_members"
       },
       "all_of": {
-        "@type": "linkml:Expression",
+        "@type": "@id",
         "@id": "all_of"
       },
       "source": {
@@ -8706,15 +8706,15 @@
         "@id": "description"
       },
       "alt_descriptions": {
-        "@type": "linkml:AltDescription",
+        "@type": "@id",
         "@id": "alt_descriptions"
       },
       "annotations": {
-        "@type": "linkml:Annotation",
+        "@type": "@id",
         "@id": "annotations"
       },
       "any_of": {
-        "@type": "linkml:Expression",
+        "@type": "@id",
         "@id": "any_of"
       },
       "apply_to": {
@@ -8722,7 +8722,7 @@
         "@id": "apply_to"
       },
       "array": {
-        "@type": "linkml:ArrayExpression",
+        "@type": "@id",
         "@id": "array"
       },
       "asymmetric": {
@@ -8730,7 +8730,7 @@
         "@id": "asymmetric"
       },
       "attributes": {
-        "@type": "linkml:SlotDefinition",
+        "@type": "@id",
         "@id": "attributes"
       },
       "base": {
@@ -8741,14 +8741,14 @@
         "@id": "bidirectional"
       },
       "bindings": {
-        "@type": "linkml:EnumBinding",
+        "@type": "@id",
         "@id": "bindings"
       },
       "binds_value_of": {
         "@id": "binds_value_of"
       },
       "boolean_slot": {
-        "@type": "linkml:Expression",
+        "@type": "@id",
         "@id": "boolean_slot"
       },
       "broad_mappings": {
@@ -8768,11 +8768,11 @@
         "@id": "class_uri"
       },
       "classes": {
-        "@type": "linkml:ClassDefinition",
+        "@type": "@id",
         "@id": "classes"
       },
       "classification_rules": {
-        "@type": "linkml:AnonymousClassExpression",
+        "@type": "@id",
         "@id": "classification_rules"
       },
       "close_mappings": {
@@ -8859,7 +8859,7 @@
         "@id": "designates_type"
       },
       "dimensions": {
-        "@type": "linkml:DimensionExpression",
+        "@type": "@id",
         "@id": "dimensions"
       },
       "disjoint_with": {
@@ -8875,14 +8875,14 @@
         "@id": "domain_of"
       },
       "elseconditions": {
-        "@type": "linkml:AnonymousClassExpression",
+        "@type": "@id",
         "@id": "elseconditions"
       },
       "emit_prefixes": {
         "@id": "emit_prefixes"
       },
       "enum_range": {
-        "@type": "linkml:EnumExpression",
+        "@type": "@id",
         "@id": "enum_range"
       },
       "enum_uri": {
@@ -8890,7 +8890,7 @@
         "@id": "enum_uri"
       },
       "enums": {
-        "@type": "linkml:EnumDefinition",
+        "@type": "@id",
         "@id": "enums"
       },
       "equals_expression": {
@@ -8923,11 +8923,11 @@
         "@id": "exact_number_dimensions"
       },
       "exactly_one_of": {
-        "@type": "linkml:Expression",
+        "@type": "@id",
         "@id": "exactly_one_of"
       },
       "examples": {
-        "@type": "linkml:Example",
+        "@type": "@id",
         "@id": "examples"
       },
       "tag": {
@@ -8938,11 +8938,11 @@
         "@id": "skos:example"
       },
       "extensions": {
-        "@type": "linkml:Extension",
+        "@type": "@id",
         "@id": "extensions"
       },
       "followed_by": {
-        "@type": "linkml:Expression",
+        "@type": "@id",
         "@id": "followed_by"
       },
       "framework": {
@@ -8957,7 +8957,7 @@
         "@id": "generation_date"
       },
       "has_member": {
-        "@type": "linkml:AnonymousSlotExpression",
+        "@type": "@id",
         "@id": "has_member"
       },
       "has_quantity_kind": {
@@ -9003,7 +9003,7 @@
         "@id": "import_from"
       },
       "import_map": {
-        "@type": "linkml:Setting",
+        "@type": "@id",
         "@id": "import_map"
       },
       "imported_from": {
@@ -9025,7 +9025,7 @@
         "@id": "inapplicable"
       },
       "include": {
-        "@type": "linkml:AnonymousEnumExpression",
+        "@type": "@id",
         "@id": "include"
       },
       "include_self": {
@@ -9123,7 +9123,7 @@
         "@id": "skos:altLabel"
       },
       "local_names": {
-        "@type": "linkml:LocalName",
+        "@type": "@id",
         "@id": "local_names"
       },
       "locally_reflexive": {
@@ -9139,7 +9139,7 @@
         "@id": "skos:mappingRelation"
       },
       "matches": {
-        "@type": "linkml:MatchQuery",
+        "@type": "@id",
         "@id": "matches"
       },
       "maximum_cardinality": {
@@ -9147,11 +9147,11 @@
         "@id": "maximum_cardinality"
       },
       "maximum_number_dimensions": {
-        "@type": "linkml:Any",
+        "@type": "@id",
         "@id": "maximum_number_dimensions"
       },
       "maximum_value": {
-        "@type": "linkml:Any",
+        "@type": "@id",
         "@id": "maximum_value"
       },
       "meaning": {
@@ -9170,11 +9170,11 @@
         "@id": "minimum_number_dimensions"
       },
       "minimum_value": {
-        "@type": "linkml:Any",
+        "@type": "@id",
         "@id": "minimum_value"
       },
       "minus": {
-        "@type": "linkml:AnonymousEnumExpression",
+        "@type": "@id",
         "@id": "minus"
       },
       "mixin": {
@@ -9199,7 +9199,7 @@
         "@id": "skos:narrowMatch"
       },
       "none_of": {
-        "@type": "linkml:Expression",
+        "@type": "@id",
         "@id": "none_of"
       },
       "notes": {
@@ -9230,22 +9230,22 @@
         "@id": "partial_match"
       },
       "path_rule": {
-        "@type": "linkml:PathExpression",
+        "@type": "@id",
         "@id": "path_rule"
       },
       "pattern": {
         "@id": "pattern"
       },
       "permissible_values": {
-        "@type": "linkml:PermissibleValue",
+        "@type": "@id",
         "@id": "permissible_values"
       },
       "postconditions": {
-        "@type": "linkml:AnonymousClassExpression",
+        "@type": "@id",
         "@id": "postconditions"
       },
       "preconditions": {
-        "@type": "linkml:AnonymousClassExpression",
+        "@type": "@id",
         "@id": "sh:condition"
       },
       "prefix_prefix": {
@@ -9256,7 +9256,7 @@
         "@id": "sh:namespace"
       },
       "prefixes": {
-        "@type": "linkml:Prefix",
+        "@type": "@id",
         "@id": "sh:declare"
       },
       "publisher": {
@@ -9276,7 +9276,7 @@
         "@id": "range"
       },
       "range_expression": {
-        "@type": "linkml:AnonymousClassExpression",
+        "@type": "@id",
         "@id": "range_expression"
       },
       "rank": {
@@ -9284,7 +9284,7 @@
         "@id": "sh:order"
       },
       "reachable_from": {
-        "@type": "linkml:ReachabilityQuery",
+        "@type": "@id",
         "@id": "reachable_from"
       },
       "readonly": {
@@ -9341,7 +9341,7 @@
         "@id": "role"
       },
       "rules": {
-        "@type": "linkml:ClassRule",
+        "@type": "@id",
         "@id": "sh:rule"
       },
       "see_also": {
@@ -9355,7 +9355,7 @@
         "@id": "setting_value"
       },
       "settings": {
-        "@type": "linkml:Setting",
+        "@type": "@id",
         "@id": "settings"
       },
       "shared": {
@@ -9366,7 +9366,7 @@
         "@id": "singular_name"
       },
       "slot_conditions": {
-        "@type": "linkml:SlotDefinition",
+        "@type": "@id",
         "@id": "slot_conditions"
       },
       "slots": {
@@ -9386,7 +9386,7 @@
         "@id": "slot_uri"
       },
       "slot_usage": {
-        "@type": "linkml:SlotDefinition",
+        "@type": "@id",
         "@id": "slot_usage"
       },
       "source_file": {
@@ -9416,15 +9416,15 @@
         "@id": "string_serialization"
       },
       "structured_aliases": {
-        "@type": "skosxl:Label",
+        "@type": "@id",
         "@id": "skosxl:altLabel"
       },
       "structured_imports": {
-        "@type": "linkml:ImportExpression",
+        "@type": "@id",
         "@id": "structured_imports"
       },
       "structured_pattern": {
-        "@type": "linkml:PatternExpression",
+        "@type": "@id",
         "@id": "structured_pattern"
       },
       "subclass_of": {
@@ -9436,7 +9436,7 @@
         "@id": "rdfs:subPropertyOf"
       },
       "subsets": {
-        "@type": "linkml:SubsetDefinition",
+        "@type": "@id",
         "@id": "subsets"
       },
       "symbol": {
@@ -9489,7 +9489,7 @@
         "@id": "typeof"
       },
       "types": {
-        "@type": "linkml:TypeDefinition",
+        "@type": "@id",
         "@id": "types"
       },
       "ucum_code": {
@@ -9507,18 +9507,18 @@
         "@id": "unique_key_slots"
       },
       "unique_keys": {
-        "@type": "linkml:UniqueKey",
+        "@type": "@id",
         "@id": "unique_keys"
       },
       "unit": {
-        "@type": "qudt:Unit",
+        "@type": "@id",
         "@id": "qudt:unit"
       },
       "usage_slot_name": {
         "@id": "usage_slot_name"
       },
       "object": {
-        "@type": "linkml:Any",
+        "@type": "@id",
         "@id": "object"
       },
       "value_presence": {
