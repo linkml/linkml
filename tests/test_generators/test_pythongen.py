@@ -99,9 +99,7 @@ types:
         source_file_date="August 10, 2020",
         source_file_size=173,
     ).serialize()
-    assert output.startswith(
-        f"# Auto generated from None by pythongen.py version: " f"{PythonGenerator.generatorversion}"
-    )
+    assert output.startswith(f"# Auto generated from None by pythongen.py version: {PythonGenerator.generatorversion}")
 
     output = PythonGenerator(yaml, format="py", metadata=False).serialize()
     assert output.startswith("\n# id: https://w3id.org/biolink/metamodel")

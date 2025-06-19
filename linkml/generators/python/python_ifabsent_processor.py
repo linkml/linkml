@@ -57,7 +57,7 @@ class PythonIfAbsentProcessor(IfAbsentProcessor):
         slot: SlotDefinition,
         cls: ClassDefinition,
     ):
-        return f"datetime({int(year)}, {int(month)}, {int(day)}, " f"{int(hour)}, {int(minutes)}, {int(seconds)})"
+        return f"datetime({int(year)}, {int(month)}, {int(day)}, {int(hour)}, {int(minutes)}, {int(seconds)})"
 
     def map_uri_or_curie_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
         return self._uri_for(default_value)
