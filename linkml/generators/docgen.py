@@ -387,7 +387,7 @@ class DocGenerator(Generator):
         :param element:
         :return:
         """
-        if isinstance(element, (SubsetDefinition)):
+        if isinstance(element, SubsetDefinition):
             # Subsets have no uri attribute
             return self.name(element)
 
