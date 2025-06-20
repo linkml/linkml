@@ -9,6 +9,7 @@ INDEX_SLOT = persons
 all: gen
 gen:
 	$(RUN) gen-project -d $(OUTDIR) $(SRC)
+	$(RUN) gen-pydantic --meta FULL  $(SRC) > $(NAME)_pydantic.py
 
 validate_all: validate-example_personinfo_data
 validate-%: data/%.yaml

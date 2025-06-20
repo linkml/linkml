@@ -113,7 +113,7 @@ def test_repr(kitchen_sink_path):
 class ParentClass:
     def __repr__(self):
         return "overridden"
-        
+
     def __post_init__(self, *args, **kwargs):
         pass
 """
