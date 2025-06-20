@@ -11,15 +11,15 @@
 ```{{ gen.mermaid_directive() }}
  classDiagram
     class {{ gen.name(element) }}
-    click {{ gen.name(element) }} href "../{{ gen.name(element) }}"
+    click {{ gen.name(element) }} href "{{ gen.name(element) }}"
       {% for s in schemaview.class_parents(element.name)|sort(attribute='name') -%}
         {{ gen.name(schemaview.get_element(s)) }} <|-- {{ gen.name(element) }}
-        click {{ gen.name(schemaview.get_element(s)) }} href "../{{ gen.name(schemaview.get_element(s)) }}"
+        click {{ gen.name(schemaview.get_element(s)) }} href "{{ gen.name(schemaview.get_element(s)) }}"
       {% endfor %}
 
       {% for s in schemaview.class_children(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} <|-- {{ gen.name(schemaview.get_element(s)) }}
-        click {{ gen.name(schemaview.get_element(s)) }} href "../{{ gen.name(schemaview.get_element(s)) }}"
+        click {{ gen.name(schemaview.get_element(s)) }} href "{{ gen.name(schemaview.get_element(s)) }}"
       {% endfor %}
 
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
@@ -33,10 +33,10 @@
 ```{{ gen.mermaid_directive() }}
  classDiagram
     class {{ gen.name(element) }}
-    click {{ gen.name(element) }} href "../{{ gen.name(element) }}"
+    click {{ gen.name(element) }} href "{{ gen.name(element) }}"
       {% for s in schemaview.class_parents(element.name)|sort(attribute='name') -%}
         {{ gen.name(schemaview.get_element(s)) }} <|-- {{ gen.name(element) }}
-        click {{ gen.name(schemaview.get_element(s)) }} href "../{{ gen.name(schemaview.get_element(s)) }}"
+        click {{ gen.name(schemaview.get_element(s)) }} href "{{ gen.name(schemaview.get_element(s)) }}"
       {% endfor %}
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{ gen.name(s) }}
@@ -49,10 +49,10 @@
 ```{{ gen.mermaid_directive() }}
  classDiagram
     class {{ gen.name(element) }}
-    click {{ gen.name(element) }} href "../{{ gen.name(element) }}"
+    click {{ gen.name(element) }} href "{{ gen.name(element) }}"
       {% for s in schemaview.class_children(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} <|-- {{ gen.name(schemaview.get_element(s)) }}
-        click {{ gen.name(schemaview.get_element(s)) }} href "../{{ gen.name(schemaview.get_element(s)) }}"
+        click {{ gen.name(schemaview.get_element(s)) }} href "{{ gen.name(schemaview.get_element(s)) }}"
       {% endfor %}
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{ gen.name(s) }}
@@ -65,7 +65,7 @@
 ```{{ gen.mermaid_directive() }}
  classDiagram
     class {{ gen.name(element) }}
-    click {{ gen.name(element) }} href "../{{ gen.name(element) }}"
+    click {{ gen.name(element) }} href "{{ gen.name(element) }}"
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{ gen.name(s) }}
         {% if s.range is not none and s.range not in gen.all_type_object_names() %}
