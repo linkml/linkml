@@ -387,8 +387,8 @@ class DocGenerator(Generator):
         :param element:
         :return:
         """
-        if isinstance(element, (EnumDefinition, SubsetDefinition)):
-            # TODO: fix schema view to handle URIs for enums and subsets
+        if isinstance(element, SubsetDefinition):
+            # Subsets have no uri attribute
             return self.name(element)
 
         if self.subfolder_type_separation:
