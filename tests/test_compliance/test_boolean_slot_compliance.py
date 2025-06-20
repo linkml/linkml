@@ -116,7 +116,7 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
                     "_mappings": {
                         PYDANTIC: f"{SLOT_S1}: Optional[Union[D, int]]",
                         JSON_SCHEMA: expected_json_schema,
-                        JSONLD_CONTEXT: {SLOT_S1: {"@id": SLOT_S1, "@type": "@id"}},
+                        JSONLD_CONTEXT: {"s1": {"@id": "s1", "@type": "@id"}},
                     },
                 },
             },
@@ -131,7 +131,6 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
             "class_uri": "linkml:Any",
         }
         classes[CLASS_C]["attributes"][SLOT_S1]["range"] = CLASS_ANY
-        classes[CLASS_C]["attributes"][SLOT_S1]["_mappings"][JSONLD_CONTEXT][SLOT_S1]["@type"] = "linkml:Any"
     if framework == PANDERA_POLARS_CLASS:
         pytest.skip("PanderaGen does not implement class ranged slots.")
     schema = validated_schema(
