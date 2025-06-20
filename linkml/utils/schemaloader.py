@@ -737,7 +737,7 @@ class SchemaLoader:
                 for slot_usage in values(cls.slot_usage):
                     if slot_usage.alias:
                         self.raise_value_error(
-                            f'Class: "{cls.name}" - alias not permitted in slot_usage slot:' f" {slot_usage.alias}"
+                            f'Class: "{cls.name}" - alias not permitted in slot_usage slot: {slot_usage.alias}'
                         )
                     if not located_aliased_parent_slot(cls, slot_usage):
                         if slot_usage.name not in self.schema.slots:
@@ -765,7 +765,7 @@ class SchemaLoader:
         for slotname, slot_usage in cls.slot_usage.items():
             if slot_usage.alias:
                 self.raise_value_error(
-                    f'Class: "{cls.name}" - alias not permitted in slot_usage slot:' f" {slot_usage.alias}"
+                    f'Class: "{cls.name}" - alias not permitted in slot_usage slot: {slot_usage.alias}'
                 )
             # Construct a new slot
             # If we've already assigned a parent, use it
@@ -947,7 +947,7 @@ class SchemaLoader:
             locs = "\n".join(TypedNode.yaml_loc(e, suffix="") for e in loc_str)
             raise ValueError(f"{locs} {error}")
         else:
-            raise ValueError(f'{TypedNode.yaml_loc(loc_str, suffix="")} {error}')
+            raise ValueError(f"{TypedNode.yaml_loc(loc_str, suffix='')} {error}")
 
     def logger_warning(
         self,
@@ -958,7 +958,7 @@ class SchemaLoader:
             locs = "\n\t".join(TypedNode.yaml_loc(e, suffix="") for e in loc_str)
             self.logger.warning(f"{warning}\n\t{locs}")
         else:
-            self.logger.warning(f'{warning}\n\t{TypedNode.yaml_loc(loc_str, suffix="")}')
+            self.logger.warning(f"{warning}\n\t{TypedNode.yaml_loc(loc_str, suffix='')}")
 
     def _get_base_dir(self, stated_base: str) -> Optional[str]:
         if stated_base:

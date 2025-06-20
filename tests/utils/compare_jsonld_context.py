@@ -3,7 +3,6 @@ from pathlib import Path
 
 
 class CompareJsonldContext:
-
     @staticmethod
     def compare_with_snapshot(jsonld_context: str, snapshot: Path):
         with open(snapshot) as snapshot:
