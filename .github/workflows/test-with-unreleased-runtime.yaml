@@ -1,4 +1,6 @@
 name: Test with unreleased linkml-runtime
+env:
+  UV_VERSION: "0.7.13"
 on:
   pull_request:
     branches:
@@ -22,8 +24,6 @@ jobs:
         os: [ ubuntu-latest, windows-latest ]
         python-version: [ "3.9", "3.13" ]
     runs-on: ${{ matrix.os }}
-    env:
-      POETRY_VIRTUALENVS_IN_PROJECT: true
 
     steps:
       - name: Get upstream branch and repo from first lines of PR Body
@@ -105,24 +105,23 @@ jobs:
           git remote add upstream https://github.com/linkml/linkml
           git fetch upstream --tags
 
-      - name: Install poetry
-        run: pipx install poetry
-
-      - name: Install dynamic versioning plugin
-        run: pipx inject poetry poetry-dynamic-versioning
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: ${{ env.UV_VERSION }}
 
       - name: Set up python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'poetry'
+          cache: 'uv'
 
       - name: Load cached venv
         id: cached-poetry-dependencies
         uses: actions/cache@v4
         with:
           path: linkml/.venv
-          key: venv-${{ matrix.python-version }}-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+          key: venv-${{ matrix.python-version }}-${{ runner.os }}-${{ hashFiles('**/uv.lock') }}
 
       # note that we run the installation step always, even if we restore a venv,
       # the cache will restore the old version of linkml, but the lockfile
@@ -130,16 +129,13 @@ jobs:
       # the cache will still speedup the rest of the installation
       - name: Add checked-out linkml-runtime
         working-directory: linkml
-        run: poetry add ../linkml-runtime
-
+        run: uv add ../linkml-runtime
       - name: Update environment according to lockfile
         working-directory: linkml
-        run: poetry sync --no-interaction --all-extras
-
+        run: uv sync --all-extras
       - name: print linkml-runtime version
         working-directory: linkml
-        run: poetry run python -c 'from importlib.metadata import version; print(version("linkml-runtime"))'
-
+        run: uv run python -c 'from importlib.metadata import version; print(version("linkml-runtime"))'
       - name: run tests
         working-directory: linkml
-        run: poetry run python -m pytest --with-slow
+        run: uv run python -m pytest --with-slow
