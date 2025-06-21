@@ -11,4 +11,3 @@ prefixes:
 types:
   string:
     base: str
-
