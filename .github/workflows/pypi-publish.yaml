@@ -1,6 +1,7 @@
 name: Publish Python Package
 # Upload to PyPI is triggered by creating & publishing a release in GitHub UI
-
+env:
+  UV_VERSION: "0.7.13"
 on:
   release:
     # Trigger the workflow only for real releases but not for draft releases
@@ -21,14 +22,14 @@ jobs:
       with:
         python-version: 3.13
 
-    - name: Install Poetry
-      run: |
-        pipx install poetry
-        pipx inject poetry poetry-dynamic-versioning
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        version: ${{ env.UV_VERSION }}
 
     - name: Build source and wheel archives
       run: |
-        poetry build
+        uv build
 
     - name: Store built distribution
       uses: actions/upload-artifact@v4.6.2

@@ -1,6 +1,6 @@
 [build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
-build-backend = "poetry_dynamic_versioning.backend"
+requires = ["hatchling", "uv-dynamic-versioning"]
+build-backend = "hatchling.build"
 
 [project]
 name = "linkml"
@@ -11,10 +11,10 @@ authors = [
   {name = "Harold Solbrig", email = "solbrig@jhu.edu"},
   {name = "Sujay Patil", email = "spatil@lbl.gov"},
   {name = "Harshad Hegde", email = "hhegde@lbl.gov"},
-  {name = "Mark Andrew Miller", email = "MAM@lbl.gov>"},
+  {name = "Mark Andrew Miller", email = "MAM@lbl.gov"},
   {name = "Deepak Unni"},
-  {name = "Gaurav Vaidya", email = "gaurav@renci.org>"},
-  {name = "Kevin Schaper", email = "kevin@tislab.org>"},
+  {name = "Gaurav Vaidya", email = "gaurav@renci.org"},
+  {name = "Kevin Schaper", email = "kevin@tislab.org"},
 ]
 license = "Apache-2.0"
 license-files = ["LICENSE"]
@@ -78,7 +78,7 @@ shacl = [
     "pyshacl >= 0.25.0",
 ]
 tests = [
-    # "linkml[black]",  # recursive dependency not supported by poetry
+  # "linkml[black]",  # recursive dependency not supported by uv
     "black >= 24.0.0",
     "numpydantic >= 1.6.1",
     "pyshacl >= 0.25.0",
@@ -88,6 +88,43 @@ pandera = [
 ]
 polars-lts-cpu = [
   "polars-lts-cpu >= 1.0.0"
+]
+
+dev = [
+  "chardet",
+  "ipykernel",
+  "ipython-genutils",
+  "jupyter",
+  "nbconvert",
+  "nbformat",
+  "coverage >= 6.4.1",
+  "tox >= 4",
+  "requests-cache >= 1.2.0",
+  "myst-nb >= 1.0.0; python_version >= '3.9'",
+  "sphinx-design >= 0.5.0",
+  "rich >= 13.7.1",
+  ]
+tests-extra = [
+  "pytest >= 7.4.0",
+  "pytest-subtests >= 0.11.0",
+  "pytest-xdist >= 3.6.1",
+  "numpy >= 1.24.3; python_version < '3.12'",
+  "numpy >= 1.25.2; python_version >= '3.12'",
+  "requests-cache >= 1.2.0",
+  "mock >= 5.1.0",
+  "testcontainers == 3.7.1",
+  "jsonpatch >= 1.33",
+]
+docs = [
+  "furo >= 2023.03.27",
+  "sphinxcontrib-mermaid >= 0.7.1",
+  "sphinx",
+  "sphinx-click",
+  "sphinx-rtd-theme",
+  "myst-parser",
+  "matplotlib >= 3.7",
+  "sphinx-jinja >= 2.0.2",
+  "sphinxcontrib-programoutput >= 0.17",
 ]
 
 [project.scripts]
@@ -140,62 +177,6 @@ gen-sssom = "linkml.generators.sssomgen:cli"
 gen-linkml = "linkml.generators.linkmlgen:cli"
 gen-mermaid-class-diagram = "linkml.generators.mermaidclassdiagramgen:cli"
 linkml-schema-fixer = "linkml.utils.schema_fixer:main"
-
-[tool.poetry]
-requires-poetry = ">=2.0"
-version = "0.0.0"
-
-[tool.poetry.dependencies]
-python = "^3.9"
-
-[tool.poetry.requires-plugins]
-poetry-dynamic-versioning = ">=1.8.2"
-
-[tool.poetry-dynamic-versioning]
-enable = true
-vcs = "git"
-style = "pep440"
-
-[tool.poetry.group.dev.dependencies]
-chardet = "*"
-ipykernel = "*"
-ipython-genutils = "*"
-jupyter = "*"
-nbconvert = "*"
-nbformat = "*"
-coverage = "^6.4.1"
-tox = "^4"
-requests-cache = "^1.2.0"
-myst-nb = {version=">=1.0.0", python=">=3.9"}
-sphinx-design = "^0.5.0"
-rich = "^13.7.1"
-
-[tool.poetry.group.tests.dependencies]
-pytest = "^7.4.0"
-pytest-subtests = "^0.11.0"
-pytest-xdist = "^3.6.1"
-numpy = [
-  { "version" = ">=1.24.3", "python" = "<3.12" },
-  { "version" = ">=1.25.2", "python" = ">=3.12" }
-]
-requests-cache = "^1.2.0"
-mock = "^5.1.0"
-testcontainers = "3.7.1"
-jsonpatch = "^1.33"
-
-[tool.poetry.group.docs]
-optional = true
-
-[tool.poetry.group.docs.dependencies]
-furo = {version = "^2023.03.27", extras = ["docs"]}
-sphinxcontrib-mermaid = {version = "^0.7.1", extras = ["docs"]}
-sphinx = "*"
-sphinx-click = "*"
-sphinx-rtd-theme = "*"
-myst-parser = "*"
-matplotlib = ">=3.7"
-sphinx-jinja = "^2.0.2"
-sphinxcontrib-programoutput = "^0.17"
 
 [tool.codespell]
 skip = [
@@ -299,11 +280,11 @@ requires = ["tox>=4"]
 env_list = ["lint", "py{39,310,311,312,313}"]
 
 [tool.tox.env_run_base]
-allowlist_externals = ["poetry"]
+allowlist_externals = ["uv"]
 deps = ["pytest"]
 commands = [
-  ["poetry", "install", "--no-root", "--sync", "--all-extras"],
-  ["poetry", "run", "pytest", "{posargs}"],
+  ["uv", "sync", "--all-extras"],
+  ["uv", "run", "pytest", "{posargs}"],
 ]
 
 [tool.tox.env.codespell]
@@ -333,3 +314,11 @@ commands = [
   ["ruff", "check", "{posargs:.}"],
   ["ruff", "format", "{posargs:.}"],
 ]
+
+[tool.uv-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "pep440"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
