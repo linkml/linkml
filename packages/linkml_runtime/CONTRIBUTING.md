@@ -68,22 +68,22 @@ are correct and expected given the context of the PR.
 
 ## Development environment setup
 
-1. Install [poetry](https://python-poetry.org/docs/#installation).
-2. Install all the dependencies from your project, which are typically specified in a `poetry.lock` file.
+1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/).
+2. Install all the dependencies from your project, which are typically specified in a `uv.lock` file.
 
 ```
-poetry install
+uv sync --all-extras --dev  
 ```
 
-3. Run any python scripts or CLI commands by prefixing with `poetry run`.
+3. Run any python scripts or CLI commands by prefixing with `uv run`.
 
 ```
-poetry run python your_script.py  # ex of how to run standalone python script
-poetry run pytest # ex of how to invoke CLI tools
+uv run python your_script.py  # ex of how to run standalone python script
+uv run pytest # ex of how to invoke CLI tools
 ```
 
-4. Refer to the poetry docs for details on how to use the [add](https://python-poetry.org/docs/cli/#add), [update](https://python-poetry.org/docs/cli/#update) and [remove](https://python-poetry.org/docs/cli/#remove) commands.
-
+4. Refer to the uv docs for details on how to use the [add](https://docs.astral.sh/uv/concepts/dependencies/), [update](https://docs.astral.sh/uv/concepts/dependencies/#updating-dependencies) and
+[remove](https://docs.astral.sh/uv/concepts/dependencies/#removing-dependencies) commands.
 ## Release process
 
 Once the code has been merged into the `main` branch on this repo, there are a few steps that need to be completed to ensure a release is complete.
@@ -105,21 +105,21 @@ All code added to the linkml-runtime source must have tests. The repo uses the n
 You can run the test suite in the following way:
 
 ```
-poetry run python -m pytest
+uv run python -m pytest
 ```
 
 ### Upstream Testing
 
 To run the upstream `linkml` tests against your branch,
-install `linkml` locally with poetry, and then manually install your
+install `linkml` locally with uv, and then manually install your
 local copy of `linkml-runtime`
 
 ```shell
 git clone https://github.com/linkml/linkml
 cd linkml
-poetry install --all-extras --with tests
-poetry run pip install -e ~/location/of/linkml-runtime
-poetry run pytest
+uv sync --all-extras
+uv add ~/location/of/linkml-runtime
+uv run pytest
 ```
 
 ## Code style

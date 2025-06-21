@@ -21,14 +21,14 @@ jobs:
       with:
         python-version: 3.13
 
-    - name: Install Poetry
-      run: |
-        pipx install poetry
-        pipx inject poetry poetry-dynamic-versioning
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        version: "0.7.13"
 
     - name: Build source and wheel archives
       run: |
-        poetry build
+        uv build
 
     - name: Store built distribution
       uses: actions/upload-artifact@v4.6.2
