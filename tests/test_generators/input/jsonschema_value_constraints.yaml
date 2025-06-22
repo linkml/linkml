@@ -80,7 +80,7 @@ data_cases:
   - data:
       string_pattern: pattern!
   - data:
-      string_pattern: pattern
+      string_pattern: patern
     error_message: does not match
   - data:
       integer_constant: 10
