@@ -115,6 +115,7 @@ tests-extra = [
   "mock >= 5.1.0",
   "testcontainers == 3.7.1",
   "jsonpatch >= 1.33",
+  "click >= 8.0.0, < 9.0.0"
 ]
 docs = [
   "furo >= 2023.03.27",
