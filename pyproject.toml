@@ -39,7 +39,7 @@ classifiers = [
 include = ["linkml"]
 requires-python = ">=3.9"
 dynamic = ["version"]
-dependencies = [  # Specifier syntax: https://peps.python.org/pep-0631/
+dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "antlr4-python3-runtime >= 4.9.0, < 4.10",
     "click >= 7.0",
     "graphviz >= 0.10.1",
@@ -326,10 +326,10 @@ commands = [
 ]
 
 [tool.tox.env.lint]
-description = "Run code linter (no fixes)."
+description = "Run code linter and formatter (no fixes)."
 skip_install = true
-deps = ["black", "ruff==0.4.8"]
+deps = ["ruff==0.11.13"]
 commands = [
   ["ruff", "check", "{posargs:.}"],
-  ["black", "--check", "--diff", "{posargs:.}"],
+  ["ruff", "format", "{posargs:.}"],
 ]

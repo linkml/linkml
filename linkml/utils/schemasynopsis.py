@@ -115,7 +115,11 @@ class SchemaSynopsis:
             (
                 ClassType
                 if v.range in self.schema.classes
-                else EnumType if v.range in self.schema.enums else TypeType if v.range in self.schema.types else None
+                else EnumType
+                if v.range in self.schema.enums
+                else TypeType
+                if v.range in self.schema.types
+                else None
             ),
             v.range,
         )
@@ -244,19 +248,19 @@ class SchemaSynopsis:
         rval = []
         undefined_classes = set(self.classrefs.keys()) - set(self.schema.classes.keys())
         if undefined_classes:
-            rval += [f"\tUndefined class references: " f"{', '.join(format_undefineds(undefined_classes))}"]
+            rval += [f"\tUndefined class references: {', '.join(format_undefineds(undefined_classes))}"]
         undefined_slots = set(self.slotrefs.keys()) - set(self.schema.slots.keys())
         if undefined_slots:
-            rval += [f"\tUndefined slot references: " f"{', '.join(format_undefineds(undefined_slots))}"]
+            rval += [f"\tUndefined slot references: {', '.join(format_undefineds(undefined_slots))}"]
         undefined_types = set(self.typerefs.keys()) - set(self.schema.types.keys())
         if undefined_types:
-            rval += [f"\tUndefined type references: " f"{', '.join(format_undefineds(undefined_types))}"]
+            rval += [f"\tUndefined type references: {', '.join(format_undefineds(undefined_types))}"]
         undefined_subsets = set(self.subsetrefs.keys()) - set(self.schema.subsets.keys())
         if undefined_subsets:
-            rval += [f"\tUndefined subset references: " f"{', '.join(format_undefineds(undefined_subsets))}"]
+            rval += [f"\tUndefined subset references: {', '.join(format_undefineds(undefined_subsets))}"]
         undefined_enums = set(self.enumrefs.keys()) - set(self.schema.enums.keys())
         if undefined_enums:
-            rval += [f"\tUndefined enun references: " f"{', '.join(format_undefineds(undefined_enums))}"]
+            rval += [f"\tUndefined enun references: {', '.join(format_undefineds(undefined_enums))}"]
 
         # Inlined slots must be multivalued (not a inviolable rule, but we make assumptions about this elsewhere in
         # the python generator
@@ -373,7 +377,7 @@ class SchemaSynopsis:
             for slotname in sorted(domain_mismatches):
                 rval.append(
                     f'\t\t\tSlot: "{slotname}" declared domain: "{self.schema.slots[slotname].domain}" '
-                    f'actual domain(s): {", ".join(self.slotclasses[slotname])}'
+                    f"actual domain(s): {', '.join(self.slotclasses[slotname])}"
                 )
         if unkdomains:
             rval += [f"\t* Unknown domain: {', '.join(sorted(unkdomains))}"]

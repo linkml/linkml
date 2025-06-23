@@ -596,7 +596,7 @@ class Imports(PydanticTemplateModel):
             else:
                 return all([obj in an_import.objects for obj in item.objects])
         else:
-            raise TypeError("Imports only contains single Import objects or other Imports\n" f"Got: {type(item)}")
+            raise TypeError(f"Imports only contains single Import objects or other Imports\nGot: {type(item)}")
 
     @field_validator("imports", mode="after")
     @classmethod

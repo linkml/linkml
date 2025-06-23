@@ -118,6 +118,10 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
         after="```mermaid",
         followed_by=["Organization : name", "```"],
     )
+    # check link to class in mermaid diagram
+    assert_mdfile_contains(tmp_path / "Person.md", 'click Person href "../Person/"')
+    # check link to enum in mermaid diagram
+    assert_mdfile_contains(tmp_path / "Person.md", 'click LifeStatusEnum href "../LifeStatusEnum/"')
 
     # test yaml
     assert_mdfile_contains(
@@ -1028,6 +1032,12 @@ def test_subfolder_type_separation(kitchen_sink_path, tmp_path):
     assert_mdfile_contains(
         tmp_path / "slots" / "activities.md",
         "[ks:slot/activities](https://w3id.org/linkml/tests/kitchen_sink/slot/activities)",
+    )
+    # check link to class in mermaid diagram
+    assert_mdfile_contains(tmp_path / "classes" / "Person.md", 'click Person href "../../classes/Person/"')
+    # check link to enum in mermaid diagram
+    assert_mdfile_contains(
+        tmp_path / "classes" / "Person.md", 'click LifeStatusEnum href "../../enums/LifeStatusEnum/"'
     )
 
 
