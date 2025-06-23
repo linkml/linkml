@@ -1,6 +1,5 @@
 # Built from:
 # https://docs.github.com/en/actions/guides/building-and-testing-python
-# https://github.com/snok/install-poetry#workflows-and-tips
 
 name: Build and test linkml
 env:

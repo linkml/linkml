@@ -182,7 +182,9 @@ linkml-schema-fixer = "linkml.utils.schema_fixer:main"
 [tool.codespell]
 skip = [
   ".git", "*.pdf", "*.svg", "*.dill",
-  "poetry.lock",
+  "./tests",  # TODO: bring in tests in too
+  "pyproject.toml",
+  "uv.lock",
   "./notebooks/DistributedModels.ipynb",
   "./docs/LinkML-logo/LinkML-Revised-Round-Logo-MASTER-FILE.ai",
   "./tests/data/hp.ttl",
