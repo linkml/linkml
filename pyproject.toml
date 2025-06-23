@@ -68,29 +68,23 @@ dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
 ]
 
 [project.optional-dependencies]
-black = [
+lint = [
     "black >= 24.0.0",
 ]
-numpydantic = [
+typing = [
     "numpydantic >= 1.6.1",
 ]
 shacl = [
     "pyshacl >= 0.25.0",
 ]
 tests = [
-  # "linkml[black]",  # recursive dependency not supported by uv
-    "black >= 24.0.0",
-    "numpydantic >= 1.6.1",
-    "pyshacl >= 0.25.0",
+  { include-group = "lint" },
+  { include-group = "typing" },
+  { include-group = "shacl" }
 ]
-pandera = [
-  "pandera >= 0.19.0"
-]
-polars-lts-cpu = [
-  "polars-lts-cpu >= 1.0.0"
-]
-
 dev = [
+  { include-group = "tests" },
+  "pytest >= 7.4.0",
   "chardet",
   "ipykernel",
   "ipython-genutils",
@@ -102,8 +96,14 @@ dev = [
   "requests-cache >= 1.2.0",
   "myst-nb >= 1.0.0; python_version >= '3.9'",
   "sphinx-design >= 0.5.0",
-  "rich >= 13.7.1",
-  ]
+  "rich >= 13.7.1"
+]
+pandera = [
+  "pandera >= 0.19.0"
+]
+polars-lts-cpu = [
+  "polars-lts-cpu >= 1.0.0"
+]
 tests-extra = [
   "pytest >= 7.4.0",
   "pytest-subtests >= 0.11.0",
