@@ -1,4 +1,6 @@
 name: Check Sphinx external links
+env:
+  UV_VERSION: "0.7.13"
 on:
   pull_request:
   schedule:
@@ -19,15 +21,12 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install poetry
-        run: |
-          pipx install poetry
-          pipx inject poetry poetry-dynamic-versioning
-
-      - name: install
-        run: poetry install --with docs
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: ${{ env.UV_VERSION }}
 
       - name: Build documentation.
         run: |
           cd docs/
-          poetry run sphinx-build -b linkcheck . _build | grep "broken"
+          uv run sphinx-build -b linkcheck . _build | grep "broken"
