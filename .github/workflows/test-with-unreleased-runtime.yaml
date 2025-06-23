@@ -125,7 +125,7 @@ jobs:
         run: uv add ../linkml-runtime
       - name: Update environment according to lockfile
         working-directory: linkml
-        run: uv sync --all-groups
+        run: uv sync --group dev --group tests-extra
       - name: print linkml-runtime version
         working-directory: linkml
         run: uv run python -c 'from importlib.metadata import version; print(version("linkml-runtime"))'
