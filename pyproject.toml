@@ -343,7 +343,7 @@ commands = [
 [tool.uv-dynamic-versioning]
 vcs = "git"
 style = "pep440"
-fallback-version = "0.0.0
+fallback-version = "0.0.0"
 
 [tool.hatch.version]
 source = "uv-dynamic-versioning"
