@@ -109,19 +109,12 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           version: ${{ env.UV_VERSION }}
+          enable-cache: true
 
       - name: Set up python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'uv'
-
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v4
-        with:
-          path: linkml/.venv
-          key: venv-${{ matrix.python-version }}-${{ runner.os }}-${{ hashFiles('**/uv.lock') }}
 
       # note that we run the installation step always, even if we restore a venv,
       # the cache will restore the old version of linkml, but the lockfile
@@ -138,4 +131,4 @@ jobs:
         run: uv run python -c 'from importlib.metadata import version; print(version("linkml-runtime"))'
       - name: run tests
         working-directory: linkml
-        run: uv run python -m pytest --with-slow
+        run: uv run -m pytest --with-slow
