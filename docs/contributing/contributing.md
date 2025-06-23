@@ -11,11 +11,11 @@ Then clone the repository and install the development dependencies:
   git clone https://github.com/linkml/linkml
   cd linkml
   # Full installation (all optional dependencies - same as CI)
-  uv sync --all-extras
+  uv sync --all-groups
   # OR lighter development installation (recommended for most development)
-  uv sync --extra dev
+  uv sync --group dev
   # OR if you need to run the full test suite locally
-  uv sync --extra dev --extra tests-extra
+  uv sync --group dev --group tests-extra
 ```
 
 ## LinkML Testing Framework
