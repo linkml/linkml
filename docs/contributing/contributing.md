@@ -4,14 +4,18 @@ For general info about how to contribute to LinkML, please see [FAQ: Contributin
 
 ## Development Environment Setup
 
-LinkML is developed with [Python](https://www.python.org/) and uses [Poetry](https://python-poetry.org/) (version >= 2.0) for dependency management and packaging. If you have not used Poetry before refer to the [Poetry documentation](https://python-poetry.org/docs/#installation/) for installation instructions.
-
+LinkML is developed with [Python](https://www.python.org/) and uses [uv](https://docs.astral.sh/uv/) for dependency management and packaging. If you have not used uv before refer to the [uv documentation](https://docs.astral.sh/uv/) for installation instructions.
 Then clone the repository and install the development dependencies:
 
 ```shell
-git clone https://github.com/linkml/linkml
-cd linkml
-poetry install --all-extras
+  git clone https://github.com/linkml/linkml
+  cd linkml
+  # Full installation (all optional dependencies - same as CI)
+  uv sync --all-extras
+  # OR lighter development installation (recommended for most development)
+  uv sync --extra dev
+  # OR if you need to run the full test suite locally
+  uv sync --extra dev --extra tests-extra
 ```
 
 ## LinkML Testing Framework
@@ -31,20 +35,20 @@ There are two cases you need to consider while writing your unit test. The first
   * As discussed above, ideally, all your test issues will have an accompanying minimal test schema. One pattern is that you include the schema in your Python unit test file as strings. Another pattern is to include them as separate YAML files in the `input` folder.
 * As for new functionality, as directed above, create a test case under any of the existing Python test files if there are tests already scoped with respect to your enhancement. Or if not, then create a new Python test file with your unit test.
 * The tests in this repo are a mix of Python [unittest](https://docs.python.org/3/library/unittest.html) tests and [pytest](https://docs.pytest.org/en/) tests. See below for more details on the transition. Because of this mix, tests should always be run using the `pytest` CLI.
-* If you have already activated the poetry virtual environment, then there is no need to use the `poetry run` prefix.
+* If you are using uv (which manages virtual environments automatically), you can use `uv run` to run commands
 * If you want to isolate specific test functions from within your Python unit test file, then you can use the [`-k` command line option](https://docs.pytest.org/en/stable/reference/reference.html#command-line-flags).
 
 
 To run a single test file using `pytest`:
 
 ```python
-poetry run pytest tests/test_issues/test_linkml_issue_NNN.py
+uv run pytest tests/test_issues/test_linkml_issue_NNN.py
 ```
 
 You can run the full test suite in the following way:
 
 ```bash
-poetry run pytest
+uv run pytest
 ```
 
 or via a shortcut Makefile target:
@@ -177,7 +181,7 @@ This repository is configured to use [Black](https://black.readthedocs.io/en/sta
 Each of these tools can be run on-demand via `tox`. To check the code for issues run:
 
 ```shell
-poetry run tox -e lint
+uv run tox -e lint
 ```
 
 Any issues should be fixed before committing or pushing changes. This command is automatically run against pull requests and the testing workflow will fail if issues are found.
@@ -185,7 +189,7 @@ Any issues should be fixed before committing or pushing changes. This command is
 Formatting and some code quality issues can be fixed automatically by running:
 
 ```shell
-poetry run tox -e format
+uv run tox -e format
 ```
 
 You can configure these tools to run automatically before each commit by using [pre-commit](https://pre-commit.com/). To set this up, first ensure that you have the pre-commit package installed globally. This can be done via [pipx](https://pypa.github.io/pipx/):
