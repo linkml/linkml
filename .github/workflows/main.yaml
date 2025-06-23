@@ -81,7 +81,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: uv sync --group dev --group tests-extra --group pandera
+        run: uv sync --all-groups
       - name: Setup Graphviz
         uses: ts-graphviz/setup-graphviz@v2
       - name: Generate coverage results
@@ -127,7 +127,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
-        run: uv sync --group dev --group tests-extra --group pandera
+        run: uv sync --all-groups
       - name: Generate coverage results
         # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668
         shell: bash

@@ -41,7 +41,7 @@ requires-python = ">=3.9"
 dynamic = ["version"]
 dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "antlr4-python3-runtime >= 4.9.0, < 4.10",
-    "click >= 7.0",
+    "click >= 8.0, < 8.2",
     "graphviz >= 0.10.1",
     "hbreader",
     "isodate >= 0.6.0",
@@ -84,6 +84,7 @@ tests = [
 ]
 dev = [
   {include-group = "tests" },
+  {include-group = "pandera"},
   "pytest >= 7.4.0",
   "chardet",
   "ipykernel",
@@ -99,11 +100,11 @@ dev = [
   "sphinx-design >= 0.5.0",
   "rich >= 13.7.1"
 ]
+
 pandera = [
-  "pandera >= 0.19.0"
-]
-polars-lts-cpu = [
-  "polars-lts-cpu >= 1.0.0"
+  "pandera >= 0.19.0",
+  "polars-lts-cpu >= 1.0.0",
+  "pandas"
 ]
 tests-extra = [
   "pytest >= 7.4.0",
@@ -115,7 +116,6 @@ tests-extra = [
   "mock >= 5.1.0",
   "testcontainers == 3.7.1",
   "jsonpatch >= 1.33",
-  "click >= 8.0.0, < 9.0.0"
 ]
 docs = [
   "furo >= 2023.03.27",
