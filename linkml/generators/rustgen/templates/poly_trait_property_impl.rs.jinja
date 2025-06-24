@@ -12,8 +12,10 @@
 {% if range.optional %}
         {% if type_getter == 'Option<&str>' %}
         return self.{{ name }}.as_deref();
-        {% else %}
+        {% elif ct != 'list' and ct != 'mapping' %}
         return self.{{ name }}.as_ref();
+        {% else %}
+        return &self.{{ name }};
         {% endif %}
 {% else %}
 {% if need_option_wrap %}

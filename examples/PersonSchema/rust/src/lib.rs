@@ -180,7 +180,7 @@ impl serde_utils::InlinedPair for NamedThing {
 }
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[serde(untagged)]
+#[cfg_attr(feature="serde", serde(untagged))]
 pub enum NamedThingOrSubtype {    NamedThing(NamedThing),     Person(Person),     Organization(Organization),     Concept(Concept),     DiagnosisConcept(DiagnosisConcept),     ProcedureConcept(ProcedureConcept)}
 
 impl From<NamedThing>   for NamedThingOrSubtype { fn from(x: NamedThing)   -> Self { Self::NamedThing(x) } }
@@ -456,7 +456,7 @@ impl<'py> FromPyObject<'py> for Box<HasAliases> {
 }
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[serde(untagged)]
+#[cfg_attr(feature="serde", serde(untagged))]
 pub enum HasAliasesOrSubtype {    HasAliases(HasAliases),     Person(Person),     Organization(Organization),     Place(Place)}
 
 impl From<HasAliases>   for HasAliasesOrSubtype { fn from(x: HasAliases)   -> Self { Self::HasAliases(x) } }
@@ -782,7 +782,7 @@ impl<'py> FromPyObject<'py> for Box<Event> {
 }
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[serde(untagged)]
+#[cfg_attr(feature="serde", serde(untagged))]
 pub enum EventOrSubtype {    Event(Event),     EmploymentEvent(EmploymentEvent),     MedicalEvent(MedicalEvent)}
 
 impl From<Event>   for EventOrSubtype { fn from(x: Event)   -> Self { Self::Event(x) } }
@@ -928,7 +928,7 @@ impl serde_utils::InlinedPair for Concept {
 }
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[serde(untagged)]
+#[cfg_attr(feature="serde", serde(untagged))]
 pub enum ConceptOrSubtype {    Concept(Concept),     DiagnosisConcept(DiagnosisConcept),     ProcedureConcept(ProcedureConcept)}
 
 impl From<Concept>   for ConceptOrSubtype { fn from(x: Concept)   -> Self { Self::Concept(x) } }
@@ -1241,7 +1241,7 @@ impl<'py> FromPyObject<'py> for Box<Relationship> {
 }
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[serde(untagged)]
+#[cfg_attr(feature="serde", serde(untagged))]
 pub enum RelationshipOrSubtype {    Relationship(Relationship),     FamilialRelationship(FamilialRelationship)}
 
 impl From<Relationship>   for RelationshipOrSubtype { fn from(x: Relationship)   -> Self { Self::Relationship(x) } }
