@@ -8,4 +8,3 @@ Note for testing
      * this is imported by other tests
      * if you change the yaml schema we recommend you run test_pythongen
      * it may be possible to get into a state where the generated python code has errors and you need to revert
-    
