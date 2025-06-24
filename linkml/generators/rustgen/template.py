@@ -297,10 +297,6 @@ class PolyTraitPropertyImpl(RustTemplateModel):
 
     @computed_field
     def need_option_wrap(self) -> bool:
-        if self.name == 'related_to':
-            print("range:" , self.range)
-            print("def range: ", self.definition_range)
-            print("struct :  ", self.struct_name)
         return self.definition_range.optional and not self.range.optional
 
     @computed_field

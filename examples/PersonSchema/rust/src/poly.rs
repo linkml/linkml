@@ -6,112 +6,112 @@ use crate::poly_containers::*;
 
 pub trait NamedThing   {
 
-    fn id(&self) -> &String;
-    // fn id_mut(&mut self) -> &mut &String;
+    fn id(&self) -> &str;
+    // fn id_mut(&mut self) -> &mut &str;
     // fn set_id(&mut self, value: String);
 
-    fn name(&self) -> &Option<String>;
-    // fn name_mut(&mut self) -> &mut &Option<String>;
-    // fn set_name(&mut self, value: &Option<String>);
+    fn name(&self) -> Option<&str>;
+    // fn name_mut(&mut self) -> &mut Option<&str>;
+    // fn set_name(&mut self, value: Option<&str>);
 
-    fn description(&self) -> &Option<String>;
-    // fn description_mut(&mut self) -> &mut &Option<String>;
-    // fn set_description(&mut self, value: &Option<String>);
+    fn description(&self) -> Option<&str>;
+    // fn description_mut(&mut self) -> &mut Option<&str>;
+    // fn set_description(&mut self, value: Option<&str>);
 
-    fn image(&self) -> &Option<String>;
-    // fn image_mut(&mut self) -> &mut &Option<String>;
-    // fn set_image(&mut self, value: &Option<String>);
+    fn image(&self) -> Option<&str>;
+    // fn image_mut(&mut self) -> &mut Option<&str>;
+    // fn set_image(&mut self, value: Option<&str>);
 
 
 }
 
 impl NamedThing for crate::NamedThing {
-        fn id(&self) -> &String {
+        fn id(&self) -> &str {
         return &self.id;
     }
-        fn name(&self) -> &Option<String> {
-        return &self.name;
+        fn name(&self) -> Option<&str> {
+        return self.name.as_deref();
     }
-        fn description(&self) -> &Option<String> {
-        return &self.description;
+        fn description(&self) -> Option<&str> {
+        return self.description.as_deref();
     }
-        fn image(&self) -> &Option<String> {
-        return &self.image;
+        fn image(&self) -> Option<&str> {
+        return self.image.as_deref();
     }
 }
 impl NamedThing for crate::Person {
-        fn id(&self) -> &String {
+        fn id(&self) -> &str {
         return &self.id;
     }
-        fn name(&self) -> &Option<String> {
-        return &self.name;
+        fn name(&self) -> Option<&str> {
+        return self.name.as_deref();
     }
-        fn description(&self) -> &Option<String> {
-        return &self.description;
+        fn description(&self) -> Option<&str> {
+        return self.description.as_deref();
     }
-        fn image(&self) -> &Option<String> {
-        return &self.image;
+        fn image(&self) -> Option<&str> {
+        return self.image.as_deref();
     }
 }
 impl NamedThing for crate::Organization {
-        fn id(&self) -> &String {
+        fn id(&self) -> &str {
         return &self.id;
     }
-        fn name(&self) -> &Option<String> {
-        return &self.name;
+        fn name(&self) -> Option<&str> {
+        return self.name.as_deref();
     }
-        fn description(&self) -> &Option<String> {
-        return &self.description;
+        fn description(&self) -> Option<&str> {
+        return self.description.as_deref();
     }
-        fn image(&self) -> &Option<String> {
-        return &self.image;
+        fn image(&self) -> Option<&str> {
+        return self.image.as_deref();
     }
 }
 impl NamedThing for crate::Concept {
-        fn id(&self) -> &String {
+        fn id(&self) -> &str {
         return &self.id;
     }
-        fn name(&self) -> &Option<String> {
-        return &self.name;
+        fn name(&self) -> Option<&str> {
+        return self.name.as_deref();
     }
-        fn description(&self) -> &Option<String> {
-        return &self.description;
+        fn description(&self) -> Option<&str> {
+        return self.description.as_deref();
     }
-        fn image(&self) -> &Option<String> {
-        return &self.image;
+        fn image(&self) -> Option<&str> {
+        return self.image.as_deref();
     }
 }
 impl NamedThing for crate::DiagnosisConcept {
-        fn id(&self) -> &String {
+        fn id(&self) -> &str {
         return &self.id;
     }
-        fn name(&self) -> &Option<String> {
-        return &self.name;
+        fn name(&self) -> Option<&str> {
+        return self.name.as_deref();
     }
-        fn description(&self) -> &Option<String> {
-        return &self.description;
+        fn description(&self) -> Option<&str> {
+        return self.description.as_deref();
     }
-        fn image(&self) -> &Option<String> {
-        return &self.image;
+        fn image(&self) -> Option<&str> {
+        return self.image.as_deref();
     }
 }
 impl NamedThing for crate::ProcedureConcept {
-        fn id(&self) -> &String {
+        fn id(&self) -> &str {
         return &self.id;
     }
-        fn name(&self) -> &Option<String> {
-        return &self.name;
+        fn name(&self) -> Option<&str> {
+        return self.name.as_deref();
     }
-        fn description(&self) -> &Option<String> {
-        return &self.description;
+        fn description(&self) -> Option<&str> {
+        return self.description.as_deref();
     }
-        fn image(&self) -> &Option<String> {
-        return &self.image;
+        fn image(&self) -> Option<&str> {
+        return self.image.as_deref();
     }
 }
 
 impl NamedThing for crate::NamedThingOrSubtype {
-        fn id(&self) -> &String {
+        fn id(&self) -> &str {
         match self {
                 NamedThingOrSubtype::NamedThing(val) => val.id(),
                 NamedThingOrSubtype::Person(val) => val.id(),
@@ -122,7 +122,7 @@ impl NamedThing for crate::NamedThingOrSubtype {
 
         }
     }
-        fn name(&self) -> &Option<String> {
+        fn name(&self) -> Option<&str> {
         match self {
                 NamedThingOrSubtype::NamedThing(val) => val.name(),
                 NamedThingOrSubtype::Person(val) => val.name(),
@@ -133,7 +133,7 @@ impl NamedThing for crate::NamedThingOrSubtype {
 
         }
     }
-        fn description(&self) -> &Option<String> {
+        fn description(&self) -> Option<&str> {
         match self {
                 NamedThingOrSubtype::NamedThing(val) => val.description(),
                 NamedThingOrSubtype::Person(val) => val.description(),
@@ -144,7 +144,7 @@ impl NamedThing for crate::NamedThingOrSubtype {
 
         }
     }
-        fn image(&self) -> &Option<String> {
+        fn image(&self) -> Option<&str> {
         match self {
                 NamedThingOrSubtype::NamedThing(val) => val.image(),
                 NamedThingOrSubtype::Person(val) => val.image(),
@@ -157,7 +157,7 @@ impl NamedThing for crate::NamedThingOrSubtype {
     }
 }
 impl NamedThing for crate::ConceptOrSubtype {
-        fn id(&self) -> &String {
+        fn id(&self) -> &str {
         match self {
                 ConceptOrSubtype::Concept(val) => val.id(),
                 ConceptOrSubtype::DiagnosisConcept(val) => val.id(),
@@ -165,7 +165,7 @@ impl NamedThing for crate::ConceptOrSubtype {
 
         }
     }
-        fn name(&self) -> &Option<String> {
+        fn name(&self) -> Option<&str> {
         match self {
                 ConceptOrSubtype::Concept(val) => val.name(),
                 ConceptOrSubtype::DiagnosisConcept(val) => val.name(),
@@ -173,7 +173,7 @@ impl NamedThing for crate::ConceptOrSubtype {
 
         }
     }
-        fn description(&self) -> &Option<String> {
+        fn description(&self) -> Option<&str> {
         match self {
                 ConceptOrSubtype::Concept(val) => val.description(),
                 ConceptOrSubtype::DiagnosisConcept(val) => val.description(),
@@ -181,7 +181,7 @@ impl NamedThing for crate::ConceptOrSubtype {
 
         }
     }
-        fn image(&self) -> &Option<String> {
+        fn image(&self) -> Option<&str> {
         match self {
                 ConceptOrSubtype::Concept(val) => val.image(),
                 ConceptOrSubtype::DiagnosisConcept(val) => val.image(),
@@ -193,21 +193,21 @@ impl NamedThing for crate::ConceptOrSubtype {
 
 pub trait Person : NamedThing  +  HasAliases   {
 
-    fn primary_email(&self) -> &Option<String>;
-    // fn primary_email_mut(&mut self) -> &mut &Option<String>;
-    // fn set_primary_email(&mut self, value: &Option<String>);
+    fn primary_email(&self) -> Option<&str>;
+    // fn primary_email_mut(&mut self) -> &mut Option<&str>;
+    // fn set_primary_email(&mut self, value: Option<&str>);
 
-    fn birth_date(&self) -> &Option<String>;
-    // fn birth_date_mut(&mut self) -> &mut &Option<String>;
-    // fn set_birth_date(&mut self, value: &Option<String>);
+    fn birth_date(&self) -> Option<&str>;
+    // fn birth_date_mut(&mut self) -> &mut Option<&str>;
+    // fn set_birth_date(&mut self, value: Option<&str>);
 
-    fn age_in_years(&self) -> &Option<isize>;
-    // fn age_in_years_mut(&mut self) -> &mut &Option<isize>;
-    // fn set_age_in_years(&mut self, value: &Option<isize>);
+    fn age_in_years(&self) -> Option<&isize>;
+    // fn age_in_years_mut(&mut self) -> &mut Option<&isize>;
+    // fn set_age_in_years(&mut self, value: Option<&isize>);
 
-    fn gender(&self) -> &Option<String>;
-    // fn gender_mut(&mut self) -> &mut &Option<String>;
-    // fn set_gender(&mut self, value: &Option<String>);
+    fn gender(&self) -> Option<&str>;
+    // fn gender_mut(&mut self) -> &mut Option<&str>;
+    // fn set_gender(&mut self, value: Option<&str>);
 
     fn current_address(&self) -> Option<&crate::Address>;
     // fn current_address_mut(&mut self) -> &mut Option<&crate::Address>;
@@ -229,17 +229,17 @@ pub trait Person : NamedThing  +  HasAliases   {
 }
 
 impl Person for crate::Person {
-        fn primary_email(&self) -> &Option<String> {
-        return &self.primary_email;
+        fn primary_email(&self) -> Option<&str> {
+        return self.primary_email.as_deref();
     }
-        fn birth_date(&self) -> &Option<String> {
-        return &self.birth_date;
+        fn birth_date(&self) -> Option<&str> {
+        return self.birth_date.as_deref();
     }
-        fn age_in_years(&self) -> &Option<isize> {
-        return &self.age_in_years;
+        fn age_in_years(&self) -> Option<&isize> {
+        return self.age_in_years.as_ref();
     }
-        fn gender(&self) -> &Option<String> {
-        return &self.gender;
+        fn gender(&self) -> Option<&str> {
+        return self.gender.as_deref();
     }
         fn current_address(&self) -> Option<&crate::Address> {
         return self.current_address.as_ref();
@@ -301,153 +301,153 @@ impl HasAliases for crate::HasAliasesOrSubtype {
 
 pub trait Organization : NamedThing  +  HasAliases   {
 
-    fn mission_statement(&self) -> &Option<String>;
-    // fn mission_statement_mut(&mut self) -> &mut &Option<String>;
-    // fn set_mission_statement(&mut self, value: &Option<String>);
+    fn mission_statement(&self) -> Option<&str>;
+    // fn mission_statement_mut(&mut self) -> &mut Option<&str>;
+    // fn set_mission_statement(&mut self, value: Option<&str>);
 
-    fn founding_date(&self) -> &Option<String>;
-    // fn founding_date_mut(&mut self) -> &mut &Option<String>;
-    // fn set_founding_date(&mut self, value: &Option<String>);
+    fn founding_date(&self) -> Option<&str>;
+    // fn founding_date_mut(&mut self) -> &mut Option<&str>;
+    // fn set_founding_date(&mut self, value: Option<&str>);
 
-    fn founding_location(&self) -> &Option<String>;
-    // fn founding_location_mut(&mut self) -> &mut &Option<String>;
-    // fn set_founding_location<E>(&mut self, value: &Option<String>) where E: Into<String>;
+    fn founding_location(&self) -> Option<&str>;
+    // fn founding_location_mut(&mut self) -> &mut Option<&str>;
+    // fn set_founding_location<E>(&mut self, value: Option<&str>) where E: Into<String>;
 
 
 }
 
 impl Organization for crate::Organization {
-        fn mission_statement(&self) -> &Option<String> {
-        return &self.mission_statement;
+        fn mission_statement(&self) -> Option<&str> {
+        return self.mission_statement.as_deref();
     }
-        fn founding_date(&self) -> &Option<String> {
-        return &self.founding_date;
+        fn founding_date(&self) -> Option<&str> {
+        return self.founding_date.as_deref();
     }
-        fn founding_location(&self) -> &Option<String> {
-        return &self.founding_location;
+        fn founding_location(&self) -> Option<&str> {
+        return self.founding_location.as_deref();
     }
 }
 
 
 pub trait Place : HasAliases   {
 
-    fn id(&self) -> &String;
-    // fn id_mut(&mut self) -> &mut &String;
+    fn id(&self) -> &str;
+    // fn id_mut(&mut self) -> &mut &str;
     // fn set_id(&mut self, value: String);
 
-    fn name(&self) -> &Option<String>;
-    // fn name_mut(&mut self) -> &mut &Option<String>;
-    // fn set_name(&mut self, value: &Option<String>);
+    fn name(&self) -> Option<&str>;
+    // fn name_mut(&mut self) -> &mut Option<&str>;
+    // fn set_name(&mut self, value: Option<&str>);
 
 
 }
 
 impl Place for crate::Place {
-        fn id(&self) -> &String {
+        fn id(&self) -> &str {
         return &self.id;
     }
-        fn name(&self) -> &Option<String> {
-        return &self.name;
+        fn name(&self) -> Option<&str> {
+        return self.name.as_deref();
     }
 }
 
 
 pub trait Address   {
 
-    fn street(&self) -> &Option<String>;
-    // fn street_mut(&mut self) -> &mut &Option<String>;
-    // fn set_street(&mut self, value: &Option<String>);
+    fn street(&self) -> Option<&str>;
+    // fn street_mut(&mut self) -> &mut Option<&str>;
+    // fn set_street(&mut self, value: Option<&str>);
 
-    fn city(&self) -> &Option<String>;
-    // fn city_mut(&mut self) -> &mut &Option<String>;
-    // fn set_city(&mut self, value: &Option<String>);
+    fn city(&self) -> Option<&str>;
+    // fn city_mut(&mut self) -> &mut Option<&str>;
+    // fn set_city(&mut self, value: Option<&str>);
 
-    fn postal_code(&self) -> &Option<String>;
-    // fn postal_code_mut(&mut self) -> &mut &Option<String>;
-    // fn set_postal_code(&mut self, value: &Option<String>);
+    fn postal_code(&self) -> Option<&str>;
+    // fn postal_code_mut(&mut self) -> &mut Option<&str>;
+    // fn set_postal_code(&mut self, value: Option<&str>);
 
 
 }
 
 impl Address for crate::Address {
-        fn street(&self) -> &Option<String> {
-        return &self.street;
+        fn street(&self) -> Option<&str> {
+        return self.street.as_deref();
     }
-        fn city(&self) -> &Option<String> {
-        return &self.city;
+        fn city(&self) -> Option<&str> {
+        return self.city.as_deref();
     }
-        fn postal_code(&self) -> &Option<String> {
-        return &self.postal_code;
+        fn postal_code(&self) -> Option<&str> {
+        return self.postal_code.as_deref();
     }
 }
 
 
 pub trait Event   {
 
-    fn started_at_time(&self) -> &Option<NaiveDate>;
-    // fn started_at_time_mut(&mut self) -> &mut &Option<NaiveDate>;
-    // fn set_started_at_time(&mut self, value: &Option<NaiveDate>);
+    fn started_at_time(&self) -> Option<&NaiveDate>;
+    // fn started_at_time_mut(&mut self) -> &mut Option<&NaiveDate>;
+    // fn set_started_at_time(&mut self, value: Option<&NaiveDate>);
 
-    fn ended_at_time(&self) -> &Option<NaiveDate>;
-    // fn ended_at_time_mut(&mut self) -> &mut &Option<NaiveDate>;
-    // fn set_ended_at_time(&mut self, value: &Option<NaiveDate>);
+    fn ended_at_time(&self) -> Option<&NaiveDate>;
+    // fn ended_at_time_mut(&mut self) -> &mut Option<&NaiveDate>;
+    // fn set_ended_at_time(&mut self, value: Option<&NaiveDate>);
 
-    fn duration(&self) -> &Option<f64>;
-    // fn duration_mut(&mut self) -> &mut &Option<f64>;
-    // fn set_duration(&mut self, value: &Option<f64>);
+    fn duration(&self) -> Option<&f64>;
+    // fn duration_mut(&mut self) -> &mut Option<&f64>;
+    // fn set_duration(&mut self, value: Option<&f64>);
 
-    fn is_current(&self) -> &Option<bool>;
-    // fn is_current_mut(&mut self) -> &mut &Option<bool>;
-    // fn set_is_current(&mut self, value: &Option<bool>);
+    fn is_current(&self) -> Option<&bool>;
+    // fn is_current_mut(&mut self) -> &mut Option<&bool>;
+    // fn set_is_current(&mut self, value: Option<&bool>);
 
 
 }
 
 impl Event for crate::Event {
-        fn started_at_time(&self) -> &Option<NaiveDate> {
-        return &self.started_at_time;
+        fn started_at_time(&self) -> Option<&NaiveDate> {
+        return self.started_at_time.as_ref();
     }
-        fn ended_at_time(&self) -> &Option<NaiveDate> {
-        return &self.ended_at_time;
+        fn ended_at_time(&self) -> Option<&NaiveDate> {
+        return self.ended_at_time.as_ref();
     }
-        fn duration(&self) -> &Option<f64> {
-        return &self.duration;
+        fn duration(&self) -> Option<&f64> {
+        return self.duration.as_ref();
     }
-        fn is_current(&self) -> &Option<bool> {
-        return &self.is_current;
+        fn is_current(&self) -> Option<&bool> {
+        return self.is_current.as_ref();
     }
 }
 impl Event for crate::EmploymentEvent {
-        fn started_at_time(&self) -> &Option<NaiveDate> {
-        return &self.started_at_time;
+        fn started_at_time(&self) -> Option<&NaiveDate> {
+        return self.started_at_time.as_ref();
     }
-        fn ended_at_time(&self) -> &Option<NaiveDate> {
-        return &self.ended_at_time;
+        fn ended_at_time(&self) -> Option<&NaiveDate> {
+        return self.ended_at_time.as_ref();
     }
-        fn duration(&self) -> &Option<f64> {
-        return &self.duration;
+        fn duration(&self) -> Option<&f64> {
+        return self.duration.as_ref();
     }
-        fn is_current(&self) -> &Option<bool> {
-        return &self.is_current;
+        fn is_current(&self) -> Option<&bool> {
+        return self.is_current.as_ref();
     }
 }
 impl Event for crate::MedicalEvent {
-        fn started_at_time(&self) -> &Option<NaiveDate> {
-        return &self.started_at_time;
+        fn started_at_time(&self) -> Option<&NaiveDate> {
+        return self.started_at_time.as_ref();
     }
-        fn ended_at_time(&self) -> &Option<NaiveDate> {
-        return &self.ended_at_time;
+        fn ended_at_time(&self) -> Option<&NaiveDate> {
+        return self.ended_at_time.as_ref();
     }
-        fn duration(&self) -> &Option<f64> {
-        return &self.duration;
+        fn duration(&self) -> Option<&f64> {
+        return self.duration.as_ref();
     }
-        fn is_current(&self) -> &Option<bool> {
-        return &self.is_current;
+        fn is_current(&self) -> Option<&bool> {
+        return self.is_current.as_ref();
     }
 }
 
 impl Event for crate::EventOrSubtype {
-        fn started_at_time(&self) -> &Option<NaiveDate> {
+        fn started_at_time(&self) -> Option<&NaiveDate> {
         match self {
                 EventOrSubtype::Event(val) => val.started_at_time(),
                 EventOrSubtype::EmploymentEvent(val) => val.started_at_time(),
@@ -455,7 +455,7 @@ impl Event for crate::EventOrSubtype {
 
         }
     }
-        fn ended_at_time(&self) -> &Option<NaiveDate> {
+        fn ended_at_time(&self) -> Option<&NaiveDate> {
         match self {
                 EventOrSubtype::Event(val) => val.ended_at_time(),
                 EventOrSubtype::EmploymentEvent(val) => val.ended_at_time(),
@@ -463,7 +463,7 @@ impl Event for crate::EventOrSubtype {
 
         }
     }
-        fn duration(&self) -> &Option<f64> {
+        fn duration(&self) -> Option<&f64> {
         match self {
                 EventOrSubtype::Event(val) => val.duration(),
                 EventOrSubtype::EmploymentEvent(val) => val.duration(),
@@ -471,7 +471,7 @@ impl Event for crate::EventOrSubtype {
 
         }
     }
-        fn is_current(&self) -> &Option<bool> {
+        fn is_current(&self) -> Option<&bool> {
         match self {
                 EventOrSubtype::Event(val) => val.is_current(),
                 EventOrSubtype::EmploymentEvent(val) => val.is_current(),
@@ -516,77 +516,77 @@ impl ProcedureConcept for crate::ProcedureConcept {
 
 pub trait Relationship   {
 
-    fn started_at_time(&self) -> &Option<NaiveDate>;
-    // fn started_at_time_mut(&mut self) -> &mut &Option<NaiveDate>;
-    // fn set_started_at_time(&mut self, value: &Option<NaiveDate>);
+    fn started_at_time(&self) -> Option<&NaiveDate>;
+    // fn started_at_time_mut(&mut self) -> &mut Option<&NaiveDate>;
+    // fn set_started_at_time(&mut self, value: Option<&NaiveDate>);
 
-    fn ended_at_time(&self) -> &Option<NaiveDate>;
-    // fn ended_at_time_mut(&mut self) -> &mut &Option<NaiveDate>;
-    // fn set_ended_at_time(&mut self, value: &Option<NaiveDate>);
+    fn ended_at_time(&self) -> Option<&NaiveDate>;
+    // fn ended_at_time_mut(&mut self) -> &mut Option<&NaiveDate>;
+    // fn set_ended_at_time(&mut self, value: Option<&NaiveDate>);
 
-    fn related_to(&self) -> &Option<String>;
-    // fn related_to_mut(&mut self) -> &mut &Option<String>;
-    // fn set_related_to(&mut self, value: &Option<String>);
+    fn related_to(&self) -> Option<&str>;
+    // fn related_to_mut(&mut self) -> &mut Option<&str>;
+    // fn set_related_to(&mut self, value: Option<&str>);
 
-    fn type_(&self) -> &Option<String>;
-    // fn type__mut(&mut self) -> &mut &Option<String>;
-    // fn set_type_(&mut self, value: &Option<String>);
+    fn type_(&self) -> Option<&str>;
+    // fn type__mut(&mut self) -> &mut Option<&str>;
+    // fn set_type_(&mut self, value: Option<&str>);
 
 
 }
 
 impl Relationship for crate::Relationship {
-        fn started_at_time(&self) -> &Option<NaiveDate> {
-        return &self.started_at_time;
+        fn started_at_time(&self) -> Option<&NaiveDate> {
+        return self.started_at_time.as_ref();
     }
-        fn ended_at_time(&self) -> &Option<NaiveDate> {
-        return &self.ended_at_time;
+        fn ended_at_time(&self) -> Option<&NaiveDate> {
+        return self.ended_at_time.as_ref();
     }
-        fn related_to(&self) -> &Option<String> {
-        return &self.related_to;
+        fn related_to(&self) -> Option<&str> {
+        return self.related_to.as_deref();
     }
-        fn type_(&self) -> &Option<String> {
-        return &self.type_;
+        fn type_(&self) -> Option<&str> {
+        return self.type_.as_deref();
     }
 }
 impl Relationship for crate::FamilialRelationship {
-        fn started_at_time(&self) -> &Option<NaiveDate> {
-        return &self.started_at_time;
+        fn started_at_time(&self) -> Option<&NaiveDate> {
+        return self.started_at_time.as_ref();
     }
-        fn ended_at_time(&self) -> &Option<NaiveDate> {
-        return &self.ended_at_time;
+        fn ended_at_time(&self) -> Option<&NaiveDate> {
+        return self.ended_at_time.as_ref();
     }
-        fn related_to(&self) -> &Option<String> {
-        return &self.related_to;
+        fn related_to(&self) -> Option<&str> {
+        return Some(&self.related_to);
     }
-        fn type_(&self) -> &Option<String> {
-        return &self.type_;
+        fn type_(&self) -> Option<&str> {
+        return Some(&self.type_);
     }
 }
 
 impl Relationship for crate::RelationshipOrSubtype {
-        fn started_at_time(&self) -> &Option<NaiveDate> {
+        fn started_at_time(&self) -> Option<&NaiveDate> {
         match self {
                 RelationshipOrSubtype::Relationship(val) => val.started_at_time(),
                 RelationshipOrSubtype::FamilialRelationship(val) => val.started_at_time(),
 
         }
     }
-        fn ended_at_time(&self) -> &Option<NaiveDate> {
+        fn ended_at_time(&self) -> Option<&NaiveDate> {
         match self {
                 RelationshipOrSubtype::Relationship(val) => val.ended_at_time(),
                 RelationshipOrSubtype::FamilialRelationship(val) => val.ended_at_time(),
 
         }
     }
-        fn related_to(&self) -> &Option<String> {
+        fn related_to(&self) -> Option<&str> {
         match self {
                 RelationshipOrSubtype::Relationship(val) => val.related_to(),
                 RelationshipOrSubtype::FamilialRelationship(val) => val.related_to(),
 
         }
     }
-        fn type_(&self) -> &Option<String> {
+        fn type_(&self) -> Option<&str> {
         match self {
                 RelationshipOrSubtype::Relationship(val) => val.type_(),
                 RelationshipOrSubtype::FamilialRelationship(val) => val.type_(),
@@ -606,25 +606,25 @@ impl FamilialRelationship for crate::FamilialRelationship {
 
 pub trait EmploymentEvent : Event   {
 
-    fn employed_at(&self) -> &Option<String>;
-    // fn employed_at_mut(&mut self) -> &mut &Option<String>;
-    // fn set_employed_at<E>(&mut self, value: &Option<String>) where E: Into<String>;
+    fn employed_at(&self) -> Option<&str>;
+    // fn employed_at_mut(&mut self) -> &mut Option<&str>;
+    // fn set_employed_at<E>(&mut self, value: Option<&str>) where E: Into<String>;
 
 
 }
 
 impl EmploymentEvent for crate::EmploymentEvent {
-        fn employed_at(&self) -> &Option<String> {
-        return &self.employed_at;
+        fn employed_at(&self) -> Option<&str> {
+        return self.employed_at.as_deref();
     }
 }
 
 
 pub trait MedicalEvent : Event   {
 
-    fn in_location(&self) -> &Option<String>;
-    // fn in_location_mut(&mut self) -> &mut &Option<String>;
-    // fn set_in_location<E>(&mut self, value: &Option<String>) where E: Into<String>;
+    fn in_location(&self) -> Option<&str>;
+    // fn in_location_mut(&mut self) -> &mut Option<&str>;
+    // fn set_in_location<E>(&mut self, value: Option<&str>) where E: Into<String>;
 
     fn diagnosis(&self) -> Option<&crate::DiagnosisConcept>;
     // fn diagnosis_mut(&mut self) -> &mut Option<&crate::DiagnosisConcept>;
@@ -638,8 +638,8 @@ pub trait MedicalEvent : Event   {
 }
 
 impl MedicalEvent for crate::MedicalEvent {
-        fn in_location(&self) -> &Option<String> {
-        return &self.in_location;
+        fn in_location(&self) -> Option<&str> {
+        return self.in_location.as_deref();
     }
         fn diagnosis(&self) -> Option<&crate::DiagnosisConcept> {
         return self.diagnosis.as_ref();
@@ -652,16 +652,16 @@ impl MedicalEvent for crate::MedicalEvent {
 
 pub trait WithLocation   {
 
-    fn in_location(&self) -> &Option<String>;
-    // fn in_location_mut(&mut self) -> &mut &Option<String>;
-    // fn set_in_location<E>(&mut self, value: &Option<String>) where E: Into<String>;
+    fn in_location(&self) -> Option<&str>;
+    // fn in_location_mut(&mut self) -> &mut Option<&str>;
+    // fn set_in_location<E>(&mut self, value: Option<&str>) where E: Into<String>;
 
 
 }
 
 impl WithLocation for crate::WithLocation {
-        fn in_location(&self) -> &Option<String> {
-        return &self.in_location;
+        fn in_location(&self) -> Option<&str> {
+        return self.in_location.as_deref();
     }
 }
 
