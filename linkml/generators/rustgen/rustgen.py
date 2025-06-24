@@ -663,7 +663,7 @@ class RustGenerator(Generator, LifecycleMixin):
         subtype_impls = []
         for sc in self.schemaview.class_descendants(cls.name):
             sco = self.schemaview.get_class(sc)
-            induced_slots = self.schemaview.class_induced_slots(cls.name)
+            induced_slots = self.schemaview.class_induced_slots(sco.name)
 
             def find_slot(n: str):
                 for s in induced_slots:
@@ -675,6 +675,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 PolyTraitPropertyImpl(
                     name=get_name(a),
                     range=get_rust_range_info(sco, find_slot(a.name), self.schemaview),
+                    definition_range=get_rust_range_info(cls, a, self.schemaview),
                     struct_name=get_name(sco),
                 )
                 for a in attribs
