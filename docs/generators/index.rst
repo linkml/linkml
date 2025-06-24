@@ -80,6 +80,7 @@ languages such as Python, Javascript, or Java.
    pydantic
    java
    typescript
+   rust
 
 Database
 --------
