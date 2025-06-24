@@ -518,6 +518,25 @@ we strongly recommend it. It provides <em>interoperation hooks</em> - others wit
 data models may have their own enumerations, by making the meaning of each permissible
 value explicit, data can be merged automatically.</p>
 </section>
+<section id="how-do-i-model-an-enum-so-that-it-gets-rendered-as-an-iri-in-rdf-format">
+<h3>How do I model an enum so that it gets rendered as an IRI in RDF format?<a class="headerlink" href="#how-do-i-model-an-enum-so-that-it-gets-rendered-as-an-iri-in-rdf-format" title="Permalink to this heading">#</a></h3>
+<p>From the schema developers perspective, the <code class="docutils literal notranslate"><span class="pre">meaning</span></code> slot does not <em>have</em> to refer to an existing term from
+an ontology or similar, it can refer to anything at all. Consider this example of an enum with a single
+value, <code class="docutils literal notranslate"><span class="pre">Not</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_enum</span><span class="p">:</span>
+  <span class="n">permissible_values</span><span class="p">:</span>
+    <span class="n">Not</span><span class="p">:</span>
+      <span class="n">meaning</span><span class="p">:</span> <span class="n">mynamespace</span><span class="p">:</span><span class="n">Not</span>
+</pre></div>
+</div>
+<p>Without the <code class="docutils literal notranslate"><span class="pre">meaning</span></code> property, the usages of the <code class="docutils literal notranslate"><span class="pre">Not</span></code> enum would be rendered as a string literal in RDF:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;Not&quot;</span><span class="o">^^</span><span class="n">xsd</span><span class="p">:</span><span class="n">string</span>
+</pre></div>
+</div>
+<p>However, adding the <code class="docutils literal notranslate"><span class="pre">meaning</span></code> property, you can use <em>any</em> prefix (e.g. <code class="docutils literal notranslate"><span class="pre">mynamespace:</span></code>), including the schema-internal one.
+So, if you like to have your enum be serialised as an IRI (RDF Resource) in RDF-based serialisations,
+all you need to do is specify the <code class="docutils literal notranslate"><span class="pre">meaning</span></code> slot; if you do not do this, the enum value will be interpreted as a string literal.</p>
+</section>
 <section id="how-do-i-constrain-a-slot-to-a-branch-of-an-ontology-or-a-whole-ontology">
 <h3>How do I constrain a slot to a branch of an ontology or a whole ontology?<a class="headerlink" href="#how-do-i-constrain-a-slot-to-a-branch-of-an-ontology-or-a-whole-ontology" title="Permalink to this heading">#</a></h3>
 <p>LinkML basic enums allow you to restrict a value to a fixed set of terms. This works well, if</p>
@@ -1141,6 +1160,7 @@ will need to answer:</p>
 <li><a class="reference internal" href="#how-do-i-constrain-the-value-of-a-slot-based-on-an-entry-in-a-different-slot">How do I constrain the value of a slot based on an entry in a different slot?</a></li>
 <li><a class="reference internal" href="#how-do-i-constrain-the-value-of-a-slot-using-an-ontology-or-vocabulary">How do I constrain the value of a slot using an ontology or vocabulary?</a><ul>
 <li><a class="reference internal" href="#how-do-i-constrain-a-slot-to-a-fixed-set-of-ontology-terms">How do I constrain a slot to a fixed set of ontology terms?</a></li>
+<li><a class="reference internal" href="#how-do-i-model-an-enum-so-that-it-gets-rendered-as-an-iri-in-rdf-format">How do I model an enum so that it gets rendered as an IRI in RDF format?</a></li>
 <li><a class="reference internal" href="#how-do-i-constrain-a-slot-to-a-branch-of-an-ontology-or-a-whole-ontology">How do I constrain a slot to a branch of an ontology or a whole ontology?</a></li>
 <li><a class="reference internal" href="#can-i-use-linkml-to-develop-ontologies">Can I use LinkML to develop ontologies?</a></li>
 <li><a class="reference internal" href="#are-curies-used-in-schema-definitions-checked-for-expandability-and-resolution">Are CURIEs used in schema definitions checked for expandability and resolution?</a></li>
