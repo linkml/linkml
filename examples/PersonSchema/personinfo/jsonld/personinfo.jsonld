@@ -77,8 +77,14 @@
       "name": "string",
       "definition_uri": "https://w3id.org/linkml/String",
       "description": "A character string",
+      "notes": [
+        "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:Text"
+      ],
       "base": "str",
       "uri": "http://www.w3.org/2001/XMLSchema#string",
       "@type": "TypeDefinition"
@@ -87,8 +93,14 @@
       "name": "integer",
       "definition_uri": "https://w3id.org/linkml/Integer",
       "description": "An integer",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"integer\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:Integer"
+      ],
       "base": "int",
       "uri": "http://www.w3.org/2001/XMLSchema#integer",
       "@type": "TypeDefinition"
@@ -97,8 +109,14 @@
       "name": "boolean",
       "definition_uri": "https://w3id.org/linkml/Boolean",
       "description": "A binary (true or false) value",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"boolean\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:Boolean"
+      ],
       "base": "Bool",
       "uri": "http://www.w3.org/2001/XMLSchema#boolean",
       "repr": "bool",
@@ -108,8 +126,14 @@
       "name": "float",
       "definition_uri": "https://w3id.org/linkml/Float",
       "description": "A real number that conforms to the xsd:float specification",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"float\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:Float"
+      ],
       "base": "float",
       "uri": "http://www.w3.org/2001/XMLSchema#float",
       "@type": "TypeDefinition"
@@ -118,8 +142,14 @@
       "name": "double",
       "definition_uri": "https://w3id.org/linkml/Double",
       "description": "A real number that conforms to the xsd:double specification",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"double\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "close_mappings": [
+        "schema:Float"
+      ],
       "base": "float",
       "uri": "http://www.w3.org/2001/XMLSchema#double",
       "@type": "TypeDefinition"
@@ -128,8 +158,14 @@
       "name": "decimal",
       "definition_uri": "https://w3id.org/linkml/Decimal",
       "description": "A real number with arbitrary precision that conforms to the xsd:decimal specification",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"decimal\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "broad_mappings": [
+        "schema:Number"
+      ],
       "base": "Decimal",
       "uri": "http://www.w3.org/2001/XMLSchema#decimal",
       "@type": "TypeDefinition"
@@ -139,12 +175,16 @@
       "definition_uri": "https://w3id.org/linkml/Time",
       "description": "A time object represents a (local) time of day, independent of any particular day",
       "notes": [
-        "URI is dateTime because OWL reasoners do not work with straight date or time"
+        "URI is dateTime because OWL reasoners do not work with straight date or time",
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"time\"."
       ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:Time"
+      ],
       "base": "XSDTime",
-      "uri": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "uri": "http://www.w3.org/2001/XMLSchema#time",
       "repr": "str",
       "@type": "TypeDefinition"
     },
@@ -153,10 +193,14 @@
       "definition_uri": "https://w3id.org/linkml/Date",
       "description": "a date (year, month and day) in an idealized calendar",
       "notes": [
-        "URI is dateTime because OWL reasoners don't work with straight date or time"
+        "URI is dateTime because OWL reasoners don't work with straight date or time",
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date\"."
       ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:Date"
+      ],
       "base": "XSDDate",
       "uri": "http://www.w3.org/2001/XMLSchema#date",
       "repr": "str",
@@ -166,8 +210,14 @@
       "name": "datetime",
       "definition_uri": "https://w3id.org/linkml/Datetime",
       "description": "The combination of a date and time",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"datetime\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:DateTime"
+      ],
       "base": "XSDDateTime",
       "uri": "http://www.w3.org/2001/XMLSchema#dateTime",
       "repr": "str",
@@ -177,6 +227,9 @@
       "name": "date_or_datetime",
       "definition_uri": "https://w3id.org/linkml/DateOrDatetime",
       "description": "Either a date or a datetime",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date_or_datetime\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
       "base": "str",
@@ -188,6 +241,9 @@
       "name": "uriorcurie",
       "definition_uri": "https://w3id.org/linkml/Uriorcurie",
       "description": "a URI or a CURIE",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uriorcurie\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
       "base": "URIorCURIE",
@@ -196,11 +252,40 @@
       "@type": "TypeDefinition"
     },
     {
-      "name": "uri",
-      "definition_uri": "https://w3id.org/linkml/Uri",
-      "description": "a complete URI",
+      "name": "curie",
+      "definition_uri": "https://w3id.org/linkml/Curie",
+      "conforms_to": "https://www.w3.org/TR/curie/",
+      "description": "a compact URI",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"curie\"."
+      ],
+      "comments": [
+        "in RDF serializations this MUST be expanded to a URI",
+        "in non-RDF serializations MAY be serialized as the compact representation"
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "base": "Curie",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "uri",
+      "definition_uri": "https://w3id.org/linkml/Uri",
+      "conforms_to": "https://www.ietf.org/rfc/rfc3987.txt",
+      "description": "a complete URI",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uri\"."
+      ],
+      "comments": [
+        "in RDF serializations a slot with range of uri is treated as a literal or type xsd:anyURI unless it is an identifier or a reference to an identifier, in which case it is translated directly to a node"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "close_mappings": [
+        "schema:URL"
+      ],
       "base": "URI",
       "uri": "http://www.w3.org/2001/XMLSchema#anyURI",
       "repr": "str",
@@ -210,6 +295,9 @@
       "name": "ncname",
       "definition_uri": "https://w3id.org/linkml/Ncname",
       "description": "Prefix part of CURIE",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"ncname\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
       "base": "NCName",
@@ -221,6 +309,9 @@
       "name": "objectidentifier",
       "definition_uri": "https://w3id.org/linkml/Objectidentifier",
       "description": "A URI or CURIE that represents an object in the model.",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"objectidentifier\"."
+      ],
       "comments": [
         "Used for inheritance and type checking"
       ],
@@ -235,10 +326,58 @@
       "name": "nodeidentifier",
       "definition_uri": "https://w3id.org/linkml/Nodeidentifier",
       "description": "A URI, CURIE or BNODE that represents a node in a model.",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"nodeidentifier\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
       "base": "NodeIdentifier",
       "uri": "http://www.w3.org/ns/shex#nonLiteral",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "jsonpointer",
+      "definition_uri": "https://w3id.org/linkml/Jsonpointer",
+      "conforms_to": "https://datatracker.ietf.org/doc/html/rfc6901",
+      "description": "A string encoding a JSON Pointer. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to a valid object within the current instance document when encoded in tree form.",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpointer\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "jsonpath",
+      "definition_uri": "https://w3id.org/linkml/Jsonpath",
+      "conforms_to": "https://www.ietf.org/archive/id/draft-goessner-dispatch-jsonpath-00.html",
+      "description": "A string encoding a JSON Path. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded in tree form.",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpath\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "sparqlpath",
+      "definition_uri": "https://w3id.org/linkml/Sparqlpath",
+      "conforms_to": "https://www.w3.org/TR/sparql11-query/#propertypaths",
+      "description": "A string encoding a SPARQL Property Path. The value of the string MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded as RDF.",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"sparqlpath\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
       "repr": "str",
       "@type": "TypeDefinition"
     }
@@ -259,7 +398,7 @@
         },
         {
           "text": "CHILD_OF",
-          "meaning": "famrel:01"
+          "meaning": "famrel:03"
         }
       ]
     },
@@ -439,12 +578,12 @@
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/has_employment_history",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "slot_uri": "https://w3id.org/linkml/examples/personinfo/has_employment_history",
-      "multivalued": true,
       "owner": "Person",
       "domain_of": [
         "Person"
       ],
       "range": "EmploymentEvent",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true,
       "@type": "SlotDefinition"
@@ -454,12 +593,12 @@
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/has_medical_history",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "slot_uri": "https://w3id.org/linkml/examples/personinfo/has_medical_history",
-      "multivalued": true,
       "owner": "Person",
       "domain_of": [
         "Person"
       ],
       "range": "MedicalEvent",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true,
       "@type": "SlotDefinition"
@@ -469,12 +608,12 @@
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/has_familial_relationships",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "slot_uri": "https://w3id.org/linkml/examples/personinfo/has_familial_relationships",
-      "multivalued": true,
       "owner": "Person",
       "domain_of": [
         "Person"
       ],
       "range": "FamilialRelationship",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true,
       "@type": "SlotDefinition"
@@ -691,12 +830,12 @@
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/persons",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "slot_uri": "https://w3id.org/linkml/examples/personinfo/persons",
-      "multivalued": true,
       "owner": "Container",
       "domain_of": [
         "Container"
       ],
       "range": "Person",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true,
       "@type": "SlotDefinition"
@@ -706,12 +845,12 @@
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/organizations",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "slot_uri": "https://w3id.org/linkml/examples/personinfo/organizations",
-      "multivalued": true,
       "owner": "Container",
       "domain_of": [
         "Container"
       ],
       "range": "Organization",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true,
       "@type": "SlotDefinition"
@@ -723,21 +862,13 @@
         "http://schema.org/alternateName"
       ],
       "slot_uri": "https://w3id.org/linkml/examples/personinfo/aliases",
-      "multivalued": true,
       "alias": "aliases",
       "owner": "HasAliases",
       "domain_of": [
         "HasAliases"
       ],
       "range": "string",
-      "@type": "SlotDefinition"
-    },
-    {
-      "name": "related_to",
-      "from_schema": "https://w3id.org/linkml/examples/personinfo",
-      "slot_uri": "https://w3id.org/linkml/examples/personinfo/related_to",
-      "range": "Person",
-      "required": true,
+      "multivalued": true,
       "@type": "SlotDefinition"
     },
     {
@@ -762,6 +893,26 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "Person_age_in_years",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/age_in_years",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "is_a": "age_in_years",
+      "domain": "Person",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/age_in_years",
+      "alias": "age_in_years",
+      "owner": "Person",
+      "domain_of": [
+        "Person"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "age_in_years",
+      "range": "integer",
+      "recommended": true,
+      "minimum_value": 0,
+      "maximum_value": 999,
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "FamilialRelationship_type",
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/type",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
@@ -781,17 +932,18 @@
     },
     {
       "name": "FamilialRelationship_related_to",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/related_to",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "is_a": "related_to",
       "domain": "FamilialRelationship",
       "slot_uri": "https://w3id.org/linkml/examples/personinfo/related_to",
-      "alias": "related to",
+      "alias": "related_to",
       "owner": "FamilialRelationship",
       "domain_of": [
         "FamilialRelationship"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "related to",
+      "usage_slot_name": "related_to",
       "range": "Person",
       "required": true,
       "@type": "SlotDefinition"
@@ -838,7 +990,7 @@
         "image",
         "Person_primary_email",
         "birth_date",
-        "age_in_years",
+        "Person_age_in_years",
         "gender",
         "current_address",
         "has_employment_history",
@@ -1015,7 +1167,6 @@
       "slots": [
         "started_at_time",
         "ended_at_time",
-        "related_to",
         "FamilialRelationship_type",
         "FamilialRelationship_related_to"
       ],
@@ -1085,9 +1236,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "personinfo.yaml",
-  "source_file_date": "2022-03-10T13:02:37",
-  "source_file_size": 5368,
-  "generation_date": "2022-10-06T14:45:51",
+  "source_file_date": "2025-06-10T13:01:18",
+  "source_file_size": 5396,
+  "generation_date": "2025-06-11T13:48:18",
   "@type": "SchemaDefinition",
   "@context": [
     "personinfo/jsonld/personinfo.context.jsonld",

@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:Person_primary_email](https://w3id.org/linkml/examples/personinfo/Person_primary_email)
 
 
@@ -27,4 +26,3 @@ URI: [personinfo:Person_primary_email](https://w3id.org/linkml/examples/personin
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | schema:email |
-

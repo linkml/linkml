@@ -35,6 +35,7 @@ Information about people, based on [schema.org](http://schema.org)
 ### Slots
 
  * [age_in_years](age_in_years.md)
+     * [Person➞age_in_years](Person_age_in_years.md)
  * [birth_date](birth_date.md)
  * [city](city.md)
  * [current_address](current_address.md) - The address at which a person currently lives
@@ -62,9 +63,8 @@ Information about people, based on [schema.org](http://schema.org)
  * [primary_email](primary_email.md)
      * [Person➞primary_email](Person_primary_email.md)
  * [procedure](procedure.md)
- * [related to](related_to.md)
-     * [FamilialRelationship➞related to](FamilialRelationship_related_to.md)
  * [related_to](related_to.md)
+     * [FamilialRelationship➞related_to](FamilialRelationship_related_to.md)
  * [started_at_time](started_at_time.md)
  * [street](street.md)
  * [type](type.md)
@@ -86,6 +86,7 @@ Information about people, based on [schema.org](http://schema.org)
 #### Built in
 
  * **Bool**
+ * **Curie**
  * **Decimal**
  * **ElementIdentifier**
  * **NCName**
@@ -102,6 +103,7 @@ Information about people, based on [schema.org](http://schema.org)
 #### Defined
 
  * [Boolean](types/Boolean.md)  (**Bool**)  - A binary (true or false) value
+ * [Curie](types/Curie.md)  (**Curie**)  - a compact URI
  * [Date](types/Date.md)  (**XSDDate**)  - a date (year, month and day) in an idealized calendar
  * [DateOrDatetime](types/DateOrDatetime.md)  (**str**)  - Either a date or a datetime
  * [Datetime](types/Datetime.md)  (**XSDDateTime**)  - The combination of a date and time
@@ -109,9 +111,12 @@ Information about people, based on [schema.org](http://schema.org)
  * [Double](types/Double.md)  (**float**)  - A real number that conforms to the xsd:double specification
  * [Float](types/Float.md)  (**float**)  - A real number that conforms to the xsd:float specification
  * [Integer](types/Integer.md)  (**int**)  - An integer
+ * [Jsonpath](types/Jsonpath.md)  (**str**)  - A string encoding a JSON Path. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded in tree form.
+ * [Jsonpointer](types/Jsonpointer.md)  (**str**)  - A string encoding a JSON Pointer. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to a valid object within the current instance document when encoded in tree form.
  * [Ncname](types/Ncname.md)  (**NCName**)  - Prefix part of CURIE
  * [Nodeidentifier](types/Nodeidentifier.md)  (**NodeIdentifier**)  - A URI, CURIE or BNODE that represents a node in a model.
  * [Objectidentifier](types/Objectidentifier.md)  (**ElementIdentifier**)  - A URI or CURIE that represents an object in the model.
+ * [Sparqlpath](types/Sparqlpath.md)  (**str**)  - A string encoding a SPARQL Property Path. The value of the string MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded as RDF.
  * [String](types/String.md)  (**str**)  - A character string
  * [Time](types/Time.md)  (**XSDTime**)  - A time object represents a (local) time of day, independent of any particular day
  * [Uri](types/Uri.md)  (**URI**)  - a complete URI

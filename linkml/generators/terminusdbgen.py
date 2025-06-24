@@ -114,8 +114,7 @@ class TerminusdbGenerator(Generator):
 
         if rng not in XSD_Ok and slot.range not in self.schema.classes:
             raise Exception(
-                f"slot range for {name} must be schema class or supported xsd type. "
-                f"Range {rng} is of type {type(rng)}."
+                f"slot range for {name} must be schema class or supported xsd type. Range {rng} is of type {type(rng)}."
             )
 
         self.clswq.property(underscore(name), rng, label=name, description=slot.description)
