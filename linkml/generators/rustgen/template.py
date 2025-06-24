@@ -70,8 +70,12 @@ class RustRange(BaseModel):
             if self.is_class_range and not self.is_reference:
                 tp = f"Option<{tp}>"
             else:
-                tp = f"&Option<{tp}>"
-
+                if tp == 'String':
+                    tp = "Option<&str>"
+                else:
+                    tp = f"Option<&{tp}>"
+        if tp == '&String':
+            tp = '&str'
         return tp
 
     def type_bound_for_setter(self, crateref: Optional[str]) -> Optional[str]:
@@ -289,6 +293,15 @@ class PolyTraitPropertyImpl(RustTemplateModel):
     name: str
     range: RustRange
     struct_name: str
+    definition_range: RustRange
+
+    @computed_field
+    def need_option_wrap(self) -> bool:
+        if self.name == 'related_to':
+            print("range:" , self.range)
+            print("def range: ", self.definition_range)
+            print("struct :  ", self.struct_name)
+        return self.definition_range.optional and not self.range.optional
 
     @computed_field
     def class_range(self) -> bool:
@@ -306,18 +319,18 @@ class PolyTraitPropertyImpl(RustTemplateModel):
 
     @computed_field
     def type_getter(self) -> str:
-        return self.range.type_for_trait(setter=False, crateref="crate")
+        return self.definition_range.type_for_trait(setter=False, crateref="crate")
 
     @computed_field
     def type_setter(self) -> str:
-        return self.range.type_for_trait(setter=True, crateref="crate")
+        return self.definition_range.type_for_trait(setter=True, crateref="crate")
 
     @computed_field
     def type_bound(self) -> Optional[str]:
         """
         The type bound for the setter method
         """
-        return self.range.type_bound_for_setter(crateref="crate")
+        return self.definition_range.type_bound_for_setter(crateref="crate")
 
 
 class PolyTraitImpl(RustTemplateModel):

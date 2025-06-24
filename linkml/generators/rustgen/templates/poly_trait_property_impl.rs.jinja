@@ -9,10 +9,18 @@
         return self.{{ name }}.as_deref();
 {% endif %}
 {% else %}
-{% if range.optional and range.is_class_range and not range.is_reference and ct == 'None' %}
+{% if range.optional %}
+        {% if type_getter == 'Option<&str>' %}
+        return self.{{ name }}.as_deref();
+        {% else %}
         return self.{{ name }}.as_ref();
+        {% endif %}
+{% else %}
+{% if need_option_wrap %}
+        return Some(&self.{{ name }});
 {% else %}
         return &self.{{ name }};
+{% endif %}
 {% endif %}
 {% endif %}
     }
