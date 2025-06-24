@@ -1,9 +1,9 @@
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 {% if type_designator_field %}
-#[serde(tag = "{{ type_designator_field }}")]
+#[cfg_attr(feature="serde", serde(tag = "{{ type_designator_field }}"))]
 {% else %}
-#[serde(untagged)]
+#[cfg_attr(feature="serde", serde(untagged))]
 {% endif %}
 pub enum {{ enum_name }} {
 {%- for t in struct_names -%}
