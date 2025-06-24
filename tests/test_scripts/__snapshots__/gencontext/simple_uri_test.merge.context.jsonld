@@ -14,11 +14,11 @@
          "@id": "linkml:tag"
       },
       "value": {
-         "@type": "linkml:Any",
+         "@type": "@id",
          "@id": "linkml:value"
       },
       "extensions": {
-         "@type": "linkml:Extension",
+         "@type": "@id",
          "@id": "linkml:extensions"
       },
       "state": {
