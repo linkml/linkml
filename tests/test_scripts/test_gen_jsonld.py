@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from click.testing import CliRunner
 from rdflib import Graph, URIRef
@@ -60,6 +62,42 @@ def test_simple_uris(input_path, snapshot):
     result = runner.invoke(cli, [str(input_path("simple_uri_test.yaml"))])
     assert result.exit_code == 0
     assert result.output == snapshot("genjsonld/simple_uri_test.jsonld")
+
+
+@pytest.mark.parametrize(
+    "arguments,mock_context_paths, context",
+    [
+        (
+            ["-f", "jsonld"],
+            ["context.jsonld", "just_another.context.jsonld"],
+            [
+                "context.jsonld",
+                "just_another.context.jsonld",
+                "https://w3id.org/linkml/extensions.context.jsonld",
+                "simple_slots.context.jsonld",
+                "includes/simple_types.context.jsonld",
+                "https://w3id.org/linkml/types.context.jsonld",
+                {
+                    "@base": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/"
+                },
+            ],
+        ),
+    ],
+)
+def test_context(input_path, arguments, mock_context_paths, context):
+    """Test generation of meta.yaml JSON"""
+
+    if mock_context_paths:
+        context_opt = "--context"
+        context_args = [x for pair in zip([context_opt] * len(mock_context_paths), mock_context_paths) for x in pair]
+        extended_arguments = arguments + context_args + [str(input_path("simple_uri_test.yaml"))]
+    else:
+        extended_arguments = arguments + [str(input_path("simple_uri_test.yaml"))]
+
+    runner = CliRunner()
+    result = runner.invoke(cli, extended_arguments)
+    assert result.exit_code == 0
+    assert json.loads(result.output)["@context"] == context
 
 
 def check_size(

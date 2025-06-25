@@ -83,9 +83,9 @@ class ContextGenerator(Generator):
         self,
         base: Optional[Union[str, Namespace]] = None,
         output: Optional[str] = None,
-        prefixes: Optional[bool] = True,
-        flatprefixes: Optional[bool] = False,
-        model: Optional[bool] = True,
+        prefixes: Optional[bool] = None,
+        flatprefixes: Optional[bool] = None,
+        model: Optional[bool] = None,
         **_,
     ) -> str:
         if model is None:
@@ -203,6 +203,11 @@ class ContextGenerator(Generator):
             self.add_prefix(uri_prefix)
 
     def serialize(self, base: Optional[Union[str, Namespace]] = None, **kwargs) -> str:
+        # defaults to constructor values if not otherwise specified
+        for arg_key in ["model", "prefixes", "flatprefixes"]:
+            if arg_key in kwargs.keys() and kwargs[arg_key] is not None:
+                continue
+            kwargs[arg_key] = getattr(self, arg_key)
         return super().serialize(base=base, **kwargs)
 
 
@@ -230,7 +235,7 @@ class ContextGenerator(Generator):
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
     """Generate jsonld @context definition from LinkML model"""
-    print(ContextGenerator(yamlfile, **args).serialize(**args))
+    print(ContextGenerator(yamlfile, **args).serialize())
 
 
 if __name__ == "__main__":
