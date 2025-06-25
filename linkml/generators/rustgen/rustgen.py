@@ -430,12 +430,12 @@ class RustGenerator(Generator, LifecycleMixin):
         attributes = self.after_generate_slots(attributes, self.schemaview)
 
         unsendable = any([a.range in self.schemaview.all_classes() for a in induced_attrs])
-
         res = ClassResult(
             source=cls,
             cls=RustStruct(
                 name=get_name(cls),
                 properties=[a.attribute for a in attributes],
+                special_case_enabled=self.schemaview.get_uri(cls, expand=True).startswith("https://w3id.org/linkml"),
                 unsendable=unsendable,
                 pyo3=self.pyo3,
                 serde=self.serde,

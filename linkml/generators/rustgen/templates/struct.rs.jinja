@@ -1,3 +1,6 @@
+{% if special_case_enabled and name == 'Anything' %}
+{% include 'anything.rs.jinja' %}
+{% else %}
 {% if class_module %}
 {{ class_module }}
 {% endif %}
@@ -50,4 +53,5 @@ impl<'py> FromPyObject<'py> for Box<{{ name }}> {
 {% endif %}
 {% if struct_or_subtype_enum %}
 {{ struct_or_subtype_enum }}
+{% endif %}
 {% endif %}
