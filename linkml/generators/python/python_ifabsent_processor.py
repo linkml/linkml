@@ -1,3 +1,5 @@
+from typing import Tuple, Union
+
 from linkml_runtime.linkml_model import (
     ClassDefinition,
     EnumDefinitionName,
@@ -8,16 +10,16 @@ from linkml.generators.common.ifabsent_processor import IfAbsentProcessor
 
 
 class PythonIfAbsentProcessor(IfAbsentProcessor):
-    UNIMPLEMENTED_DEFAULT_VALUES = ["class_curie", "class_uri", "slot_uri", "slot_curie", "default_range", "default_ns"]
 
-    def map_custom_default_values(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition) -> (bool, str):
+    def map_custom_default_values(
+        self, default_value: str, slot: SlotDefinition, cls: ClassDefinition
+    ) -> Tuple[bool, Union[str, None]]:
         if default_value in self.UNIMPLEMENTED_DEFAULT_VALUES:
             return True, None
-
-        if default_value == "bnode":
+        elif default_value == "bnode":
             return True, "bnode()"
-
-        return False, None
+        else:
+            return False, None
 
     def map_string_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
         return self._strval(default_value)
@@ -60,12 +62,25 @@ class PythonIfAbsentProcessor(IfAbsentProcessor):
         return f"datetime({int(year)}, {int(month)}, {int(day)}, {int(hour)}, {int(minutes)}, {int(seconds)})"
 
     def map_uri_or_curie_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
-        return self._uri_for(default_value)
+        if default_value in self.URI_SPECIAL_CASES:
+            return self._map_uri_special_case(default_value, slot, cls)
+        elif default_value in self.CURIE_SPECIAL_CASES:
+            return self._map_curie_special_case(default_value, slot, cls)
+        else:
+            return self._uri_for(default_value)
 
     def map_curie_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        if default_value in self.CURIE_SPECIAL_CASES:
+            return self._map_curie_special_case(default_value, slot, cls)
+        elif default_value in self.URI_SPECIAL_CASES:
+            return None
         return self._uri_for(default_value)
 
     def map_uri_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        if default_value in self.URI_SPECIAL_CASES:
+            return self._map_uri_special_case(default_value, slot, cls)
+        elif default_value in self.CURIE_SPECIAL_CASES:
+            return None
         return self._uri_for(default_value)
 
     def map_enum_default_value(

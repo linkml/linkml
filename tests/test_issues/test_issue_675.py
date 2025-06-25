@@ -27,6 +27,7 @@ slots:
     bnode_slot:
         ifabsent: bnode
     class_curie_slot:
+        range: curie
         ifabsent: class_curie
     class_uri_slot:
         range: uri
@@ -34,6 +35,7 @@ slots:
     default_ns_slot:
         ifabsent: default_ns
     default_range_slot:
+        range: string
         ifabsent: default_range
     int_42_slot:
         range: integer
@@ -48,6 +50,7 @@ slots:
         range: uri
         ifabsent: slot_uri
     slot_curie_slot:
+        range: curie
         ifabsent: slot_curie
     string_slot:
         ifabsent: string(s1)
@@ -84,30 +87,19 @@ def test_ifabsent():
     sample = m.HighClass()
     assert sample.bool_true_slot is True
     assert sample.bool_false_slot is False
-    # TODO: class_curie_slot fails
-    # assert sample.class_curie_slot, m.HighClass.class_class_curie)
-    assert sample.class_curie_slot is None
-    # TODO: class_uri_slot fails
-    # assert sample.class_uri_slot, m.HighClass.class_class_uri)
-    assert sample.class_uri_slot is None
+    assert sample.class_curie_slot == "ex:HighClass"
+    assert sample.class_uri_slot == "https://example.org/ifabsent/HighClass"
 
     # TODO: default_ns fails")
     # assert sample.default_ns_slot, 'ex')
     assert sample.default_ns_slot is None
-    # TODO: default_range fails
-    # assert sample.default_range_slot, 'string')
-    assert sample.default_range_slot is None
+    assert sample.default_range_slot == "string"
     # TODO: int(0) fails
     assert sample.int_0_slot == 0
     assert sample.int_42_slot == 42
     assert sample.neg_int_slot == -117243
-    # TODO: slot_curie fails
-    # assert sample.slot_curie_slot, m.slots.slot_curie_slot.curie)
-    assert sample.slot_curie_slot is None
-    # TODO: slot_uri fails
-    # assert sample.slot_uri_slot, m.slots.slot_uri_slot.uri)
-    assert sample.slot_uri_slot is None
-    assert sample.slot_curie_slot is None
+    assert sample.slot_curie_slot == "ex:slot_curie_slot"
+    assert sample.slot_uri_slot == "https://example.org/ifabsent/slot_uri_slot"
     assert sample.string_slot == "s1"
     assert sample.mt_string_slot == ""
 
