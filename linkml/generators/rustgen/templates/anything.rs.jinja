@@ -1,0 +1,53 @@
+#[derive(Clone, PartialEq)]
+pub struct Anything(
+    #[cfg(feature = "serde")] pub serde_value::Value,
+    #[cfg(not(feature = "serde"))] pub (),
+);
+
+
+#[cfg(feature = "serde")]
+impl Serialize for Anything {
+    fn serialize<S>(&self, ser: S) -> Result<S::Ok, S::Error>
+    where S: serde::Serializer {
+        self.0.serialize(ser)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> Deserialize<'de> for Anything {
+    fn deserialize<D>(de: D) -> Result<Self, D::Error>
+    where D: serde::Deserializer<'de> {
+        <serde_value::Value as Deserialize>::deserialize(de).map(Anything)
+    }
+}
+
+#[cfg(all(feature = "pyo3", feature = "serde"))]
+impl<'py> FromPyObject<'py> for Anything {
+    fn extract_bound(_obj: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+        // todo actually implement this. will need pythonize dependency
+        Ok(Anything(serde_value::Value::Unit))
+    }
+}
+
+/* ---------- getter side ---------- */
+#[cfg(all(feature = "pyo3", feature = "serde"))]
+impl<'py> IntoPyObject<'py> for Anything {
+    type Target = PyAny;
+    type Output = Bound<'py, Self::Target>;
+    type Error = PyErr;
+
+    fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+        // todo actually implement this. will need pythonize dependency
+        Ok(py.None().into_bound(py))
+    }
+}
+
+impl std::fmt::Debug for Anything {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[cfg(feature = "serde")]
+        return write!(f, "Anything({:?})", self.0);
+
+        #[cfg(not(feature = "serde"))]
+        return f.write_str("Anything(<opaque>)");
+    }
+}
