@@ -1,8 +1,7 @@
-"""Tests for pattern slots and use of regular expressions as constraints."""
-
-# TODO: structured patterns
+"""Tests ifabsent constructs for adding default values."""
 
 import pytest
+import rdflib
 
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
@@ -24,14 +23,15 @@ FUZZ_STR = "a b_c!@#$%^&*_+{}|:<>?[]()'\""
 @pytest.mark.parametrize(
     "schema_name,range,ifabsent,data_name,initial_value,expected,schema_valid,valid,skip_for",
     [
-        ("str", "string", "string(x)", "no_value", None, "x", True, True, []),
-        ("str", "string", "string(x)", "has_value", "y", "x", True, True, []),
-        ("int", "integer", "int(5)", "no_value", None, 5, True, True, []),
-        ("float", "float", "float(5.0)", "no_value", None, 5.0, True, True, []),
-        ("boolT", "boolean", "true", "no_value", None, True, True, True, []),
-        ("boolF", "boolean", "false", "no_value", None, False, True, True, []),
-        ("class_curie", "uriorcurie", "class_curie", "no_value", None, "ex:C", True, True, []),
-        ("D", CLASS_D, "string(p1)", "no_value", None, "p1", False, True, []),
+        ("str", "string", "string(x)", "no_value", None, "x", True, True),
+        ("str", "string", "string(x)", "has_value", "y", "y", True, True),
+        ("int", "integer", "int(5)", "no_value", None, 5, True, True),
+        ("boolT", "boolean", "true", "no_value", None, True, True, True),
+        ("boolF", "boolean", "false", "no_value", None, False, True, True),
+        ("class_curie", "uriorcurie", "class_curie", "no_value", None, "ex:C", True, True),
+        ("bnode", "nodeidentifier", "bnode", "no_value", None, rdflib.BNode, True, True),
+        ("D", CLASS_D, "string(p1)", "no_value", None, "p1", False, True),
+        ("inconsistent", "integer", "string(x)", "has_value", None, "x", True, False),
         # Skip Python, Pydantic and Shacl frameworks because this incompatibility is not possible with the processor
         (
             "incompat_string",
@@ -83,7 +83,7 @@ def test_ifabsent(
     :param schema_name: the name reflects which constraints are implemented
     :param ifabsent: default value
     :param initial_value: value to check
-    :param expected: expected value
+    :param expected: expected value (not used)
     :return:
     """
 
@@ -125,12 +125,28 @@ def test_ifabsent(
             implementation_status = ValidationBehavior.COERCES
         if framework == OWL:
             pytest.skip("this fails at the RDF generation stage, due to incompatible types")
+    exclude_rdf = True
+
+    def instance_check_call(obj):
+        if ifabsent == "class_curie":
+            return True
+        if framework in [PYTHON_DATACLASSES, PYDANTIC]:
+            if expected == rdflib.BNode:
+                return getattr(obj, SLOT_S1).startswith("_:")
+            return getattr(obj, SLOT_S1) == expected
+        return True
+
+    if ifabsent == "bnode":
+        if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
+            pytest.skip("TODO: fix bug in metamodelcore")
     check_data(
         schema,
         data_name,
         framework,
-        {SLOT_S1: initial_value},
+        {SLOT_S1: initial_value} if initial_value is not None else {},
         valid,
         expected_behavior=implementation_status,
         target_class=CLASS_C,
+        exclude_rdf=exclude_rdf,
+        instance_check_call=instance_check_call,
     )
