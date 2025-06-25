@@ -6,7 +6,6 @@ from linkml.generators.shacl.shacl_data_type import ShaclDataType
 
 
 class ShaclIfAbsentProcessor(IfAbsentProcessor):
-
     def map_custom_default_values(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition) -> (bool, str):
         if default_value == "class_curie":
             class_uri = self.schema_view.get_uri(cls, expand=True)

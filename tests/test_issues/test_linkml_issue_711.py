@@ -105,6 +105,6 @@ def _test_subject_annotations(subject, graph):
     # err:non_existing must not be present in the result
     predicates = list(graph.predicates(subject=subject, object=None))
     for pred in predicates:
-        assert (
-            "non_existing" not in pred
-        ), f"Annotation err:non_existing for {subject} should be skipped, but is present in the result."
+        assert "non_existing" not in pred, (
+            f"Annotation err:non_existing for {subject} should be skipped, but is present in the result."
+        )

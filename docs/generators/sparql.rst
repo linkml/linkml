@@ -15,7 +15,7 @@ To run:
 
 .. code:: bash
 
-   gen-sparql -d /path/to/sparql-queries/ personinfo.yaml 
+   gen-sparql -d /path/to/sparql-queries/ personinfo.yaml
 
 .. seealso:: :doc:`Data Validation </data/validating-data>` for  other
              validation strategies.
@@ -26,8 +26,8 @@ To run:
 
 For example, when running over the personinfo schema, one of the
 queries "CHECK_permitted_Person.rq" checks to see that only
-specifically permitted properties are used when the domain is Person.             
-             
+specifically permitted properties are used when the domain is Person.
+
 .. code-block:: sparql
 
     SELECT ?g ?s ?p WHERE {
@@ -50,9 +50,9 @@ specifically permitted properties are used when the domain is Person.
        schema:image,
        rdf:type ))
      }
-     
-    } 
-                
+
+    }
+
 
 Docs
 ----
@@ -69,6 +69,6 @@ Command Line
 Code
 ^^^^
 
-                   
+
 .. autoclass:: SparqlGenerator
     :members: serialize

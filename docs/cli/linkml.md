@@ -1,7 +1,7 @@
 {#linkml-cli}
 # `linkml`
 
-```{eval-rst} 
+```{eval-rst}
 .. click:: linkml.cli.main:linkml
     :prog: linkml
     :nested: short

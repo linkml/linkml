@@ -9,8 +9,8 @@ kinds of tasks:
  - Extracting from text into databases
  - Natural language interfaces to databases
 
-The underlying technology is instruction-tuned Large Language Models (LLMs), powerful tools that have 
-very general question-answer abilities, yet are prone to hallucinations. 
+The underlying technology is instruction-tuned Large Language Models (LLMs), powerful tools that have
+very general question-answer abilities, yet are prone to hallucinations.
 Additionally, LLMs can generate text that is understandable
 by a human, but getting them to produce structured data according a defined schema can be challenging.
 
@@ -32,7 +32,7 @@ She has a brother called Toshiro.
 ```
 
 into JSON, YAML, or RDF conforming to a schema, such as the example
-[PersonSchema](https://github.com/linkml/linkml/tree/main/examples/PersonSchema) 
+[PersonSchema](https://github.com/linkml/linkml/tree/main/examples/PersonSchema)
 from the [LinkML tutorial](https://linkml.io/linkml/intro/tutorial01.html)
 
 For example, the intended target object may be expressed in JSON as:
@@ -108,7 +108,7 @@ We can dynamically introspect what the generated models look like as JSON-schema
     }
   }
 }
-```    
+```
 
 ### Step 2: Generate a prompt from the Pydantic model
 
@@ -259,7 +259,7 @@ For more on SPIRES, see:
 
 Structured prompt interrogation and recursive extraction of semantics (SPIRES):
 A method for populating knowledge bases using zero-shot learning. (2023)
-Caufield, J.H. et al 
+Caufield, J.H. et al
 [doi.org/10.48550/arXiv.2304.02711](
 https://doi.org/10.48550/arXiv.2304.02711)
 
@@ -311,7 +311,7 @@ Additionally, there are aspects of current LLMs that go against certain parts of
 The examples in this tutorial require subscription access to use proprietary models, with inscrutable training
 data. On top of that there are environmental costs in training them and running them.
 
-If this *isn't* your reaction, then we encourage reading the Stochastic Parrots: https://dl.acm.org/doi/10.1145/3442188.3445922 
+If this *isn't* your reaction, then we encourage reading the Stochastic Parrots: https://dl.acm.org/doi/10.1145/3442188.3445922
 paper which goes into these issues in more detail.
 
 If it *is* your reaction, then rest assured that LLMs will not be a part of the core LinkML framework (although
@@ -320,4 +320,3 @@ intend to make it easier for people who are interested in combining LLMs with we
 Although everyone is still figuring out the strengths and benefits of this technology, there are reasons to
 believe that LLMs *when combined with curator oversight and trusted data* can be a useful tool in the data
 landscape.
-

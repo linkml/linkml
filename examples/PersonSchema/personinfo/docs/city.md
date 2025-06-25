@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:city](https://w3id.org/linkml/examples/personinfo/city)
 
 

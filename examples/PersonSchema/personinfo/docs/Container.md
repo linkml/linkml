@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:Container](https://w3id.org/linkml/examples/personinfo/Container)
 
 

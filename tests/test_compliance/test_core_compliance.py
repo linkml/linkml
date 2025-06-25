@@ -583,7 +583,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
     )
     sql_nullable = "NOT NULL" if required else ""
     if not multivalued:
-        sqlite = 'CREATE TABLE "C" (' f"  id INTEGER NOT NULL," f"  s1 TEXT {sql_nullable}," "  PRIMARY KEY (id)" ");"
+        sqlite = f'CREATE TABLE "C" (  id INTEGER NOT NULL,  s1 TEXT {sql_nullable},  PRIMARY KEY (id));'
     else:
         sqlite = (
             'CREATE TABLE "C_s1" ('

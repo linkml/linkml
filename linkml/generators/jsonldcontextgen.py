@@ -197,7 +197,6 @@ class ContextGenerator(Generator):
         elif not uri_prefix or is_default_namespace:
             definition["@id"] = uri_suffix
         else:
-
             definition["@id"] = (uri_prefix + ":" + uri_suffix) if uri_prefix else uri
 
         if uri_prefix and not is_default_namespace:

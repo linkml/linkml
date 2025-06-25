@@ -1,4 +1,4 @@
-# Subset: {{ gen.name(element) }} {% if element.deprecated %} <span style="color: red;"><strong> (DEPRECATED) </strong> {% endif %}
+# Subset: {{ gen.name(element) }} {% if element.deprecated %} <span style="color: red;"><strong> (DEPRECATED) </strong></span> {% endif %}
 
 {%- if header -%}
 {{ header }}
@@ -45,7 +45,7 @@ URI: {{ gen.link(element) }}
 | --- | --- |
 {% for c in classes_in_subset -%}
 {%- if element.name in c.in_subset -%}
-| {{gen.link(c)}} | {{c.description|enshorten}} |
+| {{ gen.link(c) }} | {{ c.description|enshorten }} |
 {% endif -%}
 {% endfor %}
 
@@ -67,16 +67,14 @@ URI: {{ gen.link(element) }}
 | Name | Cardinality and Range | Description |
 | ---  | ---  | --- |
 {% for s in filtered_slots -%}
-| {{gen.link(s)}} | {{ gen.cardinality(s) }} <br/> {{gen.link(s.range)}} | {{s.description|enshorten}} {% if s.identifier %}**identifier**{% endif %} |
+| {{ gen.link(s) }} | {{ gen.cardinality(s) }} <br/> {{ gen.link(s.range) }} | {{ s.description|enshorten }} {% if s.identifier %}**identifier**{% endif %} |
 {% endfor %}
 {%- endif %}
 
-
 {%- endif %}
 {% endfor %}
 
 {%- endif %}
-
 
 {% if slots_in_subset %}
 ## Slots in subset
@@ -91,14 +89,13 @@ URI: {{ gen.link(element) }}
 
 {%- endif %}
 
-
 {% if enums_in_subset %}
 ## Enumerations in subset
 
 | Enumeration | Description |
 | --- | --- |
 {% for e in enums_in_subset|sort(attribute='name') -%}
-{%- if element.name in e.in_subset %}
+{% if element.name in e.in_subset -%}
 | {{ gen.link(e) }} | {{ e.description|enshorten }} |
 {%- endif %}
 {% endfor %}

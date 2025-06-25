@@ -141,7 +141,7 @@ class ShaclGenerator(Generator):
                     # slot definition, as both are mapped to sh:in in SHACL
                     if s.equals_string or s.equals_string_in:
                         error = "'equals_string'/'equals_string_in' and 'any_of' are mutually exclusive"
-                        raise ValueError(f'{TypedNode.yaml_loc(str(s), suffix="")} {error}')
+                        raise ValueError(f"{TypedNode.yaml_loc(str(s), suffix='')} {error}")
 
                     or_node = BNode()
                     prop_pv(SH["or"], or_node)

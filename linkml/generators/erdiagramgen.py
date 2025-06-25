@@ -23,7 +23,7 @@ class Attribute(pydantic.BaseModel):
 
     def __str__(self):
         cmt = f'"{self.comment}"' if self.comment else ""
-        return f'    {self.datatype} {self.name} {self.key if self.key else ""} {cmt}'
+        return f"    {self.datatype} {self.name} {self.key if self.key else ''} {cmt}"
 
 
 class IdentifyingType(str, Enum):

@@ -125,11 +125,11 @@ class And(Expression):
         self.operands: list[Expression] = list(operands)
 
     def __str__(self):
-        return f'({" & ".join(str(operand) for operand in self.operands)})'
+        return f"({' & '.join(str(operand) for operand in self.operands)})"
 
     def _ordered_str(self, **kwargs):
         sorted_operands = sorted([op._ordered_str(**kwargs) for op in self.operands], key=str)
-        return f'({" & ".join(sorted_operands)})'
+        return f"({' & '.join(sorted_operands)})"
 
 
 class Or(Expression):
@@ -137,13 +137,13 @@ class Or(Expression):
         self.operands = list(operands)
 
     def __str__(self):
-        return f'({" | ".join(str(operand) for operand in self.operands)})'
+        return f"({' | '.join(str(operand) for operand in self.operands)})"
 
     def _ordered_str(self, pairwise=False):
         if pairwise and len(self.operands) > 2:
             return Or(Or(*self.operands[0:2]), Or(*self.operands[2:]))._ordered_str(pairwise=True)
         sorted_operands = sorted([op._ordered_str(pairwise=True) for op in self.operands], key=str)
-        return f'({" | ".join(sorted_operands)})'
+        return f"({' | '.join(sorted_operands)})"
 
 
 class Eq(Expression):
@@ -167,7 +167,7 @@ class Term(Expression):
         if self.predicate in OPS:
             return f"{str(self.operands[0])} {OPS[self.predicate]} {str(self.operands[1])}"
         else:
-            return f'{self.predicate}({", ".join(str(operand) for operand in self.operands)})'
+            return f"{self.predicate}({', '.join(str(operand) for operand in self.operands)})"
 
     def _ordered_str(self, **kwargs):
         return str(self)

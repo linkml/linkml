@@ -23,4 +23,3 @@ message Organization
   optional name String = 2
   optional hasBoss Manager = 3
  }
-

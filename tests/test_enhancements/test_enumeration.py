@@ -60,7 +60,6 @@ def test_enum_errors(file, error, input_path):
     ],
 )
 def test_enum_warns(file, warnings, input_path, caplog):
-
     generator = YAMLGenerator(
         (Path(input_path("enumeration")) / file).with_suffix(".yaml"),
         mergeimports=False,

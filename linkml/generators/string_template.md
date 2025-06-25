@@ -1,6 +1,6 @@
 # String Template proposal
 The `string_template` attribute allows a Python [format string](https://docs.python.org/3/library/string.html#formatstrings)
-to be associated with a LinkML model `Element`.  
+to be associated with a LinkML model `Element`.
 
 ## Syntax
 ```yaml
@@ -29,7 +29,7 @@ class FirstClass(YAMLRoot):
     name: str = None
     age: Optional[int] = None
     gender: Optional[str] = None
-    
+
     ...
 
     def __str__(self):
@@ -54,7 +54,7 @@ inst2 = FirstClass.parse("Jillian Johnson - a 93 year old female")
 print(str(inst2))
 > 'Jillian Johnson - a 93 year old female'
 
-# repr gives you the non-templated 
+# repr gives you the non-templated
 print(repr(inst2))
 > "FirstClass(name='Jillian Johnson', age=93, gender='female')"
 
@@ -71,4 +71,3 @@ name: Freddy Buster Jones
 age: 11
 gender: Undetermined
 ```
-

@@ -272,7 +272,7 @@ def test_process_ifabsent_enum():
     - name: presence
       range: PresenceEnum
       ifabsent: PresenceEnum(Missing)
-      
+
 enums:
   PresenceEnum:
     permissible_values:
@@ -366,7 +366,7 @@ def test_process_impossible_range_ifabsent_attribute():
         )
 
     assert str(e.value) == (
-        "The ifabsent value `ImpossibleEnum(DivideByZero)` of the `impossibleRange` slot could not " "be processed"
+        "The ifabsent value `ImpossibleEnum(DivideByZero)` of the `impossibleRange` slot could not be processed"
     )
 
 

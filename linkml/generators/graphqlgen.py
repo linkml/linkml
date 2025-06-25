@@ -66,7 +66,7 @@ class GraphqlGenerator(Generator):
             for value in enum.permissible_values:
                 permissible_values.append(self.name_compatiblity.compatible(value))
             values = "\n    ".join(permissible_values)
-            return f"enum {camelcase(enum.name).replace(' ','')}\n  {{\n    {values}\n  }}\n\n"
+            return f"enum {camelcase(enum.name).replace(' ', '')}\n  {{\n    {values}\n  }}\n\n"
         else:
             logging.warning(
                 f"Enumeration {enum.name} using `reachable_from` instead of `permissible_values` "

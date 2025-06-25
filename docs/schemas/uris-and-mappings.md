@@ -99,7 +99,7 @@ enums:
     permissible_values:
       ALIVE:
         description: the person is living
-        meaning: PATO:0001421 
+        meaning: PATO:0001421
       DEAD:
         description: the person is deceased
         meaning: PATO:0001422
@@ -183,7 +183,3 @@ Here we define the entity class `gene` to have a list of ID prefixes with `NCBIG
 ## See Also
 
 [this notebook](https://github.com/linkml/linkml/blob/main/notebooks/context_issue.ipynb) demonstrates some potential pitfalls of JSON-LD 1.0 with some forms of CURIEs
-
-
-
-

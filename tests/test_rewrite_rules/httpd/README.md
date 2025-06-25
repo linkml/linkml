@@ -27,7 +27,7 @@ follows:
 ```bash
 > cd httpd
 > docker image build . -t w3id
-> docker run --rm -d -p 8091:80 --name w3id -v `pwd`/linkml:/w3id/linkml w3id  
+> docker run --rm -d -p 8091:80 --name w3id -v `pwd`/linkml:/w3id/linkml w3id
 > cd ../../..
 > pipenv install
 > pipenv shell
@@ -44,5 +44,3 @@ OK (skipped=6)
 ```
 
 7. ** If necessary, make a pull request to w3id.org w/ changes **
-
-

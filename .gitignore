@@ -107,6 +107,9 @@ tests/test_config.ini
 # Don't lock
 Pipfile.lock
 
+# Understand databases
+*.und
+
 # User defined
 .vscode/*
 

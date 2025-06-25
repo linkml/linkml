@@ -44,7 +44,7 @@ i.e this is not correct:
         }
 
 It must be represented as:
-        
+
 .. code:: json
 
    "@context": {
@@ -83,6 +83,6 @@ Command Line
 Code
 ^^^^
 
-                   
+
 .. autoclass:: ContextGenerator
     :members: serialize

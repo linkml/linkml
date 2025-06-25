@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:FamilialRelationship_type](https://w3id.org/linkml/examples/personinfo/FamilialRelationship_type)
 
 

@@ -832,8 +832,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             meta = remove_empty_items(source)
         else:
             raise ValueError(
-                f"Unknown metadata mode '{self.metadata_mode}', needs to be one of "
-                f"{[mode for mode in MetadataMode]}"
+                f"Unknown metadata mode '{self.metadata_mode}', needs to be one of {[mode for mode in MetadataMode]}"
             )
 
         model.meta = meta

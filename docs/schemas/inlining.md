@@ -116,7 +116,7 @@ data:
 ```
 
 Note that in the above the `id` field is *not* included in the actual
-organism object, as it is acting as a key for that object, it doesn't 
+organism object, as it is acting as a key for that object, it doesn't
 need to be included. However, it is still legal to include it,
 like this:
 

@@ -17,3 +17,9 @@ def test_generate_class_diagrams(kitchen_sink_path, tmp_path):
         contents = md_file.read_text()
         assert "classDiagram" in contents, f"'classDiagram' not found in {md_file}"
         assert f"class {cls_name}" in contents, f"Class '{cls_name}' not found in {md_file}"
+
+        if cls_name == "Person":
+            # Check for enum usage in Person class
+            assert 'click LifeStatusEnum href "../LifeStatusEnum"' in contents, (
+                f"'LifeStatusEnum' not found in {md_file}"
+            )
