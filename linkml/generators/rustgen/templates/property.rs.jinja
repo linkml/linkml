@@ -10,4 +10,7 @@
 {% if hasdefault %}
 #[cfg_attr(feature = "serde", serde(default))]
 {% endif %}
+{% if alias %}
+#[cfg_attr(feature = "serde", serde(alias = "{{ alias }}"))]
+{% endif %}
 pub {{ name }}: {{ type_for_field }}
