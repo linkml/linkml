@@ -201,6 +201,7 @@ class RustStruct(RustTemplateModel):
     """
 
     template: ClassVar[str] = "struct.rs.jinja"
+    special_case_enabled: bool = False
     class_module: Optional[RustClassModule] = None
 
     name: str
