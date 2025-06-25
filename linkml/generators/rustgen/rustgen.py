@@ -518,6 +518,7 @@ class RustGenerator(Generator, LifecycleMixin):
             attribute=RustProperty(
                 name=get_name(attr),
                 inline_mode=inline_mode.value,
+                alias=attr.alias if attr.alias is not None and attr.alias != get_name(attr) else None,
                 container_mode=container_mode.value,
                 type_=range,
                 required=bool(attr.required),
