@@ -7,10 +7,16 @@ Test example runner using a simulated setup.
 """
 
 import pytest
+from click.testing import CliRunner
 from linkml_runtime import SchemaView
 from prefixmaps.io.parser import load_multi_context
 
-from linkml.workspaces.example_runner import ExampleRunner
+from linkml.workspaces.example_runner import ExampleRunner, cli
+
+
+@pytest.fixture
+def runner():
+    return CliRunner()
 
 
 @pytest.fixture
@@ -60,3 +66,61 @@ def test_example_runner_non_defaults(example_runner):
     assert "Container-002.ttl" in example_runner.summary.outputs
     assert "Container-001" not in md
     assert "Container-002" in md
+
+
+def test_cli_required_options(runner, example_runner, tmp_path):
+    """Test the CLI with required options."""
+    schema_path = example_runner.schemaview.schema.source_file
+    output_directory = example_runner.output_directory
+
+    result = runner.invoke(cli, ["--schema", schema_path, "--output-directory", str(output_directory)])
+    assert result.exit_code == 0
+
+
+def test_cli_with_prefixes(runner, example_runner, tmp_path):
+    """Test the CLI with the --prefixes option."""
+    schema_path = example_runner.schemaview.schema.source_file
+    output_directory = example_runner.output_directory
+    prefixes_file = tmp_path / "prefixes.yaml"
+
+    # Write prefixes to a temporary file
+    prefixes_file.write_text(
+        """
+    prefixes:
+      ex: https://example.org/
+    """
+    )
+
+    result = runner.invoke(
+        cli, ["--schema", schema_path, "--prefixes", str(prefixes_file), "--output-directory", str(output_directory)]
+    )
+    assert result.exit_code == 0
+
+
+def test_cli_with_input_directory(runner, example_runner):
+    """Test the CLI with the --input-directory option."""
+    schema_path = example_runner.schemaview.schema.source_file
+    input_directory = example_runner.input_directory
+    output_directory = example_runner.output_directory
+
+    result = runner.invoke(
+        cli,
+        [
+            "--schema",
+            schema_path,
+            "--input-directory",
+            str(input_directory),
+            "--output-directory",
+            str(output_directory),
+        ],
+    )
+    assert result.exit_code == 0
+
+
+def test_cli_no_schema(runner, example_runner):
+    """Test the CLI when the required --schema option is missing."""
+    output_directory = example_runner.output_directory
+
+    result = runner.invoke(cli, ["--output-directory", str(output_directory)])
+    assert result.exit_code != 0
+    assert "Error: Missing option '--schema'" in result.output
