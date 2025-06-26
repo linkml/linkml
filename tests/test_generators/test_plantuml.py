@@ -22,12 +22,12 @@ MARKDOWN_FOOTER = """
 
 PERSON = """
 class "Person" [[{A person, living or dead}]] {
-    {field} id : string  
-    {field} name : string  
-    {field} age_in_years : integer  
-    {field} species_name : string  
-    {field} stomach_count : integer  
-    {field} is_living : LifeStatusEnum  
+    {field} id : string
+    {field} name : string
+    {field} age_in_years : integer
+    {field} species_name : string
+    {field} stomach_count : integer
+    {field} is_living : LifeStatusEnum
     {field} aliases : string  [0..*]
 }
 """
@@ -117,7 +117,10 @@ def test_serialize_selected(input_class, expected, kitchen_sink_path, kroki_url)
 
     # check that the expected block/relationships are present
     # in class-selected diagrams
-    assert expected in plantuml
+    # Strip whitespace from each line to normalize comparison
+    expected_stripped = "\n".join(line.rstrip() for line in expected.splitlines())
+    plantuml_stripped = "\n".join(line.rstrip() for line in plantuml.splitlines())
+    assert expected_stripped in plantuml_stripped
 
     # make sure that random classes like `MarriageEvent` which
     # have no defined relationships with classes like `FamilialRelationship`
