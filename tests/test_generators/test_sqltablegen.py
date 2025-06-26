@@ -2,7 +2,7 @@ import re
 import sqlite3
 
 import pytest
-from linkml_runtime.linkml_model.meta import SlotDefinition, Annotation
+from linkml_runtime.linkml_model.meta import Annotation, SlotDefinition
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
 from sqlalchemy.dialects.oracle import VARCHAR2
@@ -143,28 +143,18 @@ def test_index_sqlddl(capsys):
     test_index = Annotation(tag='index', value = {'index2':['id','age']})
     test_index_dict = {'index':test_index}
     b.add_class(DUMMY_CLASS, slots, description="My dummy class", annotations=test_index_dict)
-    #b.add_slot("identifier_slot", identifier=True)
-    #b.add_slot("key_slot", key=True)
-    #b.add_class("ClassWithId", slots=["identifier_slot", "name", "whatever"])
-    #b.add_class("ClassWithKey", slots=["key_slot", "key_hole", "Torquay"])
+    b.add_slot("identifier_slot", identifier=True)
+    b.add_slot("key_slot", key=True)
+    b.add_class("ClassWithId", slots=["identifier_slot", "name", "whatever"])
+    b.add_class("ClassWithKey", slots=["key_slot", "key_hole", "Torquay"])
     #b.add_class("ClassWithNowt", slots=["slot_1", "slot_2"])
     #b.add_class("ClassWithItAll", slots=["identifier_slot", "key_slot", "name", "miscellany"])
-    gen = SQLTableGenerator(b.schema, use_foreign_keys=True, autogenerate_pk_index=True, autogenerate_fk_index=True)
+    gen = SQLTableGenerator(b.schema, use_foreign_keys=True)
     #sv = package_schemaview("linkml_runtime.linkml_model.meta")
     #gen2 = SQLTableGenerator(sv.schema, use_foreign_keys=True, autogenerate_pk_index=True, autogenerate_fk_index=True)
     ddl = gen.generate_ddl()
     #ddl2 = gen2.generate_ddl()
     with capsys.disabled():
-        print(test_index_dict)
-        dummy_cls = b.schema.classes[DUMMY_CLASS]
-        print(dummy_cls.annotations)
-        for k, v in dummy_cls.annotations._items():
-            print(f"Tag: {k}, Value: {v}, Type: {type(v)}")
-            if k=='index':
-                print(f"Tag: {k}, Value: {v}, Type: {type(v)}")
-                value_dict = {k: v for k, v in v.value._items()}
-                print(value_dict)
-        #print(b.schema.classes["dummy class"].annotations)
         print(ddl)
     #    print(ddl2)
     assert True
