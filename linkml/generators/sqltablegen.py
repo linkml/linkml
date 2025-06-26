@@ -149,8 +149,8 @@ class SQLTableGenerator(Generator):
     relative_slot_num: bool = False
     default_length_oracle: int = ORACLE_MAX_VARCHAR_LENGTH
     generate_abstract_class_ddl: bool = True
-    autogenerate_pk_index: bool = False
-    autogenerate_fk_index: bool = False
+    autogenerate_pk_index: bool = True
+    autogenerate_fk_index: bool = True
 
     def serialize(self, **kwargs: dict[str, Any]) -> str:
         return self.generate_ddl(**kwargs)
@@ -244,11 +244,18 @@ class SQLTableGenerator(Generator):
                         continue
                     sql_uc = UniqueConstraint(*sql_names)
                     cols.append(sql_uc)
+                    multi_index = Index(*sql_names)
+                    cols.append(multi_index)
             if not c.abstract or (c.abstract and self.generate_abstract_class_ddl):
+                for tag, annotation in c.annotations.items():
+                    if tag=="index":
+                        value_dict = {k: annotation for k, annotation in annotation.value._items()}
+                        for key, value in value_dict.items():
+                            annotated_ind = Index(key, *value)
+                            cols.append(annotated_ind)
                 Table(sql_name(cn), schema_metadata, *cols, comment=str(c.description))
         schema_metadata.create_all(engine)
         return ddl_str
-
     def get_oracle_sql_range(self, slot: SlotDefinition) -> Text | VARCHAR2 | None:
         """
         Generate the appropriate range for Oracle SQL.
