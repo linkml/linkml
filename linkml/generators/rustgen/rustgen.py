@@ -97,6 +97,12 @@ RUST_IMPORTS = {
     ),
 }
 
+MERGE_ANNOTATION = "rust.linkml.io/generate/merge"
+
+MERGE_IMPORTS = Imports(
+    imports=[Import(module="merge", version="0.2.0", objects=[ObjectImport(name="Merge")])],
+)
+
 DEFAULT_IMPORTS = Imports(
     imports=[
         Import(module="std::collections", objects=[ObjectImport(name="HashMap")]),
@@ -276,7 +282,9 @@ def get_rust_range_info(
         containerType=(
             ContainerType.LIST
             if container_mode == SlotContainerMode.LIST
-            else ContainerType.MAPPING if container_mode == SlotContainerMode.MAPPING else None
+            else ContainerType.MAPPING
+            if container_mode == SlotContainerMode.MAPPING
+            else None
         ),
         child_ranges=sub_ranges if len(sub_ranges) > 1 else None,
         box_needed=inline_mode == SlotInlineMode.INLINE and can_contain_reference_to_class(s, cls, sv),
@@ -436,6 +444,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 name=get_name(cls),
                 properties=[a.attribute for a in attributes],
                 special_case_enabled=self.schemaview.get_uri(cls, expand=True).startswith("https://w3id.org/linkml"),
+                generate_merge=MERGE_ANNOTATION in cls.annotations,
                 unsendable=unsendable,
                 pyo3=self.pyo3,
                 serde=self.serde,
@@ -519,6 +528,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 name=get_name(attr),
                 inline_mode=inline_mode.value,
                 alias=attr.alias if attr.alias is not None and attr.alias != get_name(attr) else None,
+                generate_merge=MERGE_ANNOTATION in cls.annotations,
                 container_mode=container_mode.value,
                 type_=range,
                 required=bool(attr.required),
@@ -601,7 +611,13 @@ class RustGenerator(Generator, LifecycleMixin):
         slots = [self.generate_slot(s) for s in slots]
         slots = self.after_generate_slots(slots, sv)
 
+        need_merge_crate = False
         classes = list(sv.induced_class(c) for c in sv.all_classes(ordered_by=OrderedBy.INHERITANCE))
+        for c in classes:
+            if MERGE_ANNOTATION in c.annotations:
+                need_merge_crate = True
+                break
+
         classes = self.before_generate_classes(classes, sv)
         classes = [self.generate_class(c) for c in classes]
         classes = self.after_generate_classes(classes, sv)
@@ -611,6 +627,8 @@ class RustGenerator(Generator, LifecycleMixin):
         imports = DEFAULT_IMPORTS.model_copy()
         imports += PYTHON_IMPORTS
         imports += SERDE_IMPORTS
+        if need_merge_crate:
+            imports += MERGE_IMPORTS
         for result in [*enums, *slots, *classes]:
             imports += result.imports
 
