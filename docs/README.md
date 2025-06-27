@@ -14,7 +14,7 @@ We use the sphinx framework.
 To build the docs locally, first make sure you have the development dependencies installed which may not be the case if you pip-installed linkML. In the root folder of the linkML code, run
 
 ```bash
-poetry install
+uv sync --group dev --group docs
 ```
 
 Then use the make to build the documentation:
@@ -29,7 +29,7 @@ If you don't have make (on Windows) you can build the docs by:
 
 ```bash
 cd docs
-poetry run make html
+uv run make html
 ```
 
 New versions of the documentation are published to GitHub pages by a workflow job for every merge to main.
