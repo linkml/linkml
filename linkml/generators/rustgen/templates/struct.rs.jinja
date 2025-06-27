@@ -50,6 +50,15 @@ impl<'py> FromPyObject<'py> for Box<{{ name }}> {
         ))
     }
 }
+
+{% if generate_merge %}
+impl {{ name }} {
+    pub fn merge_with(&mut self, other: {{ name }}) {
+        self.merge(other)
+    }
+}
+{% endif %}
+
 {% endif %}
 {% if as_key_value %}
 {{ as_key_value }}
