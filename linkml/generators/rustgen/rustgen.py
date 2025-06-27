@@ -497,9 +497,10 @@ class RustGenerator(Generator, LifecycleMixin):
                     return None
                 key_attr = attr
             else:
-                value_attrs.append(attr)
-                if attr.required and not attr.multivalued:
-                    value_args_no_default.append(attr)
+                if not attr.multivalued:
+                    value_attrs.append(attr)
+                    if attr.required:
+                        value_args_no_default.append(attr)
         if key_attr is not None:
             return AsKeyValue(
                 name=get_name(cls),
