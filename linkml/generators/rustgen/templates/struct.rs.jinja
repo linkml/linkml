@@ -1,5 +1,7 @@
 {% if special_case_enabled and name == 'Anything' %}
 {% include 'anything.rs.jinja' %}
+{% elif special_case_enabled and name == 'AnyValue' %}
+pub type AnyValue = Anything;
 {% else %}
 {% if class_module %}
 {{ class_module }}
@@ -53,8 +55,8 @@ impl<'py> FromPyObject<'py> for Box<{{ name }}> {
 
 {% if generate_merge %}
 impl {{ name }} {
-    pub fn merge_with(&mut self, other: {{ name }}) {
-        self.merge(other)
+    pub fn merge_with(&mut self, other: &{{ name }}) {
+        self.merge(other.clone())
     }
 }
 {% endif %}
