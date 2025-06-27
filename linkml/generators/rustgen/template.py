@@ -70,12 +70,12 @@ class RustRange(BaseModel):
             if self.is_class_range and not self.is_reference:
                 tp = f"Option<{tp}>"
             else:
-                if tp == 'String':
+                if tp == "String":
                     tp = "Option<&str>"
                 else:
                     tp = f"Option<&{tp}>"
-        if tp == '&String':
-            tp = '&str'
+        if tp == "&String":
+            tp = "&str"
         return tp
 
     def type_bound_for_setter(self, crateref: Optional[str]) -> Optional[str]:
@@ -108,7 +108,6 @@ class RustTemplateModel(TemplateModel):
 
 
 class PolyContainersFile(RustTemplateModel):
-
     template: ClassVar[str] = "poly_containers.rs.jinja"
 
 
@@ -135,12 +134,24 @@ class RustProperty(RustTemplateModel):
     template: ClassVar[str] = "property.rs.jinja"
     inline_mode: str
     alias: Optional[str] = None
+    generate_merge: bool = False
     container_mode: str
     name: str
     type_: RustRange  # might be a union type, so list length > 1
     required: bool
     multivalued: bool = False
     is_key_value: bool = False
+
+    @computed_field
+    def merge_strategy(self) -> str:
+        if self.type_.containerType == ContainerType.LIST:
+            return "skip"
+        elif self.type_.containerType == ContainerType.MAPPING:
+            return "strategy = merge::hashmap::overwrite"
+        elif self.type_.optional:
+            return "strategy = merge::option::overwrite_none"
+        else:
+            return "skip"
 
     @computed_field
     def type_for_field(self) -> str:
@@ -211,6 +222,7 @@ class RustStruct(RustTemplateModel):
     """
     properties: list[RustProperty] = Field(default_factory=list)
     unsendable: bool = False
+    generate_merge: bool = False
     as_key_value: Optional[AsKeyValue] = None
     struct_or_subtype_enum: Optional[RustStructOrSubtypeEnum] = None
 
