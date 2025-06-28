@@ -11,7 +11,7 @@ from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
-from sqlalchemy import Column, ForeignKey, MetaData, Table, UniqueConstraint, create_mock_engine
+from sqlalchemy import Column, ForeignKey, Index, MetaData, Table, UniqueConstraint, create_mock_engine
 from sqlalchemy.dialects.oracle import VARCHAR2
 from sqlalchemy.types import Boolean, Date, DateTime, Enum, Float, Integer, Text, Time
 
@@ -149,6 +149,8 @@ class SQLTableGenerator(Generator):
     relative_slot_num: bool = False
     default_length_oracle: int = ORACLE_MAX_VARCHAR_LENGTH
     generate_abstract_class_ddl: bool = True
+    autogenerate_pk_index: bool = True
+    autogenerate_fk_index: bool = True
 
     def serialize(self, **kwargs: dict[str, Any]) -> str:
         return self.generate_ddl(**kwargs)
@@ -220,12 +222,15 @@ class SQLTableGenerator(Generator):
                         fk = sql_name(self.get_id_or_key(s.range, sv))
                         args = [ForeignKey(fk)]
                     field_type = self.get_sql_range(s, schema)
+                    fk_index_cond = ((s.key or s.identifier) and self.autogenerate_fk_index)
+                    pk_index_cond = (is_pk and self.autogenerate_pk_index)
                     col = Column(
                         sql_name(sn),
                         field_type,
                         *args,
                         primary_key=is_pk,
                         nullable=not s.required,
+                        index=(fk_index_cond or pk_index_cond)
                     )
                     if include_comments:
                         ddl_str += f"--     * Slot: {sn} Description: {strip_newlines(s.description)}\n"
@@ -239,11 +244,18 @@ class SQLTableGenerator(Generator):
                         continue
                     sql_uc = UniqueConstraint(*sql_names)
                     cols.append(sql_uc)
+                    multi_index = Index(*sql_names)
+                    cols.append(multi_index)
             if not c.abstract or (c.abstract and self.generate_abstract_class_ddl):
+                for tag, annotation in c.annotations.items():
+                    if tag=="index":
+                        value_dict = {k: annotation for k, annotation in annotation.value._items()}
+                        for key, value in value_dict.items():
+                            annotated_ind = Index(key, *value)
+                            cols.append(annotated_ind)
                 Table(sql_name(cn), schema_metadata, *cols, comment=str(c.description))
         schema_metadata.create_all(engine)
         return ddl_str
-
     def get_oracle_sql_range(self, slot: SlotDefinition) -> Text | VARCHAR2 | None:
         """
         Generate the appropriate range for Oracle SQL.
@@ -361,6 +373,12 @@ class SQLTableGenerator(Generator):
     default=ORACLE_MAX_VARCHAR_LENGTH,
     show_default=True,
     help="Default length of varchar based arguments for oracle dialects",
+)
+@click.option(
+    "--autogenerate_index",
+    default=False,
+    show_default=True,
+    help="Enable the creation of indexes on all columns generated",
 )
 @click.option(
     "--generate_abstract_class_ddl",
