@@ -69,5 +69,3 @@ classes:
   ontology class:
     is_a: named thing
     description: "a concept or class in an ontology, vocabulary or thesaurus"
-
-

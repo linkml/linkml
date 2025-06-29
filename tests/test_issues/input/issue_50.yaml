@@ -45,4 +45,3 @@ slots:
     required_domain_slot:
       domain: test class 3
       required: true
-

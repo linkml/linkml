@@ -63,7 +63,7 @@ classes:
         pattern: "^\\S+@[\\S+\\.]+\\S+"
     in_subset:
       - basic_subset
-  
+
   HasAliases:
     description: >-
       A mixin applied to any class that can have aliases/alternateNames
@@ -93,7 +93,7 @@ classes:
     slots:
       - id
       - name
-      
+
   Address:
     class_uri: schema:PostalAddress
     slots:
@@ -118,7 +118,7 @@ classes:
 
   ProcedureConcept:
     is_a: Concept
-      
+
 
   Relationship:
     slots:
@@ -239,7 +239,7 @@ slots:
     inlined_as_list: false
     inlined: true
     multivalued: true
-    
+
 enums:
   FamilialRelationshipType:
     permissible_values:
