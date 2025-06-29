@@ -7,10 +7,9 @@ import click
 import yaml
 
 from linkml._version import __version__
-
-from .config.datamodel.config import RuleLevel
-from .formatters import JsonFormatter, MarkdownFormatter, TerminalFormatter, TsvFormatter
-from .linter import Linter
+from linkml.linter.config.datamodel.config import RuleLevel
+from linkml.linter.formatters import JsonFormatter, MarkdownFormatter, TerminalFormatter, TsvFormatter
+from linkml.linter.linter import Linter
 
 YAML_SUFFIXES = [".yml", ".yaml"]
 DEFAULT_CONFIG_FILES = [".linkmllint.yaml", ".linkmllint.yml"]

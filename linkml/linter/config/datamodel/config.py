@@ -1,5 +1,5 @@
 # Auto generated from config.yaml by pythongen.py version: 0.0.1
-# Generation date: 2025-06-05T06:54:12
+# Generation date: 2025-06-24T08:49:08
 # Schema: linter-config
 #
 # id: https://w3id.org/linkml/linter/config
@@ -10,17 +10,12 @@ from dataclasses import dataclass
 from typing import Any, ClassVar, Optional, Union
 
 from jsonasobj2 import as_dict
-from linkml_runtime.linkml_model.meta import (
-    EnumDefinition,
-    PermissibleValue,
-)
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.metamodelcore import empty_list
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (
-    YAMLRoot,
-)
+from linkml_runtime.utils.yamlutils import YAMLRoot
 from rdflib import URIRef
 
 from linkml_runtime.utils.metamodelcore import Bool
@@ -86,6 +81,7 @@ class Rules(YAMLRoot):
     no_xsd_int_type: Optional[Union[dict, "RuleConfig"]] = None
     no_invalid_slot_usage: Optional[Union[dict, "RuleConfig"]] = None
     no_undeclared_slots: Optional[Union[dict, "RuleConfig"]] = None
+    no_undeclared_ranges: Optional[Union[dict, "RuleConfig"]] = None
     standard_naming: Optional[Union[dict, "StandardNamingConfig"]] = None
     canonical_prefixes: Optional[Union[dict, "CanonicalPrefixesConfig"]] = None
 
@@ -114,6 +110,9 @@ class Rules(YAMLRoot):
 
         if self.no_undeclared_slots is not None and not isinstance(self.no_undeclared_slots, RuleConfig):
             self.no_undeclared_slots = RuleConfig(**as_dict(self.no_undeclared_slots))
+
+        if self.no_undeclared_ranges is not None and not isinstance(self.no_undeclared_ranges, RuleConfig):
+            self.no_undeclared_ranges = RuleConfig(**as_dict(self.no_undeclared_ranges))
 
         if self.standard_naming is not None and not isinstance(self.standard_naming, StandardNamingConfig):
             self.standard_naming = StandardNamingConfig(**as_dict(self.standard_naming))
@@ -459,6 +458,15 @@ slots.rules__no_undeclared_slots = Slot(
     name="rules__no_undeclared_slots",
     curie=LINTCFG.curie("no_undeclared_slots"),
     model_uri=LINTCFG.rules__no_undeclared_slots,
+    domain=None,
+    range=Optional[Union[dict, RuleConfig]],
+)
+
+slots.rules__no_undeclared_ranges = Slot(
+    uri=LINTCFG.no_undeclared_ranges,
+    name="rules__no_undeclared_ranges",
+    curie=LINTCFG.curie("no_undeclared_ranges"),
+    model_uri=LINTCFG.rules__no_undeclared_ranges,
     domain=None,
     range=Optional[Union[dict, RuleConfig]],
 )

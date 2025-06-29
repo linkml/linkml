@@ -20,6 +20,8 @@ rules:
     level: disabled
   no_undeclared_slots:
     level: disabled
+  no_undeclared_ranges:
+    level: disabled
   standard_naming:
     level: disabled
     permissible_values_upper_case: false
