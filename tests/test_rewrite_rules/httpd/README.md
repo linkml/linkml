@@ -16,7 +16,7 @@ follows:
 
 ## Testing the rewrite rules
 
-1) Uncomment and change the followint lines in test_rewrite_rules.py:
+1) Uncomment and change the following lines in test_rewrite_rules.py:
 ```python
 # DEFAULT_SERVER = "http://localhost:8091/"
 # SKIP_REWRITE_RULES = False
