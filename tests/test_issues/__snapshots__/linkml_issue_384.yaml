@@ -446,8 +446,6 @@ classes:
     name: Person
     definition_uri: https://w3id.org/linkml/examples/personinfo/Person
     from_schema: https://w3id.org/linkml/examples/personinfo
-    mappings:
-    - sdo:Person
     is_a: Thing
     slots:
     - id

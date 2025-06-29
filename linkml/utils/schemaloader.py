@@ -251,9 +251,9 @@ class SchemaLoader:
                         f'Class "{cls.name}" unknown apply_to target: {apply_to_cls}',
                         apply_to_cls,
                     )
-            # Class URI's also count as (trivial) mappings
-            if cls.class_uri is not None:
-                cls.mappings.insert(0, cls.class_uri)
+            # class_uri is the final URI to identify the class and it MUST not be None
+            # use a "calculated" class_uri if none has been provided or it should not be used
+            # generators might decide to replace class_uri with skos:exactMatch mappings
             if cls.class_uri is None or not self.useuris:
                 from_schema = cls.from_schema
                 if from_schema is None:
