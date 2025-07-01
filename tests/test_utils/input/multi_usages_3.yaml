@@ -28,4 +28,3 @@ classes:
       s1:
         range: boolean
         alias: foo
-

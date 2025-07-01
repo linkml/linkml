@@ -2887,7 +2887,7 @@ classes:
       - UMLSSG:OBJC
       # Entity
       - UMLSSC:T071
-      - UMLSST:enty
+      - UMLSST:entity
       # Physical Object
       - UMLSSC:T072
       - UMLSST:phob
@@ -3051,7 +3051,7 @@ classes:
       - UMLSST:humn
       # Group
       - UMLSSC:T096
-      - UMLSST:grup
+      - UMLSST:group
       # Professional or Occupational Group
       - UMLSSC:T097
       - UMLSST:prog
@@ -3854,7 +3854,7 @@ classes:
       - WB
       - WormBase
     alt_descriptions:
-      AGR: "An enitity that describes a single affected, endogenous allele.  These can be of any type that matches that definition"
+      AGR: "An entity that describes a single affected, endogenous allele.  These can be of any type that matches that definition"
       VMC: "A contiguous change at a Location"
     slots:
       - has gene
@@ -5412,4 +5412,3 @@ classes:
       - UBERON
       - PO
       - FAO
-
