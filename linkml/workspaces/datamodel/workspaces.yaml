@@ -148,8 +148,3 @@ classes:
         description: >-
           If true, the workspace manager should immediately sync any changes made
         range: boolean
-
-
-
-
-

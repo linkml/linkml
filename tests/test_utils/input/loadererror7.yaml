@@ -25,5 +25,3 @@ classes:
     is_a: c1
     slots:
       - key2
-
-

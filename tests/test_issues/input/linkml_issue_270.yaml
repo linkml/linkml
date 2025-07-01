@@ -15,7 +15,7 @@ classes:
   D1:
   D2:
     is_a: D1
-        
+
 slots:
   s1:
     description: this description should preserved in all uses
