@@ -19,7 +19,7 @@ schema:
       range: HasNonKeyRequiredSlots
       multivalued: true
       inlined: true
-  
+
   classes:
     Test:
       tree_root: true
