@@ -180,7 +180,8 @@ classes:
         multivalued: true
         description: >-
           Default: []
-          All elements except the ones with names specified in this list will be checked
+          Elements with names specified in this list will be skipped by the checker.
+          The list can include names of any schema elements (classes, slots, enums, permissible values, etc.).
       class_pattern:
         range: string
         required: false

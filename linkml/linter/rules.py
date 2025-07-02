@@ -321,7 +321,11 @@ class StandardNamingRule(LinterRule):
                     yield LinterProblem(f"Slot has name '{slot_name}'")
 
         for enum_name, enum_definition in schema_view.all_enums(imports=False).items():
-            if "enum_definition" not in excluded_types and enum_name not in excluded_names and enum_pattern.fullmatch(enum_name) is None:
+            if (
+                "enum_definition" not in excluded_types
+                and enum_name not in excluded_names
+                and enum_pattern.fullmatch(enum_name) is None
+            ):
                 yield LinterProblem(f"Enum has name '{enum_name}'")
 
             if "permissible_value" not in excluded_types:
