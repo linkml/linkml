@@ -14,9 +14,3 @@ URI: [linkml:AnyValue](https://w3id.org/linkml/AnyValue)
 
 ## Attributes
 
-
-## Other properties
-
-|  |  |  |
-| --- | --- | --- |
-| **Mappings:** | | linkml:Any |

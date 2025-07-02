@@ -414,8 +414,6 @@ classes:
     definition_uri: https://w3id.org/linkml/AnyValue
     from_schema: https://w3id.org/linkml/extensions
     imported_from: linkml:extensions
-    mappings:
-    - linkml:Any
     class_uri: linkml:Any
   extension:
     name: extension

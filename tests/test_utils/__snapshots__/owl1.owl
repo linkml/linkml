@@ -47,34 +47,34 @@ meta:C1 a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "c1" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:minCardinality 1 ;
-            owl:onProperty meta:slotonemany ],
-        [ a owl:Restriction ;
-            owl:minCardinality 1 ;
-            owl:onProperty meta:slotreq ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom meta:C2 ;
-            owl:onProperty meta:slotopt ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom meta:C2 ;
-            owl:onProperty meta:slotreq ],
-        [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty meta:slotzeromany ],
-        [ a owl:Restriction ;
             owl:maxCardinality 1 ;
             owl:onProperty meta:slotreq ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom meta:C2 ;
-            owl:onProperty meta:slotzeromany ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty meta:slotopt ],
         [ a owl:Restriction ;
             owl:allValuesFrom meta:C2 ;
             owl:onProperty meta:slotonemany ],
         [ a owl:Restriction ;
             owl:minCardinality 0 ;
+            owl:onProperty meta:slotzeromany ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom meta:C2 ;
+            owl:onProperty meta:slotreq ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom meta:C2 ;
+            owl:onProperty meta:slotopt ],
+        [ a owl:Restriction ;
+            owl:minCardinality 1 ;
+            owl:onProperty meta:slotreq ],
+        [ a owl:Restriction ;
+            owl:minCardinality 1 ;
+            owl:onProperty meta:slotonemany ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty meta:slotopt ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom meta:C2 ;
+            owl:onProperty meta:slotzeromany ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
             owl:onProperty meta:slotopt ] ;
     skos:inScheme <http://example.org/owl1> .
 
