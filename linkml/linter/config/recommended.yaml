@@ -7,6 +7,8 @@ rules:
     level: error
   no_undeclared_slots:
     level: error
+  no_undeclared_ranges:
+    level: error
   standard_naming:
     level: warning
   canonical_prefixes:
