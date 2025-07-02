@@ -356,15 +356,16 @@ class SQLTableGenerator(Generator):
     @staticmethod
     def check_duplicate_col_names(cols_list: list, item_name: str) -> Boolean:
         for entry in cols_list:
-            if item_name == entry.name:
-                exp_list = [col.name for col in entry.expressions]
-                msg = (
-                    "Warning: proposed item name already exists in schema"
-                    "Please generate a new name: "
-                    f"{item_name} already exists for {entry.name}, with columns {str(exp_list)}"
-                )
-                logger.info(msg)
-                return True
+            if isinstance(entry, Index) or isinstance(entry, UniqueConstraint):
+                if item_name == entry.name:
+                    exp_list = [col.name for col in entry.expressions]
+                    msg = (
+                        "Warning: proposed item name already exists in schema"
+                        "Please generate a new name: "
+                        f"{item_name} already exists for {entry.name}, with columns {str(exp_list)}"
+                    )
+                    logger.info(msg)
+                    return True
         return False
 
 
