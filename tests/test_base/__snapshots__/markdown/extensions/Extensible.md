@@ -19,3 +19,9 @@ URI: [linkml:Extensible](https://w3id.org/linkml/Extensible)
  * [extensions](extensions.md)  <sub>0..\*</sub>
      * Description: a tag/text tuple attached to an arbitrary element
      * Range: [Extension](Extension.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Exact Mappings:** | | linkml:Extensible |
