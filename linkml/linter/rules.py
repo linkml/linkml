@@ -289,6 +289,7 @@ class StandardNamingRule(LinterRule):
 
     def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
         excluded_types = [t.text if hasattr(t, "text") else str(t) for t in getattr(self.config, "exclude_type", [])]
+        excluded_names = getattr(self.config, "exclude", [])
         class_pattern = (
             self.PATTERNS["uppercamel"]
             if not self.config.class_pattern
@@ -307,20 +308,26 @@ class StandardNamingRule(LinterRule):
 
         if "class_definition" not in excluded_types:
             for class_name in schema_view.all_classes(imports=False):
+                if class_name in excluded_names:
+                    continue
                 if class_pattern.fullmatch(class_name) is None:
                     yield LinterProblem(f"Class has name '{class_name}'")
 
         if "slot_definition" not in excluded_types:
             for slot_name in schema_view.all_slots(imports=False):
+                if slot_name in excluded_names:
+                    continue
                 if slot_pattern.fullmatch(slot_name) is None:
                     yield LinterProblem(f"Slot has name '{slot_name}'")
 
         for enum_name, enum_definition in schema_view.all_enums(imports=False).items():
-            if "enum_definition" not in excluded_types and enum_pattern.fullmatch(enum_name) is None:
+            if "enum_definition" not in excluded_types and enum_name not in excluded_names and enum_pattern.fullmatch(enum_name) is None:
                 yield LinterProblem(f"Enum has name '{enum_name}'")
 
             if "permissible_value" not in excluded_types:
                 for permissible_value_name in enum_definition.permissible_values:
+                    if permissible_value_name in excluded_names:
+                        continue
                     if permissible_value_pattern.fullmatch(permissible_value_name) is None:
                         yield LinterProblem(
                             f"Permissible value of {self.format_element(enum_definition)} "

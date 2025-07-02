@@ -175,6 +175,12 @@ classes:
         description: >-
           Default: []
           Elements of all types (ClassDefinition, SlotDefinition, EnumDefinition, PermissibleValue, etc.) except the types specified in this list will be checked
+      exclude:
+        range: string
+        multivalued: true
+        description: >-
+          Default: []
+          All elements except the ones with names specified in this list will be checked
       class_pattern:
         range: string
         required: false
