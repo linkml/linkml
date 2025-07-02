@@ -142,8 +142,8 @@ def test_index_sqlddl(capsys):
     b.add_slot(SlotDefinition("age", range="integer", description="age of person in years"))
     slots = ["full name", "description", "age"]
     test_index = Annotation(tag="index", value={"index2": ["id", "age"]})
-    test_index_2 = Annotation(tag="index", value={"index2": ["id", "age"]})
-    test_index_dict = {"index": test_index, "index": test_index_2}
+    #test_index_2 = Annotation(tag="index", value={"index2": ["id", "age"]})
+    test_index_dict = {"index": test_index}
     b.add_class(DUMMY_CLASS, slots, description="My dummy class", annotations=test_index_dict)
     b.add_slot("identifier_slot", identifier=True)
     b.add_slot("key_slot", key=True)
