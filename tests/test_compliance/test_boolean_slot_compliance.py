@@ -36,7 +36,7 @@ from tests.test_compliance.test_compliance import (
     CLASS_C1a,
     CLASS_C1b,
     SLOT_S1a,
-    SLOT_S1b,
+    SLOT_S1b, CLASS_X,
 )
 
 
@@ -2677,3 +2677,71 @@ def test_membership(framework, name, quantification, expression, instance, is_va
         expected_behavior=expected_behavior,
         description=f"validity {is_valid} check for value {instance}",
     )
+
+@pytest.mark.parametrize("data_name,instance,is_valid", [
+    ("missing_outer_slot", {}, False),
+    ("incorrect_range", {SLOT_S1: "x"}, False),
+    ("valid nesting, within range", {SLOT_S1: {SLOT_S2: 5}}, True),
+    ("valid nesting, outside range", {SLOT_S1: {SLOT_S2: 15}}, False),
+    ])
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_range_expression(framework, data_name, instance, is_valid):
+    """
+    Tests behavior of nested range expressions.
+    """
+    slots = {
+        SLOT_S1: {
+            "range": CLASS_X,
+            "required": True,
+        },
+    }
+    classes = {
+        CLASS_C: {
+            "slots": [SLOT_S1],
+        },
+        CLASS_D: {
+            "is_a": CLASS_C,
+            "slot_usage": {
+                SLOT_S1: {
+                    "range": CLASS_X,
+                    "range_expression": {
+                        "slot_conditions": {
+                            SLOT_S2: {
+                                "maximum_value": 10,
+                            },
+                        }
+                    },
+                },
+            },
+        },
+        CLASS_X: {
+            "attributes": {
+                SLOT_S2: {
+                    "range": "integer",
+                },
+            },
+        },
+    }
+    schema = validated_schema(
+        test_range_expression,
+        "range_expression_test",
+        framework,
+        classes=classes,
+        slots=slots,
+        core_elements=["range_expression"],
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework not in [JSON_SCHEMA]:
+        if not is_valid:
+            expected_behavior = ValidationBehavior.INCOMPLETE
+    check_data(
+        schema,
+        data_name,
+        framework,
+        instance,
+        is_valid,
+        target_class=CLASS_D,
+        expected_behavior=expected_behavior,
+        description=f"validity {is_valid} check for value {instance}",
+    )
+
