@@ -9,6 +9,8 @@ rules:
     level: error
   no_undeclared_ranges:
     level: error
+  root_type_checks:
+    level: error
   standard_naming:
     level: warning
   canonical_prefixes:
