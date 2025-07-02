@@ -289,7 +289,7 @@ class StandardNamingRule(LinterRule):
 
     def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
         excluded_types = [t.text if hasattr(t, "text") else str(t) for t in getattr(self.config, "exclude_type", [])]
-        excluded_names = getattr(self.config, "exclude", [])
+        excluded_names = set(getattr(self.config, "exclude", []))
         class_pattern = (
             self.PATTERNS["uppercamel"]
             if not self.config.class_pattern
