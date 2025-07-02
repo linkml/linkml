@@ -515,6 +515,12 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         constraints.add_keyword("const", slot.equals_number)
         if slot.equals_string_in:
             constraints.add_keyword("enum", slot.equals_string_in)
+        if slot.range_expression:
+            subschema = self.get_subschema_for_anonymous_class(slot.range_expression)
+            if subschema:
+                if "allOf" not in constraints:
+                    constraints["allOf"] = []
+                constraints["allOf"].append(subschema)
         return constraints
 
     def get_subschema_for_slot(
