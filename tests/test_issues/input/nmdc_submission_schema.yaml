@@ -11759,7 +11759,7 @@ slots:
       occurrence:
         tag: occurrence
         value: '1'
-    description: The phsical condition of the door
+    description: The physical condition of the door
     title: door condition
     examples:
     - value: new
@@ -16561,7 +16561,7 @@ slots:
     description: 'Temperature at which a liquid becomes semi solid and loses its flow
       characteristics. In crude oil a high¬†pour point¬†is generally associated with
       a high paraffin content, typically found in crude deriving from a larger proportion
-      of plant material. (soure: https://en.wikipedia.org/wiki/pour_point)'
+      of plant material. (source: https://en.wikipedia.org/wiki/pour_point)'
     title: pour point
     examples:
     - value: ''
@@ -27266,7 +27266,7 @@ classes:
           occurrence:
             tag: occurrence
             value: '1'
-        description: The phsical condition of the door
+        description: The physical condition of the door
         title: door condition
         examples:
         - value: new
@@ -33037,7 +33037,7 @@ classes:
         description: 'Temperature at which a liquid becomes semi solid and loses its
           flow characteristics. In crude oil a high¬†pour point¬†is generally associated
           with a high paraffin content, typically found in crude deriving from a larger
-          proportion of plant material. (soure: https://en.wikipedia.org/wiki/pour_point)'
+          proportion of plant material. (source: https://en.wikipedia.org/wiki/pour_point)'
         title: pour point
         examples:
         - value: ''
@@ -36229,7 +36229,7 @@ classes:
         description: 'Temperature at which a liquid becomes semi solid and loses its
           flow characteristics. In crude oil a high¬†pour point¬†is generally associated
           with a high paraffin content, typically found in crude deriving from a larger
-          proportion of plant material. (soure: https://en.wikipedia.org/wiki/pour_point)'
+          proportion of plant material. (source: https://en.wikipedia.org/wiki/pour_point)'
         title: pour point
         examples:
         - value: ''
