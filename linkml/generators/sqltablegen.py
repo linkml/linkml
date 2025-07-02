@@ -222,15 +222,15 @@ class SQLTableGenerator(Generator):
                         fk = sql_name(self.get_id_or_key(s.range, sv))
                         args = [ForeignKey(fk)]
                     field_type = self.get_sql_range(s, schema)
-                    fk_index_cond = ((s.key or s.identifier) and self.autogenerate_fk_index)
-                    pk_index_cond = (is_pk and self.autogenerate_pk_index)
+                    fk_index_cond = (s.key or s.identifier) and self.autogenerate_fk_index
+                    pk_index_cond = is_pk and self.autogenerate_pk_index
                     col = Column(
                         sql_name(sn),
                         field_type,
                         *args,
                         primary_key=is_pk,
                         nullable=not s.required,
-                        index=(fk_index_cond or pk_index_cond)
+                        index=(fk_index_cond or pk_index_cond),
                     )
                     if include_comments:
                         ddl_str += f"--     * Slot: {sn} Description: {strip_newlines(s.description)}\n"
@@ -244,14 +244,14 @@ class SQLTableGenerator(Generator):
                         continue
                     sql_uc = UniqueConstraint(*sql_names)
                     cols.append(sql_uc)
-                    sql_names[0] = sql_names[0] +'_idx'
+                    sql_names[0] = sql_names[0] + "_idx"
                     is_duplicate = self.check_duplicate_col_names(cols, sql_names[0])
                     if not is_duplicate:
                         multi_index = Index(*sql_names)
                         cols.append(multi_index)
             if not c.abstract or (c.abstract and self.generate_abstract_class_ddl):
                 for tag, annotation in c.annotations.items():
-                    if tag=="index":
+                    if tag == "index":
                         value_dict = {k: annotation for k, annotation in annotation.value._items()}
                         for key, value in value_dict.items():
                             name_exists = self.check_duplicate_col_names(cols, key)
@@ -261,6 +261,7 @@ class SQLTableGenerator(Generator):
                 Table(sql_name(cn), schema_metadata, *cols, comment=str(c.description))
         schema_metadata.create_all(engine)
         return ddl_str
+
     def get_oracle_sql_range(self, slot: SlotDefinition) -> Text | VARCHAR2 | None:
         """
         Generate the appropriate range for Oracle SQL.
@@ -351,7 +352,7 @@ class SQLTableGenerator(Generator):
             raise Exception(msg)
         pk_name = pk.alias if pk.alias else pk.name
         return f"{cn}.{pk_name}"
-    
+
     @staticmethod
     def check_duplicate_col_names(cols_list: list, item_name: str) -> Boolean:
         for entry in cols_list:
@@ -359,12 +360,12 @@ class SQLTableGenerator(Generator):
                 exp_list = [col.name for col in entry.expressions]
                 msg = (
                     "Warning: proposed item name already exists in schema"
-                    f"Please generate a new name: {item_name} already exists for {entry.name}, with columns {str(exp_list)}"
+                    "Please generate a new name: "
+                    f"{item_name} already exists for {entry.name}, with columns {str(exp_list)}"
                 )
                 logger.info(msg)
                 return True
         return False
-
 
 
 @shared_arguments(SQLTableGenerator)
