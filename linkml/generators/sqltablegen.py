@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import logging
 import os
 import re
@@ -247,8 +245,8 @@ class SQLTableGenerator(Generator):
                     sql_names[0] = sql_names[0] + "_idx"
                     is_duplicate = self.check_duplicate_col_names(cols, sql_names[0])
                     if not is_duplicate:
-                        multi_index = Index(*sql_names)
-                        cols.append(multi_index)
+                        uc_index = Index(*sql_names)
+                        cols.append(uc_index)
             if not c.abstract or (c.abstract and self.generate_abstract_class_ddl):
                 for tag, annotation in c.annotations.items():
                     if tag == "index":
@@ -356,13 +354,14 @@ class SQLTableGenerator(Generator):
     @staticmethod
     def check_duplicate_col_names(cols_list: list, item_name: str) -> Boolean:
         for entry in cols_list:
+            col_entry_name = getattr(entry, 'name', str(entry))
             if isinstance(entry, Index) or isinstance(entry, UniqueConstraint):
-                if item_name == entry.name:
-                    exp_list = [col.name for col in entry.expressions]
+                if item_name == col_entry_name:
+                    exp_list = [getattr(col, 'name', str(col)) for col in entry.expressions]
                     msg = (
                         "Warning: proposed item name already exists in schema"
                         "Please generate a new name: "
-                        f"{item_name} already exists for {entry.name}, with columns {str(exp_list)}"
+                        f"{item_name} already exists for {col_entry_name}, with columns {str(exp_list)}"
                     )
                     logger.info(msg)
                     return True

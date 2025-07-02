@@ -142,7 +142,8 @@ def test_index_sqlddl(capsys):
     b.add_slot(SlotDefinition("age", range="integer", description="age of person in years"))
     slots = ["full name", "description", "age"]
     test_index = Annotation(tag="index", value={"index2": ["id", "age"]})
-    test_index_dict = {"index": test_index}
+    test_index_2 = Annotation(tag="index", value={"index2": ["id", "age"]})
+    test_index_dict = {"index": test_index, "index": test_index_2}
     b.add_class(DUMMY_CLASS, slots, description="My dummy class", annotations=test_index_dict)
     b.add_slot("identifier_slot", identifier=True)
     b.add_slot("key_slot", key=True)
@@ -153,9 +154,9 @@ def test_index_sqlddl(capsys):
     gen = SQLTableGenerator(b.schema, use_foreign_keys=True)
     # sv = package_schemaview("linkml_runtime.linkml_model.meta")
     # gen2 = SQLTableGenerator(sv.schema, use_foreign_keys=True, autogenerate_pk_index=True, autogenerate_fk_index=True)
-    ddl = gen.generate_ddl()
     # ddl2 = gen2.generate_ddl()
     with capsys.disabled():
+        ddl = gen.generate_ddl()
         print(ddl)
     #    print(ddl2)
     assert True
