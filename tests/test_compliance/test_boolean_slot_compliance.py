@@ -23,6 +23,7 @@ from tests.test_compliance.test_compliance import (
     CLASS_D,
     CLASS_U1,
     CLASS_U2,
+    CLASS_X,
     CORE_FRAMEWORKS,
     ENUM_E,
     ENUM_F,
@@ -36,7 +37,7 @@ from tests.test_compliance.test_compliance import (
     CLASS_C1a,
     CLASS_C1b,
     SLOT_S1a,
-    SLOT_S1b, CLASS_X,
+    SLOT_S1b,
 )
 
 
@@ -2678,12 +2679,16 @@ def test_membership(framework, name, quantification, expression, instance, is_va
         description=f"validity {is_valid} check for value {instance}",
     )
 
-@pytest.mark.parametrize("data_name,instance,is_valid", [
-    ("missing_outer_slot", {}, False),
-    ("incorrect_range", {SLOT_S1: "x"}, False),
-    ("valid nesting, within range", {SLOT_S1: {SLOT_S2: 5}}, True),
-    ("valid nesting, outside range", {SLOT_S1: {SLOT_S2: 15}}, False),
-    ])
+
+@pytest.mark.parametrize(
+    "data_name,instance,is_valid",
+    [
+        ("missing_outer_slot", {}, False),
+        ("incorrect_range", {SLOT_S1: "x"}, False),
+        ("valid nesting, within range", {SLOT_S1: {SLOT_S2: 5}}, True),
+        ("valid nesting, outside range", {SLOT_S1: {SLOT_S2: 15}}, False),
+    ],
+)
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_range_expression(framework, data_name, instance, is_valid):
     """
@@ -2744,4 +2749,3 @@ def test_range_expression(framework, data_name, instance, is_valid):
         expected_behavior=expected_behavior,
         description=f"validity {is_valid} check for value {instance}",
     )
-
