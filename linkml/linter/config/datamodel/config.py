@@ -10,7 +10,7 @@ import dataclasses
 import re
 from dataclasses import dataclass
 from datetime import date, datetime, time
-from typing import Any, ClassVar, Dict, List, Optional, Union
+from typing import Any, ClassVar, Optional, Union
 
 from jsonasobj2 import JsonObj, as_dict
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
@@ -258,6 +258,8 @@ class StandardNamingConfig(RuleConfig):
     exclude_type: Optional[
         Union[Union[str, "MetamodelElementTypeEnum"], list[Union[str, "MetamodelElementTypeEnum"]]]
     ] = empty_list()
+    # Elements with names specified in this list will be skipped by the checker.
+    # The list can include names of any schema elements (classes, slots, enums, permissible values, etc.).
     exclude: Optional[Union[str, list[str]]] = empty_list()
     class_pattern: Optional[str] = None
     slot_pattern: Optional[str] = None
