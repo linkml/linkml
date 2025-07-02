@@ -244,15 +244,20 @@ class SQLTableGenerator(Generator):
                         continue
                     sql_uc = UniqueConstraint(*sql_names)
                     cols.append(sql_uc)
-                    multi_index = Index(*sql_names)
-                    cols.append(multi_index)
+                    sql_names[0] = sql_names[0] +'_idx'
+                    is_duplicate = self.check_duplicate_col_names(cols, sql_names[0])
+                    if not is_duplicate:
+                        multi_index = Index(*sql_names)
+                        cols.append(multi_index)
             if not c.abstract or (c.abstract and self.generate_abstract_class_ddl):
                 for tag, annotation in c.annotations.items():
                     if tag=="index":
                         value_dict = {k: annotation for k, annotation in annotation.value._items()}
                         for key, value in value_dict.items():
-                            annotated_ind = Index(key, *value)
-                            cols.append(annotated_ind)
+                            name_exists = self.check_duplicate_col_names(cols, key)
+                            if not name_exists:
+                                annotated_ind = Index(key, *value)
+                                cols.append(annotated_ind)
                 Table(sql_name(cn), schema_metadata, *cols, comment=str(c.description))
         schema_metadata.create_all(engine)
         return ddl_str
@@ -346,6 +351,20 @@ class SQLTableGenerator(Generator):
             raise Exception(msg)
         pk_name = pk.alias if pk.alias else pk.name
         return f"{cn}.{pk_name}"
+    
+    @staticmethod
+    def check_duplicate_col_names(cols_list: list, item_name: str) -> Boolean:
+        for entry in cols_list:
+            if item_name == entry.name:
+                exp_list = [col.name for col in entry.expressions]
+                msg = (
+                    "Warning: proposed item name already exists in schema"
+                    f"Please generate a new name: {item_name} already exists for {entry.name}, with columns {str(exp_list)}"
+                )
+                logger.info(msg)
+                return True
+        return False
+
 
 
 @shared_arguments(SQLTableGenerator)
