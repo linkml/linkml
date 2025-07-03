@@ -1262,7 +1262,6 @@ class {enum_name}(EnumDefinitionImpl):
 
 @shared_arguments(PythonGenerator)
 @click.command(name="python")
-@click.option("--head/--no-head", default=True, show_default=True, help="Emit metadata heading")
 @click.option(
     "--genmeta/--no-genmeta",
     default=False,
@@ -1290,7 +1289,6 @@ class {enum_name}(EnumDefinitionImpl):
 @click.version_option(__version__, "-V", "--version")
 def cli(
     yamlfile,
-    head=True,
     genmeta=False,
     classvars=True,
     slots=True,
@@ -1298,16 +1296,10 @@ def cli(
     **args,
 ):
     """Generate python classes to represent a LinkML model"""
-    if "metadata" in args.keys():
-        if args["metadata"] != head:
-            logging.warning(
-                f"Value assigned to `metadata` ('{args['metadata']}') conficts with value assigned to "
-                + f"`head` ('{head}'), but they have the same purpose. Value of `head` wins!"
-            )
-        del args["metadata"]
+    if "metadata" not in args.keys():
+        args["metadata"] = True
     gen = PythonGenerator(
         yamlfile,
-        metadata=head,
         genmeta=genmeta,
         gen_classvars=classvars,
         gen_slots=slots,
@@ -1316,7 +1308,7 @@ def cli(
     if validate:
         mod = gen.compile_module()
         logger.info(f"Module {mod} compiled successfully")
-    print(gen.serialize(metadata=head, **args))
+    print(gen.serialize(**args))
 
 
 if __name__ == "__main__":
