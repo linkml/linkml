@@ -1,4 +1,5 @@
 import json
+import logging
 
 import pytest
 from linkml_runtime.utils.schemaview import SchemaView
@@ -6,6 +7,8 @@ from rdflib import Graph, term
 from yaml import safe_load
 
 from linkml.generators import JSONLDGenerator, RDFGenerator
+
+logger = logging.getLogger(__name__)
 
 
 @pytest.mark.xfail(reason="Bug 2687: class_uri should be exactMatch")
@@ -48,7 +51,7 @@ def test_class_uri(input_path):
     schema_jsonld = json.loads(JSONLDGenerator(schema_path, format="jsonld").serialize())
     # get all the schema classes according the generated JSON-LD
     classes_jsonld = {cls["definition_uri"]: cls for cls in schema_jsonld["classes"]}
-    print(classes_jsonld)
+    logger.info(classes_jsonld)
     # check each of the schema classes (according the SchemaView)
     for class_name, class_info in classes_with_custom_uri.items():
         assert class_info["uri"] in classes_jsonld.keys()
