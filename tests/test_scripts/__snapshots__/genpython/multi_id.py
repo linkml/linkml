@@ -1,7 +1,3 @@
-# Auto generated from multi_id.yaml by pythongen.py version: 0.0.1
-# Generation date: 2000-01-01T00:00:00
-# Schema: multi_id
-#
 # id: http://example.org/example/multi_id
 # description:
 # license:
