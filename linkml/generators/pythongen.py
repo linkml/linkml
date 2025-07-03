@@ -244,13 +244,13 @@ class PythonGenerator(Generator):
             f"""# Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}
 # Generation date: {self.schema.generation_date}
 # Schema: {self.schema.name}
-#"""
+#
+"""
             if self.metadata and self.schema.generation_date
             else ""
         )
 
-        return f"""{head}
-# id: {self.schema.id}
+        return f"""{head}# id: {self.schema.id}
 # description: {split_description}
 # license: {be(self.schema.license)}
 

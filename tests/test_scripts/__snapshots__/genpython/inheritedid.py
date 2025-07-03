@@ -1,4 +1,3 @@
-
 # id: https://example.org/inheritedid
 # description: Test
 # license: https://creativecommons.org/publicdomain/zero/1.0/

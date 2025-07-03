@@ -1,4 +1,3 @@
-
 # id: http://example.org/example/multi_id
 # description:
 # license:

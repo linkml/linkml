@@ -1,4 +1,3 @@
-
 # id: http://example.org/tests/types
 # description:
 # license:

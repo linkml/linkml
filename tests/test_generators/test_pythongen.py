@@ -102,7 +102,7 @@ types:
     assert output.startswith(f"# Auto generated from None by pythongen.py version: {PythonGenerator.generatorversion}")
 
     output = PythonGenerator(yaml, format="py", metadata=False).serialize()
-    assert output.startswith("\n# id: https://w3id.org/biolink/metamodel")
+    assert output.startswith("# id: https://w3id.org/biolink/metamodel")
 
 
 def test_repr(kitchen_sink_path):

@@ -1,4 +1,3 @@
-
 # id: http://example.org/tests/issue167b
 # description:
 # license: https://creativecommons.org/publicdomain/zero/1.0/
