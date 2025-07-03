@@ -344,7 +344,6 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     gen_classvars: bool = True
     gen_slots: bool = True
     genmeta: bool = False
-    emit_metadata: bool = True
 
     # ClassVars
     SNAKE_CASE: ClassVar[str] = r"(((?<!^)(?<!\.))(?=[A-Z][a-z]))|([^\w\.]+)"
@@ -1207,7 +1206,6 @@ def cli(
     yamlfile,
     template_file=None,
     template_dir: Optional[str] = None,
-    head=True,
     genmeta=False,
     classvars=True,
     slots=True,
@@ -1232,7 +1230,6 @@ def cli(
         yamlfile,
         array_representations=[ArrayRepresentation(x) for x in array_representations],
         extra_fields=extra_fields,
-        emit_metadata=head,
         genmeta=genmeta,
         gen_classvars=classvars,
         gen_slots=slots,

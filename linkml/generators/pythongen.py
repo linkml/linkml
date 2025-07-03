@@ -52,12 +52,12 @@ class PythonGenerator(Generator):
     file_extension = "py"
     visit_all_class_slots = False
     uses_schemaloader = True
+    metadata = False  # override superclass default
 
     # ObjectVars
     gen_classvars: bool = True
     gen_slots: bool = True
     genmeta: bool = False
-    emit_metadata: bool = True
     dataclass_repr: bool = False
     """
     Whether generated dataclasses should also generate a default __repr__ method.
@@ -245,7 +245,7 @@ class PythonGenerator(Generator):
 # Generation date: {self.schema.generation_date}
 # Schema: {self.schema.name}
 #"""
-            if self.emit_metadata and self.schema.generation_date
+            if self.metadata and self.schema.generation_date
             else ""
         )
 
@@ -1298,9 +1298,16 @@ def cli(
     **args,
 ):
     """Generate python classes to represent a LinkML model"""
+    if "metadata" in args.keys():
+        if args["metadata"] != head:
+            logging.warning(
+                f"Value assigned to `metadata` ('{args['metadata']}') conficts with value assigned to "
+                + f"`head` ('{head}'), but they have the same purpose. Value of `head` wins!"
+            )
+        del args["metadata"]
     gen = PythonGenerator(
         yamlfile,
-        emit_metadata=head,
+        metadata=head,
         genmeta=genmeta,
         gen_classvars=classvars,
         gen_slots=slots,
@@ -1309,7 +1316,7 @@ def cli(
     if validate:
         mod = gen.compile_module()
         logger.info(f"Module {mod} compiled successfully")
-    print(gen.serialize(emit_metadata=head, **args))
+    print(gen.serialize(metadata=head, **args))
 
 
 if __name__ == "__main__":

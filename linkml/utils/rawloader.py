@@ -36,7 +36,7 @@ def load_raw_schema(
     source_file_size: Optional[int] = None,
     base_dir: Optional[str] = None,
     merge_modules: Optional[bool] = True,
-    emit_metadata: Optional[bool] = True,
+    metadata: Optional[bool] = True,
 ) -> SchemaDefinition:
     """Load and flatten SchemaDefinition from a file name, a URL or a block of text
 
@@ -46,7 +46,7 @@ def load_raw_schema(
     @param source_file_size: size of source file if data is type TextIO
     @param base_dir: Working directory or base URL of sources
     @param merge_modules: True means combine modules into one source, false means keep separate
-    @param emit_metadata: True means add source file info to the output
+    @param metadata: True means add source file info to the output
     @return: Un-processed Schema Definition object
     """
 
@@ -93,7 +93,7 @@ def load_raw_schema(
         # TODO: figure out how to generate this from the default_prefix and namespace map
         raise ValueError("Schema identifier must be supplied")
 
-    if emit_metadata:
+    if metadata:
         schema.source_file = schema_metadata.source_file
         src_date = schema_metadata.source_file_date
         try:
