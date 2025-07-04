@@ -26,6 +26,12 @@ class RustRange(BaseModel):
     child_ranges: Optional[List["RustRange"]] = None
     type_: str
 
+    def is_copy(self) -> bool:
+        """
+        Whether this range is a copy type
+        """
+        return self.type_ in ["i8", "i16", "i32", "i64", "u8", "u16", "u32", "u64", "f32", "f64", "bool"]
+
     def type_for_field(self):
         tp = self.type_
         if self.has_class_subtypes:
@@ -63,7 +69,8 @@ class RustRange(BaseModel):
             else:
                 tp = f"&HashMap<String, {tp}>"
         else:
-            convert_ref = True
+            if not self.is_copy():
+                convert_ref = True
         if not setter and convert_ref and (not self.optional or (self.is_class_range and not self.is_reference)):
             tp = f"&{tp}"
         if self.optional:
@@ -73,7 +80,10 @@ class RustRange(BaseModel):
                 if tp == "String":
                     tp = "Option<&str>"
                 else:
-                    tp = f"Option<&{tp}>"
+                    if self.is_copy():
+                        tp = f"Option<{tp}>"
+                    else:
+                        tp = f"Option<&{tp}>"
         if tp == "&String":
             tp = "&str"
         return tp
@@ -315,6 +325,13 @@ class PolyTraitPropertyImpl(RustTemplateModel):
     range: RustRange
     struct_name: str
     definition_range: RustRange
+
+    @computed_field
+    def is_copy(self) -> bool:
+        """
+        Whether this range is a copy type
+        """
+        return self.range.is_copy()
 
     @computed_field
     def need_option_wrap(self) -> bool:

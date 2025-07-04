@@ -15,14 +15,22 @@
         return poly_containers::MapView::new(&self.{{ name }});
         {% endif %}
 {% else %}
+        {% if is_copy %}
+        return self.{{ name }};
+        {% else %}
         return self.{{ name }}.as_deref();
+        {% endif %}
 {% endif %}
 {% else %}
 {% if range.optional %}
         {% if type_getter == 'Option<&str>' %}
         return self.{{ name }}.as_deref();
         {% elif ct != 'list' and ct != 'mapping' %}
+        {% if is_copy %}
+        return self.{{ name }};
+        {% else %}
         return self.{{ name }}.as_ref();
+        {% endif %}
         {% else %}
         return self.{{ name }}.as_ref();
         {% endif %}
