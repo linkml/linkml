@@ -65,6 +65,7 @@ class AttributeResult(RustBuildResult, SlotResult_):
     """
     A field within a rust struct
     """
+
     attribute: RustProperty
 
 
