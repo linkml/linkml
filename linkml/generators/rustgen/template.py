@@ -37,7 +37,7 @@ class RustRange(BaseModel):
             tp = f"Vec<{tp}>"
         elif self.containerType == ContainerType.MAPPING:
             tp = f"HashMap<String, {tp}>"
-        if self.optional and self.containerType is None:
+        if self.optional:
             tp = f"Option<{tp}>"
         return tp
 
@@ -66,8 +66,8 @@ class RustRange(BaseModel):
             convert_ref = True
         if not setter and convert_ref and (not self.optional or (self.is_class_range and not self.is_reference)):
             tp = f"&{tp}"
-        if self.optional and self.containerType is None:
-            if self.is_class_range and not self.is_reference:
+        if self.optional:
+            if self.containerType or (self.is_class_range and not self.is_reference):
                 tp = f"Option<{tp}>"
             else:
                 if tp == "String":
@@ -143,13 +143,20 @@ class RustProperty(RustTemplateModel):
     is_key_value: bool = False
 
     @computed_field
+    def optional(self) -> bool:
+        """
+        Whether this property is optional
+        """
+        return self.type_.optional
+
+    @computed_field
     def merge_strategy(self) -> str:
-        if self.type_.containerType == ContainerType.LIST:
+        if self.type_.optional:
+            return "strategy = merge::option::overwrite_none"
+        elif self.type_.containerType == ContainerType.LIST:
             return "skip"
         elif self.type_.containerType == ContainerType.MAPPING:
             return "strategy = merge::hashmap::overwrite"
-        elif self.type_.optional:
-            return "strategy = merge::option::overwrite_none"
         else:
             return "skip"
 
@@ -359,6 +366,14 @@ class PolyTraitPropertyMatch(RustTemplateModel):
     struct_name: str
     cases: List[str]
 
+
+    @computed_field
+    def is_optional(self) -> bool:
+        """
+        Whether this property is optional
+        """
+        return self.range.optional
+    
     @computed_field
     def is_container(self) -> bool:
         """

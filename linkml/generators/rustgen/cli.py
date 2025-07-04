@@ -27,7 +27,6 @@ def cli(
     output: Optional[Path] = None,
     **kwargs,
 ):
-
     gen = RustGenerator(yamlfile, mode=mode, pyo3=pyo3, serde=serde, output=output, crate_name=crate_name, **kwargs)
     serialized = gen.serialize(force=force)
     if output is None:

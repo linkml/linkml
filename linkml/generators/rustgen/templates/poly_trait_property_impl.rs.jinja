@@ -1,10 +1,19 @@
     fn {{ name}}(&self) -> {{ type_getter }} {
 {%  if range.box_needed %}
-// {{ ct }}
 {% if ct == 'list' %}
+        {% if range.optional %}
+        return self.{{ name }}.as_ref().map(|x| poly_containers::ListView::new(x));
+        {% else %}
         return poly_containers::ListView::new(&self.{{ name }});
+        {% endif %}
 {% elif ct == "mapping" %}
+        {% if range.optional %}
+        return self.{{ name}}
+                .as_ref()
+                .map(poly_containers::MapView::new);
+        {% else %}
         return poly_containers::MapView::new(&self.{{ name }});
+        {% endif %}
 {% else %}
         return self.{{ name }}.as_deref();
 {% endif %}
@@ -15,7 +24,7 @@
         {% elif ct != 'list' and ct != 'mapping' %}
         return self.{{ name }}.as_ref();
         {% else %}
-        return &self.{{ name }};
+        return self.{{ name }}.as_ref();
         {% endif %}
 {% else %}
 {% if need_option_wrap %}
