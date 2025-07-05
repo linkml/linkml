@@ -1,14 +1,14 @@
-import os
-import pytest
+"""Tests of the functions from context_utils.py."""
 
+import os
+
+import pytest
 from jsonasobj2 import JsonObj, loads
 from rdflib import URIRef
 
-from linkml_runtime.linkml_model.meta import ClassDefinition, Prefix, SchemaDefinition
-from linkml_runtime.utils.context_utils import map_import, merge_contexts
+from linkml_runtime.utils.context_utils import map_import, merge_contexts, parse_import_map
 from linkml_runtime.utils.namespaces import Namespaces
-
-from tests.test_utils import METAMODEL_CONTEXT_URI, META_BASE_URI
+from tests.test_utils import META_BASE_URI, METAMODEL_CONTEXT_URI
 
 json_1 = '{ "ex": "http://example.org/test/", "ex2": "http://example.org/test2/" }'
 json_2 = '{ "foo": 17, "@context": { "ex": "http://example.org/test3/", "ex2": {"@id": "http://example.org/test4/" }}}'
@@ -31,12 +31,13 @@ context_output = """{
 }"""
 
 
-def test_merge_contexts():
+def test_merge_contexts() -> None:
+    """Test the merge_contexts function."""
     assert merge_contexts() is None
-    assert "file://local.jsonld" == merge_contexts("local.jsonld")["@context"]
-    assert "file://local.jsonld" == merge_contexts(["local.jsonld"])["@context"]
-    assert METAMODEL_CONTEXT_URI == merge_contexts(METAMODEL_CONTEXT_URI)["@context"]
-    assert METAMODEL_CONTEXT_URI == merge_contexts([METAMODEL_CONTEXT_URI])["@context"]
+    assert merge_contexts("local.jsonld")["@context"] == "file://local.jsonld"
+    assert merge_contexts(["local.jsonld"])["@context"] == "file://local.jsonld"
+    assert merge_contexts(METAMODEL_CONTEXT_URI)["@context"] == METAMODEL_CONTEXT_URI
+    assert merge_contexts([METAMODEL_CONTEXT_URI])["@context"] == METAMODEL_CONTEXT_URI
     assert JsonObj(ex="http://example.org/test/", ex2="http://example.org/test2/") == merge_contexts(json_1)["@context"]
     assert (
         JsonObj(ex="http://example.org/test/", ex2="http://example.org/test2/") == merge_contexts([json_1])["@context"]
@@ -65,10 +66,9 @@ def test_merge_contexts():
             ]
         }
     ) == merge_contexts([json_1, json_1])
-    assert "file://local.jsonld", merge_contexts("local.jsonld")["@context"]
 
 
-def test_merge_contexts_base():
+def test_merge_contexts_base() -> None:
     assert JsonObj(**{"@context": JsonObj(**{"@base": "file://relloc"})}) == merge_contexts(base="file://relloc")
     assert loads(f'{{"@context": {{"@base": "{META_BASE_URI}"}}}}') == merge_contexts(base=META_BASE_URI)
     assert loads("""
@@ -95,18 +95,18 @@ def test_merge_contexts_base():
     ("imp", "result"),
     [
         ("linkml:types", f"C:\\temp\\linkml_model\\model\\schema{os.sep}types"),
-        ("ex_file", "/tmp/example/schema"),
+        ("ex_file", "/tmp/example/schema"),  # noqa: S108
         ("_types", "https://w3id.org/linkml/types"),
     ],
 )
-def test_map_import(imp, result):
+def test_map_import(imp: str, result: str) -> None:
     importmap = {
         "linkml:": "C:\\temp\\linkml_model\\model\\schema",
-        "ex_file": "/tmp/example/schema",
+        "ex_file": "/tmp/example/schema",  # noqa: S108
         "_types": "linkml:types",
     }
 
-    def namespaces():
+    def namespaces() -> Namespaces:
         ns = Namespaces()
         ns["linkml"] = URIRef("https://w3id.org/linkml/")
         ns["ex_file"] = URIRef("https://example.org/file/")
@@ -114,3 +114,13 @@ def test_map_import(imp, result):
         return ns
 
     assert map_import(importmap, namespaces, imp) == result
+
+
+def test_parse_import_map_trailing_sep() -> None:
+    """Test the importmap namespace.
+
+    See https://github.com/linkml/linkml-runtime/issues/163.
+    """
+    importmap = parse_import_map('{ "base:": "base/" }', os.path.dirname(__file__))
+    # TODO: see how this works in a windows environment
+    assert importmap["base:"].endswith("/")

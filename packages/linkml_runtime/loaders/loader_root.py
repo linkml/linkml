@@ -75,7 +75,7 @@ class Loader(ABC):
         :return: instance of target_class
         """
         results = self.load_any(*args, **kwargs)
-        if isinstance(results, BaseModel) or isinstance(results, YAMLRoot):
+        if isinstance(results, (BaseModel, YAMLRoot)):
             return results
         else:
             raise ValueError(f"Result is not an instance of BaseModel or YAMLRoot: {type(results)}")
@@ -145,9 +145,9 @@ class Loader(ABC):
             elif isinstance(data_as_dict, dict):
                 if issubclass(target_class, BaseModel):
                     return target_class.model_validate(data_as_dict)
-                else:
-                    return target_class(**data_as_dict)
-            elif isinstance(data_as_dict, JsonObj):
+                return target_class(**data_as_dict)
+
+            if isinstance(data_as_dict, JsonObj):
                 return [target_class(**as_dict(x)) for x in data_as_dict]
             else:
                 raise ValueError(f"Unexpected type {data_as_dict}")
@@ -170,7 +170,7 @@ class Loader(ABC):
         if not isinstance(source, dict):
             # Try to get local version of schema, if one is known to exist
             try:
-                if str(source) in URI_TO_LOCAL.keys():
+                if str(source) in URI_TO_LOCAL:
                     source = str(URI_TO_LOCAL[str(source)])
             except (TypeError, KeyError) as e:
                 # Fine, use original `source` value

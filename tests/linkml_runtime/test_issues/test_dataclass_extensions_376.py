@@ -1,19 +1,19 @@
-import sys
-import pytest
-import importlib.util
 import dataclasses
+import importlib.util
+
+import pytest
 
 
 def import_patch_module():
-    """Fresh import to ensure warning is triggered"""
+    """Fresh import to ensure warning is triggered."""
     spec = importlib.util.find_spec("linkml_runtime.utils.dataclass_extensions_376")
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
 
 
-def test_patch_module_emits_deprecation_warning():
-    """All Python versions: emits DeprecationWarning and defines compatibility symbols"""
+def test_patch_module_emits_deprecation_warning() -> None:
+    """All Python versions: emits DeprecationWarning and defines compatibility symbols."""
     with pytest.warns(DeprecationWarning):
         mod = import_patch_module()
 
