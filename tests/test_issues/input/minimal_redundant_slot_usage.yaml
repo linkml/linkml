@@ -1,0 +1,972 @@
+name: minimal_redundant_slot_usage
+description: Minimal schema to test redundant slot usage removal
+id: https://example.com/minimal_redundant_slot_usage
+imports:
+- linkml:types
+
+prefixes:
+  linkml:
+    prefix_prefix: linkml
+    prefix_reference: https://w3id.org/linkml/
+  test:
+    prefix_prefix: test
+    prefix_reference: https://example.com/test/
+
+types:
+  string:
+    name: string
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    base: str
+    uri: xsd:string
+
+enums:
+  ecosystem_enum:
+    name: ecosystem_enum
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    permissible_values:
+      Environmental:
+        text: Environmental
+      Host-associated:
+        text: Host-associated
+      Engineered:
+        text: Engineered
+
+slots:
+  gold_path_field:
+    name: gold_path_field
+    description: Base slot for GOLD path fields
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    abstract: true
+    
+  ecosystem:
+    name: ecosystem
+    description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    slot_uri: test:ecosystem
+    is_a: gold_path_field
+    
+  ecosystem_category:
+    name: ecosystem_category
+    description: Ecosystem categories represent divisions within the ecosystem
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    slot_uri: test:ecosystem_category
+    
+  ecosystem_type:
+    name: ecosystem_type
+    description: Ecosystem type
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    slot_uri: test:ecosystem_type
+    
+  ecosystem_subtype:
+    name: ecosystem_subtype
+    description: Ecosystem subtype
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    slot_uri: test:ecosystem_subtype
+    
+  sample_name:
+    name: sample_name
+    description: Sample name
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    slot_uri: test:sample_name
+
+classes:
+  Biosample:
+    name: Biosample
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    slots:
+    - ecosystem
+    - ecosystem_category
+    - ecosystem_type
+    - ecosystem_subtype
+    - sample_name
+  soil_jgi_mg:  # This is the class used in the test
+    name: soil_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  water_jgi_mg:
+    name: water_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  air_jgi_mg:
+    name: air_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  sediment_jgi_mg:
+    name: sediment_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  plant_jgi_mg:
+    name: plant_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  host_jgi_mg:
+    name: host_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  built_jgi_mg:
+    name: built_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  marine_jgi_mg:
+    name: marine_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  freshwater_jgi_mg:
+    name: freshwater_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  terrestrial_jgi_mg:
+    name: terrestrial_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  aquatic_jgi_mg:
+    name: aquatic_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  biofilm_jgi_mg:
+    name: biofilm_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  microbial_mat_jgi_mg:
+    name: microbial_mat_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  hydrothermal_jgi_mg:
+    name: hydrothermal_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  subsurface_jgi_mg:
+    name: subsurface_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  symbiotic_jgi_mg:
+    name: symbiotic_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  pathogenic_jgi_mg:
+    name: pathogenic_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  commensal_jgi_mg:
+    name: commensal_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  extreme_jgi_mg:
+    name: extreme_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  polar_jgi_mg:
+    name: polar_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  desert_jgi_mg:
+    name: desert_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  forest_jgi_mg:
+    name: forest_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  grassland_jgi_mg:
+    name: grassland_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  wetland_jgi_mg:
+    name: wetland_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  urban_jgi_mg:
+    name: urban_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  agricultural_jgi_mg:
+    name: agricultural_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample
+  industrial_jgi_mg:
+    name: industrial_jgi_mg
+    from_schema: https://example.com/minimal_redundant_slot_usage
+    is_a: Biosample
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: An ecosystem is a combination of a physical environment (abiotic factors) and all the organisms (biotic factors) that interact with this environment. Ecosystem is in position 1/5 in a GOLD path.
+        slot_group: Sample ID
+        required: true
+        range: ecosystem_enum
+        owner: Biosample
+      ecosystem_category:
+        name: ecosystem_category
+        description: Ecosystem categories represent divisions within the ecosystem
+        slot_group: Sample ID
+        required: false
+        owner: Biosample
+      ecosystem_type:
+        name: ecosystem_type
+        description: Ecosystem type
+        slot_group: Sample ID
+        owner: Biosample
+      ecosystem_subtype:
+        name: ecosystem_subtype
+        description: Ecosystem subtype
+        slot_group: Sample ID
+        owner: Biosample
+      sample_name:
+        name: sample_name
+        description: Sample name
+        required: true
+        owner: Biosample

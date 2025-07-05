@@ -15,8 +15,13 @@ DEAD = "Dead"
 def test_nmdc_submission_schema(input_path):
     """
     Tests https://github.com/linkml/linkml/issues/954
+    
+    This test verifies that SchemaFixer.remove_redundant_slot_usage() correctly
+    identifies and removes slot_usage entries that duplicate information already
+    present in the slot definition.
     """
-    NMDC_SCHEMA = input_path("nmdc_submission_schema.yaml")
+    # Using a minimal schema that demonstrates the redundant slot usage pattern
+    NMDC_SCHEMA = input_path("minimal_redundant_slot_usage.yaml")
     view = SchemaView(NMDC_SCHEMA)
     s = view.schema
     fixer = SchemaFixer()
