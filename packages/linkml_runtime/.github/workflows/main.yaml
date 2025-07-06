@@ -36,8 +36,9 @@ jobs:
 
 
   test:
-    needs:
-      - quality-checks
+    # TODO: uncomment when ruff format has been run over the codebase
+    # needs:
+    #   - quality-checks
     strategy:
       fail-fast: false
       matrix:
