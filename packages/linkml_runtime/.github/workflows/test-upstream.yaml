@@ -2,8 +2,6 @@
 name: Test with upstream linkml
 on:
   pull_request:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       upstream_repo:

@@ -13,7 +13,31 @@ on:
   workflow_dispatch:
 
 jobs:
+
+  quality-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - name: Install Poetry
+        run: |
+          pipx install poetry
+          pipx inject poetry poetry-dynamic-versioning
+      - uses: actions/setup-python@v5.6.0
+        with:
+          python-version: 3.13
+      - name: Check pyproject.toml and poetry.lock
+        run: poetry check
+      - name: Install tox
+        run: python -m pip install tox
+      - name: Run codespell
+        run: tox -e codespell
+      - name: Run code format checks
+        run: tox -e format_check
+
+
   test:
+    needs:
+      - quality-checks
     strategy:
       fail-fast: false
       matrix:
@@ -54,14 +78,14 @@ jobs:
           cache: 'poetry'
 
       #----------------------------------------------
-      #    install your root project, if required 
-      #----------------------------------------------      
+      #    install your root project, if required
+      #----------------------------------------------
       - name: Install library
         run: |
           poetry install --no-interaction
 
       #----------------------------------------------
-      #              coverage report   
+      #              coverage report
       #----------------------------------------------
       - name: Generate coverage results
         # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668
