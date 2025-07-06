@@ -22,7 +22,6 @@ class PatternTestCase(unittest.TestCase):
 
         self.assertDictEqual(actual_dict, expected_dict)
 
-
     def test_pattern_resolver(self):
         sv = SchemaView(env.input_path("pattern-example.yaml"))
 

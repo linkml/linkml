@@ -8,8 +8,8 @@ from linkml_runtime.index.object_index import ObjectIndex, ProxyObject
 from linkml_runtime.utils.inference_utils import infer_slot_value, Config
 from tests.test_index import INPUT_DIR
 
-SCHEMA = os.path.join(INPUT_DIR, 'container_test.yaml')
-DATA = os.path.join(INPUT_DIR, 'object-indexer-data.yaml')
+SCHEMA = os.path.join(INPUT_DIR, "container_test.yaml")
+DATA = os.path.join(INPUT_DIR, "object-indexer-data.yaml")
 
 
 class ObjectIndexerTestCase(unittest.TestCase):
@@ -23,7 +23,7 @@ class ObjectIndexerTestCase(unittest.TestCase):
         self.container = yaml_loader.load(DATA, target_class=src_dm.Container)
 
     def test_object_index(self):
-        """ checks indexing objects """
+        """checks indexing objects"""
         # domain object
         container = self.container
         frt = container.persons[0].has_familial_relationships[0].type
@@ -93,11 +93,11 @@ class ObjectIndexerTestCase(unittest.TestCase):
         self.assertEqual("P:001", oix.eval_expr("persons[0]._parents[0][1].persons[0].id"))
         self.assertEqual("P:001", oix.eval_expr("persons[0].persons__inverse[0].persons[0].id"))
         # test inference
-        #infer_all_slot_values(person, self.schemaview, class_name="Person")
+        # infer_all_slot_values(person, self.schemaview, class_name="Person")
         config = Config(use_expressions=True)
         infer_slot_value(person, "description", schemaview=self.schemaview, class_name="Person", config=config)
         self.assertEqual("name: fred bloggs address: 1 oak street", person.description)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

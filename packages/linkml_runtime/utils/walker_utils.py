@@ -21,8 +21,7 @@ def traverse_object_tree(obj: YAMLRoot, func: Callable, mutate: bool = True) -> 
 
 
 # implementation for traverse_object_tree, but also accepts lists, dicts
-def _traverse_object_tree_1(obj: Union[YAMLRoot, list, dict], func: Callable,
-                            mutate: bool = True) -> Any:
+def _traverse_object_tree_1(obj: Union[YAMLRoot, list, dict], func: Callable, mutate: bool = True) -> Any:
     if isinstance(obj, list):
         return [_traverse_object_tree_1(x, func, mutate) for x in obj]
     elif isinstance(obj, dict):

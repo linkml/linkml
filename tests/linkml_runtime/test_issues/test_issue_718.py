@@ -7,7 +7,7 @@ import yaml
 from linkml_runtime.utils.yamlutils import YAMLRoot, DupCheckYamlLoader
 
 
-@pytest.mark.xfail(reason='Reporting line numbers should happen at load time not when instantiating dataclasses')
+@pytest.mark.xfail(reason="Reporting line numbers should happen at load time not when instantiating dataclasses")
 def test_issue_38():
     # The goal is to provide line numbers on error messages.   We've tweaked the parser so that it returns augmented
     # str's and int's with the line numbers on them.  The problem we are trying to address now is that the dataclass
@@ -30,12 +30,11 @@ def test_issue_38():
         c: sell"""
 
     parsed_yaml = yaml.load(yaml_str, DupCheckYamlLoader)
-    with pytest.raises(TypeError, match="File \"<unicode string>\", line 4, col 9"):
-        FesterBesterTester(**parsed_yaml['base'])
+    with pytest.raises(TypeError, match='File "<unicode string>", line 4, col 9'):
+        FesterBesterTester(**parsed_yaml["base"])
 
-    parsed_yaml['base'].pop('c', None)
+    parsed_yaml["base"].pop("c", None)
 
-    instance = FesterBesterTester(**parsed_yaml['base'])
+    instance = FesterBesterTester(**parsed_yaml["base"])
     assert instance.a == 17
     assert instance.b == "Ice Cream"
-

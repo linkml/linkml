@@ -11,8 +11,8 @@ from linkml_runtime.utils.yamlutils import YAMLRoot
 from tests.test_utils import INPUT_DIR
 from tests.test_utils.test_ruleutils import yaml_loader
 
-SCHEMA = os.path.join(INPUT_DIR, 'kitchen_sink_noimports.yaml')
-INSERTED_COMMENT = 'INSERTED COMMENT'
+SCHEMA = os.path.join(INPUT_DIR, "kitchen_sink_noimports.yaml")
+INSERTED_COMMENT = "INSERTED COMMENT"
 
 
 def count_classes(obj: YAMLRoot) -> int:
@@ -83,7 +83,7 @@ class WalkerUtilsTestCase(unittest.TestCase):
         self.assertNotEqual(orig, obj)
         self.assertEqual(obj_tr, obj)
         obj = SchemaDefinition(**as_dict(obj))
-        assert INSERTED_COMMENT in obj.classes['Person'].comments
+        assert INSERTED_COMMENT in obj.classes["Person"].comments
 
     def test_non_mutating_transformer(self):
         """
@@ -109,8 +109,8 @@ class WalkerUtilsTestCase(unittest.TestCase):
         self.assertNotEqual(obj_tr, orig)
         self.assertNotEqual(obj_tr, obj)
         obj_tr = SchemaDefinition(**as_dict(obj_tr))
-        assert INSERTED_COMMENT in obj_tr.classes['Person'].comments
+        assert INSERTED_COMMENT in obj_tr.classes["Person"].comments
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 
 class Dumper(ABC):
-    """ Abstract base class for all dumpers """
+    """Abstract base class for all dumpers"""
 
     def dump(self, element: Union[BaseModel, YAMLRoot], to_file: str, **_) -> None:
         """
@@ -15,7 +15,7 @@ class Dumper(ABC):
         :param to_file: file to dump to
         :@param _: method specific arguments
         """
-        with open(to_file, 'w', encoding='UTF-8') as output_file:
+        with open(to_file, "w", encoding="UTF-8") as output_file:
             output_file.write(self.dumps(element, **_))
 
     @abstractmethod

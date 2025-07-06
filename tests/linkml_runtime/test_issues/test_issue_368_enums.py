@@ -11,30 +11,30 @@ class Issue368TestCase(LoaderDumperTestCase):
     env = env
 
     def header(self, txt: str) -> str:
-        return '\n' + ("=" * 20) + f" {txt} " + ("=" * 20)
+        return "\n" + ("=" * 20) + f" {txt} " + ("=" * 20)
 
     def test_issue_368_enums(self):
-        """ Test Enum generation """
+        """Test Enum generation"""
 
-        module = compile_python(env.input_path('issue_368.py'))
+        module = compile_python(env.input_path("issue_368.py"))
 
-        enum_inst = module.SampleEnum("pva") # EnumInstanceImpl
+        enum_inst = module.SampleEnum("pva")  # EnumInstanceImpl
         example = module.SampleClass(slot_1="pva")
         assert hasattr(example, "slot_1")
         assert example.slot_1.code.text == enum_inst.code.text
         assert str(example.slot_1) == "pva"
 
         def dump_and_load(dumper: Callable, sfx: str) -> None:
-            fname = env.actual_path(f'issue_368_1.{sfx}')
+            fname = env.actual_path(f"issue_368_1.{sfx}")
             dumper(example, fname)
             with open(fname) as f:
-                print(f'\n----- {sfx} -----')
+                print(f"\n----- {sfx} -----")
                 print(f.read())
 
-        dump_and_load(json_dumper.dump, 'json')
-        dump_and_load(yaml_dumper.dump, 'yaml')
-        dump_and_load(lambda obj, fname: rdf_dumper.dump(obj, fname, env.input_path("issue_368.context.jsonld")), 'ttl')
+        dump_and_load(json_dumper.dump, "json")
+        dump_and_load(yaml_dumper.dump, "yaml")
+        dump_and_load(lambda obj, fname: rdf_dumper.dump(obj, fname, env.input_path("issue_368.context.jsonld")), "ttl")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

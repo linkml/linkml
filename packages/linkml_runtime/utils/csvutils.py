@@ -30,12 +30,13 @@ def get_configmap(schemaview: SchemaView, index_slot: SlotDefinitionName) -> CON
                     cm[sn] = config
             return cm
         else:
-            logger.warning(f'Index slot range not to class: {slot.range}')
+            logger.warning(f"Index slot range not to class: {slot.range}")
     else:
-        logger.warning(f'Index slot or schema not specified')
+        logger.warning(f"Index slot or schema not specified")
     return {}
 
-def _get_key_config(schemaview: SchemaView, tgt_cls: ClassDefinitionName, sn: SlotDefinitionName, sep='_'):
+
+def _get_key_config(schemaview: SchemaView, tgt_cls: ClassDefinitionName, sn: SlotDefinitionName, sep="_"):
     slot = schemaview.induced_slot(sn, tgt_cls)
     range = slot.range
     all_cls = schemaview.all_classes()
@@ -43,7 +44,7 @@ def _get_key_config(schemaview: SchemaView, tgt_cls: ClassDefinitionName, sn: Sl
         mappings = {}
         is_complex = False
         for inner_sn in schemaview.class_slots(range):
-            denormalized_sn = f'{sn}{sep}{inner_sn}'
+            denormalized_sn = f"{sn}{sep}{inner_sn}"
             mappings[inner_sn] = denormalized_sn
             inner_slot = schemaview.induced_slot(inner_sn, range)
             inner_slot_range = inner_slot.range
@@ -53,6 +54,8 @@ def _get_key_config(schemaview: SchemaView, tgt_cls: ClassDefinitionName, sn: Sl
             serializers = [Serializer.json]
         else:
             serializers = []
-        return KeyConfig(is_list=slot.multivalued, delete=True, flatten=True, mappings=mappings, serializers=serializers)
+        return KeyConfig(
+            is_list=slot.multivalued, delete=True, flatten=True, mappings=mappings, serializers=serializers
+        )
     else:
         return None

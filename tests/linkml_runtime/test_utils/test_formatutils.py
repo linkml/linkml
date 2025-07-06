@@ -4,33 +4,42 @@ from typing import Any
 
 from jsonasobj2 import JsonObj, as_json
 
-from linkml_runtime.utils.formatutils import camelcase, underscore, lcamelcase, be, split_line, wrapped_annotation, \
-    is_empty, remove_empty_items, uncamelcase
+from linkml_runtime.utils.formatutils import (
+    camelcase,
+    underscore,
+    lcamelcase,
+    be,
+    split_line,
+    wrapped_annotation,
+    is_empty,
+    remove_empty_items,
+    uncamelcase,
+)
 
 empty_things = [None, dict(), list(), JsonObj(), JsonObj({}), JsonObj([])]
-non_empty_things = [0, False, "", {'k': None}, {0:0}, [None], JsonObj(k=None), JsonObj(**{'k': None}), JsonObj([None])]
+non_empty_things = [0, False, "", {"k": None}, {0: 0}, [None], JsonObj(k=None), JsonObj(**{"k": None}), JsonObj([None])]
 
-things_removed: list[tuple[Any, Any]] = \
-    [(None, None),
-     (dict(), {}),
-     (list(), []),
-     (JsonObj(), {}),
-     (JsonObj({}), {}),
-     (JsonObj([]), []),
-     (0, 0),
-     (False, False),
-     ("", ""),
-     ({'k': None}, {}),
-     ({0:0}, {0:0}),
-     ([None], []),
-     (JsonObj(k=None), {}),
-     (JsonObj(**{'k': None}), {}),
-     (JsonObj([None]), []),
-     ([None], []),
-     ([None, None],[]),
-     ([None, [], [{}]], []),
-     ({"k": [{"l": None, "m": [None]}]}, {})
-     ]
+things_removed: list[tuple[Any, Any]] = [
+    (None, None),
+    (dict(), {}),
+    (list(), []),
+    (JsonObj(), {}),
+    (JsonObj({}), {}),
+    (JsonObj([]), []),
+    (0, 0),
+    (False, False),
+    ("", ""),
+    ({"k": None}, {}),
+    ({0: 0}, {0: 0}),
+    ([None], []),
+    (JsonObj(k=None), {}),
+    (JsonObj(**{"k": None}), {}),
+    (JsonObj([None]), []),
+    ([None], []),
+    ([None, None], []),
+    ([None, [], [{}]], []),
+    ({"k": [{"l": None, "m": [None]}]}, {}),
+]
 
 issue_157_1 = """
 [
@@ -106,27 +115,49 @@ class FormatUtilsTestCase(unittest.TestCase):
 
         self.assertEqual("thisIsIt", lcamelcase("   this   is\t  it\n"))
 
-        self.assertEqual('abc', be('  abc\n'))
-        self.assertEqual('', be(None))
-        self.assertEqual('', be('   '))
+        self.assertEqual("abc", be("  abc\n"))
+        self.assertEqual("", be(None))
+        self.assertEqual("", be("   "))
 
     def test_linestuff(self):
-        text = "This is a mess'o test that goes on for a long way.  It has some carriage\n returns embedded in it " \
-               "but otherwise it drags on and on and on until the cows come home.  Splitline covers this we hope."
-        self.assertEqual(["This is a mess'o test that goes on for a long way. It has some carriage returns embedded"
-                          " in it but otherwise it ",
-                          'drags on and on and on until the cows come home. Splitline covers this we hope. '],
-                         split_line(text))
-        self.assertEqual(["This is a mess'o ", 'test that goes on ', 'for a long way. It ', 'has some carriage ',
-                          'returns embedded in ', 'it but otherwise it ', 'drags on and on and ', 'on until the cows ',
-                          'come home. ', 'Splitline covers ', 'this we hope. '], split_line(text, 20))
-        self.assertEqual(['X' * 100 + ' '], split_line('X'*100, 20))
-        self.assertEqual("""This is a mess'o test that goes on for a long way.  It has some carriage
+        text = (
+            "This is a mess'o test that goes on for a long way.  It has some carriage\n returns embedded in it "
+            "but otherwise it drags on and on and on until the cows come home.  Splitline covers this we hope."
+        )
+        self.assertEqual(
+            [
+                "This is a mess'o test that goes on for a long way. It has some carriage returns embedded"
+                " in it but otherwise it ",
+                "drags on and on and on until the cows come home. Splitline covers this we hope. ",
+            ],
+            split_line(text),
+        )
+        self.assertEqual(
+            [
+                "This is a mess'o ",
+                "test that goes on ",
+                "for a long way. It ",
+                "has some carriage ",
+                "returns embedded in ",
+                "it but otherwise it ",
+                "drags on and on and ",
+                "on until the cows ",
+                "come home. ",
+                "Splitline covers ",
+                "this we hope. ",
+            ],
+            split_line(text, 20),
+        )
+        self.assertEqual(["X" * 100 + " "], split_line("X" * 100, 20))
+        self.assertEqual(
+            """This is a mess'o test that goes on for a long way.  It has some carriage
 	returns embedded in it but otherwise it drags on and on and on until the cows come home. Splitline covers this we 
-	hope. """, wrapped_annotation(text))
+	hope. """,
+            wrapped_annotation(text),
+        )
 
     def test_empty_functions(self):
-        """ Test the various forms of is_empty """
+        """Test the various forms of is_empty"""
         for thing in empty_things:
             self.assertTrue(is_empty(thing), msg=f"{thing} should clock in as empty")
         for thing in non_empty_things:
@@ -135,9 +166,9 @@ class FormatUtilsTestCase(unittest.TestCase):
         assert is_empty(obj)
 
     def test_remove_empty_items(self):
-        """ Test the various remove empty items paths """
+        """Test the various remove empty items paths"""
         seen = set()
-        save = list()      # Keep garbage collection from re-using ids
+        save = list()  # Keep garbage collection from re-using ids
         for thing, expected in things_removed:
             actual = remove_empty_items(thing)
             self.assertEqual(expected, actual, msg=f"Input = {thing}")
@@ -149,14 +180,21 @@ class FormatUtilsTestCase(unittest.TestCase):
                 seen.add(id(actual))
 
     def test_enumerations_case(self):
-        self.assertEqual("""[
+        self.assertEqual(
+            """[
    "state",
    "1"
-]""", as_json(remove_empty_items(json.loads(issue_157_1), hide_protected_keys=True)))
-        self.assertEqual("""[
+]""",
+            as_json(remove_empty_items(json.loads(issue_157_1), hide_protected_keys=True)),
+        )
+        self.assertEqual(
+            """[
    "namedstate",
    "production"
-]""", as_json(remove_empty_items(json.loads(issue_157_2), hide_protected_keys=True)))
+]""",
+            as_json(remove_empty_items(json.loads(issue_157_2), hide_protected_keys=True)),
+        )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

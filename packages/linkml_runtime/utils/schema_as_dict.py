@@ -42,7 +42,11 @@ def _remove_names(obj: Any, parent: Optional[str]) -> Any:
     :return:
     """
     if isinstance(obj, dict):
-        return {k: _remove_names(v, k) for k, v in obj.items() if k != 'name' or parent is None or parent in ['slots', 'slot_usage', 'attributes']}
+        return {
+            k: _remove_names(v, k)
+            for k, v in obj.items()
+            if k != "name" or parent is None or parent in ["slots", "slot_usage", "attributes"]
+        }
     elif isinstance(obj, list):
         return [_remove_names(x, parent) for x in obj]
     else:
@@ -61,14 +65,15 @@ def schema_as_dict(schema: SchemaDefinition) -> dict:
     :return: minimal canonical dictionary object
     """
     obj = json_dumper.to_dict(schema)
-    if '@type' in obj:
-        del obj['@type']
-    obj['prefixes'] = {k: v['prefix_reference'] for k, v in obj.get('prefixes', {}).items()}
-    for k, v in obj.get('enums', {}).items():
-        for pv in v.get('permissible_values', {}).values():
-            del pv['text']
+    if "@type" in obj:
+        del obj["@type"]
+    obj["prefixes"] = {k: v["prefix_reference"] for k, v in obj.get("prefixes", {}).items()}
+    for k, v in obj.get("enums", {}).items():
+        for pv in v.get("permissible_values", {}).values():
+            del pv["text"]
     obj = _remove_names(obj, None)
     return obj
+
 
 def schema_as_yaml_dump(schema: SchemaDefinition) -> str:
     """

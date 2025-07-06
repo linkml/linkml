@@ -13,23 +13,27 @@ logger = logging.getLogger(__name__)
 
 
 class JSONLoader(Loader):
-
-    def load_as_dict(self, 
-                     source: Union[str, dict, TextIO],
-                     *, 
-                     base_dir: Optional[str] = None,
-                     metadata: Optional[FileInfo] = None) -> Union[dict, list[dict]]:
-        data = self._read_source(source, base_dir=base_dir, metadata=metadata, accept_header="application/ld+json, application/json, text/json")
+    def load_as_dict(
+        self, source: Union[str, dict, TextIO], *, base_dir: Optional[str] = None, metadata: Optional[FileInfo] = None
+    ) -> Union[dict, list[dict]]:
+        data = self._read_source(
+            source,
+            base_dir=base_dir,
+            metadata=metadata,
+            accept_header="application/ld+json, application/json, text/json",
+        )
         data_as_dict = json.loads(data) if isinstance(data, str) else data
         return self.json_clean(data_as_dict)
 
-    def load_any(self, 
-                 source: Union[str, dict, TextIO, Path],
-                 target_class: type[Union[BaseModel, YAMLRoot]],
-                 *, 
-                 base_dir: Optional[str] = None,
-                 metadata: Optional[FileInfo] = None, 
-                 **_) -> Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]:
+    def load_any(
+        self,
+        source: Union[str, dict, TextIO, Path],
+        target_class: type[Union[BaseModel, YAMLRoot]],
+        *,
+        base_dir: Optional[str] = None,
+        metadata: Optional[FileInfo] = None,
+        **_,
+    ) -> Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]:
         """
         Load the JSON in source into the python target_class structure
 
@@ -54,7 +58,7 @@ class JSONLoader(Loader):
         data_as_dict = self.load_as_dict(source, base_dir=base_dir, metadata=metadata)
 
         if isinstance(data_as_dict, dict):
-            typ = data_as_dict.pop('@type', None)
+            typ = data_as_dict.pop("@type", None)
             if typ and typ != target_class.__name__:
                 logger.warning(f"Warning: input type mismatch. Expected: {target_class.__name__}, Actual: {typ}")
 

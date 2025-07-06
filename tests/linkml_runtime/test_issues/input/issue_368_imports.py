@@ -19,13 +19,12 @@ from linkml_runtime.utils.curienamespace import CurieNamespace
 metamodel_version = "1.7.0"
 
 # Namespaces
-DEFAULT_ = CurieNamespace('', 'https://microbiomedata/schema/mixs/')
+DEFAULT_ = CurieNamespace("", "https://microbiomedata/schema/mixs/")
 
 
 # Types
 
 # Class references
-
 
 
 class ParentClass(YAMLRoot):
@@ -39,17 +38,14 @@ class ParentClass(YAMLRoot):
 
 # Enumerations
 class SampleEnum(EnumDefinitionImpl):
-
-    pva = PermissibleValue(text="pva",
-                             description="PVA description")
-    pvb = PermissibleValue(text="pvb",
-                             description="PVB description")
+    pva = PermissibleValue(text="pva", description="PVA description")
+    pvb = PermissibleValue(text="pvb", description="PVB description")
 
     _defn = EnumDefinition(
         name="SampleEnum",
     )
 
+
 # Slots
 class slots:
     pass
-

@@ -11,19 +11,19 @@ class YamlUtilTestCase(TestEnvironmentTestCase):
     env = env
 
     def test_dupcheck_loader(self):
-        """ Make sure the duplicate checker finds duplicates """
-        with open(env.input_path('yaml1.yaml')) as f:
+        """Make sure the duplicate checker finds duplicates"""
+        with open(env.input_path("yaml1.yaml")) as f:
             y1 = yaml.safe_load(f)
-            self.assertEqual(17, y1['f1'])
-        with open(env.input_path('yaml1.yaml')) as f:
+            self.assertEqual(17, y1["f1"])
+        with open(env.input_path("yaml1.yaml")) as f:
             with self.assertRaises(ValueError):
                 yaml.load(f, DupCheckYamlLoader)
-        with open(env.input_path('yaml2.yaml')) as f:
+        with open(env.input_path("yaml2.yaml")) as f:
             with self.assertRaises(ValueError):
                 yaml.load(f, DupCheckYamlLoader)
-        with open(env.input_path('schema1.yaml')) as f:
+        with open(env.input_path("schema1.yaml")) as f:
             s1 = yaml.load(f, DupCheckYamlLoader)
-            self.assertEqual('schema1', s1['name'])
+            self.assertEqual("schema1", s1["name"])
 
     def test_line_numbers(self):
         s = """
@@ -36,16 +36,14 @@ class YamlUtilTestCase(TestEnvironmentTestCase):
         """
         obj = yaml.load(s, DupCheckYamlLoader)
         cases = [
-            ('name', 1),
-            ('info', 2),
-            ('x', 3),
-            ('l', 6),
+            ("name", 1),
+            ("info", 2),
+            ("x", 3),
+            ("l", 6),
         ]
         key_to_lines = [(k, k._s.line) for k in obj.keys()]
         self.assertCountEqual(cases, key_to_lines)
 
 
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

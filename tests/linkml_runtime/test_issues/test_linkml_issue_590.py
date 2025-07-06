@@ -4,7 +4,7 @@ from linkml_runtime.utils.schemaview import SchemaView
 
 from tests.test_issues.environment import env
 
-SCHEMA = env.input_path('test_linkml_issue_590.yaml')
+SCHEMA = env.input_path("test_linkml_issue_590.yaml")
 
 
 class Issue590TestCase(unittest.TestCase):
@@ -15,8 +15,8 @@ class Issue590TestCase(unittest.TestCase):
         sv = SchemaView(SCHEMA)
 
         # check that multivalued is set to False as in schema
-        self.assertEqual(sv.get_slot('a').multivalued, False)
+        self.assertEqual(sv.get_slot("a").multivalued, False)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
