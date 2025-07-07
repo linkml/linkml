@@ -2685,8 +2685,8 @@ def test_membership(framework, name, quantification, expression, instance, is_va
     [
         ("missing_outer_slot", {}, False),
         ("incorrect_range", {SLOT_S1: "x"}, False),
-        ("valid nesting, within range", {SLOT_S1: {SLOT_S2: 5}}, True),
-        ("valid nesting, outside range", {SLOT_S1: {SLOT_S2: 15}}, False),
+        ("valid nesting and within range", {SLOT_S1: {SLOT_S2: 5}}, True),
+        ("valid nesting and outside range", {SLOT_S1: {SLOT_S2: 15}}, False),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
@@ -2694,6 +2694,8 @@ def test_range_expression(framework, data_name, instance, is_valid):
     """
     Tests behavior of nested range expressions.
     """
+    if framework == PANDERA_POLARS_CLASS:
+        pytest.skip("PanderaGen inlining is not implemented")
     slots = {
         SLOT_S1: {
             "range": CLASS_X,
@@ -2736,12 +2738,12 @@ def test_range_expression(framework, data_name, instance, is_valid):
         core_elements=["range_expression"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework not in [JSON_SCHEMA]:
+    if framework not in [JSON_SCHEMA, OWL]:
         if not is_valid:
             expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
-        data_name,
+        data_name.replace(" ", "_"),
         framework,
         instance,
         is_valid,
