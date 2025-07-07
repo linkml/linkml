@@ -614,6 +614,11 @@ class OwlSchemaGenerator(Generator):
 
         owl_exprs = []
 
+        if slot.range_expression:
+            # to an OWL expression.
+            if isinstance(slot.range_expression, AnonymousClassExpression):
+                owl_exprs.append(self.transform_class_expression(slot.range_expression))
+
         if slot.all_members:
             owl_exprs.append(self.transform_class_slot_expression(cls, slot.all_members, main_slot, owl_types))
 
@@ -1204,6 +1209,7 @@ class OwlSchemaGenerator(Generator):
         if not p:
             raise ValueError(f"No such slot or attribute: {pn}")
         try:
+            logger.info(f"Getting URI for {p.name}")
             return URIRef(self.schemaview.get_uri(p, expand=True, native=self.use_native_uris))
         except (KeyError, ValueError):
             # TODO: fix this upstream in schemaview
