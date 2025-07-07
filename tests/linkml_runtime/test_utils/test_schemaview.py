@@ -1,22 +1,26 @@
 """Tests of the SchemaView package."""
 
+from __future__ import annotations
+
 import logging
 import os
-from copy import copy
+from copy import copy, deepcopy
 from pathlib import Path
 
 import pytest
 from jsonasobj2 import JsonObj
 
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model.meta import (
+from linkml_runtime.linkml_model import (
     ClassDefinition,
     ClassDefinitionName,
+    EnumDefinition,
     Example,
     Prefix,
     SchemaDefinition,
     SlotDefinition,
     SlotDefinitionName,
+    SubsetDefinition,
     TypeDefinition,
 )
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
@@ -44,6 +48,16 @@ ACTIVITY = "activity"
 RELATED_TO = "related to"
 AGE_IN_YEARS = "age in years"
 
+ELEMENTS = ["prefixes", "classes", "slots", "enums", "types", "subsets"]
+EXPECTED = {
+    "prefixes": {"sc1p1", "sc2p1"},
+    "classes": {"sc1c1", "sc1c2", "sc2c1", "sc2c2"},
+    "slots": {"sc1s1", "sc1s2", "sc2s1", "sc2s2"},
+    "enums": {"sc1e1", "sc2e1"},
+    "types": {"sc1t1", "sc2t1"},
+    "subsets": {"sc1ss1", "sc2ss1"},
+}
+
 
 @pytest.fixture
 def schema_view_no_imports() -> SchemaView:
@@ -61,6 +75,99 @@ def schema_view_with_imports() -> SchemaView:
 def schema_view_attributes() -> SchemaView:
     """Fixture for a SchemaView for testing attribute edge cases."""
     return SchemaView(os.path.join(INPUT_DIR, "attribute_edge_cases.yaml"))
+
+
+def make_schema(
+    name: str,
+    prefixes: list[Prefix] | None = None,
+    classes: list[ClassDefinition] | None = None,
+    slots: list[SlotDefinition] | None = None,
+    enums: list[EnumDefinition] | None = None,
+    types: list[TypeDefinition] | None = None,
+    subsets: list[SubsetDefinition] | None = None,
+) -> SchemaView:
+    """Make a schema with the given elements.
+
+    :param name:
+    :param prefixes:
+    :param classes:
+    :param slots:
+    :param enums:
+    :param types:
+    :param subsets:
+    :return:
+    """
+    schema = SchemaDefinition(id=name, name=name)
+    if prefixes:
+        for p in prefixes:
+            schema.prefixes[p.prefix_prefix] = p
+    if classes:
+        for c in classes:
+            schema.classes[c.name] = c
+    if slots:
+        for s in slots:
+            schema.slots[s.name] = s
+    if enums:
+        for e in enums:
+            schema.enums[e.name] = e
+    if types:
+        for t in types:
+            schema.types[t.name] = t
+    if subsets:
+        for s in subsets:
+            schema.subsets[s.name] = s
+    return SchemaView(schema)
+
+
+"""
+https://github.com/linkml/linkml/issues/1143
+"""
+
+
+@pytest.fixture
+def sv1() -> SchemaView:
+    return make_schema(
+        "s1",
+        prefixes=[Prefix(prefix_prefix="sc1p1", prefix_reference="http://example.org/sc1url1")],
+        classes=[ClassDefinition(name="sc1c1", slots=["sc1s1"]), ClassDefinition(name="sc1c2", slots=["sc1s2"])],
+        slots=[SlotDefinition(name="sc1s1", range="string"), SlotDefinition(name="sc1s2", range="float")],
+        enums=[
+            EnumDefinition(
+                name="sc1e1",
+                permissible_values={
+                    "sc1e1v1": "sc1e1v1",
+                },
+            )
+        ],
+        types=[TypeDefinition(name="sc1t1", base="string")],
+        subsets=[SubsetDefinition(name="sc1ss1", description="sc1ss1")],
+    )
+
+
+@pytest.fixture
+def sv2() -> SchemaView:
+    return make_schema(
+        "s2",
+        prefixes=[Prefix(prefix_prefix="sc2p1", prefix_reference="http://example.org/sc2url1")],
+        classes=[ClassDefinition(name="sc2c1", slots=["sc2s1"]), ClassDefinition(name="sc2c2", slots=["sc2s2"])],
+        slots=[SlotDefinition(name="sc2s1", range="string"), SlotDefinition(name="sc2s2", range="float")],
+        enums=[
+            EnumDefinition(
+                name="sc2e1",
+                permissible_values={
+                    "sc2e1v1": "sc2e1v1",
+                },
+            )
+        ],
+        types=[TypeDefinition(name="sc2t1", base="string")],
+        subsets=[SubsetDefinition(name="sc2ss1", description="sc2ss1")],
+    )
+
+
+@pytest.fixture
+def empty_schema() -> SchemaView:
+    """Return an empty schema."""
+    return make_schema("s3")
 
 
 def test_children_method(schema_view_no_imports: SchemaView) -> None:
@@ -357,6 +464,22 @@ def test_schemaview(schema_view_no_imports: SchemaView) -> None:
         logger.debug(s)
 
 
+def test_get_classes_modifying_slot() -> None:
+    """Test getting classes that modify a slot.
+
+    https://github.com/linkml/linkml/issues/1126
+    """
+    classes_mod_slot_file = Path(INPUT_DIR) / "issue_1126.yaml"
+    view = SchemaView(str(classes_mod_slot_file))
+    slot_definition = view.get_slot("type")
+    slot_classes = view.get_classes_modifying_slot(slot_definition)
+    assert len(slot_classes) == 2
+    for element in slot_classes:
+        assert type(element) is ClassDefinitionName
+    assert slot_classes[0] == ClassDefinitionName("Programmer")
+    assert slot_classes[1] == ClassDefinitionName("Administrator")
+
+
 def test_rollup_rolldown(schema_view_no_imports: SchemaView) -> None:
     """Test rolling up and rolling down."""
     # no import schema
@@ -627,14 +750,52 @@ def test_direct_remote_imports() -> None:
         assert c not in view.all_classes(imports=False)
 
 
+def test_view_created() -> None:
+    """Test_remote_modular_schema_view."""
+    url = (
+        "https://raw.githubusercontent.com/linkml/linkml-runtime/"
+        "2a46c65fe2e7db08e5e524342e5ff2ffb94bec92/tests/test_utils/input/kitchen_sink.yaml"
+    )
+    sv = SchemaView(url)
+    assert sv.schema.name == "kitchen_sink"
+
+    assert "activity" in sv.all_classes()
+    assert "activity" in sv.all_classes(imports=True)
+    assert "activity" not in sv.all_classes(imports=False)
+
+
+def test_mixs() -> None:
+    """Test loading from a remote repo.
+
+    Note this test case involves using an external github repo.
+
+    We use commit hashes to avoid false positive test fails caused by repo changes,
+    but in theory this test could break if the mixs repo is deleted or changes its
+    name or org.
+
+    We will likely keep skipping this for now, but once stabilized it can be unskipped
+
+    Note that the sam functionality is likely captured in the other tests that use
+    a more stable repo.
+    """
+    pytest.skip("Test is slow and may be fragile")
+    mixs_revision_url = (
+        "https://raw.githubusercontent.com/GenomicsStandardsConsortium/mixs/"
+        "83be82a99d0a210e83b371b20b3dadb6423ec612/model/schema/mixs.yaml"
+    )
+
+    sv = SchemaView(mixs_revision_url)
+    assert sv.schema.name == "MIxS"
+    assert len(sv.all_classes()) > 0
+
+
 @pytest.mark.skip("Skipped as fragile: will break if the remote schema changes")
 def test_direct_remote_imports_additional() -> None:
     """Alternative test to: https://github.com/linkml/linkml/pull/1379."""
     url = "https://raw.githubusercontent.com/GenomicsStandardsConsortium/mixs/main/model/schema/mixs.yaml"
     view = SchemaView(url)
     assert view.schema.name == "MIxS"
-    class_count = len(view.all_classes())
-    assert class_count > 0
+    assert len(view.all_classes()) > 0
 
 
 def test_merge_imports(schema_view_with_imports: SchemaView) -> None:
@@ -756,6 +917,120 @@ def test_slot_inheritance() -> None:
     view.add_slot(SlotDefinition("s5", is_a="does-not-exist"))
     with pytest.raises(ValueError):
         view.slot_ancestors("s5")
+
+
+schema_str = """
+id: https://example.com/test-induced
+name: test-induced
+title: test induced
+
+description: >-
+    test schema view's finding of induced slot information.
+
+classes:
+    class1:
+        slots:
+            - slot1
+            - slot2
+            - slot3
+        slot_usage:
+            slot2:
+                description: induced slot2
+                required: true
+                range: class1
+    class2:
+        is_a: class1
+
+    mixin1a:
+        mixin: true
+        slot_usage:
+            slot2:
+                description: mixin slot2
+                required: false
+                range: mixin1a
+
+    mixin1b:
+        mixin: true
+        slot_usage:
+            slot2:
+                description: mixin slot2
+                required: false
+                range: mixin1b
+
+    class2_1a:
+        is_a: class2
+        mixins:
+          - mixin1a
+          - mixin1b
+
+    class2_1b:
+        is_a: class2
+        mixins:
+          - mixin1b
+          - mixin1a
+
+    class0:
+
+slots:
+    slot1:
+        description: non-induced slot1
+        range: class0
+    slot2:
+        description: non-induced slot2
+        required: false
+        range: class0
+    slot3:
+        range: class0
+
+"""
+
+
+def test_induced_slots() -> None:
+    """Test induced slots and load order of mixins and is_a.
+
+    See https://github.com/linkml/linkml/issues/479 and
+    https://github.com/linkml/linkml-runtime/issues/68 for details.
+    """
+    view = SchemaView(schema_str)
+
+    # test descripton for slot1
+    s1 = view.get_slot("slot1")
+    assert s1.description == "non-induced slot1"
+    assert s1.range == "class0"
+
+    s2 = view.get_slot("slot2")
+    assert not s2.required
+    assert s2.range == "class0"
+
+    s2_induced = view.induced_slot("slot2", "class1")
+    assert s2_induced.required
+    assert s2_induced.range == "class1"
+
+    # test description for slot2
+    # this behavior is expected see: https://github.com/linkml/linkml-runtime/issues/68
+    assert s2_induced.description == "induced slot2"
+
+    s2_induced_c2 = view.induced_slot("slot2", "class2")
+    assert s2_induced_c2.required
+    assert s2_induced_c2.description == "induced slot2"
+    assert s2_induced.range == "class1"
+
+    s3_induced_c2 = view.induced_slot("slot3", "class2")
+    assert not s3_induced_c2.required
+    assert s3_induced_c2.description is None
+    assert s3_induced_c2.range == "class0"
+
+    # mixins take priority over is-a
+    # mixins specified in order of priority
+    s2_induced_c2_1a = view.induced_slot("slot2", "class2_1a")
+    assert not s2_induced_c2_1a.required
+    assert s2_induced_c2_1a.description == "mixin slot2"
+    assert s2_induced_c2_1a.range == "mixin1a"
+
+    s2_induced_c2_1b = view.induced_slot("slot2", "class2_1b")
+    assert not s2_induced_c2_1b.required
+    assert s2_induced_c2_1b.description == "mixin slot2"
+    assert s2_induced_c2_1b.range == "mixin1b"
 
 
 @pytest.mark.parametrize(
@@ -991,3 +1266,213 @@ def test_uris_without_default_prefix() -> None:
 
     assert view.get_uri("TestClass", imports=True) == "https://example.org/test#TestClass"
     assert view.get_uri("test_slot", imports=True) == "https://example.org/test#test_slot"
+
+
+"""
+merge_schema tests: https://github.com/linkml/linkml/issues/1143
+"""
+
+
+def test_merge_empty(sv1: SchemaView, empty_schema: SchemaView) -> None:
+    """Trivial case: merge a schema into an empty schema."""
+    empty_schema.merge_schema(sv1.schema)
+    for k in ELEMENTS:
+        assert getattr(empty_schema.schema, k) == getattr(sv1.schema, k)
+
+
+def test_merge_empty_rev(sv1: SchemaView, empty_schema: SchemaView) -> None:
+    """Trivial case: merge an empty schema into a non-empty schema."""
+    sv1_orig = deepcopy(sv1)
+    sv1.merge_schema(empty_schema.schema)
+
+    for k in ELEMENTS:
+        assert getattr(sv1_orig.schema, k) == getattr(sv1.schema, k)
+
+
+def test_merge_schema(sv1: SchemaView, sv2: SchemaView) -> None:
+    """Merge two schemas with disjoint elements."""
+    sv2.merge_schema(sv1.schema)
+
+    for k, vs in EXPECTED.items():
+        assert set(getattr(sv2.schema, k).keys()) == vs
+
+
+def _get_clobbered_field_val(element: str) -> tuple[str, str]:
+    if element == "prefixes":
+        return "prefix_reference", "http://example.org/clobbered"
+    return "description", "clobbered"
+
+
+def test_no_clobber(sv1: SchemaView, sv2: SchemaView) -> None:
+    """Merge non-disjoint schemas, ensuring that elements in the source schema are not clobbered."""
+    sv2.merge_schema(sv1.schema)
+    for element in ELEMENTS:
+        (field, val) = _get_clobbered_field_val(element)
+        for v in getattr(sv1.schema, element).values():
+            setattr(v, field, val)
+
+    sv2.merge_schema(sv1.schema, clobber=False)
+    for element in ELEMENTS:
+        (field, val) = _get_clobbered_field_val(element)
+        for k, v in getattr(sv2.schema, element).items():
+            if k in getattr(sv1.schema, element):
+                assert getattr(v, field) != val
+
+
+def test_clobber(sv1: SchemaView, sv2: SchemaView) -> None:
+    """Merge non-disjoint schemas, ensuring that elements in source schema are clobbered."""
+    sv2.merge_schema(sv1.schema)
+    for element in ELEMENTS:
+        (field, val) = _get_clobbered_field_val(element)
+        for v in getattr(sv1.schema, element).values():
+            setattr(v, field, val)
+
+    sv2.merge_schema(sv1.schema, clobber=True)
+    for element in ELEMENTS:
+        (field, val) = _get_clobbered_field_val(element)
+        for k, v in getattr(sv2.schema, element).items():
+            if k in getattr(sv1.schema, element):
+                assert getattr(v, field) == val
+
+
+@pytest.fixture
+def view_issue_998() -> SchemaView:
+    """SchemaView for tests related to https://github.com/linkml/linkml/issues/998."""
+    schema = """
+id: https://w3id.org/linkml/examples/personinfo
+name: personinfo
+prefixes:
+  linkml: https://w3id.org/linkml/
+  schema: http://schema.org/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Person:
+    class_uri: schema:Person
+    attributes:
+      id:
+        identifier: true
+      employed:
+        range: EmploymentStatusEnum
+      past_relationship:
+        range: RelationshipStatusEnum
+    slots:
+      - type
+      - past_employer
+  Programmer:
+    attributes:
+        employed:
+            range: EmploymentStatusEnum
+    slots:
+      - type
+      - past_employer
+    slot_usage:
+      type:
+        range: TypeEnum
+
+slots:
+    status:
+      range: PersonStatusEnum
+    relationship:
+      range: RelationshipStatusEnum
+    type:
+    past_employer:
+        range: EmploymentStatusEnum
+enums:
+  PersonStatusEnum:
+    permissible_values:
+      ALIVE:
+      DEAD:
+      UNKNOWN:
+  EmployedStatusEnum:
+    permissible_values:
+      EMPLOYED:
+      UNEMPLOYED:
+      UNKNOWN:
+  RelationshipStatusEnum:
+    permissible_values:
+      UNKNOWN:
+  TypeEnum:
+    permissible_values:
+      UNKNOWN:
+"""
+    return SchemaView(schema)
+
+
+def test_issue_998_schema_slot(view_issue_998) -> None:
+    enum_slots = view_issue_998.get_slots_by_enum("EmploymentStatusEnum")
+    assert len(enum_slots) == 2
+
+
+def test_slots_are_not_duplicated(view_issue_998) -> None:
+    enum_slots = view_issue_998.get_slots_by_enum("PersonStatusEnum")
+    assert len(enum_slots) == 1
+    assert enum_slots[0].name == "status"
+
+
+def test_issue_998_attribute_slot(view_issue_998) -> None:
+    enum_slots = view_issue_998.get_slots_by_enum("EmploymentStatusEnum")
+    assert len(enum_slots) == 2
+    assert sorted([slot.name for slot in enum_slots]) == ["employed", "past_employer"]
+
+
+def test_issue_998_schema_and_attribute_slots(view_issue_998) -> None:
+    enum_slots = view_issue_998.get_slots_by_enum("RelationshipStatusEnum")
+    assert len(enum_slots) == 2
+    assert enum_slots[0].name == "relationship"
+    assert enum_slots[1].name == "past_relationship"
+
+
+def test_issue_998_slot_usage_range(view_issue_998) -> None:
+    enum_slots = view_issue_998.get_slots_by_enum("TypeEnum")
+    assert len(enum_slots) == 1
+    assert enum_slots[0].name == "type"
+
+
+def test_get_slot_gets_attr_not_slot() -> None:
+    """Test that get_slot() returns attribute not top level slot.
+
+    See https://github.com/linkml/linkml/issues/998.
+    """
+    schema_file = Path(INPUT_DIR) / "issue_590.yaml"
+
+    sv = SchemaView(str(schema_file))
+    # check that multivalued is set to False as in schema
+    assert sv.get_slot("a").multivalued is False
+
+
+def test_class_name_mappings() -> None:
+    """Test the retrieval of normalised names and the original versions.
+
+    See https://github.com/linkml/linkml/issues/478
+    """
+    schema_file = Path(INPUT_DIR) / "issue_478.yaml"
+    view = SchemaView(str(schema_file))
+
+    # class names => normalised class names:
+    class_names = {
+        "foo bar": "FooBar",
+        "named thing": "NamedThing",
+        "biosample_processing": "BiosampleProcessing",
+        "too   much   whitespace": "TooMuchWhitespace",
+        "5' sequencing": "5'Sequencing",
+    }
+
+    assert set(view.all_classes()) == set(class_names)
+    assert set(view.class_name_mappings()) == set(class_names.values())
+    assert {cnm_def.name: cnm for cnm, cnm_def in view.class_name_mappings().items()} == class_names
+
+    slot_names = {
+        "id": "id",
+        "preferred label": "preferred_label",
+        "5' sequence": "5'_sequence",
+        # note that these slot names are unchanged
+        "SOURCE": "SOURCE",
+        "processingMethod": "processingMethod",
+    }
+
+    assert set(view.all_slots()) == set(slot_names)
+    assert set(view.slot_name_mappings()) == set(slot_names.values())
+    assert {snm_def.name: snm for snm, snm_def in view.slot_name_mappings().items()} == slot_names

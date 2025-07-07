@@ -1,4 +1,4 @@
-# Auto generated from linkml_issue_817.yaml by pythongen.py version: 0.9.0
+# Auto generated from issue_817.yaml by pythongen.py version: 0.9.0
 # Generation date: 2022-06-01T18:51:29
 # Schema: personinfo
 #
