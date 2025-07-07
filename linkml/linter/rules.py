@@ -4,29 +4,32 @@ from __future__ import annotations
 
 import re
 from abc import ABC, abstractmethod
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from functools import cache
-from typing import Callable
 
 from linkml_runtime.linkml_model import (
     ClassDefinition,
     ClassDefinitionName,
     Element,
+    ElementName,
+    EnumDefinition,
+    EnumDefinitionName,
     SlotDefinition,
+    TypeDefinition,
+    TypeDefinitionName,
 )
 from linkml_runtime.utils.schemaview import SchemaView
 from prefixmaps.io.parser import load_multi_context
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
-
-from .config.datamodel.config import (
+from linkml.linter.config.datamodel.config import (
     CanonicalPrefixesConfig,
     RecommendedRuleConfig,
     RuleConfig,
     StandardNamingConfig,
     TreeRootClassRuleConfig,
 )
-from .linter import LinterProblem
+from linkml.linter.linter import LinterProblem
 
 
 class LinterRule(ABC):
@@ -248,6 +251,34 @@ class NoInvalidSlotUsageRule(LinterRule):
             for slot_usage_name in slot_usage:
                 if slot_usage_name not in class_slots:
                     yield LinterProblem(f"Slot '{slot_usage_name}' not found on class '{class_name}'")
+
+
+class NoUndeclaredRangesRule(LinterRule):
+    id = "no_undeclared_ranges"
+
+    def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
+        all_types: dict[TypeDefinitionName, TypeDefinition] = schema_view.all_types()
+        all_enums: dict[EnumDefinitionName, EnumDefinition] = schema_view.all_enums()
+        all_classes: dict[ClassDefinitionName, ClassDefinition] = schema_view.all_classes()
+        all_possible_ranges: set[TypeDefinitionName | EnumDefinitionName | ClassDefinitionName] = (
+            set(all_types) | set(all_enums) | set(all_classes)
+        )
+
+        # check that the default_range has a valid value
+        default_range = schema_view.schema.default_range
+        if default_range and default_range not in all_possible_ranges:
+            yield LinterProblem(f"Schema default_range '{default_range}' is not defined.")
+
+        for class_name in schema_view.all_classes():
+            for slot in schema_view.class_induced_slots(class_name):
+                slot_range: set[ElementName] = set(schema_view.slot_range_as_union(slot))
+
+                # check slot range is valid
+                for range_name in slot_range:
+                    if range_name not in all_possible_ranges:
+                        yield LinterProblem(
+                            f"Class '{class_name}' slot '{slot.name}' range '{range_name}' is not defined."
+                        )
 
 
 class StandardNamingRule(LinterRule):
