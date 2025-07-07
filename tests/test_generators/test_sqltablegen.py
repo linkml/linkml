@@ -140,27 +140,26 @@ def test_abstract_class(capsys):
 def test_index_sqlddl(capsys):
     b = SchemaBuilder()
     b.add_slot(SlotDefinition("age", range="integer", description="age of person in years"))
-    slots = ["full name", "description", "age"]
-    test_index = Annotation(tag="index", value={"index2": ["id", "age"]})
-    #test_index_2 = Annotation(tag="index", value={"index2": ["id", "age"]})
-    test_index_dict = {"index": test_index}
-    b.add_class(DUMMY_CLASS, slots, description="My dummy class", annotations=test_index_dict)
+    b.add_slot(SlotDefinition("dummy_foreign_key", range="ClassWithNowt", description="foreign key test"))
     b.add_slot("identifier_slot", identifier=True)
     b.add_slot("key_slot", key=True)
-    b.add_class("ClassWithId", slots=["identifier_slot", "name", "whatever"])
-    b.add_class("ClassWithKey", slots=["key_slot", "key_hole", "Torquay"])
-    # b.add_class("ClassWithNowt", slots=["slot_1", "slot_2"])
-    # b.add_class("ClassWithItAll", slots=["identifier_slot", "key_slot", "name", "miscellany"])
+    slots = ["full name", "description", "dummy_foreign_key", "age"]
+    test_index = Annotation(tag="index", value={"index2": ["id", "age"]})
+    test_index_2 = Annotation(tag="index", value={"ix_ClassWithId_identifier_slot": ["identifier_slot", "name"]})
+    test_index_dict = {"index": test_index}
+    test_index_dict_2 = {"index": test_index_2}
+    # testing to ensure
+    b.add_class(DUMMY_CLASS, slots, description="My dummy class", annotations=test_index_dict)
+    # testing to ensure the duplicated index isn't generated
+    b.add_class("ClassWithId", slots=["identifier_slot", "name", "whatever"], annotations=test_index_dict_2)
+    b.add_class("ClassWithNowt", slots=["slot_1", "slot_2"])
     gen = SQLTableGenerator(b.schema, use_foreign_keys=True)
-    # sv = package_schemaview("linkml_runtime.linkml_model.meta")
-    # gen2 = SQLTableGenerator(sv.schema, use_foreign_keys=True, autogenerate_pk_index=True, autogenerate_fk_index=True)
-    # ddl2 = gen2.generate_ddl()
-    with capsys.disabled():
-        ddl = gen.generate_ddl()
-        print(ddl)
-    #    print(ddl2)
-    assert True
-
+    ddl = gen.generate_ddl()
+    assert 'CREATE INDEX "ix_ClassWithNowt_id" ON "ClassWithNowt" (id);' in ddl
+    assert 'CREATE INDEX "ix_ClassWithId_identifier_slot" ON "ClassWithId" (identifier_slot, name);' not in ddl
+    assert 'CREATE INDEX "ix_ClassWithId_identifier_slot" ON "ClassWithId" (identifier_slot);' in ddl
+    assert 'CREATE INDEX "ix_dummy class_id" ON "dummy class" (id);' in ddl
+    assert 'CREATE INDEX index2 ON "dummy class" (id, age);' in ddl
 
 @pytest.mark.parametrize(
     ("slot_range", "ddl_type"),
