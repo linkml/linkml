@@ -148,7 +148,7 @@ def test_index_sqlddl(capsys):
     test_index = Annotation(tag="index", value={"index2": ["id", "age"]})
     # Duplicate Index Name
     test_index_2 = Annotation(tag="index", value={"ix_ClassWithId_identifier_slot": ["identifier_slot", "name"]})
-    test_index_3 = Annotation(tag="index", value = {"ClassWithNowt_slot_1_slot_2_idx": ["slot_1"]})
+    test_index_3 = Annotation(tag="index", value={"ClassWithNowt_slot_1_slot_2_idx": ["slot_1"]})
     test_index_dict = {"index": test_index}
     test_index_dict_2 = {"index": test_index_2}
     test_index_dict_3 = {"index": test_index_3}
@@ -158,7 +158,12 @@ def test_index_sqlddl(capsys):
     b.add_class("ClassWithId", slots=["identifier_slot", "name", "whatever"], annotations=test_index_dict_2)
     # Testing Unique Constraint
     slot_1_2_UK = UniqueKey(unique_key_name="unique_keys", unique_key_slots=["slot_1", "slot_2"])
-    b.add_class("ClassWithNowt", slots=["slot_1", "slot_2"], annotations=test_index_dict_3, unique_keys={"unique_keys": slot_1_2_UK})
+    b.add_class(
+        "ClassWithNowt",
+        slots=["slot_1", "slot_2"],
+        annotations=test_index_dict_3,
+        unique_keys={"unique_keys": slot_1_2_UK},
+    )
     gen = SQLTableGenerator(b.schema, use_foreign_keys=True)
     ddl = gen.generate_ddl()
     # Tests autogeneration of primary key index
@@ -174,6 +179,7 @@ def test_index_sqlddl(capsys):
     assert 'CREATE INDEX "ix_ClassWithNowt_id" ON "ClassWithNowt" (id);' in ddl
     # Test the multi-column index defined in annotation
     assert 'CREATE INDEX index2 ON "dummy class" (id, age);' in ddl
+
 
 @pytest.mark.parametrize(
     ("slot_range", "ddl_type"),

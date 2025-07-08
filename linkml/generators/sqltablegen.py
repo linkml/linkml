@@ -376,9 +376,7 @@ class SQLTableGenerator(Generator):
     @staticmethod
     def check_duplicate_entry_names(autogen: list, item_name: str) -> bool:
         if item_name in autogen:
-            msg = (
-                f"Warning: {item_name} already exists, please generate a new name"
-            )
+            msg = f"Warning: {item_name} already exists, please generate a new name"
             logger.info(msg)
             return True
         return False
