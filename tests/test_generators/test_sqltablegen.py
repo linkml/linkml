@@ -137,7 +137,7 @@ def test_abstract_class(capsys):
     assert 'CREATE TABLE "inherited class"' in ddl2
 
 
-def test_index_sqlddl():
+def test_index_sqlddl(capsys):
     b = SchemaBuilder()
     b.add_slot(SlotDefinition("age", range="integer", description="age of person in years"))
     b.add_slot(SlotDefinition("dummy_foreign_key", range="ClassWithNowt", description="foreign key test"))
@@ -148,15 +148,17 @@ def test_index_sqlddl():
     test_index = Annotation(tag="index", value={"index2": ["id", "age"]})
     # Duplicate Index Name
     test_index_2 = Annotation(tag="index", value={"ix_ClassWithId_identifier_slot": ["identifier_slot", "name"]})
+    test_index_3 = Annotation(tag="index", value = {"ClassWithNowt_slot_1_slot_2_idx": ["slot_1"]})
     test_index_dict = {"index": test_index}
     test_index_dict_2 = {"index": test_index_2}
+    test_index_dict_3 = {"index": test_index_3}
     # testing to ensure
     b.add_class(DUMMY_CLASS, slots, description="My dummy class", annotations=test_index_dict)
     # testing to ensure the duplicated index isn't generated
     b.add_class("ClassWithId", slots=["identifier_slot", "name", "whatever"], annotations=test_index_dict_2)
     # Testing Unique Constraint
     slot_1_2_UK = UniqueKey(unique_key_name="unique_keys", unique_key_slots=["slot_1", "slot_2"])
-    b.add_class("ClassWithNowt", slots=["slot_1", "slot_2"], unique_keys={"unique_keys": slot_1_2_UK})
+    b.add_class("ClassWithNowt", slots=["slot_1", "slot_2"], annotations=test_index_dict_3, unique_keys={"unique_keys": slot_1_2_UK})
     gen = SQLTableGenerator(b.schema, use_foreign_keys=True)
     ddl = gen.generate_ddl()
     # Tests autogeneration of primary key index
@@ -165,12 +167,13 @@ def test_index_sqlddl():
     assert 'CREATE INDEX "ClassWithNowt_slot_1_slot_2_idx" ON "ClassWithNowt" (slot_1, slot_2);' in ddl
     # Tests to ensure the duplicate index name isn't created
     assert 'CREATE INDEX "ix_ClassWithId_identifier_slot" ON "ClassWithId" (identifier_slot, name);' not in ddl
+    # Tests to ensure that an index with a duplicate name as a previous index is not created
+    assert 'CREATE INDEX "ClassWithNowt_slot_1_slot_2_idx" ON "ClassWithNowt" (slot_1);' not in ddl
     # Test for the foreign key identifier slots
     assert 'CREATE INDEX "ix_ClassWithId_identifier_slot" ON "ClassWithId" (identifier_slot);' in ddl
     assert 'CREATE INDEX "ix_ClassWithNowt_id" ON "ClassWithNowt" (id);' in ddl
     # Test the multi-column index defined in annotation
     assert 'CREATE INDEX index2 ON "dummy class" (id, age);' in ddl
-
 
 @pytest.mark.parametrize(
     ("slot_range", "ddl_type"),
