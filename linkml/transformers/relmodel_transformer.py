@@ -211,8 +211,6 @@ class RelationalModelTransformer:
             # this is required in case an attribute inherits from a slot
             for sn in source_sv.all_slots(attributes=False):
                 slot = source_sv.get_slot(sn)
-                # target.slots[slot.name] = copy(slot)
-            # print(c.annotations)
             target.classes[c.name] = c
 
         target_sv = SchemaView(target)
