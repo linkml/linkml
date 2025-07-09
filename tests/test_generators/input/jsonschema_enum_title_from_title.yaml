@@ -26,4 +26,3 @@ json_schema:
   "$defs":
     MyEnum:
       title: "My Enum"
-

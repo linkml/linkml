@@ -95,7 +95,7 @@ classes:
 
   ComplexNoOpExactShapeArray:
     description: |
-      When the exact number of dimensions is equal to the number of parameterized dimensions, 
+      When the exact number of dimensions is equal to the number of parameterized dimensions,
       the representation should be the same as if it hadn't been specified.
       Test if this model is equivalent to parameterized_dimensions.yaml/ParameterizedArray
     attributes:

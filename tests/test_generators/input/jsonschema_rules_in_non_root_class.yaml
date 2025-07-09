@@ -42,26 +42,26 @@ schema:
       tree_root: true
 
 data_cases:
-  - data: 
+  - data:
       addresses:
         - street_address: 123 main street
           country: USA
           postal_code: "12345"
           telephone: "+1 555 555 1234"
-  - data: 
+  - data:
       addresses:
         - street_address: 123 main street
           country: USA_territory
           postal_code: "12345"
           telephone: "+1 555 555 1234"
-  - data: 
+  - data:
       addresses:
         - street_address: 123 main street
           country: USA
           postal_code: "DK-1448"
           telephone: "+1 555 555 1234"
     error_message: "'DK-1448' does not match"
-  - data: 
+  - data:
       addresses:
         - street_address: Asiatisk Plads 2
           country: DEN

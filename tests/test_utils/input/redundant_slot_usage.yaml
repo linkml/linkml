@@ -8,11 +8,11 @@ slots:
   ecosystem:
     name: ecosystem
     description: Test slot for ecosystem
-    
+
   slot_a:
     name: slot_a
     description: Test slot A
-    
+
   slot_b:
     name: slot_b
     description: Test slot B

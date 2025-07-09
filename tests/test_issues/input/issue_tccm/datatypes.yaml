@@ -64,6 +64,3 @@ types:
     base: URIorCURIE
     repr: str
     description: a URI or a CURIE
-
-
-

@@ -15,4 +15,3 @@ imports:
 classes:
   child:
     is_a: base
-
