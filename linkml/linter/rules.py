@@ -281,6 +281,43 @@ class NoUndeclaredRangesRule(LinterRule):
                         )
 
 
+class RootTypeChecks(LinterRule):
+    """Performs basic checks on types.
+
+    Types can be defined as subtypes of existing types using the `typeof` attribute.
+    Root types are those types that do not inherit from other types using `typeof`.
+
+    - types used in 'typeof' statements must be defined in the types section
+    - types cannot be their own 'typeof' parent
+    - every root type must have a 'base'
+    - every root type must have a 'uri'
+
+    :param LinterRule: linter rule class
+    :type LinterRule: LinterRule
+    """
+
+    id = "root_type_checks"
+
+    def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
+        type_ix = schema_view.all_types()
+        for t, type_def in type_ix.items():
+            if type_def.typeof:
+                # This is a child type. Ensure that the parent exists.
+                if type_def.typeof not in schema_view.all_types():
+                    yield LinterProblem(f"'{t}' has invalid typeof parent '{type_def.typeof}'")
+                # Ensure that a type is not its own parent.
+                # N.b. at some point, this can/should be extended to checking the full 'typeof' ancestor chain
+                # for circular inheritance.
+                if type_def.typeof == type_def.name:
+                    yield LinterProblem(f"'{t}' has invalid circular typeof parent '{type_def.typeof}'")
+                continue
+            if not type_def.base:
+                yield LinterProblem(f"Root type '{t}' is missing the required 'base' attribute")
+
+            if not type_def.uri:
+                yield LinterProblem(f"Root type '{t}' is missing the required 'uri' attribute")
+
+
 class StandardNamingRule(LinterRule):
     id = "standard_naming"
 
