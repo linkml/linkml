@@ -180,6 +180,13 @@ classes:
         description: >-
           Default: []
           Elements of all types (ClassDefinition, SlotDefinition, EnumDefinition, PermissibleValue, etc.) except the types specified in this list will be checked
+      exclude:
+        range: string
+        multivalued: true
+        description: >-
+          Default: []
+          Elements with names specified in this list will be skipped by the checker.
+          The list can include names of any schema elements (classes, slots, enums, permissible values, etc.).
       class_pattern:
         range: string
         required: false
