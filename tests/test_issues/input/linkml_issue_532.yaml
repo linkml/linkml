@@ -22,8 +22,8 @@ classes:
 
   SampleRelation:
     description: Object specifying relationships to other samples, (particularly between
-            subsamples and parent samples), or beteen samples and other related 
-            information, e.g. publications using data from the sample or providing 
+            subsamples and parent samples), or beteen samples and other related
+            information, e.g. publications using data from the sample or providing
             background information to understand the sample.
     slots:
       - target
@@ -34,7 +34,7 @@ classes:
       relationship:
         required: true
 
- 
+
 slots:
   id:
     identifier: true
@@ -53,6 +53,3 @@ slots:
     range: string
     description: identifier for the target resource in the relationship. Start
       with string, should be Identifier object.
-   
-  
-
