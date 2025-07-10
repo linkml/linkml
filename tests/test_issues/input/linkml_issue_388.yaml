@@ -32,5 +32,3 @@ classes:
         slot_uri: other:a
         description: other-a in the context of C3
         range: C1
-
-
