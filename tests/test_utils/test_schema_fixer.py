@@ -192,3 +192,38 @@ def test_fix_element_names(preserve_original_using):
             # print(cls.name, preserve_original_using, orig)
             assert classes[orig] == cls.name
     assert "FooBar" == fixed_schema.slots["foo_bar_ref"].range
+
+
+def test_remove_redundant_slot_usage_issue_954(input_path):
+    """
+    Tests https://github.com/linkml/linkml/issues/954
+    
+    This test verifies that SchemaFixer.remove_redundant_slot_usage() correctly
+    identifies and removes slot_usage entries that duplicate information already
+    present in the slot definition.
+    """
+    # Using a minimal schema that demonstrates the redundant slot usage pattern
+    from linkml_runtime import SchemaView
+    
+    schema_path = input_path("redundant_slot_usage.yaml")
+    view = SchemaView(schema_path)
+    s = view.schema
+    fixer = SchemaFixer()
+    fixer.remove_redundant_slot_usage(s)
+    
+    # Verify that many redundant fields were removed
+    assert len(fixer.history) > 50
+    
+    # Check specific slot_usage to ensure correct behavior
+    jgi = s.classes["soil_jgi_mg"].slot_usage
+    jgi_ecosystem = jgi["ecosystem"]
+    
+    # These should remain because they're not in the base slot definition
+    assert "slot_group" in jgi_ecosystem
+    assert "required" in jgi_ecosystem
+    assert "range" in jgi_ecosystem
+    
+    # These should be removed because they're redundant with the base slot
+    assert "description" not in jgi_ecosystem
+    assert "name" not in jgi_ecosystem
+    assert "owner" not in jgi_ecosystem

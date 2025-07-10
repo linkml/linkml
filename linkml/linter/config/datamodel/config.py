@@ -87,6 +87,7 @@ class Rules(YAMLRoot):
     no_invalid_slot_usage: Optional[Union[dict, "RuleConfig"]] = None
     no_undeclared_slots: Optional[Union[dict, "RuleConfig"]] = None
     no_undeclared_ranges: Optional[Union[dict, "RuleConfig"]] = None
+    root_type_checks: Optional[Union[dict, "RuleConfig"]] = None
     standard_naming: Optional[Union[dict, "StandardNamingConfig"]] = None
     canonical_prefixes: Optional[Union[dict, "CanonicalPrefixesConfig"]] = None
 
@@ -118,6 +119,9 @@ class Rules(YAMLRoot):
 
         if self.no_undeclared_ranges is not None and not isinstance(self.no_undeclared_ranges, RuleConfig):
             self.no_undeclared_ranges = RuleConfig(**as_dict(self.no_undeclared_ranges))
+
+        if self.root_type_checks is not None and not isinstance(self.root_type_checks, RuleConfig):
+            self.root_type_checks = RuleConfig(**as_dict(self.root_type_checks))
 
         if self.standard_naming is not None and not isinstance(self.standard_naming, StandardNamingConfig):
             self.standard_naming = StandardNamingConfig(**as_dict(self.standard_naming))
@@ -479,6 +483,15 @@ slots.rules__no_undeclared_ranges = Slot(
     name="rules__no_undeclared_ranges",
     curie=LINTCFG.curie("no_undeclared_ranges"),
     model_uri=LINTCFG.rules__no_undeclared_ranges,
+    domain=None,
+    range=Optional[Union[dict, RuleConfig]],
+)
+
+slots.rules__root_type_checks = Slot(
+    uri=LINTCFG.root_type_checks,
+    name="rules__root_type_checks",
+    curie=LINTCFG.curie("root_type_checks"),
+    model_uri=LINTCFG.rules__root_type_checks,
     domain=None,
     range=Optional[Union[dict, RuleConfig]],
 )
