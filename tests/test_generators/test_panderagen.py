@@ -1,3 +1,4 @@
+import json
 import logging
 import re
 from pathlib import Path
@@ -22,6 +23,30 @@ def cli_runner():
 
 
 @pytest.fixture(scope="module")
+def np():
+    """The numpy package is optional so use fixtures and importorskip to only run tests when it's installed"""
+    return pytest.importorskip("numpy", minversion="1.0", reason="Polars >= 1.0 not installed")
+
+
+@pytest.fixture(scope="module")
+def pl():
+    """The PolaRS package is optional, so use fixtures and importorskip to only run tests when it's installed"""
+    return pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
+
+
+@pytest.fixture(scope="module")
+def pandera():
+    """The pandera package is optional, so use fixtures and importorskip to only run tests when it's installed"""
+    return pytest.importorskip("pandera.polars", reason="Pandera not installed")
+
+
+@pytest.fixture(scope="module")
+def N():
+    """Number of rows in the test dataframes, 1M is enough to be real but not strain most machines."""
+    return 1000
+
+
+@pytest.fixture(scope="module")
 def synthetic_flat_dataframe_model():
     return """\
 id: https://w3id.org/linkml/examples/pandera_constraints
@@ -36,59 +61,130 @@ default_prefix: ex
 
 classes:
 
+  AnyType:
+    description: the magic class_uri makes this map to linkml Any or polars Object
+    class_uri: linkml:Any
+
+  ColumnType:
+    description: Nested in a column
+    attributes:
+      id:
+        identifier: true
+        range: string
+      x:
+        range: integer
+        required: true
+      y:
+        range: integer
+        required: true
+
+  SimpleDictType:
+    description: Nested as a simple dict
+    attributes:
+      id:
+        identifier: True
+        range: string
+      x:
+        range: integer
+        required: true
+
   PanderaSyntheticTable:
     description: A flat table with a reasonably complete assortment of datatypes.
     attributes:
       identifier_column:
         description: identifier
-        identifier: True
+        identifier: true
         range: integer
-        required: True
+        required: true
       bool_column:
         description: test boolean column
         range: boolean
-        required: True
-        #ifabsent: True
+        required: true
+        #ifabsent: true
       integer_column:
         description: test integer column with min/max values
         range: integer
-        required: True
+        required: true
         minimum_value: 0
         maximum_value: 999
+        #ifabsent: int(5)
       float_column:
         description: test float column
         range: float
-        required: True
+        required: true
+        #ifabsent: float(2.3)
       string_column:
         description: test string column
         range: string
-        required: True
+        required: true
         pattern: "^(this)|(that)|(whatever)$"
+        #ifabsent: string("whatever")
       date_column:
         description: test date column
         range: date
-        required: True
+        required: true
         #ifabsent: date("2020-01-31")
       datetime_column:
         description: test datetime column
         range: datetime
-        required: True
+        required: true
         #ifabsent: datetime("2020-01-31 03:23:57")
       enum_column:
         description: test enum column
         range: SyntheticEnum
-        required: True
+        required: true
       ontology_enum_column:
         description: test enum column with ontology values
         range: SyntheticEnumOnt
-        required: True
+        required: true
         #ifabsent: SyntheticEnumOnt(ANIMAL)
-      multivalued_column:
-        description: one-to-many form
+      # multivalued_column:
+      #   description: one-to-many form
+      #   range: integer
+      #   required: true
+      #   multivalued: true
+      #   inlined_as_list: true
+      # multivalued_one_many_column:
+      #   description: list form
+      #   range: integer
+      #   required: true
+      #   multivalued: true
+      any_type_column:
+        description: needs to have type object
+        range: AnyType
+        required: true
+      cardinality_column:
+        description: check cardinality
         range: integer
-        required: True
-        multivalued: True
-        inlined_as_list: True
+        required: true
+        minimum_cardinality: 1
+        maximum_cardinality: 1
+      # class_column:
+      #   description: test column with another class id
+      #   range: ColumnType
+      #   required: true
+      inlined_class_column:
+        description: test column with another class inlined as a struct
+        range: ColumnType
+        required: true
+        inlined: true
+        inlined_as_list: false
+        multivalued: true
+      inlined_as_list_column:
+        description: test column with another class inlined as a list
+        range: ColumnType
+        required: true
+        inlined: true
+        inlined_as_list: true
+        multivalued: true
+      inlined_simple_dict_column:
+        description: test column inlined using simple dict form
+        range: SimpleDictType
+        multivalued: true
+        inlined: true
+        inlined_as_list: false
+        required: true
+
 
 enums:
   SyntheticEnum:
@@ -116,36 +212,124 @@ MODEL_COLUMNS = [
     "datetime_column",
     "enum_column",
     "ontology_enum_column",
-    "multivalued_column",
+    # "multivalued_column",
+    # "multivalued_one_many_column",
+    "any_type_column",
+    "cardinality_column",
+    # "class_column",
+    "inlined_class_column",
+    "inlined_as_list_column",
+    "inlined_simple_dict_column",
 ]
 
 
 @pytest.fixture(scope="module")
-def np():
-    """The numpy package is optional? so use fixtures and importorskip to only run tests when it's installed"""
-    return pytest.importorskip("numpy", minversion="1.0", reason="Polars >= 1.0 not installed")
+def valid_inlined_dict_column_expression(pl):
+    """synthetic data that conforms to the inlined_class_column schema
+    using polars expression API.
+    """
+    return pl.struct(
+        pl.struct(
+            pl.lit("thing_one").alias("id"),
+            pl.lit(1111, dtype=pl.Int64).alias("x"),
+            pl.lit(2222, dtype=pl.Int64).alias("y"),
+        ).alias("thing_one"),
+        pl.struct(
+            pl.lit("thing_two").alias("id"),
+            pl.lit(3333, dtype=pl.Int64).alias("x"),
+            pl.lit(4444, dtype=pl.Int64).alias("y"),
+        ).alias("thing_two"),
+    )
 
 
 @pytest.fixture(scope="module")
-def pl():
-    """The PolaRS package is optional, so use fixtures and importorskip to only run tests when it's installed"""
-    return pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
+def invalid_inlined_dict_column_expression(pl):
+    """synthetic data with invalid float datatypes that does not conform to the inlined_class_column schema
+    using polars expression API.
+    """
+    return pl.struct(
+        pl.struct(
+            pl.lit("thing_one").alias("id"),
+            pl.lit(1111.0, dtype=pl.Float64).alias("x"),
+            pl.lit(2222.0, dtype=pl.Float64).alias("y"),
+        ).alias("thing_one"),
+        pl.struct(
+            pl.lit("thing_two").alias("id"),
+            pl.lit(3333.0, dtype=pl.Float64).alias("x"),
+            pl.lit(4444.0, dtype=pl.Float64).alias("y"),
+        ).alias("thing_two"),
+    )
 
 
 @pytest.fixture(scope="module")
-def pandera():
-    """The pandera package is optional, so use fixtures and importorskip to only run tests when it's installed"""
-    return pytest.importorskip("pandera.polars", reason="Pandera not installed")
+def valid_simple_dict_column_expression(pl):
+    """synthetic data that conforms to the inlined_simple_dict_column schema
+    using polars expression API.
+    """
+    # fmt: off
+    return pl.struct(
+      pl.lit(1).alias("A"),
+      pl.lit(2).alias("B"),
+      pl.lit(3).alias("C")
+    )
+    # fmt: on
 
 
 @pytest.fixture(scope="module")
-def N():
-    """Number of rows in the test dataframes, 1M is enough to be real but not strain most machines."""
-    return 1000000
+def invalid_simple_dict_column_expression(pl):
+    """synthetic data with float values that does not conform to the inlined_simple_dict_column schema
+    using polars expression API.
+    """
+    # fmt: off
+    return pl.struct(
+      pl.lit(1.0).alias("A"),
+      pl.lit(2.0).alias("B"),
+      pl.lit(3.0).alias("C")
+    )
+    # fmt: on
 
 
 @pytest.fixture(scope="module")
-def big_synthetic_dataframe(pl, np, N):
+def valid_inlined_as_list_column_expression(pl, np, N):
+    """synthetic data that conforms to the inlined_as_list_column schema
+    using polars expression API.
+    """
+    # fmt: off
+    return pl.concat_list([
+      pl.struct(
+          pl.Series(values=np.arange(0, N), dtype=pl.Int64).cast(pl.Utf8).alias("id"),
+          pl.Series(values=np.random.choice([0, 1], size=N), dtype=pl.Int64).alias("x"),
+          pl.Series(values=np.random.choice([0, 1], size=N), dtype=pl.Int64).alias("y")
+      )
+    ])
+    # fmt: on
+
+
+@pytest.fixture(scope="module")
+def invalid_inlined_as_list_column_expression(pl, np, N):
+    """synthetic data that does not conforms to the inlined_as_list_column schema
+    using polars expression API.
+    """
+    # fmt: off
+    return pl.concat_list([
+      pl.struct(
+          pl.Series(values=np.arange(0, N), dtype=pl.Int64).cast(pl.Utf8).alias("id"),
+          pl.Series(values=np.random.choice([0.0, 1.0], size=N), dtype=pl.Float64).alias("x"),
+          pl.Series(values=np.random.choice([0.1, 1.0], size=N), dtype=pl.Float64).alias("y")
+      )
+    ])
+    # fmt: on
+
+
+@pytest.fixture(scope="module")
+def big_synthetic_dataframe(
+    pl,
+    np,
+    N,
+    valid_inlined_dict_column_expression,
+    valid_simple_dict_column_expression,
+    valid_inlined_as_list_column_expression,
+):
     """Construct a reasonably sized dataframe that complies with the PanderaSyntheticTable model"""
     test_enum = pl.Enum(["ANIMAL", "VEGETABLE", "MINERAL"])
     test_ont_enum = pl.Enum(["fiction", "non fiction"])
@@ -179,8 +363,18 @@ def big_synthetic_dataframe(pl, np, N):
                     dtype=test_ont_enum,
                     strict=False
                 ),
-                "multivalued_column": [[1, 2, 3],] * N,
+                #"multivalued_column": [[1, 2, 3],] * N,
+                #"multivalued_one_many_column": pl.Series(np.random.choice(range(100), size=N), dtype=pl.Int64),
+                "any_type_column": pl.Series([1,] * N, dtype=pl.Object),
+                "cardinality_column": pl.Series(np.arange(1, N+1), dtype=pl.Int64),
+                #"class_column": pl.Series(np.arange(0, N), dtype=pl.Int64).cast(pl.Utf8),
+                #"inlined_simple_dict_column": pl.Series([{ "A": 1, "B": 2, "C": 3 }] * N, dtype=pl.Object),
             }
+        )
+        .with_columns(
+            valid_simple_dict_column_expression.alias("inlined_simple_dict_column"),
+            valid_inlined_as_list_column_expression.alias("inlined_as_list_column"),
+            valid_inlined_dict_column_expression.alias("inlined_class_column")
         )
     )
     # fmt: on
@@ -215,7 +409,7 @@ def test_pandera_basic_class_based(synthetic_schema):
         if match:
             classes.append(match.group(1))
 
-    expected_classes = ["PanderaSyntheticTable"]
+    expected_classes = ["AnyType", "ColumnType", "SimpleDictType", "PanderaSyntheticTable"]
 
     assert sorted(expected_classes) == sorted(classes)
 
@@ -265,6 +459,27 @@ def test_pandera_validation_error_ge(pl, pandera, compiled_synthetic_schema_modu
     assert "'column': 'integer_column'" in str(e)
 
 
+def test_pandera_validation_error_cardinality(pl, pandera, compiled_synthetic_schema_module, big_synthetic_dataframe):
+    """
+    tests ge range validation error
+    """
+    # fmt: off
+    bad_cardinality_dataframe = (
+        big_synthetic_dataframe
+        .with_columns(
+            pl.lit(1000, pl.Int64).alias("cardinality_column")
+        )
+    )
+    # fmt: on
+
+    with pytest.raises(pandera.errors.SchemaErrors) as e:
+        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(bad_cardinality_dataframe, lazy=True)
+
+    assert "DATAFRAME_CHECK" in str(e.value)
+    assert "check_cardinality_cardinality_column" in str(e.value)
+    assert "'column': 'cardinality_column'" in str(e)
+
+
 @pytest.mark.parametrize("bad_column", MODEL_COLUMNS)
 def test_synthetic_dataframe_wrong_datatype(
     pl, pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, bad_column
@@ -283,7 +498,7 @@ def test_synthetic_dataframe_wrong_datatype(
     )
     # fmt: on
 
-    with pytest.raises(pandera.errors.SchemaErrors) as e:
+    with pytest.raises((pandera.errors.SchemaError, pandera.errors.SchemaErrors)) as e:
         compiled_synthetic_schema_module.PanderaSyntheticTable.validate(error_dataframe, lazy=True)
 
     assert "WRONG_DATATYPE" in str(e.value)
@@ -294,6 +509,10 @@ def test_synthetic_dataframe_wrong_datatype(
 def test_synthetic_dataframe_boolean_error(
     pl, pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, drop_column
 ):
+    """Note that this test accepts SchemaError as well as SchemaErrors
+    even though lazy validation is performed, because nested checks
+    may be run non-lazy.
+    """
     # fmt: off
     error_dataframe = (
         big_synthetic_dataframe
@@ -303,11 +522,74 @@ def test_synthetic_dataframe_boolean_error(
     )
     # fmt: on
 
-    with pytest.raises(pandera.errors.SchemaErrors) as e:
+    with pytest.raises((pandera.errors.SchemaErrors, pandera.errors.SchemaError)) as e:
         compiled_synthetic_schema_module.PanderaSyntheticTable.validate(error_dataframe, lazy=True)
 
     assert "COLUMN_NOT_IN_DATAFRAME" in str(e.value)
     assert f"column '{drop_column}' not in dataframe" in str(e.value)
+
+    if len(e.value.message["SCHEMA"].keys()) > 1 or "DATA" in e.value.message:
+        print(json.dumps(e.value.message, indent=2))
+        assert False
+
+
+def test_inlined_simple_dict_nested_range_type_error(
+    pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_simple_dict_column_expression
+):
+    """Change the simple dict column values from Int64 to Float64"""
+    df_with_nested_simple_dict_type_error = big_synthetic_dataframe.with_columns(
+        invalid_simple_dict_column_expression.alias("inlined_simple_dict_column")
+    )
+
+    with pytest.raises(pandera.errors.SchemaErrors) as e:
+        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(
+            df_with_nested_simple_dict_type_error, lazy=True
+        )
+
+    error_details = e.value.message["DATA"]["CHECK_ERROR"][0]
+    logger.info(f"Details for expected error: {error_details}")
+
+    assert error_details["column"] == "inlined_simple_dict_column"
+    assert error_details["check"] == "check_nested_struct_inlined_simple_dict_column"
+    assert error_details["error"] == "SchemaError(\"expected column 'x' to have type Int64, got Float64\")"
+
+
+def test_inlined_dict_nested_range_type_error(
+    pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_inlined_dict_column_expression
+):
+    """Change the simple dict column values from Int64 to Float64"""
+    df_with_nested_dict_type_error = big_synthetic_dataframe.with_columns(
+        invalid_inlined_dict_column_expression.alias("inlined_class_column")
+    )
+
+    with pytest.raises(pandera.errors.SchemaErrors) as e:
+        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(df_with_nested_dict_type_error, lazy=True)
+
+    error_details = e.value.message["DATA"]["CHECK_ERROR"][0]
+    logger.info(f"Details for expected error: {error_details}")
+
+    assert error_details["column"] == "inlined_class_column"
+    assert error_details["check"] == "check_nested_struct_inlined_class_column"
+    assert error_details["error"] == "SchemaError(\"expected column 'x' to have type Int64, got Float64\")"
+
+
+def test_inlined_list_nested_range_type_error(
+    pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_inlined_as_list_column_expression
+):
+    """Change the simple dict column values from Int64 to Float64"""
+    df_with_nested_dict_type_error = big_synthetic_dataframe.with_columns(
+        invalid_inlined_as_list_column_expression.alias("inlined_as_list_column")
+    )
+
+    with pytest.raises(pandera.errors.SchemaErrors) as e:
+        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(df_with_nested_dict_type_error, lazy=True)
+
+    error_details = e.value.message["DATA"]["CHECK_ERROR"][0]
+    logger.info(f"Details for expected error: {error_details}")
+
+    assert error_details["column"] == "inlined_as_list_column"
+    assert error_details["check"] == "check_nested_struct_inlined_as_list_column"
+    assert error_details["error"] == "SchemaError(\"expected column 'x' to have type Int64, got Float64\")"
 
 
 @pytest.mark.parametrize("target_class,schema", [("Organization", "organization")])

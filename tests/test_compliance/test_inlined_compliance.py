@@ -39,7 +39,7 @@ from tests.test_compliance.test_compliance import (
 @pytest.mark.parametrize("inlined_as_list", [0, "IAL"])
 @pytest.mark.parametrize("inlined", [0, "INL"])
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)  ## TODO: consider limiting this
-def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, data):
+def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, data, request):
     """
     Tests behavior of inlined slots.
 
@@ -59,8 +59,6 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
     """
     if framework == SHACL:
         pytest.skip("TODO: RDF has no concept of inlining")
-    if framework == PANDERA_POLARS_CLASS:
-        pytest.skip("PanderaGen inlining is not implemented")
     inlined = bool(inlined)
     inlined_as_list = bool(inlined_as_list)
     multivalued = bool(multivalued)
@@ -260,7 +258,7 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
     if framework in [SQL_DDL_SQLITE, SHACL] and not is_valid:
         # inlining has no cognate in relational and RDF
         implementation_status = ValidationBehavior.NOT_APPLICABLE
-    if framework == PANDERA_POLARS_CLASS:
+    if framework == PANDERA_POLARS_CLASS and (not inlined or foreign_key):
         implementation_status = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
