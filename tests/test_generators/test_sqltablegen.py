@@ -137,7 +137,7 @@ def test_abstract_class(capsys):
     assert 'CREATE TABLE "inherited class"' in ddl2
 
 
-def test_index_sqlddl(capsys):
+def test_index_sqlddl():
     b = SchemaBuilder()
     b.add_slot(SlotDefinition("age", range="integer", description="age of person in years"))
     b.add_slot(SlotDefinition("dummy_foreign_key", range="ClassWithNowt", description="foreign key test"))
