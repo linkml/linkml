@@ -49,6 +49,7 @@ class ContextGenerator(Generator):
     output: Optional[str] = None
     prefixes: Optional[bool] = True
     flatprefixes: Optional[bool] = False
+    fix_multivalue_containers: Optional[bool] = False
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -171,6 +172,12 @@ class ContextGenerator(Generator):
                     else:
                         slot_def["@type"] = range_type.uri
 
+                if self.fix_multivalue_containers and slot.multivalued:
+                    if slot.inlined and not slot.inlined_as_list:
+                        slot_def["@container"] = "@index"
+                    else:
+                        slot_def["@container"] = "@set"
+
                 self._build_element_id(slot_def, slot.slot_uri)
                 self.add_mappings(slot)
         if slot_def:
@@ -226,6 +233,12 @@ class ContextGenerator(Generator):
     default=False,
     show_default=True,
     help="Emit non-JSON-LD compliant prefixes as an object (deprecated: use gen-prefix-map instead).",
+)
+@click.option(
+    "--fix-multivalue-containers/--no-fix-multivalue-containers",
+    default=False,
+    show_default=True,
+    help="For multivalued attributes declare a fix container type ('@set' for lists, '@index' for dictionaries).",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
