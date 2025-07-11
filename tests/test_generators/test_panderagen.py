@@ -138,12 +138,12 @@ classes:
         range: SyntheticEnumOnt
         required: true
         #ifabsent: SyntheticEnumOnt(ANIMAL)
-      # multivalued_column:
-      #   description: one-to-many form
-      #   range: integer
-      #   required: true
-      #   multivalued: true
-      #   inlined_as_list: true
+      multivalued_column:
+        description: one-to-many form
+        range: integer
+        required: true
+        multivalued: true
+        inlined_as_list: true
       # multivalued_one_many_column:
       #   description: list form
       #   range: integer
@@ -159,10 +159,12 @@ classes:
         required: true
         minimum_cardinality: 1
         maximum_cardinality: 1
-      # class_column:
-      #   description: test column with another class id
-      #   range: ColumnType
-      #   required: true
+      inlined_as_object_column:
+        description: test column that is a directly nested single object
+        range: ColumnType
+        required: true
+        inlined: true
+        multivalued: false
       inlined_class_column:
         description: test column with another class inlined as a struct
         range: ColumnType
@@ -212,11 +214,10 @@ MODEL_COLUMNS = [
     "datetime_column",
     "enum_column",
     "ontology_enum_column",
-    # "multivalued_column",
-    # "multivalued_one_many_column",
+    "multivalued_column",
     "any_type_column",
     "cardinality_column",
-    # "class_column",
+    "inlined_as_object_column",
     "inlined_class_column",
     "inlined_as_list_column",
     "inlined_simple_dict_column",
@@ -224,41 +225,63 @@ MODEL_COLUMNS = [
 
 
 @pytest.fixture(scope="module")
-def valid_inlined_dict_column_expression(pl):
-    """synthetic data that conforms to the inlined_class_column schema
-    using polars expression API.
-    """
-    return pl.struct(
+def column_type_instances(pl):
+    """valid ColumnType instances that can be used in tests"""
+    return [
         pl.struct(
             pl.lit("thing_one").alias("id"),
             pl.lit(1111, dtype=pl.Int64).alias("x"),
             pl.lit(2222, dtype=pl.Int64).alias("y"),
-        ).alias("thing_one"),
+        ),
         pl.struct(
             pl.lit("thing_two").alias("id"),
             pl.lit(3333, dtype=pl.Int64).alias("x"),
             pl.lit(4444, dtype=pl.Int64).alias("y"),
-        ).alias("thing_two"),
-    )
+        ),
+    ]
 
 
 @pytest.fixture(scope="module")
-def invalid_inlined_dict_column_expression(pl):
-    """synthetic data with invalid float datatypes that does not conform to the inlined_class_column schema
-    using polars expression API.
-    """
-    return pl.struct(
+def invalid_column_type_instances(pl):
+    """invalid (float values) ColumnType instances that can trigger failures."""
+    return [
         pl.struct(
             pl.lit("thing_one").alias("id"),
-            pl.lit(1111.0, dtype=pl.Float64).alias("x"),
-            pl.lit(2222.0, dtype=pl.Float64).alias("y"),
-        ).alias("thing_one"),
+            pl.lit(1111.0).alias("x"),
+            pl.lit(2222.0).alias("y"),
+        ),
         pl.struct(
             pl.lit("thing_two").alias("id"),
-            pl.lit(3333.0, dtype=pl.Float64).alias("x"),
-            pl.lit(4444.0, dtype=pl.Float64).alias("y"),
-        ).alias("thing_two"),
+            pl.lit(3333.0).alias("x"),
+            pl.lit(4444.0).alias("y"),
+        ),
+    ]
+
+
+@pytest.fixture(scope="module")
+def valid_inlined_dict_column_expression(pl, column_type_instances):
+    """synthetic data that conforms to the inlined_class_column schema
+    using polars expression API.
+    """
+    # fmt: off
+    return pl.struct(
+        column_type_instances[0].alias("thing_one"),
+        column_type_instances[1].alias("thing_two")
     )
+    # fmt: on
+
+
+@pytest.fixture(scope="module")
+def invalid_inlined_dict_column_expression(pl, invalid_column_type_instances):
+    """synthetic data that conforms to the inlined_class_column schema
+    using polars expression API.
+    """
+    # fmt: off
+    return pl.struct(
+        invalid_column_type_instances[0].alias("thing_one"),
+        invalid_column_type_instances[1].alias("thing_two")
+    )
+    # fmt: on
 
 
 @pytest.fixture(scope="module")
@@ -329,6 +352,7 @@ def big_synthetic_dataframe(
     valid_inlined_dict_column_expression,
     valid_simple_dict_column_expression,
     valid_inlined_as_list_column_expression,
+    column_type_instances,
 ):
     """Construct a reasonably sized dataframe that complies with the PanderaSyntheticTable model"""
     test_enum = pl.Enum(["ANIMAL", "VEGETABLE", "MINERAL"])
@@ -363,15 +387,13 @@ def big_synthetic_dataframe(
                     dtype=test_ont_enum,
                     strict=False
                 ),
-                #"multivalued_column": [[1, 2, 3],] * N,
-                #"multivalued_one_many_column": pl.Series(np.random.choice(range(100), size=N), dtype=pl.Int64),
+                "multivalued_column": [[1, 2, 3],] * N,
                 "any_type_column": pl.Series([1,] * N, dtype=pl.Object),
                 "cardinality_column": pl.Series(np.arange(1, N+1), dtype=pl.Int64),
-                #"class_column": pl.Series(np.arange(0, N), dtype=pl.Int64).cast(pl.Utf8),
-                #"inlined_simple_dict_column": pl.Series([{ "A": 1, "B": 2, "C": 3 }] * N, dtype=pl.Object),
             }
         )
         .with_columns(
+            column_type_instances[0].alias("inlined_as_object_column"),
             valid_simple_dict_column_expression.alias("inlined_simple_dict_column"),
             valid_inlined_as_list_column_expression.alias("inlined_as_list_column"),
             valid_inlined_dict_column_expression.alias("inlined_class_column")
@@ -427,7 +449,7 @@ def test_get_metadata(compiled_synthetic_schema_module):
 
 
 def test_dump_synthetic_df(big_synthetic_dataframe):
-    print(big_synthetic_dataframe)
+    logger.info(big_synthetic_dataframe)
 
 
 def test_pandera_compile_basic_class_based(compiled_synthetic_schema_module, big_synthetic_dataframe):
@@ -529,8 +551,27 @@ def test_synthetic_dataframe_boolean_error(
     assert f"column '{drop_column}' not in dataframe" in str(e.value)
 
     if len(e.value.message["SCHEMA"].keys()) > 1 or "DATA" in e.value.message:
-        print(json.dumps(e.value.message, indent=2))
+        logger.info(json.dumps(e.value.message, indent=2))
         assert False
+
+
+def test_inlined_object_nested_range_type_error(
+    pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_column_type_instances
+):
+    """Change the object column values from Int64 to Float64"""
+    df_with_nested_object_type_error = big_synthetic_dataframe.with_columns(
+        invalid_column_type_instances[0].alias("inlined_as_object_column")
+    )
+
+    with pytest.raises(pandera.errors.SchemaErrors) as e:
+        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(df_with_nested_object_type_error, lazy=True)
+
+    error_details = e.value.message["DATA"]["CHECK_ERROR"][0]
+    logger.info(f"Details for expected error: {error_details}")
+
+    assert error_details["column"] == "inlined_as_object_column"
+    assert error_details["check"] == "check_nested_struct_inlined_as_object_column"
+    assert error_details["error"] == "SchemaError(\"expected column 'x' to have type Int64, got Float64\")"
 
 
 def test_inlined_simple_dict_nested_range_type_error(
@@ -557,7 +598,7 @@ def test_inlined_simple_dict_nested_range_type_error(
 def test_inlined_dict_nested_range_type_error(
     pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_inlined_dict_column_expression
 ):
-    """Change the simple dict column values from Int64 to Float64"""
+    """Change the inlined dict column values from Int64 to Float64"""
     df_with_nested_dict_type_error = big_synthetic_dataframe.with_columns(
         invalid_inlined_dict_column_expression.alias("inlined_class_column")
     )
@@ -606,7 +647,7 @@ def test_linkml_subcommand_cli_simple(cli_runner, test_inputs_dir, target_class,
     schema_path = str(test_inputs_dir / f"{schema}.yaml")
     result = cli_runner.invoke(linkml_cli, ["generate", "pandera", schema_path])
 
-    print(result.output)
+    logger.info(result.output)
 
     assert result.exit_code == 0
     assert f"class {target_class}(" in result.output

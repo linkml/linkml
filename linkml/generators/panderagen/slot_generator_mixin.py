@@ -71,7 +71,6 @@ class SlotGeneratorMixin:
                     return s
             return None
 
-    # from golanggen
     def calculate_inlined_form(self, slot: SlotDefinition) -> str:
         is_multivalued = self.is_multivalued(slot)
         internal_inlined_form_key = ((slot.inlined is True), (slot.inlined_as_list is True), is_multivalued)
@@ -110,6 +109,17 @@ class SlotGeneratorMixin:
             range = SlotGeneratorMixin.ANY_RANGE_STRING
         else:
             inlined_form = self.calculate_inlined_form(slot)
+
+            if inlined_form == SlotGeneratorMixin.FORM_INLINED_COLLECTION_DICT:
+                logger.warning(
+                    f"Slot {slot.name} uses inlined dictionary form,"
+                    "which may be less efficient than inlined as list form with the current implementation."
+                )
+            elif inlined_form == SlotGeneratorMixin.FORM_INLINED_SIMPLE_DICT:
+                logger.warning(
+                    f"Slot {slot.name} uses inlined simple dictionary form. Support is incomplete "
+                    "and performance is less efficient than inlined as list form with the current implementation."
+                )
 
             if inlined_form in (SlotGeneratorMixin.FORM_MULTIVALUED_FOREIGN_KEY, SlotGeneratorMixin.FORM_FOREIGN_KEY):
                 logger.warning(f"Foreign key not implemented for slot {slot.name}")

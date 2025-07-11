@@ -350,8 +350,6 @@ def test_inlined_as_simple_dict(framework, name, attrs, data_name, values, is_va
     if name == "extra" and data_name == "t1":
         if framework != JSON_SCHEMA:
             pytest.skip("TODO: dataclasses-based methods are permissive")
-    if framework == PANDERA_POLARS_CLASS:
-        pytest.skip("PanderaGen does not support inlined as simplie dict")
     if data_name == "expanded_noval" and framework != JSON_SCHEMA:
         pytest.skip("TODO: dataclasses-based methods dislike empty values for simpledict")
     coerced = None
