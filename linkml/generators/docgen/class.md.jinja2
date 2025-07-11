@@ -104,15 +104,15 @@ URI: {{ gen.uri_link(element) }}
 | Rule Applied | Preconditions | Postconditions | Elseconditions |
 |--------------|---------------|----------------|----------------|
 {% for key in rule.preconditions -%}
-| {{ key }} | 
+| {{ key }} |
 {%- if rule.preconditions[key] is defined -%}
 ```{{ rule.preconditions[key] }}```
 {%- else -%}
-{% endif %} | 
+{% endif %} |
 {%- if rule.postconditions and rule.postconditions[key] is defined -%}
 ```{{ rule.postconditions[key] }}```
 {%- else -%}
-{% endif %} | 
+{% endif %} |
 {%- if rule.elseconditions and rule.elseconditions[key] is defined -%}
 ```{{ rule.elseconditions[key] }}```
 {%- else -%}
