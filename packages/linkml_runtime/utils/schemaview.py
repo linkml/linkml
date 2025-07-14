@@ -1213,6 +1213,9 @@ class SchemaView:
         elif isinstance(e, SlotDefinition):
             uri = e.slot_uri
             e_name = underscore(e.name)
+        elif isinstance(e, EnumDefinition):
+            uri = e.enum_uri
+            e_name = e.name
         elif isinstance(e, TypeDefinition):
             uri = e.uri
             e_name = underscore(e.name)
