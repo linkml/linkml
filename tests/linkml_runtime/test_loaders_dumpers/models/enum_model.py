@@ -21,13 +21,12 @@ from linkml_runtime.utils.curienamespace import CurieNamespace
 metamodel_version = "1.7.0"
 
 # Namespaces
-DEFAULT_ = CurieNamespace('', 'https://example.org/enum_test/')
+DEFAULT_ = CurieNamespace("", "https://example.org/enum_test/")
 
 
 # Types
 
 # Class references
-
 
 
 @dataclass
@@ -50,7 +49,6 @@ class Organism(YAMLRoot):
 
 # Enumerations
 class StateEnum(EnumDefinitionImpl):
-
     LIVING = PermissibleValue(text="LIVING")
     DEAD = PermissibleValue(text="DEAD")
 
@@ -58,9 +56,17 @@ class StateEnum(EnumDefinitionImpl):
         name="StateEnum",
     )
 
+
 # Slots
 class slots:
     pass
 
-slots.state = Slot(uri=DEFAULT_.state, name="state", curie=DEFAULT_.curie('state'),
-                   model_uri=DEFAULT_.state, domain=None, range=Optional[Union[str, "StateEnum"]])
+
+slots.state = Slot(
+    uri=DEFAULT_.state,
+    name="state",
+    curie=DEFAULT_.curie("state"),
+    model_uri=DEFAULT_.state,
+    domain=None,
+    range=Optional[Union[str, "StateEnum"]],
+)

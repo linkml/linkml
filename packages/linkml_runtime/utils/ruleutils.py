@@ -2,7 +2,16 @@ import logging
 from dataclasses import dataclass
 
 from linkml_runtime.utils.schemaview import SchemaView
-from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, ClassExpression, ClassDefinitionName, ClassRule, AnonymousClassExpression, SlotExpression, SlotDefinitionName
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    SlotDefinition,
+    ClassExpression,
+    ClassDefinitionName,
+    ClassRule,
+    AnonymousClassExpression,
+    SlotExpression,
+    SlotDefinitionName,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -11,36 +20,41 @@ class AtomicClassExpression:
     """
     aka literal (https://en.wikipedia.org/wiki/Literal_(mathematical_logic))
     """
+
     expression: ClassExpression
     negated: bool
 
     def __str__(self):
         if self.negated:
-            return f'NOT {self.expression}'
+            return f"NOT {self.expression}"
         else:
             return str(self.expression)
+
 
 class ClassExpressionConjunction:
     """
     conjunction of class literals
     """
+
     operands: AtomicClassExpression
 
     def __str__(self):
-        return ' AND '.join([str(op) for op in self.operands])
+        return " AND ".join([str(op) for op in self.operands])
+
 
 @dataclass
 class DisjunctiveNormalFormClassExpression:
     """
     A boolean combination of class expressions in Disjunctive Normal Form
     """
+
     operands: list[ClassExpressionConjunction]
 
     def __str__(self):
-        return ' OR '.join([str(op) for op in self.operands])
+        return " OR ".join([str(op) for op in self.operands])
 
 
-def get_range_as_disjunction(slot: SlotExpression) ->  set[ClassDefinitionName]:
+def get_range_as_disjunction(slot: SlotExpression) -> set[ClassDefinitionName]:
     """
     translate the range of a slot as defined by both range expressions and direct
     named class ranges to a disjunctive expression
@@ -58,14 +72,16 @@ def get_range_as_disjunction(slot: SlotExpression) ->  set[ClassDefinitionName]:
         if isinstance(slot.range_expression, ClassExpression):
             conjs.append(get_disjunction(slot.range_expression))
         else:
-            logger.warning(f'Expected range_expression for {slot.name} to be a class expression, not {type(slot.range_expression)}')
+            logger.warning(
+                f"Expected range_expression for {slot.name} to be a class expression, not {type(slot.range_expression)}"
+            )
     if len(conjs) == 0:
         if slot.range:
             conjs.append({slot.range})
         else:
-            logger.warning(f'No range for {slot.name}')
+            logger.warning(f"No range for {slot.name}")
     if len(conjs) > 1:
-        raise Exception(f'Cannot determine range disjunction for {slot}, got conjunctions: {conjs}')
+        raise Exception(f"Cannot determine range disjunction for {slot}, got conjunctions: {conjs}")
     if len(conjs) == 0:
         return None
     else:
@@ -82,8 +98,12 @@ def get_disjunction(cx: ClassExpression) -> set[ClassDefinitionName]:
     return disj
 
 
-def subclass_to_rules(view: SchemaView, child: ClassDefinitionName, parent: ClassDefinitionName,
-                      type_designator_slot: SlotDefinitionName = None) -> list[ClassRule]:
+def subclass_to_rules(
+    view: SchemaView,
+    child: ClassDefinitionName,
+    parent: ClassDefinitionName,
+    type_designator_slot: SlotDefinitionName = None,
+) -> list[ClassRule]:
     """
     rolls up child class to parent class, turning class-specific slot_usages into rules
     :param view:
@@ -98,10 +118,10 @@ def subclass_to_rules(view: SchemaView, child: ClassDefinitionName, parent: Clas
         if len(type_designators) == 1:
             type_designator_slot = type_designators[0]
         elif len(type_designators) > 1:
-            raise Exception(f'Multiple type designatirs: {type_designators}')
+            raise Exception(f"Multiple type designatirs: {type_designators}")
         else:
-            type_designator_slot = SlotDefinitionName('type')
-    rule.preconditions = AnonymousClassExpression(slot_conditions=[SlotDefinition('type', equals_string=child)])
+            type_designator_slot = SlotDefinitionName("type")
+    rule.preconditions = AnonymousClassExpression(slot_conditions=[SlotDefinition("type", equals_string=child)])
     rule.postconditions = AnonymousClassExpression(slot_conditions=child_slots)
     # ensure slots are declared for parent
     parent_slots = view.class_induced_slots(parent)
@@ -130,8 +150,3 @@ def remove_redundant_rules(view: SchemaView, class_name: ClassDefinitionName):
     for rule in redundant_rules:
         cls.rules.remove(rule)
     return redundant_rules
-
-
-
-
-

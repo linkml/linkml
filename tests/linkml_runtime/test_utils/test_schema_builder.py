@@ -49,9 +49,7 @@ def test_add_existing_class(replace_if_present):
     ],
 )
 @pytest.mark.parametrize("use_attributes", [True, False])
-def test_add_class_with_slot_additions(
-    slots: Optional[list[Union[str, SlotDefinition]]], use_attributes: bool
-):
+def test_add_class_with_slot_additions(slots: Optional[list[Union[str, SlotDefinition]]], use_attributes: bool):
     """
     Test adding a class with separate additional slots specification
     """
@@ -262,5 +260,6 @@ def test_add_enum_with_extra_kwargs(
         added_enum = builder.schema.enums[enum_name]
 
         assert added_enum == expected_added_enum
+
 
 # === Tests for `SchemaBuilder.add_enum` end ===

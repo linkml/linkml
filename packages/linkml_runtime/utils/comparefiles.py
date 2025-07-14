@@ -4,9 +4,9 @@ import sys
 import click
 
 
-def compare_files(file: str, target: str, comments: str = r'^\s+#.*\n') -> int:
+def compare_files(file: str, target: str, comments: str = r"^\s+#.*\n") -> int:
     def filtr(txt: str) -> str:
-        return re.sub(comments, '', txt, flags=re.MULTILINE).strip()
+        return re.sub(comments, "", txt, flags=re.MULTILINE).strip()
 
     with open(target) as oldfile:
         oldtext = filtr(oldfile.read())
@@ -21,9 +21,9 @@ def compare_files(file: str, target: str, comments: str = r'^\s+#.*\n') -> int:
 @click.argument("file2", type=click.Path(exists=True, dir_okay=False))
 @click.option("-c", "--comments", help="Comments regexp", default="^#.*$", show_default=True)
 def cli(file1, file2, comments) -> None:
-    """ Compare file1 to file2 using a filter """
+    """Compare file1 to file2 using a filter"""
     sys.exit(compare_files(file1, file2, comments))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli(sys.argv[1:])

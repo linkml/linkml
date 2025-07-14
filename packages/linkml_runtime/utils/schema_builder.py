@@ -1,10 +1,15 @@
 from dataclasses import dataclass, fields
 from typing import Union, Optional
 
-from linkml_runtime.linkml_model import (ClassDefinition, EnumDefinition,
-                                         PermissibleValue, Prefix,
-                                         SchemaDefinition, SlotDefinition,
-                                         TypeDefinition)
+from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    EnumDefinition,
+    PermissibleValue,
+    Prefix,
+    SchemaDefinition,
+    SlotDefinition,
+    TypeDefinition,
+)
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schema_as_dict import schema_as_dict
 
@@ -87,10 +92,7 @@ class SchemaBuilder:
         else:
             # Ensure that `cls` is a `ClassDefinition` object
             if not isinstance(cls, ClassDefinition):
-                msg = (
-                    f"cls must be a string, dict, or ClassDefinition, "
-                    f"not {type(cls)!r}"
-                )
+                msg = f"cls must be a string, dict, or ClassDefinition, not {type(cls)!r}"
                 raise TypeError(msg)
 
             cls_as_dict = {f.name: getattr(cls, f.name) for f in fields(cls)}
@@ -105,9 +107,7 @@ class SchemaBuilder:
                 if isinstance(s, SlotDefinition):
                     cls.attributes[s.name] = s
                 else:
-                    raise ValueError(
-                        f"If use_attributes=True then slots must be SlotDefinitions"
-                    )
+                    raise ValueError(f"If use_attributes=True then slots must be SlotDefinitions")
         else:
             for s in slots:
                 cls.slots.append(s.name if isinstance(s, SlotDefinition) else s)
@@ -186,10 +186,7 @@ class SchemaBuilder:
         else:
             # Ensure that `enum_def` is a `EnumDefinition` object
             if not isinstance(enum_def, EnumDefinition):
-                msg = (
-                    f"enum_def must be a `str`, `dict`, or `EnumDefinition`, "
-                    f"not {type(enum_def)!r}"
-                )
+                msg = f"enum_def must be a `str`, `dict`, or `EnumDefinition`, not {type(enum_def)!r}"
                 raise TypeError(msg)
 
         if enum_def.name in self.schema.enums and not replace_if_present:
@@ -202,17 +199,14 @@ class SchemaBuilder:
             if isinstance(pv, str):
                 pv = PermissibleValue(text=pv)
             elif not isinstance(pv, PermissibleValue):
-                msg = (
-                    f"A permissible value must be a `str` or "
-                    f"a `PermissibleValue` object, not {type(pv)}"
-                )
+                msg = f"A permissible value must be a `str` or a `PermissibleValue` object, not {type(pv)}"
                 raise TypeError(msg)
 
             enum_def.permissible_values[pv.text] = pv
 
         return self
 
-    def add_prefix(self, prefix: str, url: str, replace_if_present = False) -> "SchemaBuilder":
+    def add_prefix(self, prefix: str, url: str, replace_if_present=False) -> "SchemaBuilder":
         """
         Adds a prefix for use with CURIEs
 
@@ -237,7 +231,6 @@ class SchemaBuilder:
         self.schema.imports.extend(imports)
         return self
 
-
     def add_defaults(self) -> "SchemaBuilder":
         """
         Sets defaults, including:
@@ -258,12 +251,12 @@ class SchemaBuilder:
         return self
 
     def add_type(
-            self,
-            type: Union[TypeDefinition, dict, str],
-            typeof: str = None,
-            uri: str = None,
-            replace_if_present=False,
-            **kwargs
+        self,
+        type: Union[TypeDefinition, dict, str],
+        typeof: str = None,
+        uri: str = None,
+        replace_if_present=False,
+        **kwargs,
     ) -> "SchemaBuilder":
         """
         Adds the type to the schema

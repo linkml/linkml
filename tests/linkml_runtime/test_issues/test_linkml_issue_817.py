@@ -18,18 +18,18 @@ class Issue817TestCase(unittest.TestCase):
         self.assertCountEqual(c2.noidobj_as_list, c.noidobj_as_list)
 
     def test_issue_817(self):
-        person = Person(id='x', name='x', vital_status=VitalStatusEnum('LIVING'))
-        person2 = Person(id='y', name='y', vital_status=VitalStatusEnum('DEAD'))
-        thing = PersonNoId(name='z', vital_status=VitalStatusEnum('LIVING'))
-        c = Container(persons_as_list=[person, person2],
-                      persons_as_dict={person.id: person, person2.id: person2},
-                      single_person_inlined=person,
-                      noidobj_as_list=[thing],
-                      single_noidobj_inlined=thing)
+        person = Person(id="x", name="x", vital_status=VitalStatusEnum("LIVING"))
+        person2 = Person(id="y", name="y", vital_status=VitalStatusEnum("DEAD"))
+        thing = PersonNoId(name="z", vital_status=VitalStatusEnum("LIVING"))
+        c = Container(
+            persons_as_list=[person, person2],
+            persons_as_dict={person.id: person, person2.id: person2},
+            single_person_inlined=person,
+            noidobj_as_list=[thing],
+            single_noidobj_inlined=thing,
+        )
         self._roundtrip(c)
 
 
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -20,6 +20,7 @@ class EnumDefinitionMeta(type):
 
     def __setattr__(self, key, value):
         from linkml_runtime.linkml_model.meta import PermissibleValue
+
         if self._defn.code_set and isinstance(value, PermissibleValue) and value.meaning:
             print(f"Validating {value.meaning} against {self._defn.code_set}")
         super().__setattr__(key, value)
@@ -29,11 +30,12 @@ class EnumDefinitionMeta(type):
 
 
 def isinstance_dt(cls: type, inst: str) -> bool:
-    """ Duck typing isinstance to prevent recursion errors """
+    """Duck typing isinstance to prevent recursion errors"""
     return inst in [c.__name__ for c in type(cls).mro()]
 
+
 class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
-    _defn: "EnumDefinition" = None         # Overridden by implementation
+    _defn: "EnumDefinition" = None  # Overridden by implementation
 
     def __init__(self, code: Union[str, Curie]) -> None:
         if isinstance_dt(code, "PermissibleValue"):
@@ -51,10 +53,12 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
         elif key not in self.__class__:
             raise ValueError(f"Unknown {self.__class__.__name__} enumeration code: {key}")
         elif isinstance_dt(code, "PermissibleValue"):
-            if getattr(self, 'code', None):
+            if getattr(self, "code", None):
                 if self._code != code:
-                    raise ValueError(f"Enumeration: {self.__class__.__name__} - "
-                                     f"Cannot change an existing permissible value entry for {code}")
+                    raise ValueError(
+                        f"Enumeration: {self.__class__.__name__} - "
+                        f"Cannot change an existing permissible value entry for {code}"
+                    )
             else:
                 self._code = code
         else:
@@ -93,13 +97,13 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
 
     @classmethod
     def _addvals(cls):
-        """ Override this to add non-python compatible values """
+        """Override this to add non-python compatible values"""
         pass
 
     def __str__(self) -> str:
-        """ The string representation of an enumerated value should be the code representing this value."""
+        """The string representation of an enumerated value should be the code representing this value."""
         return self._code.text
 
     def __repr__(self) -> str:
         rlist = [(f.name, getattr(self._code, f.name)) for f in fields(self._code)]
-        return self.__class__.__name__ + '(' + ', '.join([f"{f[0]}={repr(f[1])}" for f in rlist if f[1]]) + ')'
+        return self.__class__.__name__ + "(" + ", ".join([f"{f[0]}={repr(f[1])}" for f in rlist if f[1]]) + ")"

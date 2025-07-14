@@ -22,12 +22,13 @@ from linkml_runtime.utils.curienamespace import CurieNamespace
 metamodel_version = "1.7.0"
 
 # Namespaces
-EXAMPLE = CurieNamespace('example', 'https://w3id.org/example')
-LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
+EXAMPLE = CurieNamespace("example", "https://w3id.org/example")
+LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
 DEFAULT_ = EXAMPLE
 
 
 # Types
+
 
 # Class references
 class CreativeWorkId(extended_str):
@@ -188,7 +189,9 @@ class Shop(YAMLRoot):
     class_name: ClassVar[str] = "shop"
     class_model_uri: ClassVar[URIRef] = EXAMPLE.Shop
 
-    all_book_series: Optional[Union[dict[Union[str, BookSeriesId], Union[dict, BookSeries]], list[Union[dict, BookSeries]]]] = empty_dict()
+    all_book_series: Optional[
+        Union[dict[Union[str, BookSeriesId], Union[dict, BookSeries]], list[Union[dict, BookSeries]]]
+    ] = empty_dict()
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         self._normalize_inlined_as_list(slot_name="all_book_series", slot_type=BookSeries, key_name="id", keyed=True)
@@ -244,7 +247,6 @@ class Review(YAMLRoot):
 
 # Enumerations
 class GenreEnum(EnumDefinitionImpl):
-
     scifi = PermissibleValue(text="scifi")
     fantasy = PermissibleValue(text="fantasy")
     western = PermissibleValue(text="western")
@@ -255,51 +257,131 @@ class GenreEnum(EnumDefinitionImpl):
         name="GenreEnum",
     )
 
+
 # Slots
 class slots:
     pass
 
-slots.id = Slot(uri=EXAMPLE.id, name="id", curie=EXAMPLE.curie('id'),
-                   model_uri=EXAMPLE.id, domain=None, range=URIRef)
 
-slots.book_category = Slot(uri=EXAMPLE.book_category, name="book_category", curie=EXAMPLE.curie('book_category'),
-                   model_uri=EXAMPLE.book_category, domain=None, range=Optional[Union[str, list[str]]])
+slots.id = Slot(uri=EXAMPLE.id, name="id", curie=EXAMPLE.curie("id"), model_uri=EXAMPLE.id, domain=None, range=URIRef)
 
-slots.name = Slot(uri=EXAMPLE.name, name="name", curie=EXAMPLE.curie('name'),
-                   model_uri=EXAMPLE.name, domain=None, range=Optional[str])
+slots.book_category = Slot(
+    uri=EXAMPLE.book_category,
+    name="book_category",
+    curie=EXAMPLE.curie("book_category"),
+    model_uri=EXAMPLE.book_category,
+    domain=None,
+    range=Optional[Union[str, list[str]]],
+)
 
-slots.price = Slot(uri=EXAMPLE.price, name="price", curie=EXAMPLE.curie('price'),
-                   model_uri=EXAMPLE.price, domain=None, range=Optional[float])
+slots.name = Slot(
+    uri=EXAMPLE.name, name="name", curie=EXAMPLE.curie("name"), model_uri=EXAMPLE.name, domain=None, range=Optional[str]
+)
 
-slots.inStock = Slot(uri=EXAMPLE.inStock, name="inStock", curie=EXAMPLE.curie('inStock'),
-                   model_uri=EXAMPLE.inStock, domain=None, range=Optional[str])
+slots.price = Slot(
+    uri=EXAMPLE.price,
+    name="price",
+    curie=EXAMPLE.curie("price"),
+    model_uri=EXAMPLE.price,
+    domain=None,
+    range=Optional[float],
+)
 
-slots.creator = Slot(uri=EXAMPLE.creator, name="creator", curie=EXAMPLE.curie('creator'),
-                   model_uri=EXAMPLE.creator, domain=None, range=Optional[Union[dict, Author]])
+slots.inStock = Slot(
+    uri=EXAMPLE.inStock,
+    name="inStock",
+    curie=EXAMPLE.curie("inStock"),
+    model_uri=EXAMPLE.inStock,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.genres = Slot(uri=EXAMPLE.genres, name="genres", curie=EXAMPLE.curie('genres'),
-                   model_uri=EXAMPLE.genres, domain=None, range=Optional[Union[Union[str, "GenreEnum"], list[Union[str, "GenreEnum"]]]])
+slots.creator = Slot(
+    uri=EXAMPLE.creator,
+    name="creator",
+    curie=EXAMPLE.curie("creator"),
+    model_uri=EXAMPLE.creator,
+    domain=None,
+    range=Optional[Union[dict, Author]],
+)
 
-slots.from_country = Slot(uri=EXAMPLE.from_country, name="from_country", curie=EXAMPLE.curie('from_country'),
-                   model_uri=EXAMPLE.from_country, domain=None, range=Optional[Union[str, CountryName]])
+slots.genres = Slot(
+    uri=EXAMPLE.genres,
+    name="genres",
+    curie=EXAMPLE.curie("genres"),
+    model_uri=EXAMPLE.genres,
+    domain=None,
+    range=Optional[Union[Union[str, "GenreEnum"], list[Union[str, "GenreEnum"]]]],
+)
 
-slots.books = Slot(uri=EXAMPLE.books, name="books", curie=EXAMPLE.curie('books'),
-                   model_uri=EXAMPLE.books, domain=None, range=Optional[Union[dict[Union[str, BookId], Union[dict, Book]], list[Union[dict, Book]]]])
+slots.from_country = Slot(
+    uri=EXAMPLE.from_country,
+    name="from_country",
+    curie=EXAMPLE.curie("from_country"),
+    model_uri=EXAMPLE.from_country,
+    domain=None,
+    range=Optional[Union[str, CountryName]],
+)
 
-slots.all_book_series = Slot(uri=EXAMPLE.all_book_series, name="all_book_series", curie=EXAMPLE.curie('all_book_series'),
-                   model_uri=EXAMPLE.all_book_series, domain=None, range=Optional[Union[dict[Union[str, BookSeriesId], Union[dict, BookSeries]], list[Union[dict, BookSeries]]]])
+slots.books = Slot(
+    uri=EXAMPLE.books,
+    name="books",
+    curie=EXAMPLE.curie("books"),
+    model_uri=EXAMPLE.books,
+    domain=None,
+    range=Optional[Union[dict[Union[str, BookId], Union[dict, Book]], list[Union[dict, Book]]]],
+)
 
-slots.summary = Slot(uri=EXAMPLE.summary, name="summary", curie=EXAMPLE.curie('summary'),
-                   model_uri=EXAMPLE.summary, domain=None, range=Optional[str])
+slots.all_book_series = Slot(
+    uri=EXAMPLE.all_book_series,
+    name="all_book_series",
+    curie=EXAMPLE.curie("all_book_series"),
+    model_uri=EXAMPLE.all_book_series,
+    domain=None,
+    range=Optional[Union[dict[Union[str, BookSeriesId], Union[dict, BookSeries]], list[Union[dict, BookSeries]]]],
+)
 
-slots.reviews = Slot(uri=EXAMPLE.reviews, name="reviews", curie=EXAMPLE.curie('reviews'),
-                   model_uri=EXAMPLE.reviews, domain=None, range=Optional[Union[Union[dict, Review], list[Union[dict, Review]]]])
+slots.summary = Slot(
+    uri=EXAMPLE.summary,
+    name="summary",
+    curie=EXAMPLE.curie("summary"),
+    model_uri=EXAMPLE.summary,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.rating = Slot(uri=EXAMPLE.rating, name="rating", curie=EXAMPLE.curie('rating'),
-                   model_uri=EXAMPLE.rating, domain=None, range=Optional[int])
+slots.reviews = Slot(
+    uri=EXAMPLE.reviews,
+    name="reviews",
+    curie=EXAMPLE.curie("reviews"),
+    model_uri=EXAMPLE.reviews,
+    domain=None,
+    range=Optional[Union[Union[dict, Review], list[Union[dict, Review]]]],
+)
 
-slots.review_text = Slot(uri=EXAMPLE.review_text, name="review_text", curie=EXAMPLE.curie('review_text'),
-                   model_uri=EXAMPLE.review_text, domain=None, range=Optional[str])
+slots.rating = Slot(
+    uri=EXAMPLE.rating,
+    name="rating",
+    curie=EXAMPLE.curie("rating"),
+    model_uri=EXAMPLE.rating,
+    domain=None,
+    range=Optional[int],
+)
 
-slots.country_name = Slot(uri=EXAMPLE.name, name="country_name", curie=EXAMPLE.curie('name'),
-                   model_uri=EXAMPLE.country_name, domain=Country, range=Union[str, CountryName])
+slots.review_text = Slot(
+    uri=EXAMPLE.review_text,
+    name="review_text",
+    curie=EXAMPLE.curie("review_text"),
+    model_uri=EXAMPLE.review_text,
+    domain=None,
+    range=Optional[str],
+)
+
+slots.country_name = Slot(
+    uri=EXAMPLE.name,
+    name="country_name",
+    curie=EXAMPLE.curie("name"),
+    model_uri=EXAMPLE.country_name,
+    domain=Country,
+    range=Union[str, CountryName],
+)

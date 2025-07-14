@@ -10,7 +10,8 @@ from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 
-SCHEMA_PATH_VAR = 'schema_path'
+SCHEMA_PATH_VAR = "schema_path"
+
 
 def package_schema_path(package: Union[str, ModuleType]) -> Path:
     if isinstance(package, str):
@@ -36,6 +37,7 @@ def package_schemaview(package: str, **kwargs) -> SchemaView:
     """
     return SchemaView(get_schema_string(package, **kwargs))
 
+
 def object_schemaview(obj: YAMLRoot) -> SchemaView:
     """
     Given an object that instantiates a LinkML class, return the corresponding SchemaView
@@ -45,6 +47,7 @@ def object_schemaview(obj: YAMLRoot) -> SchemaView:
     """
     cls = type(obj)
     return package_schemaview(cls.__module__)
+
 
 def object_class_definition(obj: YAMLRoot) -> ClassDefinition:
     """
@@ -56,5 +59,3 @@ def object_class_definition(obj: YAMLRoot) -> ClassDefinition:
     sv = object_schemaview(obj)
     cls = type(obj)
     return sv.get_class(cls.class_name)
-
-

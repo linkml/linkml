@@ -22,17 +22,18 @@ metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-EX = CurieNamespace('ex', 'https://example.org/')
-LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
-PERSONINFO = CurieNamespace('personinfo', 'https://w3id.org/linkml/personinfo/')
-SCHEMA = CurieNamespace('schema', 'http://schema.org/')
-XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
+EX = CurieNamespace("ex", "https://example.org/")
+LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
+PERSONINFO = CurieNamespace("personinfo", "https://w3id.org/linkml/personinfo/")
+SCHEMA = CurieNamespace("schema", "http://schema.org/")
+XSD = CurieNamespace("xsd", "http://www.w3.org/2001/XMLSchema#")
 DEFAULT_ = PERSONINFO
 
 
 # Types
 class Code(String):
-    """ An identifier that is encoded in a string.  This is used to represent identifiers that are not URIs, but are encoded as strings.  For example, a person's social security number is an encoded identifier. """
+    """An identifier that is encoded in a string.  This is used to represent identifiers that are not URIs, but are encoded as strings.  For example, a person's social security number is an encoded identifier."""
+
     type_class_uri = XSD.string
     type_class_curie = "xsd:string"
     type_name = "Code"
@@ -149,7 +150,9 @@ class Dataset(YAMLRoot):
 
     source: Optional[Union[str, URIorCURIE]] = None
     persons: Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]] = empty_dict()
-    organizations: Optional[Union[dict[Union[str, OrganizationId], Union[dict, Organization]], list[Union[dict, Organization]]]] = empty_dict()
+    organizations: Optional[
+        Union[dict[Union[str, OrganizationId], Union[dict, Organization]], list[Union[dict, Organization]]]
+    ] = empty_dict()
     pets: Optional[Union[dict[Union[str, PetId], Union[dict, Pet]], list[Union[dict, Pet]]]] = empty_dict()
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
@@ -172,41 +175,120 @@ class Dataset(YAMLRoot):
 class slots:
     pass
 
-slots.person__id = Slot(uri=PERSONINFO.id, name="person__id", curie=PERSONINFO.curie('id'),
-                   model_uri=PERSONINFO.person__id, domain=None, range=URIRef)
 
-slots.person__name = Slot(uri=SCHEMA.name, name="person__name", curie=SCHEMA.curie('name'),
-                   model_uri=PERSONINFO.person__name, domain=None, range=Optional[str])
+slots.person__id = Slot(
+    uri=PERSONINFO.id,
+    name="person__id",
+    curie=PERSONINFO.curie("id"),
+    model_uri=PERSONINFO.person__id,
+    domain=None,
+    range=URIRef,
+)
 
-slots.person__friends = Slot(uri=PERSONINFO.friends, name="person__friends", curie=PERSONINFO.curie('friends'),
-                   model_uri=PERSONINFO.person__friends, domain=None, range=Optional[Union[Union[str, PersonId], list[Union[str, PersonId]]]])
+slots.person__name = Slot(
+    uri=SCHEMA.name,
+    name="person__name",
+    curie=SCHEMA.curie("name"),
+    model_uri=PERSONINFO.person__name,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.pet__id = Slot(uri=PERSONINFO.id, name="pet__id", curie=PERSONINFO.curie('id'),
-                   model_uri=PERSONINFO.pet__id, domain=None, range=URIRef)
+slots.person__friends = Slot(
+    uri=PERSONINFO.friends,
+    name="person__friends",
+    curie=PERSONINFO.curie("friends"),
+    model_uri=PERSONINFO.person__friends,
+    domain=None,
+    range=Optional[Union[Union[str, PersonId], list[Union[str, PersonId]]]],
+)
 
-slots.pet__name = Slot(uri=SCHEMA.name, name="pet__name", curie=SCHEMA.curie('name'),
-                   model_uri=PERSONINFO.pet__name, domain=None, range=Optional[str])
+slots.pet__id = Slot(
+    uri=PERSONINFO.id,
+    name="pet__id",
+    curie=PERSONINFO.curie("id"),
+    model_uri=PERSONINFO.pet__id,
+    domain=None,
+    range=URIRef,
+)
 
-slots.pet__owner = Slot(uri=SCHEMA.owner, name="pet__owner", curie=SCHEMA.curie('owner'),
-                   model_uri=PERSONINFO.pet__owner, domain=None, range=Optional[Union[str, PersonId]])
+slots.pet__name = Slot(
+    uri=SCHEMA.name,
+    name="pet__name",
+    curie=SCHEMA.curie("name"),
+    model_uri=PERSONINFO.pet__name,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.organization__id = Slot(uri=PERSONINFO.id, name="organization__id", curie=PERSONINFO.curie('id'),
-                   model_uri=PERSONINFO.organization__id, domain=None, range=URIRef)
+slots.pet__owner = Slot(
+    uri=SCHEMA.owner,
+    name="pet__owner",
+    curie=SCHEMA.curie("owner"),
+    model_uri=PERSONINFO.pet__owner,
+    domain=None,
+    range=Optional[Union[str, PersonId]],
+)
 
-slots.organization__name = Slot(uri=SCHEMA.name, name="organization__name", curie=SCHEMA.curie('name'),
-                   model_uri=PERSONINFO.organization__name, domain=None, range=Optional[str])
+slots.organization__id = Slot(
+    uri=PERSONINFO.id,
+    name="organization__id",
+    curie=PERSONINFO.curie("id"),
+    model_uri=PERSONINFO.organization__id,
+    domain=None,
+    range=URIRef,
+)
 
-slots.organization__part_of = Slot(uri=PERSONINFO.part_of, name="organization__part_of", curie=PERSONINFO.curie('part_of'),
-                   model_uri=PERSONINFO.organization__part_of, domain=None, range=Optional[Union[Union[str, OrganizationId], list[Union[str, OrganizationId]]]])
+slots.organization__name = Slot(
+    uri=SCHEMA.name,
+    name="organization__name",
+    curie=SCHEMA.curie("name"),
+    model_uri=PERSONINFO.organization__name,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.dataset__source = Slot(uri=PERSONINFO.source, name="dataset__source", curie=PERSONINFO.curie('source'),
-                   model_uri=PERSONINFO.dataset__source, domain=None, range=Optional[Union[str, URIorCURIE]])
+slots.organization__part_of = Slot(
+    uri=PERSONINFO.part_of,
+    name="organization__part_of",
+    curie=PERSONINFO.curie("part_of"),
+    model_uri=PERSONINFO.organization__part_of,
+    domain=None,
+    range=Optional[Union[Union[str, OrganizationId], list[Union[str, OrganizationId]]]],
+)
 
-slots.dataset__persons = Slot(uri=PERSONINFO.persons, name="dataset__persons", curie=PERSONINFO.curie('persons'),
-                   model_uri=PERSONINFO.dataset__persons, domain=None, range=Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]])
+slots.dataset__source = Slot(
+    uri=PERSONINFO.source,
+    name="dataset__source",
+    curie=PERSONINFO.curie("source"),
+    model_uri=PERSONINFO.dataset__source,
+    domain=None,
+    range=Optional[Union[str, URIorCURIE]],
+)
 
-slots.dataset__organizations = Slot(uri=PERSONINFO.organizations, name="dataset__organizations", curie=PERSONINFO.curie('organizations'),
-                   model_uri=PERSONINFO.dataset__organizations, domain=None, range=Optional[Union[dict[Union[str, OrganizationId], Union[dict, Organization]], list[Union[dict, Organization]]]])
+slots.dataset__persons = Slot(
+    uri=PERSONINFO.persons,
+    name="dataset__persons",
+    curie=PERSONINFO.curie("persons"),
+    model_uri=PERSONINFO.dataset__persons,
+    domain=None,
+    range=Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]],
+)
 
-slots.dataset__pets = Slot(uri=PERSONINFO.pets, name="dataset__pets", curie=PERSONINFO.curie('pets'),
-                   model_uri=PERSONINFO.dataset__pets, domain=None, range=Optional[Union[dict[Union[str, PetId], Union[dict, Pet]], list[Union[dict, Pet]]]])
+slots.dataset__organizations = Slot(
+    uri=PERSONINFO.organizations,
+    name="dataset__organizations",
+    curie=PERSONINFO.curie("organizations"),
+    model_uri=PERSONINFO.dataset__organizations,
+    domain=None,
+    range=Optional[Union[dict[Union[str, OrganizationId], Union[dict, Organization]], list[Union[dict, Organization]]]],
+)
+
+slots.dataset__pets = Slot(
+    uri=PERSONINFO.pets,
+    name="dataset__pets",
+    curie=PERSONINFO.curie("pets"),
+    model_uri=PERSONINFO.dataset__pets,
+    domain=None,
+    range=Optional[Union[dict[Union[str, PetId], Union[dict, Pet]], list[Union[dict, Pet]]]],
+)

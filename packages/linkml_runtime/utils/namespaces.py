@@ -25,7 +25,7 @@ BIOCONTEXT_CONTEXTS = [
     "obo_context",
     "ro_vocab_context",
     "semweb_context",
-    "semweb_vocab_context"
+    "semweb_vocab_context",
 ]
 PREFIXMAPS_CONTEXTS = [
     "bioportal",
@@ -36,29 +36,30 @@ PREFIXMAPS_CONTEXTS = [
     "merged",
     "merged.oak",
     "obo",
-    "prefixcc"
+    "prefixcc",
 ]
 
 
 class Namespaces(CaseInsensitiveDict):
-    """ Namespace manager.  Functions as both a dictionary and a python
-     namespace.
+    """Namespace manager.  Functions as both a dictionary and a python
+    namespace.
 
-     Supports:  namespaces.NS [= uri]
-                namespaces[NS] [= uri]
-                namespaces._default [= uri]    # namespace for ':'
-                namespaces._base [= uri]       # namespace for @base
+    Supports:  namespaces.NS [= uri]
+               namespaces[NS] [= uri]
+               namespaces._default [= uri]    # namespace for ':'
+               namespaces._base [= uri]       # namespace for @base
 
-     Functions: namespaces.curie_for(uri) --> curie
-                namespaces.prefix_for(uri_or_curie) --> NCName
-                namespaces.add_prefixmap(map name)
-     """
-    _default_key = '@default'
-    _base_key = '@base'
+    Functions: namespaces.curie_for(uri) --> curie
+               namespaces.prefix_for(uri_or_curie) --> NCName
+               namespaces.add_prefixmap(map name)
+    """
+
+    _default_key = "@default"
+    _base_key = "@base"
 
     # BNODE management -- when the namespace is '_', we map the ln via _bnodes to a new bnode
-    _bnodes = {}                    # BNode to BNode map
-    _empty_bnode = BNode()          # Node for '_:'
+    _bnodes = {}  # BNode to BNode map
+    _empty_bnode = BNode()  # Node for '_:'
 
     def __init__(self, g: Optional[Graph] = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -66,7 +67,7 @@ class Namespaces(CaseInsensitiveDict):
             self.from_graph(g)
 
     def __setitem__(self, key, value):
-        if key == '_':
+        if key == "_":
             if not value:
                 if self._empty_bnode not in self._bnodes:
                     self._bnodes[self._empty_bnode] = BNode()
@@ -79,7 +80,7 @@ class Namespaces(CaseInsensitiveDict):
         elif is_ncname(key):
             v = Namespace(str(value))
             if key in self and self[key] != v:
-                logger = logging.getLogger('linkml_runtime.Namespaces')
+                logger = logging.getLogger("linkml_runtime.Namespaces")
                 logger.warning(f"{key} namespace is already mapped to {self[key]} - Overriding with mapping to {v}")
 
             super().__setitem__(key, v)
@@ -90,7 +91,7 @@ class Namespaces(CaseInsensitiveDict):
         return self[item]
 
     def __setattr__(self, key: str, value):
-        if key.startswith('_') and len(key) > 1:
+        if key.startswith("_") and len(key) > 1:
             super().__setattr__(key, value)
         else:
             self[key] = value
@@ -149,7 +150,7 @@ class Namespaces(CaseInsensitiveDict):
 
         if pythonform:
             default_ok = False
-        match: tuple[str, Optional[Namespace]] = ('', None)     # match string / prefix
+        match: tuple[str, Optional[Namespace]] = ("", None)  # match string / prefix
         uri_string = str(uri)
 
         # Find the longest match for the URI, self.items() is a list of (prefix/namespace, uri base prefix) tuples
@@ -159,8 +160,9 @@ class Namespaces(CaseInsensitiveDict):
             if uri_string.startswith(uri_base_string):
                 # default key and base key are `@default` `@base` respectively
                 # at this point match[0] is '', match[1] is None
-                if len(uri_base_string) > len(match[0]) and \
-                        (default_ok or namespace not in (Namespaces._default_key, Namespaces._base_key)):
+                if len(uri_base_string) > len(match[0]) and (
+                    default_ok or namespace not in (Namespaces._default_key, Namespaces._base_key)
+                ):
                     match = (uri_base_string, namespace)
 
         # check if length of uri_base_string is > 0, now after basically assigning it to be the URI base string
@@ -170,7 +172,7 @@ class Namespaces(CaseInsensitiveDict):
                 # uppercase the namespace
                 namespace = match[1].upper()
                 # match[0] is the URI base string, so we remove that from the incoming URI
-                leftover_uri = uri_string.replace((match[0]), '')
+                leftover_uri = uri_string.replace((match[0]), "")
                 if not leftover_uri:
                     return f"URIRef(str({namespace}))"
                 # why?
@@ -180,11 +182,11 @@ class Namespaces(CaseInsensitiveDict):
                     return f'{namespace}["{leftover_uri}"]'
             else:
                 if match[1] == Namespaces._default_key:
-                    return uri_string.replace(match[0], ':')
+                    return uri_string.replace(match[0], ":")
                 elif match[1] == Namespaces._base_key:
-                    return uri_string.replace(match[0], '')
+                    return uri_string.replace(match[0], "")
                 else:
-                    return uri_string.replace(match[0], match[1] + ':')
+                    return uri_string.replace(match[0], match[1] + ":")
         return None
 
     def prefix_for(self, uri_or_curie: Any, case_shift: bool = True) -> Optional[str]:
@@ -192,14 +194,14 @@ class Namespaces(CaseInsensitiveDict):
 
     def prefix_suffix(self, uri_or_curie: Any, case_shift: bool = True) -> tuple[Optional[str], Optional[str]]:
         uri_or_curie = str(uri_or_curie)
-        if '://' in uri_or_curie:
+        if "://" in uri_or_curie:
             uri_or_curie = self.curie_for(uri_or_curie)
             if not uri_or_curie:
                 return None, None
-        if ':' in uri_or_curie:
-            pfx, sfx = uri_or_curie.split(':')
+        if ":" in uri_or_curie:
+            pfx, sfx = uri_or_curie.split(":")
         else:
-            pfx, sfx = uri_or_curie, ''
+            pfx, sfx = uri_or_curie, ""
         return self._cased_key(pfx) if case_shift else pfx, sfx
 
     def uri_for(self, uri_or_curie: Any) -> URIRef:
@@ -210,12 +212,12 @@ class Namespaces(CaseInsensitiveDict):
         :return: Corresponding URI
         """
         uri_or_curie_str = str(uri_or_curie)
-        if '://' in uri_or_curie_str:
+        if "://" in uri_or_curie_str:
             return URIRef(uri_or_curie_str)
-        if ':\\' in uri_or_curie_str:  # Windows drive letters
+        if ":\\" in uri_or_curie_str:  # Windows drive letters
             return URIRef(uri_or_curie_str)
-        if ':' in uri_or_curie_str:
-            prefix, local = str(uri_or_curie_str).split(':', 1)
+        if ":" in uri_or_curie_str:
+            prefix, local = str(uri_or_curie_str).split(":", 1)
             if not prefix:
                 prefix = self._default_key
             elif not is_ncname(prefix):
@@ -228,27 +230,27 @@ class Namespaces(CaseInsensitiveDict):
         return URIRef(self.join(self[prefix], local))
 
     def uri_or_curie_for(self, prefix: Union[str, URIRef], suffix: str) -> str:
-        """ Return a CURIE for prefix/suffix if possible, else a URI """
-        if isinstance(prefix, URIRef) or ':/' in str(prefix):
+        """Return a CURIE for prefix/suffix if possible, else a URI"""
+        if isinstance(prefix, URIRef) or ":/" in str(prefix):
             prefix_as_uri = str(prefix)
             for k, v in self.items():
-                if not k.startswith('@') and prefix_as_uri == str(v):
-                    return k + ':' + suffix
+                if not k.startswith("@") and prefix_as_uri == str(v):
+                    return k + ":" + suffix
             return self.join(str(prefix), suffix)
         elif prefix not in self:
             raise ValueError(f"Unrecognized prefix: {prefix}")
         else:
-            return prefix + ':' + suffix
+            return prefix + ":" + suffix
 
     def load_graph(self, g: Graph) -> Graph:
-        """ Transfer all of the known namespaces into G """
+        """Transfer all of the known namespaces into G"""
         for k, v in self.items():
-            if not k.startswith('_') and not k.startswith('@'):
+            if not k.startswith("_") and not k.startswith("@"):
                 g.bind(k, URIRef(v))
         return g
 
     def from_graph(self, g: Graph) -> "Namespaces":
-        """ Transfer al bindings from G """
+        """Transfer al bindings from G"""
         for ns, name in g.namespaces():
             if ns:
                 self[ns] = name
@@ -270,7 +272,7 @@ class Namespaces(CaseInsensitiveDict):
         :param uri: uri to be suffixed
         :return: URI with suffix
         """
-        return str(uri) + ('' if uri.endswith(('/', '#')) else '/')
+        return str(uri) + ("" if uri.endswith(("/", "#")) else "/")
 
     def add_prefixmap(self, map_name: str, include_defaults: bool = True) -> None:
         """

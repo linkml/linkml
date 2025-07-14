@@ -15,16 +15,16 @@ class YAMLLoader(Loader):
     A Loader that is capable of instantiating LinkML data objects from a YAML file
     """
 
-    def load_as_dict(self, 
-                     source: Union[str, dict, TextIO], 
-                     *, 
-                     base_dir: Optional[str] = None,
-                     metadata: Optional[FileInfo] = None) -> Union[dict, list[dict]]:
+    def load_as_dict(
+        self, source: Union[str, dict, TextIO], *, base_dir: Optional[str] = None, metadata: Optional[FileInfo] = None
+    ) -> Union[dict, list[dict]]:
         if metadata is None:
             metadata = FileInfo()
         if base_dir and not metadata.base_path:
             metadata.base_path = base_dir
-        data = self._read_source(source, base_dir=base_dir, metadata=metadata, accept_header="text/yaml, application/yaml;q=0.9")
+        data = self._read_source(
+            source, base_dir=base_dir, metadata=metadata, accept_header="text/yaml, application/yaml;q=0.9"
+        )
         if isinstance(data, str):
             data = StringIO(data)
             if metadata and metadata.source_file:
@@ -33,15 +33,21 @@ class YAMLLoader(Loader):
         else:
             return data
 
-    def load_any(self,
-                 source: Union[str, dict, TextIO],
-                 target_class: Union[type[YAMLRoot], type[BaseModel]],
-                 *, base_dir: Optional[str] = None,
-                 metadata: Optional[FileInfo] = None, **_) -> Union[YAMLRoot, list[YAMLRoot]]:
+    def load_any(
+        self,
+        source: Union[str, dict, TextIO],
+        target_class: Union[type[YAMLRoot], type[BaseModel]],
+        *,
+        base_dir: Optional[str] = None,
+        metadata: Optional[FileInfo] = None,
+        **_,
+    ) -> Union[YAMLRoot, list[YAMLRoot]]:
         data_as_dict = self.load_as_dict(source, base_dir=base_dir, metadata=metadata)
         return self._construct_target_class(data_as_dict, target_class)
 
-    def loads_any(self, source: str, target_class: type[Union[BaseModel, YAMLRoot]], *, metadata: Optional[FileInfo] = None, **_) -> Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]:
+    def loads_any(
+        self, source: str, target_class: type[Union[BaseModel, YAMLRoot]], *, metadata: Optional[FileInfo] = None, **_
+    ) -> Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]:
         """
         Load source as a string
         @param source: source

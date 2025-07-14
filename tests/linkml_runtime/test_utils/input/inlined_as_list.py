@@ -19,14 +19,15 @@ from linkml_runtime.utils.curienamespace import CurieNamespace
 metamodel_version = "1.7.0"
 
 # Namespaces
-EX = CurieNamespace('ex', 'https://example.org/inlined_as_dict#')
-XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
+EX = CurieNamespace("ex", "https://example.org/inlined_as_dict#")
+XSD = CurieNamespace("xsd", "http://www.w3.org/2001/XMLSchema#")
 DEFAULT_ = EX
 
 
 # Types
 class String(str):
-    """ A character string """
+    """A character string"""
+
     type_class_uri = XSD.string
     type_class_curie = "xsd:string"
     type_name = "string"
@@ -34,7 +35,8 @@ class String(str):
 
 
 class Integer(int):
-    """ An integer """
+    """An integer"""
+
     type_class_uri = XSD.integer
     type_class_curie = "xsd:integer"
     type_name = "integer"
@@ -94,4 +96,3 @@ class E(YAMLRoot):
 
 
 # Slots
-

@@ -1,11 +1,15 @@
 import unittest
 from linkml_runtime.utils.schemaview import SchemaView
 
-URL = ("https://raw.githubusercontent.com/linkml/linkml-runtime/"
-       "2a46c65fe2e7db08e5e524342e5ff2ffb94bec92/tests/test_utils/input/kitchen_sink.yaml")
+URL = (
+    "https://raw.githubusercontent.com/linkml/linkml-runtime/"
+    "2a46c65fe2e7db08e5e524342e5ff2ffb94bec92/tests/test_utils/input/kitchen_sink.yaml"
+)
 
-MIXS_URL = ("https://raw.githubusercontent.com/GenomicsStandardsConsortium/mixs/"
-            "83be82a99d0a210e83b371b20b3dadb6423ec612/model/schema/mixs.yaml")
+MIXS_URL = (
+    "https://raw.githubusercontent.com/GenomicsStandardsConsortium/mixs/"
+    "83be82a99d0a210e83b371b20b3dadb6423ec612/model/schema/mixs.yaml"
+)
 
 
 class TestRemoteModularSchemaView(unittest.TestCase):

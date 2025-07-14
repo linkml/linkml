@@ -7,7 +7,8 @@ from rdflib import URIRef
 
 @dataclass
 class Slot:
-    """ Runtime slot definition """
+    """Runtime slot definition"""
+
     uri: URIRef
     name: str
     curie: Optional[str]

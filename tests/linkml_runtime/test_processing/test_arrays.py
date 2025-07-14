@@ -18,12 +18,10 @@ class ArrayTestCase(unittest.TestCase):
     See: https://linkml.io/linkml/howtos/multidimensional-arrays
     """
 
-
     def setUp(self) -> None:
         sv = SchemaView(str(Path(INPUT_DIR) / "array_example.yaml"))
         self.normalizer = ReferenceValidator(sv)
         self.matrix = yaml.safe_load(open(str(Path(INPUT_DIR) / "array_example_data.yaml")))
-
 
     def test_array_normalization(self):
         """Test that we can infer the collection form of a slot."""

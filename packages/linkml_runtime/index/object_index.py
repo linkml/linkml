@@ -8,6 +8,7 @@ This package provides:
 :ref:`ProxyObject`
    a proxy for a domain object that "knows" its place in the index
 """
+
 import logging
 import inspect
 from typing import Any, Union
@@ -50,6 +51,7 @@ class ObjectIndex:
     In the above, the same proxy object is reused for any
     object with an identifier.
     """
+
     def __init__(self, obj: YAMLRoot, schemaview: SchemaView):
         self._root_object = obj
         self._schemaview = schemaview
@@ -74,8 +76,8 @@ class ObjectIndex:
             if pk_val not in self._child_to_parent:
                 self._child_to_parent[pk_val] = []
             self._child_to_parent[pk_val].append((parent_key, parent))
-            #id_slot = self._schemaview.get_identifier_slot(cls.name)
-            #if id_slot:
+            # id_slot = self._schemaview.get_identifier_slot(cls.name)
+            # if id_slot:
             #    id_val = getattr(obj, id_slot.name)
             #    self._source_object_cache[(cls.name, id_val)] = obj
             for k, v in vars(obj).items():
@@ -162,12 +164,12 @@ class ObjectIndex:
     def clear_proxy_object_cache(self):
         """
         Clears all items in the proxy cache.
-        
+
         :return:
         """
         self._proxy_object_cache = {}
 
-    def eval_expr(self, expr: str, obj: Any=None, **kwargs) -> Any:
+    def eval_expr(self, expr: str, obj: Any = None, **kwargs) -> Any:
         """
         Evaluates an expression against the object store.
 
@@ -212,7 +214,7 @@ class ProxyObject:
         return self._map(v, slot.range)
 
     def __getattribute__(self, attribute):
-        if attribute == '__dict__':
+        if attribute == "__dict__":
             return {k: getattr(self, k, None) for k in vars(self._shadowed).keys()}
         else:
             return object.__getattribute__(self, attribute)
@@ -268,4 +270,3 @@ class ProxyObject:
 
     def _attributes(self) -> list[str]:
         return list(vars(self._shadowed).keys())
-

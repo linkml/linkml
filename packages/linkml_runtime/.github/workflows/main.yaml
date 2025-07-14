@@ -34,11 +34,9 @@ jobs:
       - name: Run code format checks
         run: tox -e format_check
 
-
   test:
-    # TODO: uncomment when ruff format has been run over the codebase
-    # needs:
-    #   - quality-checks
+    needs:
+      - quality-checks
     strategy:
       fail-fast: false
       matrix:

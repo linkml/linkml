@@ -16,18 +16,20 @@ from json_flattener import flatten_to_csv
 
 
 class DelimitedFileDumper(Dumper, ABC):
-
     @property
     @abstractmethod
     def delimiter(self):
         pass
 
-    def dumps(self, element: Union[BaseModel, YAMLRoot],
-              index_slot: SlotDefinitionName = None,
-              schema: SchemaDefinition = None,
-              schemaview: SchemaView = None,
-              **kwargs) -> str:
-        """ Return element formatted as CSV lines """
+    def dumps(
+        self,
+        element: Union[BaseModel, YAMLRoot],
+        index_slot: SlotDefinitionName = None,
+        schema: SchemaDefinition = None,
+        schemaview: SchemaView = None,
+        **kwargs,
+    ) -> str:
+        """Return element formatted as CSV lines"""
         json_dumper = JSONDumper()
         element_j = json.loads(json_dumper.dumps(element))
         objs = element_j[index_slot]

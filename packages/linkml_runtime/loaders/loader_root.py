@@ -13,9 +13,7 @@ from linkml_runtime import URI_TO_LOCAL
 CACHE_SIZE = 1024
 
 
-
 class Loader(ABC):
-
     @staticmethod
     def json_clean(inp: Any) -> Any:
         """
@@ -24,29 +22,32 @@ class Loader(ABC):
         :param inp: JSON-LD representation
         :return: JSON representation
         """
+
         def _is_empty(o) -> bool:
             return o is None or o == [] or o == {}
 
         if isinstance(inp, list):
             for e in [inp_e for inp_e in inp if _is_empty(inp_e)]:
-                del(inp[e])
+                del inp[e]
             for e in inp:
                 Loader.json_clean(e)
         elif isinstance(inp, dict):
             for k, v in list(inp.items()):
-                if k.startswith('@') or _is_empty(v):
-                    del(inp[k])
+                if k.startswith("@") or _is_empty(v):
+                    del inp[k]
                 else:
                     Loader.json_clean(v)
         return inp
 
-    def load_source(self,
-                    source: Union[str, dict, TextIO],
-                    loader: Callable[[Union[str, dict], FileInfo], Optional[Union[dict, list]]],
-                    target_class: Union[type[YAMLRoot], type[BaseModel]],
-                    accept_header: Optional[str] = "text/plain, application/yaml;q=0.9",
-                    metadata: Optional[FileInfo] = None) -> Optional[Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]]:
-        """ Base loader - convert a file, url, string, open file handle or dictionary into an instance
+    def load_source(
+        self,
+        source: Union[str, dict, TextIO],
+        loader: Callable[[Union[str, dict], FileInfo], Optional[Union[dict, list]]],
+        target_class: Union[type[YAMLRoot], type[BaseModel]],
+        accept_header: Optional[str] = "text/plain, application/yaml;q=0.9",
+        metadata: Optional[FileInfo] = None,
+    ) -> Optional[Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]]:
+        """Base loader - convert a file, url, string, open file handle or dictionary into an instance
         of target_class
 
         :param source: URL, file name, block of text, Existing Object or open file handle
@@ -61,7 +62,6 @@ class Loader(ABC):
         data = self._read_source(source, metadata=metadata, base_dir=metadata.base_path, accept_header=accept_header)
         data_as_dict = loader(data, metadata)
         return self._construct_target_class(data_as_dict, target_class=target_class)
-
 
     def load(self, *args, **kwargs) -> Union[BaseModel, YAMLRoot]:
         """
@@ -78,14 +78,21 @@ class Loader(ABC):
         if isinstance(results, BaseModel) or isinstance(results, YAMLRoot):
             return results
         else:
-            raise ValueError(f'Result is not an instance of BaseModel or YAMLRoot: {type(results)}')
-    
+            raise ValueError(f"Result is not an instance of BaseModel or YAMLRoot: {type(results)}")
+
     def load_as_dict(self, *args, **kwargs) -> Union[dict, list[dict]]:
         raise NotImplementedError()
 
     @abstractmethod
-    def load_any(self, source: Union[str, dict, TextIO, Path], target_class: type[Union[BaseModel, YAMLRoot]], *, base_dir: Optional[str] = None,
-             metadata: Optional[FileInfo] = None, **_) -> Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]:
+    def load_any(
+        self,
+        source: Union[str, dict, TextIO, Path],
+        target_class: type[Union[BaseModel, YAMLRoot]],
+        *,
+        base_dir: Optional[str] = None,
+        metadata: Optional[FileInfo] = None,
+        **_,
+    ) -> Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]:
         """
         Load source as an instance of target_class, or list of instances of target_class
 
@@ -98,7 +105,9 @@ class Loader(ABC):
         """
         raise NotImplementedError()
 
-    def loads_any(self, source: str, target_class: type[Union[BaseModel, YAMLRoot]], *, metadata: Optional[FileInfo] = None, **_) -> Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]:
+    def loads_any(
+        self, source: str, target_class: type[Union[BaseModel, YAMLRoot]], *, metadata: Optional[FileInfo] = None, **_
+    ) -> Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]:
         """
         Load source as a string as an instance of target_class, or list of instances of target_class
         @param source: source
@@ -109,7 +118,9 @@ class Loader(ABC):
         """
         return self.load_any(source, target_class, metadata=metadata)
 
-    def loads(self, source: str, target_class: type[Union[BaseModel, YAMLRoot]], *, metadata: Optional[FileInfo] = None, **_) -> Union[BaseModel, YAMLRoot]:
+    def loads(
+        self, source: str, target_class: type[Union[BaseModel, YAMLRoot]], *, metadata: Optional[FileInfo] = None, **_
+    ) -> Union[BaseModel, YAMLRoot]:
         """
         Load source as a string
         :param source: source
@@ -120,17 +131,17 @@ class Loader(ABC):
         """
         return self.load(source, target_class, metadata=metadata)
 
-    def _construct_target_class(self, 
-                                data_as_dict: Union[dict, list[dict]],
-                                target_class: Union[type[YAMLRoot], type[BaseModel]]) -> Optional[Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]]:
+    def _construct_target_class(
+        self, data_as_dict: Union[dict, list[dict]], target_class: Union[type[YAMLRoot], type[BaseModel]]
+    ) -> Optional[Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]]:
         if data_as_dict:
             if isinstance(data_as_dict, list):
-               if issubclass(target_class, YAMLRoot):
-                   return [target_class(**as_dict(x)) for x in data_as_dict]
-               elif issubclass(target_class, BaseModel):
-                   return [target_class.model_validate(as_dict(x)) for x in data_as_dict]
-               else:
-                   raise ValueError(f'Cannot load list of {target_class}')
+                if issubclass(target_class, YAMLRoot):
+                    return [target_class(**as_dict(x)) for x in data_as_dict]
+                elif issubclass(target_class, BaseModel):
+                    return [target_class.model_validate(as_dict(x)) for x in data_as_dict]
+                else:
+                    raise ValueError(f"Cannot load list of {target_class}")
             elif isinstance(data_as_dict, dict):
                 if issubclass(target_class, BaseModel):
                     return target_class.model_validate(data_as_dict)
@@ -139,17 +150,18 @@ class Loader(ABC):
             elif isinstance(data_as_dict, JsonObj):
                 return [target_class(**as_dict(x)) for x in data_as_dict]
             else:
-                raise ValueError(f'Unexpected type {data_as_dict}')
+                raise ValueError(f"Unexpected type {data_as_dict}")
         else:
             return None
 
-
-    def _read_source(self,
-                     source: Union[str, dict, TextIO], 
-                     *, 
-                     base_dir: Optional[str] = None, 
-                     metadata: Optional[FileInfo] = None, 
-                     accept_header: Optional[str] = "text/plain, application/yaml;q=0.9") -> Union[dict, str]:
+    def _read_source(
+        self,
+        source: Union[str, dict, TextIO],
+        *,
+        base_dir: Optional[str] = None,
+        metadata: Optional[FileInfo] = None,
+        accept_header: Optional[str] = "text/plain, application/yaml;q=0.9",
+    ) -> Union[dict, str]:
         if metadata is None:
             metadata = FileInfo()
         if base_dir and not metadata.base_path:
@@ -162,7 +174,7 @@ class Loader(ABC):
                     source = str(URI_TO_LOCAL[str(source)])
             except (TypeError, KeyError) as e:
                 # Fine, use original `source` value
-                logger = getLogger('linkml_runtime.loaders.Loader')
+                logger = getLogger("linkml_runtime.loaders.Loader")
                 logger.debug(f"Error converting stringlike source to local linkml file: {source}, got: {e}")
 
             data = hbread(source, metadata, base_dir, accept_header)

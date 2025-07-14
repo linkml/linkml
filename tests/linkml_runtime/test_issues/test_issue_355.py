@@ -21,12 +21,13 @@ from linkml_runtime.utils.metamodelcore import URIorCURIE
 metamodel_version = "1.7.0"
 
 # Namespaces
-LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
-SCT = CurieNamespace('sct', 'http://snomed.info/id/')
+LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
+SCT = CurieNamespace("sct", "http://snomed.info/id/")
 DEFAULT_ = SCT
 
 
 # Types
+
 
 # Class references
 class ContaineeId(URIorCURIE):
@@ -42,7 +43,9 @@ class Container(YAMLRoot):
     class_name: ClassVar[str] = "container"
     class_model_uri: ClassVar[URIRef] = SCT.Container
 
-    entry: Optional[Union[dict[Union[str, ContaineeId], Union[dict, "Containee"]], list[Union[dict, "Containee"]]]] = empty_dict()
+    entry: Optional[Union[dict[Union[str, ContaineeId], Union[dict, "Containee"]], list[Union[dict, "Containee"]]]] = (
+        empty_dict()
+    )
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if not isinstance(self.entry, (list, dict, JsonObj)):
@@ -83,11 +86,25 @@ class Containee(YAMLRoot):
 class slots:
     pass
 
-slots.container__entry = Slot(uri=SCT.entry, name="container__entry", curie=SCT.curie('entry'),
-                   model_uri=SCT.container__entry, domain=None, range=Optional[Union[dict[Union[str, ContaineeId], Union[dict, Containee]], list[Union[dict, Containee]]]])
 
-slots.containee__id = Slot(uri=SCT.id, name="containee__id", curie=SCT.curie('id'),
-                   model_uri=SCT.containee__id, domain=None, range=URIRef)
+slots.container__entry = Slot(
+    uri=SCT.entry,
+    name="container__entry",
+    curie=SCT.curie("entry"),
+    model_uri=SCT.container__entry,
+    domain=None,
+    range=Optional[Union[dict[Union[str, ContaineeId], Union[dict, Containee]], list[Union[dict, Containee]]]],
+)
 
-slots.containee__value = Slot(uri=SCT.value, name="containee__value", curie=SCT.curie('value'),
-                   model_uri=SCT.containee__value, domain=None, range=Optional[str])
+slots.containee__id = Slot(
+    uri=SCT.id, name="containee__id", curie=SCT.curie("id"), model_uri=SCT.containee__id, domain=None, range=URIRef
+)
+
+slots.containee__value = Slot(
+    uri=SCT.value,
+    name="containee__value",
+    curie=SCT.curie("value"),
+    model_uri=SCT.containee__value,
+    domain=None,
+    range=Optional[str],
+)
