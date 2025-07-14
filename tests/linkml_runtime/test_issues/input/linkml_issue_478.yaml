@@ -9,7 +9,7 @@ classes:
       - id
       - preferred label
       - SOURCE
-  biosample processing:
+  biosample_processing:
     is_a: named thing
     attributes:
       processingMethod:

@@ -1,4 +1,5 @@
 import pytest
+
 from linkml_runtime.utils.schemaview import SchemaView
 
 schema = """
@@ -34,7 +35,7 @@ classes:
     slot_usage:
       type:
         range: TypeEnum
-      
+
 slots:
     status:
       range: PersonStatusEnum
@@ -64,35 +65,35 @@ enums:
 
 
 @pytest.fixture
-def view():
+def view() -> SchemaView:
     return SchemaView(schema)
 
 
-def test_issue_998_schema_slot(view):
+def test_issue_998_schema_slot(view) -> None:
     enum_slots = view.get_slots_by_enum("EmploymentStatusEnum")
     assert len(enum_slots) == 2
 
 
-def test_slots_are_not_duplicated(view):
+def test_slots_are_not_duplicated(view) -> None:
     enum_slots = view.get_slots_by_enum("PersonStatusEnum")
     assert len(enum_slots) == 1
     assert enum_slots[0].name == "status"
 
 
-def test_issue_998_attribute_slot(view):
+def test_issue_998_attribute_slot(view) -> None:
     enum_slots = view.get_slots_by_enum("EmploymentStatusEnum")
     assert len(enum_slots) == 2
     assert sorted([slot.name for slot in enum_slots]) == ["employed", "past_employer"]
 
 
-def test_issue_998_schema_and_attribute_slots(view):
+def test_issue_998_schema_and_attribute_slots(view) -> None:
     enum_slots = view.get_slots_by_enum("RelationshipStatusEnum")
     assert len(enum_slots) == 2
     assert enum_slots[0].name == "relationship"
     assert enum_slots[1].name == "past_relationship"
 
 
-def test_issue_998_slot_usage_range(view):
+def test_issue_998_slot_usage_range(view) -> None:
     enum_slots = view.get_slots_by_enum("TypeEnum")
     assert len(enum_slots) == 1
     assert enum_slots[0].name == "type"

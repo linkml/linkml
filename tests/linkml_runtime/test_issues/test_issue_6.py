@@ -1,6 +1,5 @@
-import unittest
-
 import hbreader
+import pytest
 import yaml
 
 from linkml_runtime.utils.yamlutils import DupCheckYamlLoader, TypedNode
@@ -13,26 +12,29 @@ foo:
 """
 
 
-class Issue6TestCase(unittest.TestCase):
-    def test_loc_function(self):
-        inp = yaml.load(hbreader.hbread(inp_yaml), DupCheckYamlLoader)
-        self.assertEqual('File "<unicode string>", line 3, col 8: ', TypedNode.yaml_loc(inp["foo"]["x"]))
-        self.assertEqual('File "<unicode string>", line 3, col 8', TypedNode.yaml_loc(inp["foo"]["x"], suffix=""))
-        self.assertEqual('File "<unicode string>", line 4, col 8: ', TypedNode.yaml_loc(inp["foo"]["y"]))
-        self.assertEqual(
-            'File "<unicode string>", line 4, col 8I yam that I yam',
-            TypedNode.yaml_loc(inp["foo"]["y"], suffix=inp["foo"]["y"]),
-        )
-        self.assertEqual('File "<unicode string>", line 5, col 8: ', TypedNode.yaml_loc(inp["foo"]["z"]))
-
-        with self.assertWarns(DeprecationWarning) as cm:
-            self.assertEqual('File "<unicode string>", line 3, col 8', TypedNode.loc(inp["foo"]["x"]))
-        self.assertEqual("Call to deprecated method loc. (Use yaml_loc instead)", cm.warning.args[0])
-
-        self.assertEqual("", TypedNode.yaml_loc(None))
-        self.assertEqual("", TypedNode.yaml_loc("abc"))
-        self.assertEqual("", TypedNode.yaml_loc(["a", "b"]))
+def test_loc_function() -> None:
+    """Test the TypedNode.yaml_loc function."""
+    inp = yaml.load(hbreader.hbread(inp_yaml), DupCheckYamlLoader)
+    assert TypedNode.yaml_loc(inp["foo"]["x"]) == 'File "<unicode string>", line 3, col 8: '
+    assert TypedNode.yaml_loc(inp["foo"]["x"], suffix="") == 'File "<unicode string>", line 3, col 8'
+    assert TypedNode.yaml_loc(inp["foo"]["y"]) == 'File "<unicode string>", line 4, col 8: '
+    assert (
+        TypedNode.yaml_loc(inp["foo"]["y"], suffix=inp["foo"]["y"])
+        == 'File "<unicode string>", line 4, col 8I yam that I yam'
+    )
+    assert TypedNode.yaml_loc(inp["foo"]["z"]) == 'File "<unicode string>", line 5, col 8: '
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_yaml_loc_warning() -> None:
+    """Test that a warning is emitted when using the `loc` method."""
+    inp = yaml.load(hbreader.hbread(inp_yaml), DupCheckYamlLoader)
+    with pytest.warns(DeprecationWarning) as warning_list:
+        assert TypedNode.loc(inp["foo"]["x"]) == 'File "<unicode string>", line 3, col 8'
+    assert len(warning_list) == 1
+    assert str(warning_list[0].message) == "Call to deprecated method loc. (Use yaml_loc instead)"
+
+
+@pytest.mark.parametrize("loc", [None, "abc", ["a", "b"]])
+def test_yaml_loc_empty_str(loc) -> None:
+    """Test yaml_loc values that translate to an empty string."""
+    assert TypedNode.yaml_loc(loc) == ""
