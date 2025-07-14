@@ -1271,6 +1271,8 @@ def test_uris_without_default_prefix() -> None:
     assert view.get_uri("TestClass", imports=True) == "https://example.org/test#TestClass"
     assert view.get_uri("test_slot", imports=True) == "https://example.org/test#test_slot"
     assert view.get_uri("tEsT_enum", imports=True) == "https://example.org/test#tEsT_enum"
+
+
 """
 merge_schema tests: https://github.com/linkml/linkml/issues/1143
 """
@@ -1479,4 +1481,3 @@ def test_class_name_mappings() -> None:
     assert set(view.all_slots()) == set(slot_names)
     assert set(view.slot_name_mappings()) == set(slot_names.values())
     assert {snm_def.name: snm for snm, snm_def in view.slot_name_mappings().items()} == slot_names
-
