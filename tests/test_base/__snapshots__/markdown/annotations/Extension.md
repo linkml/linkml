@@ -30,3 +30,9 @@ URI: [linkml:Extension](https://w3id.org/linkml/Extension)
  * [extensions](extensions.md)  <sub>0..\*</sub>
      * Description: a tag/text tuple attached to an arbitrary element
      * Range: [Extension](Extension.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Exact Mappings:** | | linkml:Extension |
