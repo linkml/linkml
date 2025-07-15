@@ -1,5 +1,4 @@
 import logging
-import os
 from collections import defaultdict
 from dataclasses import dataclass, field
 from functools import lru_cache
@@ -64,17 +63,16 @@ GEN_MAP = {
 
 
 @lru_cache
-def get_local_imports(schema_path: str, dir: str):
+def get_local_imports(schema_path: Path, dir: Path):
     logger.info(f"GETTING IMPORTS = {schema_path}")
     all_imports = [schema_path]
-    with open(schema_path) as stream:
-        with open(schema_path) as stream:
-            schema = yaml.safe_load(stream)
-            for imp in schema.get("imports", []):
-                imp_path = os.path.join(dir, imp) + ".yaml"
-                logger.info(f" IMP={imp} //  path={imp_path}")
-                if os.path.isfile(imp_path):
-                    all_imports += get_local_imports(imp_path, dir)
+    with open(schema_path, encoding="utf-8") as stream:
+        schema = yaml.safe_load(stream)
+        for imp in schema.get("imports", []):
+            imp_path = dir / f"{imp}.yaml"
+            logger.info(f" IMP={imp} //  path={imp_path}")
+            if imp_path.is_file():
+                all_imports += get_local_imports(imp_path, dir)
     return all_imports
 
 
@@ -107,7 +105,7 @@ class ProjectGenerator:
         if config.mergeimports:
             all_schemas = [schema_path]
         else:
-            all_schemas = get_local_imports(schema_path, str(Path(schema_path).parent))
+            all_schemas = get_local_imports(schema_path, Path(schema_path).parent)
         logger.debug(f"ALL_SCHEMAS = {all_schemas}")
         for gen_name, (gen_cls, gen_path_fmt, default_gen_args) in GEN_MAP.items():
             if config.includes is not None and config.includes != [] and gen_name not in config.includes:
