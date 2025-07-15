@@ -104,4 +104,3 @@ class MyClass2(YAMLRoot):
 # Slots
 class slots:
     pass
-

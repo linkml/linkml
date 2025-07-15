@@ -14,7 +14,7 @@ URI: [linkml:SlotExpression](https://w3id.org/linkml/SlotExpression)
 
 ## Mixin for
 
- * [AnonymousSlotExpression](AnonymousSlotExpression.md) (mixin) 
+ * [AnonymousSlotExpression](AnonymousSlotExpression.md) (mixin)
  * [SlotDefinition](SlotDefinition.md) (mixin)  - an element that describes how instances are related to other instances
 
 ## Referenced by Class

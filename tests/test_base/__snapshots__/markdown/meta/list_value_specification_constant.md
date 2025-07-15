@@ -28,4 +28,3 @@ None &#8594;  <sub>0..1</sub> [String](types/String.md)
  *  [value_presence](value_presence.md)
 
 ## Used by
-

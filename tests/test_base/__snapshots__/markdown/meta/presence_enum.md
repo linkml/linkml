@@ -13,4 +13,3 @@ URI: [linkml:presence_enum](https://w3id.org/linkml/presence_enum)
 | UNCOMMITTED |  |  |  |
 | PRESENT |  |  |  |
 | ABSENT |  |  |  |
-
