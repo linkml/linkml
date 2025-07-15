@@ -344,6 +344,7 @@ class Generator(metaclass=abc.ABCMeta):
         sub_out = self.end_schema(**kwargs)
         if sub_out is not None:
             out += sub_out
+        out = out.rstrip("\n") + "\n"
         return out
 
     def visit_schema(self, **kwargs) -> Optional[str]:
