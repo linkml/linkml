@@ -1,107 +1,107 @@
 -- # Class: "NamedThing" Description: "A generic grouping for any identifiable entity"
---     * Slot: id Description:
---     * Slot: name Description:
---     * Slot: description Description:
---     * Slot: image Description:
+--     * Slot: id
+--     * Slot: name
+--     * Slot: description
+--     * Slot: image
 -- # Class: "Person" Description: "A person (alive, dead, undead, or fictional)."
---     * Slot: primary_email Description:
---     * Slot: birth_date Description:
---     * Slot: age_in_years Description:
---     * Slot: gender Description:
---     * Slot: id Description:
---     * Slot: name Description:
---     * Slot: description Description:
---     * Slot: image Description:
+--     * Slot: primary_email
+--     * Slot: birth_date
+--     * Slot: age_in_years
+--     * Slot: gender
+--     * Slot: id
+--     * Slot: name
+--     * Slot: description
+--     * Slot: image
 --     * Slot: Container_id Description: Autocreated FK slot
 --     * Slot: current_address_id Description: The address at which a person currently lives
 -- # Class: "HasAliases" Description: "A mixin applied to any class that can have aliases/alternateNames"
---     * Slot: id Description:
+--     * Slot: id
 -- # Class: "Organization" Description: "An organization such as a company or university"
---     * Slot: mission_statement Description:
---     * Slot: founding_date Description:
---     * Slot: founding_location Description:
---     * Slot: id Description:
---     * Slot: name Description:
---     * Slot: description Description:
---     * Slot: image Description:
+--     * Slot: mission_statement
+--     * Slot: founding_date
+--     * Slot: founding_location
+--     * Slot: id
+--     * Slot: name
+--     * Slot: description
+--     * Slot: image
 --     * Slot: Container_id Description: Autocreated FK slot
 -- # Class: "Place" Description: ""
---     * Slot: id Description:
---     * Slot: name Description:
+--     * Slot: id
+--     * Slot: name
 -- # Class: "Address" Description: ""
---     * Slot: id Description:
---     * Slot: street Description:
---     * Slot: city Description:
---     * Slot: postal_code Description:
+--     * Slot: id
+--     * Slot: street
+--     * Slot: city
+--     * Slot: postal_code
 -- # Class: "Event" Description: ""
---     * Slot: id Description:
---     * Slot: started_at_time Description:
---     * Slot: ended_at_time Description:
---     * Slot: duration Description:
---     * Slot: is_current Description:
+--     * Slot: id
+--     * Slot: started_at_time
+--     * Slot: ended_at_time
+--     * Slot: duration
+--     * Slot: is_current
 -- # Class: "Concept" Description: ""
---     * Slot: id Description:
---     * Slot: name Description:
---     * Slot: description Description:
---     * Slot: image Description:
+--     * Slot: id
+--     * Slot: name
+--     * Slot: description
+--     * Slot: image
 -- # Class: "DiagnosisConcept" Description: ""
---     * Slot: id Description:
---     * Slot: name Description:
---     * Slot: description Description:
---     * Slot: image Description:
+--     * Slot: id
+--     * Slot: name
+--     * Slot: description
+--     * Slot: image
 -- # Class: "ProcedureConcept" Description: ""
---     * Slot: id Description:
---     * Slot: name Description:
---     * Slot: description Description:
---     * Slot: image Description:
+--     * Slot: id
+--     * Slot: name
+--     * Slot: description
+--     * Slot: image
 -- # Class: "Relationship" Description: ""
---     * Slot: id Description:
---     * Slot: started_at_time Description:
---     * Slot: ended_at_time Description:
---     * Slot: related_to Description:
---     * Slot: type Description:
+--     * Slot: id
+--     * Slot: started_at_time
+--     * Slot: ended_at_time
+--     * Slot: related_to
+--     * Slot: type
 -- # Class: "FamilialRelationship" Description: ""
---     * Slot: id Description:
---     * Slot: started_at_time Description:
---     * Slot: ended_at_time Description:
---     * Slot: related_to Description:
---     * Slot: type Description:
+--     * Slot: id
+--     * Slot: started_at_time
+--     * Slot: ended_at_time
+--     * Slot: related_to
+--     * Slot: type
 --     * Slot: Person_id Description: Autocreated FK slot
 -- # Class: "EmploymentEvent" Description: ""
---     * Slot: id Description:
---     * Slot: employed_at Description:
---     * Slot: started_at_time Description:
---     * Slot: ended_at_time Description:
---     * Slot: duration Description:
---     * Slot: is_current Description:
+--     * Slot: id
+--     * Slot: employed_at
+--     * Slot: started_at_time
+--     * Slot: ended_at_time
+--     * Slot: duration
+--     * Slot: is_current
 --     * Slot: Person_id Description: Autocreated FK slot
 -- # Class: "MedicalEvent" Description: ""
---     * Slot: id Description:
---     * Slot: in_location Description:
---     * Slot: started_at_time Description:
---     * Slot: ended_at_time Description:
---     * Slot: duration Description:
---     * Slot: is_current Description:
+--     * Slot: id
+--     * Slot: in_location
+--     * Slot: started_at_time
+--     * Slot: ended_at_time
+--     * Slot: duration
+--     * Slot: is_current
 --     * Slot: Person_id Description: Autocreated FK slot
---     * Slot: diagnosis_id Description:
---     * Slot: procedure_id Description:
+--     * Slot: diagnosis_id
+--     * Slot: procedure_id
 -- # Class: "WithLocation" Description: ""
---     * Slot: id Description:
---     * Slot: in_location Description:
+--     * Slot: id
+--     * Slot: in_location
 -- # Class: "Container" Description: ""
---     * Slot: id Description:
+--     * Slot: id
 -- # Class: "Person_aliases" Description: ""
 --     * Slot: Person_id Description: Autocreated FK slot
---     * Slot: aliases Description:
+--     * Slot: aliases
 -- # Class: "HasAliases_aliases" Description: ""
 --     * Slot: HasAliases_id Description: Autocreated FK slot
---     * Slot: aliases Description:
+--     * Slot: aliases
 -- # Class: "Organization_aliases" Description: ""
 --     * Slot: Organization_id Description: Autocreated FK slot
---     * Slot: aliases Description:
+--     * Slot: aliases
 -- # Class: "Place_aliases" Description: ""
 --     * Slot: Place_id Description: Autocreated FK slot
---     * Slot: aliases Description:
+--     * Slot: aliases
 
 CREATE TABLE "NamedThing" (
 	id TEXT NOT NULL,
