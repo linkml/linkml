@@ -45,7 +45,7 @@ GEN_MAP = {
     "markdown": (
         MarkdownGenerator,
         "docs/",
-        {"directory": "{parent}", "index_file": "{name}.md"},
+        {"directory": "{parent}/docs", "index_file": "{name}.md"},
     ),
     "owl": (OwlSchemaGenerator, "owl/{name}.owl.ttl", {}),
     "prefixmap": (PrefixGenerator, "prefixmap/{name}.yaml", {}),
@@ -102,11 +102,12 @@ class ProjectGenerator:
     def generate(schema_path: str, config: ProjectConfiguration = ProjectConfiguration()):
         if config.directory is None:
             raise Exception("Must pass directory")
-        Path(config.directory).mkdir(parents=True, exist_ok=True)
+        output_dir = Path(config.directory)
+        output_dir.mkdir(parents=True, exist_ok=True)
         if config.mergeimports:
             all_schemas = [schema_path]
         else:
-            all_schemas = get_local_imports(schema_path, os.path.dirname(schema_path))
+            all_schemas = get_local_imports(schema_path, str(Path(schema_path).parent))
         logger.debug(f"ALL_SCHEMAS = {all_schemas}")
         for gen_name, (gen_cls, gen_path_fmt, default_gen_args) in GEN_MAP.items():
             if config.includes is not None and config.includes != [] and gen_name not in config.includes:
@@ -118,14 +119,12 @@ class ProjectGenerator:
             logger.info(f"Generating: {gen_name}")
             for local_path in all_schemas:
                 logger.info(f" SCHEMA: {local_path}")
-                name = os.path.basename(local_path).replace(".yaml", "")
+                name = Path(local_path).stem
                 gen_path = gen_path_fmt.format(name=name)
-                gen_path_full = f"{config.directory}/{gen_path}"
-                parts = gen_path_full.split("/")
-                parent_dir = "/".join(parts[0:-1])
+                gen_path_full = output_dir / gen_path
+                parent_dir = gen_path_full.parent
                 logger.info(f" PARENT={parent_dir}")
-                Path(parent_dir).mkdir(parents=True, exist_ok=True)
-                gen_path_full = "/".join(parts)
+                parent_dir.mkdir(parents=True, exist_ok=True)
                 all_gen_args = {
                     **default_gen_args,
                     **config.generator_args.get(gen_name, {}),
@@ -149,7 +148,7 @@ class ProjectGenerator:
                 gen_dump = gen.serialize(**serialize_args)
 
                 if gen_name != "excel":
-                    if parts[-1] != "":
+                    if gen_path_full.suffix != "":
                         # markdowngen does not write to a file
                         logger.info(f"  WRITING TO: {gen_path_full}")
                         with open(gen_path_full, "w", encoding="UTF-8") as stream:
