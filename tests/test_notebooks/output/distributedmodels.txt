@@ -16106,3 +16106,4 @@ slots.organism_taxon_to_environment_association_object = Slot(uri=RDF.object, na
 
 slots.organism_taxon_to_environment_association_predicate = Slot(uri=RDF.predicate, name="organism taxon to environment association_predicate", curie=RDF.curie('predicate'),
                    model_uri=DIST.organism_taxon_to_environment_association_predicate, domain=OrganismTaxonToEnvironmentAssociation, range=Union[str, PredicateType])
+
