@@ -40,4 +40,3 @@ URI: [linkml:RelationalModelProfile](https://w3id.org/linkml/RelationalModelProf
 
 
 ### Enums
-
