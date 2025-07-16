@@ -412,6 +412,7 @@ class SchemaLoader:
                     if slot.inlined is False:
                         if slot.inlined_as_list is True:
                             slot.inlined = True
+                            # TODO: do not override a given value, but raise an exception
                             self.logger.warning(
                                 f"Slot '{slot.name}': 'inlining' as list requested. " + \
                                     "Overriding inconsistent `inlined: False`!!"
@@ -429,6 +430,7 @@ class SchemaLoader:
                                     "specification. `inlined: True` has been set!"
                             )
                         elif slot.inlined_as_list is False:
+                            # TODO: decide if `inlined` should be set or not and implement accordingly
                             self.logger.warning(
                                 f"Slot '{slot.name}': A value for 'inlined_as_list' specified, but no " + \
                                     "'inlined' specification."
