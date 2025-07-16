@@ -233,4 +233,3 @@ class Sparqlpath(str):
 # Slots
 class slots:
     pass
-
