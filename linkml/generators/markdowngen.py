@@ -149,6 +149,7 @@ class MarkdownGenerator(Generator):
             items = [i for i in items if i is not None]
             out = "\n".join(items) + "\n"
             out = pad_heading(out)
+            out = out.rstrip("\n") + "\n"
             ixfile.write(out)
         return out
 
@@ -179,7 +180,7 @@ class MarkdownGenerator(Generator):
                     yg = YumlGenerator(self)
                     img_url = (
                         yg.serialize(classes=[cls.name]).replace("?", "%3F").replace(" ", "%20").replace("|", "&#124;")
-                    )
+                    ).rstrip()
 
                 items.append(f"[![img]({img_url})]({img_url})")
 
@@ -253,6 +254,7 @@ class MarkdownGenerator(Generator):
             items.append(self.element_properties(cls))
             out = "\n".join(items)
             out = pad_heading(out)
+            out = out.rstrip() + "\n"
             clsfile.write(out)
         return out
 
@@ -272,6 +274,7 @@ class MarkdownGenerator(Generator):
             out += self.element_properties(typ)
             out += "\n"
             out = pad_heading(out)
+            out = out.rstrip() + "\n"
             typefile.write(out)
         return out
 
@@ -312,6 +315,7 @@ class MarkdownGenerator(Generator):
             items.append(self.element_properties(slot))
             out = "\n".join(items)
             out = pad_heading(out)
+            out = out.rstrip() + "\n"
             slotfile.write(out)
         return out
 
@@ -324,6 +328,7 @@ class MarkdownGenerator(Generator):
             items.append(self.element_properties(enum))
             out = "\n".join(items)
             out = pad_heading(out)
+            out = out.rstrip() + "\n"
             enumfile.write(out)
         return out
 
@@ -359,6 +364,7 @@ class MarkdownGenerator(Generator):
             items.append(self.element_properties(subset))
             out = "\n".join(items)
             out = pad_heading(out)
+            out = out.rstrip() + "\n"
             subsetfile.write(out)
         return out
 
@@ -681,7 +687,7 @@ class MarkdownGenerator(Generator):
             f"({link_ref}.{self.format})"
             + (f" {after_link} " if after_link else "")
             + (f" - {desc.split(nl)[0]}" if desc else "")
-        )
+        ).rstrip()
 
     def type_link(
         self,
