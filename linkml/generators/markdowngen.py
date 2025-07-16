@@ -149,7 +149,7 @@ class MarkdownGenerator(Generator):
             items = [i for i in items if i is not None]
             out = "\n".join(items) + "\n"
             out = pad_heading(out)
-            out = out.rstrip("\n") + "\n"
+            out = out.rstrip() + "\n"
             ixfile.write(out)
         return out
 

@@ -30,4 +30,3 @@ URI: [linkml:Expression](https://w3id.org/linkml/Expression)
  *  **None** *[none_of](none_of.md)*  <sub>0..\*</sub>  **[Expression](Expression.md)**
 
 ## Attributes
-
