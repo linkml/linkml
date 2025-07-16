@@ -1,0 +1,32 @@
+default_language_version:
+  python: python3
+# Specify files to exclude - pre-commit hook doesn't parse pyproject.toml
+exclude: tests/data/hp.ttl|tests/data/hp_f.ttl|.*\.svg|jsonschema_value_constraints.yaml
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+  - id: end-of-file-fixer
+    exclude: __snapshots__
+  - id: check-yaml
+    exclude: (__snapshots__|test_utils/input)
+  - id: check-toml
+  - id: trailing-whitespace
+    # TODO: This is temporary while bioliank is being fixed upstream.
+    # TODO: Should look at snapshot exclusion to find upstream problems
+    exclude: (__snapshots__|biolink-model.yaml)
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  # Ensure this version stays in sync with tox.ini
+  rev: v0.11.13
+  hooks:
+  # Run the linter.
+  - id: ruff-check
+    args: [--fix, --exit-non-zero-on-fix]
+  # Run the formatter.
+  - id: ruff-format
+- repo: https://github.com/codespell-project/codespell
+  rev: v2.4.1
+  hooks:
+  - id: codespell
+    additional_dependencies:
+      - tomli
