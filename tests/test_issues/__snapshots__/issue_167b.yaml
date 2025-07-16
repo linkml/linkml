@@ -304,6 +304,7 @@ slots:
     range: annotation
     multivalued: true
     inlined: true
+    inlined_as_list: false
   extensions:
     name: extensions
     definition_uri: https://w3id.org/linkml/extensions
@@ -319,6 +320,7 @@ slots:
     range: extension
     multivalued: true
     inlined: true
+    inlined_as_list: false
   extension_tag:
     name: extension_tag
     definition_uri: https://w3id.org/linkml/extension_tag
