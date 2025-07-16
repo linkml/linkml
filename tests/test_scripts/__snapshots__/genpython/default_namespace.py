@@ -100,3 +100,4 @@ class slots:
 
 slots.s1 = Slot(uri=DEFAULT_.s1, name="s1", curie=DEFAULT_.curie('s1'),
                    model_uri=DEFAULT_.s1, domain=None, range=Optional[str])
+

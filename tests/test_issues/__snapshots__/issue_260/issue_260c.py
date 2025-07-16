@@ -87,4 +87,3 @@ class C260c(C260b):
 # Slots
 class slots:
     pass
-
