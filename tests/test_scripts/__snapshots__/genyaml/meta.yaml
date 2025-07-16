@@ -567,6 +567,7 @@ slots:
     - MedicalEvent
     range: DiagnosisConcept
     inlined: true
+    inlined_as_list: false
   procedure:
     name: procedure
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/procedure
@@ -577,6 +578,7 @@ slots:
     - MedicalEvent
     range: ProcedureConcept
     inlined: true
+    inlined_as_list: false
   addresses:
     name: addresses
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/addresses
