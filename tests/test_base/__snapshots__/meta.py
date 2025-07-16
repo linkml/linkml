@@ -285,7 +285,9 @@ class CommonMetadata(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+        if not isinstance(self.structured_aliases, list):
+            self.structured_aliases = [self.structured_aliases] if self.structured_aliases is not None else []
+        self.structured_aliases = [v if isinstance(v, StructuredAlias) else StructuredAlias(**as_dict(v)) for v in self.structured_aliases]
 
         if not isinstance(self.mappings, list):
             self.mappings = [self.mappings] if self.mappings is not None else []
@@ -490,7 +492,9 @@ class Element(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+        if not isinstance(self.structured_aliases, list):
+            self.structured_aliases = [self.structured_aliases] if self.structured_aliases is not None else []
+        self.structured_aliases = [v if isinstance(v, StructuredAlias) else StructuredAlias(**as_dict(v)) for v in self.structured_aliases]
 
         if not isinstance(self.mappings, list):
             self.mappings = [self.mappings] if self.mappings is not None else []
@@ -1158,7 +1162,9 @@ class EnumBinding(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+        if not isinstance(self.structured_aliases, list):
+            self.structured_aliases = [self.structured_aliases] if self.structured_aliases is not None else []
+        self.structured_aliases = [v if isinstance(v, StructuredAlias) else StructuredAlias(**as_dict(v)) for v in self.structured_aliases]
 
         if not isinstance(self.mappings, list):
             self.mappings = [self.mappings] if self.mappings is not None else []
@@ -1417,7 +1423,9 @@ class StructuredAlias(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+        if not isinstance(self.structured_aliases, list):
+            self.structured_aliases = [self.structured_aliases] if self.structured_aliases is not None else []
+        self.structured_aliases = [v if isinstance(v, StructuredAlias) else StructuredAlias(**as_dict(v)) for v in self.structured_aliases]
 
         if not isinstance(self.mappings, list):
             self.mappings = [self.mappings] if self.mappings is not None else []
@@ -1726,7 +1734,9 @@ class AnonymousExpression(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+        if not isinstance(self.structured_aliases, list):
+            self.structured_aliases = [self.structured_aliases] if self.structured_aliases is not None else []
+        self.structured_aliases = [v if isinstance(v, StructuredAlias) else StructuredAlias(**as_dict(v)) for v in self.structured_aliases]
 
         if not isinstance(self.mappings, list):
             self.mappings = [self.mappings] if self.mappings is not None else []
@@ -1931,7 +1941,9 @@ class PathExpression(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+        if not isinstance(self.structured_aliases, list):
+            self.structured_aliases = [self.structured_aliases] if self.structured_aliases is not None else []
+        self.structured_aliases = [v if isinstance(v, StructuredAlias) else StructuredAlias(**as_dict(v)) for v in self.structured_aliases]
 
         if not isinstance(self.mappings, list):
             self.mappings = [self.mappings] if self.mappings is not None else []
@@ -2915,7 +2927,9 @@ class ClassRule(ClassLevelRule):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+        if not isinstance(self.structured_aliases, list):
+            self.structured_aliases = [self.structured_aliases] if self.structured_aliases is not None else []
+        self.structured_aliases = [v if isinstance(v, StructuredAlias) else StructuredAlias(**as_dict(v)) for v in self.structured_aliases]
 
         if not isinstance(self.mappings, list):
             self.mappings = [self.mappings] if self.mappings is not None else []
@@ -3095,7 +3109,9 @@ class ArrayExpression(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+        if not isinstance(self.structured_aliases, list):
+            self.structured_aliases = [self.structured_aliases] if self.structured_aliases is not None else []
+        self.structured_aliases = [v if isinstance(v, StructuredAlias) else StructuredAlias(**as_dict(v)) for v in self.structured_aliases]
 
         if not isinstance(self.mappings, list):
             self.mappings = [self.mappings] if self.mappings is not None else []
@@ -3280,7 +3296,9 @@ class DimensionExpression(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+        if not isinstance(self.structured_aliases, list):
+            self.structured_aliases = [self.structured_aliases] if self.structured_aliases is not None else []
+        self.structured_aliases = [v if isinstance(v, StructuredAlias) else StructuredAlias(**as_dict(v)) for v in self.structured_aliases]
 
         if not isinstance(self.mappings, list):
             self.mappings = [self.mappings] if self.mappings is not None else []
@@ -3461,7 +3479,9 @@ class PatternExpression(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+        if not isinstance(self.structured_aliases, list):
+            self.structured_aliases = [self.structured_aliases] if self.structured_aliases is not None else []
+        self.structured_aliases = [v if isinstance(v, StructuredAlias) else StructuredAlias(**as_dict(v)) for v in self.structured_aliases]
 
         if not isinstance(self.mappings, list):
             self.mappings = [self.mappings] if self.mappings is not None else []
@@ -3643,7 +3663,9 @@ class ImportExpression(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+        if not isinstance(self.structured_aliases, list):
+            self.structured_aliases = [self.structured_aliases] if self.structured_aliases is not None else []
+        self.structured_aliases = [v if isinstance(v, StructuredAlias) else StructuredAlias(**as_dict(v)) for v in self.structured_aliases]
 
         if not isinstance(self.mappings, list):
             self.mappings = [self.mappings] if self.mappings is not None else []
@@ -3987,7 +4009,9 @@ class PermissibleValue(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+        if not isinstance(self.structured_aliases, list):
+            self.structured_aliases = [self.structured_aliases] if self.structured_aliases is not None else []
+        self.structured_aliases = [v if isinstance(v, StructuredAlias) else StructuredAlias(**as_dict(v)) for v in self.structured_aliases]
 
         if not isinstance(self.mappings, list):
             self.mappings = [self.mappings] if self.mappings is not None else []
@@ -4173,7 +4197,9 @@ class UniqueKey(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+        if not isinstance(self.structured_aliases, list):
+            self.structured_aliases = [self.structured_aliases] if self.structured_aliases is not None else []
+        self.structured_aliases = [v if isinstance(v, StructuredAlias) else StructuredAlias(**as_dict(v)) for v in self.structured_aliases]
 
         if not isinstance(self.mappings, list):
             self.mappings = [self.mappings] if self.mappings is not None else []
@@ -4356,7 +4382,9 @@ class TypeMapping(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+        if not isinstance(self.structured_aliases, list):
+            self.structured_aliases = [self.structured_aliases] if self.structured_aliases is not None else []
+        self.structured_aliases = [v if isinstance(v, StructuredAlias) else StructuredAlias(**as_dict(v)) for v in self.structured_aliases]
 
         if not isinstance(self.mappings, list):
             self.mappings = [self.mappings] if self.mappings is not None else []

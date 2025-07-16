@@ -590,6 +590,7 @@ slots:
     range: Address
     multivalued: true
     inlined: true
+    inlined_as_list: true
   age in years:
     name: age in years
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/age_in_years
@@ -652,6 +653,7 @@ slots:
     - Person
     range: BirthEvent
     inlined: true
+    inlined_as_list: true
   in code system:
     name: in code system
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/in_code_system
@@ -673,6 +675,7 @@ slots:
     - Dataset
     range: AnyObject
     inlined: true
+    inlined_as_list: true
   species name:
     name: species name
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/species_name
@@ -1073,6 +1076,7 @@ slots:
     - subclass test
     range: class with spaces
     inlined: true
+    inlined_as_list: true
   Person_name:
     name: Person_name
     definition_uri: https://w3id.org/linkml/tests/core/name
