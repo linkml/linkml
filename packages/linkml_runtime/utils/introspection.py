@@ -1,19 +1,19 @@
+from __future__ import annotations
+
 import sys
 from functools import lru_cache
 from pathlib import Path
 from types import ModuleType
-from typing import Union
 
 from linkml_runtime.linkml_model import ClassDefinition
 from linkml_runtime.utils.distroutils import get_schema_string
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
-
 SCHEMA_PATH_VAR = "schema_path"
 
 
-def package_schema_path(package: Union[str, ModuleType]) -> Path:
+def package_schema_path(package: str | ModuleType) -> Path:
     if isinstance(package, str):
         package = sys.modules[package]
     if SCHEMA_PATH_VAR in vars(package):
