@@ -191,6 +191,9 @@ class SQLTableGenerator(Generator):
                 return ""
             return txt.replace("\n", "")
 
+        def strip_dangling_whitespace(txt: str) -> str:
+            return "\n".join(line.rstrip() for line in txt.splitlines())
+
         # Currently SQLite dialect in SQLA does not generate comments; see
         # https://github.com/sqlalchemy/sqlalchemy/issues/1546#issuecomment-1067389172
         # As a workaround we add these as "--" comments via direct string manipulation
@@ -201,11 +204,18 @@ class SQLTableGenerator(Generator):
         # This includes generating the appropriate column name, converting the range
         # into an SQL type, and adding a foreign key notation if appropriate.
         for cn, c in schema.classes.items():
+            desc = strip_newlines(c.description)
             if include_comments:
                 if c.abstract:
-                    ddl_str += f'-- # Abstract Class: "{cn}" Description: "{strip_newlines(c.description)}"\n'
+                    if desc:
+                        ddl_str += f"-- # Abstract Class: {cn} Description: {desc}\n"
+                    else:
+                        ddl_str += f"-- # Abstract Class: {cn}\n"
                 else:
-                    ddl_str += f'-- # Class: "{cn}" Description: "{strip_newlines(c.description)}"\n'
+                    if desc:
+                        ddl_str += f"-- # Class: {cn} Description: {desc}\n"
+                    else:
+                        ddl_str += f"-- # Class: {cn}\n"
             pk_slot = sv.get_identifier_slot(cn)
             if c.attributes:
                 cols = []
@@ -228,7 +238,11 @@ class SQLTableGenerator(Generator):
                         nullable=not s.required,
                     )
                     if include_comments:
-                        ddl_str += f"--     * Slot: {sn} Description: {strip_newlines(s.description)}\n"
+                        desc = strip_newlines(s.description)
+                        comment_str = f"--     * Slot: {sn}"
+                        if desc:
+                            comment_str += f" Description: {desc}"
+                        ddl_str += comment_str + "\n"
                     if s.description:
                         col.comment = s.description
                     cols.append(col)
@@ -242,6 +256,9 @@ class SQLTableGenerator(Generator):
             if not c.abstract or (c.abstract and self.generate_abstract_class_ddl):
                 Table(sql_name(cn), schema_metadata, *cols, comment=str(c.description))
         schema_metadata.create_all(engine)
+        ddl_str = strip_dangling_whitespace(ddl_str)
+        if ddl_str[-1:] != "\n":
+            ddl_str += "\n"
         return ddl_str
 
     def get_oracle_sql_range(self, slot: SlotDefinition) -> Text | VARCHAR2 | None:
