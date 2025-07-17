@@ -37,4 +37,3 @@ URI: [linkml:MinimalSubset](https://w3id.org/linkml/MinimalSubset)
 
 
 ### Enums
-

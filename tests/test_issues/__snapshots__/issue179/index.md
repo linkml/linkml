@@ -48,4 +48,4 @@
 
 #### Defined
 
- * [String](types/String.md)  (**str**) 
+ * [String](types/String.md)  (**str**)
