@@ -285,4 +285,3 @@ interface WithLocation
   {
     inLocation: Place
   }
-
