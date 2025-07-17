@@ -9,6 +9,7 @@ import click
 import yaml
 
 from linkml._version import __version__
+from linkml.cli.logging import log_level_option
 from linkml.generators.excelgen import ExcelGenerator
 from linkml.generators.graphqlgen import GraphqlGenerator
 from linkml.generators.jsonldcontextgen import ContextGenerator
@@ -22,7 +23,6 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.sqltablegen import SQLTableGenerator
-from linkml.utils.cli_utils import log_level_option
 from linkml.utils.generator import Generator
 
 logger = logging.getLogger(__name__)
