@@ -7,7 +7,8 @@ prefixes:
 emit_prefixes:
   - dct
 
-imports: [metat:types]
+imports:
+ - metat:types
 default_range: string
 
 slots:
