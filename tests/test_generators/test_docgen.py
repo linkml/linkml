@@ -100,6 +100,16 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
         "from_schema: https://w3id.org/linkml/tests/kitchen_sink",
         after="Class: Organization",
     )
+    assert_mdfile_contains(
+        tmp_path / "KitchenStatus.md",
+        "URI: [ks:KitchenStatus](https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus)",
+        after="Enum: KitchenStatus",
+    )
+    assert_mdfile_contains(
+        tmp_path / "SubsetA.md",
+        "URI: [SubsetA](SubsetA.md)",
+        after=" Subset: SubsetA ",
+    )
     assert_mdfile_contains(tmp_path / "Organization.md", "slot_uri: skos:altLabel", after="Induced")
     # test truncating newlines
     assert_mdfile_contains(tmp_path / "index.md", "An organization", after="## Classes", followed_by=["## Slots"])
@@ -1038,6 +1048,11 @@ def test_subfolder_type_separation(kitchen_sink_path, tmp_path):
     # check link to enum in mermaid diagram
     assert_mdfile_contains(
         tmp_path / "classes" / "Person.md", 'click LifeStatusEnum href "../../enums/LifeStatusEnum/"'
+    )
+
+    assert_mdfile_contains(
+        tmp_path / "enums" / "KitchenStatus.md",
+        "[ks:enum/KitchenStatus](https://w3id.org/linkml/tests/kitchen_sink/enum/KitchenStatus)",
     )
 
 
