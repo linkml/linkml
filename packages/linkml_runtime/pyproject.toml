@@ -75,6 +75,17 @@ style = "pep440"
 coverage = "^6.2"
 requests-cache = "^1.2.0"
 
+[tool.codespell]
+skip = [
+  ".git", "*.pdf", "*.svg", "*.dill",
+  "poetry.lock",
+]
+# Ignore table where words could be split across rows
+ignore-regex = '(\|.*\|.*\|.*\||\[[A-Z][a-z]\][a-z][a-z])'
+ignore-words-list = [
+  "CrossReference"
+]
+quiet-level = 3
 # https://docs.astral.sh/ruff/settings/
 [tool.ruff]
 extend-exclude = []
@@ -86,12 +97,11 @@ target-version = "py39"
 [tool.ruff.lint]
 
 select = [
-    # core
-    "F", # Pyflakes
-    "E", # pycodestyle errors
+    "E",  # pycodestyle errors
+    "F",  # Pyflakes
+    "I", # isort
     "W", # pycodestyle warnings
     "C90", # mccabe +
-    "I", # isort
     "N", # pep8-naming
     # "D", # pydocstyle
     "UP", # pyupgrade
@@ -177,6 +187,14 @@ max-complexity = 15
 requires = ["tox>=4"]
 env_list = ["lint", "py{39,310,311,312,313}"]
 
+[tool.tox.env_run_base]
+allowlist_externals = ["poetry"]
+deps = ["pytest"]
+commands = [
+  ["poetry", "install", "--no-root", "--sync", "--all-extras"],
+  ["poetry", "run", "pytest", "{posargs}"],
+]
+
 [tool.tox.env.codespell]
 description = "Run spell checkers."
 skip_install = true
@@ -205,7 +223,7 @@ commands = [
 ]
 
 [tool.tox.env.lint]
-description = "Run code linter (no fixes)."
+description = "Run code linter and formatter (no fixes)."
 skip_install = true
 deps = ["ruff==0.11.13"]
 commands = [

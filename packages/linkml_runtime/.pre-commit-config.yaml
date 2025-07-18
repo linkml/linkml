@@ -9,12 +9,8 @@ repos:
   - id: end-of-file-fixer
     exclude: __snapshots__
   - id: check-yaml
-    exclude: (__snapshots__|test_utils/input)
   - id: check-toml
   - id: trailing-whitespace
-    # TODO: This is temporary while bioliank is being fixed upstream.
-    # TODO: Should look at snapshot exclusion to find upstream problems
-    exclude: (__snapshots__|biolink-model.yaml)
 - repo: https://github.com/astral-sh/ruff-pre-commit
   # Ensure this version stays in sync with tox.ini
   rev: v0.11.13
