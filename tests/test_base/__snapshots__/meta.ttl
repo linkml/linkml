@@ -309,6 +309,7 @@ linkml:class_definition_rules a linkml:SlotDefinition ;
     linkml:domain linkml:ClassDefinition ;
     linkml:domain_of linkml:ClassDefinition ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:rules ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -390,6 +391,7 @@ linkml:path_expression_all_of a linkml:SlotDefinition ;
     linkml:domain linkml:PathExpression ;
     linkml:domain_of linkml:PathExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:all_of ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -410,6 +412,7 @@ linkml:path_expression_any_of a linkml:SlotDefinition ;
     linkml:domain linkml:PathExpression ;
     linkml:domain_of linkml:PathExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:any_of ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -430,6 +433,7 @@ linkml:path_expression_exactly_one_of a linkml:SlotDefinition ;
     linkml:domain linkml:PathExpression ;
     linkml:domain_of linkml:PathExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:exactly_one_of ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -446,6 +450,7 @@ linkml:path_expression_followed_by a linkml:SlotDefinition ;
     linkml:domain linkml:PathExpression ;
     linkml:domain_of linkml:PathExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:followed_by ;
     linkml:is_usage_slot true ;
     linkml:owner linkml:PathExpression ;
@@ -465,6 +470,7 @@ linkml:path_expression_none_of a linkml:SlotDefinition ;
     linkml:domain linkml:PathExpression ;
     linkml:domain_of linkml:PathExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:none_of ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -912,6 +918,7 @@ linkml:preconditions a linkml:SlotDefinition ;
     linkml:definition_uri linkml:preconditions ;
     linkml:domain_of linkml:ClassRule ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner linkml:ClassRule ;
     linkml:range linkml:AnonymousClassExpression ;
     linkml:slot_uri sh:condition .
@@ -1060,6 +1067,7 @@ linkml:value_object a linkml:SlotDefinition ;
     linkml:domain linkml:Example ;
     linkml:domain_of linkml:Example ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner linkml:Example ;
     linkml:range linkml:Anything ;
     linkml:slot_uri linkml:object .
@@ -1119,6 +1127,7 @@ linkml:array a linkml:SlotDefinition ;
     linkml:domain_of linkml:SlotDefinition ;
     linkml:inherited true ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner linkml:SlotDefinition ;
     linkml:range linkml:ArrayExpression ;
     linkml:slot_uri linkml:array .
@@ -1208,6 +1217,7 @@ linkml:class_expression_all_of a linkml:SlotDefinition ;
     linkml:domain linkml:ClassExpression ;
     linkml:domain_of linkml:ClassExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:all_of ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -1228,6 +1238,7 @@ linkml:class_expression_any_of a linkml:SlotDefinition ;
     linkml:domain linkml:ClassExpression ;
     linkml:domain_of linkml:ClassExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:any_of ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -1248,6 +1259,7 @@ linkml:class_expression_exactly_one_of a linkml:SlotDefinition ;
     linkml:domain linkml:ClassExpression ;
     linkml:domain_of linkml:ClassExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:exactly_one_of ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -1268,6 +1280,7 @@ linkml:class_expression_none_of a linkml:SlotDefinition ;
     linkml:domain linkml:ClassExpression ;
     linkml:domain_of linkml:ClassExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:none_of ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -1303,6 +1316,7 @@ linkml:classification_rules a linkml:SlotDefinition ;
     linkml:domain linkml:ClassDefinition ;
     linkml:domain_of linkml:ClassDefinition ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:multivalued true ;
     linkml:owner linkml:ClassDefinition ;
     linkml:range linkml:AnonymousClassExpression ;
@@ -1404,6 +1418,7 @@ linkml:dimensions a linkml:SlotDefinition ;
     linkml:domain linkml:ArrayExpression ;
     linkml:domain_of linkml:ArrayExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:list_elements_ordered true ;
     linkml:multivalued true ;
     linkml:owner linkml:ArrayExpression ;
@@ -1455,6 +1470,7 @@ linkml:elseconditions a linkml:SlotDefinition ;
     linkml:definition_uri linkml:elseconditions ;
     linkml:domain_of linkml:ClassRule ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner linkml:ClassRule ;
     linkml:range linkml:AnonymousClassExpression ;
     linkml:slot_uri linkml:elseconditions .
@@ -1539,6 +1555,7 @@ linkml:extension_value a linkml:SlotDefinition ;
     linkml:domain_of linkml:Extension ;
     linkml:imported_from "linkml:extensions" ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner linkml:Extension ;
     linkml:range linkml:AnyValue ;
     linkml:required true ;
@@ -1887,6 +1904,7 @@ linkml:maximum_number_dimensions a linkml:SlotDefinition ;
     linkml:domain linkml:ArrayExpression ;
     linkml:domain_of linkml:ArrayExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner linkml:ArrayExpression ;
     linkml:range linkml:Anything ;
     linkml:slot_uri linkml:maximum_number_dimensions .
@@ -1994,6 +2012,7 @@ linkml:path_rule a linkml:SlotDefinition ;
     linkml:domain linkml:SlotDefinition ;
     linkml:domain_of linkml:SlotDefinition ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner linkml:SlotDefinition ;
     linkml:range linkml:PathExpression ;
     linkml:slot_uri linkml:path_rule .
@@ -2011,6 +2030,7 @@ linkml:postconditions a linkml:SlotDefinition ;
     linkml:definition_uri linkml:postconditions ;
     linkml:domain_of linkml:ClassRule ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner linkml:ClassRule ;
     linkml:range linkml:AnonymousClassExpression ;
     linkml:slot_uri linkml:postconditions .
@@ -2144,6 +2164,7 @@ linkml:rules a linkml:SlotDefinition ;
     linkml:domain linkml:ClassDefinition ;
     linkml:domain_of linkml:ClassDefinition ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:multivalued true ;
     linkml:owner linkml:ClassDefinition ;
     linkml:range linkml:ClassRule ;
@@ -2229,6 +2250,7 @@ linkml:slot_expression_all_of a linkml:SlotDefinition ;
     linkml:domain linkml:SlotExpression ;
     linkml:domain_of linkml:SlotExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:all_of ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -2249,6 +2271,7 @@ linkml:slot_expression_any_of a linkml:SlotDefinition ;
     linkml:domain linkml:SlotExpression ;
     linkml:domain_of linkml:SlotExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:any_of ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -2269,6 +2292,7 @@ linkml:slot_expression_exactly_one_of a linkml:SlotDefinition ;
     linkml:domain linkml:SlotExpression ;
     linkml:domain_of linkml:SlotExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:exactly_one_of ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -2289,6 +2313,7 @@ linkml:slot_expression_none_of a linkml:SlotDefinition ;
     linkml:domain linkml:SlotExpression ;
     linkml:domain_of linkml:SlotExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:none_of ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -2368,6 +2393,7 @@ linkml:structured_imports a linkml:SlotDefinition ;
     linkml:definition_uri linkml:structured_imports ;
     linkml:domain linkml:SchemaDefinition ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:multivalued true ;
     linkml:owner linkml:structured_imports ;
     linkml:range linkml:ImportExpression ;
@@ -2517,6 +2543,7 @@ linkml:type_expression_all_of a linkml:SlotDefinition ;
     linkml:domain linkml:TypeExpression ;
     linkml:domain_of linkml:TypeExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:all_of ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -2537,6 +2564,7 @@ linkml:type_expression_any_of a linkml:SlotDefinition ;
     linkml:domain linkml:TypeExpression ;
     linkml:domain_of linkml:TypeExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:any_of ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -2557,6 +2585,7 @@ linkml:type_expression_exactly_one_of a linkml:SlotDefinition ;
     linkml:domain linkml:TypeExpression ;
     linkml:domain_of linkml:TypeExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:exactly_one_of ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -2577,6 +2606,7 @@ linkml:type_expression_none_of a linkml:SlotDefinition ;
     linkml:domain linkml:TypeExpression ;
     linkml:domain_of linkml:TypeExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:none_of ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -2863,6 +2893,7 @@ linkml:all_members a linkml:SlotDefinition ;
     linkml:definition_uri linkml:all_members ;
     linkml:domain_of linkml:SlotExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:list_value_specification_constant ;
     linkml:owner linkml:SlotExpression ;
     linkml:range linkml:AnonymousSlotExpression ;
@@ -2935,6 +2966,7 @@ linkml:enum_range a linkml:SlotDefinition ;
     linkml:definition_uri linkml:enum_range ;
     linkml:domain_of linkml:SlotExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner linkml:SlotExpression ;
     linkml:range linkml:EnumExpression ;
     linkml:slot_uri linkml:enum_range .
@@ -2945,6 +2977,7 @@ linkml:followed_by a linkml:SlotDefinition ;
     linkml:definition_uri linkml:followed_by ;
     linkml:domain_of linkml:PathExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner linkml:PathExpression ;
     linkml:range linkml:Expression ;
     linkml:slot_uri linkml:followed_by .
@@ -2957,6 +2990,7 @@ linkml:has_member a linkml:SlotDefinition ;
     linkml:definition_uri linkml:has_member ;
     linkml:domain_of linkml:SlotExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:list_value_specification_constant ;
     linkml:owner linkml:SlotExpression ;
     linkml:range linkml:AnonymousSlotExpression ;
@@ -2970,6 +3004,7 @@ linkml:include a linkml:SlotDefinition ;
     linkml:domain linkml:EnumExpression ;
     linkml:domain_of linkml:EnumExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:multivalued true ;
     linkml:owner linkml:EnumExpression ;
     linkml:range linkml:AnonymousEnumExpression ;
@@ -2996,6 +3031,7 @@ linkml:matches a linkml:SlotDefinition ;
     linkml:domain linkml:EnumExpression ;
     linkml:domain_of linkml:EnumExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner linkml:EnumExpression ;
     linkml:range linkml:MatchQuery ;
     linkml:slot_uri linkml:matches .
@@ -3008,6 +3044,7 @@ linkml:minus a linkml:SlotDefinition ;
     linkml:domain linkml:EnumExpression ;
     linkml:domain_of linkml:EnumExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:multivalued true ;
     linkml:owner linkml:EnumExpression ;
     linkml:range linkml:AnonymousEnumExpression ;
@@ -3037,6 +3074,7 @@ linkml:reachable_from a linkml:SlotDefinition ;
     linkml:domain linkml:EnumExpression ;
     linkml:domain_of linkml:EnumExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner linkml:EnumExpression ;
     linkml:range linkml:ReachabilityQuery ;
     linkml:slot_uri linkml:reachable_from .
@@ -3150,6 +3188,7 @@ linkml:boolean_slot a linkml:SlotDefinition ;
     linkml:abstract true ;
     linkml:definition_uri linkml:boolean_slot ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:multivalued true ;
     linkml:range linkml:Expression ;
     linkml:slot_uri linkml:boolean_slot .
@@ -3306,6 +3345,7 @@ linkml:range_expression a linkml:SlotDefinition ;
     linkml:domain_of linkml:PathExpression,
         linkml:SlotExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner linkml:SlotExpression ;
     linkml:range linkml:AnonymousClassExpression ;
     linkml:slot_uri linkml:range_expression .
@@ -3392,6 +3432,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
     linkml:domain_of linkml:SchemaDefinition,
         linkml:SlotExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:multivalued true ;
     linkml:owner linkml:bindings ;
     linkml:range linkml:EnumBinding ;
@@ -3578,6 +3619,7 @@ linkml:unit a linkml:SlotDefinition ;
         linkml:TypeExpression ;
     linkml:imported_from "linkml:units" ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner linkml:PermissibleValue ;
     linkml:range linkml:UnitOfMeasure ;
     linkml:slot_uri qudt:unit .
@@ -3703,6 +3745,7 @@ linkml:maximum_value a linkml:SlotDefinition ;
         linkml:TypeExpression ;
     linkml:inherited true ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner linkml:maximum_value ;
     linkml:range linkml:Anything ;
     linkml:slot_uri linkml:maximum_value .
@@ -3720,6 +3763,7 @@ linkml:minimum_value a linkml:SlotDefinition ;
         linkml:TypeExpression ;
     linkml:inherited true ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner linkml:minimum_value ;
     linkml:range linkml:Anything ;
     linkml:slot_uri linkml:minimum_value .
@@ -3789,6 +3833,7 @@ linkml:structured_pattern a linkml:SlotDefinition ;
         linkml:TypeExpression ;
     linkml:inherited true ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner linkml:structured_pattern ;
     linkml:range linkml:PatternExpression ;
     linkml:slot_uri linkml:structured_pattern .
@@ -4379,6 +4424,7 @@ linkml:all_of a linkml:SlotDefinition ;
         linkml:SlotExpression,
         linkml:TypeExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:boolean_slot ;
     linkml:multivalued true ;
     linkml:owner linkml:ClassExpression ;
@@ -4398,6 +4444,7 @@ linkml:any_of a linkml:SlotDefinition ;
         linkml:SlotExpression,
         linkml:TypeExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:boolean_slot ;
     linkml:multivalued true ;
     linkml:owner linkml:ClassExpression ;
@@ -4417,6 +4464,7 @@ linkml:exactly_one_of a linkml:SlotDefinition ;
         linkml:SlotExpression,
         linkml:TypeExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:boolean_slot ;
     linkml:multivalued true ;
     linkml:owner linkml:ClassExpression ;
@@ -4453,6 +4501,7 @@ linkml:none_of a linkml:SlotDefinition ;
         linkml:SlotExpression,
         linkml:TypeExpression ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a linkml:boolean_slot ;
     linkml:multivalued true ;
     linkml:owner linkml:ClassExpression ;
@@ -4736,13 +4785,13 @@ linkml:UnitOfMeasure a linkml:ClassDefinition ;
     skos:inScheme linkml:units ;
     skos:mappingRelation qudt:Unit ;
     linkml:any_of [ a linkml:AnonymousClassExpression ;
-            linkml:slot_conditions linkml:symbol ],
-        [ a linkml:AnonymousClassExpression ;
-            linkml:slot_conditions linkml:iec61360code ],
-        [ a linkml:AnonymousClassExpression ;
             linkml:slot_conditions linkml:exact_mappings ],
         [ a linkml:AnonymousClassExpression ;
-            linkml:slot_conditions linkml:ucum_code ] ;
+            linkml:slot_conditions linkml:symbol ],
+        [ a linkml:AnonymousClassExpression ;
+            linkml:slot_conditions linkml:ucum_code ],
+        [ a linkml:AnonymousClassExpression ;
+            linkml:slot_conditions linkml:iec61360code ] ;
     linkml:class_uri qudt:Unit ;
     linkml:definition_uri linkml:UnitOfMeasure ;
     linkml:imported_from "linkml:units" ;
@@ -4873,6 +4922,7 @@ linkml:structured_aliases a linkml:SlotDefinition ;
     linkml:definition_uri linkml:structured_aliases ;
     linkml:domain_of linkml:CommonMetadata ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:multivalued true ;
     linkml:owner linkml:CommonMetadata ;
     linkml:range linkml:StructuredAlias ;
@@ -5144,6 +5194,7 @@ linkml:examples a linkml:SlotDefinition ;
     linkml:domain linkml:Element ;
     linkml:domain_of linkml:CommonMetadata ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:multivalued true ;
     linkml:owner linkml:examples ;
     linkml:range linkml:Example ;
@@ -5975,42 +6026,42 @@ There are many subsets of *profiles* of the metamodel, for different purposes:
 For canonical reference documentation on any metamodel construct,
 refer to the official URI for each construct, e.g.
 [https://w3id.org/linkml/is_a](https://w3id.org/linkml/is_a)""" ;
-    sh:declare [ sh:namespace oslc: ;
-            sh:prefix "oslc" ],
-        [ sh:namespace prov: ;
-            sh:prefix "prov" ],
-        [ sh:namespace <http://semanticscience.org/resource/SIO_> ;
-            sh:prefix "SIO" ],
-        [ sh:namespace bibo: ;
-            sh:prefix "bibo" ],
-        [ sh:namespace vann1: ;
-            sh:prefix "vann" ],
-        [ sh:namespace pav: ;
-            sh:prefix "pav" ],
-        [ sh:namespace skosxl: ;
-            sh:prefix "skosxl" ],
-        [ sh:namespace OIO: ;
-            sh:prefix "OIO" ],
-        [ sh:namespace linkml: ;
-            sh:prefix "linkml" ],
-        [ sh:namespace skos: ;
-            sh:prefix "skos" ],
-        [ sh:namespace NCIT: ;
-            sh:prefix "NCIT" ],
-        [ sh:namespace schema1: ;
-            sh:prefix "schema" ],
-        [ sh:namespace cdisc: ;
-            sh:prefix "cdisc" ],
-        [ sh:namespace qudt: ;
+    sh:declare [ sh:namespace qudt: ;
             sh:prefix "qudt" ],
         [ sh:namespace qb: ;
             sh:prefix "qb" ],
+        [ sh:namespace OIO: ;
+            sh:prefix "OIO" ],
+        [ sh:namespace oslc: ;
+            sh:prefix "oslc" ],
+        [ sh:namespace swrl: ;
+            sh:prefix "swrl" ],
+        [ sh:namespace prov: ;
+            sh:prefix "prov" ],
+        [ sh:namespace cdisc: ;
+            sh:prefix "cdisc" ],
+        [ sh:namespace pav: ;
+            sh:prefix "pav" ],
+        [ sh:namespace vann1: ;
+            sh:prefix "vann" ],
+        [ sh:namespace <http://semanticscience.org/resource/SIO_> ;
+            sh:prefix "SIO" ],
         [ sh:namespace owl: ;
             sh:prefix "owl" ],
+        [ sh:namespace skos: ;
+            sh:prefix "skos" ],
+        [ sh:namespace linkml: ;
+            sh:prefix "linkml" ],
+        [ sh:namespace schema1: ;
+            sh:prefix "schema" ],
+        [ sh:namespace skosxl: ;
+            sh:prefix "skosxl" ],
+        [ sh:namespace bibo: ;
+            sh:prefix "bibo" ],
         [ sh:namespace sh: ;
             sh:prefix "sh" ],
-        [ sh:namespace swrl: ;
-            sh:prefix "swrl" ] ;
+        [ sh:namespace NCIT: ;
+            sh:prefix "NCIT" ] ;
     linkml:classes linkml:AltDescription,
         linkml:Annotatable,
         linkml:Annotation,
