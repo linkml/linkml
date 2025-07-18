@@ -38,6 +38,10 @@ SCHEMA_IMPORT_TREE = Path(INPUT_DIR) / "imports" / "main.yaml"
 SCHEMA_RELATIVE_IMPORT_TREE = Path(INPUT_DIR) / "imports_relative" / "L0_0" / "L1_0_0" / "main.yaml"
 SCHEMA_RELATIVE_IMPORT_TREE2 = Path(INPUT_DIR) / "imports_relative" / "L0_2" / "main.yaml"
 
+CREATURE_SCHEMA = "creature_schema"
+CREATURE_SCHEMA_BASE_URL = "https://github.com/linkml/linkml-runtime/tests/test_utils/input/mcc"
+CREATURE_SCHEMA_BASE_PATH = Path(INPUT_DIR) / "mcc"
+
 yaml_loader = YAMLLoader()
 IS_CURRENT = "is current"
 EMPLOYED_AT = "employed at"
@@ -79,6 +83,23 @@ def schema_view_with_imports() -> SchemaView:
 def sv_attributes() -> SchemaView:
     """Fixture for a SchemaView for testing attribute edge cases."""
     return SchemaView(os.path.join(INPUT_DIR, "attribute_edge_cases.yaml"))
+
+
+@pytest.fixture(scope="session")
+def creature_view() -> SchemaView:
+    return SchemaView(str(CREATURE_SCHEMA_BASE_PATH / "creature_schema.yaml"))
+
+
+@pytest.fixture(scope="session")
+def creature_view_remote() -> SchemaView:
+    """Fixture for a SchemaView for testing remote imports."""
+    return SchemaView(str(CREATURE_SCHEMA_BASE_PATH / "creature_schema_remote.yaml"))
+
+
+@pytest.fixture(scope="session")
+def creature_view_local() -> SchemaView:
+    """Fixture for a SchemaView for testing local relative file path imports."""
+    return SchemaView(str(CREATURE_SCHEMA_BASE_PATH / "creature_schema_local.yaml"))
 
 
 def make_schema(
@@ -305,6 +326,35 @@ slots:
 
 """
     return SchemaView(schema_str)
+
+
+@pytest.fixture
+def sv_ordering_tests() -> SchemaView:
+    """SchemaView for testing class ordering."""
+    schema = """
+id: https://example.com/ordering-tests
+name: ordering-tests
+classes:
+    Clarinet:
+        rank: 5
+        is_a: wind instrument
+    instrument:
+        rank: 2
+    Bassoon:
+        is_a: wind instrument
+    wind instrument:
+        rank: 1
+        is_a: instrument
+    Abacus:
+        is_a: counting instrument
+    counting instrument:
+        rank: 4
+        is_a: instrument
+    Didgeridoo:
+        rank: 3
+        is_a: wind instrument
+"""
+    return SchemaView(schema)
 
 
 def test_imports(schema_view_with_imports: SchemaView) -> None:
@@ -695,6 +745,145 @@ def test_uris_without_default_prefix() -> None:
 
     assert view.get_uri("TestClass", imports=True) == "https://example.org/test#TestClass"
     assert view.get_uri("test_slot", imports=True) == "https://example.org/test#test_slot"
+
+
+CREATURE_EXPECTED = {
+    "class": {
+        CREATURE_SCHEMA: {"MythicalCreature", "HasMagic", "MagicalAbility", "Dragon", "Phoenix", "Unicorn"},
+        "creature_basics": {"Entity", "Creature", "Location", "CreatureAttribute", "HasHabitat"},
+    },
+    "slot": {
+        CREATURE_SCHEMA: {"creature_class", "magical_abilities", "level_of_magic"},
+        "creature_basics": {"id", "name", "description", "species", "habitat"},
+    },
+    "type": {
+        CREATURE_SCHEMA: {"MagicLevel"},
+        "creature_types": {"string", "integer", "boolean"},
+    },
+    "enum": {CREATURE_SCHEMA: {"CreatureClass"}},
+    "subset": {CREATURE_SCHEMA: set(), "creature_subsets": {"mythical_creature", "generic_creature"}},
+    "element": {},
+}
+
+# add in the elements
+for value in CREATURE_EXPECTED.values():
+    for s_name, el in value.items():
+        if s_name not in CREATURE_EXPECTED["element"]:
+            CREATURE_EXPECTED["element"][s_name] = set()
+        CREATURE_EXPECTED["element"][s_name].update(el)
+
+
+@pytest.mark.parametrize("schema", ["creature_view", "creature_view_remote", "creature_view_local"])
+@pytest.mark.parametrize("entity", CREATURE_EXPECTED.keys())
+def test_creature_schema_entities_with_without_imports(
+    schema: str, entity: str, request: pytest.FixtureRequest
+) -> None:
+    """Test retrieval of entities from the creature schema.
+
+    Tests the following methods:
+    - all_{entity}s (e.g. all_classes, all_slots, etc.) with and without imports
+    - get_{entity} (e.g. get_class, get_slot, etc.)
+    - the "from_schema" attribute of the retrieved entities
+
+    The schemas tested are:
+    - creature_view: the main schema with all entities
+    - creature_view_remote: imports the creature schema using a curie and a remote URL
+    - creature_view_local: imports the creature schema using a local relative file path
+    """
+    creature_view = request.getfixturevalue(schema)
+
+    # use the PLURAL mapping to get the correct method name to retrieve all entities of the given type
+    get_all_fn = "all_" + PLURAL.get(entity, f"{entity}s")
+    if schema == "creature_view":
+        assert set(getattr(creature_view, get_all_fn)(imports=False)) == CREATURE_EXPECTED[entity][CREATURE_SCHEMA]
+    else:
+        assert set(getattr(creature_view, get_all_fn)(imports=False)) == set()
+
+    # merge the values from all the sources to get the complete set of entities
+    all_entities = set().union(*CREATURE_EXPECTED[entity].values())
+    assert set(getattr(creature_view, get_all_fn)(imports=True)) == all_entities
+
+    # run creature_view.get_{entity} for each entity and check the source
+    for src in CREATURE_EXPECTED[entity]:
+        for entity_name in CREATURE_EXPECTED[entity][src]:
+            e = getattr(creature_view, f"get_{entity}")(entity_name, imports=True)
+            assert e.from_schema == f"{CREATURE_SCHEMA_BASE_URL}/{src}"
+
+
+@pytest.mark.parametrize("entity", CREATURE_EXPECTED.keys())
+def test_get_entities_with_without_imports(creature_view: SchemaView, entity: str) -> None:
+    """Test retrieval of a specific entity from the creature schema."""
+    get_fn = f"get_{entity}"
+
+    for src in CREATURE_EXPECTED[entity]:
+        for entity_name in CREATURE_EXPECTED[entity][src]:
+            if src == CREATURE_SCHEMA:
+                # if the source is the main schema, we can use the method directly
+                e = getattr(creature_view, get_fn)(entity_name, imports=False)
+                assert e.name == entity_name
+                # N.b. BUG: due to caching and how the `from_schema` element is generated,
+                # we cannot know whether it will be populated.
+                # assert e.from_schema is None
+            else:
+                # if the source is an imported schema, we expect None without imports
+                assert getattr(creature_view, get_fn)(entity_name, imports=False) is None
+                if entity != "element":
+                    # in strict mode, we expect an error if the entity does not exist
+                    with pytest.raises(ValueError, match=f'No such {entity}: "{entity_name}"'):
+                        getattr(creature_view, f"get_{entity}")(entity_name, imports=False, strict=True)
+
+            # turn on imports
+            e = getattr(creature_view, f"get_{entity}")(entity_name, imports=True)
+            assert e.from_schema == f"{CREATURE_SCHEMA_BASE_URL}/{src}"
+
+
+@pytest.mark.parametrize("entity", argvalues=[e for e in CREATURE_EXPECTED if e != "element"])
+def test_get_entity_does_not_exist(creature_view: SchemaView, entity: str) -> None:
+    """Test retrieval of a specific entity from the creature schema."""
+    get_fn = f"get_{entity}"
+
+    # returns None unless the `strict` flag is passed
+    assert getattr(creature_view, get_fn)("does_not_exist") is None
+
+    # raises an error with `strict` flag on
+    with pytest.raises(ValueError, match=f'No such {entity}: "does_not_exist"'):
+        getattr(creature_view, get_fn)("does_not_exist", strict=True)
+
+
+ORDERING_TESTS = {
+    # Bassoon and Abacus are unranked, so appear at the end of the list.
+    "rank": ["wind instrument", "instrument", "Didgeridoo", "counting instrument", "Clarinet", "Bassoon", "Abacus"],
+    "preserve": [
+        "Clarinet",
+        "instrument",
+        "Bassoon",
+        "wind instrument",
+        "Abacus",
+        "counting instrument",
+        "Didgeridoo",
+    ],
+    # lexical ordering is case-sensitive, so all the capitalized words come first.
+    "lexical": ["Abacus", "Bassoon", "Clarinet", "Didgeridoo", "counting instrument", "instrument", "wind instrument"],
+    # TODO: this looks very dodgy
+    "inheritance": [
+        "instrument",
+        "wind instrument",
+        "Clarinet",
+        "Bassoon",
+        "counting instrument",
+        "Abacus",
+        "Didgeridoo",
+    ],
+}
+
+
+@pytest.mark.parametrize(
+    ("ordered_by"),
+    ORDERING_TESTS.keys(),
+)
+def test_all_classes_ordered_by(sv_ordering_tests: SchemaView, ordered_by: str) -> None:
+    """Test the ordered_by method."""
+    assert list(sv_ordering_tests.all_classes(ordered_by=ordered_by).keys()) == ORDERING_TESTS[ordered_by]
 
 
 def test_children_method(schema_view_no_imports: SchemaView) -> None:

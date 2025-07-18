@@ -141,6 +141,9 @@ def is_absolute_path(path: str) -> bool:
     """
     if path.startswith("/"):
         return True
+    if "://" in path:
+        return True
+
     # windows
     if not os.path.isabs(path):
         return False
@@ -445,17 +448,12 @@ class SchemaView:
     def _order_lexically(self, elements: ElementDict) -> ElementDict:
         """Order elements by name.
 
+        Note: sort is case sensitive, based on the name used in the original schema.
+
         :param element: slots or class type to order
         :return: all classes or slots sorted lexically in schema view
         """
-        ordered_list_of_names = []
-        ordered_elements = {}
-        for c in elements:
-            ordered_list_of_names.append(c)
-        ordered_list_of_names.sort()
-        for name in ordered_list_of_names:
-            ordered_elements[self.get_element(name).name] = self.get_element(name)
-        return ordered_elements
+        return {name: elements[name] for name in sorted(elements.keys())}
 
     def _order_rank(self, elements: ElementDict) -> ElementDict:
         """Order elements by rank.
@@ -463,21 +461,7 @@ class SchemaView:
         :param elements: slots or classes to order
         :return: all classes or slots sorted by their rank in schema view
         """
-        rank_map = {}
-        unranked_map = {}
-        rank_ordered_elements = {}
-        for name, definition in elements.items():
-            if definition.rank is None:
-                unranked_map[self.get_element(name).name] = self.get_element(name)
-
-            else:
-                rank_map[definition.rank] = name
-        rank_ordered_map = collections.OrderedDict(sorted(rank_map.items()))
-        for k, v in rank_ordered_map.items():
-            rank_ordered_elements[self.get_element(v).name] = self.get_element(v)
-
-        rank_ordered_elements.update(unranked_map)
-        return rank_ordered_elements
+        return {el.name: el for el in sorted(elements.values(), key=lambda el: el.rank or float("inf"))}
 
     def _order_inheritance(self, elements: DefDict) -> DefDict:
         """Sort classes such that if C is a child of P then C appears after P in the list."""
@@ -697,7 +681,7 @@ class SchemaView:
         """
         c = self.all_classes(imports=imports).get(class_name, None)
         if strict and c is None:
-            raise ValueError(f'No such class as "{class_name}"')
+            raise ValueError(f'No such class: "{class_name}"')
         return c
 
     @lru_cache(None)
@@ -723,7 +707,7 @@ class SchemaView:
                     slot.from_schema = c.from_schema
                     slot.owner = c.name
         if strict and slot is None:
-            raise ValueError(f'No such slot as "{slot_name}"')
+            raise ValueError(f'No such slot: "{slot_name}"')
         return slot
 
     @lru_cache(None)
@@ -736,7 +720,7 @@ class SchemaView:
         """
         s = self.all_subsets(imports).get(subset_name, None)
         if strict and s is None:
-            raise ValueError(f'No such subset as "{subset_name}"')
+            raise ValueError(f'No such subset: "{subset_name}"')
         return s
 
     @lru_cache(None)
@@ -749,7 +733,7 @@ class SchemaView:
         """
         e = self.all_enums(imports).get(enum_name, None)
         if strict and e is None:
-            raise ValueError(f'No such subset as "{enum_name}"')
+            raise ValueError(f'No such enum: "{enum_name}"')
         return e
 
     @lru_cache(None)
@@ -762,7 +746,7 @@ class SchemaView:
         """
         t = self.all_types(imports).get(type_name, None)
         if strict and t is None:
-            raise ValueError(f'No such subset as "{type_name}"')
+            raise ValueError(f'No such type: "{type_name}"')
         return t
 
     def _parents(self, e: Element, imports: bool = True, mixins: bool = True, is_a: bool = True) -> list[ElementName]:
