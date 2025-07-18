@@ -225,6 +225,13 @@ ignore-words-list = [
   "TE",
   "thirdparty",
   "Vas",
+  # These are temp exemptions because they are coming from
+  # upstream repos linkml-runtime and linkml-model
+  # we should remove these once the upstream repos are fixed
+  # and changes are propagated to linkml
+  "GENERARE",
+  "re-used",
+  "doesnt"
 ]
 quiet-level = 3
 

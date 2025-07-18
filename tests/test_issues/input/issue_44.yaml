@@ -3,7 +3,8 @@ id: https://example.com/test44
 prefixes:
   meta:  https://w3id.org/linkml/
 
-imports: [meta:types]
+imports:
+ - meta:types
 default_range: string
 
 types:
