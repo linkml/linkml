@@ -389,4 +389,3 @@ enums:
       ENZYME_UNIT_PER_LITER:
         description: enzyme unit per liter
         meaning: UCUM:U/L
-

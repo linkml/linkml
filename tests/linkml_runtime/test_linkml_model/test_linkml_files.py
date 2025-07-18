@@ -1,23 +1,24 @@
+from importlib.util import find_spec
+from itertools import product
+from pathlib import Path
+from urllib.parse import urlparse
+
 import pytest
 import requests
-from pathlib import Path
-from itertools import product
-from urllib.parse import urlparse
-from importlib.util import find_spec
 
 HAVE_REQUESTS_CACHE = bool(find_spec("requests_cache"))
 
 from linkml_runtime.linkml_model.linkml_files import (
-    Source,
-    Format,
-    _Path,
-    URL_FOR,
-    LOCAL_PATH_FOR,
-    LOCAL_BASE,
     GITHUB_IO_PATH_FOR,
     GITHUB_PATH_FOR,
+    LOCAL_BASE,
+    LOCAL_PATH_FOR,
     META_ONLY,
+    URL_FOR,
+    Format,
     ReleaseTag,
+    Source,
+    _Path,
 )
 
 EXPECTED_FORMATS = [

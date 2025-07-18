@@ -33,7 +33,7 @@ settings:
   unit.weight: "(kg|g|lbs|stone)"
   email: "\\S+@\\S+{\\.\\w}+"
   hyphenated_name: "\\S+-\\S+"
-  
+
 #==================================
 # Classes                         #
 #==================================
@@ -100,5 +100,3 @@ types:
       syntax: "{email}"
       interpolated: true
       partial_match: false  ## implicit ^...$
-    
-      

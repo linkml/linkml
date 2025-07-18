@@ -2,11 +2,11 @@
 A description of the existing LinkML testing system as envisioned by
 Harold Solbrig and Dazhi Ziao
 
-__Note:__ The description below was written in the context of 
+__Note:__ The description below was written in the context of
 [linkml-runtime](https://github.com/linkml/linkml-runtime).  Many (most?) of
 the actual testing is performed in [linkml](https://github.com/linkml/linkml)
-proper.  This document needs to become a single text that covers _both_ of 
-these test envirnoments.  See: [duplicate testing code issue](https://github.com/linkml/linkml-runtime/issues/125)
+proper.  This document needs to become a single text that covers _both_ of
+these test environments.  See: [duplicate testing code issue](https://github.com/linkml/linkml-runtime/issues/125)
 for followup.
 
 ## Philosophy
@@ -22,9 +22,9 @@ a) Be removed as an artifact of a development branch that is no
 used or
 b) Have a test added for it
 
-## Basics 
+## Basics
 All unit tests must be in the `tests` directory
-Tests are grouped by general function or purpose through the use 
+Tests are grouped by general function or purpose through the use
 of python packages.  At the time of this writing, the following
 testing packages were in use:
 
@@ -51,7 +51,7 @@ testing packages were in use:
 
 ### Background
 Unit tests that validate output tend to follow the following evolutionary path:
-1) Developer 1 runs some bit of code that generates output that appears in 
+1) Developer 1 runs some bit of code that generates output that appears in
    `print` statement:
     ```python
     import unittest
@@ -72,7 +72,7 @@ Unit tests that validate output tend to follow the following evolutionary path:
    problem and change the unit test to read:
    ```python
    import unittest
-   
+
    expected = '''
       Date: Mon, Feb 7, 2021
       model Foo: expected
@@ -85,7 +85,7 @@ Unit tests that validate output tend to follow the following evolutionary path:
    if __name__ == '__main__':
       unittest.main()
    ```
-   After doing a bunch of messing w/ tabs and line feeds, developer 
+   After doing a bunch of messing w/ tabs and line feeds, developer
    1 finally gets this to work (on a Mac), and submits the revision.
    Soon after submission, the test fails because the test was run
    on Tue, Feb 8, so the text no longer matches. Developer 1 updates
@@ -98,7 +98,7 @@ Unit tests that validate output tend to follow the following evolutionary path:
    When they run the unit tests, `test_my_new_function` fails, along with
    several other function test cases that now utilize `my_new_function`.
    Developer 3 has to go through _each_ of these failures to a) confirm
-   that they failed because of the change and b) editing the test cases 
+   that they failed because of the change and b) editing the test cases
    to reflect the new output.
 
    At some point, developer 3 realizes that all these individual edits
@@ -171,7 +171,7 @@ has a different output directory than `test_loaders_dumpers`__
     issues report warnings along the way
 * `self.root_input_path` - testing root input path.  Used for inputs such as "meta.yaml" that are
    used across many testing nodes
-* `self.root_expected_path` = testing root expected 
+* `self.root_expected_path` = testing root expected
 * `self.root_temp_file_path` = testing root temp
 * `self._log` - logger for logging errors.  Same across all tests, defined in `tests/support/mismatchlog.py`
 
@@ -186,15 +186,15 @@ has a different output directory than `test_loaders_dumpers`__
 * `temp_file_path(*path: str, is_dir: bool = False` - Same as actual path, except for scratch files
    Note: In the current implementation, actual and temp share the same directory.  This may not always
    be the case.
-* `log(file_or_directory: str, message: Optional[str] = None) -> None` - record an "error", acting 
+* `log(file_or_directory: str, message: Optional[str] = None) -> None` - record an "error", acting
   according to the setting of `self.mismatch_action`.  `file_or_directory` names the file associated
-  with the error and `message` an optional identification of what was wrong.  
+  with the error and `message` an optional identification of what was wrong.
 
   The current `log` behavior is to create an ordered list of error messages, which, depending upon
   the `mismatch_action`, get printed at the end of the run.  Other, more complex behaviors are possible.
 
   Note that `MismatchLog` does some cleaning up on the stack trace to focus in on the actual cause
-  of the problem.  
+  of the problem.
 
 ## Using the testing environment
 ### Test class setup
@@ -209,7 +209,7 @@ from linkml_runtime.utils import my_function
 
 class MyFunctionTestCase(TestEnvironmentTestCase):
     env = env
- 
+
     def test_single_file(self):
         """ Test that my function behaves correctly with a single output file """
         output_text = my_function(env.input_path('input.txt'))
@@ -225,7 +225,7 @@ will then compare the output with `tests\test_dir\output\input.mod` with the fol
 At the _end_ of `MyFunctionTestCase` execution, `self.log` will be printed as output and, if `FailOnce`,
 `self.assertFail` will be raised.
 
-### eval_single_file 
+### eval_single_file
 `eval_single_file(expected_file_path: str, actual_text: str, filtr: Callable[[str], str] = None, comparator: Callable[[str, str], str] = None) -> bool:`
 
 * `expected_file_path` - path to expected output in `output` directory
@@ -247,7 +247,7 @@ At the _end_ of `MyFunctionTestCase` execution, `self.log` will be printed as ou
   * ClickTestCase.always_pass_comparator - always true. (Note: doesn't appear to be used at the moment)
 
 Note that, if the expected output file does not exist, eval_single_file creates the missing file and
-then logs it as a mismatch.  If the `mismatch_action` is `Ignore` or `Report`, any missing or 
+then logs it as a mismatch.  If the `mismatch_action` is `Ignore` or `Report`, any missing or
 mismatched files will be updated.
 
 ## Unit tests for LinkML generators
@@ -297,7 +297,7 @@ if __name__ == '__main__':
     unittest.main()
 ```
 The above example calls the PythonGenerator with `issue_106.yaml` from the local `input` directory
-as an input.  The python generator returns a string (`value_is_returned == True`), which is then 
+as an input.  The python generator returns a string (`value_is_returned == True`), which is then
 compared with `issue_106.py` in the local `output` directory.  The `compare_python` comparator is used,
 which compares the generated text with `output/issue_106.py`.  If the files do not match or `output/issue_106.py'
 doesn't exist:
@@ -348,7 +348,7 @@ class IssueOWLNamespaceTestCase(TestEnvironmentTestCase):
     def test_issue_no_default(self):
         """ Make sure that types are generated as part of the output """
         g = self._test_owl('issue_163b')
-        
+
         A = URIRef('http://example.org/sample/example1/A')
         self.assertIn((A, RDF.type, OWL.Class), g)
         NAME = URIRef('http://example.org/sample/example1/name')
@@ -367,7 +367,7 @@ The above set of tests use the `OwlSchemaGenerator` to transform input YAML file
 format.  The `_test_owl` method takes an input file name (e.g. `input/issue_163.yaml`) and generates
 the OWL turtle output (e.g. `input/issue_163.owl`). Note that in this case, we include `env.input_map`
 as an additional parameter (not sure why but...).  It uses the RDF comparator on the output and,
-assuming that the `Report` mode is in operation, the output file is updated if necessary.  _Note: We 
+assuming that the `Report` mode is in operation, the output file is updated if necessary.  _Note: We
 may want to consider what to do in `Fail` or `FailOnce` modes_.  This test case then returns the
 generated OWL in the form of an RDF graph, which can be used to test for the presence or absence
 of individual fields.
@@ -382,7 +382,7 @@ of individual fields.
   means that the destination file name will be passed as a parameter to the generator function and
   the output will be found in that file
 * `filtr` -- Optional filter to remove non-comparable information, normalize format, etc.
-* `comparator` -- Optional comaprator that does non-standard (e.g. RDF) comparisons
+* `comparator` -- Optional comparator that does non-standard (e.g. RDF) comparisons
 * `use_testing_root` -- 'True' means that, instead of using the _local_ input, output and temp
   directories, those at the root of the testing package should be used.  This parameter is used
   when one wants to run tests on the standard linkml yaml files.
@@ -390,7 +390,7 @@ of individual fields.
 
 ## generate_directory
 `generate_directory(self, dirname: Union[str, List[str]], generator: Callable[[str], None]) -> None`
-The `generate_directory` test is used to test generaters that produce multiple files (e.g. markdowngen)
+The `generate_directory` test is used to test generators that produce multiple files (e.g. markdowngen)
 ### Parameters
 * `dirname` -- the relative path of the output directory.  The directory will be first be created (and cleared)
   in the `temp` subdirectory. If a `list` is passed, each list element is a path element within the
@@ -445,8 +445,8 @@ The above example:
                 comparator: Callable[[type(unittest.TestCase), str, str, str], str] = None, ) -> None
  ```
 * `args` - the command line arguments to the function. This can either be one long string that will
-   be parsed (e.g. "-r schema_definition -r slot_definition") or a list of strings (e.g. 
-   ["-r", "schema_definition", "-r", sd]). 
+   be parsed (e.g. "-r schema_definition -r slot_definition") or a list of strings (e.g.
+   ["-r", "schema_definition", "-r", sd]).
 * `testFileOrDirectory` - where the output is to be put. _Note:_ this parameter is listed as optional,
    but the first line of code causes a failure if it isn't there.  TBD: change this signature.
 * `expected_error` - if the unit test is expected to fail, this is the error that is expected
@@ -457,7 +457,7 @@ The above example:
 * `comparator` - file comparator
 
 ### ClickTestCase example
-The following code tests tha various parameters of the CSV generator:
+The following code tests the various parameters of the CSV generator:
 ```python
 import unittest
 import click

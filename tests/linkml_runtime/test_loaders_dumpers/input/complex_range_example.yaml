@@ -10,7 +10,7 @@ prefixes:
   sparqlfun: https://w3id.org/sparqlfun/
   linkml: https://w3id.org/linkml/
   sh: http://www.w3.org/ns/shacl#
-  
+
 default_prefix: ex
 default_range: string
 
@@ -79,5 +79,3 @@ slots:
 
   type:
     range: node
-
-

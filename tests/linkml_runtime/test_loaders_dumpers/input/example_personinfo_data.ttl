@@ -55,4 +55,3 @@ ROR:1 a ns3:Organization ;
         ROR:2 ;
     ns2:persons P:001,
         P:002 .
-

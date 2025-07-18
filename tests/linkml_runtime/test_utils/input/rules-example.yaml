@@ -50,7 +50,7 @@ slots:
     range: int
   encodes:
     range: SeqFeature
-  
+
   analyte:
     required: true
     # union ranges: https://github.com/linkml/linkml/issues/215
@@ -75,7 +75,7 @@ slots:
     is_a: familial_relationships
     inverse: ancestors
 
-    
+
 #==================================
 # Classes                         #
 #==================================
@@ -100,7 +100,7 @@ classes:
             telephone:
               pattern: "^\\+1 "
 
-  
+
   SeqFeature:
     slots:
       - id
@@ -123,7 +123,7 @@ classes:
         slot_conditions:
           encodes:
             range: Protein
-          
+
   Sample:
     slots:
       - id
@@ -136,7 +136,7 @@ classes:
           analyte:
             equals_string: DNA
 
-            
+
   Person:
     slots:
       - id
@@ -226,8 +226,8 @@ classes:
                 term:
                   none_of:
                     - equals_string_in: [GO:0008150, GO:0003674, GO:0005575]
-            
-                
+
+
 #==================================
 # Enums
 #==================================
@@ -248,5 +248,3 @@ enums:
       LIVING:
       DEAD:
       UNDEAD:
-    
-              

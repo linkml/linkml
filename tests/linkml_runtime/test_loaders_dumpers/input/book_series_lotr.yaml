@@ -3,7 +3,7 @@ name: Lord of the Rings
 genres:
   - fantasy
 creator:
-  name: JRR Tolkein
+  name: JRR Tolkien
   from_country: England
 books:
   - id: S001.1
