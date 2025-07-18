@@ -125,14 +125,14 @@ def test_abstract_class(capsys):
     # Testing the inheritance of an abstract class
     gen = SQLTableGenerator(b.schema, generate_abstract_class_ddl=False)
     ddl = gen.generate_ddl()
-    assert 'Abstract Class: dummy class' in ddl
+    assert "Abstract Class: dummy class" in ddl
     assert 'CREATE TABLE "dummy class"' not in ddl
     assert 'CREATE TABLE "inherited class"' in ddl
     # Creating and asserting the default values work
     gen2 = SQLTableGenerator(b.schema)
     assert gen2.generate_abstract_class_ddl
     ddl2 = gen2.generate_ddl()
-    assert 'Abstract Class: dummy class' in ddl2
+    assert "Abstract Class: dummy class" in ddl2
     assert 'CREATE TABLE "dummy class"' in ddl2
     assert 'CREATE TABLE "inherited class"' in ddl2
 
