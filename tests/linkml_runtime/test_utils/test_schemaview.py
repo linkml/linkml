@@ -38,7 +38,6 @@ SCHEMA_IMPORT_TREE = Path(INPUT_DIR) / "imports" / "main.yaml"
 SCHEMA_RELATIVE_IMPORT_TREE = Path(INPUT_DIR) / "imports_relative" / "L0_0" / "L1_0_0" / "main.yaml"
 SCHEMA_RELATIVE_IMPORT_TREE2 = Path(INPUT_DIR) / "imports_relative" / "L0_2" / "main.yaml"
 
-
 yaml_loader = YAMLLoader()
 IS_CURRENT = "is current"
 EMPLOYED_AT = "employed at"
@@ -58,6 +57,11 @@ EXPECTED = {
     "subsets": {"sc1ss1", "sc2ss1"},
 }
 
+# workaround for the annoying plural version of "class"
+PLURAL = {
+    "class": "classes",
+}
+
 
 @pytest.fixture
 def schema_view_no_imports() -> SchemaView:
@@ -72,7 +76,7 @@ def schema_view_with_imports() -> SchemaView:
 
 
 @pytest.fixture(scope="session")
-def schema_view_attributes() -> SchemaView:
+def sv_attributes() -> SchemaView:
     """Fixture for a SchemaView for testing attribute edge cases."""
     return SchemaView(os.path.join(INPUT_DIR, "attribute_edge_cases.yaml"))
 
@@ -119,13 +123,9 @@ def make_schema(
     return SchemaView(schema)
 
 
-"""
-https://github.com/linkml/linkml/issues/1143
-"""
-
-
 @pytest.fixture
-def sv1() -> SchemaView:
+def sv_merge_1() -> SchemaView:
+    """Simple schema for testing schema merges."""
     return make_schema(
         "s1",
         prefixes=[Prefix(prefix_prefix="sc1p1", prefix_reference="http://example.org/sc1url1")],
@@ -145,7 +145,8 @@ def sv1() -> SchemaView:
 
 
 @pytest.fixture
-def sv2() -> SchemaView:
+def sv_merge_2() -> SchemaView:
+    """Another simple schema for testing schema merges."""
     return make_schema(
         "s2",
         prefixes=[Prefix(prefix_prefix="sc2p1", prefix_reference="http://example.org/sc2url1")],
@@ -165,9 +166,535 @@ def sv2() -> SchemaView:
 
 
 @pytest.fixture
-def empty_schema() -> SchemaView:
+def sv_empty() -> SchemaView:
     """Return an empty schema."""
     return make_schema("s3")
+
+
+@pytest.fixture
+def sv_issue_998() -> SchemaView:
+    """SchemaView for tests related to https://github.com/linkml/linkml/issues/998."""
+    schema = """
+id: https://w3id.org/linkml/examples/personinfo
+name: personinfo
+prefixes:
+  linkml: https://w3id.org/linkml/
+  schema: http://schema.org/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Person:
+    class_uri: schema:Person
+    attributes:
+      id:
+        identifier: true
+      employed:
+        range: EmploymentStatusEnum
+      past_relationship:
+        range: RelationshipStatusEnum
+    slots:
+      - type
+      - past_employer
+  Programmer:
+    attributes:
+        employed:
+            range: EmploymentStatusEnum
+    slots:
+      - type
+      - past_employer
+    slot_usage:
+      type:
+        range: TypeEnum
+
+slots:
+    status:
+      range: PersonStatusEnum
+    relationship:
+      range: RelationshipStatusEnum
+    type:
+    past_employer:
+        range: EmploymentStatusEnum
+enums:
+  PersonStatusEnum:
+    permissible_values:
+      ALIVE:
+      DEAD:
+      UNKNOWN:
+  EmployedStatusEnum:
+    permissible_values:
+      EMPLOYED:
+      UNEMPLOYED:
+      UNKNOWN:
+  RelationshipStatusEnum:
+    permissible_values:
+      UNKNOWN:
+  TypeEnum:
+    permissible_values:
+      UNKNOWN:
+"""
+    return SchemaView(schema)
+
+
+@pytest.fixture(scope="session")
+def sv_induced_slots() -> SchemaView:
+    """Schema for testing induced slots."""
+    schema_str = """
+id: https://example.com/test-induced
+name: test-induced
+title: test induced
+
+description: >-
+    test schema view's finding of induced slot information.
+
+classes:
+    class1:
+        slots:
+            - slot1
+            - slot2
+            - slot3
+        slot_usage:
+            slot2:
+                description: induced slot2
+                required: true
+                range: class1
+    class2:
+        is_a: class1
+
+    mixin1a:
+        mixin: true
+        slot_usage:
+            slot2:
+                description: mixin slot2
+                required: false
+                range: mixin1a
+
+    mixin1b:
+        mixin: true
+        slot_usage:
+            slot2:
+                description: mixin slot2
+                required: false
+                range: mixin1b
+
+    class2_1a:
+        is_a: class2
+        mixins:
+          - mixin1a
+          - mixin1b
+
+    class2_1b:
+        is_a: class2
+        mixins:
+          - mixin1b
+          - mixin1a
+
+    class0:
+
+slots:
+    slot1:
+        description: non-induced slot1
+        range: class0
+    slot2:
+        description: non-induced slot2
+        required: false
+        range: class0
+    slot3:
+        range: class0
+
+"""
+    return SchemaView(schema_str)
+
+
+def test_imports(schema_view_with_imports: SchemaView) -> None:
+    """View should by default dynamically include imports chain."""
+    view = schema_view_with_imports
+    assert view.schema.source_file is not None
+    logger.debug(view.imports_closure())
+    assert set(view.imports_closure()) == {"kitchen_sink", "core", "linkml:types"}
+
+    for t in view.all_types().keys():
+        logger.debug(f"T={t} in={view.in_schema(t)}")
+    assert view.in_schema(ClassDefinitionName("Person")) == "kitchen_sink"
+    assert view.in_schema(SlotDefinitionName("id")) == "core"
+    assert view.in_schema(SlotDefinitionName("name")) == "core"
+    assert view.in_schema(SlotDefinitionName(ACTIVITY)) == "core"
+    assert view.in_schema(SlotDefinitionName("string")) == "types"
+
+    assert ACTIVITY in view.all_classes()
+    assert ACTIVITY not in view.all_classes(imports=False)
+    assert "string" in view.all_types()
+    assert "string" not in view.all_types(imports=False)
+    assert len(view.type_ancestors("SymbolString")) == len(["SymbolString", "string"])
+
+    for tn, t in view.all_types().items():
+        assert tn == t.name
+        induced_t = view.induced_type(tn)
+        assert induced_t.uri is not None
+        assert induced_t.base is not None
+        if t in view.all_types(imports=False).values():
+            assert t.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
+        else:
+            assert t.from_schema in ["https://w3id.org/linkml/tests/core", "https://w3id.org/linkml/types"]
+
+    for en, e in view.all_enums().items():
+        assert en == e.name
+        if e in view.all_enums(imports=False).values():
+            assert e.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
+        else:
+            assert e.from_schema == "https://w3id.org/linkml/tests/core"
+
+    for sn, s in view.all_slots().items():
+        assert sn == s.name
+        s_induced = view.induced_slot(sn)
+        assert s_induced.range is not None
+        if s in view.all_slots(imports=False).values():
+            assert s.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
+        else:
+            assert s.from_schema == "https://w3id.org/linkml/tests/core"
+
+    for cn, c in view.all_classes().items():
+        assert cn == c.name
+        if c in view.all_classes(imports=False).values():
+            assert c.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
+        else:
+            assert c.from_schema == "https://w3id.org/linkml/tests/core"
+        for s in view.class_induced_slots(cn):
+            if s in view.all_classes(imports=False).values():
+                assert s.slot_uri is not None
+                assert s.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
+
+    for c in ["Company", "Person", "Organization", "Thing"]:
+        assert view.induced_slot("id", c).identifier
+        assert not view.induced_slot("name", c).identifier
+        assert not view.induced_slot("name", c).required
+        assert view.induced_slot("name", c).range == "string"
+
+    for c in ["Event", "EmploymentEvent", "MedicalEvent"]:
+        s = view.induced_slot("started at time", c)
+        assert s.range == "date"
+        assert s.slot_uri == "prov:startedAtTime"
+
+    assert view.induced_slot(AGE_IN_YEARS, "Person").minimum_value == 0
+    assert view.induced_slot(AGE_IN_YEARS, "Adult").minimum_value == 16
+
+    assert view.get_class("agent").class_uri == "prov:Agent"
+    assert view.get_uri(AGENT) == "prov:Agent"
+    logger.debug(view.get_class("Company").class_uri)
+
+    assert view.get_uri(COMPANY) == "ks:Company"
+    assert view.get_uri(COMPANY, expand=True) == "https://w3id.org/linkml/tests/kitchen_sink/Company"
+    logger.debug(view.get_uri("TestClass"))
+    assert view.get_uri("TestClass") == "core:TestClass"
+    assert view.get_uri("TestClass", expand=True) == "https://w3id.org/linkml/tests/core/TestClass"
+
+    assert (
+        view.get_uri("TestClass", expand=True, use_element_type=True)
+        == "https://w3id.org/linkml/tests/core/class/TestClass"
+    )
+    assert view.get_uri("TestClass", use_element_type=True) == "core:class/TestClass"
+    assert view.get_uri("name", use_element_type=True) == "core:slot/name"
+
+    assert view.get_uri("string") == "xsd:string"
+
+    # dynamic enums
+    e = view.get_enum("HCAExample")
+    assert set(e.include[0].reachable_from.source_nodes) == {"GO:0007049", "GO:0022403"}
+
+    # units
+    height = view.get_slot("height_in_m")
+    assert height.unit.ucum_code == "m"
+
+
+def test_imports_from_schemaview(schema_view_with_imports: SchemaView) -> None:
+    """View should by default dynamically include imports chain."""
+    view = schema_view_with_imports
+    view2 = SchemaView(view.schema)
+    assert len(view.all_classes()) == len(view2.all_classes())
+    assert len(view.all_classes(imports=False)) == len(view2.all_classes(imports=False))
+
+
+def test_imports_closure_order() -> None:
+    """Imports should override in a python-like order."""
+    sv = SchemaView(SCHEMA_IMPORT_TREE)
+    closure = sv.imports_closure(imports=True)
+    target = [
+        "linkml:types",
+        "s1_1",
+        "s1_2_1_1_1",
+        "s1_2_1_1_2",
+        "s1_2_1_1",
+        "s1_2_1",
+        "s1_2",
+        "s1",
+        "s2_1",
+        "s2_2",
+        "s2",
+        "s3_1",
+        "s3_2",
+        "s3",
+        "main",
+    ]
+    assert closure == target
+
+
+def test_imports_overrides() -> None:
+    """Classes defined in the importing module should override same-named classes in imported modules."""
+    sv = SchemaView(SCHEMA_IMPORT_TREE)
+    defaults = {}
+    target = {}
+    for name, cls in sv.all_classes(imports=True).items():
+        target[name] = name
+        defaults[name] = cls.attributes["value"].ifabsent
+
+    assert defaults == target
+
+
+def test_imports_relative() -> None:
+    """Relative imports from relative imports should evaluate relative to the *importing* schema."""
+    sv = SchemaView(SCHEMA_RELATIVE_IMPORT_TREE)
+    closure = sv.imports_closure(imports=True)
+
+    assert len(closure) == len(sv.schema_map.keys())
+    assert closure == [
+        "linkml:types",
+        "../neighborhood_parent",
+        "neighbor",
+        "../parent",
+        "../L1_0_1/L2_0_1_0/grandchild",
+        "../../L0_1/L1_1_0/L2_1_0_0/apple",
+        "../../L0_1/L1_1_0/L2_1_0_0/index",
+        "../../L0_1/L1_1_0/L2_1_0_1/banana",
+        "../../L0_1/L1_1_0/L2_1_0_1/index",
+        "../../L0_1/L1_1_0/index",
+        "../../L0_1/cousin",
+        "../L1_0_1/dupe",
+        "./L2_0_0_0/child",
+        "./L2_0_0_1/child",
+        "L2_0_0_2/two",
+        "L2_0_0_2/one",
+        "L2_0_0_2/four",
+        "L2_0_0_2/three",
+        "L2_0_0_2/stepchild",
+        "main",
+    ]
+
+    # check that we can actually get the classes from the same-named schema
+    classes = sv.all_classes(imports=True)
+    assert "L110Index" in classes
+    assert "L2100Index" in classes
+    assert "L2101Index" in classes
+
+
+# crap test
+def test_imports_relative_load() -> None:
+    """Relative imports from relative imports should load without FileNotFoundError."""
+    sv = SchemaView(SCHEMA_RELATIVE_IMPORT_TREE2)
+    sv.imports_closure(imports=True)
+
+
+def test_imports_direct_remote_imports() -> None:
+    """Tests that building a SchemaView directly from a remote URL works."""
+    view = SchemaView("https://w3id.org/linkml/meta.yaml")
+    main_classes = ["class_definition", "prefix"]
+    imported_classes = ["annotation"]
+    for c in main_classes:
+        assert c in view.all_classes(imports=True)
+        assert c in view.all_classes(imports=False)
+    for c in imported_classes:
+        assert c in view.all_classes(imports=True)
+        assert c not in view.all_classes(imports=False)
+
+
+def test_imports_remote_url_with_imports() -> None:
+    """Test_remote_modular_schema_view."""
+    url = (
+        "https://raw.githubusercontent.com/linkml/linkml-runtime/"
+        "2a46c65fe2e7db08e5e524342e5ff2ffb94bec92/tests/test_utils/input/kitchen_sink.yaml"
+    )
+    sv = SchemaView(url)
+    assert sv.schema.name == "kitchen_sink"
+
+    assert "activity" in sv.all_classes()
+    assert "activity" in sv.all_classes(imports=True)
+    assert "activity" not in sv.all_classes(imports=False)
+
+
+def test_imports_remote_repo_mixs() -> None:
+    """Test loading from a remote repo.
+
+    Note this test case involves using an external github repo.
+
+    We use commit hashes to avoid false positive test fails caused by repo changes,
+    but in theory this test could break if the mixs repo is deleted or changes its
+    name or org.
+
+    We will likely keep skipping this for now, but once stabilized it can be unskipped
+
+    Note that the same functionality is likely captured in the other tests that use
+    a more stable repo.
+    """
+    pytest.skip("Test is slow and may be fragile")
+    mixs_revision_url = (
+        "https://raw.githubusercontent.com/GenomicsStandardsConsortium/mixs/"
+        "83be82a99d0a210e83b371b20b3dadb6423ec612/model/schema/mixs.yaml"
+    )
+
+    sv = SchemaView(mixs_revision_url)
+    assert sv.schema.name == "MIxS"
+    assert len(sv.all_classes()) > 0
+
+
+@pytest.mark.skip("Skipped as fragile: will break if the remote schema changes")
+def test_direct_remote_imports_additional() -> None:
+    """Alternative test to: https://github.com/linkml/linkml/pull/1379."""
+    url = "https://raw.githubusercontent.com/GenomicsStandardsConsortium/mixs/main/model/schema/mixs.yaml"
+    view = SchemaView(url)
+    assert view.schema.name == "MIxS"
+    assert len(view.all_classes()) > 0
+
+
+def test_import_map() -> None:
+    """Path to import file should be configurable."""
+    for im in [{"core": "/no/such/file"}, {"linkml:": "/no/such/file"}]:
+        view = SchemaView(SCHEMA_WITH_IMPORTS, importmap=im)
+        with pytest.raises(FileNotFoundError):
+            view.all_classes()
+
+    for im in [None, {}, {"core": "core"}]:
+        view = SchemaView(SCHEMA_WITH_IMPORTS, importmap=im)
+        view.all_classes()
+        assert (
+            view.imports_closure().sort() == ["kitchen_sink", "core", "linkml:types"].sort()
+        )  # Assert imports closure
+        assert ACTIVITY in view.all_classes()  # Assert ACTIVITY is in all classes
+        assert ACTIVITY not in view.all_classes(imports=False)  # Assert ACTIVITY is not in classes without imports
+
+
+def test_mergeimports() -> None:
+    """Ensure that imports are or are not merged, depending on the kwargs."""
+    # note the change here to include an extra param not in the fixture
+    sv = SchemaView(SCHEMA_WITH_IMPORTS, merge_imports=False)
+    classes_list = list(sv.schema.classes.keys())
+    assert "activity" not in classes_list
+
+    slots_list = list(sv.schema.slots.keys())
+    assert "was generated by" not in slots_list
+
+    prefixes_list = list(sv.schema.prefixes.keys())
+    assert prefixes_list == ["pav", "dce", "lego", "linkml", "biolink", "ks", "RO", "BFO", "tax"]
+
+    sv = SchemaView(SCHEMA_WITH_IMPORTS, merge_imports=True)
+    classes_list = list(sv.schema.classes.keys())
+    assert "activity" in classes_list
+
+    slots_list = list(sv.schema.slots.keys())
+    assert "was generated by" in slots_list
+
+    prefixes_list = list(sv.schema.prefixes.keys())
+    if "schema" not in prefixes_list:
+        prefixes_list.append("schema")
+    assert sorted(prefixes_list) == sorted(
+        ["pav", "dce", "lego", "linkml", "biolink", "ks", "RO", "BFO", "tax", "core", "prov", "xsd", "schema", "shex"]
+    )
+
+
+def test_merge_imports(schema_view_with_imports: SchemaView) -> None:
+    """Ensure merging and merging imports closure works."""
+    view = schema_view_with_imports
+    all_c = copy(view.all_classes())
+    all_c_noi = copy(view.all_classes(imports=False))
+    assert len(all_c_noi) < len(all_c)
+    view.merge_imports()
+    all_c2 = copy(view.all_classes())
+    assert len(all_c) == len(all_c2)
+    all_c2_noi = copy(view.all_classes(imports=False))
+    assert len(all_c2_noi) == len(all_c2)
+
+
+def test_metamodel_imports() -> None:
+    """Tests imports of the metamodel.
+
+    Note: this test and others should be able to run without network connectivity.
+    SchemaView should make use of the version of the metamodel distributed with the package
+    over the network available version.
+    """
+    schema = SchemaDefinition(id="test", name="metamodel-imports-test", imports=["linkml:meta"])
+    sv = SchemaView(schema)
+    all_classes = sv.all_classes()
+    assert len(all_classes) > 20
+    schema_str = yaml_dumper.dumps(schema)
+    sv = SchemaView(schema_str)
+    assert len(sv.all_classes()) > 20
+    assert all_classes == sv.all_classes()
+
+
+def test_non_linkml_remote_import() -> None:
+    """Test that a remote import _not_ using the linkml prefix works.
+
+    See: https://github.com/linkml/linkml/issues/1627.
+    """
+    schema = SchemaDefinition(
+        id="test_non_linkml_remote_import",
+        name="test_non_linkml_remote_import",
+        prefixes=[Prefix(prefix_prefix="foo", prefix_reference="https://w3id.org/linkml/")],
+        imports=["foo:types"],
+        slots=[SlotDefinition(name="an_int", range="integer")],
+        classes=[ClassDefinition(name="AClass", slots=["an_int"])],
+    )
+    sv = SchemaView(schema)
+    slots = sv.class_induced_slots("AClass", imports=True)
+    assert len(slots) == 1
+
+
+def test_metamodel_in_schemaview() -> None:
+    """Test using SchemaView with the metamodel."""
+    view = package_schemaview("linkml_runtime.linkml_model.meta")
+    assert "meta" in view.imports_closure()
+    assert "linkml:types" in view.imports_closure()
+    assert "meta" in view.imports_closure(imports=False)
+    assert "linkml:types" not in view.imports_closure(imports=False)
+    assert len(view.imports_closure(imports=False)) == 1
+    all_classes = list(view.all_classes().keys())
+    all_classes_no_imports = list(view.all_classes(imports=False).keys())
+    for cn in ["class_definition", "type_definition", "slot_definition"]:
+        assert cn in all_classes
+        assert cn in all_classes_no_imports
+        assert view.get_identifier_slot(cn).name == "name"
+    for cn in ["annotation", "extension"]:
+        assert cn in all_classes, "imports should be included by default"
+        assert cn not in all_classes_no_imports, "imported class unexpectedly included"
+    for sn in ["id", "name", "description"]:
+        assert sn in view.all_slots()
+    for tn in ["uriorcurie", "string", "float"]:
+        assert tn in view.all_types()
+    for tn in ["uriorcurie", "string", "float"]:
+        assert tn not in view.all_types(imports=False)
+    for cn, c in view.all_classes().items():
+        uri = view.get_uri(cn, expand=True)
+        assert uri is not None
+        if cn not in ["structured_alias", "UnitOfMeasure", "ValidationReport", "ValidationResult"]:
+            assert "https://w3id.org/linkml/" in uri
+        induced_slots = view.class_induced_slots(cn)
+        for s in induced_slots:
+            exp_slot_uri = view.get_uri(s, expand=True)
+            assert exp_slot_uri is not None
+
+
+def test_uris_without_default_prefix() -> None:
+    """Test if uri is correct if no default_prefix is defined for the schema.
+
+    See: https://github.com/linkml/linkml/issues/2578
+    """
+    schema_definition = SchemaDefinition(id="https://example.org/test#", name="test_schema")
+
+    view = SchemaView(schema_definition)
+    view.add_class(ClassDefinition(name="TestClass", from_schema="https://example.org/another#"))
+    view.add_slot(SlotDefinition(name="test_slot", from_schema="https://example.org/another#"))
+
+    assert view.get_uri("TestClass", imports=True) == "https://example.org/test#TestClass"
+    assert view.get_uri("test_slot", imports=True) == "https://example.org/test#test_slot"
 
 
 def test_children_method(schema_view_no_imports: SchemaView) -> None:
@@ -214,7 +741,7 @@ def test_schemaview_enums(schema_view_no_imports: SchemaView) -> None:
 
     for en, e in view.all_enums().items():
         if e.name == "Animals":
-            for pv, v in e.permissible_values.items():
+            for pv in e.permissible_values:
                 if pv == "CAT":
                     assert view.permissible_value_parent(pv, e.name) is None
                     assert view.permissible_value_ancestors(pv, e.name) == ["CAT"]
@@ -534,321 +1061,6 @@ def test_caching() -> None:
     assert len(["Y", "Z", "W"]) == len(view.all_classes())
 
 
-def test_import_map() -> None:
-    """Path to import file should be configurable."""
-    for im in [{"core": "/no/such/file"}, {"linkml:": "/no/such/file"}]:
-        view = SchemaView(SCHEMA_WITH_IMPORTS, importmap=im)
-        with pytest.raises(FileNotFoundError):
-            view.all_classes()
-
-    for im in [None, {}, {"core": "core"}]:
-        view = SchemaView(SCHEMA_WITH_IMPORTS, importmap=im)
-        view.all_classes()
-        assert (
-            view.imports_closure().sort() == ["kitchen_sink", "core", "linkml:types"].sort()
-        )  # Assert imports closure
-        assert ACTIVITY in view.all_classes()  # Assert ACTIVITY is in all classes
-        assert ACTIVITY not in view.all_classes(imports=False)  # Assert ACTIVITY is not in classes without imports
-
-
-def test_imports(schema_view_with_imports: SchemaView) -> None:
-    """View should by default dynamically include imports chain."""
-    view = schema_view_with_imports
-    assert view.schema.source_file is not None
-    logger.debug(view.imports_closure())
-    assert set(view.imports_closure()) == {"kitchen_sink", "core", "linkml:types"}
-
-    for t in view.all_types().keys():
-        logger.debug(f"T={t} in={view.in_schema(t)}")
-    assert view.in_schema(ClassDefinitionName("Person")) == "kitchen_sink"
-    assert view.in_schema(SlotDefinitionName("id")) == "core"
-    assert view.in_schema(SlotDefinitionName("name")) == "core"
-    assert view.in_schema(SlotDefinitionName(ACTIVITY)) == "core"
-    assert view.in_schema(SlotDefinitionName("string")) == "types"
-
-    assert ACTIVITY in view.all_classes()
-    assert ACTIVITY not in view.all_classes(imports=False)
-    assert "string" in view.all_types()
-    assert "string" not in view.all_types(imports=False)
-    assert len(view.type_ancestors("SymbolString")) == len(["SymbolString", "string"])
-
-    for tn, t in view.all_types().items():
-        assert tn == t.name
-        induced_t = view.induced_type(tn)
-        assert induced_t.uri is not None
-        assert induced_t.base is not None
-        if t in view.all_types(imports=False).values():
-            assert t.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
-        else:
-            assert t.from_schema in ["https://w3id.org/linkml/tests/core", "https://w3id.org/linkml/types"]
-
-    for en, e in view.all_enums().items():
-        assert en == e.name
-        if e in view.all_enums(imports=False).values():
-            assert e.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
-        else:
-            assert e.from_schema == "https://w3id.org/linkml/tests/core"
-
-    for sn, s in view.all_slots().items():
-        assert sn == s.name
-        s_induced = view.induced_slot(sn)
-        assert s_induced.range is not None
-        if s in view.all_slots(imports=False).values():
-            assert s.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
-        else:
-            assert s.from_schema == "https://w3id.org/linkml/tests/core"
-
-    for cn, c in view.all_classes().items():
-        assert cn == c.name
-        if c in view.all_classes(imports=False).values():
-            assert c.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
-        else:
-            assert c.from_schema == "https://w3id.org/linkml/tests/core"
-        for s in view.class_induced_slots(cn):
-            if s in view.all_classes(imports=False).values():
-                assert s.slot_uri is not None
-                assert s.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
-
-    for c in ["Company", "Person", "Organization", "Thing"]:
-        assert view.induced_slot("id", c).identifier
-        assert not view.induced_slot("name", c).identifier
-        assert not view.induced_slot("name", c).required
-        assert view.induced_slot("name", c).range == "string"
-
-    for c in ["Event", "EmploymentEvent", "MedicalEvent"]:
-        s = view.induced_slot("started at time", c)
-        assert s.range == "date"
-        assert s.slot_uri == "prov:startedAtTime"
-
-    assert view.induced_slot(AGE_IN_YEARS, "Person").minimum_value == 0
-    assert view.induced_slot(AGE_IN_YEARS, "Adult").minimum_value == 16
-
-    assert view.get_class("agent").class_uri == "prov:Agent"
-    assert view.get_uri(AGENT) == "prov:Agent"
-    logger.debug(view.get_class("Company").class_uri)
-
-    assert view.get_uri(COMPANY) == "ks:Company"
-    assert view.get_uri(COMPANY, expand=True) == "https://w3id.org/linkml/tests/kitchen_sink/Company"
-    logger.debug(view.get_uri("TestClass"))
-    assert view.get_uri("TestClass") == "core:TestClass"
-    assert view.get_uri("TestClass", expand=True) == "https://w3id.org/linkml/tests/core/TestClass"
-
-    assert (
-        view.get_uri("TestClass", expand=True, use_element_type=True)
-        == "https://w3id.org/linkml/tests/core/class/TestClass"
-    )
-    assert view.get_uri("TestClass", use_element_type=True) == "core:class/TestClass"
-    assert view.get_uri("name", use_element_type=True) == "core:slot/name"
-
-    assert view.get_uri("OrganismType") == "ks:OrganismType"
-    assert view.get_uri("OrganismType", use_element_type=True) == "ks:enum/OrganismType"
-
-    assert view.get_uri("string") == "xsd:string"
-
-    # dynamic enums
-    e = view.get_enum("HCAExample")
-    assert set(e.include[0].reachable_from.source_nodes) == {"GO:0007049", "GO:0022403"}
-
-    # units
-    height = view.get_slot("height_in_m")
-    assert height.unit.ucum_code == "m"
-
-
-def test_imports_from_schemaview(schema_view_with_imports: SchemaView) -> None:
-    """View should by default dynamically include imports chain."""
-    view = schema_view_with_imports
-    view2 = SchemaView(view.schema)
-    assert len(view.all_classes()) == len(view2.all_classes())
-    assert len(view.all_classes(imports=False)) == len(view2.all_classes(imports=False))
-
-
-def test_imports_closure_order() -> None:
-    """Imports should override in a python-like order."""
-    sv = SchemaView(SCHEMA_IMPORT_TREE)
-    closure = sv.imports_closure(imports=True)
-    target = [
-        "linkml:types",
-        "s1_1",
-        "s1_2_1_1_1",
-        "s1_2_1_1_2",
-        "s1_2_1_1",
-        "s1_2_1",
-        "s1_2",
-        "s1",
-        "s2_1",
-        "s2_2",
-        "s2",
-        "s3_1",
-        "s3_2",
-        "s3",
-        "main",
-    ]
-    assert closure == target
-
-
-def test_imports_overrides() -> None:
-    """Classes defined in the importing module should override same-named classes in imported modules."""
-    sv = SchemaView(SCHEMA_IMPORT_TREE)
-    defaults = {}
-    target = {}
-    for name, cls in sv.all_classes(imports=True).items():
-        target[name] = name
-        defaults[name] = cls.attributes["value"].ifabsent
-
-    assert defaults == target
-
-
-def test_imports_relative() -> None:
-    """Relative imports from relative imports should evaluate relative to the *importing* schema."""
-    sv = SchemaView(SCHEMA_RELATIVE_IMPORT_TREE)
-    closure = sv.imports_closure(imports=True)
-
-    assert len(closure) == len(sv.schema_map.keys())
-    assert closure == [
-        "linkml:types",
-        "../neighborhood_parent",
-        "neighbor",
-        "../parent",
-        "../L1_0_1/L2_0_1_0/grandchild",
-        "../../L0_1/L1_1_0/L2_1_0_0/apple",
-        "../../L0_1/L1_1_0/L2_1_0_0/index",
-        "../../L0_1/L1_1_0/L2_1_0_1/banana",
-        "../../L0_1/L1_1_0/L2_1_0_1/index",
-        "../../L0_1/L1_1_0/index",
-        "../../L0_1/cousin",
-        "../L1_0_1/dupe",
-        "./L2_0_0_0/child",
-        "./L2_0_0_1/child",
-        "L2_0_0_2/two",
-        "L2_0_0_2/one",
-        "L2_0_0_2/four",
-        "L2_0_0_2/three",
-        "L2_0_0_2/stepchild",
-        "main",
-    ]
-
-    # check that we can actually get the classes from the same-named schema
-    classes = sv.all_classes(imports=True)
-    assert "L110Index" in classes
-    assert "L2100Index" in classes
-    assert "L2101Index" in classes
-
-
-def test_imports_relative_load() -> None:
-    """Relative imports from relative imports should load without FileNotFoundError."""
-    sv = SchemaView(SCHEMA_RELATIVE_IMPORT_TREE2)
-    sv.imports_closure(imports=True)
-
-
-def test_direct_remote_imports() -> None:
-    """Tests that building a SchemaView directly from a remote URL works."""
-    view = SchemaView("https://w3id.org/linkml/meta.yaml")
-    main_classes = ["class_definition", "prefix"]
-    imported_classes = ["annotation"]
-    for c in main_classes:
-        assert c in view.all_classes(imports=True)
-        assert c in view.all_classes(imports=False)
-    for c in imported_classes:
-        assert c in view.all_classes(imports=True)
-        assert c not in view.all_classes(imports=False)
-
-
-def test_view_created() -> None:
-    """Test_remote_modular_schema_view."""
-    url = (
-        "https://raw.githubusercontent.com/linkml/linkml-runtime/"
-        "2a46c65fe2e7db08e5e524342e5ff2ffb94bec92/tests/test_utils/input/kitchen_sink.yaml"
-    )
-    sv = SchemaView(url)
-    assert sv.schema.name == "kitchen_sink"
-
-    assert "activity" in sv.all_classes()
-    assert "activity" in sv.all_classes(imports=True)
-    assert "activity" not in sv.all_classes(imports=False)
-
-
-def test_mixs() -> None:
-    """Test loading from a remote repo.
-
-    Note this test case involves using an external github repo.
-
-    We use commit hashes to avoid false positive test fails caused by repo changes,
-    but in theory this test could break if the mixs repo is deleted or changes its
-    name or org.
-
-    We will likely keep skipping this for now, but once stabilized it can be unskipped
-
-    Note that the sam functionality is likely captured in the other tests that use
-    a more stable repo.
-    """
-    pytest.skip("Test is slow and may be fragile")
-    mixs_revision_url = (
-        "https://raw.githubusercontent.com/GenomicsStandardsConsortium/mixs/"
-        "83be82a99d0a210e83b371b20b3dadb6423ec612/model/schema/mixs.yaml"
-    )
-
-    sv = SchemaView(mixs_revision_url)
-    assert sv.schema.name == "MIxS"
-    assert len(sv.all_classes()) > 0
-
-
-@pytest.mark.skip("Skipped as fragile: will break if the remote schema changes")
-def test_direct_remote_imports_additional() -> None:
-    """Alternative test to: https://github.com/linkml/linkml/pull/1379."""
-    url = "https://raw.githubusercontent.com/GenomicsStandardsConsortium/mixs/main/model/schema/mixs.yaml"
-    view = SchemaView(url)
-    assert view.schema.name == "MIxS"
-    assert len(view.all_classes()) > 0
-
-
-def test_merge_imports(schema_view_with_imports: SchemaView) -> None:
-    """Ensure merging and merging imports closure works."""
-    view = schema_view_with_imports
-    all_c = copy(view.all_classes())
-    all_c_noi = copy(view.all_classes(imports=False))
-    assert len(all_c_noi) < len(all_c)
-    view.merge_imports()
-    all_c2 = copy(view.all_classes())
-    assert len(all_c) == len(all_c2)
-    all_c2_noi = copy(view.all_classes(imports=False))
-    assert len(all_c2_noi) == len(all_c2)
-
-
-def test_metamodel_imports() -> None:
-    """Tests imports of the metamodel.
-
-    Note: this test and others should be able to run without network connectivity.
-    SchemaView should make use of the version of the metamodel distributed with the package
-    over the network available version.
-    """
-    schema = SchemaDefinition(id="test", name="metamodel-imports-test", imports=["linkml:meta"])
-    sv = SchemaView(schema)
-    all_classes = sv.all_classes()
-    assert len(all_classes) > 20
-    schema_str = yaml_dumper.dumps(schema)
-    sv = SchemaView(schema_str)
-    assert len(sv.all_classes()) > 20
-    assert all_classes == sv.all_classes()
-
-
-def test_non_linkml_remote_import() -> None:
-    """Test that a remote import _not_ using the linkml prefix works.
-
-    See: https://github.com/linkml/linkml/issues/1627.
-    """
-    schema = SchemaDefinition(
-        id="test_non_linkml_remote_import",
-        name="test_non_linkml_remote_import",
-        prefixes=[Prefix(prefix_prefix="foo", prefix_reference="https://w3id.org/linkml/")],
-        imports=["foo:types"],
-        slots=[SlotDefinition(name="an_int", range="integer")],
-        classes=[ClassDefinition(name="AClass", slots=["an_int"])],
-    )
-    sv = SchemaView(schema)
-    slots = sv.class_induced_slots("AClass", imports=True)
-    assert len(slots) == 1
-
-
 def test_traversal() -> None:
     """Test schema traversal."""
     schema = SchemaDefinition(id="test", name="traversal-test")
@@ -922,90 +1134,22 @@ def test_slot_inheritance() -> None:
         view.slot_ancestors("s5")
 
 
-schema_str = """
-id: https://example.com/test-induced
-name: test-induced
-title: test induced
-
-description: >-
-    test schema view's finding of induced slot information.
-
-classes:
-    class1:
-        slots:
-            - slot1
-            - slot2
-            - slot3
-        slot_usage:
-            slot2:
-                description: induced slot2
-                required: true
-                range: class1
-    class2:
-        is_a: class1
-
-    mixin1a:
-        mixin: true
-        slot_usage:
-            slot2:
-                description: mixin slot2
-                required: false
-                range: mixin1a
-
-    mixin1b:
-        mixin: true
-        slot_usage:
-            slot2:
-                description: mixin slot2
-                required: false
-                range: mixin1b
-
-    class2_1a:
-        is_a: class2
-        mixins:
-          - mixin1a
-          - mixin1b
-
-    class2_1b:
-        is_a: class2
-        mixins:
-          - mixin1b
-          - mixin1a
-
-    class0:
-
-slots:
-    slot1:
-        description: non-induced slot1
-        range: class0
-    slot2:
-        description: non-induced slot2
-        required: false
-        range: class0
-    slot3:
-        range: class0
-
-"""
-
-
-def test_induced_slots() -> None:
+def test_induced_slots(sv_induced_slots: SchemaView) -> None:
     """Test induced slots and load order of mixins and is_a.
 
     See https://github.com/linkml/linkml/issues/479 and
     https://github.com/linkml/linkml-runtime/issues/68 for details.
     """
-    view = SchemaView(schema_str)
-
     # test descripton for slot1
-    s1 = view.get_slot("slot1")
+    s1 = sv_induced_slots.get_slot("slot1")
     assert s1.description == "non-induced slot1"
     assert s1.range == "class0"
 
-    s2 = view.get_slot("slot2")
+    s2 = sv_induced_slots.get_slot("slot2")
     assert not s2.required
     assert s2.range == "class0"
 
-    s2_induced = view.induced_slot("slot2", "class1")
+    s2_induced = sv_induced_slots.induced_slot("slot2", "class1")
     assert s2_induced.required
     assert s2_induced.range == "class1"
 
@@ -1013,24 +1157,24 @@ def test_induced_slots() -> None:
     # this behavior is expected see: https://github.com/linkml/linkml-runtime/issues/68
     assert s2_induced.description == "induced slot2"
 
-    s2_induced_c2 = view.induced_slot("slot2", "class2")
+    s2_induced_c2 = sv_induced_slots.induced_slot("slot2", "class2")
     assert s2_induced_c2.required
     assert s2_induced_c2.description == "induced slot2"
     assert s2_induced.range == "class1"
 
-    s3_induced_c2 = view.induced_slot("slot3", "class2")
+    s3_induced_c2 = sv_induced_slots.induced_slot("slot3", "class2")
     assert not s3_induced_c2.required
     assert s3_induced_c2.description is None
     assert s3_induced_c2.range == "class0"
 
     # mixins take priority over is-a
     # mixins specified in order of priority
-    s2_induced_c2_1a = view.induced_slot("slot2", "class2_1a")
+    s2_induced_c2_1a = sv_induced_slots.induced_slot("slot2", "class2_1a")
     assert not s2_induced_c2_1a.required
     assert s2_induced_c2_1a.description == "mixin slot2"
     assert s2_induced_c2_1a.range == "mixin1a"
 
-    s2_induced_c2_1b = view.induced_slot("slot2", "class2_1b")
+    s2_induced_c2_1b = sv_induced_slots.induced_slot("slot2", "class2_1b")
     assert not s2_induced_c2_1b.required
     assert s2_induced_c2_1b.description == "mixin slot2"
     assert s2_induced_c2_1b.range == "mixin1b"
@@ -1056,9 +1200,9 @@ def test_induced_slots() -> None:
         ("C1x", "a4", None, "a4"),
     ],
 )
-def test_attribute_inheritance(schema_view_attributes: SchemaView, cn: str, sn: str, req: bool, desc: str) -> None:
+def test_attribute_inheritance(sv_attributes: SchemaView, cn: str, sn: str, req: bool, desc: str) -> None:
     """Tests attribute inheritance edge cases."""
-    slot = schema_view_attributes.induced_slot(sn, cn)
+    slot = sv_attributes.induced_slot(sn, cn)
     assert req == slot.required, f"in: {cn}.{sn}"
     assert desc == slot.description, f"in: {cn}.{sn}"
     assert slot.range == "string", f"in: {cn}.{sn}"
@@ -1086,40 +1230,6 @@ def test_ambiguous_attributes() -> None:
     assert view.induced_slot(a2.name, "C1").range == a2.range
     assert view.induced_slot(a1x.name, "C2").range == a1x.range
     assert view.induced_slot(a2x.name, "C2").range == a2x.range
-
-
-def test_metamodel_in_schemaview() -> None:
-    """Test using SchemaView with the metamodel."""
-    view = package_schemaview("linkml_runtime.linkml_model.meta")
-    assert "meta" in view.imports_closure()
-    assert "linkml:types" in view.imports_closure()
-    assert "meta" in view.imports_closure(imports=False)
-    assert "linkml:types" not in view.imports_closure(imports=False)
-    assert len(view.imports_closure(imports=False)) == 1
-    all_classes = list(view.all_classes().keys())
-    all_classes_no_imports = list(view.all_classes(imports=False).keys())
-    for cn in ["class_definition", "type_definition", "slot_definition"]:
-        assert cn in all_classes
-        assert cn in all_classes_no_imports
-        assert view.get_identifier_slot(cn).name == "name"
-    for cn in ["annotation", "extension"]:
-        assert cn in all_classes, "imports should be included by default"
-        assert cn not in all_classes_no_imports, "imported class unexpectedly included"
-    for sn in ["id", "name", "description"]:
-        assert sn in view.all_slots()
-    for tn in ["uriorcurie", "string", "float"]:
-        assert tn in view.all_types()
-    for tn in ["uriorcurie", "string", "float"]:
-        assert tn not in view.all_types(imports=False)
-    for cn, c in view.all_classes().items():
-        uri = view.get_uri(cn, expand=True)
-        assert uri is not None
-        if cn not in ["structured_alias", "UnitOfMeasure", "ValidationReport", "ValidationResult"]:
-            assert "https://w3id.org/linkml/" in uri
-        induced_slots = view.class_induced_slots(cn)
-        for s in induced_slots:
-            exp_slot_uri = view.get_uri(s, expand=True)
-            assert exp_slot_uri is not None
 
 
 def test_get_classes_by_slot(schema_view_with_imports: SchemaView) -> None:
@@ -1163,34 +1273,6 @@ def test_materialize_patterns_attribute() -> None:
 
     weight_attribute = sv.get_class("ClassWithAttributes").attributes["weight"]
     assert weight_attribute.pattern == r"\d+[\.\d+] (kg|g|lbs|stone)"
-
-
-def test_mergeimports() -> None:
-    """Ensure that imports are or are not merged, depending on the kwargs."""
-    # note the change here to include an extra param not in the fixture
-    sv = SchemaView(SCHEMA_WITH_IMPORTS, merge_imports=False)
-    classes_list = list(sv.schema.classes.keys())
-    assert "activity" not in classes_list
-
-    slots_list = list(sv.schema.slots.keys())
-    assert "was generated by" not in slots_list
-
-    prefixes_list = list(sv.schema.prefixes.keys())
-    assert prefixes_list == ["pav", "dce", "lego", "linkml", "biolink", "ks", "RO", "BFO", "tax"]
-
-    sv = SchemaView(SCHEMA_WITH_IMPORTS, merge_imports=True)
-    classes_list = list(sv.schema.classes.keys())
-    assert "activity" in classes_list
-
-    slots_list = list(sv.schema.slots.keys())
-    assert "was generated by" in slots_list
-
-    prefixes_list = list(sv.schema.prefixes.keys())
-    if "schema" not in prefixes_list:
-        prefixes_list.append("schema")
-    assert sorted(prefixes_list) == sorted(
-        ["pav", "dce", "lego", "linkml", "biolink", "ks", "RO", "BFO", "tax", "core", "prov", "xsd", "schema", "shex"]
-    )
 
 
 @pytest.mark.parametrize(
@@ -1256,50 +1338,33 @@ def test_type_and_slot_with_same_name() -> None:
     assert view.get_uri("test", imports=True) == "ex:test"
 
 
-def test_uris_without_default_prefix() -> None:
-    """Test if uri is correct if no default_prefix is defined for the schema.
-
-    See: https://github.com/linkml/linkml/issues/2578
-    """
-    schema_definition = SchemaDefinition(id="https://example.org/test#", name="test_schema")
-
-    view = SchemaView(schema_definition)
-    view.add_class(ClassDefinition(name="TestClass", from_schema="https://example.org/another#"))
-    view.add_slot(SlotDefinition(name="test_slot", from_schema="https://example.org/another#"))
-    view.add_enum(EnumDefinition(name="tEsT_enum", from_schema="https://example.org/another#"))
-
-    assert view.get_uri("TestClass", imports=True) == "https://example.org/test#TestClass"
-    assert view.get_uri("test_slot", imports=True) == "https://example.org/test#test_slot"
-    assert view.get_uri("tEsT_enum", imports=True) == "https://example.org/test#tEsT_enum"
-
-
 """
 merge_schema tests: https://github.com/linkml/linkml/issues/1143
 """
 
 
-def test_merge_empty(sv1: SchemaView, empty_schema: SchemaView) -> None:
+def test_merge_schema_merge_into_empty(sv_merge_1: SchemaView, sv_empty: SchemaView) -> None:
     """Trivial case: merge a schema into an empty schema."""
-    empty_schema.merge_schema(sv1.schema)
+    sv_empty.merge_schema(sv_merge_1.schema)
     for k in ELEMENTS:
-        assert getattr(empty_schema.schema, k) == getattr(sv1.schema, k)
+        assert getattr(sv_empty.schema, k) == getattr(sv_merge_1.schema, k)
 
 
-def test_merge_empty_rev(sv1: SchemaView, empty_schema: SchemaView) -> None:
+def test_merge_schema_merge_empty(sv_merge_1: SchemaView, sv_empty: SchemaView) -> None:
     """Trivial case: merge an empty schema into a non-empty schema."""
-    sv1_orig = deepcopy(sv1)
-    sv1.merge_schema(empty_schema.schema)
+    sv_merge_1_orig = deepcopy(sv_merge_1)
+    sv_merge_1.merge_schema(sv_empty.schema)
 
     for k in ELEMENTS:
-        assert getattr(sv1_orig.schema, k) == getattr(sv1.schema, k)
+        assert getattr(sv_merge_1_orig.schema, k) == getattr(sv_merge_1.schema, k)
 
 
-def test_merge_schema(sv1: SchemaView, sv2: SchemaView) -> None:
+def test_merge_schema_disjoint_elements(sv_merge_1: SchemaView, sv_merge_2: SchemaView) -> None:
     """Merge two schemas with disjoint elements."""
-    sv2.merge_schema(sv1.schema)
+    sv_merge_2.merge_schema(sv_merge_1.schema)
 
     for k, vs in EXPECTED.items():
-        assert set(getattr(sv2.schema, k).keys()) == vs
+        assert set(getattr(sv_merge_2.schema, k).keys()) == vs
 
 
 def _get_clobbered_field_val(element: str) -> tuple[str, str]:
@@ -1308,130 +1373,64 @@ def _get_clobbered_field_val(element: str) -> tuple[str, str]:
     return "description", "clobbered"
 
 
-def test_no_clobber(sv1: SchemaView, sv2: SchemaView) -> None:
+def test_merge_schema_no_clobber(sv_merge_1: SchemaView, sv_merge_2: SchemaView) -> None:
     """Merge non-disjoint schemas, ensuring that elements in the source schema are not clobbered."""
-    sv2.merge_schema(sv1.schema)
+    sv_merge_2.merge_schema(sv_merge_1.schema)
     for element in ELEMENTS:
         (field, val) = _get_clobbered_field_val(element)
-        for v in getattr(sv1.schema, element).values():
+        for v in getattr(sv_merge_1.schema, element).values():
             setattr(v, field, val)
 
-    sv2.merge_schema(sv1.schema, clobber=False)
+    sv_merge_2.merge_schema(sv_merge_1.schema, clobber=False)
     for element in ELEMENTS:
         (field, val) = _get_clobbered_field_val(element)
-        for k, v in getattr(sv2.schema, element).items():
-            if k in getattr(sv1.schema, element):
+        for k, v in getattr(sv_merge_2.schema, element).items():
+            if k in getattr(sv_merge_1.schema, element):
                 assert getattr(v, field) != val
 
 
-def test_clobber(sv1: SchemaView, sv2: SchemaView) -> None:
+def test_merge_schema_clobber(sv_merge_1: SchemaView, sv_merge_2: SchemaView) -> None:
     """Merge non-disjoint schemas, ensuring that elements in source schema are clobbered."""
-    sv2.merge_schema(sv1.schema)
+    sv_merge_2.merge_schema(sv_merge_1.schema)
     for element in ELEMENTS:
         (field, val) = _get_clobbered_field_val(element)
-        for v in getattr(sv1.schema, element).values():
+        for v in getattr(sv_merge_1.schema, element).values():
             setattr(v, field, val)
 
-    sv2.merge_schema(sv1.schema, clobber=True)
+    sv_merge_2.merge_schema(sv_merge_1.schema, clobber=True)
     for element in ELEMENTS:
         (field, val) = _get_clobbered_field_val(element)
-        for k, v in getattr(sv2.schema, element).items():
-            if k in getattr(sv1.schema, element):
+        for k, v in getattr(sv_merge_2.schema, element).items():
+            if k in getattr(sv_merge_1.schema, element):
                 assert getattr(v, field) == val
 
 
-@pytest.fixture
-def view_issue_998() -> SchemaView:
-    """SchemaView for tests related to https://github.com/linkml/linkml/issues/998."""
-    schema = """
-id: https://w3id.org/linkml/examples/personinfo
-name: personinfo
-prefixes:
-  linkml: https://w3id.org/linkml/
-  schema: http://schema.org/
-imports:
-  - linkml:types
-default_range: string
-
-classes:
-  Person:
-    class_uri: schema:Person
-    attributes:
-      id:
-        identifier: true
-      employed:
-        range: EmploymentStatusEnum
-      past_relationship:
-        range: RelationshipStatusEnum
-    slots:
-      - type
-      - past_employer
-  Programmer:
-    attributes:
-        employed:
-            range: EmploymentStatusEnum
-    slots:
-      - type
-      - past_employer
-    slot_usage:
-      type:
-        range: TypeEnum
-
-slots:
-    status:
-      range: PersonStatusEnum
-    relationship:
-      range: RelationshipStatusEnum
-    type:
-    past_employer:
-        range: EmploymentStatusEnum
-enums:
-  PersonStatusEnum:
-    permissible_values:
-      ALIVE:
-      DEAD:
-      UNKNOWN:
-  EmployedStatusEnum:
-    permissible_values:
-      EMPLOYED:
-      UNEMPLOYED:
-      UNKNOWN:
-  RelationshipStatusEnum:
-    permissible_values:
-      UNKNOWN:
-  TypeEnum:
-    permissible_values:
-      UNKNOWN:
-"""
-    return SchemaView(schema)
-
-
-def test_issue_998_schema_slot(view_issue_998) -> None:
-    enum_slots = view_issue_998.get_slots_by_enum("EmploymentStatusEnum")
+def test_get_slots_by_enum_schema_slot(sv_issue_998) -> None:
+    enum_slots = sv_issue_998.get_slots_by_enum("EmploymentStatusEnum")
     assert len(enum_slots) == 2
 
 
-def test_slots_are_not_duplicated(view_issue_998) -> None:
-    enum_slots = view_issue_998.get_slots_by_enum("PersonStatusEnum")
+def test_get_slots_by_enum_no_duplicates(sv_issue_998) -> None:
+    enum_slots = sv_issue_998.get_slots_by_enum("PersonStatusEnum")
     assert len(enum_slots) == 1
     assert enum_slots[0].name == "status"
 
 
-def test_issue_998_attribute_slot(view_issue_998) -> None:
-    enum_slots = view_issue_998.get_slots_by_enum("EmploymentStatusEnum")
+def test_get_slots_by_enum_attribute_slot(sv_issue_998) -> None:
+    enum_slots = sv_issue_998.get_slots_by_enum("EmploymentStatusEnum")
     assert len(enum_slots) == 2
     assert sorted([slot.name for slot in enum_slots]) == ["employed", "past_employer"]
 
 
-def test_issue_998_schema_and_attribute_slots(view_issue_998) -> None:
-    enum_slots = view_issue_998.get_slots_by_enum("RelationshipStatusEnum")
+def test_get_slots_by_enum_schema_and_attribute_slots(sv_issue_998) -> None:
+    enum_slots = sv_issue_998.get_slots_by_enum("RelationshipStatusEnum")
     assert len(enum_slots) == 2
     assert enum_slots[0].name == "relationship"
     assert enum_slots[1].name == "past_relationship"
 
 
-def test_issue_998_slot_usage_range(view_issue_998) -> None:
-    enum_slots = view_issue_998.get_slots_by_enum("TypeEnum")
+def test_get_slots_by_enum_slot_usage_range(sv_issue_998) -> None:
+    enum_slots = sv_issue_998.get_slots_by_enum("TypeEnum")
     assert len(enum_slots) == 1
     assert enum_slots[0].name == "type"
 
