@@ -1,21 +1,18 @@
 import json
+import logging
 import os
 import unittest
-import logging
 from decimal import Decimal
 
 import yaml
-from rdflib import Graph
-from rdflib import Namespace
+from rdflib import Graph, Namespace
 
-from linkml_runtime.loaders import json_loader
-from linkml_runtime.dumpers import rdflib_dumper, yaml_dumper, json_dumper
-from linkml_runtime.loaders import yaml_loader
-from linkml_runtime.loaders import rdflib_loader
+from linkml_runtime.dumpers import json_dumper, rdflib_dumper, yaml_dumper
+from linkml_runtime.loaders import json_loader, rdflib_loader, yaml_loader
 from linkml_runtime.utils.schemaview import SchemaView
 from tests.test_loaders_dumpers import INPUT_DIR, OUTPUT_DIR
-from tests.test_loaders_dumpers.models.personinfo import Container, Person
 from tests.test_loaders_dumpers.models.node_object import NodeObject, Triple
+from tests.test_loaders_dumpers.models.personinfo import Container, Person
 
 logger = logging.getLogger(__name__)
 
@@ -191,7 +188,7 @@ class LoadersDumpersTestCase(unittest.TestCase):
                 allow_unprocessed_triples=False,
                 prefix_map=taxon_prefix_map,
             )
-            logger.error(f"Passed unexpectedly: there are known to be unreachable triples")
+            logger.error("Passed unexpectedly: there are known to be unreachable triples")
         # removing complex range, object has a range of string
         view.schema.slots["object"].exactly_one_of = []
         view.set_modified()
@@ -212,7 +209,7 @@ class LoadersDumpersTestCase(unittest.TestCase):
                 allow_unprocessed_triples=True,
                 prefix_map=taxon_prefix_map,
             )
-            logger.error(f"Passed unexpectedly: rdf:object is known to have a mix of literals and nodes")
+            logger.error("Passed unexpectedly: rdf:object is known to have a mix of literals and nodes")
 
 
 if __name__ == "__main__":

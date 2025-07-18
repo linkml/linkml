@@ -3,7 +3,7 @@ Utilities for walking object trees
 """
 
 from copy import deepcopy
-from typing import Callable, Union, Any
+from typing import Any, Callable, Union
 
 from linkml_runtime.utils.yamlutils import YAMLRoot
 

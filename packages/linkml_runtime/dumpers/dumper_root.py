@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Union
 
-from linkml_runtime.utils.yamlutils import YAMLRoot
 from pydantic import BaseModel
+
+from linkml_runtime.utils.yamlutils import YAMLRoot
 
 
 class Dumper(ABC):

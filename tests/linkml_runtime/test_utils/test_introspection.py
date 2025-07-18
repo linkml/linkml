@@ -1,7 +1,7 @@
 import unittest
 
 from linkml_runtime.linkml_model import SchemaDefinition
-from linkml_runtime.utils.introspection import package_schemaview, object_class_definition
+from linkml_runtime.utils.introspection import object_class_definition, package_schemaview
 
 
 class IntrospectionTestCase(unittest.TestCase):

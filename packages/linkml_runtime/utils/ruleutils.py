@@ -1,17 +1,17 @@
 import logging
 from dataclasses import dataclass
 
-from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.linkml_model.meta import (
-    ClassDefinition,
-    SlotDefinition,
-    ClassExpression,
-    ClassDefinitionName,
-    ClassRule,
     AnonymousClassExpression,
-    SlotExpression,
+    ClassDefinition,
+    ClassDefinitionName,
+    ClassExpression,
+    ClassRule,
+    SlotDefinition,
     SlotDefinitionName,
+    SlotExpression,
 )
+from linkml_runtime.utils.schemaview import SchemaView
 
 logger = logging.getLogger(__name__)
 

@@ -6,55 +6,54 @@ See:
 - `Part 6<https://w3id.org/linkml/specification/06mapping>`_ of LinkML specification
 """
 
+import datetime
 import decimal
 import re
 import sys
+from collections.abc import Iterator
 from copy import copy
 from dataclasses import dataclass, field
-import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Optional, Union, TextIO
-from collections.abc import Iterator
+from typing import Any, Optional, TextIO, Union
 
 import click
 import yaml
 
-from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import (
-    SlotDefinition,
     ClassDefinition,
-    EnumDefinition,
-    TypeDefinition,
     Element,
+    EnumDefinition,
     SchemaDefinition,
+    SlotDefinition,
     SlotDefinitionName,
+    TypeDefinition,
 )
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
     AnonymousSlotExpression,
-    ClassRule,
     ClassDefinitionName,
+    ClassRule,
 )
 from linkml_runtime.processing.validation_datamodel import (
     ConstraintType,
-    ValidationResult,
     ValidationConfiguration,
+    ValidationResult,
 )
 from linkml_runtime.utils import yamlutils
 from linkml_runtime.utils.eval_utils import eval_expr
 from linkml_runtime.utils.metamodelcore import (
-    XSDTime,
-    Bool,
-    XSDDate,
-    URIorCURIE,
     URI,
-    NCName,
+    Bool,
     ElementIdentifier,
+    NCName,
     NodeIdentifier,
+    URIorCURIE,
+    XSDDate,
+    XSDTime,
 )
-
+from linkml_runtime.utils.schemaview import SchemaView
 
 # Mapping from either XSD types or LinkML type.base fields to Python types;
 # (the coerced type is the last element of the tuple, the others are
@@ -668,7 +667,7 @@ class ReferenceValidator:
     ) -> Any:
         simple_dict_value_slot = self._slot_as_simple_dict_value_slot(parent_slot)
         if not simple_dict_value_slot:
-            raise AssertionError(f"Should have simple dict slot valie: {parent_slot.name}")
+            raise AssertionError(f"Should have simple dict slot value: {parent_slot.name}")
         normalized_object = input_object
         if isinstance(input_object, list):
             normalized_object = {v[pk_slot_name]: v for v in input_object}

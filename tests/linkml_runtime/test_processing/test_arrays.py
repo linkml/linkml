@@ -3,11 +3,10 @@ from pathlib import Path
 
 import yaml
 
-from linkml_runtime.utils.schemaview import SchemaView
-
 from linkml_runtime.processing.referencevalidator import (
     ReferenceValidator,
 )
+from linkml_runtime.utils.schemaview import SchemaView
 from tests.test_processing import INPUT_DIR
 
 

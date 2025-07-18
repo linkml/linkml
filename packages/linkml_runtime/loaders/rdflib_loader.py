@@ -2,13 +2,14 @@ import logging
 import urllib
 from copy import copy
 from dataclasses import dataclass
-from typing import Optional, Any, Union, TextIO
+from typing import Any, Optional, TextIO, Union
 
 from curies import Converter
 from hbreader import FileInfo
+from pydantic import BaseModel
 from rdflib import Graph, URIRef
-from rdflib.term import BNode, Literal
 from rdflib.namespace import RDF
+from rdflib.term import BNode, Literal
 
 from linkml_runtime import DataNotFoundError, MappingError
 from linkml_runtime.linkml_model import (
@@ -22,7 +23,6 @@ from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
-from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 

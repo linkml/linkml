@@ -1,13 +1,13 @@
 import os
 from io import StringIO
-from typing import Union, TextIO, Optional
+from typing import Optional, TextIO, Union
 
 import yaml
 from hbreader import FileInfo
+from pydantic import BaseModel
 
 from linkml_runtime.loaders.loader_root import Loader
-from linkml_runtime.utils.yamlutils import YAMLRoot, DupCheckYamlLoader
-from pydantic import BaseModel
+from linkml_runtime.utils.yamlutils import DupCheckYamlLoader, YAMLRoot
 
 
 class YAMLLoader(Loader):

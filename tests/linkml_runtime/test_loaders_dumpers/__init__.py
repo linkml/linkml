@@ -1,7 +1,7 @@
 import os
+from pathlib import Path
 
 from rdflib import Namespace
-from pathlib import Path
 
 HTTP_TEST_PORT = 8000
 HTTPS_TEST_PORT = 8443

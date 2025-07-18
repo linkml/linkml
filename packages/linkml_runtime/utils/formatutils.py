@@ -2,7 +2,7 @@ import re
 from decimal import Decimal
 from typing import Any
 
-from jsonasobj2 import JsonObj, as_dict, is_list, is_dict, items
+from jsonasobj2 import JsonObj, as_dict, is_dict, is_list, items
 
 ws_pattern = re.compile(r"\s+")
 us_pattern = re.compile(r"_+")

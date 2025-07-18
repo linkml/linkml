@@ -3,16 +3,15 @@ import unittest
 from decimal import Decimal
 
 from linkml_runtime.utils.inference_utils import (
-    infer_all_slot_values,
-    generate_slot_value,
-    infer_slot_value,
-    Policy,
     Config,
+    Policy,
+    generate_slot_value,
+    infer_all_slot_values,
+    infer_slot_value,
 )
 from linkml_runtime.utils.schemaview import SchemaView
-
-from tests.test_utils.model.inference_example import Person, Container, Evil, Relationship, AgeEnum
 from tests.test_utils import INPUT_DIR
+from tests.test_utils.model.inference_example import AgeEnum, Container, Evil, Person, Relationship
 
 SCHEMA = os.path.join(INPUT_DIR, "inference-example.yaml")
 

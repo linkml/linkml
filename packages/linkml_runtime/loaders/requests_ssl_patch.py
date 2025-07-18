@@ -1,5 +1,5 @@
-import warnings
 import contextlib
+import warnings
 
 import requests
 from urllib3.exceptions import InsecureRequestWarning

@@ -1,8 +1,7 @@
 import unittest
 
-from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, ElementName
-
 import linkml_runtime.utils.yamlutils as yutils
+from linkml_runtime.linkml_model.meta import ClassDefinition, ElementName, SlotDefinition
 from linkml_runtime.utils.dictutils import as_simple_dict
 from tests.support.test_environment import TestEnvironmentTestCase
 from tests.test_utils.environment import env

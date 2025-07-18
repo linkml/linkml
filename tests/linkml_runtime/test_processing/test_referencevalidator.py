@@ -1,28 +1,27 @@
+import datetime
 import json
 import unittest
-import datetime
-from datetime import datetime as datetime2
 from collections import namedtuple
 from dataclasses import dataclass, field
+from datetime import datetime as datetime2
 from decimal import Decimal
 from io import StringIO
 from pathlib import Path
-from typing import Optional, Any, Union
+from typing import Any, Optional, Union
 
 import yaml
 
-from linkml_runtime.dumpers import yaml_dumper, json_dumper
-from linkml_runtime.linkml_model import SlotDefinition, SlotDefinitionName, PermissibleValue
-from linkml_runtime.utils.introspection import package_schemaview
-from linkml_runtime.utils.schemaview import SchemaView
-
-from linkml_runtime.utils.schema_builder import SchemaBuilder
+from linkml_runtime.dumpers import json_dumper, yaml_dumper
+from linkml_runtime.linkml_model import PermissibleValue, SlotDefinition, SlotDefinitionName
 from linkml_runtime.processing.referencevalidator import (
+    CollectionForm,
+    ConstraintType,
     ReferenceValidator,
     Report,
-    ConstraintType,
-    CollectionForm,
 )
+from linkml_runtime.utils.introspection import package_schemaview
+from linkml_runtime.utils.schema_builder import SchemaBuilder
+from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import DupCheckYamlLoader
 
 

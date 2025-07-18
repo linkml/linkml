@@ -1,22 +1,19 @@
 import builtins
 import datetime
 import re
+import sys
 from dataclasses import field
 from decimal import Decimal
-import sys
-from typing import Union, Optional
+from typing import Optional, Union
 from urllib.parse import urlparse
 
-from rdflib import Literal, BNode, URIRef
+from rdflib import BNode, Literal, URIRef
 from rdflib.namespace import is_ncname
 from rdflib.term import Identifier as rdflib_Identifier
 
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.strictness import is_strict
-
-from linkml_runtime.utils.uri_validator import validate_uri
-from linkml_runtime.utils.uri_validator import validate_uri_reference
-from linkml_runtime.utils.uri_validator import validate_curie
+from linkml_runtime.utils.uri_validator import validate_curie, validate_uri, validate_uri_reference
 
 if sys.version_info < (3, 11):
     import isodate

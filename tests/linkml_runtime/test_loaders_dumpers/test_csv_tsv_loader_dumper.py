@@ -1,18 +1,16 @@
-import os
-import unittest
 import json
 import logging
+import os
+import unittest
 
 from jsonasobj2 import as_json_obj
 
-from linkml_runtime.dumpers import json_dumper, yaml_dumper
-from linkml_runtime.loaders import yaml_loader
+from linkml_runtime.dumpers import csv_dumper, json_dumper, tsv_dumper, yaml_dumper
+from linkml_runtime.loaders import csv_loader, tsv_loader, yaml_loader
 from linkml_runtime.utils.formatutils import remove_empty_items
 from linkml_runtime.utils.schemaview import SchemaView
-from linkml_runtime.dumpers import csv_dumper, tsv_dumper
-from linkml_runtime.loaders import csv_loader, tsv_loader
 from linkml_runtime.utils.yamlutils import as_json_object
-from tests.test_loaders_dumpers.models.books_normalized import Author, Review, Shop, Book, BookSeries
+from tests.test_loaders_dumpers.models.books_normalized import Author, Book, BookSeries, Review, Shop
 
 logger = logging.getLogger(__name__)
 

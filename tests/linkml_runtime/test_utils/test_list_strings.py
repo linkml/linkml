@@ -1,7 +1,7 @@
 import unittest
 
-from linkml_runtime.loaders import yaml_loader
 from linkml_runtime.linkml_model.meta import SchemaDefinition
+from linkml_runtime.loaders import yaml_loader
 
 sample = """id: http://examples.org/test
 name: test

@@ -1,7 +1,9 @@
 from pathlib import Path
+
+from rdflib import OWL, RDF, RDFS, SKOS, XSD
+
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.schemaview import SchemaView
-from rdflib import RDF, RDFS, SKOS, XSD, OWL
 
 __all__ = [
     "SchemaView",

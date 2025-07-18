@@ -1,5 +1,5 @@
 from dataclasses import dataclass, fields
-from typing import Union, Optional
+from typing import Optional, Union
 
 from linkml_runtime.linkml_model import (
     ClassDefinition,
@@ -107,7 +107,7 @@ class SchemaBuilder:
                 if isinstance(s, SlotDefinition):
                     cls.attributes[s.name] = s
                 else:
-                    raise ValueError(f"If use_attributes=True then slots must be SlotDefinitions")
+                    raise ValueError("If use_attributes=True then slots must be SlotDefinitions")
         else:
             for s in slots:
                 cls.slots.append(s.name if isinstance(s, SlotDefinition) else s)

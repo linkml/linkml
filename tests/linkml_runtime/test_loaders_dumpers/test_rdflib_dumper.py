@@ -368,7 +368,7 @@ class RdfLibDumperTestCase(unittest.TestCase):
                 allow_unprocessed_triples=False,
                 prefix_map=taxon_prefix_map,
             )
-            logger.error(f"Passed unexpectedly: there are known to be unreachable triples")
+            logger.error("Passed unexpectedly: there are known to be unreachable triples")
         # removing complex range, object has a range of string
         view.schema.slots["object"].exactly_one_of = []
         view.set_modified()
@@ -389,7 +389,7 @@ class RdfLibDumperTestCase(unittest.TestCase):
                 allow_unprocessed_triples=True,
                 prefix_map=taxon_prefix_map,
             )
-            logger.error(f"Passed unexpectedly: rdf:object is known to have a mix of literals and nodes")
+            logger.error("Passed unexpectedly: rdf:object is known to have a mix of literals and nodes")
 
     def test_phenopackets(self):
         view = SchemaView(str(Path(INPUT_DIR) / "phenopackets" / "phenopackets.yaml"))

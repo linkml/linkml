@@ -2,11 +2,11 @@ import json
 
 import yaml
 
-from linkml_runtime.dumpers import yaml_dumper, json_dumper
-from tests.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
-from tests.test_loaders_dumpers.models.books_normalized_pydantic import Book, BookSeries, Author
-from tests.test_loaders_dumpers.models.kitchen_sink_pydantic import BirthEvent, Person
+from linkml_runtime.dumpers import json_dumper, yaml_dumper
 from linkml_runtime.utils.formatutils import remove_empty_items
+from tests.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
+from tests.test_loaders_dumpers.models.books_normalized_pydantic import Author, Book, BookSeries
+from tests.test_loaders_dumpers.models.kitchen_sink_pydantic import BirthEvent, Person
 
 
 class PydanticDumpersTestCase(LoaderDumperTestCase):

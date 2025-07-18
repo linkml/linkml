@@ -1,8 +1,8 @@
-from pathlib import Path
-from enum import Enum, auto
-from typing import Optional, Union, NamedTuple
-from urllib.parse import urljoin
 from dataclasses import dataclass
+from enum import Enum, auto
+from pathlib import Path
+from typing import NamedTuple, Optional, Union
+from urllib.parse import urljoin
 
 import requests
 from rdflib import Namespace

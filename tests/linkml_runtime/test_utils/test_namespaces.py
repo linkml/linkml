@@ -62,7 +62,7 @@ class NamespacesTestCase(unittest.TestCase):
         self.assertEqual("l3:able/foo", ns.curie_for("http://example.org/subset/table/foo"))
         self.assertEqual("u1:foo", ns.curie_for("urn:example:foo"))
         with self.assertRaises(ValueError):
-            ns.curie_for("1abc\junk")
+            ns.curie_for(r"1abc\junk")
         # no comment in skos?
         # self.assertEqual(SKOS.comment, ns.uri_for("skos:comment"))
         self.assertEqual(URIRef("http://example.org/dc/table"), ns.uri_for("dc:table"))

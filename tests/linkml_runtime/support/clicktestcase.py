@@ -1,12 +1,12 @@
 import os
 import shlex
 import unittest
-from typing import Union, Optional, Callable
+from typing import Callable, Optional, Union
 from warnings import warn
 
-from tests.support.dirutils import make_and_clear_directory
 from tests.support.compare_rdf import compare_rdf
-from tests.support.test_environment import TestEnvironmentTestCase, TestEnvironment
+from tests.support.dirutils import make_and_clear_directory
+from tests.support.test_environment import TestEnvironment, TestEnvironmentTestCase
 
 
 class ClickTestCase(TestEnvironmentTestCase):

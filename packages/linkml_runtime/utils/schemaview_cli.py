@@ -1,14 +1,14 @@
+import builtins
 import io
 import json
 import logging
 
+import click
 from json_flattener import flatten_to_csv
 
+from linkml_runtime.dumpers import json_dumper, yaml_dumper
 from linkml_runtime.linkml_model import Element
 from linkml_runtime.utils.schemaview import SchemaView
-from linkml_runtime.dumpers import json_dumper, yaml_dumper
-import click
-import builtins
 
 logger = logging.getLogger(__name__)
 

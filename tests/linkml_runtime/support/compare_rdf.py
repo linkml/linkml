@@ -1,10 +1,10 @@
 import re
 from contextlib import redirect_stdout
 from io import StringIO
-from typing import Union, Optional
+from typing import Optional, Union
 
-from rdflib import Graph, RDF
-from rdflib.compare import to_isomorphic, IsomorphicGraph, graph_diff
+from rdflib import RDF, Graph
+from rdflib.compare import IsomorphicGraph, graph_diff, to_isomorphic
 
 from linkml_runtime import LINKML
 

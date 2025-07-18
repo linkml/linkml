@@ -1,13 +1,13 @@
 import json
 import logging
 from pathlib import Path
-from typing import Union, TextIO, Optional
+from typing import Optional, TextIO, Union
 
 from hbreader import FileInfo
+from pydantic import BaseModel
 
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.yamlutils import YAMLRoot
-from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 

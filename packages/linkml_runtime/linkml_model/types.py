@@ -9,13 +9,13 @@
 
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.metamodelcore import (
+    URI,
     Bool,
     Curie,
     Decimal,
     ElementIdentifier,
     NCName,
     NodeIdentifier,
-    URI,
     URIorCURIE,
     XSDDate,
     XSDDateTime,
