@@ -1,15 +1,15 @@
-from typing import Optional, Union, Any
 from dataclasses import fields
+from typing import Any, Optional, Union
 
 import pytest
 
-from linkml_runtime.utils.schema_builder import SchemaBuilder
 from linkml_runtime.linkml_model import (
     ClassDefinition,
-    SlotDefinition,
     EnumDefinition,
     PermissibleValue,
+    SlotDefinition,
 )
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 
 # === Tests for `SchemaBuilder.add_class` ===

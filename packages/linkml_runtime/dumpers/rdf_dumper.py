@@ -1,13 +1,12 @@
 import json
 from typing import Optional, Union
-from pydantic import BaseModel
 
 from hbreader import hbread
+from pydantic import BaseModel
 from rdflib import Graph
 
-
 from linkml_runtime.dumpers.dumper_root import Dumper
-from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE, CONTEXT_TYPE
+from linkml_runtime.utils.context_utils import CONTEXT_TYPE, CONTEXTS_PARAM_TYPE
 from linkml_runtime.utils.formatutils import remove_empty_items
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -31,7 +30,7 @@ class RDFDumper(Dumper):
         :return: rdflib Graph containing element
         """
         if contexts is None:
-            raise Exception(f"Must pass in JSON-LD context via contexts parameter")
+            raise Exception("Must pass in JSON-LD context via contexts parameter")
         if isinstance(contexts, list):
             inp_contexts = [json.loads(hbread(c)) for c in contexts]
         else:

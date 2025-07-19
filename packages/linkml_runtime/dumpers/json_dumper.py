@@ -1,17 +1,17 @@
 import json
-from datetime import datetime, date
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Union
-from pydantic import BaseModel
 
 from deprecated.classic import deprecated
+from jsonasobj2 import JsonObj
+from pydantic import BaseModel
 
 from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.utils import formatutils
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE
 from linkml_runtime.utils.formatutils import remove_empty_items
 from linkml_runtime.utils.yamlutils import YAMLRoot, as_json_object
-from jsonasobj2 import JsonObj
 
 
 class JSONDumper(Dumper):

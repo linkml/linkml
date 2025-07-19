@@ -1,6 +1,6 @@
 from typing import Union
 
-from linkml_runtime.utils.schemaview import SchemaView, CLASS_NAME
+from linkml_runtime.utils.schemaview import CLASS_NAME, SchemaView
 
 CLASS_NAME_OR_LIST = Union[CLASS_NAME, list[CLASS_NAME]]
 

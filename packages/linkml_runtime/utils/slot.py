@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from typing import Optional, Any
 from re import Pattern
+from typing import Any, Optional
 
 from rdflib import URIRef
 

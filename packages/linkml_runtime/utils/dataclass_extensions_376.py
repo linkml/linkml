@@ -1,6 +1,5 @@
-import sys
-import warnings
 import dataclasses
+import warnings
 
 warnings.warn(
     "The LinkML dataclass extension patch is deprecated and will be removed in a future release.\n"

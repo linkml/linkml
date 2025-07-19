@@ -3,9 +3,8 @@ import unittest
 
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
+from linkml_runtime.utils.ruleutils import get_range_as_disjunction, subclass_to_rules
 from linkml_runtime.utils.schemaview import SchemaView
-from linkml_runtime.utils.ruleutils import subclass_to_rules, get_range_as_disjunction
-
 from tests.test_utils import INPUT_DIR
 
 SCHEMA = os.path.join(INPUT_DIR, "rules-example.yaml")

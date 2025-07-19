@@ -1,13 +1,12 @@
 import logging
 import urllib
-from typing import Optional, Any, Union
-from pydantic import BaseModel
+from typing import Any, Optional, Union
 
 from curies import Converter
-from rdflib import Graph, URIRef, XSD
-from rdflib.term import Node, BNode, Literal
+from pydantic import BaseModel
+from rdflib import XSD, Graph, URIRef
 from rdflib.namespace import RDF
-
+from rdflib.term import BNode, Literal, Node
 
 from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.linkml_model import ElementName, PermissibleValue, PermissibleValueText, SlotDefinition

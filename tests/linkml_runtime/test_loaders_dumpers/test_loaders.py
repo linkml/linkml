@@ -1,12 +1,13 @@
 import os
 import unittest
-from typing import Union, TextIO, Optional
 from pathlib import Path
+from typing import Optional, TextIO, Union
+
 from hbreader import FileInfo
 
-from linkml_runtime.loaders import yaml_loader, json_loader, rdf_loader, RDFLoader
+from linkml_runtime.loaders import RDFLoader, json_loader, rdf_loader, yaml_loader
 from linkml_runtime.utils.yamlutils import YAMLRoot
-from tests.test_loaders_dumpers import LD_11_SVR, LD_11_SSL_SVR, LD_11_DIR
+from tests.test_loaders_dumpers import LD_11_DIR, LD_11_SSL_SVR, LD_11_SVR
 from tests.test_loaders_dumpers.environment import env
 from tests.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
 from tests.test_loaders_dumpers.models.termci_schema import Package

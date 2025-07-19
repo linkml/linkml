@@ -5,15 +5,15 @@ from typing import Any
 from jsonasobj2 import JsonObj, as_json
 
 from linkml_runtime.utils.formatutils import (
-    camelcase,
-    underscore,
-    lcamelcase,
     be,
-    split_line,
-    wrapped_annotation,
+    camelcase,
     is_empty,
+    lcamelcase,
     remove_empty_items,
+    split_line,
     uncamelcase,
+    underscore,
+    wrapped_annotation,
 )
 
 empty_things = [None, dict(), list(), JsonObj(), JsonObj({}), JsonObj([])]
@@ -150,9 +150,12 @@ class FormatUtilsTestCase(unittest.TestCase):
         )
         self.assertEqual(["X" * 100 + " "], split_line("X" * 100, 20))
         self.assertEqual(
-            """This is a mess'o test that goes on for a long way.  It has some carriage
-	returns embedded in it but otherwise it drags on and on and on until the cows come home. Splitline covers this we 
-	hope. """,
+            (
+                "This is a mess'o test that goes on for a long way.  It has some carriage\n"
+                "\treturns embedded in it but otherwise it drags on and on and on until the "
+                "cows come home. Splitline covers this we \n"
+                "\thope. "
+            ),
             wrapped_annotation(text),
         )
 
@@ -168,7 +171,7 @@ class FormatUtilsTestCase(unittest.TestCase):
     def test_remove_empty_items(self):
         """Test the various remove empty items paths"""
         seen = set()
-        save = list()  # Keep garbage collection from re-using ids
+        save = list()  # Keep garbage collection from reusing ids
         for thing, expected in things_removed:
             actual = remove_empty_items(thing)
             self.assertEqual(expected, actual, msg=f"Input = {thing}")

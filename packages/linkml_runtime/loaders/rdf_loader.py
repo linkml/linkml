@@ -1,13 +1,13 @@
-from typing import Union, TextIO, Optional
+from typing import Optional, TextIO, Union
 
 from hbreader import FileInfo
-from linkml_runtime.loaders.loader_root import Loader
-from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE
-from linkml_runtime.utils.yamlutils import YAMLRoot
 from pydantic import BaseModel
 from rdflib import Graph
 
+from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.loaders.requests_ssl_patch import no_ssl_verification
+from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE
+from linkml_runtime.utils.yamlutils import YAMLRoot
 
 # TODO: figure out what mime types go here.  I think we can find the complete set in rdflib
 RDF_MIME_TYPES = "application/x-turtle;q=0.9, application/rdf+n3;q=0.8, application/rdf+xml;q=0.5, text/plain;q=0.1"

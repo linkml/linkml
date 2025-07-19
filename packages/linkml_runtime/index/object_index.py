@@ -9,13 +9,13 @@ This package provides:
    a proxy for a domain object that "knows" its place in the index
 """
 
-import logging
 import inspect
+import logging
+from collections.abc import Iterator, Mapping
 from typing import Any, Union
-from collections.abc import Mapping, Iterator
 
-from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils import eval_utils
+from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 logger = logging.getLogger(__name__)

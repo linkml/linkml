@@ -51,7 +51,7 @@ def test_merge_contexts() -> None:
         == merge_contexts([json_2])["@context"]
     )
     assert [
-        f"file://local.jsonld",
+        "file://local.jsonld",
         "https://w3id.org/linkml/meta.context.jsonld",
         JsonObj(ex="http://example.org/test/", ex2="http://example.org/test2/"),
         JsonObj(ex="http://example.org/test3/", ex2=JsonObj(**{"@id": "http://example.org/test4/"})),

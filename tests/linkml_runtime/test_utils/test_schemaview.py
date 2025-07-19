@@ -1329,7 +1329,7 @@ def test_induced_slots(sv_induced_slots: SchemaView) -> None:
     See https://github.com/linkml/linkml/issues/479 and
     https://github.com/linkml/linkml-runtime/issues/68 for details.
     """
-    # test descripton for slot1
+    # test description for slot1
     s1 = sv_induced_slots.get_slot("slot1")
     assert s1.description == "non-induced slot1"
     assert s1.range == "class0"

@@ -1,14 +1,14 @@
 from abc import ABC, abstractmethod
-from pathlib import Path
-from typing import TextIO, Union, Optional, Callable, Any
 from logging import getLogger
+from pathlib import Path
+from typing import Any, Callable, Optional, TextIO, Union
 
-from pydantic import BaseModel
 from hbreader import FileInfo, hbread
-from jsonasobj2 import as_dict, JsonObj
+from jsonasobj2 import JsonObj, as_dict
+from pydantic import BaseModel
 
-from linkml_runtime.utils.yamlutils import YAMLRoot
 from linkml_runtime import URI_TO_LOCAL
+from linkml_runtime.utils.yamlutils import YAMLRoot
 
 CACHE_SIZE = 1024
 

@@ -1,5 +1,5 @@
 from dataclasses import fields
-from typing import Union, Optional
+from typing import Optional, Union
 
 from linkml_runtime.utils.metamodelcore import Curie
 from linkml_runtime.utils.yamlutils import YAMLRoot

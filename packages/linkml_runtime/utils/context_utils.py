@@ -1,12 +1,10 @@
 import json
 import os
 from io import TextIOWrapper
-from typing import Optional, Union, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, Optional, Union
 
 import yaml
 from jsonasobj2 import JsonObj, loads
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from linkml_runtime.utils.namespaces import Namespaces
@@ -83,7 +81,7 @@ def map_import(importmap: dict[str, str], namespaces: Callable[[], "Namespaces"]
             else:
                 sname = os.path.join(expanded_prefix, lname)
     sname = importmap.get(sname, sname)  # Import map may use CURIE
-    if ":" in sname and not ":\\" in sname:  # Don't interpret Windows paths as CURIEs
+    if ":" in sname and ":\\" not in sname:  # Don't interpret Windows paths as CURIEs
         sname = str(namespaces().uri_for(sname))
     return importmap.get(sname, sname)  # It may also use URI or other forms
 

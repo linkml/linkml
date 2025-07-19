@@ -9,7 +9,7 @@ from enum import Enum
 from importlib import import_module
 from io import StringIO
 from pathlib import Path
-from typing import Optional, Callable, Union
+from typing import Callable, Optional, Union
 
 from tests.support.dirutils import are_dir_trees_equal
 from tests.support.mismatchlog import MismatchLog
@@ -79,7 +79,7 @@ class TestEnvironment:
         from tests import USE_LOCAL_IMPORT_MAP
 
         if USE_LOCAL_IMPORT_MAP and not TestEnvironment.import_map_warning_emitted:
-            print(f"WARNING: USE_LOCAL_IMPORT_MAP must be reset to False before completing submission.")
+            print("WARNING: USE_LOCAL_IMPORT_MAP must be reset to False before completing submission.")
             TestEnvironment.import_map_warning_emitted = True
 
     def clear_log(self) -> None:

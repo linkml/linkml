@@ -1,5 +1,5 @@
-from functools import lru_cache
 import re
+from functools import lru_cache
 
 
 # We might want to deprecate this method in favor of PatternResolver in the future

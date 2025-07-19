@@ -2,13 +2,13 @@ import logging
 from typing import Any, Optional, Union
 
 from prefixcommons import curie_util
-from rdflib import Namespace, URIRef, Graph, BNode
+from prefixmaps.io.parser import load_context
+from rdflib import BNode, Graph, Namespace, URIRef
 from rdflib.namespace import is_ncname
 from requests.structures import CaseInsensitiveDict
-from prefixmaps.io.parser import load_context
 
-from linkml_runtime.utils.yamlutils import TypedNode
 from linkml_runtime.utils.uri_validator import validate_uri
+from linkml_runtime.utils.yamlutils import TypedNode
 
 META_NS = "meta"
 META_URI = "https://w3id.org/linkml/meta"

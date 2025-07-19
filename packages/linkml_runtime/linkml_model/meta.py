@@ -30,21 +30,22 @@
 #   [https://w3id.org/linkml/is_a](https://w3id.org/linkml/is_a)
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-from jsonasobj2 import as_dict
-from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
+from typing import Any, ClassVar, Optional, Union
 
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
-from linkml_runtime.utils.formatutils import sfx
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from jsonasobj2 import as_dict
 from rdflib import URIRef
+
 from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.formatutils import sfx
+from linkml_runtime.utils.metamodelcore import URI, Bool, NCName, URIorCURIE, XSDDateTime, empty_dict, empty_list
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
+
 from .annotations import Annotation, AnnotationTag
 from .extensions import Extension, ExtensionTag
 from .units import UnitOfMeasure
-from linkml_runtime.utils.metamodelcore import Bool, NCName, URI, URIorCURIE, XSDDateTime
 
 metamodel_version = "1.7.0"
 version = None

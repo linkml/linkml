@@ -1,13 +1,13 @@
+import re
+import textwrap
 from copy import copy
 from json import JSONDecoder
-from typing import Union, Any, Optional, Callable
 from pprint import pformat
-import textwrap
-import re
+from typing import Any, Callable, Optional, Union
 
 import yaml
 from deprecated.classic import deprecated
-from jsonasobj2 import JsonObj, as_json, as_dict, JsonObjTypes, items
+from jsonasobj2 import JsonObj, JsonObjTypes, as_dict, as_json, items
 from rdflib import Graph, URIRef
 from yaml.constructor import ConstructorError
 

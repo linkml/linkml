@@ -1,5 +1,6 @@
-import yaml
 from typing import Union
+
+import yaml
 from pydantic import BaseModel
 
 from linkml_runtime.dumpers.dumper_root import Dumper

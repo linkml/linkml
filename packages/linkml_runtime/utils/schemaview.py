@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import collections
 import logging
 import os
 import sys
@@ -1142,7 +1141,7 @@ class SchemaView:
         will return True if the slot id has the identifier property set to True.
 
         :param slot_name: slot to test for multivalued
-        :param metadata_property: controlled vocabulary for boolean attribtues
+        :param metadata_property: controlled vocabulary for boolean attributes
         :return: boolean
         """
         induced_slot = self.induced_slot(slot_name)
@@ -1762,7 +1761,7 @@ class SchemaView:
         """Get all slots that use a given enum: schema defined, attribute, or slot_usage.
 
         :param enum_name: enum in consideration
-        :return: list of slots, either schem or both class attribute defined
+        :return: list of slots, either schema or both class attribute defined
         """
         enum_slots = []
         for s in self.all_slots().values():

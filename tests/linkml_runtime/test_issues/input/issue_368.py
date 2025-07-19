@@ -6,13 +6,14 @@
 # description:
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
-from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
+from typing import Any, ClassVar, Optional, Union
 
-from linkml_runtime.utils.slot import Slot
 from rdflib import URIRef
+
 from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.slot import Slot
+
 from .issue_368_imports import ParentClass, SampleEnum
 
 metamodel_version = "1.7.0"

@@ -1,5 +1,6 @@
 import unittest
-from linkml_runtime.linkml_model.meta import Element, LINKML
+
+from linkml_runtime.linkml_model.meta import LINKML, Element
 
 
 class PolyDataclassTestCase(unittest.TestCase):

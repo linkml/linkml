@@ -6,15 +6,14 @@
 # description: Terminology Code Index model
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
-from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
+from typing import Any, ClassVar, Optional, Union
 
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict
-from linkml_runtime.utils.yamlutils import YAMLRoot
 from rdflib import URIRef
+
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.metamodelcore import URI, URIorCURIE
+from linkml_runtime.utils.metamodelcore import URI, URIorCURIE, empty_dict, empty_list
+from linkml_runtime.utils.yamlutils import YAMLRoot
 
 metamodel_version = "1.7.0"
 

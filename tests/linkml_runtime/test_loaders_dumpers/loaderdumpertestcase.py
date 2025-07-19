@@ -3,12 +3,12 @@ from typing import Callable, Optional, Union
 from urllib.parse import urlparse
 
 from hbreader import FileInfo, hbread
+from pydantic import BaseModel
 
 import tests.environment as test_base
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.yamlutils import YAMLRoot
-from pydantic import BaseModel
 from tests.support.test_environment import TestEnvironment, TestEnvironmentTestCase
 
 

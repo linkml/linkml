@@ -1,20 +1,21 @@
 import datetime
 import unittest
 from dataclasses import dataclass
+
 import pytest
 from jsonasobj2 import as_json
-from rdflib import Literal, XSD, Graph, RDF, Namespace
+from rdflib import RDF, XSD, Graph, Literal, Namespace
 
 from linkml_runtime.utils.metamodelcore import (
-    NCName,
-    Bool,
-    URIorCURIE,
     URI,
+    Bool,
+    Curie,
+    NCName,
+    NodeIdentifier,
+    URIorCURIE,
     XSDDate,
     XSDDateTime,
     XSDTime,
-    Curie,
-    NodeIdentifier,
 )
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.strictness import lax, strict
