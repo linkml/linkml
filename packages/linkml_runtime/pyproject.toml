@@ -83,7 +83,14 @@ skip = [
 # Ignore table where words could be split across rows
 ignore-regex = '(\|.*\|.*\|.*\||\[[A-Z][a-z]\][a-z][a-z])'
 ignore-words-list = [
-  "CrossReference"
+  "CrossReference",
+  "ND",
+  "MILIARY",
+  "Miliary",
+  # The two below are from metamodel upstream, should be
+  # dropped when upstream is fixed
+  "GENERARE",
+  "re-used",
 ]
 quiet-level = 3
 # https://docs.astral.sh/ruff/settings/
