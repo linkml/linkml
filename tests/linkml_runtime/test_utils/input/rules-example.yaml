@@ -195,7 +195,8 @@ classes:
       - postconditions:
           none_of:
             - title: IPI should not be used with GO:0003824 catalytic activity or descendents
-              see_also: [GORULE:0000007]
+              see_also:
+                - GORULE:0000007
               #exact_mappings: [GORULE:0000007]
               all_of:
               - slot_conditions:
@@ -205,7 +206,8 @@ classes:
                     has_member:
                       equals_string: GO:0003824
             - title: No annotations should be made to uninformative high level terms
-              see_also: [GORULE:0000008]
+              see_also:
+               - GORULE:0000008
               any_of:
                 - slot_conditions:
                     term_subsets:
@@ -219,13 +221,17 @@ classes:
                       none_of:
                         - equals_string_in: [IEA, ISS, ISO, IBA]
             - title: ND evidence code should be to root nodes only, and no terms other than root nodes can have the evidence code ND
-              see_also: [GORULE:0000011]
+              see_also:
+               - GORULE:0000011
               slot_conditions:
                 evidence_type:
                   equals_string: ND
                 term:
                   none_of:
-                    - equals_string_in: [GO:0008150, GO:0003674, GO:0005575]
+                    - equals_string_in:
+                      - GO:0008150
+                      - GO:0003674
+                      - GO:0005575
 
 
 #==================================
