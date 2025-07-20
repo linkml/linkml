@@ -181,6 +181,7 @@ class RelationalModelTransformer:
             types=source.types,
             subsets=source.subsets,
             enums=source.enums,
+            annotations=source.annotations,
         )
         target.prefixes["rr"] = Prefix("rr", "http://www.w3.org/ns/r2rml#")
 
@@ -196,6 +197,7 @@ class RelationalModelTransformer:
                 abstract=c.abstract,
                 description=c.description,
                 unique_keys=c.unique_keys,
+                annotations=c.annotations,
             )
             for slot in source_sv.class_induced_slots(cn):
                 tgt_slot = copy(slot)
@@ -209,7 +211,6 @@ class RelationalModelTransformer:
             # this is required in case an attribute inherits from a slot
             for sn in source_sv.all_slots(attributes=False):
                 slot = source_sv.get_slot(sn)
-                # target.slots[slot.name] = copy(slot)
             target.classes[c.name] = c
 
         target_sv = SchemaView(target)
