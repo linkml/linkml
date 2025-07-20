@@ -14,7 +14,7 @@ URI: [http://example.org/sample/example1/HasMessagesChild](http://example.org/sa
 
 ## Mixin for
 
- * [MetricResultChild](MetricResultChild.md) (mixin) 
+ * [MetricResultChild](MetricResultChild.md) (mixin)
 
 ## Referenced by Class
 

@@ -100,4 +100,3 @@ class Child(Base):
 # Slots
 class slots:
     pass
-

@@ -221,3 +221,4 @@ slots.id = Slot(uri=LINKML.id, name="id", curie=LINKML.curie('id'),
 
 slots.name = Slot(uri=LINKML.name, name="name", curie=LINKML.curie('name'),
                    model_uri=LINKML.name, domain=NamedThing, range=Optional[Union[str, LabelType]])
+

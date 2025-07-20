@@ -159,3 +159,4 @@ slots.sequence_variant_id = Slot(uri=DEFAULT_.id, name="sequence variant_id", cu
 
 slots.sequence_variant_node_property = Slot(uri=DEFAULT_.node_property, name="sequence variant_node property", curie=DEFAULT_.curie('node_property'),
                    model_uri=DEFAULT_.sequence_variant_node_property, domain=SequenceVariant, range=Optional[Union[URIorCURIE, IdentifierType]])
+

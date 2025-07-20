@@ -7,11 +7,14 @@ prefixes:
 emit_prefixes:
   - dct
 
-imports: [metat:types]
+imports:
+  - metat:types
 default_range: string
 
 slots:
-  created: {range: datetime, slot_uri: dct:created}  # slot_uri: "dct:created"
+  created:
+    range: datetime
+    slot_uri: dct:created
 
 classes:
   Company:

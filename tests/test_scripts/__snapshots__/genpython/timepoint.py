@@ -138,3 +138,4 @@ slots.k = Slot(uri=DEFAULT_.k, name="k", curie=DEFAULT_.curie('k'),
 
 slots.timepoint = Slot(uri=DEFAULT_.timepoint, name="timepoint", curie=DEFAULT_.curie('timepoint'),
                    model_uri=DEFAULT_.timepoint, domain=GeographicLocationAtTime, range=Optional[Union[str, TimeType]])
+

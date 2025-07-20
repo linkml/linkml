@@ -342,6 +342,9 @@ class Generator(metaclass=abc.ABCMeta):
         sub_out = self.end_schema(**kwargs)
         if sub_out is not None:
             out += sub_out
+        out = out.rstrip()
+        if not (out.count("\n") == 0 and out.startswith("http")):
+            out += "\n"
         return out
 
     def visit_schema(self, **kwargs) -> Optional[str]:

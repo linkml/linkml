@@ -6,7 +6,7 @@ prefixes:
 default_prefix: ex
 imports:
   - linkml:types
-  
+
 classes:
   Contained:
     slots:
@@ -33,5 +33,3 @@ slots:
     range: Contained
     inlined: true
     inlined_as_list: true
-    
-
