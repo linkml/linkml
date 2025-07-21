@@ -1,13 +1,17 @@
+from __future__ import annotations
+
 import os
 from io import StringIO
-from typing import Optional, TextIO, Union
+from typing import TYPE_CHECKING, TextIO
 
 import yaml
 from hbreader import FileInfo
-from pydantic import BaseModel
 
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.yamlutils import DupCheckYamlLoader, YAMLRoot
+
+if TYPE_CHECKING:
+    from pydantic import BaseModel
 
 
 class YAMLLoader(Loader):
@@ -16,8 +20,8 @@ class YAMLLoader(Loader):
     """
 
     def load_as_dict(
-        self, source: Union[str, dict, TextIO], *, base_dir: Optional[str] = None, metadata: Optional[FileInfo] = None
-    ) -> Union[dict, list[dict]]:
+        self, source: str | dict | TextIO, *, base_dir: str | None = None, metadata: FileInfo | None = None
+    ) -> dict | list[dict]:
         if metadata is None:
             metadata = FileInfo()
         if base_dir and not metadata.base_path:
@@ -30,24 +34,23 @@ class YAMLLoader(Loader):
             if metadata and metadata.source_file:
                 data.name = os.path.relpath(metadata.source_file, metadata.base_path)
             return yaml.load(data, DupCheckYamlLoader)
-        else:
-            return data
+        return data
 
     def load_any(
         self,
-        source: Union[str, dict, TextIO],
-        target_class: Union[type[YAMLRoot], type[BaseModel]],
+        source: str | dict | TextIO,
+        target_class: type[YAMLRoot | BaseModel],
         *,
-        base_dir: Optional[str] = None,
-        metadata: Optional[FileInfo] = None,
+        base_dir: str | None = None,
+        metadata: FileInfo | None = None,
         **_,
-    ) -> Union[YAMLRoot, list[YAMLRoot]]:
+    ) -> YAMLRoot | list[YAMLRoot]:
         data_as_dict = self.load_as_dict(source, base_dir=base_dir, metadata=metadata)
         return self._construct_target_class(data_as_dict, target_class)
 
     def loads_any(
-        self, source: str, target_class: type[Union[BaseModel, YAMLRoot]], *, metadata: Optional[FileInfo] = None, **_
-    ) -> Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]:
+        self, source: str, target_class: type[BaseModel | YAMLRoot], *, metadata: FileInfo | None = None, **_
+    ) -> BaseModel | YAMLRoot | list[BaseModel] | list[YAMLRoot]:
         """
         Load source as a string
         @param source: source
