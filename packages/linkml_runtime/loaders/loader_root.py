@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from logging import getLogger
-from pathlib import Path
-from typing import Any, Callable, Optional, TextIO, Union
+from typing import TYPE_CHECKING, Any, TextIO
 
 from hbreader import FileInfo, hbread
 from jsonasobj2 import JsonObj, as_dict
@@ -9,6 +10,10 @@ from pydantic import BaseModel
 
 from linkml_runtime import URI_TO_LOCAL
 from linkml_runtime.utils.yamlutils import YAMLRoot
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+    from pathlib import Path
 
 CACHE_SIZE = 1024
 
@@ -41,12 +46,12 @@ class Loader(ABC):
 
     def load_source(
         self,
-        source: Union[str, dict, TextIO],
-        loader: Callable[[Union[str, dict], FileInfo], Optional[Union[dict, list]]],
-        target_class: Union[type[YAMLRoot], type[BaseModel]],
-        accept_header: Optional[str] = "text/plain, application/yaml;q=0.9",
-        metadata: Optional[FileInfo] = None,
-    ) -> Optional[Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]]:
+        source: str | dict | TextIO,
+        loader: Callable[[str | dict, FileInfo], dict | list | None],
+        target_class: type[YAMLRoot | BaseModel],
+        accept_header: str | None = "text/plain, application/yaml;q=0.9",
+        metadata: FileInfo | None = None,
+    ) -> BaseModel | YAMLRoot | list[BaseModel] | list[YAMLRoot] | None:
         """Base loader - convert a file, url, string, open file handle or dictionary into an instance
         of target_class
 
@@ -63,7 +68,7 @@ class Loader(ABC):
         data_as_dict = loader(data, metadata)
         return self._construct_target_class(data_as_dict, target_class=target_class)
 
-    def load(self, *args, **kwargs) -> Union[BaseModel, YAMLRoot]:
+    def load(self, *args, **kwargs) -> BaseModel | YAMLRoot:
         """
         Load source as an instance of target_class
 
@@ -77,22 +82,22 @@ class Loader(ABC):
         results = self.load_any(*args, **kwargs)
         if isinstance(results, (BaseModel, YAMLRoot)):
             return results
-        else:
-            raise ValueError(f"Result is not an instance of BaseModel or YAMLRoot: {type(results)}")
+        msg = f"Result is not an instance of BaseModel or YAMLRoot: {type(results)}"
+        raise ValueError(msg)
 
-    def load_as_dict(self, *args, **kwargs) -> Union[dict, list[dict]]:
+    def load_as_dict(self, *args, **kwargs) -> dict | list[dict]:
         raise NotImplementedError()
 
     @abstractmethod
     def load_any(
         self,
-        source: Union[str, dict, TextIO, Path],
-        target_class: type[Union[BaseModel, YAMLRoot]],
+        source: str | dict | TextIO | Path,
+        target_class: type[BaseModel | YAMLRoot],
         *,
-        base_dir: Optional[str] = None,
-        metadata: Optional[FileInfo] = None,
+        base_dir: str | None = None,
+        metadata: FileInfo | None = None,
         **_,
-    ) -> Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]:
+    ) -> BaseModel | YAMLRoot | list[BaseModel] | list[YAMLRoot]:
         """
         Load source as an instance of target_class, or list of instances of target_class
 
@@ -106,8 +111,8 @@ class Loader(ABC):
         raise NotImplementedError()
 
     def loads_any(
-        self, source: str, target_class: type[Union[BaseModel, YAMLRoot]], *, metadata: Optional[FileInfo] = None, **_
-    ) -> Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]:
+        self, source: str, target_class: type[BaseModel | YAMLRoot], *, metadata: FileInfo | None = None, **_
+    ) -> BaseModel | YAMLRoot | list[BaseModel] | list[YAMLRoot]:
         """
         Load source as a string as an instance of target_class, or list of instances of target_class
         @param source: source
@@ -119,8 +124,8 @@ class Loader(ABC):
         return self.load_any(source, target_class, metadata=metadata)
 
     def loads(
-        self, source: str, target_class: type[Union[BaseModel, YAMLRoot]], *, metadata: Optional[FileInfo] = None, **_
-    ) -> Union[BaseModel, YAMLRoot]:
+        self, source: str, target_class: type[BaseModel | YAMLRoot], *, metadata: FileInfo | None = None, **_
+    ) -> BaseModel | YAMLRoot:
         """
         Load source as a string
         :param source: source
@@ -132,53 +137,52 @@ class Loader(ABC):
         return self.load(source, target_class, metadata=metadata)
 
     def _construct_target_class(
-        self, data_as_dict: Union[dict, list[dict]], target_class: Union[type[YAMLRoot], type[BaseModel]]
-    ) -> Optional[Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]]:
+        self, data_as_dict: dict | list[dict], target_class: type[YAMLRoot | BaseModel]
+    ) -> BaseModel | YAMLRoot | list[BaseModel] | list[YAMLRoot] | None:
         if data_as_dict:
             if isinstance(data_as_dict, list):
                 if issubclass(target_class, YAMLRoot):
                     return [target_class(**as_dict(x)) for x in data_as_dict]
-                elif issubclass(target_class, BaseModel):
+                if issubclass(target_class, BaseModel):
                     return [target_class.model_validate(as_dict(x)) for x in data_as_dict]
-                else:
-                    raise ValueError(f"Cannot load list of {target_class}")
-            elif isinstance(data_as_dict, dict):
+                msg = f"Cannot load list of {target_class}"
+                raise ValueError(msg)
+            if isinstance(data_as_dict, dict):
                 if issubclass(target_class, BaseModel):
                     return target_class.model_validate(data_as_dict)
                 return target_class(**data_as_dict)
 
             if isinstance(data_as_dict, JsonObj):
                 return [target_class(**as_dict(x)) for x in data_as_dict]
-            else:
-                raise ValueError(f"Unexpected type {data_as_dict}")
-        else:
-            return None
+
+            msg = f"Unexpected type {data_as_dict}"
+            # should really be a TypeError
+            raise ValueError(msg)
+        return None
 
     def _read_source(
         self,
-        source: Union[str, dict, TextIO],
+        source: str | dict | TextIO,
         *,
-        base_dir: Optional[str] = None,
-        metadata: Optional[FileInfo] = None,
-        accept_header: Optional[str] = "text/plain, application/yaml;q=0.9",
-    ) -> Union[dict, str]:
+        base_dir: str | None = None,
+        metadata: FileInfo | None = None,
+        accept_header: str | None = "text/plain, application/yaml;q=0.9",
+    ) -> dict | str:
         if metadata is None:
             metadata = FileInfo()
         if base_dir and not metadata.base_path:
             metadata.base_path = base_dir
 
-        if not isinstance(source, dict):
-            # Try to get local version of schema, if one is known to exist
-            try:
-                if str(source) in URI_TO_LOCAL:
-                    source = str(URI_TO_LOCAL[str(source)])
-            except (TypeError, KeyError) as e:
-                # Fine, use original `source` value
-                logger = getLogger("linkml_runtime.loaders.Loader")
-                logger.debug(f"Error converting stringlike source to local linkml file: {source}, got: {e}")
+        if isinstance(source, dict):
+            return source
 
-            data = hbread(source, metadata, base_dir, accept_header)
-        else:
-            data = source
+        # Try to get local version of schema, if one is known to exist
+        try:
+            if str(source) in URI_TO_LOCAL:
+                source = str(URI_TO_LOCAL[str(source)])
+        except (TypeError, KeyError) as e:
+            # Fine, use original `source` value
+            logger = getLogger("linkml_runtime.loaders.Loader")
+            logger.debug(f"Error converting stringlike source to local linkml file: {source}, got: {e}")
 
-        return data
+        return hbread(source, metadata, base_dir, accept_header)
