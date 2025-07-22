@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from enum import Enum
 from functools import lru_cache
 from pathlib import Path, PurePath
-from typing import TYPE_CHECKING, Any, TypeVar, Union
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from deprecated.classic import deprecated
 
@@ -48,7 +48,7 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
     from types import NotImplementedType
 
-    from linkml_runtime.utils.metamodelcore import URIorCURIE
+    from linkml_runtime.utils.metamodelcore import URI, URIorCURIE
 
 
 logger = logging.getLogger(__name__)
@@ -56,23 +56,25 @@ logger = logging.getLogger(__name__)
 MAPPING_TYPE = str  ## e.g. broad, exact, related, ...
 CACHE_SIZE = 1024
 
-SLOTS = "slots"
 CLASSES = "classes"
 ENUMS = "enums"
-SUBSETS = "subsets"
 TYPES = "types"
+SUBSETS = "subsets"
+ELEMENTS = [CLASSES, SLOTS, ENUMS, SUBSETS, TYPES]
+PREFIXES = "prefixes"
+
 WINDOWS = sys.platform == "win32"
 
-CLASS_NAME = Union[ClassDefinitionName, str]
-SLOT_NAME = Union[SlotDefinitionName, str]
-SUBSET_NAME = Union[SubsetDefinitionName, str]
-TYPE_NAME = Union[TypeDefinitionName, str]
-ENUM_NAME = Union[EnumDefinitionName, str]
+CLASS_NAME = ClassDefinitionName | str
+SLOT_NAME = SlotDefinitionName | str
+SUBSET_NAME = SubsetDefinitionName | str
+TYPE_NAME = TypeDefinitionName | str
+ENUM_NAME = EnumDefinitionName | str
 
 ElementType = TypeVar("ElementType", bound=Element)
-ElementNameType = TypeVar("ElementNameType", bound=Union[ElementName, str])
+ElementNameType = TypeVar("ElementNameType", bound=ElementName | str)
 DefinitionType = TypeVar("DefinitionType", bound=Definition)
-DefinitionNameType = TypeVar("DefinitionNameType", bound=Union[DefinitionName, str])
+DefinitionNameType = TypeVar("DefinitionNameType", bound=DefinitionName | str)
 ElementDict = dict[ElementNameType, ElementType]
 DefDict = dict[DefinitionNameType, DefinitionType]
 
@@ -223,7 +225,7 @@ class SchemaView:
             self.merge_imports()
         self.uuid = str(uuid.uuid4())
 
-    def __key(self):
+    def __key(self) -> tuple[str | URI, str, int]:
         return self.schema.id, self.uuid, self.modifications
 
     def __eq__(self, other: object) -> bool | NotImplementedType:
@@ -398,7 +400,7 @@ class SchemaView:
             for s in self.schema_map.values():
                 # It is important to merge element definitions as a list as multiple elements of different kinds can
                 # have the same name which means they have the same dict key.
-                elements = []
+                elements: list = []
                 elements.extend(s.classes.values())
                 elements.extend(s.enums.values())
                 elements.extend(s.slots.values())
@@ -802,18 +804,6 @@ class SchemaView:
         """:param enum_name: parent enum name
         :param permissible_value: permissible value
         :return: all direct child permissible values (is_a)
-
-        CAT:
-        LION:
-          is_a: CAT
-        ANGRY_LION:
-          is_a: LION
-        TABBY:
-          is_a: CAT
-        BIRD:
-        EAGLE:
-          is_a: BIRD
-
         """
         enum = self.get_enum(enum_name, strict=True)
         children = []
