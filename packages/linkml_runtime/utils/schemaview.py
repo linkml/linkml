@@ -57,7 +57,6 @@ MAPPING_TYPE = str  ## e.g. broad, exact, related, ...
 CACHE_SIZE = 1024
 
 CLASSES = "classes"
-SLOT = "slots"
 SLOTS = "slots"
 ENUMS = "enums"
 TYPES = "types"
