@@ -7,3 +7,5 @@ coverage:
     patch:
       default:
         informational: true
+ignore:
+  - "linkml_runtime/linkml_model/**/*"  # Vendored code from linkml-model
