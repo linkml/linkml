@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from enum import Enum
 from functools import lru_cache
 from pathlib import Path, PurePath
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar, Union
 
 from deprecated.classic import deprecated
 
@@ -66,16 +66,16 @@ PREFIXES = "prefixes"
 
 WINDOWS = sys.platform == "win32"
 
-CLASS_NAME = ClassDefinitionName | str
-SLOT_NAME = SlotDefinitionName | str
-SUBSET_NAME = SubsetDefinitionName | str
-TYPE_NAME = TypeDefinitionName | str
-ENUM_NAME = EnumDefinitionName | str
+CLASS_NAME = Union[ClassDefinitionName, str]
+SLOT_NAME = Union[SlotDefinitionName, str]
+SUBSET_NAME = Union[SubsetDefinitionName, str]
+TYPE_NAME = Union[TypeDefinitionName, str]
+ENUM_NAME = Union[EnumDefinitionName, str]
 
 ElementType = TypeVar("ElementType", bound=Element)
-ElementNameType = TypeVar("ElementNameType", bound=ElementName | str)
+ElementNameType = TypeVar("ElementNameType", bound=Union[ElementName, str])
 DefinitionType = TypeVar("DefinitionType", bound=Definition)
-DefinitionNameType = TypeVar("DefinitionNameType", bound=DefinitionName | str)
+DefinitionNameType = TypeVar("DefinitionNameType", bound=Union[DefinitionName, str])
 ElementDict = dict[ElementNameType, ElementType]
 DefDict = dict[DefinitionNameType, DefinitionType]
 
