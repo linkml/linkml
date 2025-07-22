@@ -241,20 +241,10 @@ class SchemaView:
             self._hash = hash(self.__key())
         return self._hash
 
-    @lru_cache(None)
-    def namespaces(self) -> Namespaces:
-        """Return the namespaces present in a schema.
-
-        :return: namespaces
-        :rtype: Namespaces
-        """
-        namespaces = Namespaces()
-        for s in self.schema_map.values():
-            for cmap in self.schema.default_curi_maps:
-                namespaces.add_prefixmap(cmap, include_defaults=False)
-            for prefix in s.prefixes.values():
-                namespaces[prefix.prefix_prefix] = prefix.prefix_reference
-        return namespaces
+    def set_modified(self) -> None:
+        """Increase the number of schema modifications by 1."""
+        self._hash = None
+        self.modifications += 1
 
     def load_import(self, imp: str, from_schema: SchemaDefinition | None = None) -> SchemaDefinition:
         """Handle import directives.
@@ -292,9 +282,49 @@ class SchemaView:
             base_dir = os.path.dirname(from_schema.source_file)
         else:
             base_dir = None
-        logger.info(f"Importing {imp} as {sname} from source {from_schema.source_file}; base_dir={base_dir}")
-        schema = load_schema_wrap(sname + ".yaml", base_dir=base_dir)
-        return schema
+        msg = f"Importing {imp} as {sname} from source {from_schema.source_file}; base_dir={base_dir}"
+        logger.info(msg)
+        return load_schema_wrap(sname + ".yaml", base_dir=base_dir)
+
+    def merge_imports(self) -> None:
+        """Merge the full imports closure."""
+        schema = self.schema
+        to_merge = [s2 for s2 in self.all_schema(imports=True) if s2 != schema]
+        for s2 in to_merge:
+            self.merge_schema(s2)
+        schema.imports = []
+        self.set_modified()
+
+    def merge_schema(self, schema: SchemaDefinition, clobber: bool = False) -> None:
+        """Merge another schema into this one.
+
+        If the other schema has an element with the same name as an element in this schema,
+        then this element is NOT copied.
+
+        :param schema: schema to be merged
+        :param clobber: if True, then overwrite existing elements
+        """
+        dest = self.schema
+        for el in [PREFIXES, *ELEMENTS]:
+            # for each key/value pair of the element type
+            for k, v in getattr(schema, el).items():
+                # if clobber is True or the key does not exist in the destination schema
+                if clobber or k not in getattr(dest, el):
+                    # copy the element value to the destination schema indexed under k
+                    getattr(dest, el)[k] = copy(v)
+        self.set_modified()
+
+    def _get_dict(self, element_name: str, imports: bool = True) -> dict:
+        schemas = self.all_schema(imports)
+        d = {}
+        # iterate through all schemas and merge the list together
+        for s in schemas:
+            # get the value of element name from the schema; if empty, return empty dictionary.
+            d1 = getattr(s, element_name, {})
+            # {**d,**d1} syntax merges dictionary d and d1 into a single dictionary, removing duplicates.
+            d = {**d, **d1}
+
+        return d
 
     @lru_cache(None)
     def imports_closure(
@@ -420,6 +450,21 @@ class SchemaView:
         """
         m = self.schema_map
         return [m[sn] for sn in self.imports_closure(imports)]
+
+    @lru_cache(None)
+    def namespaces(self) -> Namespaces:
+        """Return the namespaces present in a schema.
+
+        :return: namespaces
+        :rtype: Namespaces
+        """
+        namespaces = Namespaces()
+        for s in self.schema_map.values():
+            for cmap in self.schema.default_curi_maps:
+                namespaces.add_prefixmap(cmap, include_defaults=False)
+            for prefix in s.prefixes.values():
+                namespaces[prefix.prefix_prefix] = prefix.prefix_reference
+        return namespaces
 
     @deprecated("Use `all_classes` instead")
     @lru_cache(None)
@@ -606,19 +651,6 @@ class SchemaView:
         all_subsets = self.all_subsets(imports=imports)
         # {**a,**b} syntax merges dictionary a and b into a single dictionary, removing duplicates.
         return {**all_classes, **all_slots, **all_enums, **all_types, **all_subsets}
-
-    def _get_dict(self, slot_name: str, imports: bool = True) -> dict:
-        schemas = self.all_schema(imports)
-        d = {}
-        # pdb.set_trace()
-        # iterate through all schemas and merge the list together
-        for s in schemas:
-            # get the value of element name from the schema, if empty, return empty dictionary.
-            d1 = getattr(s, slot_name, {})
-            # {**d,**d1} syntax merges dictionary d and d1 into a single dictionary, removing duplicates.
-            d = {**d, **d1}
-
-        return d
 
     @lru_cache(None)
     def slot_name_mappings(self) -> dict[str, SlotDefinition]:
@@ -1926,45 +1958,6 @@ class SchemaView:
     # def rename(self, old_name: str, new_name: str):
     #   TODO: add to runtime
 
-    def merge_schema(self, schema: SchemaDefinition, clobber: bool = False) -> None:
-        """Merge another schema into this one.
-
-        If the other schema has an element with the same name as an element in this schema,
-        then this element is NOT copied.
-
-        :param schema: schema to be merged
-        :param clobber: if True, then overwrite existing elements
-        """
-        dest = self.schema
-        for k, v in schema.prefixes.items():
-            if clobber or k not in dest.prefixes:
-                dest.prefixes[k] = copy(v)
-        for k, v in schema.classes.items():
-            if clobber or k not in dest.classes:
-                dest.classes[k] = copy(v)
-        for k, v in schema.slots.items():
-            if clobber or k not in dest.slots:
-                dest.slots[k] = copy(v)
-        for k, v in schema.types.items():
-            if clobber or k not in dest.types:
-                dest.types[k] = copy(v)
-        for k, v in schema.enums.items():
-            if clobber or k not in dest.enums:
-                dest.enums[k] = copy(v)
-        for k, v in schema.subsets.items():
-            if clobber or k not in dest.subsets:
-                dest.subsets[k] = copy(v)
-        self.set_modified()
-
-    def merge_imports(self) -> None:
-        """Merge the full imports closure."""
-        schema = self.schema
-        to_merge = [s2 for s2 in self.all_schema(imports=True) if s2 != schema]
-        for s2 in to_merge:
-            self.merge_schema(s2)
-        schema.imports = []
-        self.set_modified()
-
     def copy_schema(self, new_name: str | None = None) -> SchemaDefinition:
         """Generate a copy of the schema.
 
@@ -1977,11 +1970,6 @@ class SchemaView:
         if new_name is not None:
             s2.name = new_name
         return s2
-
-    def set_modified(self) -> None:
-        """Increase the number of schema modifications by 1."""
-        self._hash = None
-        self.modifications += 1
 
     def materialize_patterns(self) -> None:
         """Materialize schema by expanding structured patterns into regular expressions based on composite patterns provided in the settings dictionary."""
