@@ -57,6 +57,7 @@ MAPPING_TYPE = str  ## e.g. broad, exact, related, ...
 CACHE_SIZE = 1024
 
 CLASSES = "classes"
+SLOTS = "slots"
 ENUMS = "enums"
 TYPES = "types"
 SUBSETS = "subsets"
@@ -91,11 +92,8 @@ class OrderedBy(Enum):
     """
 
 
-def _closure(f, x, reflexive: bool = True, depth_first: bool = True, **kwargs: dict[str, Any] | None) -> list:
-    if reflexive:
-        rv = [x]
-    else:
-        rv = []
+def _closure(f, x, reflexive: bool = True, depth_first: bool = True, **kwargs: dict[str, Any] | None) -> list:  # noqa: ARG001
+    rv = [x] if reflexive else []
     visited = []
     todo = [x]
     while len(todo) > 0:
@@ -140,9 +138,7 @@ def is_absolute_path(path: str) -> bool:
     :return: true or false
     :rtype: bool
     """
-    if path.startswith("/"):
-        return True
-    if "://" in path:
+    if path.startswith("/") or "://" in path:
         return True
 
     # windows
@@ -220,7 +216,7 @@ class SchemaView:
             schema = load_schema_wrap(schema)
         self.schema = schema
         self.schema_map = {schema.name: schema}
-        self.importmap = parse_import_map(importmap, base_dir) if importmap is not None else dict()
+        self.importmap = parse_import_map(importmap, base_dir) if importmap is not None else {}
         if merge_imports:
             self.merge_imports()
         self.uuid = str(uuid.uuid4())
@@ -382,10 +378,11 @@ class SchemaView:
                     if "/" in sn and ":" not in i:
                         if WINDOWS:
                             # This cannot be simplified. os.path.normpath() must be called before .as_posix()
-                            i = PurePath(os.path.normpath(PurePath(sn).parent / i)).as_posix()
+                            todo.append(PurePath(os.path.normpath(PurePath(sn).parent / i)).as_posix())
                         else:
-                            i = os.path.normpath(str(Path(sn).parent / i))
-                    todo.append(i)
+                            todo.append(os.path.normpath(str(Path(sn).parent / i)))
+                    else:
+                        todo.append(i)
 
             # add item to closure
             # append + pop (above) is FILO queue, which correctly extends tree leaves,
@@ -444,7 +441,8 @@ class SchemaView:
             return self._order_inheritance(elements)
         if ordered_by is None or ordered_by in (OrderedBy.PRESERVE, OrderedBy.PRESERVE.value):
             return elements
-        raise ValueError(f"ordered_by must be in OrderedBy or None, got {ordered_by}")
+        msg = f"ordered_by must be in OrderedBy or None, got {ordered_by}"
+        raise ValueError(msg)
 
     def _order_lexically(self, elements: ElementDict) -> ElementDict:
         """Order elements by name.
@@ -476,11 +474,12 @@ class SchemaView:
                 if candidate.is_a is None or candidate.is_a in [p.name for p in slist]:
                     can_add = True
                 if can_add:
-                    slist = slist + [candidate]
+                    slist = [*slist, candidate]
                     del clist[i]
                     break
             if not can_add:
-                raise OrderingError(f"could not find suitable element in {clist} that does not ref {slist}")
+                msg = f"could not find suitable element in {clist} that does not ref {slist}"
+                raise OrderingError(msg)
 
         return {s.name: s for s in slist}
 
@@ -629,10 +628,7 @@ class SchemaView:
 
         :return: mapping from safe names to slot
         """
-        m = {}
-        for s in self.all_slots().values():
-            m[underscore(s.name)] = s
-        return m
+        return {underscore(s.name): s for s in self.all_slots().values()}
 
     @lru_cache(None)
     def class_name_mappings(self) -> dict[str, ClassDefinition]:
@@ -642,10 +638,7 @@ class SchemaView:
 
         :return: mapping from safe names to class
         """
-        m = {}
-        for s in self.all_classes().values():
-            m[camelcase(s.name)] = s
-        return m
+        return {camelcase(s.name): s for s in self.all_classes().values()}
 
     @lru_cache(None)
     def in_schema(self, element_name: ElementName) -> SchemaDefinitionName:
@@ -656,7 +649,8 @@ class SchemaView:
         """
         ix = self.element_by_schema_map()
         if element_name not in ix:
-            raise ValueError(f"Element {element_name} not in any schema")
+            msg = f"Element {element_name} not in any schema"
+            raise ValueError(msg)
         return ix[element_name]
 
     @lru_cache(None)
@@ -664,11 +658,11 @@ class SchemaView:
         ix = {}
         schemas = self.all_schema(True)
         for schema in schemas:
-            for type_key in [CLASSES, SLOTS, TYPES, ENUMS, SUBSETS]:
-                for k, v in getattr(schema, type_key, {}).items():
+            for type_key in ELEMENTS:
+                for k in getattr(schema, type_key, {}):
                     ix[k] = schema.name
             for c in schema.classes.values():
-                for aname, a in c.attributes.items():
+                for aname in c.attributes:
                     ix[aname] = schema.name
         return ix
 
@@ -682,7 +676,8 @@ class SchemaView:
         """
         c = self.all_classes(imports=imports).get(class_name, None)
         if strict and c is None:
-            raise ValueError(f'No such class: "{class_name}"')
+            msg = f'No such class: "{class_name}"'
+            raise ValueError(msg)
         return c
 
     @lru_cache(None)
@@ -708,7 +703,8 @@ class SchemaView:
                     slot.from_schema = c.from_schema
                     slot.owner = c.name
         if strict and slot is None:
-            raise ValueError(f'No such slot: "{slot_name}"')
+            msg = f'No such slot: "{slot_name}"'
+            raise ValueError(msg)
         return slot
 
     @lru_cache(None)
@@ -721,7 +717,8 @@ class SchemaView:
         """
         s = self.all_subsets(imports).get(subset_name, None)
         if strict and s is None:
-            raise ValueError(f'No such subset: "{subset_name}"')
+            msg = f'No such subset: "{subset_name}"'
+            raise ValueError(msg)
         return s
 
     @lru_cache(None)
@@ -734,7 +731,8 @@ class SchemaView:
         """
         e = self.all_enums(imports).get(enum_name, None)
         if strict and e is None:
-            raise ValueError(f'No such enum: "{enum_name}"')
+            msg = f'No such enum: "{enum_name}"'
+            raise ValueError(msg)
         return e
 
     @lru_cache(None)
@@ -747,7 +745,8 @@ class SchemaView:
         """
         t = self.all_types(imports).get(type_name, None)
         if strict and t is None:
-            raise ValueError(f'No such type: "{type_name}"')
+            msg = f'No such type: "{type_name}"'
+            raise ValueError(msg)
         return t
 
     def _parents(self, e: Element, imports: bool = True, mixins: bool = True, is_a: bool = True) -> list[ElementName]:
@@ -794,8 +793,8 @@ class SchemaView:
                 pv = enum.permissible_values[permissible_value]
                 if pv.is_a:
                     return [pv.is_a]
-        else:
-            return []
+            return None
+        return []
 
     @lru_cache(None)
     def permissible_value_children(
@@ -815,8 +814,9 @@ class SchemaView:
                     if isapv_entity.is_a and pv.text == isapv_entity.is_a:
                         children.append(isapv)
                 return children
-        else:
-            raise ValueError(f'No such enum as "{enum_name}"')
+            return None
+        msg = f'No such enum as "{enum_name}"'
+        raise ValueError(msg)
 
     @lru_cache(None)
     def slot_parents(
@@ -856,7 +856,7 @@ class SchemaView:
         :return: list of child element
         """
         children = []
-        for e, el in self.all_elements().items():
+        for el in self.all_elements().values():
             if isinstance(el, (ClassDefinition, SlotDefinition, EnumDefinition)):
                 if el.is_a and el.is_a == name:
                     children.append(el.name)
@@ -1135,9 +1135,12 @@ class SchemaView:
         :return: boolean
         """
         induced_slot = self.induced_slot(slot_name)
-        if type(getattr(induced_slot, metadata_property)) == bool:
-            return True if getattr(induced_slot, metadata_property) else False
-        raise ValueError('property to introspect must be of type "boolean"')
+        metadata_property_value = getattr(induced_slot, metadata_property)
+        if type(metadata_property_value) is bool:
+            return metadata_property_value
+
+        msg = 'property to introspect must be of type "boolean"'
+        raise ValueError(msg)
 
     def get_element(self, element: ElementName | Element, imports: bool = True) -> Element:
         """Fetch an element by name.
@@ -1193,12 +1196,16 @@ class SchemaView:
             uri = e.uri
             e_name = underscore(e.name)
         else:
-            raise ValueError(f"Must be class or slot or type: {e}")
+            msg = f"Must be class or slot or type: {e}"
+            # should be a TypeError
+            raise ValueError(msg)
+
         if uri is None or native:
             if e.from_schema is not None:
                 schema = next((sc for sc in self.schema_map.values() if sc.id == e.from_schema), None)
                 if schema is None:
-                    raise ValueError(f"Cannot find {e.from_schema} in schema_map")
+                    msg = f"Cannot find {e.from_schema} in schema_map"
+                    raise ValueError(msg)
             else:
                 schema = self.schema_map[self.in_schema(e.name)]
             if use_element_type:
@@ -1209,10 +1216,10 @@ class SchemaView:
             pfx = schema.default_prefix
             # To construct the uri we have to find out if the schema has a default_prefix
             # or if a pseudo "prefix" was derived from the schema id.
-            if pfx == sfx(str(schema.id)):  # no prefix defined in schema
+            uri = f"{pfx}:{e_type_path}{e_name}"
+            # no prefix defined in schema
+            if pfx == sfx(str(schema.id)):
                 uri = f"{pfx}{e_type_path}{e_name}"
-            else:
-                uri = f"{pfx}:{e_type_path}{e_name}"
         if expand:
             return self.expand_curie(uri)
         return uri
@@ -1264,7 +1271,7 @@ class SchemaView:
         """
         applicable_elements = []
         elements = self.all_elements()
-        for category, category_element in elements.items():
+        for category_element in elements.values():
             if hasattr(category_element, "id_prefixes") and prefix in category_element.id_prefixes:
                 applicable_elements.append(category_element.name)
 
@@ -1278,7 +1285,7 @@ class SchemaView:
         """
         element_aliases = {}
 
-        for e, el in self.all_elements().items():
+        for el in self.all_elements().values():
             if el.name not in element_aliases:
                 element_aliases[el.name] = []
             if el.aliases and el.aliases is not None:
@@ -1302,7 +1309,9 @@ class SchemaView:
         :return: index keyed by mapping type
         """
         e = self.get_element(element_name, imports=imports)
-        if isinstance(e, ClassDefinition) or isinstance(e, SlotDefinition) or isinstance(e, TypeDefinition):
+        m_dict = {}
+
+        if isinstance(e, (ClassDefinition, SlotDefinition, TypeDefinition)):
             m_dict = {
                 "self": [self.get_uri(element_name, imports=imports, expand=False)],
                 "native": [self.get_uri(element_name, imports=imports, expand=False, native=True)],
@@ -1313,11 +1322,9 @@ class SchemaView:
                 "close": e.close_mappings,
                 "undefined": e.mappings,
             }
-        else:
-            m_dict = {}
-        if expand:
-            for k, vs in m_dict.items():
-                m_dict[k] = [self.expand_curie(v) for v in vs]
+            if expand:
+                for k, vs in m_dict.items():
+                    m_dict[k] = [self.expand_curie(v) for v in vs]
 
         return m_dict
 
@@ -1331,8 +1338,7 @@ class SchemaView:
         :return: boolean
         """
         element = self.get_element(element_name)
-        is_mixin = element.mixin if isinstance(element, Definition) else False
-        return is_mixin
+        return element.mixin if isinstance(element, Definition) else False
 
     @lru_cache(None)
     def inverse(self, slot_name: SlotDefinition):
@@ -1347,7 +1353,7 @@ class SchemaView:
         element = self.get_element(slot_name)
         inverse = element.inverse if isinstance(element, SlotDefinition) else False
         if not inverse:
-            for inv_slot_name, slot_definition in self.all_slots().items():
+            for slot_definition in self.all_slots().values():
                 if slot_definition.inverse == element.name:
                     inverse = slot_definition.name
         return inverse
@@ -1390,13 +1396,13 @@ class SchemaView:
         :param imports:
         :return: true if the class represents a relationship
         """
-        STMT_TYPES = ["rdf:Statement", "owl:Axiom"]
+        statement_types = ["rdf:Statement", "owl:Axiom"]
         for an in self.class_ancestors(class_name, imports=imports):
-            if self.get_uri(an) in STMT_TYPES:
+            if self.get_uri(an) in statement_types:
                 return True
             a = self.get_class(an, imports=imports)
             for m in a.exact_mappings:
-                if m in STMT_TYPES:
+                if m in statement_types:
                     return True
         return False
 
@@ -1427,10 +1433,7 @@ class SchemaView:
         :param attributes: include attribute declarations as well as slots (default is True)
         :return: all slot names applicable for a class
         """
-        if direct:
-            ancs = [class_name]
-        else:
-            ancs = self.class_ancestors(class_name, imports=imports)
+        ancs = [class_name] if direct else self.class_ancestors(class_name, imports=imports)
         slots = []
         for an in ancs:
             a = self.get_class(an, imports)
@@ -1464,10 +1467,7 @@ class SchemaView:
         :param imports: include imports closure
         :return: dynamic slot constructed by inference
         """
-        if class_name:
-            cls = self.get_class(class_name, imports, strict=True)
-        else:
-            cls = None
+        cls = self.get_class(class_name, imports, strict=True) if class_name else None
 
         # attributes take priority over schema-level slot definitions, IF
         # the attributes is declared for the class or an ancestor
@@ -1486,10 +1486,11 @@ class SchemaView:
             slot = self.get_slot(slot_name, imports, attributes=True)
 
         if slot is None:
-            raise ValueError(
+            msg = (
                 f"No such slot {slot_name} as an attribute of {class_name} ancestors "
                 "or as a slot definition in the schema"
             )
+            raise ValueError(msg)
 
         # copy the slot, as it will be modified
         induced_slot = copy(slot)
@@ -1498,10 +1499,10 @@ class SchemaView:
             # inheritable slot: first propagate from ancestors
             for anc_sn in reversed(slot_anc_names):
                 anc_slot = self.get_slot(anc_sn, attributes=False)
-                for metaslot_name in SlotDefinition._inherited_slots:
+                for metaslot_name in SlotDefinition._inherited_slots:  # noqa: SLF001
                     if getattr(anc_slot, metaslot_name, None):
                         setattr(induced_slot, metaslot_name, copy(getattr(anc_slot, metaslot_name)))
-        COMBINE = {
+        mix_max_value_dict = {
             "maximum_value": lambda x, y: min(x, y),
             "minimum_value": lambda x, y: max(x, y),
         }
@@ -1510,10 +1511,7 @@ class SchemaView:
             # inheritance of slots; priority order
             #   slot-level assignment < ancestor slot_usage < self slot_usage
             v = getattr(induced_slot, metaslot_name, None)
-            if cls is None:
-                propagated_from = []
-            else:
-                propagated_from = self.class_ancestors(class_name, reflexive=True, mixins=True)
+            propagated_from = [] if cls is None else self.class_ancestors(class_name, reflexive=True, mixins=True)
             for an in reversed(propagated_from):
                 induced_slot.owner = an
                 a = self.get_class(an, imports)
@@ -1521,9 +1519,9 @@ class SchemaView:
                 v2 = getattr(anc_slot_usage, metaslot_name, None)
                 if v is None:
                     v = v2
-                elif metaslot_name in COMBINE:
+                elif metaslot_name in mix_max_value_dict:
                     if v2 is not None:
-                        v = COMBINE[metaslot_name](v, v2)
+                        v = mix_max_value_dict[metaslot_name](v, v2)
                 # can rewrite below as:
                 # 1. if v2:
                 # 2. if v2 is not None and
@@ -1534,9 +1532,8 @@ class SchemaView:
                 elif not is_empty(v2):
                     v = v2
                     logger.debug(f"{v} takes precedence over {v2} for {induced_slot.name}.{metaslot_name}")
-            if v is None:
-                if metaslot_name == "range":
-                    v = self.schema.default_range
+            if v is None and metaslot_name == "range":
+                v = self.schema.default_range
             if v is not None:
                 setattr(induced_slot, metaslot_name, v)
         if slot.inlined_as_list:
@@ -1549,9 +1546,10 @@ class SchemaView:
         if not induced_slot.alias:
             induced_slot.alias = underscore(slot_name)
         for c in self.all_classes().values():
-            if induced_slot.name in c.slots or induced_slot.name in c.attributes:
-                if c.name not in induced_slot.domain_of:
-                    induced_slot.domain_of.append(c.name)
+            if (
+                induced_slot.name in c.slots or induced_slot.name in c.attributes
+            ) and c.name not in induced_slot.domain_of:
+                induced_slot.domain_of.append(c.name)
         return induced_slot
 
     @lru_cache(None)
@@ -1666,12 +1664,12 @@ class SchemaView:
         :param imports:
         :return:
         """
-        range = slot.range
-        if range in self.all_classes():
+        slot_range = slot.range
+        if slot_range in self.all_classes():
             if slot.inlined or slot.inlined_as_list:
                 return True
 
-            id_slot = self.get_identifier_slot(range, imports=imports)
+            id_slot = self.get_identifier_slot(slot_range, imports=imports)
             if id_slot is None:
                 # must be inlined as has no identifier
                 return True
@@ -1705,7 +1703,8 @@ class SchemaView:
             if is_any or r in self.all_types():
                 range_types.append(TypeDefinition.class_name)
         if not range_types:
-            raise ValueError(f"Unrecognized range: {r}")
+            msg = f"Unrecognized range: {r}"
+            raise ValueError(msg)
         return range_types
 
     def slot_range_as_union(self, slot: SlotDefinition) -> list[ElementName]:
@@ -1803,18 +1802,15 @@ class SchemaView:
 
         :return: dictionary of SchemaUsages keyed by used elements
         """
-        ROLES = ["domain", "range", "any_of", "exactly_one_of", "none_of", "all_of"]
+        roles = ["domain", "range", "any_of", "exactly_one_of", "none_of", "all_of"]
         ix = defaultdict(list)
         for cn, c in self.all_classes().items():
             direct_slots = c.slots
             for sn in self.class_slots(cn):
                 s = self.induced_slot(sn, cn)
-                for k in ROLES:
+                for k in roles:
                     v = getattr(s, k)
-                    if isinstance(v, list):
-                        vl = v
-                    else:
-                        vl = [v]
+                    vl = v if isinstance(v, list) else [v]
                     for x in vl:
                         if x is not None:
                             if isinstance(x, AnonymousSlotExpression):
