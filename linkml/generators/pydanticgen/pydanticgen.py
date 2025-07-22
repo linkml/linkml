@@ -1241,7 +1241,7 @@ def cli(
         metadata_mode=meta,
         **args,
     )
-    print(gen.serialize())
+    print(gen.serialize(), end="")
 
 
 if __name__ == "__main__":
