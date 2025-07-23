@@ -6,9 +6,10 @@ from linkml_runtime.utils.formatutils import be, split_line
 
 from linkml._version import __version__
 from linkml.generators.pythongen import PythonGenerator
-from linkml.utils.generator import shared_arguments
+from linkml.utils.generator import deprecated_fields, shared_arguments
 
 
+@deprecated_fields({"head": "metadata", "emit_metadata": "metadata"})
 @dataclass
 class NamespaceGenerator(PythonGenerator):
     generatorname = os.path.basename(__file__)

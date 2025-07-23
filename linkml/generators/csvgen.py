@@ -13,9 +13,10 @@ from linkml_runtime.linkml_model.meta import ClassDefinition, ClassDefinitionNam
 from linkml_runtime.utils.formatutils import be, underscore
 
 from linkml._version import __version__
-from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.generator import Generator, deprecated_fields, shared_arguments
 
 
+@deprecated_fields({"head": "metadata", "emit_metadata": "metadata"})
 @dataclass
 class CsvGenerator(Generator):
     """
