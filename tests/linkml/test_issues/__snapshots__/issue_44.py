@@ -1,7 +1,3 @@
-# Auto generated from issue_44.yaml by pythongen.py version: 0.0.1
-# Generation date: 2000-01-01T00:00:00
-# Schema: test44
-#
 # id: https://example.com/test44
 # description:
 # license: https://creativecommons.org/publicdomain/zero/1.0/
