@@ -20,7 +20,7 @@ def gen_and_comp_python(
     python_base: Optional[str] = None,
 ) -> None:
     """Generate yaml_file into python_file and compare it against master_file"""
-    arglist = [str(schema), "--no-metadata"] + (addl_args if addl_args else [])
+    arglist = [str(schema), "--no-head"] + (addl_args if addl_args else [])
 
     runner = CliRunner()
     result = runner.invoke(cli, arglist)

@@ -81,6 +81,7 @@ class JavaGenerator(OOCodeGenerator):
     gen_classvars: bool = True
     gen_slots: bool = True
     genmeta: bool = False
+    emit_metadata: bool = True
 
     def default_value_for_type(self, typ: str) -> str:
         return TYPE_DEFAULTS.get(typ, "null")
@@ -152,7 +153,8 @@ def cli(
     package=None,
     template_file=None,
     generate_records=False,
-    metadata=False,
+    head=True,
+    emit_metadata=False,
     genmeta=False,
     classvars=True,
     slots=True,
@@ -164,7 +166,7 @@ def cli(
         package=package,
         template_file=template_file,
         generate_records=generate_records,
-        metadata=metadata,
+        emit_metadata=head,
         genmeta=genmeta,
         gen_classvars=classvars,
         gen_slots=slots,

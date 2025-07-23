@@ -52,12 +52,12 @@ class PythonGenerator(Generator):
     file_extension = "py"
     visit_all_class_slots = False
     uses_schemaloader = True
-    metadata = False  # override superclass default
 
     # ObjectVars
     gen_classvars: bool = True
     gen_slots: bool = True
     genmeta: bool = False
+    emit_metadata: bool = True
     dataclass_repr: bool = False
     """
     Whether generated dataclasses should also generate a default __repr__ method.
@@ -244,13 +244,13 @@ class PythonGenerator(Generator):
             f"""# Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}
 # Generation date: {self.schema.generation_date}
 # Schema: {self.schema.name}
-#
-"""
-            if self.metadata and self.schema.generation_date
+#"""
+            if self.emit_metadata and self.schema.generation_date
             else ""
         )
 
-        return f"""{head}# id: {self.schema.id}
+        return f"""{head}
+# id: {self.schema.id}
 # description: {split_description}
 # license: {be(self.schema.license)}
 
@@ -1262,6 +1262,7 @@ class {enum_name}(EnumDefinitionImpl):
 
 @shared_arguments(PythonGenerator)
 @click.command(name="python")
+@click.option("--head/--no-head", default=True, show_default=True, help="Emit metadata heading")
 @click.option(
     "--genmeta/--no-genmeta",
     default=False,
@@ -1289,6 +1290,7 @@ class {enum_name}(EnumDefinitionImpl):
 @click.version_option(__version__, "-V", "--version")
 def cli(
     yamlfile,
+    head=True,
     genmeta=False,
     classvars=True,
     slots=True,
@@ -1296,10 +1298,9 @@ def cli(
     **args,
 ):
     """Generate python classes to represent a LinkML model"""
-    if "metadata" not in args.keys():
-        args["metadata"] = True
     gen = PythonGenerator(
         yamlfile,
+        emit_metadata=head,
         genmeta=genmeta,
         gen_classvars=classvars,
         gen_slots=slots,
@@ -1308,7 +1309,7 @@ def cli(
     if validate:
         mod = gen.compile_module()
         logger.info(f"Module {mod} compiled successfully")
-    print(gen.serialize(**args))
+    print(gen.serialize(emit_metadata=head, **args))
 
 
 if __name__ == "__main__":

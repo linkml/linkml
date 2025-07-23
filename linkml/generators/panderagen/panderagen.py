@@ -74,6 +74,7 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
     gen_classvars: bool = True
     gen_slots: bool = True
     genmeta: bool = False
+    emit_metadata: bool = True
     coerce: bool = False
 
     def default_value_for_type(self, typ: str) -> str:

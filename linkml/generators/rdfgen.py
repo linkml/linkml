@@ -35,7 +35,7 @@ class RDFGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
-    metadata: bool = False  # overriding the subclass field to change the default
+    emit_metadata: bool = False
     context: list[str] = None
     original_schema: SchemaDefinition = None
     """See https://github.com/linkml/linkml/issues/871"""
@@ -51,7 +51,7 @@ class RDFGenerator(Generator):
         gen = JSONLDGenerator(
             self.original_schema,
             format=JSONLDGenerator.valid_formats[0],
-            metadata=self.metadata,
+            metadata=self.emit_metadata,
             importmap=self.importmap,
         )
         # Iterate over permissible text strings making them URI compatible
