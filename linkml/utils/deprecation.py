@@ -258,6 +258,20 @@ DEPRECATIONS = (
         ),
         recommendation="Update to use `gen-doc`, `gen-plantuml`, `gen-mermaid-class-diagram`, or `gen-erdiagram`",
     ),
+    Deprecation(
+        name="metadata-flag",
+        deprecated_in=SemVer.from_str("1.9.2"),
+        removed_in=SemVer.from_str("1.10.0"),
+        message=(
+            "Use of flags `head` or `emit_metadata` to get a metadata header "
+            "on some generators is no longer supported. "
+            "Flags `head`, `emit_metadata` and `metadata` were being used for "
+            "the same purpose. "
+            "They have been unified, remaining only `metadata`."
+        ),
+        recommendation="Use flag `metadata` instead",
+        issue=1799,
+    ),
 )  # type: tuple[Deprecation, ...]
 
 EMITTED = set()  # type: set[str]
