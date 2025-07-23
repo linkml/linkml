@@ -384,7 +384,7 @@
     <span class="n">source_file_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">base_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">merge_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">emit_metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SchemaDefinition</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load and flatten SchemaDefinition from a file name, a URL or a block of text</span>
 
@@ -394,7 +394,7 @@
 <span class="sd">    @param source_file_size: size of source file if data is type TextIO</span>
 <span class="sd">    @param base_dir: Working directory or base URL of sources</span>
 <span class="sd">    @param merge_modules: True means combine modules into one source, false means keep separate</span>
-<span class="sd">    @param emit_metadata: True means add source file info to the output</span>
+<span class="sd">    @param metadata: True means add source file info to the output</span>
 <span class="sd">    @return: Un-processed Schema Definition object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -441,7 +441,7 @@
         <span class="c1"># TODO: figure out how to generate this from the default_prefix and namespace map</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Schema identifier must be supplied&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">emit_metadata</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">metadata</span><span class="p">:</span>
         <span class="n">schema</span><span class="o">.</span><span class="n">source_file</span> <span class="o">=</span> <span class="n">schema_metadata</span><span class="o">.</span><span class="n">source_file</span>
         <span class="n">src_date</span> <span class="o">=</span> <span class="n">schema_metadata</span><span class="o">.</span><span class="n">source_file_date</span>
         <span class="k">try</span><span class="p">:</span>

@@ -383,7 +383,7 @@
     <span class="n">uses_schemaloader</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="c1"># ObjectVars</span>
-    <span class="n">emit_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># overriding the subclass field to change the default</span>
     <span class="n">context</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">original_schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;See https://github.com/linkml/linkml/issues/871&quot;&quot;&quot;</span>
@@ -399,7 +399,7 @@
         <span class="n">gen</span> <span class="o">=</span> <span class="n">JSONLDGenerator</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">original_schema</span><span class="p">,</span>
             <span class="nb">format</span><span class="o">=</span><span class="n">JSONLDGenerator</span><span class="o">.</span><span class="n">valid_formats</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">emit_metadata</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
             <span class="n">importmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># Iterate over permissible text strings making them URI compatible</span>
