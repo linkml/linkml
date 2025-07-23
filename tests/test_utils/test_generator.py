@@ -53,7 +53,7 @@ class GeneratorTest(Generator):
         self,
         schema: Union[str, TextIO, SchemaDefinition],
         fmt: str = "txt",
-        emit_metadata: bool = False,
+        metadata: bool = False,
     ) -> None:
         self.visited = []
         self.visit_class_return = True
@@ -68,7 +68,7 @@ class GeneratorTest(Generator):
             logger.removeHandler(handler)
         logger.addHandler(logging.StreamHandler(self.logstream))
         logger.setLevel(logging.INFO)
-        super().__init__(schema, fmt, emit_metadata, logger=logger)
+        super().__init__(schema, fmt, metadata, logger=logger)
 
     def __post_init__(self) -> None:
         self.logstream = StringIO()

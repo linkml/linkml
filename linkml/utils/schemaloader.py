@@ -43,7 +43,7 @@ class SchemaLoader:
         importmap: Optional[Mapping[str, str]] = None,
         logger: Optional[logging.Logger] = None,
         mergeimports: Optional[bool] = True,
-        emit_metadata: Optional[bool] = True,
+        metadata: Optional[bool] = True,
         source_file_date: Optional[str] = None,
         source_file_size: Optional[int] = None,
     ) -> None:
@@ -56,7 +56,7 @@ class SchemaLoader:
         :param importmap: A map from import entries to URI or file name.
         :param logger: Target Logger, if any
         :param mergeimports: True means combine imports into single package. False means separate packages
-        :param emit_metadata: True means include source file, size and date
+        :param metadata: True means include source file, size and date
         :param source_file_date: modification of source file
         :param source_file_size: size of source file
         """
@@ -85,7 +85,7 @@ class SchemaLoader:
         self.schema_location: Optional[str] = None
         self.schema_defaults: dict[str, str] = {}  # Map from schema URI to default namespace
         self.merge_modules = mergeimports
-        self.emit_metadata = emit_metadata
+        self.metadata = metadata
 
     def resolve(self) -> SchemaDefinition:
         """Reconcile a loaded schema, applying is_a, mixins, apply_to's and other such things.  Also validate the
@@ -124,7 +124,7 @@ class SchemaLoader:
                 sname + ".yaml",
                 base_dir=os.path.dirname(self.schema.source_file) if self.schema.source_file else self.base_dir,
                 merge_modules=self.merge_modules,
-                emit_metadata=self.emit_metadata,
+                metadata=self.metadata,
             )
             loaded_schema = (str(sname), import_schemadefinition.version)
             if import_schemadefinition.id in self.loaded:
