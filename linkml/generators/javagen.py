@@ -9,7 +9,7 @@ from linkml_runtime.linkml_model.meta import TypeDefinition
 
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator
-from linkml.utils.generator import shared_arguments
+from linkml.utils.generator import deprecated_fields, shared_arguments
 
 default_template = """
 {#-
@@ -55,6 +55,7 @@ TYPEMAP = {
 TYPE_DEFAULTS = {"boolean": "false", "int": "0", "float": "0f", "double": "0d", "String": '""'}
 
 
+@deprecated_fields({"head": "metadata", "emit_metadata": "metadata"})
 @dataclass
 class JavaGenerator(OOCodeGenerator):
     """
