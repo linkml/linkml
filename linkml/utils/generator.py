@@ -202,6 +202,8 @@ class Generator(metaclass=abc.ABCMeta):
         if isinstance(schema, Path):
             schema = str(schema)
 
+        # TODO: remove aliasing
+        self.emit_metadata = self.metadata
         if self.uses_schemaloader:
             self._initialize_using_schemaloader(schema)
         else:
@@ -246,7 +248,7 @@ class Generator(metaclass=abc.ABCMeta):
                 importmap=self.importmap,
                 logger=self.logger,
                 mergeimports=self.mergeimports,
-                metadata=self.metadata,
+                emit_metadata=self.metadata,
                 source_file_date=self.source_file_date,
                 source_file_size=self.source_file_size,
             )

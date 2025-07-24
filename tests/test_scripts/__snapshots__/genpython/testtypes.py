@@ -1,3 +1,7 @@
+# Auto generated from testtypes.yaml by pythongen.py version: 0.0.1
+# Generation date: 2000-01-01T00:00:00
+# Schema: types
+#
 # id: http://example.org/tests/types
 # description:
 # license:
