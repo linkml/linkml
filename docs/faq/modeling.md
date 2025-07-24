@@ -197,7 +197,7 @@ value explicit, data can be merged automatically.
 
 From the schema developers perspective, the `meaning` slot does not _have_ to refer to an existing term from
 an ontology or similar, it can refer to anything at all. Consider this example of an enum with a single
-value, `Not`. 
+value, `Not`.
 
 ```
 my_enum:
@@ -212,7 +212,7 @@ Without the `meaning` property, the usages of the `Not` enum would be rendered a
 "Not"^^xsd:string
 ```
 
-However, adding the `meaning` property, you can use _any_ prefix (e.g. `mynamespace:`), including the schema-internal one. 
+However, adding the `meaning` property, you can use _any_ prefix (e.g. `mynamespace:`), including the schema-internal one.
 So, if you like to have your enum be serialised as an IRI (RDF Resource) in RDF-based serialisations,
 all you need to do is specify the `meaning` slot; if you do not do this, the enum value will be interpreted as a string literal.
 

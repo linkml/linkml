@@ -129,7 +129,7 @@ data_cases:
   - data:
       more_than_one_non_key_slots:
         k1: v1
-        k2: v2  
+        k2: v2
     error_message: "not valid under any of the given schemas"
   - data:
       not_inlined_key_value_pairs:
@@ -173,9 +173,9 @@ data_cases:
           value: k2
   - data:
       inlined_as_list_int_key_value_pair:
-        1: 
+        1:
           value: v1
-        2: 
+        2:
           value: v2
     error_message: "not of type 'array'"
   - data:
@@ -191,7 +191,7 @@ data_cases:
         'pfx:1':
           value: v1
         'pfx:2':
-          value: v2   
+          value: v2
   - data:
       inlined_uriorcurie_key_value_pairs:
         'pfx:1': v1
@@ -240,4 +240,3 @@ data_cases:
         'pfx:1': v1
         'pfx:2': v2
     error_message: not of type 'array'
-  

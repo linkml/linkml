@@ -54,7 +54,7 @@ slots:
 
   type:
     slot_uri: rdf:type
-    
+
   label:
     slot_uri: rdfs:label
 
@@ -62,10 +62,8 @@ slots:
 
   additionalName:
     slot_uri: sdo:additionalName
-    
+
   part of:
     slot_uri: BFO:0000050
     exact_mappings:
       - sdo:isPartOf
-
-  

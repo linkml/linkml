@@ -205,11 +205,34 @@ skip = [
   "./docs/LinkML-logo/LinkML-Revised-Round-Logo-MASTER-FILE.ai",
   "./tests/data/hp.ttl",
   "./tests/data/hp_f.ttl",
+  "tests/test_generators/input/jsonschema_value_constraints.yaml",
 ]
 # Ignore table where words could be split across rows
 ignore-regex = '(\|.*\|.*\|.*\||\[[A-Z][a-z]\][a-z][a-z])'
-# Instead of a comma-seperated single string,  a toml list may be used (as for "skip" above)
-ignore-words-list = 'anc,mater,connexion,infarction,thirdparty,linke,amination,brite,mor,'
+ignore-words-list = [
+  "acsess",
+  "AGS",
+  "amination",
+  "anc",
+  "brite",
+  "connexion",
+  "EHR",
+  "infarction",
+  "linke",
+  "mater",
+  "mor",
+  "Stye",
+  "TE",
+  "thirdparty",
+  "Vas",
+  # These are temp exemptions because they are coming from
+  # upstream repos linkml-runtime and linkml-model
+  # we should remove these once the upstream repos are fixed
+  # and changes are propagated to linkml
+  "GENERARE",
+  "re-used",
+  "doesnt"
+]
 quiet-level = 3
 
 [tool.black]

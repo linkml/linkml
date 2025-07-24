@@ -15,4 +15,3 @@ URI: [linkml:relational_role_enum](https://w3id.org/linkml/relational_role_enum)
 | PREDICATE | a slot with this role connects a relationship to its predicate/property | rdf:predicate | {'exact_mappings': ['owl:annotatedProperty']} |
 | NODE | a slot with this role connects a symmetric relationship to a node that represents either subject or object node |  |  |
 | OTHER_ROLE | a slot with this role connects a relationship to a node that is not subject/object/predicate |  |  |
-
