@@ -1559,6 +1559,7 @@
 <span class="sd">        PermissibleValue(text=&quot;NAME_ONLY&quot;)</span>
 <span class="sd">        PermissibleValue(</span>
 <span class="sd">            text=&quot;CODE&quot;,</span>
+<span class="sd">            title=&quot;...&quot;,</span>
 <span class="sd">            description=&quot;...&quot;,</span>
 <span class="sd">            meaning=&quot;...&quot;)</span>
 
@@ -1569,11 +1570,13 @@
         <span class="n">constructor</span> <span class="o">=</span> <span class="s2">&quot;PermissibleValue&quot;</span>
         <span class="n">pv_text</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">pv</span><span class="o">.</span><span class="n">description</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">pv</span><span class="o">.</span><span class="n">meaning</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pv</span><span class="o">.</span><span class="n">description</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">pv</span><span class="o">.</span><span class="n">meaning</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">pv</span><span class="o">.</span><span class="n">title</span><span class="p">:</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">constructor</span><span class="si">}</span><span class="s1">(text=&quot;</span><span class="si">{</span><span class="n">pv_text</span><span class="si">}</span><span class="s1">&quot;)&#39;</span>
 
         <span class="n">indent_str</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span> <span class="o">+</span> <span class="n">indent</span><span class="p">)</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span>
         <span class="n">pv_attrs</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">indent_str</span><span class="si">}</span><span class="s1">text=&quot;</span><span class="si">{</span><span class="n">pv_text</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">pv</span><span class="o">.</span><span class="n">title</span><span class="p">:</span>
+            <span class="n">pv_attrs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">indent_str</span><span class="si">}</span><span class="s1">title=&quot;</span><span class="si">{</span><span class="n">pv</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">pv</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
             <span class="n">pv_attrs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">process_multiline_string</span><span class="p">(</span><span class="n">pv</span><span class="o">.</span><span class="n">description</span><span class="p">,</span><span class="w"> </span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">indent_str</span><span class="si">}</span><span class="s1">description=&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">pv</span><span class="o">.</span><span class="n">meaning</span><span class="p">:</span>
