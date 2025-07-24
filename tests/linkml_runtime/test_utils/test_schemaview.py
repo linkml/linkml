@@ -886,6 +886,12 @@ def test_all_classes_ordered_by(sv_ordering_tests: SchemaView, ordered_by: str) 
     assert list(sv_ordering_tests.all_classes(ordered_by=ordered_by).keys()) == ORDERING_TESTS[ordered_by]
 
 
+@pytest.fixture(scope="session")
+def schema_view_inlined() -> SchemaView:
+    """Fixture for a SchemaView for testing attribute edge cases."""
+    return SchemaView(os.path.join(INPUT_DIR, "schemaview_is_inlined.yaml"))
+
+
 def test_children_method(schema_view_no_imports: SchemaView) -> None:
     """Test retrieval of the children of a class."""
     view = schema_view_no_imports
@@ -1478,12 +1484,10 @@ def test_materialize_patterns_attribute() -> None:
         ("inlined_as_list_integer", False),
     ],
 )
-def test_is_inlined(slot_name: str, expected_result: bool) -> None:
+def test_is_inlined(schema_view_inlined: SchemaView, slot_name: str, expected_result: bool) -> None:
     """Tests for slots being inlined or not."""
-    schema_path = os.path.join(INPUT_DIR, "schemaview_is_inlined.yaml")
-    sv = SchemaView(schema_path)
-    slot = sv.get_slot(slot_name)
-    assert sv.is_inlined(slot) == expected_result
+    slot = schema_view_inlined.get_slot(slot_name)
+    assert schema_view_inlined.is_inlined(slot) == expected_result
 
 
 def test_materialize_nonscalar_slot_usage() -> None:
