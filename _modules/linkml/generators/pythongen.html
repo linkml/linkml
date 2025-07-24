@@ -400,12 +400,12 @@
     <span class="n">file_extension</span> <span class="o">=</span> <span class="s2">&quot;py&quot;</span>
     <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">uses_schemaloader</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">metadata</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># override superclass default</span>
 
     <span class="c1"># ObjectVars</span>
     <span class="n">gen_classvars</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">gen_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">genmeta</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">emit_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">dataclass_repr</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Whether generated dataclasses should also generate a default __repr__ method.</span>
@@ -592,13 +592,13 @@
             <span class="sa">f</span><span class="s2">&quot;&quot;&quot;# Auto generated from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">source_file</span><span class="si">}</span><span class="s2"> by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generatorname</span><span class="si">}</span><span class="s2"> version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generatorversion</span><span class="si">}</span>
 <span class="s2"># Generation date: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">generation_date</span><span class="si">}</span>
 <span class="s2"># Schema: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="si">}</span>
-<span class="s2">#</span>
-<span class="s2">&quot;&quot;&quot;</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">generation_date</span>
+<span class="s2">#&quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">emit_metadata</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">generation_date</span>
             <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span><span class="si">{</span><span class="n">head</span><span class="si">}</span><span class="s2"># id: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="si">}</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span><span class="si">{</span><span class="n">head</span><span class="si">}</span>
+<span class="s2"># id: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="si">}</span>
 <span class="s2"># description: </span><span class="si">{</span><span class="n">split_description</span><span class="si">}</span>
 <span class="s2"># license: </span><span class="si">{</span><span class="n">be</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">license</span><span class="p">)</span><span class="si">}</span>
 
@@ -1610,6 +1610,7 @@
 
 <span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">PythonGenerator</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--head/--no-head&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Emit metadata heading&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--genmeta/--no-genmeta&quot;</span><span class="p">,</span>
     <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -1637,6 +1638,7 @@
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span>
     <span class="n">yamlfile</span><span class="p">,</span>
+    <span class="n">head</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">genmeta</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">classvars</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -1644,10 +1646,9 @@
     <span class="o">**</span><span class="n">args</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate python classes to represent a LinkML model&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="s2">&quot;metadata&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="n">args</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">gen</span> <span class="o">=</span> <span class="n">PythonGenerator</span><span class="p">(</span>
         <span class="n">yamlfile</span><span class="p">,</span>
+        <span class="n">emit_metadata</span><span class="o">=</span><span class="n">head</span><span class="p">,</span>
         <span class="n">genmeta</span><span class="o">=</span><span class="n">genmeta</span><span class="p">,</span>
         <span class="n">gen_classvars</span><span class="o">=</span><span class="n">classvars</span><span class="p">,</span>
         <span class="n">gen_slots</span><span class="o">=</span><span class="n">slots</span><span class="p">,</span>
@@ -1656,7 +1657,7 @@
     <span class="k">if</span> <span class="n">validate</span><span class="p">:</span>
         <span class="n">mod</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">compile_module</span><span class="p">()</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Module </span><span class="si">{</span><span class="n">mod</span><span class="si">}</span><span class="s2"> compiled successfully&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">gen</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">gen</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">emit_metadata</span><span class="o">=</span><span class="n">head</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">))</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

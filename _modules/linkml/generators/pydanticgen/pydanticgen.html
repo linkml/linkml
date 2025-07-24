@@ -692,6 +692,7 @@
     <span class="n">gen_classvars</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">gen_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">genmeta</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">emit_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="c1"># ClassVars</span>
     <span class="n">SNAKE_CASE</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(((?&lt;!^)(?&lt;!\.))(?=[A-Z][a-z]))|([^\w\.]+)&quot;</span>
@@ -1554,6 +1555,7 @@
     <span class="n">yamlfile</span><span class="p">,</span>
     <span class="n">template_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">template_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">head</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">genmeta</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">classvars</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -1578,6 +1580,7 @@
         <span class="n">yamlfile</span><span class="p">,</span>
         <span class="n">array_representations</span><span class="o">=</span><span class="p">[</span><span class="n">ArrayRepresentation</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">array_representations</span><span class="p">],</span>
         <span class="n">extra_fields</span><span class="o">=</span><span class="n">extra_fields</span><span class="p">,</span>
+        <span class="n">emit_metadata</span><span class="o">=</span><span class="n">head</span><span class="p">,</span>
         <span class="n">genmeta</span><span class="o">=</span><span class="n">genmeta</span><span class="p">,</span>
         <span class="n">gen_classvars</span><span class="o">=</span><span class="n">classvars</span><span class="p">,</span>
         <span class="n">gen_slots</span><span class="o">=</span><span class="n">slots</span><span class="p">,</span>

@@ -391,7 +391,7 @@
         <span class="n">importmap</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">mergeimports</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">emit_metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">source_file_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">source_file_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -404,7 +404,7 @@
 <span class="sd">        :param importmap: A map from import entries to URI or file name.</span>
 <span class="sd">        :param logger: Target Logger, if any</span>
 <span class="sd">        :param mergeimports: True means combine imports into single package. False means separate packages</span>
-<span class="sd">        :param metadata: True means include source file, size and date</span>
+<span class="sd">        :param emit_metadata: True means include source file, size and date</span>
 <span class="sd">        :param source_file_date: modification of source file</span>
 <span class="sd">        :param source_file_size: size of source file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -433,7 +433,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">schema_location</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schema_defaults</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Map from schema URI to default namespace</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">merge_modules</span> <span class="o">=</span> <span class="n">mergeimports</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emit_metadata</span> <span class="o">=</span> <span class="n">emit_metadata</span>
 
 <div class="viewcode-block" id="SchemaLoader.resolve"><a class="viewcode-back" href="../../../code/utils.html#linkml.utils.schemaloader.SchemaLoader.resolve">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SchemaDefinition</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reconcile a loaded schema, applying is_a, mixins, apply_to&#39;s and other such things.  Also validate the</span>
@@ -472,7 +472,7 @@
                 <span class="n">sname</span> <span class="o">+</span> <span class="s2">&quot;.yaml&quot;</span><span class="p">,</span>
                 <span class="n">base_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">source_file</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">source_file</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span>
                 <span class="n">merge_modules</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">merge_modules</span><span class="p">,</span>
-                <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
+                <span class="n">emit_metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">emit_metadata</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">loaded_schema</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sname</span><span class="p">),</span> <span class="n">import_schemadefinition</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">import_schemadefinition</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span><span class="p">:</span>
