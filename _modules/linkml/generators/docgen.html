@@ -735,8 +735,8 @@
 <span class="sd">        :param element:</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="p">(</span><span class="n">EnumDefinition</span><span class="p">,</span> <span class="n">SubsetDefinition</span><span class="p">)):</span>
-            <span class="c1"># TODO: fix schema view to handle URIs for enums and subsets</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">SubsetDefinition</span><span class="p">):</span>
+            <span class="c1"># Subsets have no uri attribute</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subfolder_type_separation</span><span class="p">:</span>
