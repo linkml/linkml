@@ -348,14 +348,13 @@
           <h1>Source code for linkml_runtime.dumpers.rdflib_dumper</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">urllib</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">curies</span><span class="w"> </span><span class="kn">import</span> <span class="n">Converter</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">rdflib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">,</span> <span class="n">XSD</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">rdflib.term</span><span class="w"> </span><span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">BNode</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rdflib</span><span class="w"> </span><span class="kn">import</span> <span class="n">XSD</span><span class="p">,</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">URIRef</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdflib.namespace</span><span class="w"> </span><span class="kn">import</span> <span class="n">RDF</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">rdflib.term</span><span class="w"> </span><span class="kn">import</span> <span class="n">BNode</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Node</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.dumpers.dumper_root</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dumper</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">ElementName</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">,</span> <span class="n">PermissibleValueText</span><span class="p">,</span> <span class="n">SlotDefinition</span>
@@ -374,6 +373,7 @@
 <span class="sd">    This requires a SchemaView object</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">as_rdf_graph</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">element</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">YAMLRoot</span><span class="p">],</span>
@@ -393,7 +393,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prefix_map</span><span class="p">,</span> <span class="n">Converter</span><span class="p">):</span>
             <span class="c1"># TODO replace with `prefix_map = prefix_map.bimap` after making minimum requirement on python 3.8</span>
             <span class="n">prefix_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">record</span><span class="o">.</span><span class="n">prefix</span><span class="p">:</span> <span class="n">record</span><span class="o">.</span><span class="n">uri_prefix</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">prefix_map</span><span class="o">.</span><span class="n">records</span><span class="p">}</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;PREFIXMAP=</span><span class="si">{</span><span class="n">prefix_map</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PREFIXMAP=</span><span class="si">{</span><span class="n">prefix_map</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">namespaces</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">namespaces</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">prefix_map</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">prefix_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -417,7 +417,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">inject_triples</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">g</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">inject_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">graph</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">target_type</span><span class="p">:</span> <span class="n">ElementName</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inject_triples</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">graph</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">target_type</span><span class="p">:</span> <span class="n">ElementName</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Inject triples from conversion of element into a Graph</span>
 
@@ -429,7 +431,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">namespaces</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">namespaces</span><span class="p">()</span>
         <span class="n">slot_name_map</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">slot_name_mappings</span><span class="p">()</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;CONVERT: </span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s1"> // </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">element</span><span class="p">)</span><span class="si">}</span><span class="s1"> // </span><span class="si">{</span><span class="n">target_type</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CONVERT: </span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s2"> // </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">element</span><span class="p">)</span><span class="si">}</span><span class="s2"> // </span><span class="si">{</span><span class="n">target_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">all_enums</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">PermissibleValueText</span><span class="p">):</span>
                 <span class="n">e</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">get_enum</span><span class="p">(</span><span class="n">target_type</span><span class="p">)</span>
@@ -445,22 +447,22 @@
             <span class="n">t</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">get_type</span><span class="p">(</span><span class="n">target_type</span><span class="p">)</span>
             <span class="n">dt_uri</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">uri</span>
             <span class="k">if</span> <span class="n">dt_uri</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">dt_uri</span> <span class="o">==</span> <span class="s1">&#39;rdfs:Resource&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">dt_uri</span> <span class="o">==</span> <span class="s2">&quot;rdfs:Resource&quot;</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">schemaview</span><span class="o">.</span><span class="n">expand_curie</span><span class="p">(</span><span class="n">element</span><span class="p">))</span>
-                <span class="k">elif</span> <span class="n">dt_uri</span> <span class="o">==</span> <span class="s1">&#39;xsd:string&#39;</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">dt_uri</span> <span class="o">==</span> <span class="s2">&quot;xsd:string&quot;</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">if</span> <span class="s2">&quot;xsd&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">namespaces</span><span class="p">:</span>
                         <span class="n">namespaces</span><span class="p">[</span><span class="s2">&quot;xsd&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">XSD</span>
                     <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">dt_uri</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No datatype specified for : </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">, using plain Literal&#39;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No datatype specified for : </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, using plain Literal&quot;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
-        <span class="n">element_vars</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">element</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)}</span>
+        <span class="n">element_vars</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">element</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)}</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">element_vars</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">id_slot</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">target_type</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_as_uri</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">id_slot</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">)</span>
-            <span class="c1">#return URIRef(schemaview.expand_curie(str(element)))</span>
+            <span class="c1"># return URIRef(schemaview.expand_curie(str(element)))</span>
         <span class="n">element_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
         <span class="n">cn</span> <span class="o">=</span> <span class="n">element_type</span><span class="o">.</span><span class="n">class_name</span>
         <span class="n">id_slot</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
@@ -483,7 +485,7 @@
                 <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">slot_name_map</span><span class="p">:</span>
                     <span class="n">k</span> <span class="o">=</span> <span class="n">slot_name_map</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Slot </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1"> not in name map&#39;</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Slot </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> not in name map&quot;</span><span class="p">)</span>
                 <span class="n">slot</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">cn</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span><span class="p">:</span>
                     <span class="n">slot_uri</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
@@ -500,7 +502,7 @@
         <span class="n">element</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">YAMLRoot</span><span class="p">],</span>
         <span class="n">to_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;turtle&#39;</span><span class="p">,</span>
+        <span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;turtle&quot;</span><span class="p">,</span>
         <span class="n">prefix_map</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Converter</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">args</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -520,7 +522,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">element</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">YAMLRoot</span><span class="p">],</span>
         <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">fmt</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;turtle&#39;</span><span class="p">,</span>
+        <span class="n">fmt</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;turtle&quot;</span><span class="p">,</span>
         <span class="n">prefix_map</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Converter</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -532,15 +534,13 @@
 <span class="sd">        :param prefix_map:</span>
 <span class="sd">        :return: serialization of rdflib Graph containing element</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_rdf_graph</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">,</span> <span class="n">prefix_map</span><span class="o">=</span><span class="n">prefix_map</span><span class="p">)</span><span class="o">.</span>\
-            <span class="n">serialize</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_rdf_graph</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">,</span> <span class="n">prefix_map</span><span class="o">=</span><span class="n">prefix_map</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_as_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">id_slot</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">],</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">URIRef</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">id_slot</span> <span class="ow">and</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">is_slot_percent_encoded</span><span class="p">(</span><span class="n">id_slot</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">element_id</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">namespaces</span><span class="p">()</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">element_id</span><span class="p">)</span></div>
-
 </pre></div>
         </article>
       </div>
