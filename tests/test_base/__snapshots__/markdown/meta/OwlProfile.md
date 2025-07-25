@@ -45,4 +45,3 @@ URI: [linkml:OwlProfile](https://w3id.org/linkml/OwlProfile)
 
 
 ### Enums
-

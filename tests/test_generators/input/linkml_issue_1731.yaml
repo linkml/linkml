@@ -1,8 +1,8 @@
 id: https://w3id.org/linkml/tests/linkml_issue_1731
 name: pokemon
 title: Pokemon schema
-description: >- 
-  This schema describes the Pokemon universe, where creatures called 
+description: >-
+  This schema describes the Pokemon universe, where creatures called
   Pokemon exist.
 default_curi_maps:
   - semweb_context
@@ -15,7 +15,7 @@ default_range: string
 classes:
   Pokemon:
     description: >-
-      Creatures that co-exist with humans in a shared universe called 
+      Creatures that co-exist with humans in a shared universe called
       the Pokemon world.
     slots:
       - name

@@ -8,7 +8,7 @@ The elements that control the python for slot generation include
 * Whether `range` references an instance of a LinkML `type` or a LinkML `class`
 * If the slot range is a `class`:
     * Whether the class has a key (`key: <type>`), an identifier (`identifier: <type>`), or neither
-    * _If_ the class has a `key` or `identifier`, whether the instances are inlined as a dictionary (`inlined: true`), 
+    * _If_ the class has a `key` or `identifier`, whether the instances are inlined as a dictionary (`inlined: true`),
     inlined as a list (`inlined_as_list: true`) or are referenced elsewhere in the model (Default).
 * Whether the slot is or concrete (`abstract: false`) or abstract (`abstract: true` or `mixin: true`) (Default: `false`)
 * Whether a slot is required (`required: true`) or optional (`required: false`) (Default: `false`)
@@ -128,11 +128,11 @@ The python then emits a class definition for the `Integers` class, where we have
 
     * The type, `int`, is from the `base` attribute. The python generator does make use of strictly positional parameters,
     so all type declarations will have an appropriate default, which is `None` in this case:
-    
+
         `mand_integer: int = None`
-    
+
     * Check for the presence of the value itself:
-        ``` 
+        ```
         if self.mand_integer is None:
             raise ValueError("mand_integer must be supplied")
         ```
@@ -145,68 +145,68 @@ The python then emits a class definition for the `Integers` class, where we have
 2) `mand_multi_integer` - a mandatory list of integers
 
     * Accept _either_ a list of integers or a single integer, which will be converted to a list:
-    
-        `mand_multi_integer: Union[int, List[int]] = None` 
-    
+
+        `mand_multi_integer: Union[int, List[int]] = None`
+
     * Check that the value is present.  _Note:_ LinkML treats an empty list as the same as an absent value.
-     
+
         ```
             if self.mand_multi_integer is None:
                 raise ValueError("mand_multi_integer must be supplied")
         ```
     * Convert a non-list value into a list.  This allows constructors to be lazy when it comes to single valued entries.
-    Note, however, that this _does_ require that list-of-list constructs to be explicitly declared because, while the 
+    Note, however, that this _does_ require that list-of-list constructs to be explicitly declared because, while the
     code treats `x = C(1)` as the same as `x = C([1])` in the multivalued case, it does _not_ attempt to differentiate
     `x = C([1])` and `x = C([[1]])`. This could be done if there is a compelling reason to, however:
-    
-        ```        
+
+        ```
         elif not isinstance(self.mand_multi_integer, list):
             self.mand_multi_integer = [self.mand_multi_integer]
         ```
     *  Check that the mandatory list has at least one element (our definition of `mandatory list`:
-        ```        
+        ```
         elif len(self.mand_multi_integer) == 0:
             raise ValueError(f"mand_multi_integer must be a non-empty list")
         ```
     * Coerce all of the member of the list into the target type (`int`):
-    
+
         `self.mand_multi_integer = [v if isinstance(v, int) else int(v) for v in self.mand_multi_integer]`
-            
+
 3) `opt_integer` - Optional non-list.
     * Accept either an `int` or `None`, the latter being entailed in the `Optional` type:
         `opt_integer: Optional[int] = None`
-        
+
     * Coerce to an integer if the value is present, otherwise let it be:
-        ```        
+        ```
         if self.opt_integer is not None and not isinstance(self.opt_integer, int):
             self.opt_integer = int(self.opt_integer)
         ```
     * Type is `Optional[<type>]`
     * `__post_init__` adds type coercion if necessary
-    
+
 4) `opt_multi_integer`: list:
     * Accept one of `None`, `int`, list of `int`, or anything that can be coerced into `List[int]`:
-    
+
         `opt_multi_integer: Optional[Union[int, List[int]]] = empty_list()`
-        
+
     * The absence of a list property is always represented as an empty list:
-        ```        
+        ```
         if self.opt_multi_integer is None:
             self.opt_multi_integer = []
         ```
-      
+
     * Coerce any other non-list into a list:
-        ```        
+        ```
         if not isinstance(self.opt_multi_integer, list):
             self.opt_multi_integer = [self.opt_multi_integer]
         ```
-      
+
     * Coerce all the members of the list into the range type
-        ```        
+        ```
         self.opt_multi_integer = [v if isinstance(v, int) else int(v) for v in self.opt_multi_integer]
         ```
 
-    
+
 ### 2) Python generation for a Type defined in `metamodelcore.py` -- `XSDDate` in this example
 YAML:
 ```yaml
@@ -287,7 +287,7 @@ are the `Union` of the class representing the element and the `repr` element (e.
 `int` type:
 
         mand_multi_integer: Union[int, List[int]] = None
-        
+
 `XSDDate` type:
 
         mand_multi_date: Union[Union[str, XSDDate], List[Union[str, XSDDate]]] = None
@@ -375,15 +375,15 @@ The Python patterns for each of the inherited types (Inherited from basic (e.g. 
 ### 2) Slot range is a LinkML `class` definition
 The previous section described the Python that was generated for slot ranges that reference LinkML **Type** definitions.
 This section addresses the second use case, where the slot range references another LinkML **Class**.  Classes are
-a more complex example, because, as opposed to types, classes can either be represented by _value_ or, if they have been 
+a more complex example, because, as opposed to types, classes can either be represented by _value_ or, if they have been
 declared to have unique identifiers, by _reference_.  In addition, classes that are represented by value can either be
-represented as lists of values or dictionaries. 
+represented as lists of values or dictionaries.
 
 The following attributes control how the python is generated for a LinkML `class` definition:
 * The slot `abstract` setting
 * The slot `required` setting
 * The slot `multivalued` setting
-* Whether a class includes a slot identified as a "key" (`"key": true`), an "identifier" (`"identifier": true`) or 
+* Whether a class includes a slot identified as a "key" (`"key": true`), an "identifier" (`"identifier": true`) or
 neither.  Note that at the moment, a class may have at most one key or identifier slot.  Two keys, two identifiers or
 a key and an identifier are all considered errors.  It is anticipated that a future version of LinkML will allow
 multiple key slots, directly implementing the notion of a "compound key".
@@ -438,16 +438,16 @@ An optional, single element class generates the following code:
         Range is a optional class that contains one non-key/non-identifier element
         """
         ...
-    
+
         v1: Optional[Union[dict, OneElementClass]] = None
-    
+
         def __post_init__(self, **kwargs: Dict[str, Any]):
             if self.v1 is not None and not isinstance(self.v1, OneElementClass):
                 self.v1 = OneElementClass(**self.v1)
-    
+
             super().__post_init__(**kwargs)
 ```
-`v1` can be one of: 
+`v1` can be one of:
 * `None` - as in indicated by the `Optional` type
 * any python `dict`, which is the type that underlies all class representations
 * an instance of `OneElementClass`
@@ -512,7 +512,7 @@ The code:
 
 In the final case, we've attempted to show both a) what a required inline list looks like and b) show that the target
 type is irrelevant as long as it is a LinkML `Class` and has no `key` or `identifier` slots
- 
+
 
 ```python
 @dataclass
@@ -542,7 +542,7 @@ The structural differences between the above class and its predecessor are:
 
 
 ### Keyed or Identified Classes
-When the range of a slot is a LinkML class that has a `key` or an `identifier`, additional options 
+When the range of a slot is a LinkML class that has a `key` or an `identifier`, additional options
 present themselves:
 1) Should elements be represented inline or as references?
 2) If inline, should the elements be represented as lists or as dictionaries, whose key is the `key` or `identifier`
@@ -776,7 +776,7 @@ The table below describes the various python generation options for single-value
 | 1.4 | false | - | Y | Y | slot value in of containing class (i.e. inline) |
 
 The YAML examples below the above options for both optional and required slots.
- 
+
  ```yaml
   OptionalThreeElementRange:
     description: Case 1.1(o) -- single values optional slot - range has no keys or identifiers
@@ -1135,7 +1135,7 @@ Starting with the signature:
 `v1: Optional[Union[Dict[Union[str, IdentifiedThreeElementClassName], Union[dict, IdentifiedThreeElementClass]], List[Union[dict, IdentifiedThreeElementClass]]]] = empty_list()`
 
 The outermost declaration: `Optional[...] = empty_list()` reflects:
-1) `v1` is not required: `None` is a valid value 
+1) `v1` is not required: `None` is a valid value
 2) the internal storage structure is going to be a list.  Note that None, [] and {} (Missing scalar, empty list and empty dictionary all indicate absence of a value)
 
 Moving inwards, `Union[Dict[...], List[...]]` means that the inputs can either be in the form of a dictionary or a list.
@@ -1172,12 +1172,12 @@ One can represent instances of `OptionalMultivaluedInlinedListIdentifiedThreeEle
 or in python as:
 ```python
 ktec_examples = OptionalMultivaluedInlinedListIdentifiedThreeElementRange(
-    { 
+    {
         element1: {value: 17, modifier: "2012-03-11"},
         KeyedThreeElementClassKey('element2'): {},
         element3: {name: 'element3', value: 42}
-    }   
-)  
+    }
+)
 ```
 Note that the following is not valid because, while the `name` attribute (the key) is not required, as it has already
 been established by the key, if present it _must_ match the key itself
@@ -1197,9 +1197,9 @@ ktec_examples: OptionalMultivaluedInlinedListIdentifiedThreeElementRange = {
 Would result in an error, as `itc.name` is an instance of `IdentifiedThreeElementClassKey` while `KeyedThreeElementClass` expects a `KeyedThreeElementClassKey`
 
 #### Input in the form of a list
-Starting with the skeleton we visited earlier, Moving inwards, `Union[Dict[...], List[...]]` the second option, 
+Starting with the skeleton we visited earlier, Moving inwards, `Union[Dict[...], List[...]]` the second option,
 `List[Union[dict, IdentifiedThreeElementClass]]` indicates that the input to the constructor can also be a _list_ of
-dictionaries that conform to the `IdentifiedThreeElementClass` model. Referencing the examples that we used above, 
+dictionaries that conform to the `IdentifiedThreeElementClass` model. Referencing the examples that we used above,
 we could also use:
 ```yaml
     - name: element1
@@ -1215,8 +1215,8 @@ ktec_examples = OptionalMultivaluedInlinedListIdentifiedThreeElementRange(
     [ {name: 'element1', value: 17, modifier: "2012-03-11"},
       {name: KeyedThreeElementClassKey('element2')},
       {name: 'element3', value: 42}
-    ]  
-)  
+    ]
+)
 ```
 We then move on to the generated code:
 ```python
@@ -1243,12 +1243,12 @@ The final line in the `__post_init__` section:
 ```python
     self._normalize_inlined_slot(slot_name="v1", slot_type=IdentifiedThreeElementClass, key_name="name", inlined_as_list=True, keyed=True)
 ```
-passes the remainder of the post initialization normalization to a function defined in `YAMLRoot`.  
+passes the remainder of the post initialization normalization to a function defined in `YAMLRoot`.
 
 
 The final case, Case 2.4 (Inlined as dictionary) is essentially the same, with the exception that the target type is
-a dictionary rather than a list.  
-  
+a dictionary rather than a list.
+
 ```yaml
 OptionalMultivaluedInlinedIdentifiedThreeElementRangeList:
     description: 2.4(o) Range is an optional identified three element class that is represented as an inlined dictionary
@@ -1321,7 +1321,7 @@ At the moment, the following code is emitted:
 # Slots
 class slots:
     pass
-    
+
     ...
 
 slots.RequiredInlinedKeyedTwoElementRange_v1 = Slot(uri=LISTS_AND_KEYS.v1, name="RequiredInlinedKeyedTwoElementRange_v1", curie=LISTS_AND_KEYS.curie('v1'),
@@ -1343,7 +1343,7 @@ a slot, you use `slots.RequiredInlinedTwoElementRange_v1` (which is the mangling
 At the _moment_, you have the following elements:
 
 * uri - the SLOT URI
-* name - the mangled name 
+* name - the mangled name
 * curie - the SLOT CURIE
 * model_uri - the slot URI where the base is the Model URI vs. one assigned via `slot_uri`
 * domain - the slot domain

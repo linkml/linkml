@@ -23,4 +23,3 @@ URI: [linkml:relational_logical_characteristic](https://w3id.org/linkml/relation
  *  [transitive](transitive.md)
 
 ## Used by
-

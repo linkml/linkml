@@ -23,7 +23,7 @@ types:
     description: >-
       A formal “semantic” assertion about a named entity, in the form of subject, predicate, and object including any
       provenance, qualifiers, or internal BNODEs.
-  
+
   BINDING_QUALIFIER:
     typeof: ValueSet
     description: >-

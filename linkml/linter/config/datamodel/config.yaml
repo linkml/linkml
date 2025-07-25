@@ -78,6 +78,11 @@ classes:
         description: >-
           Disallow the use of ranges in slot specifications if any of the ranges used
           do not refer to an existing type, class, or enum. Not auto-fixable.
+      root_type_checks:
+        range: RuleConfig
+        description: >-
+          Ensure that root types, types with no `typeof` attributes, have the required slots, and
+          that values used in the `typeof` slot refer to valid types. Not auto-fixable.
       standard_naming:
         range: StandardNamingConfig
         description: >-
