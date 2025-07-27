@@ -129,6 +129,9 @@ class ERDiagramGenerator(Generator):
     exclude_attributes: bool = False
     """If True, do not include attributes in entities"""
 
+    exclude_abstract_classes: bool = False
+    """If True, do not include abstract classes in the diagram"""
+
     genmeta: bool = False
     gen_classvars: bool = True
     gen_slots: bool = True
@@ -223,6 +226,8 @@ class ERDiagramGenerator(Generator):
     def add_upstream_class(self, class_name: ClassDefinitionName, targets: set[str], diagram: ERDiagram) -> None:
         sv = self.schemaview
         cls = sv.get_class(class_name)
+        if self.exclude_abstract_classes and cls.abstract:
+            return
         entity = Entity(name=camelcase(cls.name))
         diagram.entities.append(entity)
         for slot in sv.class_induced_slots(class_name):
@@ -239,6 +244,8 @@ class ERDiagramGenerator(Generator):
         """
         sv = self.schemaview
         cls = sv.get_class(class_name)
+        if self.exclude_abstract_classes and cls.abstract:
+            return
         entity = Entity(name=camelcase(cls.name))
         diagram.entities.append(entity)
         for slot in sv.class_induced_slots(class_name):
@@ -302,6 +309,11 @@ class ERDiagramGenerator(Generator):
     "--exclude-attributes/--no-exclude-attributes",
     default=False,
     help="If True, do not include attributes in entities",
+)
+@click.option(
+    "--exclude-abstract-classes/--no-exclude-abstract-classes",
+    default=False,
+    help="If True, do not include abstract classes in the diagram",
 )
 @click.option(
     "--follow-references/--no-follow-references",
