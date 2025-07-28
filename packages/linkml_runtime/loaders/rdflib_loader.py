@@ -238,7 +238,7 @@ class RDFLibLoader(Loader):
         if not isinstance(node, BNode):
             id_val = self._uri_to_id(node, id_slot, schemaview)
             # id_val = schemaview.namespaces().curie_for(node)
-            if id_val == None:
+            if id_val is None:
                 id_val = str(node)
             return {id_slot.name: id_val}
         else:

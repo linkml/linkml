@@ -109,11 +109,6 @@ class InlinedAsDictTestcase(unittest.TestCase):
 
         # Form 2: key/value tuples (only works when at most two values are required
         v = E(ev={"k1": "v11", "k2": "v21", "k3": {}})
-        expected = (
-            "E({ 'ev': { 'k1': {'s1': 'k1', 's2': 'v11'},\n"
-            "          'k2': {'s1': 'k2', 's2': 'v21'},\n"
-            "          'k3': {'s1': 'k3'}}})"
-        )
         self.assertEqual(
             v.ev,
             {
