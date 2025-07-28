@@ -1,14 +1,14 @@
 
-# Slot: name
+# Slot: mappings
 
 
 
-URI: [personinfo:name](https://w3id.org/linkml/examples/personinfo/name)
+URI: [personinfo:concept__mappings](https://w3id.org/linkml/examples/personinfo/concept__mappings)
 
 
 ## Domain and Range
 
-None &#8594;  <sub>0..1</sub> [String](types/String.md)
+None &#8594;  <sub>0..\*</sub> [CrossReference](types/CrossReference.md)
 
 ## Parents
 
@@ -21,16 +21,11 @@ None &#8594;  <sub>0..1</sub> [String](types/String.md)
  * [Concept](Concept.md)
  * [DiagnosisConcept](DiagnosisConcept.md)
  * [ImagingProcedureConcept](ImagingProcedureConcept.md)
- * [NamedThing](NamedThing.md)
  * [OperationProcedureConcept](OperationProcedureConcept.md)
- * [Organization](Organization.md)
- * [Person](Person.md)
- * [Place](Place.md)
  * [ProcedureConcept](ProcedureConcept.md)
- * [CodeSystem](CodeSystem.md)
 
 ## Other properties
 
 |  |  |  |
 | --- | --- | --- |
-| **Mappings:** | | schema:name |
+| **Mappings:** | | skos:exactMatch |
