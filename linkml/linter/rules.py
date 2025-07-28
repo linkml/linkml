@@ -6,6 +6,7 @@ import re
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Iterable
 from functools import cache
+from itertools import chain
 
 from linkml_runtime.linkml_model import (
     ClassDefinition,
@@ -346,13 +347,18 @@ class StandardNamingRule(LinterRule):
             else self.PATTERNS["snake"],
         }
 
-        plural = {"class": "classes", "slot": "slots", "enum": "enums"}
+        # explicit method mapping for better readability and maintainability
+        schema_methods = {
+            "class": schema_view.all_classes,
+            "slot": schema_view.all_slots,
+            "enum": schema_view.all_enums,
+        }
 
-        # generate a list of LinterProblems for classes, slots, and enums
-        problems = list(
+        # generate LinterProblems for classes, slots, and enums incrementally
+        problems = (
             LinterProblem(f"{el_type.capitalize()} has name '{el_name}'")
-            for el_type in plural
-            for el_name in getattr(schema_view, f"all_{plural[el_type]}")()
+            for el_type in schema_methods
+            for el_name in schema_methods[el_type]()
             if f"{el_type}_definition" not in excluded_types
             and el_name not in excluded_names
             and pattern[el_type].fullmatch(el_name) is None
@@ -360,14 +366,15 @@ class StandardNamingRule(LinterRule):
 
         if "permissible_value" not in excluded_types:
             # add issues from the permissible values, if appropriate
-            problems.extend(
-                list(
-                    LinterProblem(f"Permissible value of Enum '{en}' has name '{pv}'")
-                    for en, en_def in schema_view.all_enums(imports=False).items()
-                    for pv in en_def.permissible_values
-                    if pv not in excluded_names and pattern["permissible_value"].fullmatch(pv) is None
-                )
+            pv_problems = (
+                LinterProblem(f"Permissible value of Enum '{en}' has name '{pv}'")
+                for en, en_def in schema_view.all_enums(imports=False).items()
+                for pv in en_def.permissible_values
+                if pv not in excluded_names and pattern["permissible_value"].fullmatch(pv) is None
             )
+            # chain the generators together
+            return chain(problems, pv_problems)
+
         return problems
 
 
