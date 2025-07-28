@@ -1,0 +1,139 @@
+id: https://example.org/test/connected-components
+name: connected-components-test
+title: Connected Components Test Schema
+description: Test schema for connected component detection and class classification
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  test: https://example.org/test/
+
+default_prefix: test
+default_range: string
+
+imports:
+  - linkml:types
+
+classes:
+
+  # Root base class - everything inherits from this
+  Thing:
+    abstract: true
+    attributes:
+      id:
+        identifier: true
+        description: Unique identifier
+
+  # Component 1: Person-related classes (connected via relationships)
+  Person:
+    is_a: Thing
+    attributes:
+      name:
+      address:
+        range: Address
+      employment:
+        range: Employment
+        multivalued: true
+
+  Address:
+    is_a: Thing
+    attributes:
+      street:
+      city:
+
+  Employment:
+    is_a: Thing
+    attributes:
+      company:
+        range: Company
+      position:
+
+  Company:
+    is_a: Thing
+    attributes:
+      name:
+      headquarters:
+        range: Address
+
+  # Component 2: Medical-related classes (separate connected component)
+  Patient:
+    is_a: Thing
+    attributes:
+      medical_record:
+        range: MedicalRecord
+
+  MedicalRecord:
+    is_a: Thing
+    attributes:
+      diagnosis:
+        range: Diagnosis
+        multivalued: true
+
+  Diagnosis:
+    is_a: Thing
+    attributes:
+      code:
+      description:
+
+  # Base Classes - used as parents but have no direct relationships
+  BaseEntity:
+    is_a: Thing
+    abstract: true
+    attributes:
+      created_at:
+        range: date
+      updated_at:
+        range: date
+
+  IdentifiedThing:
+    is_a: Thing
+    attributes:
+      name:
+
+  # Classes that inherit from base classes and participate in relationships
+  PersonWithBase:
+    is_a: IdentifiedThing
+    attributes:
+      email:
+      contact:
+        range: ContactInfo
+
+  ContactInfo:
+    is_a: BaseEntity
+    attributes:
+      phone:
+      email:
+
+  # Truly standalone classes - no relationships and not used as base classes
+  ConfigSettings:
+    is_a: Thing
+    attributes:
+      setting_name:
+      setting_value:
+
+  UtilityClass:
+    is_a: Thing
+    attributes:
+      helper_method:
+
+  # Mixed inheritance chain
+  Animal:
+    is_a: Thing
+    attributes:
+      species:
+
+  Mammal:
+    is_a: Animal
+    attributes:
+      fur_type:
+
+  Dog:
+    is_a: Mammal
+    attributes:
+      owner:
+        range: PersonWithBase  # This connects to the PersonWithBase component
+
+enums:
+  StatusEnum:
+    permissible_values:
+      active:
+      inactive:
