@@ -15,6 +15,9 @@ prefixes:
   prov: http://www.w3.org/ns/prov#
   GSSO: http://purl.obolibrary.org/obo/GSSO_
   famrel: https://example.org/FamilialRelations#
+  bizcodes: https://example.org/bizcodes/
+  skos: http://www.w3.org/2004/02/skos/core#
+
   # DATA PREFIXES
   P: http://example.org/P/
   ROR: http://example.org/ror/
@@ -29,6 +32,22 @@ emit_prefixes:
   - xsd
   - skos
 
+types:
+
+  CrossReference:
+    typeof: uriorcurie
+    description: A string URI or CURIE representation of an external identifier, modeled as a Resource in RDF
+    base: str
+    uri: rdfs:Resource
+
+  ImageURL:
+    typeof: uri
+    base: str
+    uri: xsd:anyURI
+
+  SalaryType:
+    typeof: decimal
+
 classes:
 
   NamedThing:
@@ -38,7 +57,7 @@ classes:
       - id
       - name
       - description
-      - image
+      - depicted_by
     close_mappings:
      - schema:Thing
 
@@ -57,6 +76,7 @@ classes:
       - current_address
       - has_employment_history
       - has_familial_relationships
+      - has_interpersonal_relationships
       - has_medical_history
     slot_usage:
       primary_email:
@@ -88,6 +108,21 @@ classes:
       - mission_statement
       - founding_date
       - founding_location
+      - categories
+      - score
+      - min_salary
+    slot_usage:
+      categories:
+        range: OrganizationType
+    rules:
+      - postconditions:
+          slot_conditions:
+            score:
+              maximum_value: 0
+        preconditions:
+          slot_conditions:
+            min_salary:
+              maximum_value: 80000.00
 
   Place:
     mixins:
@@ -95,6 +130,7 @@ classes:
     slots:
       - id
       - name
+      - depicted_by
 
   Address:
     class_uri: schema:PostalAddress
@@ -114,6 +150,13 @@ classes:
 
   Concept:
     is_a: NamedThing
+    attributes:
+      code system:
+        range: code system
+      mappings:
+        slot_uri: skos:exactMatch
+        multivalued: true
+        range: CrossReference
 
   DiagnosisConcept:
     is_a: Concept
@@ -121,6 +164,17 @@ classes:
   ProcedureConcept:
     is_a: Concept
 
+
+  OperationProcedureConcept:
+    is_a: ProcedureConcept
+
+  ImagingProcedureConcept:
+    is_a: ProcedureConcept
+
+  code system:
+    slots:
+      - id
+      - name
 
   Relationship:
     slots:
@@ -135,7 +189,19 @@ classes:
       type:
         range: FamilialRelationshipType
         required: true
-      related_to:
+      related to:
+        range: Person
+        required: true
+
+  InterPersonalRelationship:
+    is_a: Relationship
+    slot_usage:
+      type:
+        any_of:
+          - range: FamilialRelationshipType
+          - range: NonFamilialRelationshipType
+        required: true
+      related to:
         range: Person
         required: true
 
@@ -143,18 +209,19 @@ classes:
     is_a: Event
     slots:
       - employed_at
+      - salary
 
   MedicalEvent:
     is_a: Event
     slots:
-      - in_location
+      - in location
       - diagnosis
       - procedure
 
   WithLocation:
     mixin: true
     slots:
-      - in_location
+      - in location
 
   # TODO: annotate that this is a container/root class
   Container:
@@ -167,6 +234,7 @@ slots:
   id:
     identifier: true
     slot_uri: schema:identifier
+    range: uriorcurie
   name:
     slot_uri: schema:name
   description:
@@ -196,7 +264,11 @@ slots:
     range: FamilialRelationship
     multivalued: true
     inlined_as_list: true
-  in_location:
+  has_interpersonal_relationships:
+    range: InterPersonalRelationship
+    multivalued: true
+    inlined_as_list: true
+  in location:
     range: Place
   current_address:
     description: >-
@@ -206,7 +278,15 @@ slots:
     range: integer
     minimum_value: 0
     maximum_value: 999
+  score:
+    description: A score between 0 and 5, represented as a decimal
+    range: decimal
+    minimum_value: 0.0
+    maximum_value: 5.0
   related_to:
+    range: NamedThing
+  depicted_by:
+    range: ImageURL
   type:
   street:
   city:
@@ -242,6 +322,14 @@ slots:
     inlined_as_list: true
     inlined: true
     multivalued: true
+  categories:
+    multivalued: true
+
+  salary:
+    range: SalaryType
+  min_salary:
+    range: SalaryType
+
 
 enums:
   FamilialRelationshipType:
@@ -252,6 +340,14 @@ enums:
         meaning: famrel:02
       CHILD_OF:
         meaning: famrel:03
+  NonFamilialRelationshipType:
+    permissible_values:
+      COWORKER_OF:
+        meaning: famrel:70
+      ROOMMATE_OF:
+        meaning: famrel:71
+      BEST_FRIEND_OF:
+      MORTAL_ENEMY_OF:
   GenderType:
     permissible_values:
       nonbinary man:
@@ -267,6 +363,17 @@ enums:
       cisgender woman:
         meaning: GSSO:000385
   DiagnosisType:
+    permissible_values:
+      todo:
+  OrganizationType:
+    permissible_values:
+      non profit:
+      for profit:
+      offshore:
+      charity:
+        meaning: bizcodes:001
+      shell company:
+      loose organization:
 
 subsets:
   basic_subset:
