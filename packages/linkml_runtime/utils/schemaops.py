@@ -22,7 +22,6 @@ def roll_up(sv: SchemaView, classes: CLASS_NAME_OR_LIST = None, mixins=True, is_
     dels = set()
     for cn in classes:
         c = sv.get_class(cn)
-        slots = []
         for d in sv.class_descendants(cn, reflexive=False, mixins=mixins, is_a=is_a):
             for sn in sv.class_slots(d):
                 s = sv.induced_slot(sn, class_name=d)
@@ -54,7 +53,6 @@ def roll_down(sv: SchemaView, classes: list[CLASS_NAME] = None, mixins=True, is_
     dels = set()
     for cn in classes:
         c = sv.get_class(cn)
-        slots = []
         for d in sv.class_ancestors(cn, reflexive=False, mixins=mixins, is_a=is_a):
             for sn in sv.class_slots(d):
                 s = sv.induced_slot(sn, class_name=d)
