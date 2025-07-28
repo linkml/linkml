@@ -348,17 +348,20 @@ class StandardNamingRule(LinterRule):
         }
 
         # explicit method mapping for better readability and maintainability
-        schema_methods = {
+        element_extractors = {
             "class": schema_view.all_classes,
             "slot": schema_view.all_slots,
             "enum": schema_view.all_enums,
         }
 
+        # cache the results to avoid repeated method calls
+        cached_elements = {el_type: element_extractors[el_type]() for el_type in element_extractors}
+
         # generate LinterProblems for classes, slots, and enums incrementally
         problems = (
             LinterProblem(f"{el_type.capitalize()} has name '{el_name}'")
-            for el_type in schema_methods
-            for el_name in schema_methods[el_type]()
+            for el_type, elements in cached_elements.items()
+            for el_name in elements
             if f"{el_type}_definition" not in excluded_types
             and el_name not in excluded_names
             and pattern[el_type].fullmatch(el_name) is None
@@ -375,7 +378,7 @@ class StandardNamingRule(LinterRule):
             # chain the generators together
             return chain(problems, pv_problems)
 
-        return problems
+        return iter(problems)
 
 
 class CanonicalPrefixesRule(LinterRule):
