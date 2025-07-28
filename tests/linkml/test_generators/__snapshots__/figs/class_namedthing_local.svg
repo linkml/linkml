@@ -1,0 +1,206 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml" aria-roledescription="class" role="graphics-document document" viewBox="0 0 391.25 234" height="234" class="classDiagram" width="391.25" id="container">
+  <style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container g.classGroup text{fill:#9370DB;stroke:none;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:10px;}#container g.classGroup text .title{font-weight:bolder;}#container .nodeLabel,#container .edgeLabel{color:#131300;}#container .edgeLabel .label rect{fill:#ECECFF;}#container .label text{fill:#131300;}#container .labelBkg{background:#ECECFF;}#container .edgeLabel .label span{background:#ECECFF;}#container .classTitle{font-weight:bolder;}#container .node rect,#container .node circle,#container .node ellipse,#container .node polygon,#container .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#container .divider{stroke:#9370DB;stroke-width:1;}#container g.clickable{cursor:pointer;}#container g.classGroup rect{fill:#ECECFF;stroke:#9370DB;}#container g.classGroup line{stroke:#9370DB;stroke-width:1;}#container .classLabel .box{stroke:none;stroke-width:0;fill:#ECECFF;opacity:0.5;}#container .classLabel .label{fill:#9370DB;font-size:10px;}#container .relation{stroke:#333333;stroke-width:1;fill:none;}#container .dashed-line{stroke-dasharray:3;}#container .dotted-line{stroke-dasharray:1 2;}#container #compositionStart,#container .composition{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#container #compositionEnd,#container .composition{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#container #dependencyStart,#container .dependency{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#container #dependencyStart,#container .dependency{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#container #extensionStart,#container .extension{fill:transparent!important;stroke:#333333!important;stroke-width:1;}#container #extensionEnd,#container .extension{fill:transparent!important;stroke:#333333!important;stroke-width:1;}#container #aggregationStart,#container .aggregation{fill:transparent!important;stroke:#333333!important;stroke-width:1;}#container #aggregationEnd,#container .aggregation{fill:transparent!important;stroke:#333333!important;stroke-width:1;}#container #lollipopStart,#container .lollipop{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#container #lollipopEnd,#container .lollipop{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#container .edgeTerminals{font-size:11px;line-height:initial;}#container .classTitleText{text-anchor:middle;font-size:18px;fill:#333;}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style>
+  <g>
+    <defs>
+      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="18" class="marker aggregation class" id="container_class-aggregationStart">
+        <path d="M 18,7 L9,13 L1,7 L9,1 Z"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="1" class="marker aggregation class" id="container_class-aggregationEnd">
+        <path d="M 18,7 L9,13 L1,7 L9,1 Z"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="18" class="marker extension class" id="container_class-extensionStart">
+        <path d="M 1,7 L18,13 V 1 Z"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="1" class="marker extension class" id="container_class-extensionEnd">
+        <path d="M 1,1 V 13 L18,7 Z"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="18" class="marker composition class" id="container_class-compositionStart">
+        <path d="M 18,7 L9,13 L1,7 L9,1 Z"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="1" class="marker composition class" id="container_class-compositionEnd">
+        <path d="M 18,7 L9,13 L1,7 L9,1 Z"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="6" class="marker dependency class" id="container_class-dependencyStart">
+        <path d="M 5,7 L9,13 L1,7 L9,1 Z"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="13" class="marker dependency class" id="container_class-dependencyEnd">
+        <path d="M 18,7 L9,13 L14,7 L9,1 Z"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="13" class="marker lollipop class" id="container_class-lollipopStart">
+        <circle r="6" cy="7" cx="7" fill="transparent" stroke="black"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="1" class="marker lollipop class" id="container_class-lollipopEnd">
+        <circle r="6" cy="7" cx="7" fill="transparent" stroke="black"/>
+      </marker>
+    </defs>
+    <g class="root">
+      <g class="clusters"/>
+      <g class="edgePaths">
+        <path marker-start="url(#container_class-extensionStart)" style=";" class="edge-thickness-normal edge-pattern-solid relation" id="id_NamedThing_Concept_1" d="M125.746,83.114L113.069,88.762C100.393,94.409,75.04,105.705,62.364,115.519C49.688,125.333,49.688,133.667,49.688,137.833L49.688,142"/>
+        <path marker-start="url(#container_class-extensionStart)" style=";" class="edge-thickness-normal edge-pattern-solid relation" id="id_NamedThing_Organization_2" d="M200.07,110L200.07,111.167C200.07,112.333,200.07,114.667,200.07,120C200.07,125.333,200.07,133.667,200.07,137.833L200.07,142"/>
+        <path marker-start="url(#container_class-extensionStart)" style=";" class="edge-thickness-normal edge-pattern-solid relation" id="id_NamedThing_Person_3" d="M274.312,84.084L286.261,89.57C298.21,95.056,322.109,106.028,334.058,115.681C346.008,125.333,346.008,133.667,346.008,137.833L346.008,142"/>
+      </g>
+      <g class="edgeLabels">
+        <g class="edgeLabel">
+          <g transform="translate(0, -12)" class="label">
+            <foreignObject height="24" width="0">
+              <html:div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
+                <html:span class="edgeLabel" style=";display: inline-block"/>
+              </html:div>
+            </foreignObject>
+          </g>
+        </g>
+        <g class="edgeLabel">
+          <g transform="translate(0, -12)" class="label">
+            <foreignObject height="24" width="0">
+              <html:div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
+                <html:span class="edgeLabel" style=";display: inline-block"/>
+              </html:div>
+            </foreignObject>
+          </g>
+        </g>
+        <g class="edgeLabel">
+          <g transform="translate(0, -12)" class="label">
+            <foreignObject height="24" width="0">
+              <html:div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
+                <html:span class="edgeLabel" style=";display: inline-block"/>
+              </html:div>
+            </foreignObject>
+          </g>
+        </g>
+      </g>
+      <g class="nodes">
+        <g transform="translate(200.0703125, 50)" id="classId-NamedThing-0" class="node default">
+          <g class="basic label-container">
+            <path style="" fill="#ECECFF" stroke-width="0" stroke="none" d="M-57.8828125 -42 L57.8828125 -42 L57.8828125 42 L-57.8828125 42"/>
+            <path style="" fill="none" stroke-width="1.3" stroke="#9370DB" d="M-57.8828125 -42 C-15.841155628338186 -42, 26.20050124332363 -42, 57.8828125 -42 M-57.8828125 -42 C-12.028698299164652 -42, 33.825415901670695 -42, 57.8828125 -42 M57.8828125 -42 C57.8828125 -16.137069250192855, 57.8828125 9.72586149961429, 57.8828125 42 M57.8828125 -42 C57.8828125 -17.16433955649998, 57.8828125 7.671320887000043, 57.8828125 42 M57.8828125 42 C13.622343671750237 42, -30.638125156499527 42, -57.8828125 42 M57.8828125 42 C20.184858002454597 42, -17.513096495090807 42, -57.8828125 42 M-57.8828125 42 C-57.8828125 12.248350457244136, -57.8828125 -17.503299085511728, -57.8828125 -42 M-57.8828125 42 C-57.8828125 18.451912029652362, -57.8828125 -5.096175940695275, -57.8828125 -42"/>
+          </g>
+          <g transform="translate(0, -18)" class="annotation-group text"/>
+          <g transform="translate(-45.8828125, -18)" class="label-group text">
+            <g transform="translate(0,-12)" style="font-weight: bolder" class="label">
+              <foreignObject height="24" width="91.765625">
+                <html:div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 143px; text-align: center;">
+                  <html:span style="" class="nodeLabel markdown-node-label">
+                    <html:p>
+                      <html:a href="https://example.com/schema#namedthing" style="color: inherit; text-decoration: none;">NamedThing</html:a>
+                    </html:p>
+                  </html:span>
+                </html:div>
+              </foreignObject>
+            </g>
+          </g>
+          <g transform="translate(-45.8828125, 30)" class="members-group text"/>
+          <g transform="translate(-45.8828125, 60)" class="methods-group text"/>
+          <g style="" class="divider">
+            <path style="" fill="none" stroke-width="1.3" stroke="#9370DB" d="M-57.8828125 6 C-18.67245396747306 6, 20.53790456505388 6, 57.8828125 6 M-57.8828125 6 C-15.952051578593611 6, 25.978709342812778 6, 57.8828125 6"/>
+          </g>
+          <g style="" class="divider">
+            <path style="" fill="none" stroke-width="1.3" stroke="#9370DB" d="M-57.8828125 24 C-33.64679099784232 24, -9.410769495684633 24, 57.8828125 24 M-57.8828125 24 C-13.461543750962726 24, 30.95972499807455 24, 57.8828125 24"/>
+          </g>
+        </g>
+        <g transform="translate(49.6875, 184)" id="classId-Concept-1" class="node default">
+          <g class="basic label-container">
+            <path style="" fill="#ECECFF" stroke-width="0" stroke="none" d="M-41.6875 -42 L41.6875 -42 L41.6875 42 L-41.6875 42"/>
+            <path style="" fill="none" stroke-width="1.3" stroke="#9370DB" d="M-41.6875 -42 C-14.735787989197636 -42, 12.215924021604728 -42, 41.6875 -42 M-41.6875 -42 C-21.935013621605574 -42, -2.1825272432111475 -42, 41.6875 -42 M41.6875 -42 C41.6875 -8.993333978555135, 41.6875 24.01333204288973, 41.6875 42 M41.6875 -42 C41.6875 -24.872708591541866, 41.6875 -7.745417183083731, 41.6875 42 M41.6875 42 C18.804680678802217 42, -4.078138642395565 42, -41.6875 42 M41.6875 42 C16.443074183301807 42, -8.801351633396386 42, -41.6875 42 M-41.6875 42 C-41.6875 9.75660572844889, -41.6875 -22.48678854310222, -41.6875 -42 M-41.6875 42 C-41.6875 19.56535591906369, -41.6875 -2.8692881618726176, -41.6875 -42"/>
+          </g>
+          <g transform="translate(0, -18)" class="annotation-group text"/>
+          <g transform="translate(-29.6875, -18)" class="label-group text">
+            <g transform="translate(0,-12)" style="font-weight: bolder" class="label">
+              <foreignObject height="24" width="59.375">
+                <html:div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 110px; text-align: center;">
+                  <html:span style="" class="nodeLabel markdown-node-label">
+                    <html:p>
+                      <html:a href="https://example.com/schema#concept" style="color: inherit; text-decoration: none;">Concept</html:a>
+                    </html:p>
+                  </html:span>
+                </html:div>
+              </foreignObject>
+            </g>
+          </g>
+          <g transform="translate(-29.6875, 30)" class="members-group text"/>
+          <g transform="translate(-29.6875, 60)" class="methods-group text"/>
+          <g style="" class="divider">
+            <path style="" fill="none" stroke-width="1.3" stroke="#9370DB" d="M-41.6875 6 C-20.09082075237524 6, 1.5058584952495195 6, 41.6875 6 M-41.6875 6 C-13.590259282670704 6, 14.506981434658591 6, 41.6875 6"/>
+          </g>
+          <g style="" class="divider">
+            <path style="" fill="none" stroke-width="1.3" stroke="#9370DB" d="M-41.6875 24 C-22.08464920663069 24, -2.48179841326138 24, 41.6875 24 M-41.6875 24 C-22.67955307526391 24, -3.671606150527822 24, 41.6875 24"/>
+          </g>
+        </g>
+        <g transform="translate(200.0703125, 184)" id="classId-Organization-2" class="node default">
+          <g class="basic label-container">
+            <path style="" fill="#ECECFF" stroke-width="0" stroke="none" d="M-58.6953125 -42 L58.6953125 -42 L58.6953125 42 L-58.6953125 42"/>
+            <path style="" fill="none" stroke-width="1.3" stroke="#9370DB" d="M-58.6953125 -42 C-11.849759698649876 -42, 34.99579310270025 -42, 58.6953125 -42 M-58.6953125 -42 C-25.25499301860475 -42, 8.1853264627905 -42, 58.6953125 -42 M58.6953125 -42 C58.6953125 -19.018438949240746, 58.6953125 3.9631221015185076, 58.6953125 42 M58.6953125 -42 C58.6953125 -12.725922545912756, 58.6953125 16.54815490817449, 58.6953125 42 M58.6953125 42 C28.593978778566804 42, -1.5073549428663924 42, -58.6953125 42 M58.6953125 42 C28.17634890184751 42, -2.3426146963049774 42, -58.6953125 42 M-58.6953125 42 C-58.6953125 21.967556742928092, -58.6953125 1.935113485856185, -58.6953125 -42 M-58.6953125 42 C-58.6953125 13.627525078887881, -58.6953125 -14.744949842224237, -58.6953125 -42"/>
+          </g>
+          <g transform="translate(0, -18)" class="annotation-group text"/>
+          <g transform="translate(-46.6953125, -18)" class="label-group text">
+            <g transform="translate(0,-12)" style="font-weight: bolder" class="label">
+              <foreignObject height="24" width="93.390625">
+                <html:div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 143px; text-align: center;">
+                  <html:span style="" class="nodeLabel markdown-node-label">
+                    <html:p>
+                      <html:a href="https://example.com/schema#organization" style="color: inherit; text-decoration: none;">Organization</html:a>
+                    </html:p>
+                  </html:span>
+                </html:div>
+              </foreignObject>
+            </g>
+          </g>
+          <g transform="translate(-46.6953125, 30)" class="members-group text"/>
+          <g transform="translate(-46.6953125, 60)" class="methods-group text"/>
+          <g style="" class="divider">
+            <path style="" fill="none" stroke-width="1.3" stroke="#9370DB" d="M-58.6953125 6 C-18.813967891766232 6, 21.067376716467535 6, 58.6953125 6 M-58.6953125 6 C-29.17112017108034 6, 0.3530721578393212 6, 58.6953125 6"/>
+          </g>
+          <g style="" class="divider">
+            <path style="" fill="none" stroke-width="1.3" stroke="#9370DB" d="M-58.6953125 24 C-15.971916202368853 24, 26.751480095262295 24, 58.6953125 24 M-58.6953125 24 C-21.281403693277817 24, 16.132505113444367 24, 58.6953125 24"/>
+          </g>
+        </g>
+        <g transform="translate(346.0078125, 184)" id="classId-Person-3" class="node default">
+          <g class="basic label-container">
+            <path style="" fill="#ECECFF" stroke-width="0" stroke="none" d="M-37.2421875 -42 L37.2421875 -42 L37.2421875 42 L-37.2421875 42"/>
+            <path style="" fill="none" stroke-width="1.3" stroke="#9370DB" d="M-37.2421875 -42 C-8.903653893314917 -42, 19.434879713370165 -42, 37.2421875 -42 M-37.2421875 -42 C-15.010594755037868 -42, 7.220997989924264 -42, 37.2421875 -42 M37.2421875 -42 C37.2421875 -18.251692382145183, 37.2421875 5.496615235709633, 37.2421875 42 M37.2421875 -42 C37.2421875 -14.768851150144052, 37.2421875 12.462297699711897, 37.2421875 42 M37.2421875 42 C11.058009285375643 42, -15.126168929248713 42, -37.2421875 42 M37.2421875 42 C15.770855127619178 42, -5.700477244761643 42, -37.2421875 42 M-37.2421875 42 C-37.2421875 10.379236804320232, -37.2421875 -21.241526391359535, -37.2421875 -42 M-37.2421875 42 C-37.2421875 14.351495205065984, -37.2421875 -13.297009589868033, -37.2421875 -42"/>
+          </g>
+          <g transform="translate(0, -18)" class="annotation-group text"/>
+          <g transform="translate(-25.2421875, -18)" class="label-group text">
+            <g transform="translate(0,-12)" style="font-weight: bolder" class="label">
+              <foreignObject height="24" width="50.484375">
+                <html:div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 99px; text-align: center;">
+                  <html:span style="" class="nodeLabel markdown-node-label">
+                    <html:p>
+                      <html:a href="https://example.com/schema#person" style="color: inherit; text-decoration: none;">Person</html:a>
+                    </html:p>
+                  </html:span>
+                </html:div>
+              </foreignObject>
+            </g>
+          </g>
+          <g transform="translate(-25.2421875, 30)" class="members-group text"/>
+          <g transform="translate(-25.2421875, 60)" class="methods-group text"/>
+          <g style="" class="divider">
+            <path style="" fill="none" stroke-width="1.3" stroke="#9370DB" d="M-37.2421875 6 C-17.207534103373156 6, 2.8271192932536877 6, 37.2421875 6 M-37.2421875 6 C-8.973629947370945 6, 19.29492760525811 6, 37.2421875 6"/>
+          </g>
+          <g style="" class="divider">
+            <path style="" fill="none" stroke-width="1.3" stroke="#9370DB" d="M-37.2421875 24 C-13.032201837104466 24, 11.177783825791067 24, 37.2421875 24 M-37.2421875 24 C-8.668399641693142 24, 19.905388216613716 24, 37.2421875 24"/>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

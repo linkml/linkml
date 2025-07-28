@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:ns1="http://www.w3.org/1999/xlink" aria-roledescription="er" role="graphics-document document" viewBox="0 0 1283.6943359375 465" height="465" width="1283.6943359375" id="container">
+  <style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .entityBox{fill:#ECECFF;stroke:#9370DB;}#container .attributeBoxOdd{fill:#ffffff;stroke:#9370DB;}#container .attributeBoxEven{fill:#f2f2f2;stroke:#9370DB;}#container .relationshipLabelBox{fill:hsl(80, 100%, 96.2745098039%);opacity:0.7;background-color:hsl(80, 100%, 96.2745098039%);}#container .relationshipLabelBox rect{opacity:0.5;}#container .relationshipLine{stroke:#333333;}#container .entityTitleText{text-anchor:middle;font-size:18px;fill:#333;}#container #MD_PARENT_START{fill:#f5f5f5!important;stroke:#333333!important;stroke-width:1;}#container #MD_PARENT_END{fill:#f5f5f5!important;stroke:#333333!important;stroke-width:1;}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style>
+  <g/>
+  <defs>
+    <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="0" id="MD_PARENT_START">
+      <path d="M 18,7 L9,13 L1,7 L9,1 Z"/>
+    </marker>
+  </defs>
+  <defs>
+    <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="19" id="MD_PARENT_END">
+      <path d="M 18,7 L9,13 L1,7 L9,1 Z"/>
+    </marker>
+  </defs>
+  <defs>
+    <marker orient="auto" markerHeight="18" markerWidth="18" refY="9" refX="0" id="ONLY_ONE_START">
+      <path d="M9,0 L9,18 M15,0 L15,18" fill="none" stroke="gray"/>
+    </marker>
+  </defs>
+  <defs>
+    <marker orient="auto" markerHeight="18" markerWidth="18" refY="9" refX="18" id="ONLY_ONE_END">
+      <path d="M3,0 L3,18 M9,0 L9,18" fill="none" stroke="gray"/>
+    </marker>
+  </defs>
+  <defs>
+    <marker orient="auto" markerHeight="18" markerWidth="30" refY="9" refX="0" id="ZERO_OR_ONE_START">
+      <circle r="6" cy="9" cx="21" fill="white" stroke="gray"/>
+      <path d="M9,0 L9,18" fill="none" stroke="gray"/>
+    </marker>
+  </defs>
+  <defs>
+    <marker orient="auto" markerHeight="18" markerWidth="30" refY="9" refX="30" id="ZERO_OR_ONE_END">
+      <circle r="6" cy="9" cx="9" fill="white" stroke="gray"/>
+      <path d="M21,0 L21,18" fill="none" stroke="gray"/>
+    </marker>
+  </defs>
+  <defs>
+    <marker orient="auto" markerHeight="36" markerWidth="45" refY="18" refX="18" id="ONE_OR_MORE_START">
+      <path d="M0,18 Q 18,0 36,18 Q 18,36 0,18 M42,9 L42,27" fill="none" stroke="gray"/>
+    </marker>
+  </defs>
+  <defs>
+    <marker orient="auto" markerHeight="36" markerWidth="45" refY="18" refX="27" id="ONE_OR_MORE_END">
+      <path d="M3,9 L3,27 M9,18 Q27,0 45,18 Q27,36 9,18" fill="none" stroke="gray"/>
+    </marker>
+  </defs>
+  <defs>
+    <marker orient="auto" markerHeight="36" markerWidth="57" refY="18" refX="18" id="ZERO_OR_MORE_START">
+      <circle r="6" cy="18" cx="48" fill="white" stroke="gray"/>
+      <path d="M0,18 Q18,0 36,18 Q18,36 0,18" fill="none" stroke="gray"/>
+    </marker>
+  </defs>
+  <defs>
+    <marker orient="auto" markerHeight="36" markerWidth="57" refY="18" refX="39" id="ZERO_OR_MORE_END">
+      <circle r="6" cy="18" cx="9" fill="white" stroke="gray"/>
+      <path d="M21,18 Q39,0 57,18 Q39,36 21,18" fill="none" stroke="gray"/>
+    </marker>
+  </defs>
+  <path style="stroke: gray; fill: none;" marker-start="url(#ONLY_ONE_START)" marker-end="url(#ZERO_OR_ONE_END)" d="M597.251,240.079L509.375,253.399C421.5,266.719,245.75,293.36,157.875,315.013C70,336.667,70,353.333,70,361.667L70,370" class="er relationshipLine"/>
+  <path style="stroke: gray; fill: none;" marker-start="url(#ONLY_ONE_START)" marker-end="url(#ZERO_OR_MORE_END)" d="M597.251,244.558L545.111,257.131C492.972,269.705,388.693,294.853,336.554,315.76C284.414,336.667,284.414,353.333,284.414,361.667L284.414,370" class="er relationshipLine"/>
+  <path style="stroke: gray; fill: none;" marker-start="url(#ONLY_ONE_START)" marker-end="url(#ZERO_OR_MORE_END)" d="M597.251,266.661L584.239,275.551C571.227,284.441,545.204,302.22,532.192,319.443C519.18,336.667,519.18,353.333,519.18,361.667L519.18,370" class="er relationshipLine"/>
+  <path style="stroke: gray; fill: none;" marker-start="url(#ONLY_ONE_START)" marker-end="url(#ZERO_OR_MORE_END)" d="M697.251,266.661L710.262,275.551C723.274,284.441,749.297,302.22,762.309,319.443C775.321,336.667,775.321,353.333,775.321,361.667L775.321,370" class="er relationshipLine"/>
+  <path style="stroke: gray; fill: none;" marker-start="url(#ONLY_ONE_START)" marker-end="url(#ZERO_OR_MORE_END)" d="M697.251,244.481L749.776,257.068C802.301,269.654,907.352,294.827,959.877,315.747C1012.402,336.667,1012.402,353.333,1012.402,361.667L1012.402,370" class="er relationshipLine"/>
+  <path style="stroke: gray; fill: none;" marker-start="url(#ONLY_ONE_START)" marker-end="url(#ZERO_OR_MORE_END)" d="M697.251,240.224L783.324,253.52C869.398,266.816,1041.546,293.408,1127.62,315.037C1213.694,336.667,1213.694,353.333,1213.694,361.667L1213.694,370" class="er relationshipLine"/>
+  <path style="stroke: gray; fill: none;" marker-start="url(#ONLY_ONE_START)" marker-end="url(#ZERO_OR_ONE_END)" d="M647.251,95L647.251,103.333C647.251,111.667,647.251,128.333,647.251,145C647.251,161.667,647.251,178.333,647.251,186.667L647.251,195" class="er relationshipLine"/>
+  <g transform="translate(597.2505035400391,195 )" id="entity-Person-84ee9ab5-8d8f-5582-81c6-bfa2c33a578d">
+    <rect height="75" width="100" y="0" x="0" class="er entityBox"/>
+    <a ns1:href="https://example.com/schema#person">
+      <text style="dominant-baseline: middle; text-anchor: middle; font-size: 12px;" transform="translate(50,37.5)" y="0" x="0" id="text-entity-Person-84ee9ab5-8d8f-5582-81c6-bfa2c33a578d" class="er entityLabel">Person</text>
+    </a>
+  </g>
+  <g transform="translate(597.2505035400391,20 )" id="entity-Relationship-fe28afad-2f9c-58b9-b144-f749efe2e492">
+    <rect height="75" width="100" y="0" x="0" class="er entityBox"/>
+    <a ns1:href="https://example.com/schema#relationship">
+      <text style="dominant-baseline: middle; text-anchor: middle; font-size: 12px;" transform="translate(50,37.5)" y="0" x="0" id="text-entity-Relationship-fe28afad-2f9c-58b9-b144-f749efe2e492" class="er entityLabel">Relationship</text>
+    </a>
+  </g>
+  <g transform="translate(20,370 )" id="entity-Address-c76279a2-ae7d-51c9-9b7a-8d5514196196">
+    <rect height="75" width="100" y="0" x="0" class="er entityBox"/>
+    <a ns1:href="https://example.com/schema#address">
+      <text style="dominant-baseline: middle; text-anchor: middle; font-size: 12px;" transform="translate(50,37.5)" y="0" x="0" id="text-entity-Address-c76279a2-ae7d-51c9-9b7a-8d5514196196" class="er entityLabel">Address</text>
+    </a>
+  </g>
+  <g transform="translate(220,370 )" id="entity-EmploymentEvent-56c3c7d1-f4bb-5be3-828a-3e23e6573584">
+    <rect height="75" width="128.82862854003906" y="0" x="0" class="er entityBox"/>
+    <a ns1:href="https://example.com/schema#employmentevent">
+      <text style="dominant-baseline: middle; text-anchor: middle; font-size: 12px;" transform="translate(64.41431427001953,37.5)" y="0" x="0" id="text-entity-EmploymentEvent-56c3c7d1-f4bb-5be3-828a-3e23e6573584" class="er entityLabel">EmploymentEvent</text>
+    </a>
+  </g>
+  <g transform="translate(448.82862854003906,370 )" id="entity-FamilialRelationship-8e4c2ae0-f0f9-5ca5-982f-64350aa36c56">
+    <rect height="75" width="140.703125" y="0" x="0" class="er entityBox"/>
+    <a ns1:href="https://example.com/schema#familialrelationship">
+      <text style="dominant-baseline: middle; text-anchor: middle; font-size: 12px;" transform="translate(70.3515625,37.5)" y="0" x="0" id="text-entity-FamilialRelationship-8e4c2ae0-f0f9-5ca5-982f-64350aa36c56" class="er entityLabel">FamilialRelationship</text>
+    </a>
+  </g>
+  <g transform="translate(689.5317535400391,370 )" id="entity-InterPersonalRelationship-b76bfd76-9bcf-517b-ab35-ac44277db9b4">
+    <rect height="75" width="171.578125" y="0" x="0" class="er entityBox"/>
+    <a ns1:href="https://example.com/schema#interpersonalrelationship">
+      <text style="dominant-baseline: middle; text-anchor: middle; font-size: 12px;" transform="translate(85.7890625,37.5)" y="0" x="0" id="text-entity-InterPersonalRelationship-b76bfd76-9bcf-517b-ab35-ac44277db9b4" class="er entityLabel">InterPersonalRelationship</text>
+    </a>
+  </g>
+  <g transform="translate(961.1098785400391,370 )" id="entity-MedicalEvent-d5deae62-476c-51b4-a0e2-2f724e47e110">
+    <rect height="75" width="102.58444213867188" y="0" x="0" class="er entityBox"/>
+    <a ns1:href="https://example.com/schema#medicalevent">
+      <text style="dominant-baseline: middle; text-anchor: middle; font-size: 12px;" transform="translate(51.29222106933594,37.5)" y="0" x="0" id="text-entity-MedicalEvent-d5deae62-476c-51b4-a0e2-2f724e47e110" class="er entityLabel">MedicalEvent</text>
+    </a>
+  </g>
+  <g transform="translate(1163.694320678711,370 )" id="entity-NewsEvent-fba918f1-1263-50de-9016-dbcd9481098a">
+    <rect height="75" width="100" y="0" x="0" class="er entityBox"/>
+    <a ns1:href="https://example.com/schema#newsevent">
+      <text style="dominant-baseline: middle; text-anchor: middle; font-size: 12px;" transform="translate(50,37.5)" y="0" x="0" id="text-entity-NewsEvent-fba918f1-1263-50de-9016-dbcd9481098a" class="er entityLabel">NewsEvent</text>
+    </a>
+  </g>
+  <rect height="14" width="88.5845947265625" y="276.1816101074219" x="276.8608703613281" class="er relationshipLabelBox"/>
+  <text style="text-anchor: middle; dominant-baseline: middle; font-size: 12px;" y="283.1816101074219" x="321.1531677246094" id="rel1" class="er relationshipLabel">current_address</text>
+  <rect height="14" width="137.31689453125" y="280.2644348144531" x="357.6372985839844" class="er relationshipLabelBox"/>
+  <text style="text-anchor: middle; dominant-baseline: middle; font-size: 12px;" y="287.2644348144531" x="426.2957458496094" id="rel2" class="er relationshipLabel">has_employment_history</text>
+  <rect height="14" width="143.52093505859375" y="301.0400695800781" x="470.6891174316406" class="er relationshipLabelBox"/>
+  <text style="text-anchor: middle; dominant-baseline: middle; font-size: 12px;" y="308.0400695800781" x="542.4495849609375" id="rel3" class="er relationshipLabel">has_familial_relationships</text>
+  <rect height="14" width="176.41314697265625" y="301.040283203125" x="663.8451232910156" class="er relationshipLabelBox"/>
+  <text style="text-anchor: middle; dominant-baseline: middle; font-size: 12px;" y="308.040283203125" x="752.0516967773438" id="rel4" class="er relationshipLabel">has_interpersonal_relationships</text>
+  <rect height="14" width="112.020751953125" y="280.1927185058594" x="813.3253173828125" class="er relationshipLabelBox"/>
+  <text style="text-anchor: middle; dominant-baseline: middle; font-size: 12px;" y="287.1927185058594" x="869.335693359375" id="rel5" class="er relationshipLabel">has_medical_history</text>
+  <rect height="14" width="94.8365478515625" y="276.3096618652344" x="920.6090087890625" class="er relationshipLabelBox"/>
+  <text style="text-anchor: middle; dominant-baseline: middle; font-size: 12px;" y="283.3096618652344" x="968.0272827148438" id="rel6" class="er relationshipLabel">has_news_events</text>
+  <rect height="14" width="55.828125" y="138" x="619.3369140625" class="er relationshipLabelBox"/>
+  <text style="text-anchor: middle; dominant-baseline: middle; font-size: 12px;" y="145" x="647.2509765625" id="rel7" class="er relationshipLabel">related_to</text>
+</svg>
