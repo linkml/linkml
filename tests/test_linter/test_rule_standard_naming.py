@@ -198,7 +198,9 @@ def test_exclude_specific_entities():
     builder.add_slot("AnotherBadSlot")  # should fail
 
     builder.add_enum("bad_enum", ["good_pv"])  # enum name would normally fail
-    builder.add_enum("GoodEnum", ["Bad_PV", "good_pv", "Extra_Bad_Pv"])  # Bad_PV would normally fail, Extra_Bad_Pv will fail
+    builder.add_enum(
+        "GoodEnum", ["Bad_PV", "good_pv", "Extra_Bad_Pv"]
+    )  # Bad_PV would normally fail, Extra_Bad_Pv will fail
     builder.add_enum("another_bad_enum", ["good_pv"])  # should fail
 
     rule = StandardNamingRule(config)
@@ -208,7 +210,7 @@ def test_exclude_specific_entities():
         "Class has name 'another_bad_class'",
         "Slot has name 'AnotherBadSlot'",
         "Enum has name 'another_bad_enum'",
-        "Permissible value of Enum 'GoodEnum' has name 'Extra_Bad_Pv'"
+        "Permissible value of Enum 'GoodEnum' has name 'Extra_Bad_Pv'",
     }
 
     assert {p.message for p in problems} == expected_messages
