@@ -101,8 +101,12 @@ class ERDiagram(pydantic.BaseModel):
     relationships: list[Relationship] = []
 
     def __str__(self):
-        ents = "\n".join([str(e) for e in self.entities])
-        rels = "\n".join([str(r) for r in self.relationships])
+        # Sort entities and relationships for stable output
+        sorted_entities = sorted(self.entities, key=lambda e: e.name)
+        sorted_relationships = sorted(self.relationships, key=lambda r: str(r))
+
+        ents = "\n".join([str(e) for e in sorted_entities])
+        rels = "\n".join([str(r) for r in sorted_relationships])
         return f"erDiagram\n{ents}\n\n{rels}\n"
 
 
