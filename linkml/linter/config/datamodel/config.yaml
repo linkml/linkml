@@ -185,8 +185,8 @@ classes:
         multivalued: true
         description: >-
           Default: []
-          Elements with names specified in this list will be skipped by the checker.
-          The list can include names of any schema elements (classes, slots, enums, permissible values, etc.).
+          Named schema elements in this list will be skipped by the checker.
+          For example: ["legacy_class", "badSlot", "bad_enum", "LEGACY_PERMISSIBLE_VALUE"]
       class_pattern:
         range: string
         required: false
