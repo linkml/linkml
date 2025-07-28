@@ -1,5 +1,6 @@
 id: https://w3id.org/linkml/examples/personinfo
 name: personinfo
+version: 0.0.1
 description: |-
   Information about people, based on [schema.org](http://schema.org)
 license: https://creativecommons.org/publicdomain/zero/1.0/
@@ -181,16 +182,23 @@ slots:
   id:
     identifier: true
     slot_uri: schema:identifier
+    description: ID string to uniquely identify the object
   int_id:
     identifier: true
     slot_uri: schema:int_identifier
     range: integer
   name:
     slot_uri: schema:name
+    description: Short human readable object name
   description:
     slot_uri: schema:description
+    description: >-
+      Detailed free form description of the object
   image:
     slot_uri: schema:image
+    range: uri
+    description: >-
+        image that visually represents the object
   gender:
     slot_uri: schema:gender
     range: GenderType
