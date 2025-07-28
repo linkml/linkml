@@ -7,6 +7,7 @@ from linkml.generators.javagen import JavaGenerator
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
+from linkml.generators.markdowndatadictgen import MarkdownDataDictGen
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.panderagen import PanderaGenerator
 from linkml.generators.pydanticgen import PydanticGenerator
@@ -45,6 +46,7 @@ __all__ = [
     "OwlSchemaGenerator",
     "PydanticGenerator",
     "PanderaGenerator",
+    "MarkdownDataDictGen",
     "PythonGenerator",
     "JavaGenerator",
     "ContextGenerator",
