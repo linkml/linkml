@@ -1,14 +1,14 @@
 
-# Slot: name
+# Slot: depicted_by
 
 
 
-URI: [personinfo:name](https://w3id.org/linkml/examples/personinfo/name)
+URI: [personinfo:depicted_by](https://w3id.org/linkml/examples/personinfo/depicted_by)
 
 
 ## Domain and Range
 
-None &#8594;  <sub>0..1</sub> [String](types/String.md)
+None &#8594;  <sub>0..1</sub> [ImageURL](types/ImageURL.md)
 
 ## Parents
 
@@ -27,10 +27,3 @@ None &#8594;  <sub>0..1</sub> [String](types/String.md)
  * [Person](Person.md)
  * [Place](Place.md)
  * [ProcedureConcept](ProcedureConcept.md)
- * [CodeSystem](CodeSystem.md)
-
-## Other properties
-
-|  |  |  |
-| --- | --- | --- |
-| **Mappings:** | | schema:name |

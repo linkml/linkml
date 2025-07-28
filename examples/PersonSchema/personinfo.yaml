@@ -317,7 +317,7 @@ slots:
     minimum_value: 0.0
     maximum_value: 5.0
   related_to:
-    range: NamedThing
+    range: Person
   depicted_by:
     range: ImageURL
   type:
