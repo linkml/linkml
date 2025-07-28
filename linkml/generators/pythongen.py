@@ -1211,6 +1211,7 @@ class {enum_name}(EnumDefinitionImpl):
         PermissibleValue(text="NAME_ONLY")
         PermissibleValue(
             text="CODE",
+            title="...",
             description="...",
             meaning="...")
 
@@ -1221,11 +1222,13 @@ class {enum_name}(EnumDefinitionImpl):
         constructor = "PermissibleValue"
         pv_text = pv.text.replace('"', '\\"')
 
-        if not pv.description and not pv.meaning:
+        if not pv.description and not pv.meaning and not pv.title:
             return f'{constructor}(text="{pv_text}")'
 
         indent_str = (4 + indent) * " "
         pv_attrs = [f'{indent_str}text="{pv_text}"']
+        if pv.title:
+            pv_attrs.append(f'{indent_str}title="{pv.title}"')
         if pv.description:
             pv_attrs.append(f"{self.process_multiline_string(pv.description, f'{indent_str}description=')}")
         if pv.meaning:

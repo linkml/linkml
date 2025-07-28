@@ -48,7 +48,7 @@ dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "jinja2 >= 3.1.0",
     "jsonasobj2 >= 1.0.3, < 2.0.0",
     "jsonschema[format] >= 4.0.0",
-    "linkml-runtime >= 1.9.3, < 2.0.0",
+    "linkml-runtime >= 1.9.4, < 2.0.0",
     "openpyxl",
     "parse",
     "prefixcommons >= 0.1.7",
