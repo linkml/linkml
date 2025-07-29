@@ -1,6 +1,5 @@
 id: https://w3id.org/linkml/examples/personinfo
 name: personinfo
-version: 0.0.1
 description: |-
   Information about people, based on [schema.org](http://schema.org)
 license: https://creativecommons.org/publicdomain/zero/1.0/
@@ -69,7 +68,6 @@ classes:
     class_uri: schema:Person
     mixins:
       - HasAliases
-      - HasNewsEvents
     slots:
       - primary_email
       - birth_date
@@ -104,7 +102,6 @@ classes:
     mixin: true
     attributes:
       aliases:
-        singular_name: alias
         multivalued: true
         exact_mappings:
           - schema:alternateName
@@ -129,7 +126,6 @@ classes:
     class_uri: schema:Organization
     mixins:
       - HasAliases
-      - HasNewsEvents
     slots:
       - mission_statement
       - founding_date
@@ -190,9 +186,6 @@ classes:
   ProcedureConcept:
     is_a: Concept
 
-  IntegerPrimaryKeyObject:
-    slots:
-      - int_id
 
   OperationProcedureConcept:
     is_a: ProcedureConcept
@@ -245,13 +238,14 @@ classes:
     mixins:
       - WithLocation
     slots:
+      - in location
       - diagnosis
       - procedure
 
   WithLocation:
     mixin: true
     slots:
-      - in_location
+      - in location
 
   # TODO: annotate that this is a container/root class
   Container:
@@ -277,13 +271,8 @@ slots:
     description: Short human readable object name
   description:
     slot_uri: schema:description
-    description: >-
-      Detailed free form description of the object
   image:
     slot_uri: schema:image
-    range: uri
-    description: >-
-        image that visually represents the object
   gender:
     slot_uri: schema:gender
     range: GenderType
@@ -315,7 +304,7 @@ slots:
     range: InterPersonalRelationship
     multivalued: true
     inlined_as_list: true
-  in_location:
+  in location:
     range: Place
   current_address:
     description: >-
