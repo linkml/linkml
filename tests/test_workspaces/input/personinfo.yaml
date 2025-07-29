@@ -237,13 +237,14 @@ classes:
     mixins:
       - WithLocation
     slots:
+      - in location
       - diagnosis
       - procedure
 
   WithLocation:
     mixin: true
     slots:
-      - in_location
+      - in location
 
   # TODO: annotate that this is a container/root class
   Container:
