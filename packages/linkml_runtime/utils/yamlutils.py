@@ -366,6 +366,7 @@ def as_json_object(element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, inje
     :param element: element to return
     :param contexts: context(s) to include in the output
     :param inject_type: if True (default), add a @type at the top level
+    :param element_type: if provided, use this as the @type value instead of the element's class name
     :return: JsonObj representation of element
     """
     rval = copy(element)
