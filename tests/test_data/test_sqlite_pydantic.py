@@ -13,7 +13,7 @@ def test_enums(person_pydantic):
     See https://github.com/linkml/linkml/issues/817
     """
     person_pydantic.FamilialRelationship(type="SIBLING_OF", related_to="x")
-    p = person_pydantic.Person(id="x", gender=person_pydantic.GenderType("cisgender_man"))
+    p = person_pydantic.Person(id="x", name="Bob", gender=person_pydantic.GenderType("cisgender man"))
     assert isinstance(p.gender, str)
 
 

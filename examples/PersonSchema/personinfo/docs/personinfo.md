@@ -21,11 +21,15 @@ Information about people, based on [schema.org](http://schema.org)
      * [Concept](Concept.md)
          * [DiagnosisConcept](DiagnosisConcept.md)
          * [ProcedureConcept](ProcedureConcept.md)
+             * [ImagingProcedureConcept](ImagingProcedureConcept.md)
+             * [OperationProcedureConcept](OperationProcedureConcept.md)
      * [Organization](Organization.md) - An organization such as a company or university
      * [Person](Person.md) - A person (alive, dead, undead, or fictional).
  * [Place](Place.md)
  * [Relationship](Relationship.md)
      * [FamilialRelationship](FamilialRelationship.md)
+     * [InterPersonalRelationship](InterPersonalRelationship.md)
+ * [CodeSystem](CodeSystem.md)
 
 ### Mixins
 
@@ -37,8 +41,13 @@ Information about people, based on [schema.org](http://schema.org)
  * [age_in_years](age_in_years.md)
      * [Person➞age_in_years](Person_age_in_years.md)
  * [birth_date](birth_date.md)
+ * [categories](categories.md)
+     * [Organization➞categories](Organization_categories.md)
  * [city](city.md)
+ * [➞code system](concept__code_system.md)
+ * [➞mappings](concept__mappings.md)
  * [current_address](current_address.md) - The address at which a person currently lives
+ * [depicted_by](depicted_by.md)
  * [description](description.md)
  * [diagnosis](diagnosis.md)
  * [duration](duration.md)
@@ -50,11 +59,13 @@ Information about people, based on [schema.org](http://schema.org)
  * [➞aliases](hasAliases__aliases.md)
  * [has_employment_history](has_employment_history.md)
  * [has_familial_relationships](has_familial_relationships.md)
+ * [has_interpersonal_relationships](has_interpersonal_relationships.md)
  * [has_medical_history](has_medical_history.md)
  * [id](id.md)
  * [image](image.md)
- * [in_location](in_location.md)
+ * [in location](in_location.md)
  * [is_current](is_current.md)
+ * [min_salary](min_salary.md)
  * [mission_statement](mission_statement.md)
  * [name](name.md)
  * [organizations](organizations.md)
@@ -63,18 +74,25 @@ Information about people, based on [schema.org](http://schema.org)
  * [primary_email](primary_email.md)
      * [Person➞primary_email](Person_primary_email.md)
  * [procedure](procedure.md)
+ * [related to](related_to.md)
+     * [FamilialRelationship➞related to](FamilialRelationship_related_to.md)
+     * [InterPersonalRelationship➞related to](InterPersonalRelationship_related_to.md)
  * [related_to](related_to.md)
-     * [FamilialRelationship➞related_to](FamilialRelationship_related_to.md)
+ * [salary](salary.md)
+ * [score](score.md) - A score between 0 and 5, represented as a decimal
  * [started_at_time](started_at_time.md)
  * [street](street.md)
  * [type](type.md)
      * [FamilialRelationship➞type](FamilialRelationship_type.md)
+     * [InterPersonalRelationship➞type](InterPersonalRelationship_type.md)
 
 ### Enums
 
  * [DiagnosisType](DiagnosisType.md)
  * [FamilialRelationshipType](FamilialRelationshipType.md)
  * [GenderType](GenderType.md)
+ * [NonFamilialRelationshipType](NonFamilialRelationshipType.md)
+ * [OrganizationType](OrganizationType.md)
 
 ### Subsets
 
@@ -102,6 +120,9 @@ Information about people, based on [schema.org](http://schema.org)
 
 #### Defined
 
+ * [CrossReference](types/CrossReference.md)  ([Uriorcurie](types/Uriorcurie.md))  - A string URI or CURIE representation of an external identifier, modeled as a Resource in RDF
+ * [ImageURL](types/ImageURL.md)  ([Uri](types/Uri.md))
+ * [SalaryType](types/SalaryType.md)  ([Decimal](types/Decimal.md))
  * [Boolean](types/Boolean.md)  (**Bool**)  - A binary (true or false) value
  * [Curie](types/Curie.md)  (**Curie**)  - a compact URI
  * [Date](types/Date.md)  (**XSDDate**)  - a date (year, month and day) in an idealized calendar
