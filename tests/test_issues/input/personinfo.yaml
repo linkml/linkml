@@ -55,7 +55,6 @@ classes:
       - age_in_years
       - gender
       - current_address
-      - color_of_hair
       - has_employment_history
       - has_familial_relationships
       - has_medical_history
@@ -164,9 +163,6 @@ classes:
       - persons
       - organizations
 
-  Anything:
-    class_uri: linkml:Any
-
 slots:
   id:
     identifier: true
@@ -211,9 +207,7 @@ slots:
     minimum_value: 0
     maximum_value: 999
   related_to:
-    range: Anything
   type:
-    range: Anything
   street:
   city:
   mission_statement:
@@ -233,20 +227,6 @@ slots:
   procedure:
     range: ProcedureConcept
     inlined: true
-  color_of_hair:
-    description: >-
-      The color of a person's hair.
-    range: HairColorEnum
-    alias: hair_color
-
-  # Note: It's not recommended to tweak other slots willy-nilly because
-  # it might break other tests. So we're adding a dummy slot here called
-  # deprecation_test_slot to check if the slot documentation page will
-  # have a banner called "DEPRECATED".
-  deprecation_test_slot:
-    deprecated: >-
-      This is a dummy slot that we are deprecating for testing purposes.
-      Deprecated on 3/24/2025.
 
   ended_at_time:
     slot_uri: prov:endedAtTime
@@ -287,15 +267,6 @@ enums:
       cisgender woman:
         meaning: GSSO:000385
   DiagnosisType:
-  # Not meant to be an exhaustive list of hair colors.
-  # Can be expanded as needed.
-  HairColorEnum:
-    permissible_values:
-      BLACK:
-      BROWN:
-      BLONDE:
-      RED:
-      GRAY:
 
 subsets:
   basic_subset:
