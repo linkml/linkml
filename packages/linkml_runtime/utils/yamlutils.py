@@ -360,7 +360,7 @@ def as_yaml(element: YAMLRoot) -> str:
     return yaml.dump(element, Dumper=yaml.SafeDumper, sort_keys=False)
 
 
-def as_json_object(element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, inject_type=True) -> JsonObj:
+def as_json_object(element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, inject_type=True, element_type=None) -> JsonObj:
     """
     Return the representation of element as a JsonObj object
     :param element: element to return
@@ -370,7 +370,9 @@ def as_json_object(element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, inje
     """
     rval = copy(element)
     if inject_type:
-        rval["@type"] = element.__class__.__name__
+        if element_type is None:
+            element_type = element.__class__.__name__
+        rval["@type"] = element_type
     context_element = merge_contexts(contexts)
     if context_element:
         rval["@context"] = context_element["@context"]
