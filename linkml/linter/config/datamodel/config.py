@@ -1,23 +1,28 @@
 # Auto generated from config.yaml by pythongen.py version: 0.0.1
-# Generation date: 2025-07-01T09:27:27
+# Generation date: 2025-07-28T09:29:10
 # Schema: linter-config
 #
 # id: https://w3id.org/linkml/linter/config
 # description: A datamodel describing the configuration file accepted by the linkml-lint command
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
+import dataclasses
+import re
 from dataclasses import dataclass
-from typing import Any, ClassVar, Optional, Union
+from datetime import date, datetime, time
+from typing import Any, ClassVar, Dict, List, Optional, Union
 
-from jsonasobj2 import as_dict
-from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
+from jsonasobj2 import JsonObj, as_dict
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.metamodelcore import empty_list
+from linkml_runtime.utils.formatutils import camelcase, sfx, underscore
+from linkml_runtime.utils.metamodelcore import bnode, empty_dict, empty_list
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import YAMLRoot
-from rdflib import URIRef
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_float, extended_int, extended_str
+from rdflib import Namespace, URIRef
 
+from linkml_runtime.linkml_model.types import Boolean, String
 from linkml_runtime.utils.metamodelcore import Bool
 
 metamodel_version = "1.7.0"
@@ -257,6 +262,7 @@ class StandardNamingConfig(RuleConfig):
     exclude_type: Optional[
         Union[Union[str, "MetamodelElementTypeEnum"], list[Union[str, "MetamodelElementTypeEnum"]]]
     ] = empty_list()
+    exclude: Optional[Union[str, list[str]]] = empty_list()
     class_pattern: Optional[str] = None
     slot_pattern: Optional[str] = None
 
@@ -269,6 +275,10 @@ class StandardNamingConfig(RuleConfig):
         self.exclude_type = [
             v if isinstance(v, MetamodelElementTypeEnum) else MetamodelElementTypeEnum(v) for v in self.exclude_type
         ]
+
+        if not isinstance(self.exclude, list):
+            self.exclude = [self.exclude] if self.exclude is not None else []
+        self.exclude = [v if isinstance(v, str) else str(v) for v in self.exclude]
 
         if self.class_pattern is not None and not isinstance(self.class_pattern, str):
             self.class_pattern = str(self.class_pattern)
@@ -581,6 +591,15 @@ slots.standardNamingConfig__exclude_type = Slot(
     model_uri=LINTCFG.standardNamingConfig__exclude_type,
     domain=None,
     range=Optional[Union[Union[str, "MetamodelElementTypeEnum"], list[Union[str, "MetamodelElementTypeEnum"]]]],
+)
+
+slots.standardNamingConfig__exclude = Slot(
+    uri=LINTCFG.exclude,
+    name="standardNamingConfig__exclude",
+    curie=LINTCFG.curie("exclude"),
+    model_uri=LINTCFG.standardNamingConfig__exclude,
+    domain=None,
+    range=Optional[Union[str, list[str]]],
 )
 
 slots.standardNamingConfig__class_pattern = Slot(

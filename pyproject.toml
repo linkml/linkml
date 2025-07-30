@@ -292,7 +292,9 @@ extend-exclude = [
     "tests/**/__snapshots__",
     "examples/",
     "docs/",
-    "notebooks/"
+    "notebooks/",
+    # Auto-generated files that may not conform to current linting rules
+    "linkml/linter/config/datamodel/config.py"
 ]
 force-exclude = true
 line-length = 120
@@ -312,7 +314,7 @@ select = [
 # These templates can have long lines
 "linkml/generators/sqlalchemy/sqlalchemy_declarative_template.py" = ["E501"]
 "linkml/generators/sqlalchemy/sqlalchemy_imperative_template.py" = ["E501"]
-"linkml/linter/config/datamodel/config.py" = ["E501", "F401", "I001"]
+"linkml/linter/config/datamodel/config.py" = ["E501", "F401", "I001", "UP035"]
 
 # Notebooks can have unsorted imports
 "tests/test_notebooks/input/*" = ["E402"]
