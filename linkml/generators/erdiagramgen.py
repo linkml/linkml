@@ -101,8 +101,12 @@ class ERDiagram(pydantic.BaseModel):
     relationships: list[Relationship] = []
 
     def __str__(self):
-        ents = "\n".join([str(e) for e in self.entities])
-        rels = "\n".join([str(r) for r in self.relationships])
+        # Sort entities and relationships for stable output
+        sorted_entities = sorted(self.entities, key=lambda e: e.name)
+        sorted_relationships = sorted(self.relationships, key=lambda r: str(r))
+
+        ents = "\n".join([str(e) for e in sorted_entities])
+        rels = "\n".join([str(r) for r in sorted_relationships])
         return f"erDiagram\n{ents}\n\n{rels}\n"
 
 
@@ -128,6 +132,9 @@ class ERDiagramGenerator(Generator):
 
     exclude_attributes: bool = False
     """If True, do not include attributes in entities"""
+
+    exclude_abstract_classes: bool = False
+    """If True, do not include abstract classes in the diagram"""
 
     genmeta: bool = False
     gen_classvars: bool = True
@@ -223,6 +230,8 @@ class ERDiagramGenerator(Generator):
     def add_upstream_class(self, class_name: ClassDefinitionName, targets: set[str], diagram: ERDiagram) -> None:
         sv = self.schemaview
         cls = sv.get_class(class_name)
+        if self.exclude_abstract_classes and cls.abstract:
+            return
         entity = Entity(name=camelcase(cls.name))
         diagram.entities.append(entity)
         for slot in sv.class_induced_slots(class_name):
@@ -239,6 +248,8 @@ class ERDiagramGenerator(Generator):
         """
         sv = self.schemaview
         cls = sv.get_class(class_name)
+        if self.exclude_abstract_classes and cls.abstract:
+            return
         entity = Entity(name=camelcase(cls.name))
         diagram.entities.append(entity)
         for slot in sv.class_induced_slots(class_name):
@@ -302,6 +313,11 @@ class ERDiagramGenerator(Generator):
     "--exclude-attributes/--no-exclude-attributes",
     default=False,
     help="If True, do not include attributes in entities",
+)
+@click.option(
+    "--exclude-abstract-classes/--no-exclude-abstract-classes",
+    default=False,
+    help="If True, do not include abstract classes in the diagram",
 )
 @click.option(
     "--follow-references/--no-follow-references",
