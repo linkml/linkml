@@ -68,6 +68,7 @@ classes:
     class_uri: schema:Person
     mixins:
       - HasAliases
+      - HasNewsEvents
     slots:
       - primary_email
       - birth_date
@@ -102,6 +103,7 @@ classes:
     mixin: true
     attributes:
       aliases:
+        singular_name: alias
         multivalued: true
         exact_mappings:
           - schema:alternateName
@@ -126,6 +128,7 @@ classes:
     class_uri: schema:Organization
     mixins:
       - HasAliases
+      - HasNewsEvents
     slots:
       - mission_statement
       - founding_date

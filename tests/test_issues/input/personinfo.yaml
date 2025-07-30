@@ -235,7 +235,6 @@ slots:
   id:
     identifier: true
     slot_uri: schema:identifier
-    range: uriorcurie
   name:
     slot_uri: schema:name
   description:
