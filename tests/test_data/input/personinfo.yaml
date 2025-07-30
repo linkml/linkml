@@ -74,6 +74,7 @@ classes:
       - age_in_years
       - gender
       - current_address
+      - telephone
       - has_employment_history
       - has_familial_relationships
       - has_interpersonal_relationships
@@ -82,6 +83,8 @@ classes:
       primary_email:
         pattern: "^\\S+@[\\S+\\.]+\\S+"
       age_in_years:
+        recommended: true
+      telephone:
         recommended: true
     in_subset:
       - basic_subset
@@ -229,6 +232,7 @@ classes:
     slots:
       - persons
       - organizations
+      - places
 
 slots:
   id:
@@ -237,6 +241,7 @@ slots:
     range: uriorcurie
   name:
     slot_uri: schema:name
+    required: true
   description:
     slot_uri: schema:description
   image:
@@ -244,6 +249,10 @@ slots:
   gender:
     slot_uri: schema:gender
     range: GenderType
+  telephone:
+    slot_uri: schema:telephone
+    pattern: "^[\\d\\(\\)\\-]+$"
+
   primary_email:
     slot_uri: schema:email
   birth_date:
@@ -276,6 +285,7 @@ slots:
     range: Address
   age_in_years:
     range: integer
+    alias: age
     minimum_value: 0
     maximum_value: 999
   score:
@@ -322,9 +332,13 @@ slots:
     inlined_as_list: true
     inlined: true
     multivalued: true
+  places:
+    range: Place
+    inlined_as_list: true
+    inlined: true
+    multivalued: true
   categories:
     multivalued: true
-
   salary:
     range: SalaryType
   min_salary:

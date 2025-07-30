@@ -68,6 +68,7 @@ classes:
     class_uri: schema:Person
     mixins:
       - HasAliases
+      - HasNewsEvents
     slots:
       - primary_email
       - birth_date
@@ -93,9 +94,17 @@ classes:
     attributes:
       aliases:
         multivalued: true
+        singular_name: alias
         exact_mappings:
           - schema:alternateName
 
+  HasNewsEvents:
+    mixin: true
+    attributes:
+      has_news_events:
+        singular_name: has_news_event
+        multivalued: true
+        range: NewsEvent
 
   Organization:
     description: >-
@@ -104,6 +113,7 @@ classes:
     class_uri: schema:Organization
     mixins:
       - HasAliases
+      - HasNewsEvents
     slots:
       - mission_statement
       - founding_date
@@ -217,6 +227,11 @@ classes:
       - in location
       - diagnosis
       - procedure
+
+  NewsEvent:
+    is_a: Event
+    attributes:
+      headline:
 
   WithLocation:
     mixin: true

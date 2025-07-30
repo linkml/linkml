@@ -966,4 +966,3 @@ personinfo:GenderType a owl:Class,
                 owl:someValuesFrom [ a rdfs:Datatype ;
                         owl:onDatatype xsd:float ;
                         owl:withRestrictions ( [ xsd:maxInclusive 8e+04 ] ) ] ] personinfo:Organization ) .
-

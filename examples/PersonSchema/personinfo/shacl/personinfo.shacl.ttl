@@ -614,4 +614,3 @@ personinfo:CodeSystem a sh:NodeShape ;
             sh:order 0 ;
             sh:path schema1:identifier ] ;
     sh:targetClass personinfo:CodeSystem .
-

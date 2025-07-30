@@ -74,6 +74,7 @@ classes:
       - age_in_years
       - gender
       - current_address
+      - color_of_hair
       - has_employment_history
       - has_familial_relationships
       - has_interpersonal_relationships
@@ -234,7 +235,6 @@ slots:
   id:
     identifier: true
     slot_uri: schema:identifier
-    range: uriorcurie
   name:
     slot_uri: schema:name
   description:
@@ -312,6 +312,21 @@ slots:
     slot_uri: prov:endedAtTime
     range: date
 
+  color_of_hair:
+    description: >-
+      The color of a person's hair.
+    range: HairColorEnum
+    alias: hair_color
+
+  # Note: It's not recommended to tweak other slots willy-nilly because
+  # it might break other tests. So we're adding a dummy slot here called
+  # deprecation_test_slot to check if the slot documentation page will
+  # have a banner called "DEPRECATED".
+  deprecation_test_slot:
+    deprecated: >-
+      This is a dummy slot that we are deprecating for testing purposes.
+      Deprecated on 3/24/2025.
+
   persons:
     range: Person
     inlined: true
@@ -365,6 +380,15 @@ enums:
   DiagnosisType:
     permissible_values:
       todo:
+  # Not meant to be an exhaustive list of hair colors.
+  # Can be expanded as needed.
+  HairColorEnum:
+    permissible_values:
+      BLACK:
+      BROWN:
+      BLONDE:
+      RED:
+      GRAY:
   OrganizationType:
     permissible_values:
       non profit:
