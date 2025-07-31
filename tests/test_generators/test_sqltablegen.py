@@ -323,7 +323,7 @@ def test_sqlddl_basic(schema):
     cur.executescript(ddl)
     name = "fred"
     cur.execute(
-        "INSERT INTO Person (id, name, age_in_years) VALUES (?,?,?)",
+        "INSERT INTO Person (id, name, age) VALUES (?,?,?)",
         ("P1", name, 33),
     )
     cur.execute(
@@ -341,7 +341,7 @@ def test_sqlddl_basic(schema):
     with pytest.raises(Exception):
         # PK violation
         cur.execute(
-            "INSERT INTO Person (id, name, age_in_years) VALUES (?,?,?)",
+            "INSERT INTO Person (id, name, age) VALUES (?,?,?)",
             ("P1", "other person", 22),
         )
     with pytest.raises(Exception):

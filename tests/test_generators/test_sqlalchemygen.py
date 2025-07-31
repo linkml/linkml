@@ -114,12 +114,12 @@ def test_sqla_compile_imperative(schema):
     gen = SQLAlchemyGenerator(schema)
     # use standard python generation for classes and sqlagen for mappings
     personinfo_module = gen.compile_sqla(compile_python_dataclasses=True)
-    p1 = personinfo_module.Person(id="P1", name="John Doe", age_in_years=22)
+    p1 = personinfo_module.Person(id="P1", name="John Doe", age=22)
 
     # test three attributes with values supplied above
     assert hasattr(p1, "id"), f"'id' attribute not found in {p1}"
     assert hasattr(p1, "name"), f"'name' attribute not found in {p1}"
-    assert hasattr(p1, "age_in_years"), f"'age_in_years' attribute not found in {p1}"
+    assert hasattr(p1, "age"), f"'age' attribute not found in {p1}"
 
     # test one or more attributes without values supplied during initialization
     assert hasattr(p1, "description"), f"'description' attribute not found in {p1}"
@@ -145,7 +145,7 @@ def test_sqla_imperative_dataclasses_exec(schema):
     session = SessionClass()
     gen = SQLAlchemyGenerator(schema)
     mod = gen.compile_sqla(template=TemplateEnum.IMPERATIVE, compile_python_dataclasses=True)
-    p1 = mod.Person(id="P1", name="a b", age_in_years=22)
+    p1 = mod.Person(id="P1", name="a b", age=22)
     session.add(p1)
     q = session.query(mod.Person).where(mod.Person.name == p1.name)
     persons = q.all()
@@ -153,7 +153,7 @@ def test_sqla_imperative_dataclasses_exec(schema):
     assert p1 in persons
     p1 = persons[0]
     assert p1.name == "a b"
-    assert p1.age_in_years == 22
+    assert p1.age == 22
     session.commit()
     dc = mod.DiagnosisConcept(id="C001", name="cough")
     e1 = mod.MedicalEvent(duration=100.0, diagnosis=dc)
@@ -209,7 +209,7 @@ def test_sqla_imperative_pydantic_exec(schema):
         pydantic=True,
     )
     # p1 = mod.NamedThing()
-    p1 = mod.Person(id="P1", name="a b", age_in_years=22)
+    p1 = mod.Person(id="P1", name="a b", age=22)
     session.add(p1)
     # SessionClass = sessionmaker(bind=engine)
     # session = SessionClass()
@@ -220,7 +220,7 @@ def test_sqla_imperative_pydantic_exec(schema):
     assert p1 in persons
     p1 = persons[0]
     assert p1.name == "a b"
-    assert p1.age_in_years == 22
+    assert p1.age == 22
     session.commit()
     e1 = mod.MedicalEvent(duration=100.0)
     p2 = mod.Person(id="P2", name="p2 name", aliases=["foo"], has_medical_history=[e1])
@@ -268,9 +268,9 @@ def test_sqla_declarative_exec(schema):
     # aliases =['x']
     # aliases = []
     address = mod.Address(street="1 a street", city="big city", postal_code="ZZ1 ZZ2")
-    # p1 = mod.Person(id='P1', name='a b', aliases=aliases, age_in_years=22,
+    # p1 = mod.Person(id='P1', name='a b', aliases=aliases, age=22,
     #                 has_medical_history=[e1, e2], current_address=address)
-    p1 = mod.Person(id="P1", name="a b", age_in_years=22, has_medical_history=[e1, e2])
+    p1 = mod.Person(id="P1", name="a b", age=22, has_medical_history=[e1, e2])
     p1.aliases = ["Anne"]
     # p1.aliases_rel = [mod.Person_alias(alias='zzz')]
     p1.aliases.append("Fred")
@@ -298,7 +298,7 @@ def test_sqla_declarative_exec(schema):
             assert isinstance(e, mod.Event)
     assert len(persons) == 1
     p1_from_query = persons[0]
-    assert p1.age_in_years == 22
+    assert p1.age == 22
     assert Counter(p1.aliases) == Counter(["Anne", "Fred"])
     assert len(p1_from_query.has_medical_history) == 2
     assert p1 in persons
