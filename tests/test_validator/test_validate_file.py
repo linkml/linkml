@@ -4,7 +4,7 @@ from linkml.validator import validate_file
 
 PERSONINFO_SCHEMA = str(Path(__file__).parent / "input/personinfo.yaml")
 
-CSV_DATA = """id, full_name, phone, age
+CSV_DATA = """id, name, telephone, age
 id:1,Person A,555-1234,25
 id:2,Person B,555-0101,57
 id:3,Person C,,
@@ -28,9 +28,9 @@ def test_valid_json_file(tmp_file_factory):
     "persons": [
         {
             "id": "id:1",
-            "full_name": "Person A",
+            "name": "Person A",
             "aliases": ["A", "a"],
-            "phone": "555-1234",
+            "telephone": "555-1234",
             "age": 25
         }
     ]
@@ -45,11 +45,11 @@ def test_valid_yaml_file(tmp_file_factory):
     data = """
 persons:
     - id: "id:1"
-      full_name: Person A
+      name: Person A
       aliases:
         - A
           a
-      phone: 555-1234
+      telephone: 555-1234
       age: 25
     """
     f = tmp_file_factory("data.yaml", data)
@@ -58,7 +58,7 @@ persons:
 
 
 def test_invalid_csv_file(tmp_file_factory):
-    data = """id, full_name, phone, age
+    data = """id, name, telephone, age
 id:1, Person A, 555-1234, 25
 id:2, Person B, ABC-0101, 57
 """
@@ -69,7 +69,7 @@ id:2, Person B, ABC-0101, 57
 
 
 def test_invalid_tsv_file(tmp_file_factory):
-    data = """id\t full_name\t phone\t age
+    data = """id\t name\t telephone\t age
 id:1\tPerson A\t555-1234\ttwenty
 id:2\tPerson B\t555-0101\t57
 """
@@ -83,15 +83,15 @@ def test_invalid_json_file(tmp_file_factory):
     data = """[
     {
         "id": "id:1",
-        "full_name": "Person A",
+        "name": "Person A",
         "aliases": "uh-oh",
-        "phone": "555-1234",
+        "telephone": "555-1234",
         "age": 25
     },
     {
-        "full_name": "Person B",
+        "name": "Person B",
         "aliases": ["B", "b"],
-        "phone": "555-1234",
+        "telephone": "555-1234",
         "age": 25
     }
 ]
@@ -106,16 +106,16 @@ def test_invalid_json_file(tmp_file_factory):
 def test_invalid_yaml_file(tmp_file_factory):
     data = """
 id: "id:1"
-full_name: Person A
+name: Person A
 aliases: uh-oh
-phone: 555-1234
+telephone: 555-1234
 age: 25
 ---
-full_name: Person B
+name: Person B
 aliases:
   - B
     b
-phone: 555-1234
+telephone: 555-1234
 age: 25
 """
     f = tmp_file_factory("data.yaml", data)
