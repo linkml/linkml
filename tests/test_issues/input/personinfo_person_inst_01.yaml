@@ -3,7 +3,7 @@ name: John Doe
 description: A sample person
 primary_email: john.doe@example.com
 birth_date: 1980-01-15
-age_in_years: 44
+age: 44
 gender: cisgender man
 aliases:
   - Johnny

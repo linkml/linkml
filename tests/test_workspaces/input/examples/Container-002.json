@@ -4,7 +4,7 @@
       "id": "P:701",
       "name": "fred bloggs",
       "primary_email": "fred.bloggs@example.com",
-      "age_in_years": 33
+      "age": 33
     },
     {
       "id": "P:702",
