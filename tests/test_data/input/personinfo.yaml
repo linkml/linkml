@@ -307,6 +307,7 @@ slots:
       The address at which a person currently lives
     range: Address
   age_in_years:
+    alias: age
     range: integer
     alias: age
     minimum_value: 0
