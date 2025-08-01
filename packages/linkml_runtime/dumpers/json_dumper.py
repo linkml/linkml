@@ -66,7 +66,12 @@ class JSONDumper(Dumper):
         if isinstance(element, BaseModel):
             element = element.model_dump()
         return json.dumps(
-            as_json_object(element, contexts, inject_type=inject_type, element_type=element_type), default=default, ensure_ascii=False, indent="  "
+        return json.dumps(
+            as_json_object(element, contexts, inject_type=inject_type, element_type=element_type),
+            default=default,
+            ensure_ascii=False,
+            indent="  ",
+        )
         )
 
     @staticmethod
