@@ -16,7 +16,11 @@ from linkml_runtime.utils.yamlutils import YAMLRoot, as_json_object
 
 class JSONDumper(Dumper):
     def dump(
-        self, element: Union[BaseModel, YAMLRoot], to_file: str, contexts: CONTEXTS_PARAM_TYPE = None, **kwargs
+        self,
+        element: Union[BaseModel, YAMLRoot],
+        to_file: str,
+        contexts: CONTEXTS_PARAM_TYPE = None,
+        **kwargs,
     ) -> None:
         """
         Write element as json to to_file
@@ -34,7 +38,12 @@ class JSONDumper(Dumper):
             element = element.model_dump()
         super().dump(element, to_file, contexts=contexts, **kwargs)
 
-    def dumps(self, element: Union[BaseModel, YAMLRoot], contexts: CONTEXTS_PARAM_TYPE = None, inject_type=True) -> str:
+    def dumps(
+        self,
+        element: Union[BaseModel, YAMLRoot],
+        contexts: CONTEXTS_PARAM_TYPE = None,
+        inject_type=True,
+    ) -> str:
         """
         Return element as a JSON or a JSON-LD string
         :param element: LinkML object to be emitted
@@ -66,12 +75,12 @@ class JSONDumper(Dumper):
         if isinstance(element, BaseModel):
             element = element.model_dump()
         return json.dumps(
-        return json.dumps(
-            as_json_object(element, contexts, inject_type=inject_type, element_type=element_type),
+            as_json_object(
+                element, contexts, inject_type=inject_type, element_type=element_type
+            ),
             default=default,
             ensure_ascii=False,
             indent="  ",
-        )
         )
 
     @staticmethod
@@ -85,7 +94,10 @@ class JSONDumper(Dumper):
         return formatutils.remove_empty_items(obj, hide_protected_keys=True)
 
     def to_json_object(
-        self, element: Union[BaseModel, YAMLRoot], contexts: CONTEXTS_PARAM_TYPE = None, inject_type=True
+        self,
+        element: Union[BaseModel, YAMLRoot],
+        contexts: CONTEXTS_PARAM_TYPE = None,
+        inject_type=True,
     ) -> JsonObj:
         """
         As dumps(), except returns a JsonObj, not a string
