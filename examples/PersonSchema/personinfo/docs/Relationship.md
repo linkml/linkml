@@ -6,7 +6,7 @@
 URI: [personinfo:Relationship](https://w3id.org/linkml/examples/personinfo/Relationship)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[NamedThing]<related_to%200..1-%20[Relationship&#124;started_at_time:date%20%3F;ended_at_time:date%20%3F;type:string%20%3F],[Relationship]^-[InterPersonalRelationship],[Relationship]^-[FamilialRelationship],[NamedThing],[InterPersonalRelationship],[FamilialRelationship])](https://yuml.me/diagram/nofunky;dir:TB/class/[NamedThing]<related_to%200..1-%20[Relationship&#124;started_at_time:date%20%3F;ended_at_time:date%20%3F;type:string%20%3F],[Relationship]^-[InterPersonalRelationship],[Relationship]^-[FamilialRelationship],[NamedThing],[InterPersonalRelationship],[FamilialRelationship])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Person]<related_to%200..1-%20[Relationship&#124;started_at_time:date%20%3F;ended_at_time:date%20%3F;type:string%20%3F],[Relationship]^-[InterPersonalRelationship],[Relationship]^-[FamilialRelationship],[Person],[InterPersonalRelationship],[FamilialRelationship])](https://yuml.me/diagram/nofunky;dir:TB/class/[Person]<related_to%200..1-%20[Relationship&#124;started_at_time:date%20%3F;ended_at_time:date%20%3F;type:string%20%3F],[Relationship]^-[InterPersonalRelationship],[Relationship]^-[FamilialRelationship],[Person],[InterPersonalRelationship],[FamilialRelationship])
 
 ## Children
 
@@ -26,6 +26,6 @@ URI: [personinfo:Relationship](https://w3id.org/linkml/examples/personinfo/Relat
  * [ended_at_time](ended_at_time.md)  <sub>0..1</sub>
      * Range: [Date](types/Date.md)
  * [related_to](related_to.md)  <sub>0..1</sub>
-     * Range: [NamedThing](NamedThing.md)
+     * Range: [Person](Person.md)
  * [type](type.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)

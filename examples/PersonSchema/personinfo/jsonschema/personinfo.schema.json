@@ -34,14 +34,12 @@
                     "type": "string"
                 },
                 "name": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "string"
                 }
             },
             "required": [
-                "id"
+                "id",
+                "name"
             ],
             "title": "CodeSystem",
             "type": "object"
@@ -81,14 +79,12 @@
                     ]
                 },
                 "name": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "string"
                 }
             },
             "required": [
-                "id"
+                "id",
+                "name"
             ],
             "title": "Concept",
             "type": "object"
@@ -109,6 +105,15 @@
                 "persons": {
                     "items": {
                         "$ref": "#/$defs/Person"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "places": {
+                    "items": {
+                        "$ref": "#/$defs/Place"
                     },
                     "type": [
                         "array",
@@ -154,14 +159,12 @@
                     ]
                 },
                 "name": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "string"
                 }
             },
             "required": [
-                "id"
+                "id",
+                "name"
             ],
             "title": "DiagnosisConcept",
             "type": "object"
@@ -346,16 +349,31 @@
                     ]
                 },
                 "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "name"
+            ],
+            "title": "ImagingProcedureConcept",
+            "type": "object"
+        },
+        "IntegerPrimaryKeyObject": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "int_id": {
                     "type": [
-                        "string",
+                        "integer",
                         "null"
                     ]
                 }
             },
             "required": [
-                "id"
+                "int_id"
             ],
-            "title": "ImagingProcedureConcept",
+            "title": "IntegerPrimaryKeyObject",
             "type": "object"
         },
         "InterPersonalRelationship": {
@@ -483,16 +501,54 @@
                     ]
                 },
                 "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "name"
+            ],
+            "title": "NamedThing",
+            "type": "object"
+        },
+        "NewsEvent": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "duration": {
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "ended_at_time": {
+                    "format": "date",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "headline": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "is_current": {
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "started_at_time": {
+                    "format": "date",
                     "type": [
                         "string",
                         "null"
                     ]
                 }
             },
-            "required": [
-                "id"
-            ],
-            "title": "NamedThing",
+            "title": "NewsEvent",
             "type": "object"
         },
         "NonFamilialRelationshipType": {
@@ -541,14 +597,12 @@
                     ]
                 },
                 "name": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "string"
                 }
             },
             "required": [
-                "id"
+                "id",
+                "name"
             ],
             "title": "OperationProcedureConcept",
             "type": "object"
@@ -609,6 +663,15 @@
                         "null"
                     ]
                 },
+                "has_news_events": {
+                    "items": {
+                        "$ref": "#/$defs/NewsEvent"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
                 "id": {
                     "type": "string"
                 },
@@ -625,10 +688,7 @@
                     ]
                 },
                 "name": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "string"
                 },
                 "score": {
                     "description": "A score between 0 and 5, represented as a decimal",
@@ -641,7 +701,8 @@
                 }
             },
             "required": [
-                "id"
+                "id",
+                "name"
             ],
             "then": {
                 "properties": {
@@ -673,7 +734,7 @@
             "additionalProperties": false,
             "description": "A person (alive, dead, undead, or fictional).",
             "properties": {
-                "age_in_years": {
+                "age": {
                     "maximum": 999,
                     "minimum": 0,
                     "type": [
@@ -758,14 +819,20 @@
                         "null"
                     ]
                 },
+                "has_news_events": {
+                    "items": {
+                        "$ref": "#/$defs/NewsEvent"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
                 "id": {
                     "type": "string"
                 },
                 "name": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "string"
                 },
                 "primary_email": {
                     "pattern": "^\\S+@[\\S+\\.]+\\S+",
@@ -773,10 +840,18 @@
                         "string",
                         "null"
                     ]
+                },
+                "telephone": {
+                    "pattern": "^[\\d\\(\\)\\-]+$",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "required": [
-                "id"
+                "id",
+                "name"
             ],
             "title": "Person",
             "type": "object"
@@ -804,14 +879,12 @@
                     "type": "string"
                 },
                 "name": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "string"
                 }
             },
             "required": [
-                "id"
+                "id",
+                "name"
             ],
             "title": "Place",
             "type": "object"
@@ -851,14 +924,12 @@
                     ]
                 },
                 "name": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "string"
                 }
             },
             "required": [
-                "id"
+                "id",
+                "name"
             ],
             "title": "ProcedureConcept",
             "type": "object"
@@ -916,6 +987,15 @@
         "persons": {
             "items": {
                 "$ref": "#/$defs/Person"
+            },
+            "type": [
+                "array",
+                "null"
+            ]
+        },
+        "places": {
+            "items": {
+                "$ref": "#/$defs/Place"
             },
             "type": [
                 "array",

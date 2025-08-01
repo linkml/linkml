@@ -25,6 +25,7 @@ message Container
  {
  repeated  person persons = 0
  repeated  organization organizations = 0
+ repeated  place places = 0
  }
 message DiagnosisConcept
  {
@@ -55,7 +56,7 @@ message FamilialRelationship
  {
   date startedAtTime = 0
   date endedAtTime = 0
-  namedThing relatedTo = 0
+  person relatedTo = 0
   familialRelationshipType type = 0
   person relatedTo = 0
  }
@@ -68,11 +69,15 @@ message ImagingProcedureConcept
   codeSystem codeSystem = 0
  repeated  crossReference mappings = 0
  }
+message IntegerPrimaryKeyObject
+ {
+  integer intId = 0
+ }
 message InterPersonalRelationship
  {
   date startedAtTime = 0
   date endedAtTime = 0
-  namedThing relatedTo = 0
+  person relatedTo = 0
   string type = 0
   person relatedTo = 0
  }
@@ -82,9 +87,9 @@ message MedicalEvent
   date endedAtTime = 0
   float duration = 0
   boolean isCurrent = 0
-  place inLocation = 0
   diagnosisConcept diagnosis = 0
   procedureConcept procedure = 0
+  place inLocation = 0
  }
 // A generic grouping for any identifiable entity
 message NamedThing
@@ -93,6 +98,14 @@ message NamedThing
   string name = 0
   string description = 0
   imageURL depictedBy = 0
+ }
+message NewsEvent
+ {
+  date startedAtTime = 0
+  date endedAtTime = 0
+  float duration = 0
+  boolean isCurrent = 0
+  string headline = 0
  }
 message OperationProcedureConcept
  {
@@ -117,6 +130,7 @@ message Organization
   decimal score = 0
   salaryType minSalary = 0
  repeated  string aliases = 0
+ repeated  newsEvent hasNewsEvents = 0
  }
 // A person (alive, dead, undead, or fictional).
 message Person
@@ -127,14 +141,16 @@ message Person
   imageURL depictedBy = 0
   string primaryEmail = 0
   string birthDate = 0
-  integer ageInYears = 0
+  integer age = 0
   genderType gender = 0
   address currentAddress = 0
+  string telephone = 0
  repeated  employmentEvent hasEmploymentHistory = 0
  repeated  familialRelationship hasFamilialRelationships = 0
  repeated  interPersonalRelationship hasInterpersonalRelationships = 0
  repeated  medicalEvent hasMedicalHistory = 0
  repeated  string aliases = 0
+ repeated  newsEvent hasNewsEvents = 0
  }
 message Place
  {
@@ -156,6 +172,6 @@ message Relationship
  {
   date startedAtTime = 0
   date endedAtTime = 0
-  namedThing relatedTo = 0
+  person relatedTo = 0
   string type = 0
  }

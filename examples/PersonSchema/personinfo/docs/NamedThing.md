@@ -6,7 +6,7 @@ A generic grouping for any identifiable entity
 URI: [personinfo:NamedThing](https://w3id.org/linkml/examples/personinfo/NamedThing)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Person],[Organization],[Relationship]-%20related_to%200..1>[NamedThing&#124;id:uriorcurie;name:string%20%3F;description:string%20%3F;depicted_by:ImageURL%20%3F],[NamedThing]^-[Person],[NamedThing]^-[Organization],[NamedThing]^-[Concept],[Relationship],[Concept])](https://yuml.me/diagram/nofunky;dir:TB/class/[Person],[Organization],[Relationship]-%20related_to%200..1>[NamedThing&#124;id:uriorcurie;name:string%20%3F;description:string%20%3F;depicted_by:ImageURL%20%3F],[NamedThing]^-[Person],[NamedThing]^-[Organization],[NamedThing]^-[Concept],[Relationship],[Concept])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Person],[Organization],[NamedThing&#124;id:uriorcurie;name:string;description:string%20%3F;depicted_by:ImageURL%20%3F]^-[Person],[NamedThing]^-[Organization],[NamedThing]^-[Concept],[Concept])](https://yuml.me/diagram/nofunky;dir:TB/class/[Person],[Organization],[NamedThing&#124;id:uriorcurie;name:string;description:string%20%3F;depicted_by:ImageURL%20%3F]^-[Person],[NamedThing]^-[Organization],[NamedThing]^-[Concept],[Concept])
 
 ## Children
 
@@ -16,7 +16,6 @@ URI: [personinfo:NamedThing](https://w3id.org/linkml/examples/personinfo/NamedTh
 
 ## Referenced by Class
 
- *  **None** *[related_to](related_to.md)*  <sub>0..1</sub>  **[NamedThing](NamedThing.md)**
 
 ## Attributes
 
@@ -25,7 +24,7 @@ URI: [personinfo:NamedThing](https://w3id.org/linkml/examples/personinfo/NamedTh
 
  * [id](id.md)  <sub>1..1</sub>
      * Range: [Uriorcurie](types/Uriorcurie.md)
- * [name](name.md)  <sub>0..1</sub>
+ * [name](name.md)  <sub>1..1</sub>
      * Range: [String](types/String.md)
  * [description](description.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)

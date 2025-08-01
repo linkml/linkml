@@ -550,6 +550,23 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "int_id",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/int_id",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "mappings": [
+        "http://schema.org/int_identifier"
+      ],
+      "slot_uri": "http://schema.org/int_identifier",
+      "identifier": true,
+      "owner": "IntegerPrimaryKeyObject",
+      "domain_of": [
+        "IntegerPrimaryKeyObject"
+      ],
+      "range": "integer",
+      "required": true,
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "name",
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/name",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
@@ -564,6 +581,7 @@
         "CodeSystem"
       ],
       "range": "string",
+      "required": true,
       "@type": "SlotDefinition"
     },
     {
@@ -605,6 +623,22 @@
         "Person"
       ],
       "range": "GenderType",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "telephone",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/telephone",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "mappings": [
+        "http://schema.org/telephone"
+      ],
+      "slot_uri": "http://schema.org/telephone",
+      "owner": "Person",
+      "domain_of": [
+        "Person"
+      ],
+      "range": "string",
+      "pattern": "^[\\d\\(\\)\\-]+$",
       "@type": "SlotDefinition"
     },
     {
@@ -728,7 +762,6 @@
       "slot_uri": "https://w3id.org/linkml/examples/personinfo/in_location",
       "owner": "WithLocation",
       "domain_of": [
-        "MedicalEvent",
         "WithLocation"
       ],
       "range": "Place",
@@ -752,7 +785,8 @@
       "name": "age_in_years",
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/age_in_years",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
-      "slot_uri": "https://w3id.org/linkml/examples/personinfo/age_in_years",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/age",
+      "alias": "age",
       "owner": "Person",
       "domain_of": [
         "Person"
@@ -786,7 +820,7 @@
       "domain_of": [
         "Relationship"
       ],
-      "range": "NamedThing",
+      "range": "Person",
       "@type": "SlotDefinition"
     },
     {
@@ -987,6 +1021,21 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "places",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/places",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/places",
+      "owner": "Container",
+      "domain_of": [
+        "Container"
+      ],
+      "range": "Place",
+      "multivalued": true,
+      "inlined": true,
+      "inlined_as_list": true,
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "categories",
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/categories",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
@@ -1029,6 +1078,7 @@
       "exact_mappings": [
         "http://schema.org/alternateName"
       ],
+      "singular_name": "alias",
       "slot_uri": "https://w3id.org/linkml/examples/personinfo/aliases",
       "alias": "aliases",
       "owner": "HasAliases",
@@ -1037,6 +1087,33 @@
       ],
       "range": "string",
       "multivalued": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "newsEvent__headline",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/headline",
+      "alias": "headline",
+      "owner": "NewsEvent",
+      "domain_of": [
+        "NewsEvent"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "hasNewsEvents__has_news_events",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "singular_name": "has_news_event",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/has_news_events",
+      "alias": "has_news_events",
+      "owner": "HasNewsEvents",
+      "domain_of": [
+        "HasNewsEvents"
+      ],
+      "range": "NewsEvent",
+      "multivalued": true,
+      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
@@ -1102,8 +1179,8 @@
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "is_a": "age_in_years",
       "domain": "Person",
-      "slot_uri": "https://w3id.org/linkml/examples/personinfo/age_in_years",
-      "alias": "age_in_years",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/age",
+      "alias": "age",
       "owner": "Person",
       "domain_of": [
         "Person"
@@ -1114,6 +1191,28 @@
       "recommended": true,
       "minimum_value": 0,
       "maximum_value": 999,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "Person_telephone",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/telephone",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "mappings": [
+        "http://schema.org/telephone"
+      ],
+      "is_a": "telephone",
+      "domain": "Person",
+      "slot_uri": "http://schema.org/telephone",
+      "alias": "telephone",
+      "owner": "Person",
+      "domain_of": [
+        "Person"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "telephone",
+      "range": "string",
+      "recommended": true,
+      "pattern": "^[\\d\\(\\)\\-]+$",
       "@type": "SlotDefinition"
     },
     {
@@ -1247,7 +1346,8 @@
       ],
       "is_a": "NamedThing",
       "mixins": [
-        "HasAliases"
+        "HasAliases",
+        "HasNewsEvents"
       ],
       "slots": [
         "id",
@@ -1259,11 +1359,13 @@
         "Person_age_in_years",
         "gender",
         "current_address",
+        "Person_telephone",
         "has_employment_history",
         "has_familial_relationships",
         "has_interpersonal_relationships",
         "has_medical_history",
-        "hasAliases__aliases"
+        "hasAliases__aliases",
+        "hasNewsEvents__has_news_events"
       ],
       "slot_usage": {},
       "class_uri": "http://schema.org/Person",
@@ -1285,11 +1387,55 @@
           "exact_mappings": [
             "schema:alternateName"
           ],
+          "singular_name": "alias",
           "multivalued": true,
           "@type": "SlotDefinition"
         }
       ],
       "class_uri": "https://w3id.org/linkml/examples/personinfo/HasAliases",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "NewsEvent",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/NewsEvent",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "is_a": "Event",
+      "slots": [
+        "started_at_time",
+        "ended_at_time",
+        "duration",
+        "is_current",
+        "newsEvent__headline"
+      ],
+      "slot_usage": {},
+      "attributes": [
+        {
+          "name": "headline",
+          "@type": "SlotDefinition"
+        }
+      ],
+      "class_uri": "https://w3id.org/linkml/examples/personinfo/NewsEvent",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "HasNewsEvents",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/HasNewsEvents",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "mixin": true,
+      "slots": [
+        "hasNewsEvents__has_news_events"
+      ],
+      "slot_usage": {},
+      "attributes": [
+        {
+          "name": "has_news_events",
+          "singular_name": "has_news_event",
+          "range": "NewsEvent",
+          "multivalued": true,
+          "@type": "SlotDefinition"
+        }
+      ],
+      "class_uri": "https://w3id.org/linkml/examples/personinfo/HasNewsEvents",
       "@type": "ClassDefinition"
     },
     {
@@ -1302,7 +1448,8 @@
       ],
       "is_a": "NamedThing",
       "mixins": [
-        "HasAliases"
+        "HasAliases",
+        "HasNewsEvents"
       ],
       "slots": [
         "id",
@@ -1315,7 +1462,8 @@
         "Organization_categories",
         "score",
         "min_salary",
-        "hasAliases__aliases"
+        "hasAliases__aliases",
+        "hasNewsEvents__has_news_events"
       ],
       "slot_usage": {},
       "class_uri": "http://schema.org/Organization",
@@ -1462,6 +1610,17 @@
       "@type": "ClassDefinition"
     },
     {
+      "name": "IntegerPrimaryKeyObject",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/IntegerPrimaryKeyObject",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slots": [
+        "int_id"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/examples/personinfo/IntegerPrimaryKeyObject",
+      "@type": "ClassDefinition"
+    },
+    {
       "name": "OperationProcedureConcept",
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/OperationProcedureConcept",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
@@ -1575,14 +1734,17 @@
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/MedicalEvent",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "is_a": "Event",
+      "mixins": [
+        "WithLocation"
+      ],
       "slots": [
         "started_at_time",
         "ended_at_time",
         "duration",
         "is_current",
-        "in_location",
         "diagnosis",
-        "procedure"
+        "procedure",
+        "in_location"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/examples/personinfo/MedicalEvent",
@@ -1606,7 +1768,8 @@
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "slots": [
         "persons",
-        "organizations"
+        "organizations",
+        "places"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/examples/personinfo/Container",
@@ -1616,9 +1779,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "personinfo.yaml",
-  "source_file_date": "2025-07-28T18:30:24",
-  "source_file_size": 7669,
-  "generation_date": "2025-07-28T18:30:29",
+  "source_file_date": "2025-07-31T20:46:11",
+  "source_file_size": 8392,
+  "generation_date": "2025-07-31T20:49:04",
   "@type": "SchemaDefinition",
   "@context": [
     "personinfo/jsonld/personinfo.context.jsonld",

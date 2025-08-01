@@ -6,7 +6,7 @@
 URI: [personinfo:DiagnosisConcept](https://w3id.org/linkml/examples/personinfo/DiagnosisConcept)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[CodeSystem],[MedicalEvent]++-%20diagnosis%200..1>[DiagnosisConcept&#124;mappings(i):CrossReference%20*;id(i):uriorcurie;name(i):string%20%3F;description(i):string%20%3F;depicted_by(i):ImageURL%20%3F],[Concept]^-[DiagnosisConcept],[MedicalEvent],[Concept])](https://yuml.me/diagram/nofunky;dir:TB/class/[CodeSystem],[MedicalEvent]++-%20diagnosis%200..1>[DiagnosisConcept&#124;mappings(i):CrossReference%20*;id(i):uriorcurie;name(i):string%20%3F;description(i):string%20%3F;depicted_by(i):ImageURL%20%3F],[Concept]^-[DiagnosisConcept],[MedicalEvent],[Concept])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[CodeSystem],[MedicalEvent]++-%20diagnosis%200..1>[DiagnosisConcept&#124;mappings(i):CrossReference%20*;id(i):uriorcurie;name(i):string;description(i):string%20%3F;depicted_by(i):ImageURL%20%3F],[Concept]^-[DiagnosisConcept],[MedicalEvent],[Concept])](https://yuml.me/diagram/nofunky;dir:TB/class/[CodeSystem],[MedicalEvent]++-%20diagnosis%200..1>[DiagnosisConcept&#124;mappings(i):CrossReference%20*;id(i):uriorcurie;name(i):string;description(i):string%20%3F;depicted_by(i):ImageURL%20%3F],[Concept]^-[DiagnosisConcept],[MedicalEvent],[Concept])
 
 ## Parents
 
@@ -23,7 +23,7 @@ URI: [personinfo:DiagnosisConcept](https://w3id.org/linkml/examples/personinfo/D
 
  * [id](id.md)  <sub>1..1</sub>
      * Range: [Uriorcurie](types/Uriorcurie.md)
- * [name](name.md)  <sub>0..1</sub>
+ * [name](name.md)  <sub>1..1</sub>
      * Range: [String](types/String.md)
  * [description](description.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)

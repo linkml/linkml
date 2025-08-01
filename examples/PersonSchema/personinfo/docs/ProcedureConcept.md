@@ -6,7 +6,7 @@
 URI: [personinfo:ProcedureConcept](https://w3id.org/linkml/examples/personinfo/ProcedureConcept)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[CodeSystem],[MedicalEvent]++-%20procedure%200..1>[ProcedureConcept&#124;mappings(i):CrossReference%20*;id(i):uriorcurie;name(i):string%20%3F;description(i):string%20%3F;depicted_by(i):ImageURL%20%3F],[ProcedureConcept]^-[OperationProcedureConcept],[ProcedureConcept]^-[ImagingProcedureConcept],[Concept]^-[ProcedureConcept],[OperationProcedureConcept],[MedicalEvent],[ImagingProcedureConcept],[Concept])](https://yuml.me/diagram/nofunky;dir:TB/class/[CodeSystem],[MedicalEvent]++-%20procedure%200..1>[ProcedureConcept&#124;mappings(i):CrossReference%20*;id(i):uriorcurie;name(i):string%20%3F;description(i):string%20%3F;depicted_by(i):ImageURL%20%3F],[ProcedureConcept]^-[OperationProcedureConcept],[ProcedureConcept]^-[ImagingProcedureConcept],[Concept]^-[ProcedureConcept],[OperationProcedureConcept],[MedicalEvent],[ImagingProcedureConcept],[Concept])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[CodeSystem],[MedicalEvent]++-%20procedure%200..1>[ProcedureConcept&#124;mappings(i):CrossReference%20*;id(i):uriorcurie;name(i):string;description(i):string%20%3F;depicted_by(i):ImageURL%20%3F],[ProcedureConcept]^-[OperationProcedureConcept],[ProcedureConcept]^-[ImagingProcedureConcept],[Concept]^-[ProcedureConcept],[OperationProcedureConcept],[MedicalEvent],[ImagingProcedureConcept],[Concept])](https://yuml.me/diagram/nofunky;dir:TB/class/[CodeSystem],[MedicalEvent]++-%20procedure%200..1>[ProcedureConcept&#124;mappings(i):CrossReference%20*;id(i):uriorcurie;name(i):string;description(i):string%20%3F;depicted_by(i):ImageURL%20%3F],[ProcedureConcept]^-[OperationProcedureConcept],[ProcedureConcept]^-[ImagingProcedureConcept],[Concept]^-[ProcedureConcept],[OperationProcedureConcept],[MedicalEvent],[ImagingProcedureConcept],[Concept])
 
 ## Parents
 
@@ -28,7 +28,7 @@ URI: [personinfo:ProcedureConcept](https://w3id.org/linkml/examples/personinfo/P
 
  * [id](id.md)  <sub>1..1</sub>
      * Range: [Uriorcurie](types/Uriorcurie.md)
- * [name](name.md)  <sub>0..1</sub>
+ * [name](name.md)  <sub>1..1</sub>
      * Range: [String](types/String.md)
  * [description](description.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)

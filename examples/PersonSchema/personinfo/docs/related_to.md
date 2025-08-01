@@ -8,7 +8,7 @@ URI: [personinfo:related_to](https://w3id.org/linkml/examples/personinfo/related
 
 ## Domain and Range
 
-None &#8594;  <sub>0..1</sub> [NamedThing](NamedThing.md)
+None &#8594;  <sub>0..1</sub> [Person](Person.md)
 
 ## Parents
 

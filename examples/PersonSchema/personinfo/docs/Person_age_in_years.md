@@ -1,5 +1,5 @@
 
-# Slot: age_in_years
+# Slot: age
 
 
 
@@ -12,7 +12,7 @@ URI: [personinfo:Person_age_in_years](https://w3id.org/linkml/examples/personinf
 
 ## Parents
 
- *  is_a: [age_in_years](age_in_years.md)
+ *  is_a: [➞age](age_in_years.md)
 
 ## Children
 

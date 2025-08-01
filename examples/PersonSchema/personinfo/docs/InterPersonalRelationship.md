@@ -6,7 +6,7 @@
 URI: [personinfo:InterPersonalRelationship](https://w3id.org/linkml/examples/personinfo/InterPersonalRelationship)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Relationship],[Person],[NamedThing],[Person]<related%20to%201..1-%20[InterPersonalRelationship&#124;type:string;started_at_time(i):date%20%3F;ended_at_time(i):date%20%3F],[Person]++-%20has_interpersonal_relationships%200..*>[InterPersonalRelationship],[Relationship]^-[InterPersonalRelationship])](https://yuml.me/diagram/nofunky;dir:TB/class/[Relationship],[Person],[NamedThing],[Person]<related%20to%201..1-%20[InterPersonalRelationship&#124;type:string;started_at_time(i):date%20%3F;ended_at_time(i):date%20%3F],[Person]++-%20has_interpersonal_relationships%200..*>[InterPersonalRelationship],[Relationship]^-[InterPersonalRelationship])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Relationship],[Person],[Person]<related%20to%201..1-%20[InterPersonalRelationship&#124;type:string;started_at_time(i):date%20%3F;ended_at_time(i):date%20%3F],[Person]++-%20has_interpersonal_relationships%200..*>[InterPersonalRelationship],[Relationship]^-[InterPersonalRelationship])](https://yuml.me/diagram/nofunky;dir:TB/class/[Relationship],[Person],[Person]<related%20to%201..1-%20[InterPersonalRelationship&#124;type:string;started_at_time(i):date%20%3F;ended_at_time(i):date%20%3F],[Person]++-%20has_interpersonal_relationships%200..*>[InterPersonalRelationship],[Relationship]^-[InterPersonalRelationship])
 
 ## Parents
 
@@ -33,4 +33,4 @@ URI: [personinfo:InterPersonalRelationship](https://w3id.org/linkml/examples/per
  * [ended_at_time](ended_at_time.md)  <sub>0..1</sub>
      * Range: [Date](types/Date.md)
  * [related_to](related_to.md)  <sub>0..1</sub>
-     * Range: [NamedThing](NamedThing.md)
+     * Range: [Person](Person.md)

@@ -6,7 +6,7 @@
 URI: [personinfo:Concept](https://w3id.org/linkml/examples/personinfo/Concept)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[CodeSystem],[ProcedureConcept],[NamedThing],[DiagnosisConcept],[CodeSystem]<code%20system%200..1-%20[Concept&#124;mappings:CrossReference%20*;id(i):uriorcurie;name(i):string%20%3F;description(i):string%20%3F;depicted_by(i):ImageURL%20%3F],[Concept]^-[ProcedureConcept],[Concept]^-[DiagnosisConcept],[NamedThing]^-[Concept])](https://yuml.me/diagram/nofunky;dir:TB/class/[CodeSystem],[ProcedureConcept],[NamedThing],[DiagnosisConcept],[CodeSystem]<code%20system%200..1-%20[Concept&#124;mappings:CrossReference%20*;id(i):uriorcurie;name(i):string%20%3F;description(i):string%20%3F;depicted_by(i):ImageURL%20%3F],[Concept]^-[ProcedureConcept],[Concept]^-[DiagnosisConcept],[NamedThing]^-[Concept])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[CodeSystem],[ProcedureConcept],[NamedThing],[DiagnosisConcept],[CodeSystem]<code%20system%200..1-%20[Concept&#124;mappings:CrossReference%20*;id(i):uriorcurie;name(i):string;description(i):string%20%3F;depicted_by(i):ImageURL%20%3F],[Concept]^-[ProcedureConcept],[Concept]^-[DiagnosisConcept],[NamedThing]^-[Concept])](https://yuml.me/diagram/nofunky;dir:TB/class/[CodeSystem],[ProcedureConcept],[NamedThing],[DiagnosisConcept],[CodeSystem]<code%20system%200..1-%20[Concept&#124;mappings:CrossReference%20*;id(i):uriorcurie;name(i):string;description(i):string%20%3F;depicted_by(i):ImageURL%20%3F],[Concept]^-[ProcedureConcept],[Concept]^-[DiagnosisConcept],[NamedThing]^-[Concept])
 
 ## Parents
 
@@ -34,7 +34,7 @@ URI: [personinfo:Concept](https://w3id.org/linkml/examples/personinfo/Concept)
 
  * [id](id.md)  <sub>1..1</sub>
      * Range: [Uriorcurie](types/Uriorcurie.md)
- * [name](name.md)  <sub>0..1</sub>
+ * [name](name.md)  <sub>1..1</sub>
      * Range: [String](types/String.md)
  * [description](description.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)

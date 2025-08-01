@@ -49,13 +49,13 @@ type Address
 type CodeSystem
   {
     id: Uriorcurie!
-    name: String
+    name: String!
   }
 
 type Concept
   {
     id: Uriorcurie!
-    name: String
+    name: String!
     description: String
     depictedBy: ImageURL
     codeSystem: CodeSystem
@@ -66,12 +66,13 @@ type Container
   {
     persons: [Person]
     organizations: [Organization]
+    places: [Place]
   }
 
 type DiagnosisConcept
   {
     id: Uriorcurie!
-    name: String
+    name: String!
     description: String
     depictedBy: ImageURL
     codeSystem: CodeSystem
@@ -100,7 +101,7 @@ type FamilialRelationship
   {
     startedAtTime: Date
     endedAtTime: Date
-    relatedTo: NamedThing
+    relatedTo: Person
     type: FamilialRelationshipType!
     relatedTo: Person!
   }
@@ -110,58 +111,77 @@ interface HasAliases
     aliases: [String]
   }
 
+interface HasNewsEvents
+  {
+    hasNewsEvents: [NewsEvent]
+  }
+
 type ImagingProcedureConcept
   {
     id: Uriorcurie!
-    name: String
+    name: String!
     description: String
     depictedBy: ImageURL
     codeSystem: CodeSystem
     mappings: [CrossReference]
+  }
+
+type IntegerPrimaryKeyObject
+  {
+    intId: Integer!
   }
 
 type InterPersonalRelationship
   {
     startedAtTime: Date
     endedAtTime: Date
-    relatedTo: NamedThing
+    relatedTo: Person
     type: String!
     relatedTo: Person!
   }
 
-type MedicalEvent
+type MedicalEvent implements WithLocation
   {
     startedAtTime: Date
     endedAtTime: Date
     duration: Float
     isCurrent: Boolean
-    inLocation: Place
     diagnosis: DiagnosisConcept
     procedure: ProcedureConcept
+    inLocation: Place
   }
 
 type NamedThing
   {
     id: Uriorcurie!
-    name: String
+    name: String!
     description: String
     depictedBy: ImageURL
+  }
+
+type NewsEvent
+  {
+    startedAtTime: Date
+    endedAtTime: Date
+    duration: Float
+    isCurrent: Boolean
+    headline: String
   }
 
 type OperationProcedureConcept
   {
     id: Uriorcurie!
-    name: String
+    name: String!
     description: String
     depictedBy: ImageURL
     codeSystem: CodeSystem
     mappings: [CrossReference]
   }
 
-type Organization implements HasAliases
+type Organization implements HasAliases, HasNewsEvents
   {
     id: Uriorcurie!
-    name: String
+    name: String!
     description: String
     depictedBy: ImageURL
     missionStatement: String
@@ -171,30 +191,33 @@ type Organization implements HasAliases
     score: Decimal
     minSalary: SalaryType
     aliases: [String]
+    hasNewsEvents: [NewsEvent]
   }
 
-type Person implements HasAliases
+type Person implements HasAliases, HasNewsEvents
   {
     id: Uriorcurie!
-    name: String
+    name: String!
     description: String
     depictedBy: ImageURL
     primaryEmail: String
     birthDate: String
-    ageInYears: Integer
+    age: Integer
     gender: GenderType
     currentAddress: Address
+    telephone: String
     hasEmploymentHistory: [EmploymentEvent]
     hasFamilialRelationships: [FamilialRelationship]
     hasInterpersonalRelationships: [InterPersonalRelationship]
     hasMedicalHistory: [MedicalEvent]
     aliases: [String]
+    hasNewsEvents: [NewsEvent]
   }
 
 type Place implements HasAliases
   {
     id: Uriorcurie!
-    name: String
+    name: String!
     depictedBy: ImageURL
     aliases: [String]
   }
@@ -202,7 +225,7 @@ type Place implements HasAliases
 type ProcedureConcept
   {
     id: Uriorcurie!
-    name: String
+    name: String!
     description: String
     depictedBy: ImageURL
     codeSystem: CodeSystem
@@ -213,7 +236,7 @@ type Relationship
   {
     startedAtTime: Date
     endedAtTime: Date
-    relatedTo: NamedThing
+    relatedTo: Person
     type: String
   }
 

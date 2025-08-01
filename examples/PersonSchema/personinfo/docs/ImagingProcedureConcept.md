@@ -6,7 +6,7 @@
 URI: [personinfo:ImagingProcedureConcept](https://w3id.org/linkml/examples/personinfo/ImagingProcedureConcept)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[CodeSystem],[ProcedureConcept],[ProcedureConcept]^-[ImagingProcedureConcept&#124;mappings(i):CrossReference%20*;id(i):uriorcurie;name(i):string%20%3F;description(i):string%20%3F;depicted_by(i):ImageURL%20%3F])](https://yuml.me/diagram/nofunky;dir:TB/class/[CodeSystem],[ProcedureConcept],[ProcedureConcept]^-[ImagingProcedureConcept&#124;mappings(i):CrossReference%20*;id(i):uriorcurie;name(i):string%20%3F;description(i):string%20%3F;depicted_by(i):ImageURL%20%3F])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[CodeSystem],[ProcedureConcept],[ProcedureConcept]^-[ImagingProcedureConcept&#124;mappings(i):CrossReference%20*;id(i):uriorcurie;name(i):string;description(i):string%20%3F;depicted_by(i):ImageURL%20%3F])](https://yuml.me/diagram/nofunky;dir:TB/class/[CodeSystem],[ProcedureConcept],[ProcedureConcept]^-[ImagingProcedureConcept&#124;mappings(i):CrossReference%20*;id(i):uriorcurie;name(i):string;description(i):string%20%3F;depicted_by(i):ImageURL%20%3F])
 
 ## Parents
 
@@ -19,7 +19,7 @@ URI: [personinfo:ImagingProcedureConcept](https://w3id.org/linkml/examples/perso
 
  * [id](id.md)  <sub>1..1</sub>
      * Range: [Uriorcurie](types/Uriorcurie.md)
- * [name](name.md)  <sub>0..1</sub>
+ * [name](name.md)  <sub>1..1</sub>
      * Range: [String](types/String.md)
  * [description](description.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)

@@ -65,7 +65,7 @@ linkml:Sparqlpath xsd:string
 }
 
 <CodeSystem> CLOSED {
-    (  $<CodeSystem_tes> schema1:name @linkml:String ? ;
+    (  $<CodeSystem_tes> schema1:name @linkml:String ;
        rdf:type [ <CodeSystem> ]
     )
 }
@@ -84,7 +84,8 @@ linkml:Sparqlpath xsd:string
 
 <Container> CLOSED {
     (  $<Container_tes> (  <persons> @<Person> * ;
-          <organizations> @<Organization> *
+          <organizations> @<Organization> * ;
+          <places> @<Place> *
        ) ;
        rdf:type [ <Container> ] ?
     )
@@ -117,7 +118,7 @@ linkml:Sparqlpath xsd:string
           ) ;
           rdf:type [ <Event> ] ?
        )
-    } OR @<EmploymentEvent> OR @<MedicalEvent>
+    } OR @<EmploymentEvent> OR @<MedicalEvent> OR @<NewsEvent>
 )
 
 <FamilialRelationship> CLOSED {
@@ -136,11 +137,23 @@ linkml:Sparqlpath xsd:string
     )
 }
 
+<HasNewsEvents> {
+    (  $<HasNewsEvents_tes> <has_news_events> @<NewsEvent> * ;
+       rdf:type [ <HasNewsEvents> ] ?
+    )
+}
+
 <ImagingProcedureConcept> CLOSED {
     (  $<ImagingProcedureConcept_tes> (  &<ProcedureConcept_tes> ;
           rdf:type [ <ProcedureConcept> ] ?
        ) ;
        rdf:type [ <ImagingProcedureConcept> ]
+    )
+}
+
+<IntegerPrimaryKeyObject> CLOSED {
+    (  $<IntegerPrimaryKeyObject_tes> rdf:type . * ;
+       rdf:type [ <IntegerPrimaryKeyObject> ]
     )
 }
 
@@ -157,9 +170,11 @@ linkml:Sparqlpath xsd:string
 <MedicalEvent> CLOSED {
     (  $<MedicalEvent_tes> (  &<Event_tes> ;
           rdf:type [ <Event> ] ? ;
-          <in_location> @<Place> ? ;
+          &<WithLocation_tes> ;
+          rdf:type [ <WithLocation> ] ? ;
           <diagnosis> @<DiagnosisConcept> ? ;
-          <procedure> @<ProcedureConcept> ?
+          <procedure> @<ProcedureConcept> ? ;
+          <in_location> @<Place> ?
        ) ;
        rdf:type [ <MedicalEvent> ] ?
     )
@@ -167,7 +182,7 @@ linkml:Sparqlpath xsd:string
 
 <NamedThing>  (
     CLOSED {
-       (  $<NamedThing_tes> (  schema1:name @linkml:String ? ;
+       (  $<NamedThing_tes> (  schema1:name @linkml:String ;
              schema1:description @linkml:String ? ;
              <depicted_by> @<ImageURL> ?
           ) ;
@@ -175,6 +190,15 @@ linkml:Sparqlpath xsd:string
        )
     } OR @<Concept> OR @<Organization> OR @<Person>
 )
+
+<NewsEvent> CLOSED {
+    (  $<NewsEvent_tes> (  &<Event_tes> ;
+          rdf:type [ <Event> ] ? ;
+          <headline> @linkml:String ?
+       ) ;
+       rdf:type [ <NewsEvent> ] ?
+    )
+}
 
 <OperationProcedureConcept> CLOSED {
     (  $<OperationProcedureConcept_tes> (  &<ProcedureConcept_tes> ;
@@ -189,6 +213,8 @@ linkml:Sparqlpath xsd:string
           rdf:type [ <NamedThing> ] ? ;
           &<HasAliases_tes> ;
           rdf:type [ <HasAliases> ] ? ;
+          &<HasNewsEvents_tes> ;
+          rdf:type [ <HasNewsEvents> ] ? ;
           <mission_statement> @linkml:String ? ;
           <founding_date> @linkml:String ? ;
           <founding_location> @<Place> ? ;
@@ -199,7 +225,8 @@ linkml:Sparqlpath xsd:string
              <https://w3id.org/linkml/examples/personinfo/OrganizationType#loose%20organization> ] * ;
           <score> @linkml:Decimal ? ;
           <min_salary> @<SalaryType> ? ;
-          <aliases> @linkml:String *
+          <aliases> @linkml:String * ;
+          <has_news_events> @<NewsEvent> *
        ) ;
        rdf:type [ schema1:Organization ]
     )
@@ -210,18 +237,22 @@ linkml:Sparqlpath xsd:string
           rdf:type [ <NamedThing> ] ? ;
           &<HasAliases_tes> ;
           rdf:type [ <HasAliases> ] ? ;
+          &<HasNewsEvents_tes> ;
+          rdf:type [ <HasNewsEvents> ] ? ;
           schema1:email @linkml:String ? ;
           schema1:birthDate @linkml:String ? ;
-          <age_in_years> @linkml:Integer ? ;
+          <age> @linkml:Integer ? ;
           schema1:gender [ <http://purl.obolibrary.org/obo/GSSO_009254> <http://purl.obolibrary.org/obo/GSSO_009253>
              <http://purl.obolibrary.org/obo/GSSO_000384> <http://purl.obolibrary.org/obo/GSSO_000372>
              <http://purl.obolibrary.org/obo/GSSO_000371> <http://purl.obolibrary.org/obo/GSSO_000385> ] ? ;
           <current_address> @<Address> ? ;
+          schema1:telephone @linkml:String ? ;
           <has_employment_history> @<EmploymentEvent> * ;
           <has_familial_relationships> @<FamilialRelationship> * ;
           <has_interpersonal_relationships> @<InterPersonalRelationship> * ;
           <has_medical_history> @<MedicalEvent> * ;
-          <aliases> @linkml:String *
+          <aliases> @linkml:String * ;
+          <has_news_events> @<NewsEvent> *
        ) ;
        rdf:type [ schema1:Person ]
     )
@@ -230,7 +261,7 @@ linkml:Sparqlpath xsd:string
 <Place> CLOSED {
     (  $<Place_tes> (  &<HasAliases_tes> ;
           rdf:type [ <HasAliases> ] ? ;
-          schema1:name @linkml:String ? ;
+          schema1:name @linkml:String ;
           <depicted_by> @<ImageURL> ? ;
           <aliases> @linkml:String *
        ) ;
@@ -252,7 +283,7 @@ linkml:Sparqlpath xsd:string
     CLOSED {
        (  $<Relationship_tes> (  prov:startedAtTime @linkml:Date ? ;
              prov:endedAtTime @linkml:Date ? ;
-             <related_to> @<NamedThing> ? ;
+             <related_to> @<Person> ? ;
              <type> @linkml:String ?
           ) ;
           rdf:type [ <Relationship> ] ?
