@@ -1,6 +1,6 @@
-import unittest
 from pathlib import Path
 
+import pytest
 import yaml
 
 from linkml_runtime.processing.referencevalidator import (
@@ -10,21 +10,26 @@ from linkml_runtime.utils.schemaview import SchemaView
 from tests.test_processing import INPUT_DIR
 
 
-class ArrayTestCase(unittest.TestCase):
-    """
-    Tests array normalization
+@pytest.fixture
+def normalizer():
+    """ReferenceValidator instance for array example schema."""
+    sv = SchemaView(str(Path(INPUT_DIR) / "array_example.yaml"))
+    return ReferenceValidator(sv)
 
+
+@pytest.fixture
+def matrix_data():
+    """Load matrix data from array example data file."""
+    return yaml.safe_load(open(str(Path(INPUT_DIR) / "array_example_data.yaml")))
+
+
+def test_array_normalization(normalizer, matrix_data):
+    """
+    Test that we can infer the collection form of a slot.
+
+    Tests array normalization functionality.
     See: https://linkml.io/linkml/howtos/multidimensional-arrays
     """
-
-    def setUp(self) -> None:
-        sv = SchemaView(str(Path(INPUT_DIR) / "array_example.yaml"))
-        self.normalizer = ReferenceValidator(sv)
-        self.matrix = yaml.safe_load(open(str(Path(INPUT_DIR) / "array_example_data.yaml")))
-
-    def test_array_normalization(self):
-        """Test that we can infer the collection form of a slot."""
-        norm = self.normalizer
-        matrix = norm.normalize(self.matrix)
-        vals = [int(x) for x in matrix["temperatures"]]
-        self.assertEqual([11, 12, 13, 21, 22, 23, 31, 32, 33], vals)
+    matrix = normalizer.normalize(matrix_data)
+    vals = [int(x) for x in matrix["temperatures"]]
+    assert vals == [11, 12, 13, 21, 22, 23, 31, 32, 33]
