@@ -10,3 +10,4 @@ URI: [personinfo:DiagnosisType](https://w3id.org/linkml/examples/personinfo/Diag
 
 | Text | Description | Meaning | Other Information |
 | :--- | :---: | :---: | ---: |
+| todo |  |  |  |
