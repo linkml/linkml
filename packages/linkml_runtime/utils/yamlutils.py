@@ -360,7 +360,9 @@ def as_yaml(element: YAMLRoot) -> str:
     return yaml.dump(element, Dumper=yaml.SafeDumper, sort_keys=False)
 
 
-def as_json_object(element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, inject_type=True, element_type=None) -> JsonObj:
+def as_json_object(
+    element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, inject_type=True, element_type=None
+) -> JsonObj:
     """
     Return the representation of element as a JsonObj object
     :param element: element to return
