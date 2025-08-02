@@ -1,7 +1,3 @@
-# Auto generated from kitchen_sink.yaml by pythongen.py version: 0.0.1
-# Generation date: 2000-01-01T00:00:00
-# Schema: kitchen_sink
-#
 # id: https://w3id.org/linkml/tests/kitchen_sink
 # description: Kitchen Sink Schema
 #
