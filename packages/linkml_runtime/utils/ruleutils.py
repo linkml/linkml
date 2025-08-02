@@ -136,12 +136,12 @@ def subclass_to_rules(
 
 
 def rule_subsumed_by_class(view: SchemaView, rule, cls: ClassDefinition):
-    induced_slots = view.class_induced_slots(cls.name)
+    view.class_induced_slots(cls.name)
     return False
 
 
 def remove_redundant_rules(view: SchemaView, class_name: ClassDefinitionName):
-    induced_slots = view.class_induced_slots(class_name)
+    view.class_induced_slots(class_name)
     cls = view.get_class(class_name)
     redundant_rules = []
     for rule in cls.rules:
