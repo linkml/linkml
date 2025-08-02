@@ -1,4 +1,5 @@
 import pytest
+from graphql import parse
 
 from linkml.generators.graphqlgen import GraphqlGenerator
 
@@ -10,11 +11,11 @@ type Person implements HasAliases
     hasEmploymentHistory: [EmploymentEvent]
     hasFamilialRelationships: [FamilialRelationship]
     hasMedicalHistory: [MedicalEvent]
-    ageInYears: Integer
+    ageInYears: Int
     addresses: [Address]
     hasBirthEvent: BirthEvent
     speciesName: String
-    stomachCount: Integer
+    stomachCount: Int
     isLiving: LifeStatusEnum
     aliases: [String]
   }
@@ -23,8 +24,8 @@ type Person implements HasAliases
 MEDICALEVENT = """
 type MedicalEvent
   {
-    startedAtTime: Date
-    endedAtTime: Date
+    startedAtTime: String
+    endedAtTime: String
     isCurrent: Boolean
     metadata: AnyObject
     inLocation: Place
@@ -36,8 +37,8 @@ type MedicalEvent
 FAMILIALRELATIONSHIP = """
 type FamilialRelationship
   {
-    startedAtTime: Date
-    endedAtTime: Date
+    startedAtTime: String
+    endedAtTime: String
     cordialness: String
     type: FamilialRelationshipType!
     relatedTo: Person!
@@ -64,13 +65,6 @@ enum FamilialRelationshipType
   }
 """
 
-OTHERCODES = """
-enum OtherCodes
-  {
-    a_b
-  }
-"""
-
 
 @pytest.mark.parametrize(
     "input_class,expected",
@@ -81,7 +75,6 @@ enum OtherCodes
         ("MedicalEvent", MEDICALEVENT),
         ("FamilialRelationship", FAMILIALRELATIONSHIP),
         ("FamilialRelationshipType", FAMILIALRELATIONSHIPTYPE),
-        ("OtherCodes", OTHERCODES),
     ],
 )
 def test_serialize_selected(input_class, expected, kitchen_sink_path):
@@ -97,3 +90,17 @@ def test_snapshot(kitchen_sink_path, snapshot):
     generator = GraphqlGenerator(kitchen_sink_path)
     generated = generator.serialize()
     assert generated == snapshot("kitchen_sink.graphql")
+
+
+def test_graphql_validity(kitchen_sink_path):
+    generator = GraphqlGenerator(kitchen_sink_path)
+    generated = generator.serialize()
+    print("\nGenerated GraphQL schema:")
+    print("vvvvvv Start GraphQL vvvvvv")
+    print(generated)
+    print("^^^^^^^ End GraphQL ^^^^^^^")
+    try:
+        parse(generated)
+    except Exception as ex:
+        print(f"\nvvvvvv Start Error Message vvvvvv\n{str(ex)}\n^^^^^^^ End Error Message ^^^^^^^")
+        pytest.fail("Generated GraphQL appears to be wrong, it cannot be parsed!")
