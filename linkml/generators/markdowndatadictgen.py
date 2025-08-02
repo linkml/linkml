@@ -950,6 +950,7 @@ def pad_heading(text: str) -> str:
     return re.sub(r"(?<!\n)\n##", "\n\n##", text)
 
 
+@shared_arguments(MarkdownDataDictGen)
 @click.command()
 @click.option("--classes", "-c", multiple=True, help="Class(es) to emit")
 @click.option(
