@@ -461,6 +461,10 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         return slist
 
     def generate_class(self, cls: ClassDefinition) -> ClassResult:
+        # Handle union_of classes by creating a type alias instead of a class
+        if cls.union_of:
+            return self._generate_union_class(cls)
+
         pyclass = PydanticClass(
             name=camelcase(cls.name),
             bases=self.class_bases.get(camelcase(cls.name), PydanticBaseModel.default_name),
@@ -487,6 +491,33 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         attributes = {slot.attribute.name: slot.attribute for slot in slot_results}
 
         result.cls.attributes = attributes
+        result.cls = self.include_metadata(result.cls, cls)
+
+        return result
+
+    def _generate_union_class(self, cls: ClassDefinition) -> ClassResult:
+        """Generate a union type alias for classes with union_of"""
+        # Get the union types with string quotes to handle forward references
+        union_types = [f'"{camelcase(union_cls)}"' for union_cls in cls.union_of]
+        union_type_str = f"Union[{', '.join(union_types)}]"
+
+        # Create a type alias instead of a class
+        pyclass = PydanticClass(
+            name=camelcase(cls.name),
+            bases=[],  # Empty list for type aliases
+            description=cls.description.replace('"', '\\"') if cls.description is not None else None,
+            is_type_alias=True,
+            type_alias_value=union_type_str,
+        )
+
+        imports = self._get_imports(cls) if self.split else None
+        result = ClassResult(cls=pyclass, source=cls, imports=imports)
+
+        # Add Union import
+        union_import = Import(module="typing", objects=[ObjectImport(name="Union")])
+        result.imports = result.imports + union_import if result.imports else Imports() + union_import
+
+        # Add metadata
         result.cls = self.include_metadata(result.cls, cls)
 
         return result
