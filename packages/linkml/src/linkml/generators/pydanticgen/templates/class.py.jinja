@@ -1,3 +1,12 @@
+{% if is_type_alias %}
+# Type alias for union_of
+{{ name }} = {{ type_alias_value }}
+{% if description %}
+"""
+{{ description }}
+"""
+{% endif -%}
+{% else %}
 class {{ name }}({% if bases is string %}{{ bases }}{% else %}{{ bases | join(', ') }}{% endif %}):
     {% if description %}
     """
@@ -23,3 +32,4 @@ class {{ name }}({% if bases is string %}{{ bases }}{% else %}{{ bases | join(',
     {% else %}
     pass
     {% endif %}
+{% endif %}

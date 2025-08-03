@@ -2744,6 +2744,54 @@ def test_lifecycle_slots(kitchen_sink_path):
             assert attr.meta["extra_meta_field"]
 
 
+def test_union_of():
+    """
+    Test that classes with union_of generate proper type aliases
+    """
+    schema_path = Path(__file__).parent.parent / "test_data" / "input" / "union_test.yaml"
+    generator = PydanticGenerator(schema_path, package="test")
+    code = generator.serialize()
+
+    # Check that UnionClass is generated as a type alias with forward references
+    assert "# Type alias for union_of" in code
+    assert 'UnionClass = Union["TypeA", "TypeB"]' in code
+
+    # Check that Union is imported
+    assert "from typing import" in code and "Union" in code
+
+    # Check that the description is preserved
+    assert '"""' in code
+    assert "A class that represents a union of other classes" in code
+
+    # Check that individual classes are still generated normally
+    assert "class TypeA(" in code
+    assert "class TypeB(" in code
+
+    # Check that type aliases are excluded from model_rebuild section
+    assert "UnionClass.model_rebuild()" not in code
+
+    # Compile and test the generated code
+    module = compile_python(code, "test")
+
+    # Verify the type alias exists and is correct
+    assert hasattr(module, "UnionClass")
+    assert hasattr(module, "TypeA")
+    assert hasattr(module, "TypeB")
+
+    # Verify they are instances of the union (type checking would work at runtime)
+
+    if hasattr(typing, "get_origin"):  # Python 3.8+
+        union_origin = typing.get_origin(module.UnionClass)
+        union_args = typing.get_args(module.UnionClass)
+        assert union_origin is Union
+        # With forward references, the args are ForwardRef objects
+        from typing import ForwardRef
+
+        expected_refs = {ForwardRef("TypeA"), ForwardRef("TypeB")}
+        actual_refs = set(union_args)
+        assert actual_refs == expected_refs
+
+
 def test_crappy_stdlib_set_removed():
     """
     After support for <3.10 is dropped, remove the dang stdlib list stub
