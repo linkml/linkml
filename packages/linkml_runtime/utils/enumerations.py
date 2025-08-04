@@ -18,11 +18,11 @@ class EnumDefinitionMeta(type):
             raise ValueError(f"{cls.__name__} - {key} already assigned")
         cls.__dict__[key] = value
 
-    def __setattr__(self, key, value):
+    def __setattr__(cls, key, value):
         from linkml_runtime.linkml_model.meta import PermissibleValue
 
-        if self._defn.code_set and isinstance(value, PermissibleValue) and value.meaning:
-            print(f"Validating {value.meaning} against {self._defn.code_set}")
+        if cls._defn.code_set and isinstance(value, PermissibleValue) and value.meaning:
+            print(f"Validating {value.meaning} against {cls._defn.code_set}")
         super().__setattr__(key, value)
 
     def __contains__(cls, item) -> bool:
