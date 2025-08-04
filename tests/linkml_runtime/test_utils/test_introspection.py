@@ -1,20 +1,18 @@
-import unittest
-
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.utils.introspection import object_class_definition, package_schemaview
 
 
-class IntrospectionTestCase(unittest.TestCase):
-    def test_introspection_on_metamodel(self):
-        view = package_schemaview("linkml_runtime.linkml_model.meta")
-        for cn in ["class_definition", "type_definition", "slot_definition"]:
-            assert cn in view.all_classes()
-        for tn in ["uriorcurie", "string", "float"]:
-            assert tn in view.all_types()
-        obj = SchemaDefinition(id="x", name="x")
-        c = object_class_definition(obj)
-        assert "classes" in c.slots
+def test_introspection_on_metamodel():
+    """Test introspection capabilities on the linkml metamodel"""
+    view = package_schemaview("linkml_runtime.linkml_model.meta")
 
+    # Test that expected classes are present
+    assert {"class_definition", "type_definition", "slot_definition"}.issubset(set(view.all_classes()))
 
-if __name__ == "__main__":
-    unittest.main()
+    # Test that expected types are present
+    assert {"uriorcurie", "string", "float"}.issubset(set(view.all_types()))
+
+    # Test object class definition introspection
+    obj = SchemaDefinition(id="x", name="x")
+    c = object_class_definition(obj)
+    assert "classes" in c.slots

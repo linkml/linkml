@@ -72,6 +72,6 @@ def roll_down(sv: SchemaView, classes: list[CLASS_NAME] = None, mixins=True, is_
             if is_a and c.is_a is not None:
                 del c.is_a
     for d in dels:
-        d_cls = sv.get_class(d)
+        sv.get_class(d)
         sv.delete_class(d)
     sv.set_modified()

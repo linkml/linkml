@@ -70,7 +70,7 @@ class ObjectIndex:
             return {k: self._index(v, parent_key, parent) for k, v in obj.items()}
         cls_name = type(obj).__name__
         if cls_name in self._class_map:
-            cls = self._class_map[cls_name]
+            self._class_map[cls_name]
             pk_val = self._key(obj)
             self._source_object_cache[pk_val] = obj
             if pk_val not in self._child_to_parent:
