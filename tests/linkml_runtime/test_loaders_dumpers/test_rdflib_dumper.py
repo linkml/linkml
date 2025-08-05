@@ -1,5 +1,4 @@
 import logging
-import os
 from pathlib import Path
 
 import pytest
@@ -27,12 +26,31 @@ from tests.test_loaders_dumpers.models.phenopackets import (
 logger = logging.getLogger(__name__)
 
 
-SCHEMA = os.path.join(INPUT_DIR, "personinfo.yaml")
-DATA = os.path.join(INPUT_DIR, "example_personinfo_data.yaml")
-DATA_TTL = os.path.join(INPUT_DIR, "example_personinfo_data.ttl")
-OUT = os.path.join(OUTPUT_DIR, "example_personinfo_data.ttl")
-DATA_ROUNDTRIP = os.path.join(OUTPUT_DIR, "example_personinfo_data.roundtrip-rdf.yaml")
-UNMAPPED_ROUNDTRIP = os.path.join(OUTPUT_DIR, "example_personinfo_data.unmapped-preds.yaml")
+INPUT_PATH = Path(INPUT_DIR)
+OUTPUT_PATH = Path(OUTPUT_DIR)
+
+SCHEMA = INPUT_PATH / "personinfo.yaml"
+DATA = INPUT_PATH / "example_personinfo_data.yaml"
+DATA_TTL = INPUT_PATH / "example_personinfo_data.ttl"
+OUT = OUTPUT_PATH / "example_personinfo_data.ttl"
+DATA_ROUNDTRIP = OUTPUT_PATH / "example_personinfo_data.roundtrip-rdf.yaml"
+UNMAPPED_ROUNDTRIP = OUTPUT_PATH / "example_personinfo_data.unmapped-preds.yaml"
+
+# Test TTL files
+UNMAPPED_PREDICATES_TTL = INPUT_PATH / "unmapped_predicates_test.ttl"
+UNMAPPED_TYPE_TTL = INPUT_PATH / "unmapped_type_test.ttl"
+ENUM_UNION_TYPE_TTL = INPUT_PATH / "enum_union_type_test.ttl"
+BLANK_NODE_TTL = INPUT_PATH / "blank_node_test.ttl"
+
+
+# see https://github.com/linkml/linkml/issues/429
+SCHEMA_429 = INPUT_PATH / "personinfo_test_issue_429.yaml"
+DATA_429 = INPUT_PATH / "example_personinfo_test_issue_429_data.yaml"
+OUT_429 = OUTPUT_PATH / "example_personinfo_test_issue_429_data.ttl"
+
+ORCID = Namespace("https://orcid.org/")
+personinfo = Namespace("https://w3id.org/linkml/examples/personinfo/")
+SDO = Namespace("http://schema.org/")
 
 PREFIX_MAP = {
     "CODE": "http://example.org/code/",
@@ -41,66 +59,6 @@ PREFIX_MAP = {
     "GEO": "http://example.org/GEO/",
 }
 
-unmapped_predicates_test_ttl = """
-@prefix P: <http://example.org/P/> .
-@prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
-@prefix sdo: <http://schema.org/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix unmapped: <http://example.org/unmapped/> .
-
-P:001 a sdo:Person ;
-    sdo:email "fred.bloggs@example.com" ;
-    sdo:gender <http://purl.obolibrary.org/obo/GSSO_000371> ;
-    sdo:name "fred bloggs" ;
-    unmapped:foo "foo" ;
-    personinfo:age_in_years 33 .
-"""
-
-unmapped_type_test_ttl = """
-@prefix P: <http://example.org/P/> .
-@prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
-@prefix sdo: <http://schema.org/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix unmapped: <http://example.org/unmapped/> .
-
-P:001 a unmapped:Person ;
-    sdo:email "fred.bloggs@example.com" ;
-    sdo:gender <http://purl.obolibrary.org/obo/GSSO_000371> ;
-    sdo:name "fred bloggs" ;
-    personinfo:age_in_years 33 .
-"""
-
-enum_union_type_test_ttl = """
-@prefix P: <http://example.org/P/> .
-@prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
-@prefix sdo: <http://schema.org/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix famrel: <https://example.org/FamilialRelations#> .
-
-P:001 a sdo:Person ;
-    sdo:email "fred.bloggs@example.com" ;
-    sdo:name "fred bloggs" ;
-    personinfo:age_in_years 33 ;
-    personinfo:has_interpersonal_relationships [
-      a personinfo:InterpersonalRelationship ;
-      personinfo:type famrel:70 ;
-      personinfo:related_to P:002
-    ] ,
-    [
-      a personinfo:InterpersonalRelationship ;
-      personinfo:type "BEST_FRIEND_OF" ;
-      personinfo:related_to P:003
-    ] .
-"""
-
-blank_node_test_ttl = """
-@prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
-@prefix sdo: <http://schema.org/> .
-
-[ a sdo:PostalAddress ;
-            personinfo:city "foo city" ;
-            personinfo:street "1 foo street" ] .
-"""
 
 P = Namespace("http://example.org/P/")
 ROR = Namespace("http://example.org/ror/")
@@ -114,19 +72,25 @@ WD = Namespace("http://www.wikidata.org/entity/")
 
 
 @pytest.fixture
-def prefix_map():
-    """Standard prefix map for rdflib dumper tests."""
-    return PREFIX_MAP
+def issue_429_graph():
+    """Create RDF graph for issue 429 testing."""
+    view = SchemaView(str(SCHEMA_429))
+    container = yaml_loader.load(str(DATA_429), target_class=Container_429)
+    rdflib_dumper.dump(container, schemaview=view, to_file=str(OUT_429))
+    g = Graph()
+    g.parse(str(OUT_429), format="ttl")
+    return g
 
 
+@pytest.mark.parametrize("prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)])
 def test_rdflib_dumper(prefix_map):
     """Test the RDFLib dumper functionality."""
-    view = SchemaView(SCHEMA)
-    container = yaml_loader.load(DATA, target_class=Container)
+    view = SchemaView(str(SCHEMA))
+    container = yaml_loader.load(str(DATA), target_class=Container)
     _check_objs(view, container)
-    rdflib_dumper.dump(container, schemaview=view, to_file=OUT, prefix_map=prefix_map)
+    rdflib_dumper.dump(container, schemaview=view, to_file=str(OUT), prefix_map=prefix_map)
     g = Graph()
-    g.parse(OUT, format="ttl")
+    g.parse(str(OUT), format="ttl")
 
     assert (P["001"], RDF.type, SDO.Person) in g
     assert (P["001"], SDO.name, Literal("fred bloggs")) in g
@@ -135,8 +99,6 @@ def test_rdflib_dumper(prefix_map):
     assert (P["001"], SDO.gender, GSSO["000371"]) in g
     assert (P["001"], INFO.depicted_by, Literal("https://example.org/pictures/fred.jpg", datatype=XSD.anyURI)) in g
     assert (P["001"], INFO.depicted_by, Literal("https://example.org/pictures/fred.jpg", datatype=XSD.string)) not in g
-    # for (s,p,o) in g.triples((None, None, None)):
-    #    print(f'{s} {p} {o}')
     assert (CODE["D0001"], RDF.type, INFO.DiagnosisConcept) in g
     assert (CODE["D0001"], RDF.type, INFO.DiagnosisConcept) in g
     assert (CODE["D0001"], SKOS.exactMatch, HP["0002315"]) in g
@@ -148,16 +110,14 @@ def test_rdflib_dumper(prefix_map):
     assert (container, INFO.organizations, ROR["2"]) in g
     assert (container, INFO.persons, P["001"]) in g
     assert (container, INFO.persons, P["002"]) in g
-    container: Container = rdflib_loader.load(OUT, target_class=Container, schemaview=view, prefix_map=prefix_map)
+    container: Container = rdflib_loader.load(str(OUT), target_class=Container, schemaview=view, prefix_map=prefix_map)
     _check_objs(view, container)
-    # print(yaml_dumper.dumps(container))
-    # person = next(p for p in container.persons if p.id == 'P:002')
-    # mh = person.has_medical_history[0]
 
 
+@pytest.mark.parametrize("prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)])
 def test_enums(prefix_map):
     """Test enum handling in RDFLib dumper."""
-    view = SchemaView(SCHEMA)
+    view = SchemaView(str(SCHEMA))
     org1type1 = OrganizationType("non profit")  ## no meaning declared
     org1type2 = OrganizationType("charity")  ## meaning URI is declared
     assert not org1type1.meaning
@@ -179,7 +139,7 @@ def test_enums(prefix_map):
 
 def test_undeclared_prefix_raises_error():
     """Test that undeclared prefixes raise exceptions."""
-    view = SchemaView(SCHEMA)
+    view = SchemaView(str(SCHEMA))
     org1 = Organization("foo")  # not a CURIE or URI
     with pytest.raises(Exception):
         rdflib_dumper.as_rdf_graph(org1, schemaview=view)
@@ -189,35 +149,39 @@ def test_undeclared_prefix_raises_error():
 
 def test_base_prefix():
     """Test base prefix functionality."""
-    view = SchemaView(SCHEMA)
+    view = SchemaView(str(SCHEMA))
     view.schema.prefixes["_base"] = Prefix("_base", "http://example.org/")
     org1 = Organization("foo")  # not a CURIE or URI
     g = rdflib_dumper.as_rdf_graph(org1, schemaview=view)
     assert (URIRef("http://example.org/foo"), RDF.type, SDO.Organization) in g
 
 
+@pytest.mark.parametrize("prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)])
 def test_rdflib_loader(prefix_map):
     """
     tests loading from an RDF graph
     """
-    view = SchemaView(SCHEMA)
-    container: Container = rdflib_loader.load(DATA_TTL, target_class=Container, schemaview=view, prefix_map=prefix_map)
+    view = SchemaView(str(SCHEMA))
+    container: Container = rdflib_loader.load(
+        str(DATA_TTL), target_class=Container, schemaview=view, prefix_map=prefix_map
+    )
     _check_objs(view, container)
-    yaml_dumper.dump(container, to_file=DATA_ROUNDTRIP)
+    yaml_dumper.dump(container, to_file=str(DATA_ROUNDTRIP))
 
 
+@pytest.mark.parametrize("prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)])
 def test_unmapped_predicates(prefix_map):
     """
     By default, the presence of predicates in rdf that have no mapping to slots
     should raise a MappingError
     """
-    view = SchemaView(SCHEMA)
+    view = SchemaView(str(SCHEMA))
     # default behavior is to raise error on unmapped predicates
     with pytest.raises(MappingError):
-        rdflib_loader.loads(unmapped_predicates_test_ttl, target_class=Person, schemaview=view, prefix_map=prefix_map)
+        rdflib_loader.load(str(UNMAPPED_PREDICATES_TTL), target_class=Person, schemaview=view, prefix_map=prefix_map)
     # called can explicitly allow unmapped predicates to be dropped
-    person: Person = rdflib_loader.loads(
-        unmapped_predicates_test_ttl,
+    person: Person = rdflib_loader.load(
+        str(UNMAPPED_PREDICATES_TTL),
         target_class=Person,
         schemaview=view,
         prefix_map=prefix_map,
@@ -226,19 +190,20 @@ def test_unmapped_predicates(prefix_map):
     assert person.id == "P:001"
     assert person.age_in_years == 33
     assert str(person.gender) == "cisgender man"
-    yaml_dumper.dump(person, to_file=UNMAPPED_ROUNDTRIP)
+    yaml_dumper.dump(person, to_file=str(UNMAPPED_ROUNDTRIP))
 
 
+@pytest.mark.parametrize("prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)])
 def test_any_of_enum(prefix_map):
     """
     Tests https://github.com/linkml/linkml/issues/1023
     """
-    view = SchemaView(SCHEMA)
+    view = SchemaView(str(SCHEMA))
     # default behavior is to raise error on unmapped predicates
-    person = rdflib_loader.loads(enum_union_type_test_ttl, target_class=Person, schemaview=view, prefix_map=prefix_map)
+    person = rdflib_loader.load(str(ENUM_UNION_TYPE_TTL), target_class=Person, schemaview=view, prefix_map=prefix_map)
     assert person.id == "P:001"
     assert person.age_in_years == 33
-    yaml_dumper.dump(person, to_file=UNMAPPED_ROUNDTRIP)
+    yaml_dumper.dump(person, to_file=str(UNMAPPED_ROUNDTRIP))
     cases = [
         ("P:002", "COWORKER_OF"),
         ("P:003", "BEST_FRIEND_OF"),
@@ -249,27 +214,29 @@ def test_any_of_enum(prefix_map):
     assert sorted(cases) == sorted(tups)
 
 
+@pytest.mark.parametrize("prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)])
 def test_unmapped_type(prefix_map):
     """
     If a type cannot be mapped then no objects will be returned by load/from_rdf_graph
     """
-    view = SchemaView(SCHEMA)
+    view = SchemaView(str(SCHEMA))
     # default behavior is to raise error on unmapped predicates
     with pytest.raises(DataNotFoundError):
-        rdflib_loader.loads(unmapped_type_test_ttl, target_class=Person, schemaview=view, prefix_map=prefix_map)
+        rdflib_loader.load(str(UNMAPPED_TYPE_TTL), target_class=Person, schemaview=view, prefix_map=prefix_map)
     graph = Graph()
-    graph.parse(data=unmapped_type_test_ttl, format="ttl")
+    graph.parse(str(UNMAPPED_TYPE_TTL), format="ttl")
     objs = rdflib_loader.from_rdf_graph(graph, target_class=Person, schemaview=view, prefix_map=prefix_map)
     assert len(objs) == 0
 
 
+@pytest.mark.parametrize("prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)])
 def test_blank_node(prefix_map):
     """
     blank nodes should be retrievable
     """
-    view = SchemaView(SCHEMA)
-    address: Address = rdflib_loader.loads(
-        blank_node_test_ttl,
+    view = SchemaView(str(SCHEMA))
+    address: Address = rdflib_loader.load(
+        str(BLANK_NODE_TTL),
         target_class=Address,
         schemaview=view,
         prefix_map=prefix_map,
@@ -332,7 +299,7 @@ def test_edge_cases():
     # schema with following characterics:
     #  - reified triples
     #  - object has a complex union range (experimental new feature)
-    view = SchemaView(os.path.join(INPUT_DIR, "complex_range_example.yaml"))
+    view = SchemaView(str(INPUT_PATH / "complex_range_example.yaml"))
     graph = Graph()
     taxon_prefix_map = {
         "NCBITaxon": "http://purl.obolibrary.org/obo/NCBITaxon_",
@@ -342,7 +309,7 @@ def test_edge_cases():
     #  - blank nodes to represent statements
     #  - some triples not reachable from roots
     #  - implicit schema with complex ranges (rdf:object has range of either node or literal)
-    graph.parse(os.path.join(INPUT_DIR, "bacteria-taxon-class.ttl"), format="ttl")
+    graph.parse(str(INPUT_PATH / "bacteria-taxon-class.ttl"), format="ttl")
     objs = rdflib_loader.from_rdf_graph(
         graph,
         target_class=NodeObject,
@@ -395,9 +362,10 @@ def test_edge_cases():
         logger.error("Passed unexpectedly: rdf:object is known to have a mix of literals and nodes")
 
 
+@pytest.mark.parametrize("prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)])
 def test_phenopackets(prefix_map):
     """Test phenopackets functionality."""
-    view = SchemaView(str(Path(INPUT_DIR) / "phenopackets" / "phenopackets.yaml"))
+    view = SchemaView(str(INPUT_PATH / "phenopackets" / "phenopackets.yaml"))
     test_label = "test label"
     with pytest.raises(ValueError):
         c = OntologyClass(id="NO_SUCH_PREFIX:1", label=test_label)
@@ -436,33 +404,6 @@ def test_phenopackets(prefix_map):
             assert len(list(g.objects(resource_uri))) == 1
 
 
-@pytest.fixture
-def converter_prefix_map():
-    """Converter-based prefix map for testing loading and dumping with RDFLib."""
-    return Converter.from_prefix_map(PREFIX_MAP)
-
-
-# see https://github.com/linkml/linkml/issues/429
-SCHEMA_429 = os.path.join(INPUT_DIR, "personinfo_test_issue_429.yaml")
-DATA_429 = os.path.join(INPUT_DIR, "example_personinfo_test_issue_429_data.yaml")
-OUT_429 = os.path.join(OUTPUT_DIR, "example_personinfo_test_issue_429_data.ttl")
-
-ORCID = Namespace("https://orcid.org/")
-personinfo = Namespace("https://w3id.org/linkml/examples/personinfo/")
-SDO = Namespace("http://schema.org/")
-
-
-@pytest.fixture
-def issue_429_graph():
-    """Create RDF graph for issue 429 testing."""
-    view = SchemaView(SCHEMA_429)
-    container = yaml_loader.load(DATA_429, target_class=Container_429)
-    rdflib_dumper.dump(container, schemaview=view, to_file=OUT_429)
-    g = Graph()
-    g.parse(OUT_429, format="ttl")
-    return g
-
-
 def test_rdf_output(issue_429_graph):
     """Test RDF output for issue 429."""
     g = issue_429_graph
@@ -478,49 +419,8 @@ def test_rdf_output(issue_429_graph):
 
 def test_output_prefixes():
     """Test output prefixes for issue 429."""
-    with open(OUT_429, encoding="UTF-8") as file:
+    with open(str(OUT_429), encoding="UTF-8") as file:
         file_string = file.read()
     prefixes = ["prefix ORCID:", "prefix personinfo:", "prefix sdo:", "sdo:Person", "personinfo:age", "ORCID:1234"]
     for prefix in prefixes:
         assert prefix in file_string
-
-
-# Tests for RDFLib Converter functionality (uses the same test functions with converter_prefix_map fixture)
-def test_rdflib_dumper_with_converter(converter_prefix_map):
-    """Test the RDFLib dumper functionality with Converter."""
-    test_rdflib_dumper(converter_prefix_map)
-
-
-def test_enums_with_converter(converter_prefix_map):
-    """Test enum handling with Converter."""
-    test_enums(converter_prefix_map)
-
-
-def test_rdflib_loader_with_converter(converter_prefix_map):
-    """Test RDFLib loader with Converter."""
-    test_rdflib_loader(converter_prefix_map)
-
-
-def test_unmapped_predicates_with_converter(converter_prefix_map):
-    """Test unmapped predicates with Converter."""
-    test_unmapped_predicates(converter_prefix_map)
-
-
-def test_any_of_enum_with_converter(converter_prefix_map):
-    """Test any_of enum with Converter."""
-    test_any_of_enum(converter_prefix_map)
-
-
-def test_unmapped_type_with_converter(converter_prefix_map):
-    """Test unmapped type with Converter."""
-    test_unmapped_type(converter_prefix_map)
-
-
-def test_blank_node_with_converter(converter_prefix_map):
-    """Test blank node with Converter."""
-    test_blank_node(converter_prefix_map)
-
-
-def test_phenopackets_with_converter(converter_prefix_map):
-    """Test phenopackets with Converter."""
-    test_phenopackets(converter_prefix_map)

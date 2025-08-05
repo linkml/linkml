@@ -1,0 +1,12 @@
+@prefix P: <http://example.org/P/> .
+@prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
+@prefix sdo: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix unmapped: <http://example.org/unmapped/> .
+
+P:001 a sdo:Person ;
+    sdo:email "fred.bloggs@example.com" ;
+    sdo:gender <http://purl.obolibrary.org/obo/GSSO_000371> ;
+    sdo:name "fred bloggs" ;
+    unmapped:foo "foo" ;
+    personinfo:age_in_years 33 .

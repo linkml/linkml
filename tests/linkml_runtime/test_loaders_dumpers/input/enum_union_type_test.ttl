@@ -1,0 +1,20 @@
+@prefix P: <http://example.org/P/> .
+@prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
+@prefix sdo: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix famrel: <https://example.org/FamilialRelations#> .
+
+P:001 a sdo:Person ;
+    sdo:email "fred.bloggs@example.com" ;
+    sdo:name "fred bloggs" ;
+    personinfo:age_in_years 33 ;
+    personinfo:has_interpersonal_relationships [
+      a personinfo:InterpersonalRelationship ;
+      personinfo:type famrel:70 ;
+      personinfo:related_to P:002
+    ] ,
+    [
+      a personinfo:InterpersonalRelationship ;
+      personinfo:type "BEST_FRIEND_OF" ;
+      personinfo:related_to P:003
+    ] .
