@@ -54,6 +54,16 @@ class PydanticDumpersTestCase(LoaderDumperTestCase):
                 "creator" not in data["books"][i].keys()
             self.assertEqual(data, remove_empty_items(self.bookseries.model_dump()))
 
+        # test @type is added to the top level and is assigned correct type when inject_type is True
+        bookseries_with_type = json.loads(json_dumper.dumps(self.bookseries, inject_type=True))
+        self.assertIn("@type", bookseries_with_type)
+        self.assertEqual("BookSeries", bookseries_with_type.get("@type"))
+
+        # test @type is not added to the top level when inject_type is False
+        bookseries_without_type = json.loads(json_dumper.dumps(self.bookseries, inject_type=False))
+        self.assertNotIn("@type", bookseries_without_type)
+        self.assertEqual(None, bookseries_without_type.get("@type"))
+
 
 class PydanticDumpersDateTestCase(LoaderDumperTestCase):
     @classmethod
