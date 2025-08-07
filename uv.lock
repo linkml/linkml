@@ -1952,7 +1952,7 @@ requires-dist = [
     { name = "jinja2", specifier = ">=3.1.0" },
     { name = "jsonasobj2", specifier = ">=1.0.3,<2.0.0" },
     { name = "jsonschema", extras = ["format"], specifier = ">=4.0.0" },
-    { name = "linkml-runtime", specifier = ">=1.9.3,<2.0.0" },
+    { name = "linkml-runtime", specifier = ">=1.9.4,<2.0.0" },
     { name = "openpyxl" },
     { name = "parse" },
     { name = "prefixcommons", specifier = ">=0.1.7" },
@@ -2032,7 +2032,7 @@ typing = [{ name = "numpydantic", specifier = ">=1.6.1" }]
 
 [[package]]
 name = "linkml-runtime"
-version = "1.9.3"
+version = "1.9.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -2050,9 +2050,9 @@ dependencies = [
     { name = "rdflib" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/24/3c/d0ec2b9b2472a06fb43784f67c89ebcaa6dfb69f9c9bc19c8ed358c88045/linkml_runtime-1.9.3.tar.gz", hash = "sha256:1b65358bf91868b7607675abb98c26597873bb45f73ab309b7d4c31a84e58e1b", size = 479939, upload-time = "2025-06-02T16:52:42.878Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/09/70/512702563be185eb0e74ac7c112bcf204dc5ad9fa9a7777ca2046fc2b1f7/linkml_runtime-1.9.4.tar.gz", hash = "sha256:ac8f01aa4f92eb32ca377bf15ce42dad63fc2d2201e08e2b955896e34016075b", size = 480103, upload-time = "2025-07-20T17:00:45.858Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ce/64/93e53462fc222d6cbf6094781e55a6b3d129184f89dc533237beb544d62b/linkml_runtime-1.9.3-py3-none-any.whl", hash = "sha256:39a8aa51b40decd58fd04f4c02a213aad06b971df4c042aa7764f4b75cc09aa8", size = 577670, upload-time = "2025-06-02T16:52:40.853Z" },
+    { url = "https://files.pythonhosted.org/packages/ed/e2/ca07482e4194ad1af537a172f6f4567af3645c668d64674747c9e756b0af/linkml_runtime-1.9.4-py3-none-any.whl", hash = "sha256:df54f38ea836da97a7f7e61375241d898f37f18a7a4b1f890c181dcf03998e90", size = 576255, upload-time = "2025-07-20T17:00:43.727Z" },
 ]
 
 [[package]]
