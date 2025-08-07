@@ -118,9 +118,9 @@ jobs:
 
       # we are not using linkml-runtime's lockfile, but simulating what will happen
       # when we merge this and update linkml's lockfile
-      - name: add linkml-runtime to lockfile
+      - name: add linkml-runtime to lockfile with dev dependencies
         working-directory: linkml
-        run: uv add ../linkml-runtime
+        run: uv add ../linkml-runtime --group dev
 
       # note that we run the installation step always, even if we restore a venv,
       # the cache will restore the old version of linkml-runtime, but the lockfile
@@ -128,7 +128,7 @@ jobs:
       # the cache will still speedup the rest of the installation
       - name: install linkml
         working-directory: linkml
-        run: uv sync --all-extras
+        run: uv sync --all-extras --group dev
 
       - name: print linkml-runtime version
         working-directory: linkml
