@@ -9,11 +9,11 @@ on:
       upstream_repo:
         description: "Upstream linkml repository to test against"
         required: true
-        default: "linkml/linkml"
+        default: "iQuxLE/linkml"
       upstream_branch:
         description: "Upstream linkml branch to test against"
         required: true
-        default: "main"
+        default: "migrate-to-uv"
 
 jobs:
   test_upstream:
