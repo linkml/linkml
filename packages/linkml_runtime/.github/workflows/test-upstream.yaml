@@ -130,7 +130,15 @@ jobs:
         working-directory: linkml
         run: |
           uv sync --all-extras
-          uv add --group dev docker requests-cache
+          uv add --group dev docker requests-cache jsonpatch testcontainers nbformat
+
+      - name: debug what's installed
+        working-directory: linkml
+        run: |
+          echo "=== Installed packages ==="
+          uv run pip list | grep -E "(docker|requests|json|test|numpy|nbformat)" || echo "No matches found"
+          echo "=== Python path ==="
+          uv run python -c "import sys; print('\n'.join(sys.path))"
         
       - name: print linkml-runtime version
         working-directory: linkml
