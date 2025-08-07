@@ -118,17 +118,20 @@ jobs:
 
       # we are not using linkml-runtime's lockfile, but simulating what will happen
       # when we merge this and update linkml's lockfile
-      - name: add linkml-runtime to lockfile with dev dependencies
+      - name: add linkml-runtime to lockfile
         working-directory: linkml
-        run: uv add ../linkml-runtime --group dev
+        run: uv add ../linkml-runtime
 
       # note that we run the installation step always, even if we restore a venv,
       # the cache will restore the old version of linkml-runtime, but the lockfile
       # will only store the directory dependency (and thus will reinstall it)
       # the cache will still speedup the rest of the installation
-      - name: install linkml with all extras and linkml-runtime dev dependencies
+      - name: install linkml with all extras and dev dependencies needed for tests
         working-directory: linkml
-        run: uv sync --all-extras --group dev
+        run: |
+          uv sync --all-extras
+          # Explicitly install all dependencies that linkml tests need
+          uv add docker requests-cache jsonpatch testcontainers nbformat nbconvert
 
       - name: debug what's installed
         working-directory: linkml
@@ -137,7 +140,7 @@ jobs:
           uv run pip list | grep -E "(docker|requests|json|test|numpy|nbformat)" || echo "No matches found"
           echo "=== Python path ==="
           uv run python -c "import sys; print('\n'.join(sys.path))"
-        
+
       - name: print linkml-runtime version
         working-directory: linkml
         run: uv run python -c 'import linkml_runtime; from importlib.metadata import version; print(linkml_runtime.__file__); print(version("linkml_runtime"))'
