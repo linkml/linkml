@@ -1,7 +1,6 @@
 import inspect
 from functools import wraps
 
-import narwhals as nw
 import pandera
 import polars as pl
 from pandera.api.polars.types import PolarsData
@@ -35,29 +34,6 @@ class LinkmlPanderaValidator:
     @classmethod
     def get_id_column_name(cls):
         return cls._id_name
-
-    @classmethod
-    def _check_cardinality(cls, df, column_name, min_cardinality: int = None, max_cardinality: int = None):
-        min_expr = nw.col("count") >= min_cardinality
-        max_expr = nw.col("count") <= max_cardinality
-
-        if min_cardinality is not None:
-            if max_cardinality is not None:
-                combined_expression = (min_expr and max_expr).all()
-            else:
-                combined_expression = min_expr.all()
-        else:
-            combined_expression = max_expr.all()
-
-        df = (
-            nw.from_native(df)
-            .group_by(column_name)
-            .agg(nw.col(column_name).count().alias("count"))
-            .select(combined_expression)
-            .to_native()
-        )
-
-        return df
 
     @classmethod
     def _simple_dict_fields(cls, column_name):

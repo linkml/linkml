@@ -9,6 +9,13 @@ from click.testing import CliRunner
 from linkml.cli.main import linkml as linkml_cli
 from linkml.generators.panderagen import PanderaGenerator, cli
 
+# The following packages are required for these tests but optional for linkml
+# avoid pytest collection errors if not installed
+# see: https://docs.pytest.org/en/latest/how-to/skipping.html#skipping-on-a-missing-import-dependency
+np = pytest.importorskip("numpy", minversion="1.0", reason="NumPy >= 1.0 not installed")
+pl = pytest.importorskip("polars", minversion="1.0", reason="PolaRS >= 1.0 not installed")
+pandera = pytest.importorskip("pandera.polars", reason="Pandera not installed")
+
 logger = logging.getLogger(__name__)
 
 
@@ -20,24 +27,6 @@ def test_inputs_dir():
 @pytest.fixture
 def cli_runner():
     return CliRunner()
-
-
-@pytest.fixture(scope="module")
-def np():
-    """The numpy package is optional so use fixtures and importorskip to only run tests when it's installed"""
-    return pytest.importorskip("numpy", minversion="1.0", reason="Polars >= 1.0 not installed")
-
-
-@pytest.fixture(scope="module")
-def pl():
-    """The PolaRS package is optional, so use fixtures and importorskip to only run tests when it's installed"""
-    return pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
-
-
-@pytest.fixture(scope="module")
-def pandera():
-    """The pandera package is optional, so use fixtures and importorskip to only run tests when it's installed"""
-    return pytest.importorskip("pandera.polars", reason="Pandera not installed")
 
 
 @pytest.fixture(scope="module")
@@ -144,21 +133,10 @@ classes:
         required: true
         multivalued: true
         inlined_as_list: true
-      # multivalued_one_many_column:
-      #   description: list form
-      #   range: integer
-      #   required: true
-      #   multivalued: true
       any_type_column:
         description: needs to have type object
         range: AnyType
         required: true
-      cardinality_column:
-        description: check cardinality
-        range: integer
-        required: true
-        minimum_cardinality: 1
-        maximum_cardinality: 1
       inlined_as_object_column:
         description: test column that is a directly nested single object
         range: ColumnType
@@ -216,7 +194,6 @@ MODEL_COLUMNS = [
     "ontology_enum_column",
     "multivalued_column",
     "any_type_column",
-    "cardinality_column",
     "inlined_as_object_column",
     "inlined_class_column",
     "inlined_as_list_column",
@@ -225,7 +202,7 @@ MODEL_COLUMNS = [
 
 
 @pytest.fixture(scope="module")
-def column_type_instances(pl):
+def column_type_instances():
     """valid ColumnType instances that can be used in tests"""
     return [
         pl.struct(
@@ -242,7 +219,7 @@ def column_type_instances(pl):
 
 
 @pytest.fixture(scope="module")
-def invalid_column_type_instances(pl):
+def invalid_column_type_instances():
     """invalid (float values) ColumnType instances that can trigger failures."""
     return [
         pl.struct(
@@ -259,7 +236,7 @@ def invalid_column_type_instances(pl):
 
 
 @pytest.fixture(scope="module")
-def valid_inlined_dict_column_expression(pl, column_type_instances):
+def valid_inlined_dict_column_expression(column_type_instances):
     """synthetic data that conforms to the inlined_class_column schema
     using polars expression API.
     """
@@ -272,7 +249,7 @@ def valid_inlined_dict_column_expression(pl, column_type_instances):
 
 
 @pytest.fixture(scope="module")
-def invalid_inlined_dict_column_expression(pl, invalid_column_type_instances):
+def invalid_inlined_dict_column_expression(invalid_column_type_instances):
     """synthetic data that conforms to the inlined_class_column schema
     using polars expression API.
     """
@@ -285,7 +262,7 @@ def invalid_inlined_dict_column_expression(pl, invalid_column_type_instances):
 
 
 @pytest.fixture(scope="module")
-def valid_simple_dict_column_expression(pl):
+def valid_simple_dict_column_expression():
     """synthetic data that conforms to the inlined_simple_dict_column schema
     using polars expression API.
     """
@@ -299,7 +276,7 @@ def valid_simple_dict_column_expression(pl):
 
 
 @pytest.fixture(scope="module")
-def invalid_simple_dict_column_expression(pl):
+def invalid_simple_dict_column_expression():
     """synthetic data with float values that does not conform to the inlined_simple_dict_column schema
     using polars expression API.
     """
@@ -313,7 +290,7 @@ def invalid_simple_dict_column_expression(pl):
 
 
 @pytest.fixture(scope="module")
-def valid_inlined_as_list_column_expression(pl, np, N):
+def valid_inlined_as_list_column_expression(N):
     """synthetic data that conforms to the inlined_as_list_column schema
     using polars expression API.
     """
@@ -329,7 +306,7 @@ def valid_inlined_as_list_column_expression(pl, np, N):
 
 
 @pytest.fixture(scope="module")
-def invalid_inlined_as_list_column_expression(pl, np, N):
+def invalid_inlined_as_list_column_expression(N):
     """synthetic data that does not conforms to the inlined_as_list_column schema
     using polars expression API.
     """
@@ -346,8 +323,6 @@ def invalid_inlined_as_list_column_expression(pl, np, N):
 
 @pytest.fixture(scope="module")
 def big_synthetic_dataframe(
-    pl,
-    np,
     N,
     valid_inlined_dict_column_expression,
     valid_simple_dict_column_expression,
@@ -389,7 +364,6 @@ def big_synthetic_dataframe(
                 ),
                 "multivalued_column": [[1, 2, 3],] * N,
                 "any_type_column": pl.Series([1,] * N, dtype=pl.Object),
-                "cardinality_column": pl.Series(np.arange(1, N+1), dtype=pl.Int64),
             }
         )
         .with_columns(
@@ -460,7 +434,7 @@ def test_pandera_compile_basic_class_based(compiled_synthetic_schema_module, big
     compiled_synthetic_schema_module.PanderaSyntheticTable.validate(big_synthetic_dataframe, lazy=True)
 
 
-def test_pandera_validation_error_ge(pl, pandera, compiled_synthetic_schema_module, big_synthetic_dataframe):
+def test_pandera_validation_error_ge(compiled_synthetic_schema_module, big_synthetic_dataframe):
     """
     tests ge range validation error
     """
@@ -481,31 +455,8 @@ def test_pandera_validation_error_ge(pl, pandera, compiled_synthetic_schema_modu
     assert "'column': 'integer_column'" in str(e)
 
 
-def test_pandera_validation_error_cardinality(pl, pandera, compiled_synthetic_schema_module, big_synthetic_dataframe):
-    """
-    tests ge range validation error
-    """
-    # fmt: off
-    bad_cardinality_dataframe = (
-        big_synthetic_dataframe
-        .with_columns(
-            pl.lit(1000, pl.Int64).alias("cardinality_column")
-        )
-    )
-    # fmt: on
-
-    with pytest.raises(pandera.errors.SchemaErrors) as e:
-        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(bad_cardinality_dataframe, lazy=True)
-
-    assert "DATAFRAME_CHECK" in str(e.value)
-    assert "check_cardinality_cardinality_column" in str(e.value)
-    assert "'column': 'cardinality_column'" in str(e)
-
-
 @pytest.mark.parametrize("bad_column", MODEL_COLUMNS)
-def test_synthetic_dataframe_wrong_datatype(
-    pl, pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, bad_column
-):
+def test_synthetic_dataframe_wrong_datatype(compiled_synthetic_schema_module, big_synthetic_dataframe, bad_column):
     if bad_column == "bool_column":
         bad_value = None
     else:
@@ -528,9 +479,7 @@ def test_synthetic_dataframe_wrong_datatype(
 
 
 @pytest.mark.parametrize("drop_column", MODEL_COLUMNS)
-def test_synthetic_dataframe_boolean_error(
-    pl, pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, drop_column
-):
+def test_synthetic_dataframe_boolean_error(compiled_synthetic_schema_module, big_synthetic_dataframe, drop_column):
     """Note that this test accepts SchemaError as well as SchemaErrors
     even though lazy validation is performed, because nested checks
     may be run non-lazy.
@@ -556,7 +505,7 @@ def test_synthetic_dataframe_boolean_error(
 
 
 def test_inlined_object_nested_range_type_error(
-    pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_column_type_instances
+    compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_column_type_instances
 ):
     """Change the object column values from Int64 to Float64"""
     df_with_nested_object_type_error = big_synthetic_dataframe.with_columns(
@@ -575,7 +524,7 @@ def test_inlined_object_nested_range_type_error(
 
 
 def test_inlined_simple_dict_nested_range_type_error(
-    pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_simple_dict_column_expression
+    compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_simple_dict_column_expression
 ):
     """Change the simple dict column values from Int64 to Float64"""
     df_with_nested_simple_dict_type_error = big_synthetic_dataframe.with_columns(
@@ -596,7 +545,7 @@ def test_inlined_simple_dict_nested_range_type_error(
 
 
 def test_inlined_dict_nested_range_type_error(
-    pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_inlined_dict_column_expression
+    compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_inlined_dict_column_expression
 ):
     """Change the inlined dict column values from Int64 to Float64"""
     df_with_nested_dict_type_error = big_synthetic_dataframe.with_columns(
@@ -615,7 +564,7 @@ def test_inlined_dict_nested_range_type_error(
 
 
 def test_inlined_list_nested_range_type_error(
-    pandera, compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_inlined_as_list_column_expression
+    compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_inlined_as_list_column_expression
 ):
     """Change the simple dict column values from Int64 to Float64"""
     df_with_nested_dict_type_error = big_synthetic_dataframe.with_columns(

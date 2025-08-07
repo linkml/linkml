@@ -40,47 +40,15 @@ TYPEMAP = {
         "xsd:anyURI": "str",
         "xsd:decimal": "float",
     },
-    "panderagen_polars_schema": {
-        "xsd:string": "pl.Utf8",
-        "xsd:normalizedString": "pl.Utf8",
-        "xsd:int": "pl:Int32",
-        "xsd:integer": "pl.Int64",
-        "xsd:float": "pl.Float32",
-        "xsd:double": "pl.Float64",
-        "xsd:boolean": "pl.Boolean",
-        "xsd:dateTime": "pl.Datetime",
-        "xsd:date": "pl.Date",
-        "xsd:time": "pl.Time",
-        "xsd:anyURI": "pl.Utf8",
-        "xsd:decimal": "pl.Decimal",
-    },
-    "panderagen_arrow_schema": {
-        "xsd:string": "pa.string",
-        "xsd:integer": "pa.int64",
-        "xsd:int": "pa.int32",
-        "xsd:float": "pa.float32",
-        "xsd:double": "pa.float64",
-        "xsd:boolean": "pa.boolean",
-        "xsd:dateTime": "pa.timestamp",
-        "xsd:date": "pa.date64",
-        "xsd:time": "pa.time64",
-        "xsd:anyURI": "pa.string",
-        "xsd:decimal": "pa.decimal128",
-    },
 }
 
 NESTED_TYPE_MAP = {
     "panderagen_class_based": {"list": ""},
-    "panderagen_polars_schema": {"list": ""},
-    "panderagen_arrow_schema": {"list": ""},
 }
 
 
 class TemplateEnum(Enum):
     CLASS_BASED = "panderagen_class_based"
-    OBJECT_BASED = "panderagen_object_based"
-    POLARS_SCHEMA = "polars_schema"
-    PYARROW_SCHEMA = "pyarrow_schema"
 
 
 @dataclass
@@ -246,8 +214,6 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
                 ooclass.mixin = c.mixin
             if c.mixins:
                 ooclass.mixins = [(x) for x in c.mixins]
-            # if c.abstract:
-            #    ooclass.abstract = c.abstraccamelcased
             if c.is_a:
                 ooclass.is_a = self.get_class_name(c.is_a)
                 parent_slots = sv.class_slots(c.is_a)
@@ -264,7 +230,6 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
         return oodoc
 
 
-# @shared_arguments(PanderaGenerator)
 @click.option("--package", help="Package name where relevant for generated class files")
 @click.option("--template-path", help="Optional jinja2 template directory within module")
 @click.option("--template-file", help="Optional jinja2 template to use for class generation")

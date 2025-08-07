@@ -24,7 +24,7 @@ Currently supported LinkML features are:
 - literal slot ranges: string, integer, float, boolean, date, datetime
 - enums
 - constraints: required, pattern, minimum_value, maximum_value, multivalued
-- inlining: nested non-multivalued objects, lists of literals, lists of objects
+- inlining: nested single-valued objects, lists of literals, lists of objects
 - **note:** nested dictionary collections (including 'simple' dicts) inlining is inefficient and incomplete, use inlined-as-list instead.
 
 Future priorities that are currently not supported include:
@@ -53,7 +53,7 @@ Given a definition of a synthetic flat table with some nested/inlined columns:
           description: test boolean column
           range: boolean
           required: true
-          integer_column:
+        integer_column:
           description: test integer column with min/max values
           range: integer
           required: true
@@ -94,12 +94,6 @@ Given a definition of a synthetic flat table with some nested/inlined columns:
           description: needs to have type object
           range: AnyType
           required: true
-        cardinality_column:
-          description: check cardinality
-          range: integer
-          required: true
-          minimum_cardinality: 1
-          maximum_cardinality: 1
         inlined_class_column:
           description: test column with another class inlined as a struct
           range: ColumnType
@@ -130,120 +124,76 @@ The generate python looks like this:
 .. code-block:: python
 
   class PanderaSyntheticTable(pla.DataFrameModel, _LinkmlPanderaValidator):
-      """
-      A flat table with a reasonably complete assortment of datatypes.
-      """
+        """A flat table with a reasonably complete assortment of datatypes."""
 
-      _id_name : str =  'identifier_column'
-      identifier_column: int = pla.Field()
-      """
-      identifier
-      """
 
-      bool_column: bool = pla.Field()
-      """
-      test boolean column
-      """
+        identifier_column: int= pla.Field()
+        """identifier"""
 
-      integer_column: int = pla.Field(ge=0, le=999, )
-      """
-      test integer column with min/max values
-      """
+        bool_column: bool= pla.Field()
+        """test boolean column"""
 
-      float_column: float = pla.Field()
-      """
-      test float column
-      """
+        integer_column: int= pla.Field(ge=0, le=999, )
+        """test integer column with min/max values"""
 
-      string_column: str = pla.Field(str_matches=r"^(this)|(that)|(whatever)$", )
-      """
-      test string column
-      """
+        float_column: float= pla.Field()
+        """test float column"""
 
-      date_column: Date = pla.Field()
-      """
-      test date column
-      """
+        string_column: str= pla.Field()
+        """test string column"""
 
-      datetime_column: DateTime = pla.Field()
-      """
-      test datetime column
-      """
+        date_column: Date= pla.Field()
+        """test date column"""
 
-      enum_column: Enum = pla.Field(dtype_kwargs={"categories":('ANIMAL','VEGETABLE','MINERAL',)})
-      """
-      test enum column
-      """
+        datetime_column: DateTime= pla.Field()
+        """test datetime column"""
 
-      ontology_enum_column: Enum = pla.Field(dtype_kwargs={"categories":('fiction','non fiction',)})
-      """
-      test enum column with ontology values
-      """
+        enum_column: Enum= pla.Field(dtype_kwargs={"categories":('ANIMAL','VEGETABLE','MINERAL',)})
+        """test enum column"""
 
-      multivalued_column: List[int] = pla.Field()
-      """
-      one-to-many form
-      """
+        ontology_enum_column: Enum= pla.Field(dtype_kwargs={"categories":('fiction','non fiction',)})
+        """test enum column with ontology values"""
 
-      any_type_column: Object = pla.Field()
-      """
-      needs to have type object
-      """
+        multivalued_column: List[int]= pla.Field()
+        """one-to-many form"""
 
-      cardinality_column: int = pla.Field()
-      """
-      check cardinality
-      """
+        any_type_column: Object = pla.Field()
+        """needs to have type object"""
 
-      inlined_class_column: Struct = pla.Field()
-      """
-      test column with another class inlined as a struct
-      """
+        inlined_class_column: Struct = pla.Field()
+        """test column with another class inlined as a struct"""
 
-      inlined_as_list_column: pl.List = pla.Field()
-      """
-      test column with another class inlined as a list
-      """
+        inlined_as_list_column: pl.List = pla.Field()
+        """test column with another class inlined as a list"""
 
-      inlined_simple_dict_column: Struct = pla.Field()
-      """
-      test column inlined using simple dict form
-      """
+        inlined_simple_dict_column: Struct = pla.Field()
+        """test column inlined using simple dict form"""
 
-      @pla.check("cardinality_column")
-      def check_cardinality_cardinality_column(cls, data: PolarsData):
-          return cls._check_cardinality(
-              data.lazyframe,
-              data.key,
-              min_cardinality=1,
-              max_cardinality=1
-          )
+        @pla.check("inlined_class_column")
+        def check_nested_struct_inlined_class_column(cls, data: PolarsData):
+            return cls._check_collection_struct(data)
 
-      @pla.check("inlined_class_column")
-      def check_nested_struct_inlined_class_column(cls, data: PolarsData):
-          return cls._check_collection_struct(data)
+        @pla.check("inlined_as_list_column")
+        def check_nested_struct_inlined_as_list_column(cls, data: PolarsData):
+            return cls._check_nested_list_struct(data)
 
-      @pla.check("inlined_as_list_column")
-      def check_nested_struct_inlined_as_list_column(cls, data: PolarsData):
-          return cls._check_nested_list_struct(data)
+        @pla.check("inlined_simple_dict_column")
+        def check_nested_struct_inlined_simple_dict_column(cls, data: PolarsData):
+            return cls._check_simple_dict(data)
 
-      @pla.check("inlined_simple_dict_column")
-      def check_nested_struct_inlined_simple_dict_column(cls, data: PolarsData):
-          return cls._check_simple_dict(data)
-
-      _NESTED_RANGES = {
-          "inlined_class_column": "ColumnType",
-          "inlined_as_list_column": "ColumnType",
-          "inlined_simple_dict_column": "SimpleDictType",
-      }
-      _INLINE_FORM = {
-          "inlined_class_column": "inline_collection_dict",
-          "inlined_as_list_column": "inlined_list_dict",
-          "inlined_simple_dict_column": "simple_dict",
-      }
-      _INLINE_DETAILS = {
-          "inlined_simple_dict_column": {'id': 'id', 'other': 'x'},
-      }
+        _NESTED_RANGES = {
+            "inlined_class_column": "ColumnType",
+            "inlined_as_list_column": "ColumnType",
+            "inlined_simple_dict_column": "SimpleDictType",
+        }
+        _INLINE_FORM = {
+            "inlined_class_column": "inline_collection_dict",
+            "inlined_as_list_column": "inlined_list_dict",
+            "inlined_simple_dict_column": "simple_dict",
+        }
+        _INLINE_DETAILS = {
+            "inlined_simple_dict_column": {'id': 'id', 'other': 'x'},
+        }
 
 
 Command Line
@@ -331,12 +281,16 @@ Future Roadmap
 The following major features need to be prioritized
 
 - Foreign key associations
+- Model and slot inheritance, including abstract models
 - Make transformer module more general rather than performing operations only at validation time.
 - Generalize support for additional dataframe libraries
   - PolaRS independent of Pandera to help loading tables prior to validation
   - Parquet/PyArrow storage formats
   - PySpark (also supported by Pandera)
   - Narwhals (general dataframe API wrapper)
+- Improve modularity
+  - leverage and align with existing linkml-runtime modules and tables
 - Conversion mechanism (loaders) for models using inlined-as-dictionary and inlined-as-simple-dict forms to inlined-as-list.
 - Top-level validator cli tool under linkml/validators
 - Ability to use the generated Pandera without a runtime LinkML dependency.
+- Cardinality checks over entire dataframe columns

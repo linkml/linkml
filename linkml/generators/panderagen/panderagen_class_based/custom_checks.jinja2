@@ -1,17 +1,4 @@
 
-{%- macro cardinality_checks(field) -%}
-    {%- if field.minimum_cardinality() or field.maximum_cardinality() %}
-    @pla.check("{{ field.name }}")
-    def check_cardinality_{{ field.name }}(cls, data: PolarsData):
-        return cls._check_cardinality(
-            data.lazyframe,
-            data.key,
-            min_cardinality={{ field.minimum_cardinality() }},
-            max_cardinality={{ field.maximum_cardinality() }}
-        )
-    {%- endif -%}
-{%- endmacro -%}
-
 {%- macro nested_checks(field) -%}
 {#-
     field: DataframeField
@@ -35,7 +22,6 @@
 
 {%- macro render_custom_checks(cls) -%}
     {%- for field in cls.fields -%}
-    {{ cardinality_checks(field) }}
     {{ nested_checks(field) }}
     {%- endfor %}
 {%- endmacro -%}
