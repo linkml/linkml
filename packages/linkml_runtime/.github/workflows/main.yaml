@@ -4,7 +4,8 @@
 # https://github.com/codecov/codecov-action
 
 name: Build and test linkml-runtime
-
+env:
+  UV_VERSION: "0.7.13"
 on:
   push:
     branches:
@@ -16,18 +17,21 @@ jobs:
   quality-checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@4.2.2
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v6
         with:
-          version: "0.7.13"
-          python-version: "3.13"
-      - name: Install dependencies
-        run: uv sync --group dev
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - uses: actions/setup-python@v5.6.0
+        with:
+          python-version: 3.13
+      - name: Install tox
+        run: python -m pip install tox
       - name: Run codespell
-        run: uv run codespell linkml_runtime tests
+        run: tox -e codespell
       - name: Run code format checks
-        run: uv run ruff format --check linkml_runtime tests
+        run: tox -e format_check
 
   test:
     needs:
@@ -54,20 +58,34 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@4.2.2
         with:
           fetch-depth: 0
 
+      #----------------------------------------------
+      #          install uv
+      #----------------------------------------------
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v6
         with:
-          version: "0.7.13"
+          version: ${{ env.UV_VERSION }}
           enable-cache: true
           cache-dependency-glob: "uv.lock"
           python-version: ${{ matrix.python-version }}
 
-      - name: Install library
-        run: uv sync --all-extras --dev
+      #----------------------------------------------
+      #    install your root project, if required 
+      #----------------------------------------------      
+      - name: Install dependencies
+        run: |
+          uv sync --group dev 
+
+      - name: Verify uv.lock is up-to-date
+        run: uv lock --check
+
+      #----------------------------------------------
+      #              coverage report   
+      #----------------------------------------------
       - name: Generate coverage results
         # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668
         shell: bash
@@ -75,6 +93,10 @@ jobs:
           uv run coverage run -m pytest
           uv run coverage xml
           uv run coverage report -m
+
+      #----------------------------------------------
+      #           upload coverage results
+      #----------------------------------------------
       - name: Upload coverage report
         uses: codecov/codecov-action@v5
         with:

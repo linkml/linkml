@@ -1,5 +1,7 @@
 # Test linkml-runtime with upstream linkml and run linkml tests
 name: Test with upstream linkml
+env:
+  UV_VERSION: "0.7.13"
 on:
   pull_request:
   workflow_dispatch:
@@ -108,17 +110,11 @@ jobs:
           git fetch upstream --tags
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v6
         with:
-          version: "0.7.13"
+          enable-cache: true
+          version: ${{ env.UV_VERSION }}
           python-version: ${{ matrix.python-version }}
-
-      - name: Load cached venv
-        id: cached-uv-dependencies
-        uses: actions/cache@v4.2.3
-        with:
-          path: linkml/.venv
-          key: venv-${{ matrix.python-version }}-${{ runner.os }}-${{ hashFiles('**/uv.lock') }}
 
       # we are not using linkml-runtime's lockfile, but simulating what will happen
       # when we merge this and update linkml's lockfile
@@ -132,7 +128,7 @@ jobs:
       # the cache will still speedup the rest of the installation
       - name: install linkml
         working-directory: linkml
-        run: uv sync --no-interaction --all-extras
+        run: uv sync --all-groups
 
       - name: print linkml-runtime version
         working-directory: linkml
@@ -142,4 +138,4 @@ jobs:
         # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668
         shell: bash
         working-directory: linkml
-        run: uv run python -m pytest --with-slow
+        run: uv run -m pytest --with-slow

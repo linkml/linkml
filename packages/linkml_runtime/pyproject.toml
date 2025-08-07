@@ -52,18 +52,20 @@ dependencies = [
     "isodate >=0.7.2, <1.0.0; python_version < '3.11'",
 ]
 
-[project.scripts]
-comparefiles = "linkml_runtime.utils.comparefiles:cli"
-linkml-normalize = "linkml_runtime.processing.referencevalidator:cli"
-
 [dependency-groups]
 dev = [
     "coverage >=6.2",
     "requests-cache >=1.2.0",
-    "pytest",
-    "pytest-cov",
-    "ruff",
-    "codespell",
+]
+
+[project.scripts]
+comparefiles = "linkml_runtime.utils.comparefiles:cli"
+linkml-normalize = "linkml_runtime.processing.referencevalidator:cli"
+
+[project.optional-dependencies]
+dev = [
+    "coverage",
+    "requests-cache",
 ]
 
 [tool.codespell]
@@ -84,6 +86,7 @@ ignore-words-list = [
   "re-used",
 ]
 quiet-level = 3
+# https://docs.astral.sh/ruff/settings/
 [tool.ruff]
 extend-exclude = []
 force-exclude = true
@@ -173,16 +176,63 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["F401"] # unused imports
+"tests/**/*.py" = ["S101"] # use of assert
 
 [tool.ruff.lint.mccabe]
 # Flag errors (`C901`) whenever the complexity level exceeds 15.
 max-complexity = 15
 
+[tool.tox]
+requires = ["tox>=4"]
+env_list = ["lint", "py{39,310,311,312,313}"]
+
+[tool.tox.env_run_base]
+allowlist_externals = ["uv"]
+deps = ["pytest"]
+commands = [
+  ["uv", "sync", "--all-extras", "--dev"],
+  ["uv", "run", "pytest", "{posargs}"],
+]
+
+[tool.tox.env.codespell]
+description = "Run spell checkers."
+skip_install = true
+deps = [
+  "codespell",
+  "tomli", # required for getting config from pyproject.toml
+]
+commands = [
+  ["codespell", "{posargs}"]
+]
+
+[tool.tox.env.format]
+description = "Run ruff code formatter."
+skip_install = true
+deps = ["ruff==0.11.13"]
+commands = [
+  ["ruff", "format", "{posargs:.}"],
+]
+
+[tool.tox.env.format_check]
+description = "Check that code is correctly formatted by ruff."
+skip_install = true
+deps = ["ruff==0.11.13"]
+commands = [
+  ["ruff", "format", "--check", "{posargs:.}"],
+]
+
+[tool.tox.env.lint]
+description = "Run code linter and formatter (no fixes)."
+skip_install = true
+deps = ["ruff==0.11.13"]
+commands = [
+  ["ruff", "check", "{posargs:.}"],
+]
+
 [tool.uv-dynamic-versioning]
-enable = true
 vcs = "git"
 style = "pep440"
+fallback-version = "0.0.0"
 
 [tool.hatch.version]
 source = "uv-dynamic-versioning"
