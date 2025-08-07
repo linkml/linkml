@@ -48,7 +48,7 @@ dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "jinja2 >= 3.1.0",
     "jsonasobj2 >= 1.0.3, < 2.0.0",
     "jsonschema[format] >= 4.0.0",
-    "linkml-runtime >= 1.9.3, < 2.0.0",
+    "linkml-runtime >= 1.9.4, < 2.0.0",
     "openpyxl",
     "parse",
     "prefixcommons >= 0.1.7",
@@ -206,11 +206,34 @@ skip = [
   "./docs/LinkML-logo/LinkML-Revised-Round-Logo-MASTER-FILE.ai",
   "./tests/data/hp.ttl",
   "./tests/data/hp_f.ttl",
+  "tests/test_generators/input/jsonschema_value_constraints.yaml",
 ]
 # Ignore table where words could be split across rows
 ignore-regex = '(\|.*\|.*\|.*\||\[[A-Z][a-z]\][a-z][a-z])'
-# Instead of a comma-seperated single string,  a toml list may be used (as for "skip" above)
-ignore-words-list = 'anc,mater,connexion,infarction,thirdparty,linke,amination,brite,mor,'
+ignore-words-list = [
+  "acsess",
+  "AGS",
+  "amination",
+  "anc",
+  "brite",
+  "connexion",
+  "EHR",
+  "infarction",
+  "linke",
+  "mater",
+  "mor",
+  "Stye",
+  "TE",
+  "thirdparty",
+  "Vas",
+  # These are temp exemptions because they are coming from
+  # upstream repos linkml-runtime and linkml-model
+  # we should remove these once the upstream repos are fixed
+  # and changes are propagated to linkml
+  "GENERARE",
+  "re-used",
+  "doesnt"
+]
 quiet-level = 3
 
 [tool.black]
@@ -270,7 +293,9 @@ extend-exclude = [
     "tests/**/__snapshots__",
     "examples/",
     "docs/",
-    "notebooks/"
+    "notebooks/",
+    # Auto-generated files that may not conform to current linting rules
+    "linkml/linter/config/datamodel/config.py"
 ]
 force-exclude = true
 line-length = 120
@@ -290,7 +315,7 @@ select = [
 # These templates can have long lines
 "linkml/generators/sqlalchemy/sqlalchemy_declarative_template.py" = ["E501"]
 "linkml/generators/sqlalchemy/sqlalchemy_imperative_template.py" = ["E501"]
-"linkml/linter/config/datamodel/config.py" = ["E501", "F401", "I001"]
+"linkml/linter/config/datamodel/config.py" = ["E501", "F401", "I001", "UP035"]
 
 # Notebooks can have unsorted imports
 "tests/test_notebooks/input/*" = ["E402"]

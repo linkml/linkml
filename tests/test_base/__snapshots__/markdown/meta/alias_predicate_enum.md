@@ -14,4 +14,3 @@ URI: [linkml:alias_predicate_enum](https://w3id.org/linkml/alias_predicate_enum)
 | RELATED_SYNONYM |  | skos:relatedMatch |  |
 | BROAD_SYNONYM |  | skos:broaderMatch |  |
 | NARROW_SYNONYM |  | skos:narrowerMatch |  |
-

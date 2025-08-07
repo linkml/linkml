@@ -694,8 +694,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         if self.materialize_patterns:
             logger.info("Materializing patterns in the schema before serialization")
             self.schemaview.materialize_patterns()
-
-        return self.generate().to_json(sort_keys=True, indent=self.indent if self.indent > 0 else None)
+        result = self.generate().to_json(sort_keys=True, indent=self.indent if self.indent > 0 else None)
+        return result.rstrip() + "\n"
 
 
 @shared_arguments(JsonSchemaGenerator)

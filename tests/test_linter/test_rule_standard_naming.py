@@ -180,3 +180,37 @@ def test_pv_violation_allowed():
     problems = list(rule.check(SchemaView(builder.schema)))
 
     assert len(problems) == 0
+
+
+def test_exclude_specific_entities():
+    config = StandardNamingConfig(
+        level=RuleLevel.error.text,
+        exclude=["bad_class", "BadSlot", "bad_enum", "Bad_PV"],
+    )
+
+    builder = SchemaBuilder()
+    builder.add_class("bad_class")  # would normally fail
+    builder.add_class("GoodClass")  # should pass
+    builder.add_class("another_bad_class")  # should fail
+
+    builder.add_slot("BadSlot")  # would normally fail
+    builder.add_slot("good_slot")  # should pass
+    builder.add_slot("AnotherBadSlot")  # should fail
+
+    builder.add_enum("bad_enum", ["good_pv"])  # enum name would normally fail
+    builder.add_enum(
+        "GoodEnum", ["Bad_PV", "good_pv", "Extra_Bad_Pv"]
+    )  # Bad_PV would normally fail, Extra_Bad_Pv will fail
+    builder.add_enum("another_bad_enum", ["good_pv"])  # should fail
+
+    rule = StandardNamingRule(config)
+    problems = list(rule.check(SchemaView(builder.schema)))
+
+    expected_messages = {
+        "Class has name 'another_bad_class'",
+        "Slot has name 'AnotherBadSlot'",
+        "Enum has name 'another_bad_enum'",
+        "Permissible value of Enum 'GoodEnum' has name 'Extra_Bad_Pv'",
+    }
+
+    assert {p.message for p in problems} == expected_messages
