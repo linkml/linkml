@@ -57,6 +57,10 @@ dev = [
     "coverage >=6.2",
     "requests-cache >=1.2.0",
     "docker",
+    "jsonpatch",
+    "testcontainers", 
+    "nbformat",
+    "nbconvert",
 ]
 
 [project.scripts]
