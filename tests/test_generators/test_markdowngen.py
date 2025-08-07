@@ -67,7 +67,6 @@ def test_markdowngen_deprecation(kitchen_sink_path):
     """Test that MarkdownGenerator emits a deprecation warning since
     it has been marked for deprecation."""
     from linkml.utils.deprecation import EMITTED, SemVer
-    
     # Skip test in development environment with version 0.0.0
     ver = SemVer.from_package("linkml")
     if ver.major == 0 and ver.minor == 0 and ver.patch == 0:
