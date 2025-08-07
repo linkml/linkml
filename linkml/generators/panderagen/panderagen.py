@@ -1,4 +1,3 @@
-import importlib
 import logging
 import os
 from dataclasses import dataclass
@@ -42,10 +41,6 @@ TYPEMAP = {
     },
 }
 
-NESTED_TYPE_MAP = {
-    "panderagen_class_based": {"list": ""},
-}
-
 
 class TemplateEnum(Enum):
     CLASS_BASED = "panderagen_class_based"
@@ -58,10 +53,9 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
 
     Status: incompletely implemented
 
-    Two styles are supported:
+    One styles is supported:
 
-    - class-based
-    - schema-based (not implemented)
+    - panderagen_class_based
     """
 
     DEFAULT_TEMPLATE_PATH = "panderagen_class_based"
@@ -83,7 +77,6 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
     gen_slots: bool = True
     genmeta: bool = False
     emit_metadata: bool = True
-    inline_validator_mixin: bool = False
     coerce: bool = False
 
     def default_value_for_type(self, typ: str) -> str:
@@ -93,7 +86,7 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
     @staticmethod
     def make_multivalued(range: str) -> str:
         if range == "Struct":
-            return "pl.List"  # WOW
+            return "pl.List"
         return f"List[{range}]"
 
     def uri_type_map(self, xsd_uri: str, template: str = None):
@@ -131,23 +124,6 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
 
         return compile_python(pandera_code)
 
-    def read_validator_helper(self) -> str:
-        """
-        Return the linkml_pandera_validator python module code as a string.
-
-        The generated pandera classes use a mixin helper.
-        This is currently inlined in the generated code.
-        """
-        linkml_pandera_validator = importlib.import_module("linkml.generators.panderagen.linkml_pandera_validator")
-        module_path = linkml_pandera_validator.__file__
-
-        try:
-            with open(module_path) as file:
-                return file.read().replace("LinkmlPanderaValidator", "_LinkmlPanderaValidator")
-        except Exception as e:
-            logger.warning(f"Unable to read linkml_pandera_validator module: {e}")
-            return None
-
     def serialize(self, rendered_module: Optional[OODocument] = None) -> str:
         """
         Serialize the schema to a Pandera module as a string
@@ -166,11 +142,6 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
 
         template_obj = self.load_template(template_file)
 
-        if self.inline_validator_mixin:
-            pandera_validator_code = self.read_validator_helper()
-        else:
-            pandera_validator_code = None
-
         code = template_obj.render(
             doc=module,
             metamodel_version=self.schema.metamodel_version,
@@ -178,7 +149,7 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
             coerce=self.coerce,
             type_map=TYPEMAP,
             template_path=self.template_path,
-            pandera_validator_code=pandera_validator_code,
+            pandera_validator_code=None,
         )
         return code
 
