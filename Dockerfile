@@ -7,16 +7,17 @@ ENV PYTHONFAULTHANDLER=1 \
   PIP_NO_CACHE_DIR=off \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
   PIP_DEFAULT_TIMEOUT=100 \
-  POETRY_VERSION=2.1.1
+  UV_VERSION=0.7.13
 
-# Install Poetry
-RUN pip install "poetry==$POETRY_VERSION"
+# Install uv
+RUN pip install "uv==$UV_VERSION"
+
 
 WORKDIR /code
 
-# Build project. The .git directory is needed for poetry-dynamic-versioning
+# Build project. The .git directory is needed for uv-dynamic-versioning
 COPY . .
-RUN poetry build
+RUN uv build
 
 #######################################
 FROM python:3.12-slim-bookworm AS runner
