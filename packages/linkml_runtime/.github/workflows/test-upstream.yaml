@@ -52,7 +52,7 @@ jobs:
           echo $UPSTREAM_BRANCH
 
           if [[ -z "$UPSTREAM_BRANCH" ]]; then
-            echo "Using migrate-to-uv as default, after merge change back"
+            echo "Using migrate-to-uv as default"
             UPSTREAM_BRANCH="migrate-to-uv"
           fi
 
@@ -67,7 +67,7 @@ jobs:
           echo $UPSTREAM_REPO
 
           if [[ -z "$UPSTREAM_REPO" ]]; then
-            echo "Using iQuxLE/linkml as default for now, after merge change back!"
+            echo "Using iQuxLE/linkml as default"
             UPSTREAM_REPO="iQuxLE/linkml"
           fi
 
@@ -126,20 +126,9 @@ jobs:
       # the cache will restore the old version of linkml-runtime, but the lockfile
       # will only store the directory dependency (and thus will reinstall it)
       # the cache will still speedup the rest of the installation
-      - name: install linkml with all extras and dev dependencies needed for tests
+      - name: install linkml
         working-directory: linkml
-        run: |
-          uv sync --all-extras
-          # Explicitly install all dependencies that linkml tests need
-          uv add docker requests-cache jsonpatch testcontainers nbformat nbconvert
-
-      - name: debug what's installed
-        working-directory: linkml
-        run: |
-          echo "=== Installed packages ==="
-          uv run pip list | grep -E "(docker|requests|json|test|numpy|nbformat)" || echo "No matches found"
-          echo "=== Python path ==="
-          uv run python -c "import sys; print('\n'.join(sys.path))"
+        run: uv sync --all-groups && uv add docker
 
       - name: print linkml-runtime version
         working-directory: linkml
