@@ -1,18 +1,18 @@
 <!doctype html>
-<html class="no-js" lang="en" data-content_root="">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="How to Generate AI prompts" href="generate-ai-prompts.html" /><link rel="prev" title="Multidimensional Arrays" href="multidimensional-arrays.html" />
 
-    <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
+    <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>How to make a property graph schema - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
     <link rel="stylesheet" type="text/css" href="../_static/css/common.css?v=95000900" />
     <link rel="stylesheet" type="text/css" href="../_static/css/notebooks.css?v=1ce917dd" />
     
@@ -73,7 +73,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -88,22 +88,63 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -116,6 +157,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -134,7 +177,8 @@
       <div class="theme-toggle-container theme-toggle-header">
         <button class="theme-toggle">
           <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
@@ -332,11 +376,17 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/howtos/model-property-graphs.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
 <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
@@ -346,15 +396,15 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="how-to-make-a-property-graph-schema">
-<h1>How to make a property graph schema<a class="headerlink" href="#how-to-make-a-property-graph-schema" title="Permalink to this heading">#</a></h1>
+<h1>How to make a property graph schema<a class="headerlink" href="#how-to-make-a-property-graph-schema" title="Link to this heading">¶</a></h1>
 <p>LinkML is intended to be a flexible, general purpose “<a class="reference external" href="https://github.com/json-ld/yaml-ld/issues/19">polyglot</a>” data modeling framework. You can use it with JSON documents and document databases like MongoDB, with tables and data frames, or with graph or RDF databases, and more. See <a class="reference internal" href="recognize-structural-forms.html"><span class="std std-doc">How to recognize and work with different structural forms</span></a> for more details.</p>
 <p>A lot of the LinkML documentation uses JSON/YAML as examples, as these are flexible commonly used syntaxes for exchanging data, but many of the original use cases for LinkML came from <a class="reference external" href="https://biolink.github.io/biolink-model/">graph modeling</a>, and this continues to be a driving use case.</p>
 <p>This how-to guide walks through the steps for making a schema for a <a class="reference external" href="https://en.wikipedia.org/wiki/Property_graph">Property Graph</a> (PG), such as what might be found in a graph database like <a class="reference external" href="https://neo4j.com/">Neo4J</a>, or also in an RDF database that supports <a class="reference external" href="https://www.ontotext.com/knowledgehub/fundamentals/what-is-rdf-star/">RDF-star</a>, such as GraphDB.</p>
 <p>We focus here on PGs, because there are some specific design considerations that don’t come up when thinking about simple RDF-style subject-property-object graphs (see <a class="reference external" href="https://linkml.io/linkml/data/rdf.html">working with RDF</a> for more on this topic).</p>
 <section id="what-is-a-property-graph">
-<h2>What is a property graph?<a class="headerlink" href="#what-is-a-property-graph" title="Permalink to this heading">#</a></h2>
+<h2>What is a property graph?<a class="headerlink" href="#what-is-a-property-graph" title="Link to this heading">¶</a></h2>
 <p>A property graph (PG) is a graph data model that allows for properties to be associated with both edges (relationships) and nodes (vertices). This allows for more expressive queries and data modeling than a simple graph.</p>
 <p>The Neo4J documentation on <a class="reference external" href="https://neo4j.com/docs/getting-started/appendix/graphdb-concepts/">graph database concepts</a> shows an example of a PG for representing relationships of persons to Movies:</p>
 <p><img alt="example graph" src="https://neo4j.com/docs/getting-started/_images/graph_simple-arr.svg" /></p>
@@ -366,7 +416,7 @@
 <p>Let’s explore how this could be modeled in LinkML. Our first attempt will be a simple projection of the PG where each edge is a <em>slot</em>, but this has some limitations. Then we will explore an alternative way of doing this.</p>
 </section>
 <section id="first-attempt-a-simple-graph-projection">
-<h2>First attempt: A simple graph projection<a class="headerlink" href="#first-attempt-a-simple-graph-projection" title="Permalink to this heading">#</a></h2>
+<h2>First attempt: A simple graph projection<a class="headerlink" href="#first-attempt-a-simple-graph-projection" title="Link to this heading">¶</a></h2>
 <p>If we ignore the edge property <code class="docutils literal notranslate"><span class="pre">roles</span></code>, then coming up with a schema for this graph is quite easy:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://example.org/person-movie</span>
 <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Person-Movie</span>
@@ -434,7 +484,7 @@
 </div>
 <p>Note that in this simple graph projection, we don’t have any way of representing the <code class="docutils literal notranslate"><span class="pre">roles</span></code> edge property in the original Neo4J example.</p>
 <section id="schemasheets-representation-of-direct-simple-graphs">
-<h3>Schemasheets representation of direct simple graphs<a class="headerlink" href="#schemasheets-representation-of-direct-simple-graphs" title="Permalink to this heading">#</a></h3>
+<h3>Schemasheets representation of direct simple graphs<a class="headerlink" href="#schemasheets-representation-of-direct-simple-graphs" title="Link to this heading">¶</a></h3>
 <p>The above schema can easily be represented in a tabular form using <a class="reference external" href="https://linkml.io/schemasheets/">SchemaSheets</a>:</p>
 <p>Main tab:</p>
 <div class="table-wrapper colwidths-auto docutils container">
@@ -495,7 +545,7 @@
 </div>
 </section>
 <section id="example-data">
-<h3>Example data<a class="headerlink" href="#example-data" title="Permalink to this heading">#</a></h3>
+<h3>Example data<a class="headerlink" href="#example-data" title="Link to this heading">¶</a></h3>
 <p>Let’s examine some example data instances, using the simple projection schema. We’ll show these first as YAML:</p>
 <p>Persons:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Tom Hanks</span>
@@ -544,7 +594,7 @@
 <p>Note that when we try and traverse from movie to persons directly, this won’t work as associations are directional in OO models. Note also the awkward need to lookup non-inlined references.</p>
 </section>
 <section id="limitations-of-simple-graphs">
-<h3>Limitations of simple graphs<a class="headerlink" href="#limitations-of-simple-graphs" title="Permalink to this heading">#</a></h3>
+<h3>Limitations of simple graphs<a class="headerlink" href="#limitations-of-simple-graphs" title="Link to this heading">¶</a></h3>
 <p>This all works well for simple graphs, but what happens if we want to represent the <em>role</em> of the actor in the movie, e.g. the name of the character that Tom Hanks plays in the movie Forest Gump is… “Forrest Gump”?</p>
 <p><img alt="example graph" src="https://neo4j.com/docs/getting-started/_images/graph_simple-arr.svg" /></p>
 <p>There are a number of different design patterns here, and from an RDF modeling perspective these have all been collected in an influential W3C note on <a class="reference external" href="https://www.w3.org/TR/swbp-n-aryRelations/">n-ary relations</a>. More recently, the RDF-star extension to RDF has been proposed to allow for properties on edges. The Ontotext site has good up to date documentation contrasting the different design patterns for representing PGs in RDF, and their relationship to RDF-star: <a class="reference external" href="https://www.ontotext.com/knowledgehub/fundamentals/what-is-rdf-star/">What is rdf-star?</a></p>
@@ -558,7 +608,7 @@
 </section>
 </section>
 <section id="second-attempt-standard-pg-pattern-node-and-edge-classes">
-<h2>Second attempt: Standard PG Pattern: Node and Edge classes<a class="headerlink" href="#second-attempt-standard-pg-pattern-node-and-edge-classes" title="Permalink to this heading">#</a></h2>
+<h2>Second attempt: Standard PG Pattern: Node and Edge classes<a class="headerlink" href="#second-attempt-standard-pg-pattern-node-and-edge-classes" title="Link to this heading">¶</a></h2>
 <p>A standard pattern for modeling PGs is to have two sets of classes: classes for nodes, and classes for edges. These could either be generic, or they could be abstract base classes intended to be subclassed.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">Node</span><span class="p">:</span>
@@ -793,7 +843,7 @@ model differently.</p>
 </div>
 <p>This would be flagged as invalid.</p>
 <section id="direct-rdf-mapping-of-example-data">
-<h3>Direct RDF mapping of example data<a class="headerlink" href="#direct-rdf-mapping-of-example-data" title="Permalink to this heading">#</a></h3>
+<h3>Direct RDF mapping of example data<a class="headerlink" href="#direct-rdf-mapping-of-example-data" title="Link to this heading">¶</a></h3>
 <p>If we were to serialize the above data as RDF using the schema above, this would result in triples such as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PERSON</span><span class="p">:</span><span class="n">TH</span> <span class="n">a</span> <span class="n">my</span><span class="p">:</span><span class="n">Person</span> <span class="p">;</span>
   <span class="n">rdfs</span><span class="p">:</span><span class="n">label</span> <span class="s2">&quot;Tom Hanks&quot;</span> <span class="p">;</span>
@@ -832,7 +882,7 @@ model differently.</p>
 </div>
 </section>
 <section id="edge-types">
-<h3>Edge types<a class="headerlink" href="#edge-types" title="Permalink to this heading">#</a></h3>
+<h3>Edge types<a class="headerlink" href="#edge-types" title="Link to this heading">¶</a></h3>
 <p>In the above example, we equate the RDF predicate with the edge type. This has the advantage of simplicity.</p>
 <p>In some cases we might want to make edge types more granular than predicates. For example, consider a schema that uses a <code class="docutils literal notranslate"><span class="pre">HasPart</span></code> predicate. This is a very general predicate that could be used for:</p>
 <ul class="simple">
@@ -891,14 +941,14 @@ model differently.</p>
 <p>This provides a bit more flexibility, but with some additional complexity.</p>
 </section>
 <section id="assertions-vs-quotes">
-<h3>Assertions vs Quotes<a class="headerlink" href="#assertions-vs-quotes" title="Permalink to this heading">#</a></h3>
+<h3>Assertions vs Quotes<a class="headerlink" href="#assertions-vs-quotes" title="Link to this heading">¶</a></h3>
 <p>As noted above, when using the standard PG modeling pattern, edge types (predicates) are classes. We do not have slots <code class="docutils literal notranslate"><span class="pre">acted_in</span></code> and <code class="docutils literal notranslate"><span class="pre">directed</span></code>. Instead we have <code class="docutils literal notranslate"><span class="pre">ActedIn</span></code> and <code class="docutils literal notranslate"><span class="pre">Directed</span></code> classes, and generic n-ary relation properties to relate edge instances to nodes.</p>
 <p>This is in contrast to the simple representation, where we have explicit slots for each predicate, but we can’t represent directly the edge properties.</p>
 <p>We are currently exploring options for allow features such as auto-asserting PG style models when mapping to RDF-star.</p>
 </section>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">#</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://www.ontotext.com/knowledgehub/fundamentals/what-is-rdf-star/">What is RDF-star</a> from GraphDB docs</p></li>
 <li><p><a class="reference external" href="https://linkml.io/linkml-store/how-to/Use-Neo4j.html">Property Graphs with LinkML store</a></p></li>
@@ -987,12 +1037,10 @@ model differently.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
-    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     </body>
 </html>

@@ -1,18 +1,18 @@
 <!doctype html>
-<html class="no-js" lang="en" data-content_root="">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="FAQ: Getting Help" href="getting-help.html" /><link rel="prev" title="FAQ: Tools" href="tools.html" />
 
-    <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
+    <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>FAQ: Python - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
     <link rel="stylesheet" type="text/css" href="../_static/css/common.css?v=95000900" />
     <link rel="stylesheet" type="text/css" href="../_static/css/notebooks.css?v=1ce917dd" />
     
@@ -73,7 +73,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -88,22 +88,63 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -116,6 +157,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -134,7 +177,8 @@
       <div class="theme-toggle-container theme-toggle-header">
         <button class="theme-toggle">
           <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
@@ -332,11 +376,17 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/faq/python.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
 <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
@@ -346,12 +396,12 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="faq-python">
-<h1>FAQ: Python<a class="headerlink" href="#faq-python" title="Permalink to this heading">#</a></h1>
+<h1>FAQ: Python<a class="headerlink" href="#faq-python" title="Link to this heading">¶</a></h1>
 <p>this section of the FAQ is for questions about writing Python code that uses the LinkML framework.</p>
 <section id="why-would-i-use-linkml-in-my-python-code">
-<h2>Why would I use LinkML in my Python code?<a class="headerlink" href="#why-would-i-use-linkml-in-my-python-code" title="Permalink to this heading">#</a></h2>
+<h2>Why would I use LinkML in my Python code?<a class="headerlink" href="#why-would-i-use-linkml-in-my-python-code" title="Link to this heading">¶</a></h2>
 <p>You can use LinkML without writing a line of Python code, but if you
 are coding in Python there are a number of advantages to using parts
 of the LinkML toolchain.</p>
@@ -366,24 +416,24 @@ lots of “freebies” for things like loading/dumping to formats like YAML/JSON
 </ul>
 </section>
 <section id="where-do-i-find-out-more">
-<h2>Where do I find out more?<a class="headerlink" href="#where-do-i-find-out-more" title="Permalink to this heading">#</a></h2>
+<h2>Where do I find out more?<a class="headerlink" href="#where-do-i-find-out-more" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://linkml.io/linkml/data/python.html">working with python</a></p></li>
 <li><p><a class="reference external" href="https://linkml.io/linkml/developers/index.html">developers guide</a></p></li>
 </ul>
 </section>
 <section id="which-packages-do-i-need-to-install">
-<h2>Which packages do I need to install?<a class="headerlink" href="#which-packages-do-i-need-to-install" title="Permalink to this heading">#</a></h2>
+<h2>Which packages do I need to install?<a class="headerlink" href="#which-packages-do-i-need-to-install" title="Link to this heading">¶</a></h2>
 <p>If you want to generate Python dataclasses, then you need the full <a class="reference external" href="https://github.com/linkml/linkml">linkml</a> package.</p>
 <p>However, your code doesn’t need this at <em>runtime</em>. Once you have generated your project files your only dependency will be on the more lightweight <a class="reference external" href="https://github.com/linkml/linkml-runtime">linkml-runtime</a> package.</p>
 <p><em>Note</em> you don’t need to install <a class="reference external" href="https://github.com/linkml/linkml-model">linkml-model</a>, the metamodel is included as part of the runtime</p>
 </section>
 <section id="how-do-i-get-started">
-<h2>How do I get started?<a class="headerlink" href="#how-do-i-get-started" title="Permalink to this heading">#</a></h2>
+<h2>How do I get started?<a class="headerlink" href="#how-do-i-get-started" title="Link to this heading">¶</a></h2>
 <p>We recommend going through the tutorial, and in particular, <a class="reference external" href="https://linkml.io/linkml/intro/tutorial05.html">Part 5: Using Python</a></p>
 </section>
 <section id="what-is-a-loader-or-a-dumper">
-<h2>What is a loader or a dumper?<a class="headerlink" href="#what-is-a-loader-or-a-dumper" title="Permalink to this heading">#</a></h2>
+<h2>What is a loader or a dumper?<a class="headerlink" href="#what-is-a-loader-or-a-dumper" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>loaders allow data to be loaded <em>into</em> python objects from supported formats</p></li>
 <li><p>dumpers allow data to be loaded <em>from</em> python objects into supported formats</p></li>
@@ -411,7 +461,7 @@ there is insufficient information in the json/yaml</p>
 <p>Note: dumpers shouldn’t be confused with <em>generators</em> - dumpers are for exporting <em>data</em> that conforms to a LinkML schema, and generators are for converting an actual LinkML schema to another framework (e.g. json-schema)</p>
 </section>
 <section id="what-formats-are-supported">
-<h2>What formats are supported?<a class="headerlink" href="#what-formats-are-supported" title="Permalink to this heading">#</a></h2>
+<h2>What formats are supported?<a class="headerlink" href="#what-formats-are-supported" title="Link to this heading">¶</a></h2>
 <p>The core formats for LinkML data are:</p>
 <ul class="simple">
 <li><p>json (see json_dumper and json_loader)</p></li>
@@ -422,12 +472,12 @@ there is insufficient information in the json/yaml</p>
 <p>Data can also be exported to and imported from SQL databases, but this is not part of the loader/dumper framework</p>
 </section>
 <section id="why-do-i-get-a-not-json-serializable-message">
-<h2>Why do I get a “not JSON serializable” message?<a class="headerlink" href="#why-do-i-get-a-not-json-serializable-message" title="Permalink to this heading">#</a></h2>
+<h2>Why do I get a “not JSON serializable” message?<a class="headerlink" href="#why-do-i-get-a-not-json-serializable-message" title="Link to this heading">¶</a></h2>
 <p>This is probably because you are using the <code class="docutils literal notranslate"><span class="pre">dump</span></code> method from the <code class="docutils literal notranslate"><span class="pre">json</span></code> package, which expects dictionaries, not objects.</p>
 <p>you should use <code class="docutils literal notranslate"><span class="pre">json_dumper</span></code> instead.</p>
 </section>
 <section id="what-is-the-difference-between-gen-python-and-gen-pydantic-and-gen-sqla">
-<h2>What is the difference between gen-python and gen-pydantic and gen-sqla?<a class="headerlink" href="#what-is-the-difference-between-gen-python-and-gen-pydantic-and-gen-sqla" title="Permalink to this heading">#</a></h2>
+<h2>What is the difference between gen-python and gen-pydantic and gen-sqla?<a class="headerlink" href="#what-is-the-difference-between-gen-python-and-gen-pydantic-and-gen-sqla" title="Link to this heading">¶</a></h2>
 <p>Python has a number of different options for defining an object model:</p>
 <ul class="simple">
 <li><p>dataclasses (part of the standard library)</p></li>
@@ -474,7 +524,7 @@ interest in Pydantic, especially as this works well with the popular FastAPI fra
 </ul>
 </section>
 <section id="can-i-convert-between-sql-alchemy-models-and-dataclasses-pydantic">
-<h2>Can I convert between SQL Alchemy models and dataclasses/pydantic<a class="headerlink" href="#can-i-convert-between-sql-alchemy-models-and-dataclasses-pydantic" title="Permalink to this heading">#</a></h2>
+<h2>Can I convert between SQL Alchemy models and dataclasses/pydantic<a class="headerlink" href="#can-i-convert-between-sql-alchemy-models-and-dataclasses-pydantic" title="Link to this heading">¶</a></h2>
 <p>Yes, <a class="reference external" href="https://linkml.io/linkml/developers/sqlstore.html">SQLStore</a> can perform interconversion</p>
 <p>See <a class="reference external" href="https://github.com/linkml/linkml/blob/main/notebooks/SQL-examples.ipynb">SQL-Examples notebook</a>
 for example code</p>
@@ -557,12 +607,10 @@ for example code</p>
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
-    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     </body>
 </html>

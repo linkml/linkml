@@ -1,18 +1,18 @@
 <!doctype html>
-<html class="no-js" lang="en" data-content_root="">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="SPARQL" href="sparql.html" /><link rel="prev" title="JSON-LD" href="jsonld.html" />
 
-    <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
+    <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>RDF - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
     <link rel="stylesheet" type="text/css" href="../_static/css/common.css?v=95000900" />
     <link rel="stylesheet" type="text/css" href="../_static/css/notebooks.css?v=1ce917dd" />
     
@@ -73,7 +73,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -88,22 +88,63 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -116,6 +157,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -134,7 +177,8 @@
       <div class="theme-toggle-container theme-toggle-header">
         <button class="theme-toggle">
           <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
@@ -332,11 +376,17 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/generators/rdf.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
 <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
@@ -346,46 +396,46 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="module-linkml.generators.rdfgen">
-<span id="rdf"></span><h1>RDF<a class="headerlink" href="#module-linkml.generators.rdfgen" title="Permalink to this heading">#</a></h1>
+<span id="rdf"></span><h1>RDF<a class="headerlink" href="#module-linkml.generators.rdfgen" title="Link to this heading">¶</a></h1>
 <p>YAML Schema to RDF Generator</p>
 <p>Generate a JSON LD representation of the model</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.rdfgen.RDFGenerator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.rdfgen.</span></span><span class="sig-name descname"><span class="pre">RDFGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">schema:</span> <span class="pre">Union[str,</span> <span class="pre">TextIO,</span> <span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition,</span> <span class="pre">ForwardRef('Generator'),</span> <span class="pre">pathlib.Path],</span> <span class="pre">schemaview:</span> <span class="pre">Optional[linkml_runtime.utils.schemaview.SchemaView]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">format:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">useuris:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">log_level:</span> <span class="pre">Optional[int]</span> <span class="pre">=</span> <span class="pre">30,</span> <span class="pre">mergeimports:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">source_file_date:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">source_file_size:</span> <span class="pre">Optional[int]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">logger:</span> <span class="pre">Optional[logging.Logger]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">verbose:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">output:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">namespaces:</span> <span class="pre">Optional[linkml_runtime.utils.namespaces.Namespaces]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metamodel_name_map:</span> <span class="pre">dict[str,</span> <span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">importmap:</span> <span class="pre">Union[str,</span> <span class="pre">collections.abc.Mapping[str,</span> <span class="pre">str],</span> <span class="pre">NoneType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">emit_prefixes:</span> <span class="pre">set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">metamodel:</span> <span class="pre">linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">include:</span> <span class="pre">Union[str,</span> <span class="pre">pathlib.Path,</span> <span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition,</span> <span class="pre">NoneType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">emit_metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">context:</span> <span class="pre">list[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">original_schema:</span> <span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">=</span> <span class="pre">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/rdfgen.html#RDFGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.rdfgen.</span></span><span class="sig-name descname"><span class="pre">RDFGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">schema:</span> <span class="pre">Union[str,</span> <span class="pre">TextIO,</span> <span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition,</span> <span class="pre">ForwardRef('Generator'),</span> <span class="pre">pathlib.Path],</span> <span class="pre">schemaview:</span> <span class="pre">Optional[linkml_runtime.utils.schemaview.SchemaView]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">format:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">useuris:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">log_level:</span> <span class="pre">Optional[int]</span> <span class="pre">=</span> <span class="pre">30,</span> <span class="pre">mergeimports:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">source_file_date:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">source_file_size:</span> <span class="pre">Optional[int]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">logger:</span> <span class="pre">Optional[logging.Logger]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">verbose:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">output:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">namespaces:</span> <span class="pre">Optional[linkml_runtime.utils.namespaces.Namespaces]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metamodel_name_map:</span> <span class="pre">dict[str,</span> <span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">importmap:</span> <span class="pre">Union[str,</span> <span class="pre">collections.abc.Mapping[str,</span> <span class="pre">str],</span> <span class="pre">NoneType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">emit_prefixes:</span> <span class="pre">set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">metamodel:</span> <span class="pre">linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">include:</span> <span class="pre">Union[str,</span> <span class="pre">pathlib.Path,</span> <span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition,</span> <span class="pre">NoneType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">emit_metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">context:</span> <span class="pre">list[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">original_schema:</span> <span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">=</span> <span class="pre">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/rdfgen.html#RDFGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator" title="Link to this definition">¶</a></dt>
 <dd><dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.rdfgen.RDFGenerator.context">
-<span class="sig-name descname"><span class="pre">context</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator.context" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">context</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator.context" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.rdfgen.RDFGenerator.emit_metadata">
-<span class="sig-name descname"><span class="pre">emit_metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator.emit_metadata" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">emit_metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator.emit_metadata" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.rdfgen.RDFGenerator.end_schema">
-<span class="sig-name descname"><span class="pre">end_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/rdfgen.html#RDFGenerator.end_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator.end_schema" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">end_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/rdfgen.html#RDFGenerator.end_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator.end_schema" title="Link to this definition">¶</a></dt>
 <dd><p>Visited once at the end of generation</p>
 <p>&#64;param kwargs: Arguments passed through from CLI – implementation dependent</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.rdfgen.RDFGenerator.generatorname">
-<span class="sig-name descname"><span class="pre">generatorname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rdfgen.py'</span></em><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator.generatorname" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">generatorname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rdfgen.py'</span></em><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator.generatorname" title="Link to this definition">¶</a></dt>
 <dd><p>Name of the generator. Override with os.path.basename(__file__)</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.rdfgen.RDFGenerator.generatorversion">
-<span class="sig-name descname"><span class="pre">generatorversion</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'0.1.1'</span></em><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator.generatorversion" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">generatorversion</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'0.1.1'</span></em><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator.generatorversion" title="Link to this definition">¶</a></dt>
 <dd><p>Version of the generator. Consider deprecating and instead use overall linkml version</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.rdfgen.RDFGenerator.original_schema">
-<span class="sig-name descname"><span class="pre">original_schema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator.original_schema" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">original_schema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator.original_schema" title="Link to this definition">¶</a></dt>
 <dd><p>//github.com/linkml/linkml/issues/871</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -396,19 +446,19 @@
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.rdfgen.RDFGenerator.uses_schemaloader">
-<span class="sig-name descname"><span class="pre">uses_schemaloader</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator.uses_schemaloader" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">uses_schemaloader</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator.uses_schemaloader" title="Link to this definition">¶</a></dt>
 <dd><p>Old-style generator that uses the SchemaLoader and visitor pattern</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.rdfgen.RDFGenerator.valid_formats">
-<span class="sig-name descname"><span class="pre">valid_formats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['ttl',</span> <span class="pre">'hext',</span> <span class="pre">'json-ld',</span> <span class="pre">'n3',</span> <span class="pre">'nquads',</span> <span class="pre">'nt',</span> <span class="pre">'nt11',</span> <span class="pre">'ntriples',</span> <span class="pre">'patch',</span> <span class="pre">'trig',</span> <span class="pre">'trix',</span> <span class="pre">'ttl',</span> <span class="pre">'turtle',</span> <span class="pre">'xml']</span></em><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator.valid_formats" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">valid_formats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['ttl',</span> <span class="pre">'hext',</span> <span class="pre">'json-ld',</span> <span class="pre">'n3',</span> <span class="pre">'nquads',</span> <span class="pre">'nt',</span> <span class="pre">'nt11',</span> <span class="pre">'ntriples',</span> <span class="pre">'patch',</span> <span class="pre">'trig',</span> <span class="pre">'trix',</span> <span class="pre">'ttl',</span> <span class="pre">'turtle',</span> <span class="pre">'xml']</span></em><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator.valid_formats" title="Link to this definition">¶</a></dt>
 <dd><p>Allowed formats - first format is default</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.rdfgen.RDFGenerator.visit_all_class_slots">
-<span class="sig-name descname"><span class="pre">visit_all_class_slots</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator.visit_all_class_slots" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">visit_all_class_slots</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.rdfgen.RDFGenerator.visit_all_class_slots" title="Link to this definition">¶</a></dt>
 <dd><p>False means only visit own slots, True means visit all slots</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -420,9 +470,9 @@
 </dd></dl>
 
 <section id="cli">
-<h2>CLI<a class="headerlink" href="#cli" title="Permalink to this heading">#</a></h2>
+<h2>CLI<a class="headerlink" href="#cli" title="Link to this heading">¶</a></h2>
 <section id="gen-rdf">
-<h3>gen-rdf<a class="headerlink" href="#gen-rdf" title="Permalink to this heading">#</a></h3>
+<h3>gen-rdf<a class="headerlink" href="#gen-rdf" title="Link to this heading">¶</a></h3>
 <p>Generate an RDF representation of a LinkML model</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-rdf<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
 </pre></div>
@@ -430,13 +480,13 @@
 <p class="rubric">Options</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-rdf-o">
-<span id="cmdoption-gen-rdf-output"></span><span class="sig-name descname"><span class="pre">-o</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-gen-rdf-o" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-rdf-output"></span><span class="sig-name descname"><span class="pre">-o</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-gen-rdf-o" title="Link to this definition">¶</a></dt>
 <dd><p>Output file name</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-rdf-context">
-<span class="sig-name descname"><span class="pre">--context</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;context&gt;</span></span><a class="headerlink" href="#cmdoption-gen-rdf-context" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">--context</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;context&gt;</span></span><a class="headerlink" href="#cmdoption-gen-rdf-context" title="Link to this definition">¶</a></dt>
 <dd><p>JSONLD context file (default: <a class="reference external" href="https://w3id.org/linkml/meta.context.jsonld">https://w3id.org/linkml/meta.context.jsonld</a>)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -447,13 +497,13 @@
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-rdf-V">
-<span id="cmdoption-gen-rdf-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-rdf-V" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-rdf-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-rdf-V" title="Link to this definition">¶</a></dt>
 <dd><p>Show the version and exit.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-rdf-f">
-<span id="cmdoption-gen-rdf-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-rdf-f" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-rdf-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-rdf-f" title="Link to this definition">¶</a></dt>
 <dd><p>Output format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -467,7 +517,7 @@
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-rdf-metadata">
-<span id="cmdoption-gen-rdf-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-rdf-metadata" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-rdf-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-rdf-metadata" title="Link to this definition">¶</a></dt>
 <dd><p>Include metadata in output</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -478,7 +528,7 @@
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-rdf-useuris">
-<span id="cmdoption-gen-rdf-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-rdf-useuris" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-rdf-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-rdf-useuris" title="Link to this definition">¶</a></dt>
 <dd><p>Use class and slot URIs over model uris</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -489,13 +539,13 @@
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-rdf-im">
-<span id="cmdoption-gen-rdf-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-rdf-im" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-rdf-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-rdf-im" title="Link to this definition">¶</a></dt>
 <dd><p>Import mapping file</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-rdf-log_level">
-<span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-rdf-log_level" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-rdf-log_level" title="Link to this definition">¶</a></dt>
 <dd><p>Logging level</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -509,19 +559,19 @@
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-rdf-v">
-<span id="cmdoption-gen-rdf-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-rdf-v" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-rdf-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-rdf-v" title="Link to this definition">¶</a></dt>
 <dd><p>Verbosity. Takes precedence over –log_level.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-rdf-mergeimports">
-<span id="cmdoption-gen-rdf-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-rdf-mergeimports" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-rdf-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-rdf-mergeimports" title="Link to this definition">¶</a></dt>
 <dd><p>Merge imports into source file (default=mergeimports)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-rdf-stacktrace">
-<span id="cmdoption-gen-rdf-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-rdf-stacktrace" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-rdf-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-rdf-stacktrace" title="Link to this definition">¶</a></dt>
 <dd><p>Print a stack trace when an error occurs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -533,7 +583,7 @@
 <p class="rubric">Arguments</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-rdf-arg-YAMLFILE">
-<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-rdf-arg-YAMLFILE" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-rdf-arg-YAMLFILE" title="Link to this definition">¶</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
@@ -624,12 +674,10 @@
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
-    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     </body>
 </html>

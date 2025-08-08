@@ -1,18 +1,18 @@
 <!doctype html>
-<html class="no-js" lang="en" data-content_root="">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Using yq for querying and manipulating schemas" href="yq-for-schemas.html" /><link rel="prev" title="How to run a collaborative data modeling project" href="collaborative-development.html" />
 
-    <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
+    <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>How to recognize and work with different structural forms - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
     <link rel="stylesheet" type="text/css" href="../_static/css/common.css?v=95000900" />
     <link rel="stylesheet" type="text/css" href="../_static/css/notebooks.css?v=1ce917dd" />
     
@@ -73,7 +73,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -88,22 +88,63 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -116,6 +157,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -134,7 +177,8 @@
       <div class="theme-toggle-container theme-toggle-header">
         <button class="theme-toggle">
           <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
@@ -332,11 +376,17 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/howtos/recognize-structural-forms.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
 <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
@@ -346,13 +396,13 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="how-to-recognize-and-work-with-different-structural-forms">
-<span id="structural-forms"></span><h1>How to recognize and work with different structural forms<a class="headerlink" href="#how-to-recognize-and-work-with-different-structural-forms" title="Permalink to this heading">#</a></h1>
+<span id="structural-forms"></span><h1>How to recognize and work with different structural forms<a class="headerlink" href="#how-to-recognize-and-work-with-different-structural-forms" title="Link to this heading">¶</a></h1>
 <section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
 <section id="purpose-of-the-guide">
-<h3>Purpose of the Guide<a class="headerlink" href="#purpose-of-the-guide" title="Permalink to this heading">#</a></h3>
+<h3>Purpose of the Guide<a class="headerlink" href="#purpose-of-the-guide" title="Link to this heading">¶</a></h3>
 <p>This how-to guide is intended to allow schema designers
 and data modelers recognize the broadly different <em>shapes</em> or <em>srtructural forms</em> data can take, including flat tables, trees,
 normalized relations, and ontology graphs.</p>
@@ -366,7 +416,7 @@ are sometimes called data <em>shapes</em> but we avoid this term
 where it could be confused with <a class="reference external" href="https://www.w3.org/TR/shacl/">RDF Shape Languages</a>.</p>
 </section>
 <section id="the-main-schema-structural-forms">
-<h3>The Main Schema Structural Forms<a class="headerlink" href="#the-main-schema-structural-forms" title="Permalink to this heading">#</a></h3>
+<h3>The Main Schema Structural Forms<a class="headerlink" href="#the-main-schema-structural-forms" title="Link to this heading">¶</a></h3>
 <p>This guide covers four distinct “shapes” of data, each catering to different data modeling requirements:</p>
 <ol class="arabic simple">
 <li><p><strong>Tabular Structural Form</strong>: Exemplified by spreadsheets and statistical data frames. Ideal for straightforward, row-and-column data structures,. It is best suited for datasets where complexity and interrelationships are minimal, or have been “flattened” into a table form.</p></li>
@@ -377,7 +427,7 @@ where it could be confused with <a class="reference external" href="https://www.
 </ol>
 </section>
 <section id="choosing-the-right-schema-style">
-<h3>Choosing the Right Schema Style<a class="headerlink" href="#choosing-the-right-schema-style" title="Permalink to this heading">#</a></h3>
+<h3>Choosing the Right Schema Style<a class="headerlink" href="#choosing-the-right-schema-style" title="Link to this heading">¶</a></h3>
 <p>Selecting the appropriate schema style depends on various factors, such as the complexity of the data, the nature of relationships within the data, and the intended use of the data model. It also
 might depend on technical requirements, such as suitability for
 use with particular database systems, or query performance need.</p>
@@ -389,15 +439,15 @@ note cases where it can be useful to blend these forms together.</p>
 </section>
 </section>
 <section id="id1">
-<h2>Structural Forms<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<h2>Structural Forms<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <section id="tabular-structural-form">
-<h3>Tabular Structural Form<a class="headerlink" href="#tabular-structural-form" title="Permalink to this heading">#</a></h3>
+<h3>Tabular Structural Form<a class="headerlink" href="#tabular-structural-form" title="Link to this heading">¶</a></h3>
 <section id="overview">
-<h4>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h4>
+<h4>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h4>
 <p>The tabular or data frame style organizes data in a familiar row-and-column format, similar to spreadsheets. It’s effective for datasets where each row signifies a unique observation or data item and each column denotes a specific attribute of that observation or data item.</p>
 </section>
 <section id="tabular-data-example">
-<h4>Tabular Data Example<a class="headerlink" href="#tabular-data-example" title="Permalink to this heading">#</a></h4>
+<h4>Tabular Data Example<a class="headerlink" href="#tabular-data-example" title="Link to this heading">¶</a></h4>
 <p>Imagine we have a table of books:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
@@ -497,7 +547,7 @@ note cases where it can be useful to blend these forms together.</p>
 </div>
 </section>
 <section id="key-characteristics">
-<h4>Key Characteristics<a class="headerlink" href="#key-characteristics" title="Permalink to this heading">#</a></h4>
+<h4>Key Characteristics<a class="headerlink" href="#key-characteristics" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><strong>Row-Oriented Layout</strong>: Each row is an individual observation or data item</p></li>
 <li><p><strong>Columnar Attributes</strong>: Columns represent distinct attributes. The number of columns can potentially be large.</p></li>
@@ -505,7 +555,7 @@ note cases where it can be useful to blend these forms together.</p>
 </ul>
 </section>
 <section id="usage-scenarios">
-<h4>Usage Scenarios<a class="headerlink" href="#usage-scenarios" title="Permalink to this heading">#</a></h4>
+<h4>Usage Scenarios<a class="headerlink" href="#usage-scenarios" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><strong>Data Analysis and Reporting</strong>: This format is easily manipulated for statistical analysis, reporting, and data science applications</p></li>
 <li><p><strong>Simple Data Storage and Entry</strong>: Ideal for basic data storage and entry needs, where complexity is minimal. Suited for spreadsheet tools like Excel.</p></li>
@@ -514,7 +564,7 @@ note cases where it can be useful to blend these forms together.</p>
 </ul>
 </section>
 <section id="serialization-formats-and-databases">
-<h4>Serialization Formats and Databases<a class="headerlink" href="#serialization-formats-and-databases" title="Permalink to this heading">#</a></h4>
+<h4>Serialization Formats and Databases<a class="headerlink" href="#serialization-formats-and-databases" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><strong>CSVs/TSVs</strong></p></li>
 <li><p><strong>Excel</strong></p></li>
@@ -525,7 +575,7 @@ such as BigTable can be a good match, but really any kind of system
 can be easily used.</p>
 </section>
 <section id="key-metamodel-elements-and-concepts">
-<h4>Key Metamodel Elements and Concepts<a class="headerlink" href="#key-metamodel-elements-and-concepts" title="Permalink to this heading">#</a></h4>
+<h4>Key Metamodel Elements and Concepts<a class="headerlink" href="#key-metamodel-elements-and-concepts" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p>tables correspond to <em>classes</em> (typically one per schema)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">attributes</span></code></p></li>
@@ -534,29 +584,29 @@ can be easily used.</p>
 </ul>
 </section>
 <section id="relationship-to-other-forms">
-<h4>Relationship to other forms<a class="headerlink" href="#relationship-to-other-forms" title="Permalink to this heading">#</a></h4>
+<h4>Relationship to other forms<a class="headerlink" href="#relationship-to-other-forms" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><strong>Tabular/Tree</strong>: It’s common to combine tabular style with lightweight nesting or additional structure on each attribute. This can be achieve through the use of <em>inlining</em>. Note this makes use of simple CSVs or Excel more difficult, and formats such as jsonl or Parquet may be more appropriate</p></li>
 <li><p><strong>Tabular/Relational</strong>: Sometimes it can be useful to break things out into multiple tables, with a primary key and foreign key structure. In some cases it may not make sense to have a crisp distinction between tabular and relational forms.</p></li>
 </ul>
 </section>
 <section id="best-practice-tidy-data-modeling">
-<h4>Best Practice: Tidy Data Modeling<a class="headerlink" href="#best-practice-tidy-data-modeling" title="Permalink to this heading">#</a></h4>
+<h4>Best Practice: Tidy Data Modeling<a class="headerlink" href="#best-practice-tidy-data-modeling" title="Link to this heading">¶</a></h4>
 <p><a class="reference external" href="https://vita.had.co.nz/papers/tidy-data.pdf">Tidy data modeling</a>, as proposed by Hadley Wickham, emphasizes a streamlined and consistent approach to organizing data sets. The core principle of this methodology is to structure data in a way that facilitates analysis and visualization, making it easily interpretable and manageable. In a tidy data set, each variable forms a column, each observation forms a row, and each type of observational unit forms a table. This structure significantly simplifies the majority of data manipulation tasks since each variable is isolated in its column, allowing for more intuitive and straightforward data handling. The approach aligns with principles of data normalization, minimizing redundancy and ensuring clarity in data representation. By adhering to these practices, data sets become more orderly, aligned, and accessible for analysis, providing a robust foundation for statistical analysis and data-driven decision-making. Tidy data modeling not only enhances data quality but also streamlines the process of data transformation, visualization, and analysis, making it an essential practice in modern data science.</p>
 </section>
 <section id="conclusion">
-<h4>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this heading">#</a></h4>
+<h4>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">¶</a></h4>
 <p>The tabular/tidy schema style, coupled with LinkML, offers a clear, structured format for simple datasets. It’s particularly useful where the main focus is on basic data storage, entry, and straightforward analysis, avoiding the complexities of hierarchical or relational data structures.</p>
 </section>
 </section>
 <section id="tree-structural-forms">
-<h3>Tree Structural Forms<a class="headerlink" href="#tree-structural-forms" title="Permalink to this heading">#</a></h3>
+<h3>Tree Structural Forms<a class="headerlink" href="#tree-structural-forms" title="Link to this heading">¶</a></h3>
 <section id="id2">
-<h4>Overview<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h4>
+<h4>Overview<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h4>
 <p>The tree form is designed for data structures where data is organized in a nested manner. This style is suitable for datasets where attributes are composite or compound objects.</p>
 </section>
 <section id="example">
-<h4>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h4>
+<h4>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h4>
 <p>To illustrate this style we will modify the above example and advantage of nesting to organize the data more efficiently. The prices for paperback and hardback can be collapsed into a nested <code class="docutils literal notranslate"><span class="pre">prices</span></code> array, each with details like amount, currency, and format. Here’s how the dataset would look in JSON:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;books&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="p">[</span>
@@ -630,7 +680,7 @@ can be easily used.</p>
 <p>To adapt the original LinkML schema to accommodate the modified JSON structure for the books dataset, the main change involves the representation of book prices. Here’s the revised part of the LinkML schema reflecting this change:</p>
 </section>
 <section id="modified-schema-to-allow-for-nesting">
-<h4>Modified schema to allow for nesting<a class="headerlink" href="#modified-schema-to-allow-for-nesting" title="Permalink to this heading">#</a></h4>
+<h4>Modified schema to allow for nesting<a class="headerlink" href="#modified-schema-to-allow-for-nesting" title="Link to this heading">¶</a></h4>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">Book</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;...&quot;</span>
@@ -667,7 +717,7 @@ automatically if there is no identifier.</p>
 <p>These changes reflect the nested structure of the book prices in the JSON representation, showcasing the flexibility of LinkML in adapting to different data structuring needs.</p>
 </section>
 <section id="id3">
-<h4>Key Characteristics<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h4>
+<h4>Key Characteristics<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><strong>Nested Data Representation</strong>: Data is structured in a tree-like format, with a composition-style hierarchy</p></li>
 <li><p><strong>Complex Data Structures</strong>: Ideal for representing complex, interrelated data elements that are not easily captured in a flat structure.</p></li>
@@ -675,14 +725,14 @@ automatically if there is no identifier.</p>
 </ul>
 </section>
 <section id="id4">
-<h4>Usage Scenarios<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h4>
+<h4>Usage Scenarios<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><strong>Configurations and Settings</strong>: For data involving settings or configurations where hierarchical groupings are necessary.</p></li>
 <li><p><strong>Complex Data Models</strong>: Suitable for representing complex entities, such as organizational structures or product catalogs.</p></li>
 </ul>
 </section>
 <section id="id5">
-<h4>Serialization Formats and Databases<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h4>
+<h4>Serialization Formats and Databases<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><strong>JSON/YAML</strong></p></li>
 <li><p><strong>XML</strong> (not typically used in modern environments)</p></li>
@@ -694,7 +744,7 @@ may introduce mild impedance mismatches or the need for lightweight
 structural transformations.</p>
 </section>
 <section id="id6">
-<h4>Key Metamodel Elements and Concepts<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h4>
+<h4>Key Metamodel Elements and Concepts<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h4>
 <p>In addition to the core elements and concepts used for flat
 tabular data:</p>
 <ul class="simple">
@@ -703,7 +753,7 @@ tabular data:</p>
 </ul>
 </section>
 <section id="hierarchical-composition">
-<h4>Hierarchical Composition<a class="headerlink" href="#hierarchical-composition" title="Permalink to this heading">#</a></h4>
+<h4>Hierarchical Composition<a class="headerlink" href="#hierarchical-composition" title="Link to this heading">¶</a></h4>
 <p>This form also includes the ability to represent
 hierarchical structures, for example:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
@@ -723,21 +773,21 @@ hierarchical structures, for example:</p>
 </div>
 </section>
 <section id="id7">
-<h4>Conclusion<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h4>
+<h4>Conclusion<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h4>
 <p>The Tree Structural Form, when implemented with LinkML, offers an effective way to model complex and hierarchical data structures. This approach is particularly beneficial for datasets where relationships and nested groupings play a crucial role, allowing for a more natural and intuitive representation of the data. With careful planning and implementation, this style can greatly enhance the organization and accessibility of complex datasets.</p>
 </section>
 </section>
 <section id="relational-structural-form">
-<h3>Relational Structural Form<a class="headerlink" href="#relational-structural-form" title="Permalink to this heading">#</a></h3>
+<h3>Relational Structural Form<a class="headerlink" href="#relational-structural-form" title="Link to this heading">¶</a></h3>
 <section id="id8">
-<h4>Overview<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h4>
+<h4>Overview<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h4>
 <p>The relational or SQL schema style is centered around the relational model, commonly used in SQL databases. In particular, where
 the schema has been fully or partially <em>normalized</em> (otherwise
 it becomes indistinguishable from the Tabular Structural Form).</p>
 <p>This style is characterized by data organized into tables (aka records, <em>relations</em>), with relationships between these tables managed through keys. It’s ideal for datasets with complex interrelationships between different entities.</p>
 </section>
 <section id="id9">
-<h4>Key Characteristics<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h4>
+<h4>Key Characteristics<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><strong>Table-oriented Data Organization</strong>: Data is structured in tables, where each table represents a different entity type.</p></li>
 <li><p><strong>Relationships Through Keys</strong>: Relationships between tables are defined using primary and foreign keys.</p></li>
@@ -745,7 +795,7 @@ it becomes indistinguishable from the Tabular Structural Form).</p>
 </ul>
 </section>
 <section id="id10">
-<h4>Usage Scenarios<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h4>
+<h4>Usage Scenarios<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><strong>Complex Interrelated Datasets</strong>: Suitable for datasets with intricate relationships between various entities.</p></li>
 <li><p><strong>Scalable Data Models</strong>: Effective for models that require scalability and flexibility in defining inter-table relationships.</p></li>
@@ -753,10 +803,10 @@ it becomes indistinguishable from the Tabular Structural Form).</p>
 </section>
 </section>
 <section id="example-json-following-relational-structural-form">
-<h3>Example JSON, following Relational Structural Form<a class="headerlink" href="#example-json-following-relational-structural-form" title="Permalink to this heading">#</a></h3>
+<h3>Example JSON, following Relational Structural Form<a class="headerlink" href="#example-json-following-relational-structural-form" title="Link to this heading">¶</a></h3>
 <p>To transform the JSON representation into a more relational model, we’ll create separate collections for authors, books, and prices. Each <code class="docutils literal notranslate"><span class="pre">Book</span></code> will reference an <code class="docutils literal notranslate"><span class="pre">Author</span></code> through an identifier, instead of inlining the author details.</p>
 <section id="collections-in-json-format">
-<h4>Collections in JSON Format:<a class="headerlink" href="#collections-in-json-format" title="Permalink to this heading">#</a></h4>
+<h4>Collections in JSON Format:<a class="headerlink" href="#collections-in-json-format" title="Link to this heading">¶</a></h4>
 <ol class="arabic simple">
 <li><p><strong>Authors Collection</strong>:</p></li>
 </ol>
@@ -795,7 +845,7 @@ it becomes indistinguishable from the Tabular Structural Form).</p>
 </div>
 </section>
 <section id="explanation">
-<h4>Explanation:<a class="headerlink" href="#explanation" title="Permalink to this heading">#</a></h4>
+<h4>Explanation:<a class="headerlink" href="#explanation" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><strong>Authors Collection</strong>: Contains details of authors, each with a unique identifier (<code class="docutils literal notranslate"><span class="pre">author_id</span></code>).</p></li>
 <li><p><strong>Books Collection</strong>: Each book has its own identifier (<code class="docutils literal notranslate"><span class="pre">book_id</span></code>), and references an author through <code class="docutils literal notranslate"><span class="pre">author_id</span></code>. Other details like title, genre, year, and rating are also included.</p></li>
@@ -806,9 +856,9 @@ it becomes indistinguishable from the Tabular Structural Form).</p>
 </section>
 </section>
 <section id="linkml-schema-for-the-relational-model">
-<h3>LinkML Schema for the Relational Model<a class="headerlink" href="#linkml-schema-for-the-relational-model" title="Permalink to this heading">#</a></h3>
+<h3>LinkML Schema for the Relational Model<a class="headerlink" href="#linkml-schema-for-the-relational-model" title="Link to this heading">¶</a></h3>
 <section id="author-class">
-<h4>Author Class<a class="headerlink" href="#author-class" title="Permalink to this heading">#</a></h4>
+<h4>Author Class<a class="headerlink" href="#author-class" title="Link to this heading">¶</a></h4>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">Author</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;An</span><span class="nv"> </span><span class="s">author</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">books&quot;</span>
@@ -824,7 +874,7 @@ it becomes indistinguishable from the Tabular Structural Form).</p>
 </div>
 </section>
 <section id="book-class">
-<h4>Book Class<a class="headerlink" href="#book-class" title="Permalink to this heading">#</a></h4>
+<h4>Book Class<a class="headerlink" href="#book-class" title="Link to this heading">¶</a></h4>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="nt">Book</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;A</span><span class="nv"> </span><span class="s">record</span><span class="nv"> </span><span class="s">representing</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">book&quot;</span>
 <span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
@@ -853,7 +903,7 @@ it becomes indistinguishable from the Tabular Structural Form).</p>
 </div>
 </section>
 <section id="price-class">
-<h4>Price Class<a class="headerlink" href="#price-class" title="Permalink to this heading">#</a></h4>
+<h4>Price Class<a class="headerlink" href="#price-class" title="Link to this heading">¶</a></h4>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">Price</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Price</span><span class="nv"> </span><span class="s">details</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">book</span><span class="nv"> </span><span class="s">format&quot;</span>
 <span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
@@ -880,7 +930,7 @@ it becomes indistinguishable from the Tabular Structural Form).</p>
 <p>This schema effectively models the relational structure of the data, with separate entities for authors, books, and prices, and uses identifiers to establish relationships between these entities. It exemplifies how LinkML can be used to represent a relational data model, similar to traditional SQL database designs.</p>
 </section>
 <section id="id11">
-<h4>Serialization Formats and Databases<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h4>
+<h4>Serialization Formats and Databases<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><strong>CSVs/TSVs</strong></p></li>
 <li><p><strong>RDF</strong> (in particular for fully normalized data)</p></li>
@@ -892,7 +942,7 @@ In practice any system can be used, but systems that don’t
 have first class support for joins/traversal may be suboptimal.</p>
 </section>
 <section id="id12">
-<h4>Key Metamodel Elements and Concepts<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h4>
+<h4>Key Metamodel Elements and Concepts<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h4>
 <p>In addition to the core elements and concepts used for flat
 tabular data:</p>
 <ul class="simple">
@@ -907,7 +957,7 @@ automated translation to SQL translate multivalued columns to join
 tables.</p>
 </section>
 <section id="best-practices">
-<h4>Best Practices<a class="headerlink" href="#best-practices" title="Permalink to this heading">#</a></h4>
+<h4>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><strong>Normalization Principles</strong>: Apply normalization principles to minimize redundancy and dependency, enhancing data integrity.</p></li>
 <li><p><strong>Clear Relationship Mapping</strong>: Clearly define and document relationships between classes, ensuring that the relational model is easy to understand and maintain.</p></li>
@@ -915,16 +965,16 @@ tables.</p>
 </section>
 </section>
 <section id="ontological-structural-form">
-<h3>Ontological Structural Form<a class="headerlink" href="#ontological-structural-form" title="Permalink to this heading">#</a></h3>
+<h3>Ontological Structural Form<a class="headerlink" href="#ontological-structural-form" title="Link to this heading">¶</a></h3>
 <section id="id13">
-<h4>Overview<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h4>
+<h4>Overview<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h4>
 <p>The ontological or knowledge graph schema style in LinkML focuses on
 hierarchical classification of entities within a domain, and the use of inheritance to propagate down attributes.</p>
 <p><strong>NOTE</strong> this form is somewhat orthogonal to the others, and as such me may later choose to separate this into its own document.</p>
 <p>This form can often be easily intermingled with the other forms in this document</p>
 </section>
 <section id="example-ontology">
-<h4>Example Ontology<a class="headerlink" href="#example-ontology" title="Permalink to this heading">#</a></h4>
+<h4>Example Ontology<a class="headerlink" href="#example-ontology" title="Link to this heading">¶</a></h4>
 <p><strong>Base Class</strong></p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">CreativeWork</span><span class="p">:</span>
@@ -1045,7 +1095,7 @@ hierarchical classification of entities within a domain, and the use of inherita
 </div>
 </section>
 <section id="id14">
-<h4>Key Characteristics<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h4>
+<h4>Key Characteristics<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><strong>Entity-Relationship Framework</strong>: Models data as entities (nodes) and relationships (edges) in a graph.</p></li>
 <li><p><strong>Semantic Depth</strong>: Emphasizes the meaning and nuances of relationships between entities.</p></li>
@@ -1053,7 +1103,7 @@ hierarchical classification of entities within a domain, and the use of inherita
 </ul>
 </section>
 <section id="id15">
-<h4>Usage Scenarios<a class="headerlink" href="#id15" title="Permalink to this heading">#</a></h4>
+<h4>Usage Scenarios<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h4>
 <ul>
 <li><p><strong>Complex Semantic Models</strong>: Ideal for complex systems with significant relational depth.</p></li>
 <li><p><strong>Data Integration</strong>: Suited for scenarios requiring the merging of various data sources or adherence to standard ontologies.</p></li>
@@ -1072,7 +1122,7 @@ hierarchical classification of entities within a domain, and the use of inherita
 </ul>
 </section>
 <section id="id16">
-<h4>Serialization Formats and Databases<a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h4>
+<h4>Serialization Formats and Databases<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><strong>OWL</strong></p></li>
 <li><p><strong>RDFS</strong></p></li>
@@ -1082,14 +1132,14 @@ hierarchical classification of entities within a domain, and the use of inherita
 form of data.</p>
 </section>
 <section id="id17">
-<h4>Key Metamodel Elements and Concepts<a class="headerlink" href="#id17" title="Permalink to this heading">#</a></h4>
+<h4>Key Metamodel Elements and Concepts<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">is_a</span></code> and <code class="docutils literal notranslate"><span class="pre">mixins</span></code> for inheritance hierarchies</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">slot_usage</span></code> to refine the use of existing properties</p></li>
 </ul>
 </section>
 <section id="property-graph-vs-rdf-s-style">
-<h4>Property Graph vs. RDF/S Style<a class="headerlink" href="#property-graph-vs-rdf-s-style" title="Permalink to this heading">#</a></h4>
+<h4>Property Graph vs. RDF/S Style<a class="headerlink" href="#property-graph-vs-rdf-s-style" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><strong>Property Graph (Biolink Model)</strong>:</p>
 <ul>
@@ -1106,7 +1156,7 @@ form of data.</p>
 </ul>
 </section>
 <section id="id18">
-<h4>Best Practices<a class="headerlink" href="#id18" title="Permalink to this heading">#</a></h4>
+<h4>Best Practices<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><strong>Semantic Clarity</strong>: Ensure each entity and relationship is semantically well-defined.</p></li>
 <li><p><strong>Scalable and Adaptable Ontologies</strong>: Design ontologies to be flexible and scalable, accommodating evolving knowledge.</p></li>
@@ -1114,12 +1164,12 @@ form of data.</p>
 </ul>
 </section>
 <section id="id19">
-<h4>Conclusion<a class="headerlink" href="#id19" title="Permalink to this heading">#</a></h4>
+<h4>Conclusion<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h4>
 <p>The ontological/knowledge graph schema style, when utilized with LinkML, offers a sophisticated means to model data with complex semantic relationships. This style is invaluable for creating detailed knowledge graphs that require a deep understanding of the data and its interconnections. By effectively employing class hierarchies and understanding the nuances between property graph and RDF/S styles, one can develop comprehensive, semantically rich models that serve a wide range of advanced data analysis and integration purposes.</p>
 </section>
 </section>
 <section id="multidimensional-structural-form">
-<h3>Multidimensional Structural Form<a class="headerlink" href="#multidimensional-structural-form" title="Permalink to this heading">#</a></h3>
+<h3>Multidimensional Structural Form<a class="headerlink" href="#multidimensional-structural-form" title="Link to this heading">¶</a></h3>
 <p>Documentation on this form forthcoming, for now see the how-to section on <a class="reference external" href="https://linkml.io/linkml/howtos/multidimensional-arrays.html">multidimensional arrays</a></p>
 </section>
 </section>
@@ -1258,12 +1308,10 @@ form of data.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
-    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     </body>
 </html>

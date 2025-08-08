@@ -1,18 +1,18 @@
 <!doctype html>
-<html class="no-js" lang="en" data-content_root="">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Derived models" href="derived-models.html" /><link rel="prev" title="Mapping schemas to other frameworks" href="generators.html" />
 
-    <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
+    <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>Schema Linter - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
     <link rel="stylesheet" type="text/css" href="../_static/css/common.css?v=95000900" />
     <link rel="stylesheet" type="text/css" href="../_static/css/notebooks.css?v=1ce917dd" />
     
@@ -73,7 +73,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -88,22 +88,63 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -116,6 +157,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -134,7 +177,8 @@
       <div class="theme-toggle-container theme-toggle-header">
         <button class="theme-toggle">
           <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
@@ -332,11 +376,17 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/schemas/linter.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
 <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
@@ -346,12 +396,12 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="schema-linter">
-<h1>Schema Linter<a class="headerlink" href="#schema-linter" title="Permalink to this heading">#</a></h1>
+<h1>Schema Linter<a class="headerlink" href="#schema-linter" title="Link to this heading">¶</a></h1>
 <p>When authoring a schema – especially when it is large or there are many authors – it is important to establish and adhere to best practices. For example, while <a class="reference internal" href="metadata.html#providing-descriptions"><span class="std std-ref">providing a description</span></a> for each schema element is not required, descriptions can help reduce miscommunication between schema authors. LinkML provides a configurable <a class="reference external" href="https://en.wikipedia.org/wiki/Lint_(software)">linter</a> to identify violations of best practices or error-prone patterns.</p>
 <section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">linkml-lint</span></code> command performs checks on a schema which – while valid – may not represent best practices or may indicate a likely mistake in the schema. These checks are referred to as <a class="reference internal" href="#rules">rules</a> and without additional <a class="reference internal" href="#configuration">configuration</a> a default set of rules will be used.</p>
 <p>To lint a single schema file:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-lint<span class="w"> </span>schema.yaml
@@ -363,7 +413,7 @@
 </div>
 </section>
 <section id="configuration">
-<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading">#</a></h2>
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">linkml-lint</span></code> command can be configured with a YAML configuration file. The configuration file can be provided using the <code class="docutils literal notranslate"><span class="pre">--config</span></code> command line option:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-lint<span class="w"> </span>--config<span class="w"> </span>myconfig.yaml<span class="w"> </span>myschema.yaml
 </pre></div>
@@ -398,10 +448,10 @@
 </div>
 </section>
 <section id="rules">
-<h2>Rules<a class="headerlink" href="#rules" title="Permalink to this heading">#</a></h2>
+<h2>Rules<a class="headerlink" href="#rules" title="Link to this heading">¶</a></h2>
 <p>Rule names denoted with a star ⭐ are part of the <code class="docutils literal notranslate"><span class="pre">recommended</span></code> configuration set.</p>
 <section id="canonical-prefixes">
-<h3>canonical_prefixes ⭐<a class="headerlink" href="#canonical-prefixes" title="Permalink to this heading">#</a></h3>
+<h3>canonical_prefixes ⭐<a class="headerlink" href="#canonical-prefixes" title="Link to this heading">¶</a></h3>
 <p>Enforce canonical prefixes by verifying that the mappings defined in the schema’s <code class="docutils literal notranslate"><span class="pre">prefixes</span></code> slot agree with those provided by the <a class="reference external" href="https://github.com/linkml/prefixmaps">prefixmaps</a> package.</p>
 <p><strong>Additional Configuration</strong></p>
 <ul class="simple">
@@ -409,19 +459,19 @@
 </ul>
 </section>
 <section id="no-empty-title">
-<h3>no_empty_title<a class="headerlink" href="#no-empty-title" title="Permalink to this heading">#</a></h3>
+<h3>no_empty_title<a class="headerlink" href="#no-empty-title" title="Link to this heading">¶</a></h3>
 <p>Disallow empty titles on schema elements.</p>
 </section>
 <section id="no-invalid-slot-usage">
-<h3>no_invalid_slot_usage ⭐<a class="headerlink" href="#no-invalid-slot-usage" title="Permalink to this heading">#</a></h3>
+<h3>no_invalid_slot_usage ⭐<a class="headerlink" href="#no-invalid-slot-usage" title="Link to this heading">¶</a></h3>
 <p>Disallow <code class="docutils literal notranslate"><span class="pre">slot_usage</span></code> definitions where the name of the slot does not refer to an existing slot of the class.</p>
 </section>
 <section id="no-xsd-int-type">
-<h3>no_xsd_int_type ⭐<a class="headerlink" href="#no-xsd-int-type" title="Permalink to this heading">#</a></h3>
+<h3>no_xsd_int_type ⭐<a class="headerlink" href="#no-xsd-int-type" title="Link to this heading">¶</a></h3>
 <p>Disallow use of <code class="docutils literal notranslate"><span class="pre">uri:</span> <span class="pre">xsd:int</span></code> in type definitions. In nearly all cases, <code class="docutils literal notranslate"><span class="pre">xsd:integer</span></code> should be used instead.</p>
 </section>
 <section id="permissible-values-format">
-<h3>permissible_values_format<a class="headerlink" href="#permissible-values-format" title="Permalink to this heading">#</a></h3>
+<h3>permissible_values_format<a class="headerlink" href="#permissible-values-format" title="Link to this heading">¶</a></h3>
 <p>Enforce consistent formatting of enum permissible values. This rule may conflict with the <code class="docutils literal notranslate"><span class="pre">standard_naming</span></code> rule, but it is more flexible.</p>
 <p><strong>Additional Configuration</strong></p>
 <ul class="simple">
@@ -429,7 +479,7 @@
 </ul>
 </section>
 <section id="recommended">
-<h3>recommended ⭐<a class="headerlink" href="#recommended" title="Permalink to this heading">#</a></h3>
+<h3>recommended ⭐<a class="headerlink" href="#recommended" title="Link to this heading">¶</a></h3>
 <p>Require any slot in the <a class="reference internal" href="metamodel.html"><span class="doc std std-doc">metamodel</span></a> with <code class="docutils literal notranslate"><span class="pre">recommended:</span> <span class="pre">true</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">description</span></code>) to be provided.</p>
 <p><strong>Additional Configuration</strong></p>
 <ul class="simple">
@@ -438,7 +488,7 @@
 </ul>
 </section>
 <section id="standard-naming">
-<h3>standard_naming ⭐<a class="headerlink" href="#standard-naming" title="Permalink to this heading">#</a></h3>
+<h3>standard_naming ⭐<a class="headerlink" href="#standard-naming" title="Link to this heading">¶</a></h3>
 <p>Enforce standard naming conventions: CamelCase for classes, snake_case for slots, CamelCase for enums, snake_case (default) or UPPER_SNAKE for permissible_values (see <code class="docutils literal notranslate"><span class="pre">permissible_values_upper_case</span></code> option). This rule may conflict with the <code class="docutils literal notranslate"><span class="pre">permissible_values_format</span></code> rule.</p>
 <p><strong>Additional Configuration</strong></p>
 <ul class="simple">
@@ -448,7 +498,7 @@
 </ul>
 </section>
 <section id="tree-root-class">
-<h3>tree_root_class<a class="headerlink" href="#tree-root-class" title="Permalink to this heading">#</a></h3>
+<h3>tree_root_class<a class="headerlink" href="#tree-root-class" title="Link to this heading">¶</a></h3>
 <p>Require a single class with <code class="docutils literal notranslate"><span class="pre">tree_root:</span> <span class="pre">true</span></code> and optionally verify that class’s name.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">validate_existing_class_name</span></code>: If <code class="docutils literal notranslate"><span class="pre">true</span></code>, in addition to validating that a <code class="docutils literal notranslate"><span class="pre">tree_root:</span> <span class="pre">true</span></code> ClassDefinition exists, the rule will also validate that is has the name provided by the <code class="docutils literal notranslate"><span class="pre">root_class_name</span></code> option. Default: <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></li>
@@ -457,7 +507,7 @@
 </section>
 </section>
 <section id="reports">
-<h2>Reports<a class="headerlink" href="#reports" title="Permalink to this heading">#</a></h2>
+<h2>Reports<a class="headerlink" href="#reports" title="Link to this heading">¶</a></h2>
 <p>By default, if the <code class="docutils literal notranslate"><span class="pre">linkml-lint</span></code> command identifies violations of the configured rules it will print the files and issues to the terminal. This behavior can be changed with the <code class="docutils literal notranslate"><span class="pre">--format</span></code> and <code class="docutils literal notranslate"><span class="pre">--output</span></code> command line options.</p>
 <p>The valid values for <code class="docutils literal notranslate"><span class="pre">--format</span></code> are terminal (the default), markdown, json, and tsv.</p>
 <p>If the <code class="docutils literal notranslate"><span class="pre">--output</span></code> option is provided the report will be written to the specified file instead of the terminal.</p>
@@ -467,15 +517,15 @@
 </div>
 </section>
 <section id="exit-codes">
-<h2>Exit Codes<a class="headerlink" href="#exit-codes" title="Permalink to this heading">#</a></h2>
+<h2>Exit Codes<a class="headerlink" href="#exit-codes" title="Link to this heading">¶</a></h2>
 <p>If the linter does not encounter any rule violations at all it will exit with code <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
 <p>If the linter encounters rule violations with <code class="docutils literal notranslate"><span class="pre">level:</span> <span class="pre">error</span></code> it will exit with code <code class="docutils literal notranslate"><span class="pre">2</span></code>. This will be the case regardless of whether there are also rule violations with <code class="docutils literal notranslate"><span class="pre">level:</span> <span class="pre">warning</span></code>.</p>
 <p>By default, if the linter encounters <em>only</em> rule violations with <code class="docutils literal notranslate"><span class="pre">level:</span> <span class="pre">warning</span></code> it will exit with code <code class="docutils literal notranslate"><span class="pre">1</span></code>. This behavior can be changed with command line options. In this scenario, if the <code class="docutils literal notranslate"><span class="pre">--ignore-warnings</span></code> flag is provided the exit code will be <code class="docutils literal notranslate"><span class="pre">0</span></code>. If instead the <code class="docutils literal notranslate"><span class="pre">--max-warnings</span> <span class="pre">&lt;int&gt;</span></code> option is passed, the exit code will be <code class="docutils literal notranslate"><span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">0</span></code> depending on whether the number of warning rule violations is greater than the provided number or not. If both <code class="docutils literal notranslate"><span class="pre">--ignore-warnings</span></code> and <code class="docutils literal notranslate"><span class="pre">--max-warnings</span></code> are used <code class="docutils literal notranslate"><span class="pre">--ignore-warnings</span></code> takes precedence.</p>
 </section>
 <section id="api-docs">
-<h2>API Docs<a class="headerlink" href="#api-docs" title="Permalink to this heading">#</a></h2>
+<h2>API Docs<a class="headerlink" href="#api-docs" title="Link to this heading">¶</a></h2>
 <section id="linkml-lint">
-<h3>linkml-lint<a class="headerlink" href="#linkml-lint" title="Permalink to this heading">#</a></h3>
+<h3>linkml-lint<a class="headerlink" href="#linkml-lint" title="Link to this heading">¶</a></h3>
 <p>Run linter on SCHEMA.</p>
 <p>SCHEMA can be a single LinkML YAML file or a directory. If it is a directory
 every YAML file found in the directory (recursively) will be linted.</p>
@@ -485,19 +535,19 @@ every YAML file found in the directory (recursively) will be linted.</p>
 <p class="rubric">Options</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-lint-a">
-<span id="cmdoption-linkml-lint-all"></span><span class="sig-name descname"><span class="pre">-a</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--all</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-a" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-linkml-lint-all"></span><span class="sig-name descname"><span class="pre">-a</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--all</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-a" title="Link to this definition">¶</a></dt>
 <dd><p>Process files that start with ‘.’.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-lint-c">
-<span id="cmdoption-linkml-lint-config"></span><span class="sig-name descname"><span class="pre">-c</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--config</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;config&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-lint-c" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-linkml-lint-config"></span><span class="sig-name descname"><span class="pre">-c</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--config</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;config&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-lint-c" title="Link to this definition">¶</a></dt>
 <dd><p>Custom linter configuration file.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-lint-f">
-<span id="cmdoption-linkml-lint-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-lint-f" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-linkml-lint-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-lint-f" title="Link to this definition">¶</a></dt>
 <dd><p>Report format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -511,36 +561,36 @@ every YAML file found in the directory (recursively) will be linted.</p>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-lint-validate">
-<span class="sig-name descname"><span class="pre">--validate</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-validate" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">--validate</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-validate" title="Link to this definition">¶</a></dt>
 <dd><p>Validate the schema against the LinkML Metamodel before linting.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-lint-validate-only">
-<span class="sig-name descname"><span class="pre">--validate-only</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-validate-only" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">--validate-only</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-validate-only" title="Link to this definition">¶</a></dt>
 <dd><p>Validate the schema against the LinkML Metamodel and then exit without checking linter rules.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-lint-v">
-<span id="cmdoption-linkml-lint-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-v" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-linkml-lint-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-v" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-lint-o">
-<span id="cmdoption-linkml-lint-output"></span><span class="sig-name descname"><span class="pre">-o</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-lint-o" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-linkml-lint-output"></span><span class="sig-name descname"><span class="pre">-o</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-lint-o" title="Link to this definition">¶</a></dt>
 <dd><p>Report file name.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-lint-ignore-warnings">
-<span class="sig-name descname"><span class="pre">--ignore-warnings</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-ignore-warnings" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">--ignore-warnings</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-ignore-warnings" title="Link to this definition">¶</a></dt>
 <dd><p>Do not exit with an error status if only warnings are found.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-lint-max-warnings">
-<span class="sig-name descname"><span class="pre">--max-warnings</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;max_warnings&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-lint-max-warnings" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">--max-warnings</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;max_warnings&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-lint-max-warnings" title="Link to this definition">¶</a></dt>
 <dd><p>Do not exit with an error status if up to this number of warnings (and no errors) are found.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -551,19 +601,19 @@ every YAML file found in the directory (recursively) will be linted.</p>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-lint-fix">
-<span id="cmdoption-linkml-lint-no-fix"></span><span class="sig-name descname"><span class="pre">--fix</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-fix</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-fix" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-linkml-lint-no-fix"></span><span class="sig-name descname"><span class="pre">--fix</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-fix</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-fix" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-lint-V">
-<span id="cmdoption-linkml-lint-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-V" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-linkml-lint-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-V" title="Link to this definition">¶</a></dt>
 <dd><p>Show the version and exit.</p>
 </dd></dl>
 
 <p class="rubric">Arguments</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-lint-arg-SCHEMA">
-<span class="sig-name descname"><span class="pre">SCHEMA</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-arg-SCHEMA" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">SCHEMA</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-arg-SCHEMA" title="Link to this definition">¶</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
@@ -657,12 +707,10 @@ every YAML file found in the directory (recursively) will be linted.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
-    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     </body>
 </html>

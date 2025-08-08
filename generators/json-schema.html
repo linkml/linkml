@@ -1,18 +1,18 @@
 <!doctype html>
-<html class="no-js" lang="en" data-content_root="">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="ProtoBuf" href="protobuf.html" /><link rel="prev" title="Generators" href="index.html" />
 
-    <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
+    <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>JSON Schema - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
     <link rel="stylesheet" type="text/css" href="../_static/css/common.css?v=95000900" />
     <link rel="stylesheet" type="text/css" href="../_static/css/notebooks.css?v=1ce917dd" />
     
@@ -73,7 +73,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -88,22 +88,63 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -116,6 +157,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -134,7 +177,8 @@
       <div class="theme-toggle-container theme-toggle-header">
         <button class="theme-toggle">
           <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
@@ -332,11 +376,17 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/generators/json-schema.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
 <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
@@ -346,15 +396,15 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="json-schema">
-<h1>JSON Schema<a class="headerlink" href="#json-schema" title="Permalink to this heading">#</a></h1>
+<h1>JSON Schema<a class="headerlink" href="#json-schema" title="Link to this heading">¶</a></h1>
 <section id="example-output">
-<h2>Example Output<a class="headerlink" href="#example-output" title="Permalink to this heading">#</a></h2>
+<h2>Example Output<a class="headerlink" href="#example-output" title="Link to this heading">¶</a></h2>
 <p><a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/jsonschema/personinfo.schema.json">personinfo.schema.json</a></p>
 </section>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
 <p><a class="reference external" href="https://json-schema.org/">JSON Schema</a> is a schema language for JSON
 documents.</p>
 <p>JSON-Schema can be generated from a LinkML schema and used to validate
@@ -379,7 +429,7 @@ validation strategies</p>
 converted to RDF using the derived JSON-LD context.</p>
 </div>
 <section id="inheritance">
-<h3>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this heading">#</a></h3>
+<h3>Inheritance<a class="headerlink" href="#inheritance" title="Link to this heading">¶</a></h3>
 <p>Because JSON-Schema does not support inheritance hierarchy, slots are
 “rolled down” from parent.</p>
 <p>For example, in the personinfo schema, slots such as <cite>id</cite> and <cite>name</cite>
@@ -443,7 +493,7 @@ are inherited from NamedThing, and <cite>aliases</cite> are inherited from a mix
 </div>
 </section>
 <section id="composition">
-<h3>Composition<a class="headerlink" href="#composition" title="Permalink to this heading">#</a></h3>
+<h3>Composition<a class="headerlink" href="#composition" title="Link to this heading">¶</a></h3>
 <p>JSON-Schema supports schema <em>composition</em> through:</p>
 <ul class="simple">
 <li><p>allOf</p></li>
@@ -462,7 +512,7 @@ are inherited from NamedThing, and <cite>aliases</cite> are inherited from a mix
 <p>Use of these elements will be translated into the appropriate JSON-Schema construct.</p>
 </section>
 <section id="inlining">
-<h3>Inlining<a class="headerlink" href="#inlining" title="Permalink to this heading">#</a></h3>
+<h3>Inlining<a class="headerlink" href="#inlining" title="Link to this heading">¶</a></h3>
 <p>LinkML separates the underlying logical model from choices of how
 references are inlined in JSON.</p>
 <p>If an <a class="reference external" href="https://w3id.org/linkml/inlined">inlined</a> directive is added
@@ -633,7 +683,7 @@ validating the body of the <code class="docutils literal notranslate"><span clas
 </div>
 </section>
 <section id="patterns">
-<h3>Patterns<a class="headerlink" href="#patterns" title="Permalink to this heading">#</a></h3>
+<h3>Patterns<a class="headerlink" href="#patterns" title="Link to this heading">¶</a></h3>
 <p>Both LinkML and JSON-Schema support the same subset of <a class="reference external" href="https://www.ecma-international.org/publications-and-standards/standards/ecma-262/">ECMA-262</a>
 regular expressions.</p>
 <p>See <a class="reference external" href="https://json-schema.org/understanding-json-schema/reference/regular_expressions.html#example">Regular Expressions</a>.</p>
@@ -657,13 +707,13 @@ regular expressions.</p>
 compiled down to patterns during JSON Schema generation.</p>
 </section>
 <section id="rules">
-<h3>Rules<a class="headerlink" href="#rules" title="Permalink to this heading">#</a></h3>
+<h3>Rules<a class="headerlink" href="#rules" title="Link to this heading">¶</a></h3>
 <p>LinkML supports <a class="reference external" href="https://linkml.io/linkml/schemas/advanced.html">Rules</a> which allow for conditional
 application of constraints.</p>
 <p>These are converted to if/then/else constructs in JSON-Schema.</p>
 </section>
 <section id="uniqueness-constraints">
-<h3>Uniqueness constraints<a class="headerlink" href="#uniqueness-constraints" title="Permalink to this heading">#</a></h3>
+<h3>Uniqueness constraints<a class="headerlink" href="#uniqueness-constraints" title="Link to this heading">¶</a></h3>
 <p>LinkML provides different mechanisms for stating uniqueness constraints:</p>
 <ul class="simple">
 <li><p>The <a class="reference external" href="https://w3id.org/linkml/identifier">identifier</a> and <a class="reference external" href="https://w3id.org/linkml/key">key</a> slots
@@ -678,7 +728,7 @@ are enforced to be unique by virtue of the fact that the slot is used as the key
 and dictionaries in JSON cannot have duplicate keys.</p>
 </section>
 <section id="enums">
-<h3>Enums<a class="headerlink" href="#enums" title="Permalink to this heading">#</a></h3>
+<h3>Enums<a class="headerlink" href="#enums" title="Link to this heading">¶</a></h3>
 <p>Enumerations are treated as simple strings. If the LinkML schema has
 additional metadata about the enumeration values, this is lost in
 translation.</p>
@@ -749,11 +799,11 @@ translation.</p>
 </section>
 </section>
 <section id="docs">
-<h2>Docs<a class="headerlink" href="#docs" title="Permalink to this heading">#</a></h2>
+<h2>Docs<a class="headerlink" href="#docs" title="Link to this heading">¶</a></h2>
 <section id="command-line">
-<h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this heading">#</a></h3>
+<h3>Command Line<a class="headerlink" href="#command-line" title="Link to this heading">¶</a></h3>
 <section id="gen-json-schema">
-<h4>gen-json-schema<a class="headerlink" href="#gen-json-schema" title="Permalink to this heading">#</a></h4>
+<h4>gen-json-schema<a class="headerlink" href="#gen-json-schema" title="Link to this heading">¶</a></h4>
 <p>Generate JSON Schema representation of a LinkML model</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-json-schema<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
 </pre></div>
@@ -761,20 +811,20 @@ translation.</p>
 <p class="rubric">Options</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-i">
-<span id="cmdoption-gen-json-schema-inline"></span><span class="sig-name descname"><span class="pre">-i</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--inline</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-i" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-json-schema-inline"></span><span class="sig-name descname"><span class="pre">-i</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--inline</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-i" title="Link to this definition">¶</a></dt>
 <dd><p>Generate references to types rather than inlining them.
 Note that declaring a slot as inlined: true will always inline the class</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-t">
-<span id="cmdoption-gen-json-schema-top-class"></span><span class="sig-name descname"><span class="pre">-t</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--top-class</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;top_class&gt;</span></span><a class="headerlink" href="#cmdoption-gen-json-schema-t" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-json-schema-top-class"></span><span class="sig-name descname"><span class="pre">-t</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--top-class</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;top_class&gt;</span></span><a class="headerlink" href="#cmdoption-gen-json-schema-t" title="Link to this definition">¶</a></dt>
 <dd><p>Top level class; slots of this class will become top level properties in the json-schema</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-not-closed">
-<span id="cmdoption-gen-json-schema-closed"></span><span class="sig-name descname"><span class="pre">--not-closed</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--closed</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-not-closed" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-json-schema-closed"></span><span class="sig-name descname"><span class="pre">--not-closed</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--closed</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-not-closed" title="Link to this definition">¶</a></dt>
 <dd><p>Set additionalProperties=False if closed otherwise true if not closed at the global level</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -785,13 +835,13 @@ Note that declaring a slot as inlined: true will always inline the class</p>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-include-range-class-descendants">
-<span id="cmdoption-gen-json-schema-no-range-class-descendants"></span><span class="sig-name descname"><span class="pre">--include-range-class-descendants</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-range-class-descendants</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-include-range-class-descendants" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-json-schema-no-range-class-descendants"></span><span class="sig-name descname"><span class="pre">--include-range-class-descendants</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-range-class-descendants</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-include-range-class-descendants" title="Link to this definition">¶</a></dt>
 <dd><p>When handling range constraints, include all descendants of the range class instead of just the range class</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-indent">
-<span class="sig-name descname"><span class="pre">--indent</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;indent&gt;</span></span><a class="headerlink" href="#cmdoption-gen-json-schema-indent" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">--indent</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;indent&gt;</span></span><a class="headerlink" href="#cmdoption-gen-json-schema-indent" title="Link to this definition">¶</a></dt>
 <dd><p>If this is a positive number the resulting JSON will be pretty-printed with that indent level. Set to 0 to
 disable pretty-printing and return the most compact JSON representation</p>
 <dl class="field-list simple">
@@ -803,7 +853,7 @@ disable pretty-printing and return the most compact JSON representation</p>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-title-from">
-<span class="sig-name descname"><span class="pre">--title-from</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;title_from&gt;</span></span><a class="headerlink" href="#cmdoption-gen-json-schema-title-from" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">--title-from</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;title_from&gt;</span></span><a class="headerlink" href="#cmdoption-gen-json-schema-title-from" title="Link to this definition">¶</a></dt>
 <dd><p>Specify from which slot are JSON Schema ‘title’ annotations generated.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Options<span class="colon">:</span></dt>
@@ -814,14 +864,14 @@ disable pretty-printing and return the most compact JSON representation</p>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-d">
-<span id="cmdoption-gen-json-schema-include"></span><span class="sig-name descname"><span class="pre">-d</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--include</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;include&gt;</span></span><a class="headerlink" href="#cmdoption-gen-json-schema-d" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-json-schema-include"></span><span class="sig-name descname"><span class="pre">-d</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--include</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;include&gt;</span></span><a class="headerlink" href="#cmdoption-gen-json-schema-d" title="Link to this definition">¶</a></dt>
 <dd><p>Include LinkML Schema outside of imports mechanism.  Helpful in including deprecated classes and slots in a separate
 YAML, and including it when necessary but not by default (e.g. in documentation or for backwards compatibility)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-materialize-patterns">
-<span id="cmdoption-gen-json-schema-no-materialize-patterns"></span><span class="sig-name descname"><span class="pre">--materialize-patterns</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-materialize-patterns</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-materialize-patterns" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-json-schema-no-materialize-patterns"></span><span class="sig-name descname"><span class="pre">--materialize-patterns</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-materialize-patterns</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-materialize-patterns" title="Link to this definition">¶</a></dt>
 <dd><p>If set, patterns will be materialized in the generated JSON Schema.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -832,13 +882,13 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-V">
-<span id="cmdoption-gen-json-schema-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-V" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-json-schema-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-V" title="Link to this definition">¶</a></dt>
 <dd><p>Show the version and exit.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-f">
-<span id="cmdoption-gen-json-schema-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-json-schema-f" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-json-schema-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-json-schema-f" title="Link to this definition">¶</a></dt>
 <dd><p>Output format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -852,7 +902,7 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-metadata">
-<span id="cmdoption-gen-json-schema-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-metadata" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-json-schema-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-metadata" title="Link to this definition">¶</a></dt>
 <dd><p>Include metadata in output</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -863,7 +913,7 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-useuris">
-<span id="cmdoption-gen-json-schema-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-useuris" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-json-schema-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-useuris" title="Link to this definition">¶</a></dt>
 <dd><p>Use class and slot URIs over model uris</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -874,13 +924,13 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-im">
-<span id="cmdoption-gen-json-schema-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-json-schema-im" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-json-schema-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-json-schema-im" title="Link to this definition">¶</a></dt>
 <dd><p>Import mapping file</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-log_level">
-<span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-json-schema-log_level" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-json-schema-log_level" title="Link to this definition">¶</a></dt>
 <dd><p>Logging level</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -894,19 +944,19 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-v">
-<span id="cmdoption-gen-json-schema-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-v" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-json-schema-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-v" title="Link to this definition">¶</a></dt>
 <dd><p>Verbosity. Takes precedence over –log_level.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-mergeimports">
-<span id="cmdoption-gen-json-schema-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-mergeimports" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-json-schema-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-mergeimports" title="Link to this definition">¶</a></dt>
 <dd><p>Merge imports into source file (default=mergeimports)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-stacktrace">
-<span id="cmdoption-gen-json-schema-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-stacktrace" title="Permalink to this definition">#</a></dt>
+<span id="cmdoption-gen-json-schema-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-stacktrace" title="Link to this definition">¶</a></dt>
 <dd><p>Print a stack trace when an error occurs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -918,17 +968,17 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 <p class="rubric">Arguments</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-arg-YAMLFILE">
-<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-arg-YAMLFILE" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-arg-YAMLFILE" title="Link to this definition">¶</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
 </section>
 </section>
 <section id="code">
-<h3>Code<a class="headerlink" href="#code" title="Permalink to this heading">#</a></h3>
+<h3>Code<a class="headerlink" href="#code" title="Link to this heading">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.jsonschemagen.JsonSchemaGenerator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.jsonschemagen.</span></span><span class="sig-name descname"><span class="pre">JsonSchemaGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.TextIO</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">~linkml.utils.generator.Generator</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemaview:</span> <span class="pre">~linkml_runtime.utils.schemaview.SchemaView</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useuris:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergeimports:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_date:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_size:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger:</span> <span class="pre">~logging.Logger</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces:</span> <span class="pre">~linkml_runtime.utils.namespaces.Namespaces</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel_name_map:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importmap:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~collections.abc.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emit_prefixes:</span> <span class="pre">set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel:</span> <span class="pre">~linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">materialize_patterns:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topClass:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_closed:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inline:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_class:</span> <span class="pre">~linkml_runtime.linkml_model.meta.ClassDefinitionName</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_range_class_descendants:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title_from:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'name'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_level_schema:</span> <span class="pre">~linkml.generators.jsonschemagen.JsonSchema</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_null:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/jsonschemagen.html#JsonSchemaGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.jsonschemagen.</span></span><span class="sig-name descname"><span class="pre">JsonSchemaGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.TextIO</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">~linkml.utils.generator.Generator</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemaview:</span> <span class="pre">~linkml_runtime.utils.schemaview.SchemaView</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useuris:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergeimports:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_date:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_size:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger:</span> <span class="pre">~logging.Logger</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces:</span> <span class="pre">~linkml_runtime.utils.namespaces.Namespaces</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel_name_map:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importmap:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~collections.abc.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emit_prefixes:</span> <span class="pre">set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel:</span> <span class="pre">~linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">materialize_patterns:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topClass:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_closed:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inline:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_class:</span> <span class="pre">~linkml_runtime.linkml_model.meta.ClassDefinitionName</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_range_class_descendants:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title_from:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'name'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_level_schema:</span> <span class="pre">~linkml.generators.jsonschemagen.JsonSchema</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_null:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/jsonschemagen.html#JsonSchemaGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator" title="Link to this definition">¶</a></dt>
 <dd><p>Generates JSONSchema documents from a LinkML SchemaDefinition</p>
 <ul class="simple">
 <li><p>Each linkml class generates a schema</p></li>
@@ -953,7 +1003,7 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 </ul>
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.jsonschemagen.JsonSchemaGenerator.serialize">
-<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/jsonschemagen.html#JsonSchemaGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.serialize" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/jsonschemagen.html#JsonSchemaGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.serialize" title="Link to this definition">¶</a></dt>
 <dd><p>Generate output in the required format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1063,12 +1113,10 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
-    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     </body>
 </html>
