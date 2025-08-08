@@ -9,11 +9,11 @@ on:
       upstream_repo:
         description: "Upstream linkml repository to test against"
         required: true
-        default: "iQuxLE/linkml"
+        default: "linkml/linkml"
       upstream_branch:
         description: "Upstream linkml branch to test against"
         required: true
-        default: "migrate-to-uv"
+        default: "main"
 
 jobs:
   test_upstream:
@@ -52,8 +52,8 @@ jobs:
           echo $UPSTREAM_BRANCH
 
           if [[ -z "$UPSTREAM_BRANCH" ]]; then
-            echo "Using migrate-to-uv as default"
-            UPSTREAM_BRANCH="migrate-to-uv"
+            echo "Using main as default"
+            UPSTREAM_BRANCH="main"
           fi
 
           UPSTREAM_REPO=$( \
@@ -67,8 +67,8 @@ jobs:
           echo $UPSTREAM_REPO
 
           if [[ -z "$UPSTREAM_REPO" ]]; then
-            echo "Using iQuxLE/linkml as default"
-            UPSTREAM_REPO="iQuxLE/linkml"
+            echo "Using linkml/linkml as default"
+            UPSTREAM_REPO="linkml/linkml"
           fi
 
           echo "upstream_branch=$UPSTREAM_BRANCH" >> "$GITHUB_ENV"
