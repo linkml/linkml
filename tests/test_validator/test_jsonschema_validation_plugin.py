@@ -12,7 +12,7 @@ from linkml.validator.validation_context import ValidationContext
 
 def test_valid_instance(validation_context):
     plugin = JsonschemaValidationPlugin()
-    instance = {"id": "1", "full_name": "Person One"}
+    instance = {"id": "1", "name": "Person One"}
     result_iter = plugin.process(instance, validation_context)
     with pytest.raises(StopIteration):
         next(result_iter)
@@ -20,7 +20,7 @@ def test_valid_instance(validation_context):
 
 def test_invalid_instance(validation_context):
     plugin = JsonschemaValidationPlugin()
-    instance = {"id": "1", "full_name": "Person One", "phone": "555-CALL-NOW"}
+    instance = {"id": "1", "name": "Person One", "telephone": "555-CALL-NOW"}
     result_iter = plugin.process(instance, validation_context)
     assert "'555-CALL-NOW' does not match" in next(result_iter).message
     with pytest.raises(StopIteration):
@@ -31,7 +31,7 @@ def test_invalid_instance_closed(validation_context):
     plugin = JsonschemaValidationPlugin(closed=True)
     instance = {
         "id": "1",
-        "full_name": "Person One",
+        "name": "Person One",
         "whoops": "my bad",
     }
     result_iter = plugin.process(instance, validation_context)

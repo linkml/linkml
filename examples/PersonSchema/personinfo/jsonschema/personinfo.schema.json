@@ -26,10 +26,40 @@
             "title": "Address",
             "type": "object"
         },
+        "CodeSystem": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "name"
+            ],
+            "title": "CodeSystem",
+            "type": "object"
+        },
         "Concept": {
             "additionalProperties": false,
             "description": "",
             "properties": {
+                "code_system": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "depicted_by": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
                 "description": {
                     "type": [
                         "string",
@@ -39,21 +69,22 @@
                 "id": {
                     "type": "string"
                 },
-                "image": {
+                "mappings": {
+                    "items": {
+                        "type": "string"
+                    },
                     "type": [
-                        "string",
+                        "array",
                         "null"
                     ]
                 },
                 "name": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "string"
                 }
             },
             "required": [
-                "id"
+                "id",
+                "name"
             ],
             "title": "Concept",
             "type": "object"
@@ -79,6 +110,15 @@
                         "array",
                         "null"
                     ]
+                },
+                "places": {
+                    "items": {
+                        "$ref": "#/$defs/Place"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
                 }
             },
             "title": "Container",
@@ -88,6 +128,18 @@
             "additionalProperties": false,
             "description": "",
             "properties": {
+                "code_system": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "depicted_by": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
                 "description": {
                     "type": [
                         "string",
@@ -97,27 +149,31 @@
                 "id": {
                     "type": "string"
                 },
-                "image": {
+                "mappings": {
+                    "items": {
+                        "type": "string"
+                    },
                     "type": [
-                        "string",
+                        "array",
                         "null"
                     ]
                 },
                 "name": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "string"
                 }
             },
             "required": [
-                "id"
+                "id",
+                "name"
             ],
             "title": "DiagnosisConcept",
             "type": "object"
         },
         "DiagnosisType": {
             "description": "",
+            "enum": [
+                "todo"
+            ],
             "title": "DiagnosisType",
             "type": "string"
         },
@@ -147,6 +203,12 @@
                 "is_current": {
                     "type": [
                         "boolean",
+                        "null"
+                    ]
+                },
+                "salary": {
+                    "type": [
+                        "number",
                         "null"
                     ]
                 },
@@ -207,7 +269,10 @@
                     ]
                 },
                 "related_to": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "started_at_time": {
                     "format": "date",
@@ -221,7 +286,6 @@
                 }
             },
             "required": [
-                "related_to",
                 "type"
             ],
             "title": "FamilialRelationship",
@@ -249,6 +313,110 @@
             ],
             "title": "GenderType",
             "type": "string"
+        },
+        "ImagingProcedureConcept": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "code_system": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "depicted_by": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "description": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mappings": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "name"
+            ],
+            "title": "ImagingProcedureConcept",
+            "type": "object"
+        },
+        "IntegerPrimaryKeyObject": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "int_id": {
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "int_id"
+            ],
+            "title": "IntegerPrimaryKeyObject",
+            "type": "object"
+        },
+        "InterPersonalRelationship": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "ended_at_time": {
+                    "format": "date",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "related_to": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "started_at_time": {
+                    "format": "date",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "type": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/FamilialRelationshipType"
+                        },
+                        {
+                            "$ref": "#/$defs/NonFamilialRelationshipType"
+                        }
+                    ],
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type"
+            ],
+            "title": "InterPersonalRelationship",
+            "type": "object"
         },
         "MedicalEvent": {
             "additionalProperties": false,
@@ -314,6 +482,12 @@
             "additionalProperties": false,
             "description": "A generic grouping for any identifiable entity",
             "properties": {
+                "depicted_by": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
                 "description": {
                     "type": [
                         "string",
@@ -326,28 +500,126 @@
                         "null"
                     ]
                 },
-                "image": {
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "name"
+            ],
+            "title": "NamedThing",
+            "type": "object"
+        },
+        "NewsEvent": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "duration": {
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "ended_at_time": {
+                    "format": "date",
                     "type": [
                         "string",
                         "null"
                     ]
                 },
-                "name": {
+                "headline": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "is_current": {
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "started_at_time": {
+                    "format": "date",
                     "type": [
                         "string",
                         "null"
                     ]
                 }
             },
-            "required": [
-                "id"
+            "title": "NewsEvent",
+            "type": "object"
+        },
+        "NonFamilialRelationshipType": {
+            "description": "",
+            "enum": [
+                "COWORKER_OF",
+                "ROOMMATE_OF",
+                "BEST_FRIEND_OF",
+                "MORTAL_ENEMY_OF"
             ],
-            "title": "NamedThing",
+            "title": "NonFamilialRelationshipType",
+            "type": "string"
+        },
+        "OperationProcedureConcept": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "code_system": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "depicted_by": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "description": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mappings": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "name"
+            ],
+            "title": "OperationProcedureConcept",
             "type": "object"
         },
         "Organization": {
             "additionalProperties": false,
             "description": "An organization such as a company or university",
+            "if": {
+                "properties": {
+                    "min_salary": {
+                        "maximum": 80000.0
+                    }
+                },
+                "required": [
+                    "min_salary"
+                ]
+            },
             "properties": {
                 "aliases": {
                     "items": {
@@ -355,6 +627,21 @@
                     },
                     "type": [
                         "array",
+                        "null"
+                    ]
+                },
+                "categories": {
+                    "items": {
+                        "$ref": "#/$defs/OrganizationType"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "depicted_by": {
+                    "type": [
+                        "string",
                         "null"
                     ]
                 },
@@ -376,12 +663,21 @@
                         "null"
                     ]
                 },
+                "has_news_events": {
+                    "items": {
+                        "$ref": "#/$defs/NewsEvent"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
                 "id": {
                     "type": "string"
                 },
-                "image": {
+                "min_salary": {
                     "type": [
-                        "string",
+                        "number",
                         "null"
                     ]
                 },
@@ -392,23 +688,53 @@
                     ]
                 },
                 "name": {
+                    "type": "string"
+                },
+                "score": {
+                    "description": "A score between 0 and 5, represented as a decimal",
+                    "maximum": 5.0,
+                    "minimum": 0.0,
                     "type": [
-                        "string",
+                        "number",
                         "null"
                     ]
                 }
             },
             "required": [
-                "id"
+                "id",
+                "name"
             ],
+            "then": {
+                "properties": {
+                    "score": {
+                        "maximum": 0
+                    }
+                },
+                "required": [
+                    "score"
+                ]
+            },
             "title": "Organization",
             "type": "object"
+        },
+        "OrganizationType": {
+            "description": "",
+            "enum": [
+                "non profit",
+                "for profit",
+                "offshore",
+                "charity",
+                "shell company",
+                "loose organization"
+            ],
+            "title": "OrganizationType",
+            "type": "string"
         },
         "Person": {
             "additionalProperties": false,
             "description": "A person (alive, dead, undead, or fictional).",
             "properties": {
-                "age_in_years": {
+                "age": {
                     "maximum": 999,
                     "minimum": 0,
                     "type": [
@@ -442,6 +768,12 @@
                     ],
                     "description": "The address at which a person currently lives"
                 },
+                "depicted_by": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
                 "description": {
                     "type": [
                         "string",
@@ -469,6 +801,15 @@
                         "null"
                     ]
                 },
+                "has_interpersonal_relationships": {
+                    "items": {
+                        "$ref": "#/$defs/InterPersonalRelationship"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
                 "has_medical_history": {
                     "items": {
                         "$ref": "#/$defs/MedicalEvent"
@@ -478,20 +819,20 @@
                         "null"
                     ]
                 },
+                "has_news_events": {
+                    "items": {
+                        "$ref": "#/$defs/NewsEvent"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
                 "id": {
                     "type": "string"
                 },
-                "image": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
-                },
                 "name": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "string"
                 },
                 "primary_email": {
                     "pattern": "^\\S+@[\\S+\\.]+\\S+",
@@ -499,10 +840,18 @@
                         "string",
                         "null"
                     ]
+                },
+                "telephone": {
+                    "pattern": "^[\\d\\(\\)\\-]+$",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "required": [
-                "id"
+                "id",
+                "name"
             ],
             "title": "Person",
             "type": "object"
@@ -520,18 +869,22 @@
                         "null"
                     ]
                 },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
+                "depicted_by": {
                     "type": [
                         "string",
                         "null"
                     ]
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
             },
             "required": [
-                "id"
+                "id",
+                "name"
             ],
             "title": "Place",
             "type": "object"
@@ -540,6 +893,18 @@
             "additionalProperties": false,
             "description": "",
             "properties": {
+                "code_system": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "depicted_by": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
                 "description": {
                     "type": [
                         "string",
@@ -549,21 +914,22 @@
                 "id": {
                     "type": "string"
                 },
-                "image": {
+                "mappings": {
+                    "items": {
+                        "type": "string"
+                    },
                     "type": [
-                        "string",
+                        "array",
                         "null"
                     ]
                 },
                 "name": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "string"
                 }
             },
             "required": [
-                "id"
+                "id",
+                "name"
             ],
             "title": "ProcedureConcept",
             "type": "object"
@@ -621,6 +987,15 @@
         "persons": {
             "items": {
                 "$ref": "#/$defs/Person"
+            },
+            "type": [
+                "array",
+                "null"
+            ]
+        },
+        "places": {
+            "items": {
+                "$ref": "#/$defs/Place"
             },
             "type": [
                 "array",

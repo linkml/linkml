@@ -200,6 +200,8 @@ ignore-words-list = [
   "amination",
   "anc",
   "brite",
+  "CrossReference",
+  "crossReference",
   "connexion",
   "EHR",
   "infarction",
