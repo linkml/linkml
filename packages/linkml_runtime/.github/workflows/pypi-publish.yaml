@@ -50,7 +50,7 @@ jobs:
       id-token: write  # This permission is mandatory for trusted publishing.
     steps:
       - name: Download built distribution
-        uses: actions/download-artifact@v4.3.0
+        uses: actions/download-artifact@v5.0.0
         with:
           name: distribution-files
           path: dist
