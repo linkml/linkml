@@ -1,6 +1,6 @@
 [build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
-build-backend = "poetry_dynamic_versioning.backend"
+requires = ["hatchling", "uv-dynamic-versioning"]
+build-backend = "hatchling.build"
 
 [project]
 name = "linkml-runtime"
@@ -52,33 +52,26 @@ dependencies = [
     "isodate >=0.7.2, <1.0.0; python_version < '3.11'",
 ]
 
+[dependency-groups]
+dev = [
+    "coverage >=6.2",
+    "requests-cache >=1.2.0",
+]
+
 [project.scripts]
 comparefiles = "linkml_runtime.utils.comparefiles:cli"
 linkml-normalize = "linkml_runtime.processing.referencevalidator:cli"
 
-[tool.poetry]
-requires-poetry = ">=2.0"
-version = "0.0.0"
-
-[tool.poetry.dependencies]
-python = "^3.9"
-
-[tool.poetry.requires-plugins]
-poetry-dynamic-versioning = ">=1.8.2"
-
-[tool.poetry-dynamic-versioning]
-enable = true
-vcs = "git"
-style = "pep440"
-
-[tool.poetry.group.dev.dependencies]
-coverage = "^6.2"
-requests-cache = "^1.2.0"
+[project.optional-dependencies]
+dev = [
+    "coverage",
+    "requests-cache",
+]
 
 [tool.codespell]
 skip = [
   ".git", "*.pdf", "*.svg", "*.dill",
-  "poetry.lock",
+  "uv.lock",
 ]
 # Ignore table where words could be split across rows
 ignore-regex = '(\|.*\|.*\|.*\||\[[A-Z][a-z]\][a-z][a-z])'
@@ -189,17 +182,16 @@ ignore = [
 # Flag errors (`C901`) whenever the complexity level exceeds 15.
 max-complexity = 15
 
-
 [tool.tox]
 requires = ["tox>=4"]
 env_list = ["lint", "py{39,310,311,312,313}"]
 
 [tool.tox.env_run_base]
-allowlist_externals = ["poetry"]
+allowlist_externals = ["uv"]
 deps = ["pytest"]
 commands = [
-  ["poetry", "install", "--no-root", "--sync", "--all-extras"],
-  ["poetry", "run", "pytest", "{posargs}"],
+  ["uv", "sync", "--all-extras", "--dev"],
+  ["uv", "run", "pytest", "{posargs}"],
 ]
 
 [tool.tox.env.codespell]
@@ -236,3 +228,11 @@ deps = ["ruff==0.11.13"]
 commands = [
   ["ruff", "check", "{posargs:.}"],
 ]
+
+[tool.uv-dynamic-versioning]
+vcs = "git"
+style = "pep440"
+fallback-version = "0.0.0"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
