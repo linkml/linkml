@@ -60,6 +60,7 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
 
     DEFAULT_TEMPLATE_PATH = "panderagen_class_based"
     DEFAULT_TEMPLATE_FILE = "pandera.jinja2"
+    DEFAULT_GENERATOR_CLASS = PanderaDataframeGenerator
 
     # ClassVars
     generatorname = os.path.basename(__file__)
@@ -204,6 +205,11 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
 @click.option("--package", help="Package name where relevant for generated class files")
 @click.option("--template-path", help="Optional jinja2 template directory within module")
 @click.option("--template-file", help="Optional jinja2 template to use for class generation")
+@click.option(
+    "--generator-class",
+    help=f"Generator class to use. Options: {list(GENERATOR_CLASSES.keys())}",
+    default="PanderaDataframeGenerator",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.argument("yamlfile")
 @click.command(name="gen-pandera")
@@ -212,6 +218,7 @@ def cli(
     package=None,
     template_path=None,
     template_file=None,
+    generator_class=None,
     **args,
 ):
     if template_path is not None and template_path not in TYPEMAP:

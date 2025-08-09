@@ -224,6 +224,17 @@ the source models from :mod:`linkml_runtime` and the target models under
 :mod:`.panderagen` , making clear what is needed to generate
 schema code as well as what parts of the linkml metamodel are supported.
 
+Testing
+-------
+
+The panderagen package is tested against the subset of the LinkML compliance tests
+that it currently implements. There is also a specific test for the generator that
+emphasizes the dataframe nature of the validation.
+
+In the tests, the optional LinkML dependencies such as NumPy, PolaRS, and Pandera
+are wrapped in test fixtures and imported using pytest.importerskip.
+This prevents test collection errors and skips the tests when the optional packages
+are not installed.
 
 Additional Notes
 ----------------

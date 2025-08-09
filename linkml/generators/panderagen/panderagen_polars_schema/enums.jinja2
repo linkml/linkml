@@ -1,0 +1,24 @@
+{#-
+  Jinja2 Template for a PolaRS Enum
+-#}
+
+{%- macro enum_name(cls) -%}
+polars_enum_{{cls.name}}
+{%- endmacro -%}
+
+{%- macro render_enum(cls) -%}
+{{ enum_name(cls) }} = pl.Enum({{ '[' }}{% for field in cls.fields %}
+    {%- if field.permissible_values()|length > 0 -%}
+        {{ field.name }} = pl.Enum([{{- field.permissible_values()|join(", ") -}}])
+    {%- endif -%}
+{% endfor %}
+{{ '])' }}
+{%- endmacro -%}
+
+{%- macro render_enums(schema_view, generator) -%}
+{% for enum in schema_view.all_enums().values() %}
+{{ enum_name(enum) }} = pl.Enum([
+"{{ generator.get_enum_permissible_values(enum)|join("\", \"") }}"
+])
+{% endfor %}
+{%- endmacro -%}
