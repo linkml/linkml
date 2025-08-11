@@ -6,19 +6,18 @@ and commands necessary to build and test your project.  For  step-by-step instru
 [consult the documentation here](https://github.com/linkml/linkml-project-cookiecutter/blob/main/README.md).
 
 ## LinkML Project Cookiecutter Quickstart
-In your poetry virtual environment:
+In your uv virtual environment:
 
 ```bash
-poetry add cruft
+uv add cruft
 ```
 
 ## Use cruft to create your brand new LinkML project:
 
-In your poetry virtual environment:
+In your uv virtual environment:
 
 ```bash
-poetry shell
-cruft create https://github.com/linkml/linkml-project-cookiecutter
+uv run cruft create https://github.com/linkml/linkml-project-cookiecutter
 ```
 
 Answer the prompted questions to customize your project.  More details on the prompts and how to answer
