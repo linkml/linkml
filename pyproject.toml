@@ -142,6 +142,7 @@ gen-java = "linkml.generators.javagen:cli"
 gen-jsonld = "linkml.generators.jsonldgen:cli"
 gen-json-schema = "linkml.generators.jsonschemagen:cli"
 gen-markdown = "linkml.generators.markdowngen:cli"
+gen-markdown-datadict = "linkml.generators.markdowndatadictgen:cli"
 gen-dbml = "linkml.generators.dbmlgen:cli"
 gen-doc = "linkml.generators.docgen:cli"
 gen-namespaces = "linkml.generators.namespacegen:cli"
@@ -200,6 +201,8 @@ ignore-words-list = [
   "amination",
   "anc",
   "brite",
+  "CrossReference",
+  "crossReference",
   "connexion",
   "EHR",
   "infarction",

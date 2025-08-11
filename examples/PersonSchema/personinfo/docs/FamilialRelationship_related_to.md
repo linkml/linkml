@@ -1,5 +1,5 @@
 
-# Slot: related_to
+# Slot: related to
 
 
 
@@ -12,7 +12,7 @@ URI: [personinfo:FamilialRelationship_related_to](https://w3id.org/linkml/exampl
 
 ## Parents
 
- *  is_a: [related_to](related_to.md)
+ *  is_a: [related to](related_to.md)
 
 ## Children
 
