@@ -1,6 +1,6 @@
 [build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
-build-backend = "poetry_dynamic_versioning.backend"
+requires = ["hatchling", "uv-dynamic-versioning"]
+build-backend = "hatchling.build"
 
 [project]
 name = "linkml"
@@ -11,10 +11,10 @@ authors = [
   {name = "Harold Solbrig", email = "solbrig@jhu.edu"},
   {name = "Sujay Patil", email = "spatil@lbl.gov"},
   {name = "Harshad Hegde", email = "hhegde@lbl.gov"},
-  {name = "Mark Andrew Miller", email = "MAM@lbl.gov>"},
+  {name = "Mark Andrew Miller", email = "MAM@lbl.gov"},
   {name = "Deepak Unni"},
-  {name = "Gaurav Vaidya", email = "gaurav@renci.org>"},
-  {name = "Kevin Schaper", email = "kevin@tislab.org>"},
+  {name = "Gaurav Vaidya", email = "gaurav@renci.org"},
+  {name = "Kevin Schaper", email = "kevin@tislab.org"},
 ]
 license = "Apache-2.0"
 license-files = ["LICENSE"]
@@ -41,14 +41,14 @@ requires-python = ">=3.9"
 dynamic = ["version"]
 dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "antlr4-python3-runtime >= 4.9.0, < 4.10",
-    "click >= 7.0",
+    "click >= 8.0, < 8.2",
     "graphviz >= 0.10.1",
     "hbreader",
     "isodate >= 0.6.0",
     "jinja2 >= 3.1.0",
     "jsonasobj2 >= 1.0.3, < 2.0.0",
     "jsonschema[format] >= 4.0.0",
-    "linkml-runtime >= 1.9.3, < 2.0.0",
+    "linkml-runtime >= 1.9.4, < 2.0.0",
     "openpyxl",
     "parse",
     "prefixcommons >= 0.1.7",
@@ -67,27 +67,66 @@ dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "sphinx-click (>=6.0.0)",
 ]
 
-[project.optional-dependencies]
-black = [
+[dependency-groups]
+lint = [
     "black >= 24.0.0",
 ]
-numpydantic = [
+typing = [
     "numpydantic >= 1.6.1",
 ]
 shacl = [
     "pyshacl >= 0.25.0",
 ]
 tests = [
-    # "linkml[black]",  # recursive dependency not supported by poetry
-    "black >= 24.0.0",
-    "numpydantic >= 1.6.1",
-    "pyshacl >= 0.25.0",
+  { include-group = "lint" },
+  { include-group = "typing" },
+  { include-group = "shacl" }
 ]
+dev = [
+  {include-group = "tests" },
+  {include-group = "pandera"},
+  "pytest >= 7.4.0",
+  "chardet",
+  "ipykernel",
+  "ipython-genutils",
+  "jupyter",
+  "nbconvert",
+  "nbformat",
+  "coverage >= 6.4.1",
+  "tox >= 4",
+  "tox-uv",
+  "requests-cache >= 1.2.0",
+  "myst-nb >= 1.0.0; python_version >= '3.9'",
+  "sphinx-design >= 0.5.0",
+  "rich >= 13.7.1"
+]
+
 pandera = [
-  "pandera >= 0.19.0"
+  "pandera >= 0.19.0",
+  "polars-lts-cpu >= 1.0.0",
+  "pandas"
 ]
-polars-lts-cpu = [
-  "polars-lts-cpu >= 1.0.0"
+tests-extra = [
+  "pytest >= 7.4.0",
+  "pytest-subtests >= 0.11.0",
+  "pytest-xdist >= 3.6.1",
+  "numpy >= 1.24.3; python_version < '3.12'",
+  "numpy >= 1.25.2; python_version >= '3.12'",
+  "requests-cache >= 1.2.0",
+  "mock >= 5.1.0",
+  "testcontainers == 3.7.1",
+  "jsonpatch >= 1.33",
+]
+docs = [
+  "furo >= 2023.03.27",
+  "sphinxcontrib-mermaid >= 0.7.1",
+  "sphinx",
+  "sphinx-click",
+  "sphinx-rtd-theme",
+  "myst-parser",
+  "matplotlib >= 3.7",
+  "sphinx-jinja >= 2.0.2",
+  "sphinxcontrib-programoutput >= 0.17",
 ]
 
 [project.scripts]
@@ -141,66 +180,12 @@ gen-linkml = "linkml.generators.linkmlgen:cli"
 gen-mermaid-class-diagram = "linkml.generators.mermaidclassdiagramgen:cli"
 linkml-schema-fixer = "linkml.utils.schema_fixer:main"
 
-[tool.poetry]
-requires-poetry = ">=2.0"
-version = "0.0.0"
-
-[tool.poetry.dependencies]
-python = "^3.9"
-
-[tool.poetry.requires-plugins]
-poetry-dynamic-versioning = ">=1.8.2"
-
-[tool.poetry-dynamic-versioning]
-enable = true
-vcs = "git"
-style = "pep440"
-
-[tool.poetry.group.dev.dependencies]
-chardet = "*"
-ipykernel = "*"
-ipython-genutils = "*"
-jupyter = "*"
-nbconvert = "*"
-nbformat = "*"
-coverage = "^6.4.1"
-tox = "^4"
-requests-cache = "^1.2.0"
-myst-nb = {version=">=1.0.0", python=">=3.9"}
-sphinx-design = "^0.5.0"
-rich = "^13.7.1"
-
-[tool.poetry.group.tests.dependencies]
-pytest = "^7.4.0"
-pytest-subtests = "^0.11.0"
-pytest-xdist = "^3.6.1"
-numpy = [
-  { "version" = ">=1.24.3", "python" = "<3.12" },
-  { "version" = ">=1.25.2", "python" = ">=3.12" }
-]
-requests-cache = "^1.2.0"
-mock = "^5.1.0"
-testcontainers = "3.7.1"
-jsonpatch = "^1.33"
-
-[tool.poetry.group.docs]
-optional = true
-
-[tool.poetry.group.docs.dependencies]
-furo = {version = "^2023.03.27", extras = ["docs"]}
-sphinxcontrib-mermaid = {version = "^0.7.1", extras = ["docs"]}
-sphinx = "*"
-sphinx-click = "*"
-sphinx-rtd-theme = "*"
-myst-parser = "*"
-matplotlib = ">=3.7"
-sphinx-jinja = "^2.0.2"
-sphinxcontrib-programoutput = "^0.17"
-
 [tool.codespell]
 skip = [
   ".git", "*.pdf", "*.svg", "*.dill",
-  "poetry.lock",
+  "./tests",  # TODO: bring in tests in too
+  "pyproject.toml",
+  "uv.lock",
   "./notebooks/DistributedModels.ipynb",
   "./docs/LinkML-logo/LinkML-Revised-Round-Logo-MASTER-FILE.ai",
   "./tests/data/hp.ttl",
@@ -292,7 +277,9 @@ extend-exclude = [
     "tests/**/__snapshots__",
     "examples/",
     "docs/",
-    "notebooks/"
+    "notebooks/",
+    # Auto-generated files that may not conform to current linting rules
+    "linkml/linter/config/datamodel/config.py"
 ]
 force-exclude = true
 line-length = 120
@@ -312,25 +299,25 @@ select = [
 # These templates can have long lines
 "linkml/generators/sqlalchemy/sqlalchemy_declarative_template.py" = ["E501"]
 "linkml/generators/sqlalchemy/sqlalchemy_imperative_template.py" = ["E501"]
-"linkml/linter/config/datamodel/config.py" = ["E501", "F401", "I001"]
+"linkml/linter/config/datamodel/config.py" = ["E501", "F401", "I001", "UP035"]
 
 # Notebooks can have unsorted imports
 "tests/test_notebooks/input/*" = ["E402"]
 
 [tool.tox]
-requires = ["tox>=4"]
+requires = ["tox>=4", "tox-uv"]
 env_list = ["lint", "py{39,310,311,312,313}"]
 
 [tool.tox.env_run_base]
-allowlist_externals = ["poetry"]
+runner = "uv-venv-lock-runner"
 deps = ["pytest"]
 commands = [
-  ["poetry", "install", "--no-root", "--sync", "--all-extras"],
-  ["poetry", "run", "pytest", "{posargs}"],
+  ["pytest", "{posargs}"],
 ]
 
 [tool.tox.env.codespell]
 description = "Run spell checkers."
+runner = "uv-venv-runner"
 skip_install = true
 deps = [
   "codespell",
@@ -342,6 +329,7 @@ commands = [
 
 [tool.tox.env.format]
 description = "Run code formatter and code-fixing linter."
+runner = "uv-venv-runner"
 skip_install = true
 deps = ["pre-commit"]
 commands = [
@@ -350,9 +338,18 @@ commands = [
 
 [tool.tox.env.lint]
 description = "Run code linter and formatter (no fixes)."
+runner = "uv-venv-runner"
 skip_install = true
 deps = ["ruff==0.11.13"]
 commands = [
   ["ruff", "check", "{posargs:.}"],
   ["ruff", "format", "{posargs:.}"],
 ]
+
+[tool.uv-dynamic-versioning]
+vcs = "git"
+style = "pep440"
+fallback-version = "0.0.0"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"

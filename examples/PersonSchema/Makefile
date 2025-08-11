@@ -1,7 +1,7 @@
 NAME = personinfo
 SRC = $(NAME).yaml
 ROOT = Container
-RUN = poetry run
+RUN = uv run
 OUTDIR = $(NAME)
 BUILD = build
 INDEX_SLOT = persons
