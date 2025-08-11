@@ -62,9 +62,11 @@ class DependencySorter:
         # Reverse to get correct declaration order (dependencies first)
         return result  # list(reversed(result))
 
-    def add_dependency(self, node: str, dependency: str):
+    def add_dependency(self, node: str, dependency: str = None):
         """
         Add a single dependency to the dependency dictionary.
+        If dependency is not provided or is None the node is added with an empty
+        dependency list.
 
         Args:
             node: The node to which the dependency is added.
@@ -72,4 +74,6 @@ class DependencySorter:
         """
         if node not in self.dependency_dict:
             self.dependency_dict[node] = []
-        self.dependency_dict[node].append(dependency)
+
+        if dependency is not None and dependency not in self.dependency_dict[node]:
+            self.dependency_dict[node].append(dependency)
