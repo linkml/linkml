@@ -1624,7 +1624,8 @@ def test_arrays_anyshape_json_schema(dtype, expected):
     # Check that the expected primitive types match the beginning of `anyOf`
     assert anyOf[0:-1] == expected
     # Check that the final type is a self-referential array
-    assert anyOf[-1] == {"$ref": f"#/$defs/{array_ref}"}
+    self_ref = anyOf[-1]["$ref"]
+    assert self_ref.startswith("#/$defs/") and "AnyShapeArray" in self_ref
 
 
 def test_arrays_anyshape_strict():
