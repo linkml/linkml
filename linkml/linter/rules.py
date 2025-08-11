@@ -6,6 +6,7 @@ import re
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Iterable
 from functools import cache
+from itertools import chain
 
 from linkml_runtime.linkml_model import (
     ClassDefinition,
@@ -326,43 +327,58 @@ class StandardNamingRule(LinterRule):
 
     def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
         excluded_types = [t.text if hasattr(t, "text") else str(t) for t in getattr(self.config, "exclude_type", [])]
-        class_pattern = (
-            self.PATTERNS["uppercamel"]
-            if not self.config.class_pattern
-            else self.PATTERNS.get(self.config.class_pattern, re.compile(self.config.class_pattern))
+        excluded_names = set(getattr(self.config, "exclude", []))
+
+        # element naming patterns indexed by element type
+        pattern = {
+            "class": (
+                self.PATTERNS["uppercamel"]
+                if not self.config.class_pattern
+                else self.PATTERNS.get(self.config.class_pattern, re.compile(self.config.class_pattern))
+            ),
+            "slot": (
+                self.PATTERNS["snake"]
+                if not self.config.slot_pattern
+                else self.PATTERNS.get(self.config.slot_pattern, re.compile(self.config.slot_pattern))
+            ),
+            "enum": self.PATTERNS["uppercamel"],
+            "permissible_value": self.PATTERNS["uppersnake"]
+            if self.config.permissible_values_upper_case
+            else self.PATTERNS["snake"],
+        }
+
+        # explicit method mapping for better readability and maintainability
+        element_extractors = {
+            "class": schema_view.all_classes,
+            "slot": schema_view.all_slots,
+            "enum": schema_view.all_enums,
+        }
+
+        # cache the results to avoid repeated method calls
+        cached_elements = {el_type: element_extractors[el_type]() for el_type in element_extractors}
+
+        # generate LinterProblems for classes, slots, and enums incrementally
+        problems = (
+            LinterProblem(f"{el_type.capitalize()} has name '{el_name}'")
+            for el_type, elements in cached_elements.items()
+            for el_name in elements
+            if f"{el_type}_definition" not in excluded_types
+            and el_name not in excluded_names
+            and pattern[el_type].fullmatch(el_name) is None
         )
-        slot_pattern = (
-            self.PATTERNS["snake"]
-            if not self.config.slot_pattern
-            else self.PATTERNS.get(self.config.slot_pattern, re.compile(self.config.slot_pattern))
-        )
 
-        enum_pattern = self.PATTERNS["uppercamel"]
-        permissible_value_pattern = (
-            self.PATTERNS["uppersnake"] if self.config.permissible_values_upper_case else self.PATTERNS["snake"]
-        )
+        if "permissible_value" not in excluded_types:
+            # add issues from the permissible values, if appropriate
+            pv_problems = (
+                LinterProblem(f"Permissible value of Enum '{en}' has name '{pv}'")
+                for en, en_def in schema_view.all_enums(imports=False).items()
+                for pv in en_def.permissible_values
+                if pv not in excluded_names and pattern["permissible_value"].fullmatch(pv) is None
+            )
+            # chain the generators together
+            return chain(problems, pv_problems)
 
-        if "class_definition" not in excluded_types:
-            for class_name in schema_view.all_classes(imports=False):
-                if class_pattern.fullmatch(class_name) is None:
-                    yield LinterProblem(f"Class has name '{class_name}'")
-
-        if "slot_definition" not in excluded_types:
-            for slot_name in schema_view.all_slots(imports=False):
-                if slot_pattern.fullmatch(slot_name) is None:
-                    yield LinterProblem(f"Slot has name '{slot_name}'")
-
-        for enum_name, enum_definition in schema_view.all_enums(imports=False).items():
-            if "enum_definition" not in excluded_types and enum_pattern.fullmatch(enum_name) is None:
-                yield LinterProblem(f"Enum has name '{enum_name}'")
-
-            if "permissible_value" not in excluded_types:
-                for permissible_value_name in enum_definition.permissible_values:
-                    if permissible_value_pattern.fullmatch(permissible_value_name) is None:
-                        yield LinterProblem(
-                            f"Permissible value of {self.format_element(enum_definition)} "
-                            f"has name '{permissible_value_name}'"
-                        )
+        return iter(problems)
 
 
 class CanonicalPrefixesRule(LinterRule):

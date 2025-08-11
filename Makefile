@@ -11,7 +11,7 @@ all-examples-%:  examples/%.py examples/%.schema.json  examples/%.shex  examples
 	echo done
 
 #RUN=pipenv run
-RUN=poetry run
+RUN=uv run
 
 lint-fix:
 	$(RUN) tox -e format
