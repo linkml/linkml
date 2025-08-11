@@ -15,9 +15,11 @@ prefixes:
   prov: http://www.w3.org/ns/prov#
   GSSO: http://purl.obolibrary.org/obo/GSSO_
   famrel: https://example.org/FamilialRelations#
-  X: http://example.org/data/
-  ONT: http://example.org/ont/
-  skos: http://www.w3.org/2004/02/skos/core#
+  # DATA PREFIXES
+  P: http://example.org/P/
+  ROR: http://example.org/ror/
+  CODE: http://example.org/code/
+  GEO: http://example.org/geoloc/
 default_prefix: personinfo
 default_range: string
 
@@ -47,7 +49,6 @@ classes:
     class_uri: schema:Person
     mixins:
       - HasAliases
-      - HasNewsEvents
     slots:
       - primary_email
       - birth_date
@@ -57,10 +58,11 @@ classes:
       - has_employment_history
       - has_familial_relationships
       - has_medical_history
-      #- children
     slot_usage:
       primary_email:
         pattern: "^\\S+@[\\S+\\.]+\\S+"
+      age_in_years:
+        recommended: true
     in_subset:
       - basic_subset
 
@@ -70,18 +72,10 @@ classes:
     mixin: true
     attributes:
       aliases:
-        singular_name: alias
         multivalued: true
         exact_mappings:
           - schema:alternateName
 
-  HasNewsEvents:
-    mixin: true
-    attributes:
-      has_news_events:
-        singular_name: has_news_event
-        multivalued: true
-        range: NewsEvent
 
   Organization:
     description: >-
@@ -90,12 +84,10 @@ classes:
     class_uri: schema:Organization
     mixins:
       - HasAliases
-      - HasNewsEvents
     slots:
       - mission_statement
       - founding_date
       - founding_location
-      - current_address
 
   Place:
     mixins:
@@ -159,28 +151,17 @@ classes:
       - diagnosis
       - procedure
 
-  NewsEvent:
-    is_a: Event
-    attributes:
-      headline:
-
   WithLocation:
     mixin: true
     slots:
       - in_location
 
-  # deliberately switch style from CamelCase/snake_case
-  biological specimen:
-    is_a: NamedThing
-
   # TODO: annotate that this is a container/root class
   Container:
     tree_root: true
     slots:
-      - name
       - persons
       - organizations
-      - places
 
 slots:
   id:
@@ -215,11 +196,6 @@ slots:
     range: FamilialRelationship
     multivalued: true
     inlined_as_list: true
-  children:
-    singular_name: child
-    range: Person
-    multivalued: true
-    inlined_as_list: true
   in_location:
     range: Place
   current_address:
@@ -232,7 +208,6 @@ slots:
     maximum_value: 999
   related_to:
   type:
-    range: FamilialRelationshipType
   street:
   city:
   mission_statement:
@@ -267,11 +242,6 @@ slots:
     inlined_as_list: true
     inlined: true
     multivalued: true
-  places:
-    range: Place
-    inlined_as_list: true
-    inlined: true
-    multivalued: true
 
 enums:
   FamilialRelationshipType:
@@ -281,20 +251,20 @@ enums:
       PARENT_OF:
         meaning: famrel:02
       CHILD_OF:
-        meaning: famrel:01
+        meaning: famrel:03
   GenderType:
     permissible_values:
-      nonbinary_man:
+      nonbinary man:
         meaning: GSSO:009254
-      nonbinary_woman:
+      nonbinary woman:
         meaning: GSSO:009253
-      transgender_woman:
+      transgender woman:
         meaning: GSSO:000384
-      transgender_man:
+      transgender man:
         meaning: GSSO:000372
-      cisgender_man:
+      cisgender man:
         meaning: GSSO:000371
-      cisgender_woman:
+      cisgender woman:
         meaning: GSSO:000385
   DiagnosisType:
 

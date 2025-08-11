@@ -61,6 +61,8 @@ classes:
     slot_usage:
       primary_email:
         pattern: "^\\S+@[\\S+\\.]+\\S+"
+      age_in_years:
+        recommended: true
     in_subset:
       - basic_subset
 
@@ -133,7 +135,7 @@ classes:
       type:
         range: FamilialRelationshipType
         required: true
-      related to:
+      related_to:
         range: Person
         required: true
 
@@ -154,6 +156,7 @@ classes:
     slots:
       - in_location
 
+  # TODO: annotate that this is a container/root class
   Container:
     tree_root: true
     slots:
@@ -236,7 +239,7 @@ slots:
     multivalued: true
   organizations:
     range: Organization
-    inlined_as_list: false
+    inlined_as_list: true
     inlined: true
     multivalued: true
 
