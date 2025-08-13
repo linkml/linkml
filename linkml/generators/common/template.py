@@ -44,7 +44,7 @@ class TemplateModel(BaseModel):
         if environment is None:
             environment = TemplateModel.environment()
 
-        fields = {**self.model_fields, **self.model_computed_fields}
+        fields = {**type(self).model_fields, **type(self).model_computed_fields}
 
         data = {k: _render(getattr(self, k, None), environment) for k in fields}
         template = environment.get_template(self.template)
@@ -83,7 +83,7 @@ def _render(
     elif isinstance(item, dict):
         return {k: _render(v, environment) for k, v in item.items()}
     elif isinstance(item, BaseModel):
-        fields = item.model_fields
+        fields = type(item).model_fields
         return {k: _render(getattr(item, k, None), environment) for k in fields.keys()}
     else:
         return item

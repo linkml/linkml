@@ -552,7 +552,7 @@ class Imports(PydanticTemplateModel):
         imports = self.imports.copy()
         imports = self._merge(imports, other)
         return Imports.model_construct(
-            imports=imports, **{k: getattr(self, k, None) for k in self.model_fields if k != "imports"}
+            imports=imports, **{k: getattr(self, k, None) for k in type(self).model_fields if k != "imports"}
         )
 
     def __len__(self) -> int:
