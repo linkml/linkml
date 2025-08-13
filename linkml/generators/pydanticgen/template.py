@@ -1,3 +1,4 @@
+import keyword
 import sys
 from collections.abc import Generator
 from importlib.util import find_spec
@@ -92,6 +93,7 @@ class PydanticTemplateModel(TemplateModel):
         """
         if environment is None:
             environment = self.environment()
+        environment.filters.setdefault("is_keyword", keyword.iskeyword)
 
         rendered = super().render(environment=environment)
 
