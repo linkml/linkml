@@ -172,7 +172,7 @@ But maintainers should take care to verify that the upstream branch and repo are
 ### Testing linkml-runtime PRs against any upstream linkml repository/branch
 
 For linkml-runtime a similar action as above is available allowing you to select a linkml repository to test against.
-For more see [linkml-runtime/CONRBUTING](https://github.com/linkml/linkml-runtime/blob/main/CONTRIBUTING.md).
+For more see [linkml-runtime/CONTRIBUTING](https://github.com/linkml/linkml-runtime/blob/main/CONTRIBUTING.md).
 
 ## Code formatting and linting
 
