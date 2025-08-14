@@ -15,7 +15,7 @@ from tests.test_compliance.helper import (
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
-    validated_schema,
+    validated_schema, SHEX, SQL_DDL_POSTGRES,
 )
 from tests.test_compliance.test_compliance import (
     CLASS_ANY,
@@ -2690,9 +2690,15 @@ def test_membership(framework, name, quantification, expression, instance, is_va
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_range_expression(framework, data_name, instance, is_valid):
+def test_range_expression_nesting(framework, data_name, instance, is_valid):
     """
     Tests behavior of nested range expressions.
+
+    This test creates a test schema with a class C that restricts
+    C.s1.s2 to be an integer with maximum value of 10.
+
+    See
+    https://github.com/orgs/linkml/discussions/2791
     """
     if framework == PANDERA_POLARS_CLASS:
         pytest.skip("PanderaGen inlining is not implemented")
@@ -2730,7 +2736,7 @@ def test_range_expression(framework, data_name, instance, is_valid):
         },
     }
     schema = validated_schema(
-        test_range_expression,
+        test_range_expression_nesting,
         "range_expression_test",
         framework,
         classes=classes,
@@ -2751,3 +2757,76 @@ def test_range_expression(framework, data_name, instance, is_valid):
         expected_behavior=expected_behavior,
         description=f"validity {is_valid} check for value {instance}",
     )
+
+@pytest.mark.parametrize(
+    "data_name,instance,is_valid",
+    [
+        ("valid_flat_int", {SLOT_S1: 5}, True),
+        ("invalid_flat_str", {SLOT_S1: "a"}, False),
+        ("valid_nested_int", {SLOT_S1: {SLOT_S2: 5}}, True),
+        ("invalid_nested_str", {SLOT_S1: {SLOT_S2: "a"}}, False),
+    ],
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_range_expression_booleans(framework, data_name, instance, is_valid):
+    """
+    Tests behavior of  range expression combined with boolean expressions.
+
+    class C is constrained such that C.s1 is either an integer or an instance of class X
+    """
+    if framework == PANDERA_POLARS_CLASS:
+        pytest.skip("PanderaGen inlining is not implemented")
+    if framework in [SQL_DDL_SQLITE, SQL_DDL_POSTGRES]:
+        pytest.skip("TODO: add Any support in sqlgen")
+    if framework in [PYTHON_DATACLASSES]:
+        pytest.skip("TODO")
+    classes = {
+        CLASS_ANY: {
+            "class_uri": "linkml:Any",
+        },
+        CLASS_C: {
+            "attributes": {
+                SLOT_S1: {
+                    "range": CLASS_ANY,
+                    "range_expression": {
+                        "any_of": [
+                            {"is_a": CLASS_X},
+                            {"is_a": "integer"},
+                        ],
+                    },
+                },
+            },
+        },
+        CLASS_X: {
+            "attributes": {
+                SLOT_S2: {
+                    "range": "integer",
+                },
+            },
+        },
+    }
+    schema = validated_schema(
+        test_range_expression_booleans,
+        "test_range_expression_booleans",
+        framework,
+        default_range=CLASS_ANY,
+        classes=classes,
+        core_elements=["range_expression"],
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework in [OWL, SHACL, SHEX]:
+        pytest.skip("RDF serialization for ambiguous types not implemented")
+    if framework not in [JSON_SCHEMA]:
+        if not is_valid:
+            expected_behavior = ValidationBehavior.INCOMPLETE
+    check_data(
+        schema,
+        data_name.replace(" ", "_"),
+        framework,
+        instance,
+        is_valid,
+        target_class=CLASS_C,
+        expected_behavior=expected_behavior,
+        description=f"validity {is_valid} check for value {instance}",
+    )
+
