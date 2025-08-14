@@ -155,3 +155,18 @@ def test_format_option_no_markdown(runner, kitchen_sink_path):
     print(result.output)
     assert not result.output.startswith("```mermaid")
     assert result.output.endswith("\n\n")
+
+
+def test_exclude_abstract_classes(kitchen_sink_path):
+    """Test exclusion of abstract classes"""
+    # Test with abstract classes included (default)
+    gen = ERDiagramGenerator(kitchen_sink_path, structural=False)
+    mermaid = remove_whitespace(gen.serialize())
+    assert "Friend{" in mermaid, "Friend abstract class should be included by default"
+
+    # Test with abstract classes excluded
+    gen = ERDiagramGenerator(kitchen_sink_path, structural=False, exclude_abstract_classes=True)
+    mermaid = remove_whitespace(gen.serialize())
+    assert "Friend{" not in mermaid, "Friend abstract class should be excluded"
+    assert "Person{" in mermaid, "Person concrete class should still be included"
+    assert "Agent{" in mermaid, "Agent concrete class should still be included"
