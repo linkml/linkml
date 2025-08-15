@@ -12,10 +12,12 @@ from tests.test_compliance.helper import (
     PYDANTIC,
     PYTHON_DATACLASSES,
     SHACL,
+    SHEX,
+    SQL_DDL_POSTGRES,
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
-    validated_schema, SHEX, SQL_DDL_POSTGRES,
+    validated_schema,
 )
 from tests.test_compliance.test_compliance import (
     CLASS_ANY,
@@ -2758,6 +2760,7 @@ def test_range_expression_nesting(framework, data_name, instance, is_valid):
         description=f"validity {is_valid} check for value {instance}",
     )
 
+
 @pytest.mark.parametrize(
     "data_name,instance,is_valid",
     [
@@ -2829,4 +2832,3 @@ def test_range_expression_booleans(framework, data_name, instance, is_valid):
         expected_behavior=expected_behavior,
         description=f"validity {is_valid} check for value {instance}",
     )
-
