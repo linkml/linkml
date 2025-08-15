@@ -18,7 +18,7 @@ jobs:
         python-version: ["3.12"]
     steps:
       - name: Check out repository
-        uses: actions/checkout@4.2.2
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
