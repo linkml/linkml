@@ -17,4 +17,3 @@ URI: [linkml:structured_imports](https://w3id.org/linkml/structured_imports)
 
 
 ## Used by
-

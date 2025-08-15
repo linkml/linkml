@@ -58,7 +58,7 @@ linkml-sqldb dump -s personinfo.yaml --db persons.db data.yaml
 
 This will create a SQLite database `persons.db` (you don't have to worry about creating the schema, this is handled automatically)
 
-Data can be retrieved from the database via slite3, e. g. the following command
+Data can be retrieved from the database via sqlite3, e. g. the following command
 
 ```bash
 sqlite3 persons.db "SELECT * FROM Person"

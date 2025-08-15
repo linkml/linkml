@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:type](https://w3id.org/linkml/examples/personinfo/type)
 
 
@@ -17,6 +16,7 @@ None &#8594;  <sub>0..1</sub> [String](types/String.md)
 ## Children
 
  *  [FamilialRelationship➞type](FamilialRelationship_type.md)
+ *  [InterPersonalRelationship➞type](InterPersonalRelationship_type.md)
 
 ## Used by
 

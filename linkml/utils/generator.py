@@ -51,7 +51,7 @@ from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.namespaces import Namespaces
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
-from linkml.utils.cli_utils import DEFAULT_LOG_LEVEL_INT, log_level_option
+from linkml.cli.logging import DEFAULT_LOG_LEVEL_INT, log_level_option
 from linkml.utils.mergeutils import alias_root
 from linkml.utils.schemaloader import SchemaLoader
 from linkml.utils.typereferences import References
@@ -344,6 +344,9 @@ class Generator(metaclass=abc.ABCMeta):
         sub_out = self.end_schema(**kwargs)
         if sub_out is not None:
             out += sub_out
+        out = out.rstrip()
+        if not (out.count("\n") == 0 and out.startswith("http")):
+            out += "\n"
         return out
 
     def visit_schema(self, **kwargs) -> Optional[str]:

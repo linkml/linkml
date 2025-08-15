@@ -22,7 +22,7 @@ classes:
 
   Person3:
     is_a: Person2
-    
+
   Interface:
     mixin: true
     slots:
@@ -31,12 +31,12 @@ classes:
   HasAliases:
     mixin: true
     is_a: Interface
-    
+
 slots:
     test_slot:
         description: "Test slot"
         range: string
-    
+
     test_aliases:
         description: "Test aliases"
         range: string

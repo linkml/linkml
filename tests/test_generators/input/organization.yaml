@@ -12,7 +12,7 @@ types:
 prefixes:
   ORGDATA: http://example.org/sample/organization/data/
   xsd: http://www.w3.org/2001/XMLSchema#
-    
+
 classes:
 
   organization:
@@ -21,7 +21,7 @@ classes:
       - id
       - name
       - has boss
-      
+
   employee:
     description: A person employed by an organization
     slots:
@@ -33,7 +33,7 @@ classes:
     slot_usage:
       last name :
         required: true
-      
+
   manager:
     description: An employee who manages others
     is_a: employee
@@ -41,7 +41,7 @@ classes:
       - has employees
 
 slots:
-  
+
   id:
     description: Unique identifier of a person
     identifier: true
@@ -49,18 +49,18 @@ slots:
   name:
     description: human readable name
     range: string
-    
+
   aliases:
     is_a: name
     description: An alternative name
     multivalued: true
-    
+
   first name:
     is_a: name
     description: The first name of a person
     examples:
       - value: fred
-    
+
   last name:
     is_a: name
     description: The last name of a person

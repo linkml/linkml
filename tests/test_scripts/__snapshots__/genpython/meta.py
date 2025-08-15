@@ -1251,3 +1251,4 @@ slots.FamilialRelationship_cordialness = Slot(uri=KS.cordialness, name="Familial
 
 slots.EmploymentEvent_type = Slot(uri=KS.type, name="EmploymentEvent_type", curie=KS.curie('type'),
                    model_uri=KS.EmploymentEvent_type, domain=EmploymentEvent, range=Optional[str])
+

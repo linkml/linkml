@@ -97,4 +97,3 @@ class SampleEnum(EnumDefinitionImpl):
 # Slots
 class slots:
     pass
-

@@ -10,4 +10,4 @@ class MyInjectedClass:
     classattr: str = "hey"
 
     def __init__(self, up: str = "doc"):
-        self.whats = up
+        self.what = up

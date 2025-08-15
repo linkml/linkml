@@ -59,6 +59,6 @@ def test_jsonld_prefix(prefix, version, expected):
     g.bind("CHEBI", "http://purl.obolibrary.org/obo/CHEBI_")
     jsonld = g.serialize(format="json-ld", version=version, prefix=prefix, context=context)
     if expected:
-        # TODO: determin if it's possible to do this
+        # TODO: determine if it's possible to do this
         # assert '"CHEBI:33709"' in jsonld
         assert '"CHEBI:33709"' in jsonld or '"http://purl.obolibrary.org/obo/CHEBI_33709"' in jsonld

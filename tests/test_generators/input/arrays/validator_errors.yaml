@@ -2,7 +2,7 @@ id: validator_errors
 name: validator_errors
 title: validator_errors
 description:
-  Invalid array specifications to test ArrayValidator. Each array slot's name 
+  Invalid array specifications to test ArrayValidator. Each array slot's name
   should match a validator method - see the docstrings there for explanations
 imports:
   - linkml:types

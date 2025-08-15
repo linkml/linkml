@@ -5,7 +5,7 @@ id: https://w3id.org/linkml/tests/kitchen_sink_ifabsent
 name: kitchen_sink_ifabsent
 title: Kitchen Sink IfAbsent Schema
 description: |-
-  Kitchen Sink IfAbsent Schema specially designed to test ifabsent attribute generation. 
+  Kitchen Sink IfAbsent Schema specially designed to test ifabsent attribute generation.
 
 imports:
   - linkml:types
@@ -61,6 +61,3 @@ enums:
         description: spiteful
       indifferent:
         description: not overly friendly nor obnoxiously spiteful
-
-
-

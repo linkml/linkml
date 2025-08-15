@@ -20,4 +20,4 @@ help:
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 apidocs:
-	poetry run sphinx-apidoc -o ./ ../linkml
+	uv run sphinx-apidoc -o ./ ../linkml

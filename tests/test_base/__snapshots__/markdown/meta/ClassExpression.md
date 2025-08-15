@@ -10,7 +10,7 @@ URI: [linkml:ClassExpression](https://w3id.org/linkml/ClassExpression)
 
 ## Mixin for
 
- * [AnonymousClassExpression](AnonymousClassExpression.md) (mixin) 
+ * [AnonymousClassExpression](AnonymousClassExpression.md) (mixin)
  * [ClassDefinition](ClassDefinition.md) (mixin)  - an element whose instances are complex objects that may have slot-value assignments
 
 ## Referenced by Class

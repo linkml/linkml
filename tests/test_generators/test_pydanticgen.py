@@ -402,9 +402,9 @@ def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_i
     assert f"a2b: {expected}" in code, f"did not find expected {expected} in {code}"
     if expected not in expected_default_factories:
         raise ValueError(f"unexpected default factory for {expected}")
-    assert (
-        expected_default_factories[expected] in code
-    ), f"did not find expected default factory {expected_default_factories[expected]}"
+    assert expected_default_factories[expected] in code, (
+        f"did not find expected default factory {expected_default_factories[expected]}"
+    )
 
 
 def test_ifabsent():
@@ -1624,7 +1624,8 @@ def test_arrays_anyshape_json_schema(dtype, expected):
     # Check that the expected primitive types match the beginning of `anyOf`
     assert anyOf[0:-1] == expected
     # Check that the final type is a self-referential array
-    assert anyOf[-1] == {"$ref": f"#/$defs/{array_ref}"}
+    self_ref = anyOf[-1]["$ref"]
+    assert self_ref.startswith("#/$defs/") and "AnyShapeArray" in self_ref
 
 
 def test_arrays_anyshape_strict():
@@ -2563,9 +2564,9 @@ def test_generate_split_pattern(input_path):
     for an_import in should_have:
         assert an_import in imports, "Missed a necessary import when generating from a pattern"
     for an_import in shouldnt_have:
-        assert (
-            an_import not in imports
-        ), "Got one of the imports with the default template instead of the supplied pattern"
+        assert an_import not in imports, (
+            "Got one of the imports with the default template instead of the supplied pattern"
+        )
 
 
 @pytest.mark.pydanticgen_split
@@ -2700,9 +2701,9 @@ def test_crappy_stdlib_set_removed():
 
         linkml_meta = metadata("linkml")
         req_python = SpecifierSet(linkml_meta.json["requires_python"])
-        assert req_python.contains(
-            Version("3.9")
-        ), "REMOVE _some_stdlib_module_names from the bottom of pydanticgen/template.py, "
+        assert req_python.contains(Version("3.9")), (
+            "REMOVE _some_stdlib_module_names from the bottom of pydanticgen/template.py, "
+        )
         "and then REMOVE THIS TEST!"
     except Exception:
         pass

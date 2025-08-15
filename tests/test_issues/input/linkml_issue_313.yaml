@@ -12,7 +12,7 @@ types:
 classes:
   c1:
     c1val
-    
+
 slots:
   s1:
     s1val

@@ -320,7 +320,6 @@ def _generate_framework_output(
 
         cached_generator_output[pair] = (gen, output, out_path)
         for context, impdict in mappings:
-
             if framework in impdict:
                 expected = impdict[framework]
                 if expected is None:
@@ -559,7 +558,7 @@ def _make_schema(
 
     if imported_schemas:
         for imp in imported_schemas:
-            imp_path = f'{out_dir / imp["name"]}.yaml'
+            imp_path = f"{out_dir / imp['name']}.yaml"
             with open(imp_path, "w", encoding="utf-8") as imp_stream:
                 yaml.safe_dump(imp, imp_stream, sort_keys=False)
 
@@ -791,9 +790,9 @@ def check_data(
                         assert True, f"could not coerce invalid object; exception: {e}"
                     if py_inst:
                         if coerced:
-                            assert _as_compact_yaml(py_inst) == _as_compact_yaml(
-                                coerced
-                            ), f"coerced {py_inst} != {coerced}"
+                            assert _as_compact_yaml(py_inst) == _as_compact_yaml(coerced), (
+                                f"coerced {py_inst} != {coerced}"
+                            )
                         else:
                             logger.warning(f"INCOMPLETE TEST: did not check coerced: {py_inst}")
                 else:

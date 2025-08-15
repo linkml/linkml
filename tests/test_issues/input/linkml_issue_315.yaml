@@ -26,4 +26,3 @@ slots:
     multivalued: true
     inlined: true
     range: WordMapping
-
