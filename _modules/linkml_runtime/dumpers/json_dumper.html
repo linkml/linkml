@@ -457,10 +457,14 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecoder</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
 
+        <span class="n">element_type</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">):</span>
             <span class="n">element</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
-            <span class="n">as_json_object</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">contexts</span><span class="p">,</span> <span class="n">inject_type</span><span class="o">=</span><span class="n">inject_type</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="s2">&quot;  &quot;</span>
+            <span class="n">as_json_object</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">contexts</span><span class="p">,</span> <span class="n">inject_type</span><span class="o">=</span><span class="n">inject_type</span><span class="p">,</span> <span class="n">element_type</span><span class="o">=</span><span class="n">element_type</span><span class="p">),</span>
+            <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span>
+            <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">indent</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
