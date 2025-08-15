@@ -1,7 +1,7 @@
 id: https://w3id.org/linkml/tests/core
 name: core
 description: |-
-  core schema imported by kitchen_sink    
+  core schema imported by kitchen_sink
 default_curi_maps:
   - semweb_context
 imports:
@@ -47,7 +47,7 @@ classes:
       - description
     mappings:
       - prov:Activity
-      
+
   agent:
     description: "a provence-generating agent"
     slots:
@@ -55,7 +55,7 @@ classes:
       - acted on behalf of
       - was informed by
     class_uri: prov:Agent
-      
+
 slots:
 
   id:
@@ -67,7 +67,7 @@ slots:
     rank: 2
 
   description:
-  
+
   started at time:
     slot_uri: prov:startedAtTime
     range: date
@@ -111,4 +111,4 @@ enums:
   KitchenStatus:
     permissible_values:
       DIRTY:
-      CLEAN: 
+      CLEAN:

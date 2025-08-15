@@ -36,7 +36,7 @@ Documentation
    specifications/linkml-spec.md
    contributing/contributing.md
    faq/index
-   
+
 Metamodel Reference
 -------------------
 
@@ -48,7 +48,7 @@ repository. Each element of the model has a URI of the form
 The key schema elements are:
 
 - `linkml:SchemaDefinition <https://w3id.org/linkml/SchemaDefinition>`_
-  
+
     - `linkml:ClassDefinition <https://w3id.org/linkml/ClassDefinition>`_
     - `linkml:SlotDefinition <https://w3id.org/linkml/SlotDefinition>`_
     - `linkml:TypeDefinition <https://w3id.org/linkml/TypeDefinition>`_

@@ -11,7 +11,7 @@ schema:
       multivalued: true
       minimum_cardinality: 2
       maximum_cardinality: 5
-    
+
     int_dict:
       range: KeyedInt
       multivalued: true
@@ -47,18 +47,18 @@ json_schema:
       minProperties: 3
       maxProperties: 4
 data_cases:
-  - data: 
+  - data:
       int_list: [1, 2]
   - data:
       int_list: [1]
     error_message: Failed validating 'minItems'
-  - data: 
+  - data:
       int_list: [1, 2, 3, 4, 5]
   - data:
       int_list: [1, 2, 3, 4, 5, 6]
     error_message: Failed validating 'maxItems'
   - data:
-      int_dict: 
+      int_dict:
         1:
           value: 1
         2:
@@ -66,14 +66,14 @@ data_cases:
         3:
           value: 3
   - data:
-      int_dict: 
+      int_dict:
         1:
           value: 1
         2:
           value: 2
     error_message: Failed validating 'minProperties'
   - data:
-      int_dict: 
+      int_dict:
         1:
           value: 1
         2:
@@ -83,7 +83,7 @@ data_cases:
         4:
           value: 4
   - data:
-      int_dict: 
+      int_dict:
         1:
           value: 1
         2:
@@ -95,4 +95,3 @@ data_cases:
         5:
           value: 5
     error_message: Failed validating 'maxProperties'
-        

@@ -3,7 +3,8 @@ id: http://example.org
 prefixes:
   linkml: https://w3id.org/linkml/
 
-imports: [linkml:types]
+imports:
+ - linkml:types
 default_range: string
 
 classes:

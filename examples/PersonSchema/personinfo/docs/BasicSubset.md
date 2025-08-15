@@ -1,7 +1,6 @@
 
 # Subset: basic_subset
 
-
 A subset of the schema that handles basic information
 
 URI: [personinfo:basic_subset](https://w3id.org/linkml/examples/personinfo/basic_subset)
@@ -21,4 +20,3 @@ URI: [personinfo:basic_subset](https://w3id.org/linkml/examples/personinfo/basic
 
 
 ### Enums
-

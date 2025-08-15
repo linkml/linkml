@@ -139,6 +139,3 @@ try:
     main()
 except Exception as e:
     warnings.warn('Could not plot deprecations!\n' + str(e))
-
-
-

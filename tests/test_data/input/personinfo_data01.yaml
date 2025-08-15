@@ -28,7 +28,7 @@ persons:
           name: prescribe cough medicine
   - id: X:P2
     name: person2
-    gender: cisgender_man
+    gender: cisgender man
     aliases:
       - p2a1
       - p2a2
@@ -43,4 +43,3 @@ persons:
         procedure:
           id: ONT:T002
           name: ointment
-

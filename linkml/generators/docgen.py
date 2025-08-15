@@ -6,11 +6,11 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 import click
 from jinja2 import Environment, FileSystemLoader, Template
-from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.dumpers import json_dumper, yaml_dumper
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
@@ -387,8 +387,8 @@ class DocGenerator(Generator):
         :param element:
         :return:
         """
-        if isinstance(element, (EnumDefinition, SubsetDefinition)):
-            # TODO: fix schema view to handle URIs for enums and subsets
+        if isinstance(element, SubsetDefinition):
+            # Subsets have no uri attribute
             return self.name(element)
 
         if self.subfolder_type_separation:
@@ -409,6 +409,21 @@ class DocGenerator(Generator):
         uri = self.uri(element)
         curie = self.uri(element, expand=False)
         return f"[{curie}]({uri})"
+
+    def link_mermaid(self, e: Union[Definition, DefinitionName]) -> str:
+        """
+        Return link to insert in mermaid diagrams for a given element
+
+        :param e: element to be linked
+        :return: string with link
+        """
+        # Reuse markdown link generation to avoid code duplication.
+        md_link = self.link(e)
+        if not md_link.endswith(")"):
+            return md_link
+        link = md_link.rsplit("(")[-1][:-1]
+        link = link.removesuffix(".md")
+        return f"../{link}/"
 
     def link(self, e: Union[Definition, DefinitionName], index_link: bool = False) -> str:
         """
@@ -485,14 +500,13 @@ class DocGenerator(Generator):
         return self._is_external(t) and not self.schemaview.schema.id.startswith("https://w3id.org/linkml/")
 
     def _is_external(self, element: Element) -> bool:
-        # note: this is currently incomplete. See: https://github.com/linkml/linkml/issues/782
         if element.from_schema == "https://w3id.org/linkml/types" and not self.genmeta:
             return True
         else:
             return False
 
     @staticmethod
-    def _markdown_link(n: str, name: str = None, subfolder: str = None) -> str:
+    def _markdown_link(n: str, name: str = "", subfolder: str = "") -> str:
         if subfolder:
             rel_path = f"{subfolder}/{n}"
         else:
@@ -965,6 +979,80 @@ class DocGenerator(Generator):
                 objs.append((stem, f.read()))
         return objs
 
+    def _remove_name_keys(self, obj):
+        """Recursively removes 'name' keys from a JSON object representation.
+
+        This is used to clean up the output of ClassRule objects. For example, if we had a rule like:
+        rules:
+        - title: calibration_standard_if_rt
+            preconditions:
+                slot_conditions:
+                    calibration_target:
+                        equals_string: retention_index
+
+        The JSON representation would include redundant "name" keys:
+        {
+            "slot_conditions": {
+                "name": "slot_conditions"
+                "calibration_target": {
+                    "name": "calibration_target"
+                    "equals_string": "retention_index",
+                },
+            }
+        }
+
+        This function removes those redundant "name" keys to make the output cleaner.
+
+        :param obj: The object to clean (dict, list, or primitive value)
+        :return: The same object with all "name" keys removed from dicts
+        """
+        if isinstance(obj, dict):
+            return {k: self._remove_name_keys(v) for k, v in obj.items() if k != "name"}
+        elif isinstance(obj, list):
+            return [self._remove_name_keys(item) for item in obj]
+        else:
+            return obj
+
+    def classrule_to_dict_view(self, element: ClassDefinition) -> list[dict[str, Any]]:
+        """Process all rules (of type ClassRule) asserted on a class.
+
+        This method iterates through all rules asserted on a class and returns a list of
+        dictionaries, each containing four pieces of information about a rule:
+        _title_, _preconditions_, _postconditions_, and _elseconditions_.
+        These values will be read in the jinja template and formatted into a tabular
+        view for users to understand the rules applied to the class.
+
+        Note: This method removes redundant "name" keys which are asserted on some
+        classes in the Python representation of classes from the metamodel.
+
+        :param element: LinkML class object with `rules` asserted on it
+        :return: List of dictionaries with title and "sanitized" conditions for each rule
+        """
+        if not element.rules:
+            return []
+
+        rule_dicts = []
+
+        for rule in element.rules:
+            # TODO: expand this list of ClassRule metaslots based on use case
+            rule_dict = {
+                "title": rule.title or "",
+                "preconditions": None,
+                "postconditions": None,
+                "elseconditions": None,
+            }
+
+            for key in ["preconditions", "postconditions", "elseconditions"]:
+                condition_obj = getattr(rule, key, None)
+                if condition_obj:
+                    json_obj = json_dumper.to_dict(condition_obj)
+                    sanitized_condition = self._remove_name_keys(json_obj)
+                    rule_dict[key] = sanitized_condition
+
+            rule_dicts.append(rule_dict)
+
+        return rule_dicts
+
     def customize_environment(self, env: Environment):
         if self.truncate_descriptions:
             env.filters["enshorten"] = enshorten
@@ -1031,7 +1119,6 @@ class DocGenerator(Generator):
     help="Folder in which example files are found. These are used to make inline examples",
 )
 @click.option(
-    "-d",
     "--include",
     help="""
 Include LinkML Schema outside of imports mechanism.  Helpful in including deprecated classes and slots in a separate

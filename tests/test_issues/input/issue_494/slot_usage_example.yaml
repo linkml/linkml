@@ -1,15 +1,15 @@
 id: https://w3id.org/linkml/examples/personinfo
 name: personinfo
-prefixes:                                 
+prefixes:
   linkml: https://w3id.org/linkml/
 imports:
   - linkml:types
   - testme
 default_range: string
-  
+
 classes:
   NamedThing:
-    slots: 
+    slots:
      - id
      - full_name
   Person:
@@ -23,7 +23,7 @@ classes:
         multivalued: true
         range: OrganizationalRelationship
         inlined_as_list: true
-    
+
   Organization:
     is_a: NamedThing
 
@@ -44,7 +44,7 @@ classes:
         required: true
       relationship_type:
         range: FamilialRelationshipType
-      
+
 
   OrganizationalRelationship:
     is_a: Relationship

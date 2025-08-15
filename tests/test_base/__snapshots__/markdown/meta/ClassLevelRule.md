@@ -16,4 +16,3 @@ URI: [linkml:ClassLevelRule](https://w3id.org/linkml/ClassLevelRule)
 
 
 ## Attributes
-

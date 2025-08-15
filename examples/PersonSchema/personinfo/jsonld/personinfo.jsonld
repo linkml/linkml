@@ -36,6 +36,14 @@
       "prefix_reference": "https://example.org/FamilialRelations#"
     },
     {
+      "prefix_prefix": "bizcodes",
+      "prefix_reference": "https://example.org/bizcodes/"
+    },
+    {
+      "prefix_prefix": "skos",
+      "prefix_reference": "http://www.w3.org/2004/02/skos/core#"
+    },
+    {
       "prefix_prefix": "P",
       "prefix_reference": "http://example.org/P/"
     },
@@ -74,11 +82,47 @@
   ],
   "types": [
     {
+      "name": "CrossReference",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/CrossReference",
+      "description": "A string URI or CURIE representation of an external identifier, modeled as a Resource in RDF",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "typeof": "uriorcurie",
+      "base": "str",
+      "uri": "http://www.w3.org/2000/01/rdf-schema#Resource",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "ImageURL",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/ImageURL",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "typeof": "uri",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#anyURI",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "SalaryType",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/SalaryType",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "typeof": "decimal",
+      "base": "Decimal",
+      "uri": "http://www.w3.org/2001/XMLSchema#decimal",
+      "@type": "TypeDefinition"
+    },
+    {
       "name": "string",
       "definition_uri": "https://w3id.org/linkml/String",
       "description": "A character string",
+      "notes": [
+        "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:Text"
+      ],
       "base": "str",
       "uri": "http://www.w3.org/2001/XMLSchema#string",
       "@type": "TypeDefinition"
@@ -87,8 +131,14 @@
       "name": "integer",
       "definition_uri": "https://w3id.org/linkml/Integer",
       "description": "An integer",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"integer\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:Integer"
+      ],
       "base": "int",
       "uri": "http://www.w3.org/2001/XMLSchema#integer",
       "@type": "TypeDefinition"
@@ -97,8 +147,14 @@
       "name": "boolean",
       "definition_uri": "https://w3id.org/linkml/Boolean",
       "description": "A binary (true or false) value",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"boolean\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:Boolean"
+      ],
       "base": "Bool",
       "uri": "http://www.w3.org/2001/XMLSchema#boolean",
       "repr": "bool",
@@ -108,8 +164,14 @@
       "name": "float",
       "definition_uri": "https://w3id.org/linkml/Float",
       "description": "A real number that conforms to the xsd:float specification",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"float\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:Float"
+      ],
       "base": "float",
       "uri": "http://www.w3.org/2001/XMLSchema#float",
       "@type": "TypeDefinition"
@@ -118,8 +180,14 @@
       "name": "double",
       "definition_uri": "https://w3id.org/linkml/Double",
       "description": "A real number that conforms to the xsd:double specification",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"double\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "close_mappings": [
+        "schema:Float"
+      ],
       "base": "float",
       "uri": "http://www.w3.org/2001/XMLSchema#double",
       "@type": "TypeDefinition"
@@ -128,8 +196,14 @@
       "name": "decimal",
       "definition_uri": "https://w3id.org/linkml/Decimal",
       "description": "A real number with arbitrary precision that conforms to the xsd:decimal specification",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"decimal\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "broad_mappings": [
+        "schema:Number"
+      ],
       "base": "Decimal",
       "uri": "http://www.w3.org/2001/XMLSchema#decimal",
       "@type": "TypeDefinition"
@@ -139,12 +213,16 @@
       "definition_uri": "https://w3id.org/linkml/Time",
       "description": "A time object represents a (local) time of day, independent of any particular day",
       "notes": [
-        "URI is dateTime because OWL reasoners do not work with straight date or time"
+        "URI is dateTime because OWL reasoners do not work with straight date or time",
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"time\"."
       ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:Time"
+      ],
       "base": "XSDTime",
-      "uri": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "uri": "http://www.w3.org/2001/XMLSchema#time",
       "repr": "str",
       "@type": "TypeDefinition"
     },
@@ -153,10 +231,14 @@
       "definition_uri": "https://w3id.org/linkml/Date",
       "description": "a date (year, month and day) in an idealized calendar",
       "notes": [
-        "URI is dateTime because OWL reasoners don't work with straight date or time"
+        "URI is dateTime because OWL reasoners don't work with straight date or time",
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date\"."
       ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:Date"
+      ],
       "base": "XSDDate",
       "uri": "http://www.w3.org/2001/XMLSchema#date",
       "repr": "str",
@@ -166,8 +248,14 @@
       "name": "datetime",
       "definition_uri": "https://w3id.org/linkml/Datetime",
       "description": "The combination of a date and time",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"datetime\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "exact_mappings": [
+        "schema:DateTime"
+      ],
       "base": "XSDDateTime",
       "uri": "http://www.w3.org/2001/XMLSchema#dateTime",
       "repr": "str",
@@ -177,6 +265,9 @@
       "name": "date_or_datetime",
       "definition_uri": "https://w3id.org/linkml/DateOrDatetime",
       "description": "Either a date or a datetime",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date_or_datetime\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
       "base": "str",
@@ -188,6 +279,9 @@
       "name": "uriorcurie",
       "definition_uri": "https://w3id.org/linkml/Uriorcurie",
       "description": "a URI or a CURIE",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uriorcurie\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
       "base": "URIorCURIE",
@@ -196,11 +290,40 @@
       "@type": "TypeDefinition"
     },
     {
-      "name": "uri",
-      "definition_uri": "https://w3id.org/linkml/Uri",
-      "description": "a complete URI",
+      "name": "curie",
+      "definition_uri": "https://w3id.org/linkml/Curie",
+      "conforms_to": "https://www.w3.org/TR/curie/",
+      "description": "a compact URI",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"curie\"."
+      ],
+      "comments": [
+        "in RDF serializations this MUST be expanded to a URI",
+        "in non-RDF serializations MAY be serialized as the compact representation"
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
+      "base": "Curie",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "uri",
+      "definition_uri": "https://w3id.org/linkml/Uri",
+      "conforms_to": "https://www.ietf.org/rfc/rfc3987.txt",
+      "description": "a complete URI",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uri\"."
+      ],
+      "comments": [
+        "in RDF serializations a slot with range of uri is treated as a literal or type xsd:anyURI unless it is an identifier or a reference to an identifier, in which case it is translated directly to a node"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "close_mappings": [
+        "schema:URL"
+      ],
       "base": "URI",
       "uri": "http://www.w3.org/2001/XMLSchema#anyURI",
       "repr": "str",
@@ -210,6 +333,9 @@
       "name": "ncname",
       "definition_uri": "https://w3id.org/linkml/Ncname",
       "description": "Prefix part of CURIE",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"ncname\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
       "base": "NCName",
@@ -221,6 +347,9 @@
       "name": "objectidentifier",
       "definition_uri": "https://w3id.org/linkml/Objectidentifier",
       "description": "A URI or CURIE that represents an object in the model.",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"objectidentifier\"."
+      ],
       "comments": [
         "Used for inheritance and type checking"
       ],
@@ -235,10 +364,58 @@
       "name": "nodeidentifier",
       "definition_uri": "https://w3id.org/linkml/Nodeidentifier",
       "description": "A URI, CURIE or BNODE that represents a node in a model.",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"nodeidentifier\"."
+      ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
       "base": "NodeIdentifier",
       "uri": "http://www.w3.org/ns/shex#nonLiteral",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "jsonpointer",
+      "definition_uri": "https://w3id.org/linkml/Jsonpointer",
+      "conforms_to": "https://datatracker.ietf.org/doc/html/rfc6901",
+      "description": "A string encoding a JSON Pointer. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to a valid object within the current instance document when encoded in tree form.",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpointer\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "jsonpath",
+      "definition_uri": "https://w3id.org/linkml/Jsonpath",
+      "conforms_to": "https://www.ietf.org/archive/id/draft-goessner-dispatch-jsonpath-00.html",
+      "description": "A string encoding a JSON Path. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded in tree form.",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpath\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "sparqlpath",
+      "definition_uri": "https://w3id.org/linkml/Sparqlpath",
+      "conforms_to": "https://www.w3.org/TR/sparql11-query/#propertypaths",
+      "description": "A string encoding a SPARQL Property Path. The value of the string MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded as RDF.",
+      "notes": [
+        "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"sparqlpath\"."
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
       "repr": "str",
       "@type": "TypeDefinition"
     }
@@ -259,7 +436,28 @@
         },
         {
           "text": "CHILD_OF",
-          "meaning": "famrel:01"
+          "meaning": "famrel:03"
+        }
+      ]
+    },
+    {
+      "name": "NonFamilialRelationshipType",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/NonFamilialRelationshipType",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "permissible_values": [
+        {
+          "text": "COWORKER_OF",
+          "meaning": "famrel:70"
+        },
+        {
+          "text": "ROOMMATE_OF",
+          "meaning": "famrel:71"
+        },
+        {
+          "text": "BEST_FRIEND_OF"
+        },
+        {
+          "text": "MORTAL_ENEMY_OF"
         }
       ]
     },
@@ -297,7 +495,38 @@
     {
       "name": "DiagnosisType",
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/DiagnosisType",
-      "from_schema": "https://w3id.org/linkml/examples/personinfo"
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "permissible_values": [
+        {
+          "text": "todo"
+        }
+      ]
+    },
+    {
+      "name": "OrganizationType",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/OrganizationType",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "permissible_values": [
+        {
+          "text": "non profit"
+        },
+        {
+          "text": "for profit"
+        },
+        {
+          "text": "offshore"
+        },
+        {
+          "text": "charity",
+          "meaning": "bizcodes:001"
+        },
+        {
+          "text": "shell company"
+        },
+        {
+          "text": "loose organization"
+        }
+      ]
     }
   ],
   "slots": [
@@ -310,12 +539,30 @@
       ],
       "slot_uri": "http://schema.org/identifier",
       "identifier": true,
-      "owner": "Place",
+      "owner": "CodeSystem",
       "domain_of": [
         "NamedThing",
-        "Place"
+        "Place",
+        "CodeSystem"
       ],
-      "range": "string",
+      "range": "uriorcurie",
+      "required": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "int_id",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/int_id",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "mappings": [
+        "http://schema.org/int_identifier"
+      ],
+      "slot_uri": "http://schema.org/int_identifier",
+      "identifier": true,
+      "owner": "IntegerPrimaryKeyObject",
+      "domain_of": [
+        "IntegerPrimaryKeyObject"
+      ],
+      "range": "integer",
       "required": true,
       "@type": "SlotDefinition"
     },
@@ -327,12 +574,14 @@
         "http://schema.org/name"
       ],
       "slot_uri": "http://schema.org/name",
-      "owner": "Place",
+      "owner": "CodeSystem",
       "domain_of": [
         "NamedThing",
-        "Place"
+        "Place",
+        "CodeSystem"
       ],
       "range": "string",
+      "required": true,
       "@type": "SlotDefinition"
     },
     {
@@ -358,10 +607,6 @@
         "http://schema.org/image"
       ],
       "slot_uri": "http://schema.org/image",
-      "owner": "NamedThing",
-      "domain_of": [
-        "NamedThing"
-      ],
       "range": "string",
       "@type": "SlotDefinition"
     },
@@ -378,6 +623,22 @@
         "Person"
       ],
       "range": "GenderType",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "telephone",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/telephone",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "mappings": [
+        "http://schema.org/telephone"
+      ],
+      "slot_uri": "http://schema.org/telephone",
+      "owner": "Person",
+      "domain_of": [
+        "Person"
+      ],
+      "range": "string",
+      "pattern": "^[\\d\\(\\)\\-]+$",
       "@type": "SlotDefinition"
     },
     {
@@ -439,12 +700,12 @@
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/has_employment_history",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "slot_uri": "https://w3id.org/linkml/examples/personinfo/has_employment_history",
-      "multivalued": true,
       "owner": "Person",
       "domain_of": [
         "Person"
       ],
       "range": "EmploymentEvent",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true,
       "@type": "SlotDefinition"
@@ -454,12 +715,12 @@
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/has_medical_history",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "slot_uri": "https://w3id.org/linkml/examples/personinfo/has_medical_history",
-      "multivalued": true,
       "owner": "Person",
       "domain_of": [
         "Person"
       ],
       "range": "MedicalEvent",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true,
       "@type": "SlotDefinition"
@@ -469,12 +730,27 @@
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/has_familial_relationships",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "slot_uri": "https://w3id.org/linkml/examples/personinfo/has_familial_relationships",
-      "multivalued": true,
       "owner": "Person",
       "domain_of": [
         "Person"
       ],
       "range": "FamilialRelationship",
+      "multivalued": true,
+      "inlined": true,
+      "inlined_as_list": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "has_interpersonal_relationships",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/has_interpersonal_relationships",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/has_interpersonal_relationships",
+      "owner": "Person",
+      "domain_of": [
+        "Person"
+      ],
+      "range": "InterPersonalRelationship",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true,
       "@type": "SlotDefinition"
@@ -486,7 +762,6 @@
       "slot_uri": "https://w3id.org/linkml/examples/personinfo/in_location",
       "owner": "WithLocation",
       "domain_of": [
-        "MedicalEvent",
         "WithLocation"
       ],
       "range": "Place",
@@ -510,7 +785,8 @@
       "name": "age_in_years",
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/age_in_years",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
-      "slot_uri": "https://w3id.org/linkml/examples/personinfo/age_in_years",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/age",
+      "alias": "age",
       "owner": "Person",
       "domain_of": [
         "Person"
@@ -518,6 +794,21 @@
       "range": "integer",
       "minimum_value": 0,
       "maximum_value": 999,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "score",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/score",
+      "description": "A score between 0 and 5, represented as a decimal",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/score",
+      "owner": "Organization",
+      "domain_of": [
+        "Organization"
+      ],
+      "range": "decimal",
+      "minimum_value": 0.0,
+      "maximum_value": 5.0,
       "@type": "SlotDefinition"
     },
     {
@@ -529,7 +820,20 @@
       "domain_of": [
         "Relationship"
       ],
-      "range": "string",
+      "range": "Person",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "depicted_by",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/depicted_by",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/depicted_by",
+      "owner": "Place",
+      "domain_of": [
+        "NamedThing",
+        "Place"
+      ],
+      "range": "ImageURL",
       "@type": "SlotDefinition"
     },
     {
@@ -691,12 +995,12 @@
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/persons",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "slot_uri": "https://w3id.org/linkml/examples/personinfo/persons",
-      "multivalued": true,
       "owner": "Container",
       "domain_of": [
         "Container"
       ],
       "range": "Person",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true,
       "@type": "SlotDefinition"
@@ -706,14 +1010,66 @@
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/organizations",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "slot_uri": "https://w3id.org/linkml/examples/personinfo/organizations",
-      "multivalued": true,
       "owner": "Container",
       "domain_of": [
         "Container"
       ],
       "range": "Organization",
+      "multivalued": true,
       "inlined": true,
       "inlined_as_list": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "places",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/places",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/places",
+      "owner": "Container",
+      "domain_of": [
+        "Container"
+      ],
+      "range": "Place",
+      "multivalued": true,
+      "inlined": true,
+      "inlined_as_list": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "categories",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/categories",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/categories",
+      "owner": "Organization",
+      "domain_of": [
+        "Organization"
+      ],
+      "range": "string",
+      "multivalued": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "salary",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/salary",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/salary",
+      "owner": "EmploymentEvent",
+      "domain_of": [
+        "EmploymentEvent"
+      ],
+      "range": "SalaryType",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "min_salary",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/min_salary",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/min_salary",
+      "owner": "Organization",
+      "domain_of": [
+        "Organization"
+      ],
+      "range": "SalaryType",
       "@type": "SlotDefinition"
     },
     {
@@ -722,14 +1078,70 @@
       "exact_mappings": [
         "http://schema.org/alternateName"
       ],
+      "singular_name": "alias",
       "slot_uri": "https://w3id.org/linkml/examples/personinfo/aliases",
-      "multivalued": true,
       "alias": "aliases",
       "owner": "HasAliases",
       "domain_of": [
         "HasAliases"
       ],
       "range": "string",
+      "multivalued": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "newsEvent__headline",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/headline",
+      "alias": "headline",
+      "owner": "NewsEvent",
+      "domain_of": [
+        "NewsEvent"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "hasNewsEvents__has_news_events",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "singular_name": "has_news_event",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/has_news_events",
+      "alias": "has_news_events",
+      "owner": "HasNewsEvents",
+      "domain_of": [
+        "HasNewsEvents"
+      ],
+      "range": "NewsEvent",
+      "multivalued": true,
+      "inlined": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "concept__code_system",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/code_system",
+      "alias": "code_system",
+      "owner": "Concept",
+      "domain_of": [
+        "Concept"
+      ],
+      "range": "CodeSystem",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "concept__mappings",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "mappings": [
+        "http://www.w3.org/2004/02/skos/core#exactMatch"
+      ],
+      "slot_uri": "http://www.w3.org/2004/02/skos/core#exactMatch",
+      "alias": "mappings",
+      "owner": "Concept",
+      "domain_of": [
+        "Concept"
+      ],
+      "range": "CrossReference",
+      "multivalued": true,
       "@type": "SlotDefinition"
     },
     {
@@ -759,6 +1171,66 @@
       "usage_slot_name": "primary_email",
       "range": "string",
       "pattern": "^\\S+@[\\S+\\.]+\\S+",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "Person_age_in_years",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/age_in_years",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "is_a": "age_in_years",
+      "domain": "Person",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/age",
+      "alias": "age",
+      "owner": "Person",
+      "domain_of": [
+        "Person"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "age_in_years",
+      "range": "integer",
+      "recommended": true,
+      "minimum_value": 0,
+      "maximum_value": 999,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "Person_telephone",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/telephone",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "mappings": [
+        "http://schema.org/telephone"
+      ],
+      "is_a": "telephone",
+      "domain": "Person",
+      "slot_uri": "http://schema.org/telephone",
+      "alias": "telephone",
+      "owner": "Person",
+      "domain_of": [
+        "Person"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "telephone",
+      "range": "string",
+      "recommended": true,
+      "pattern": "^[\\d\\(\\)\\-]+$",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "Organization_categories",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/categories",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "is_a": "categories",
+      "domain": "Organization",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/categories",
+      "alias": "categories",
+      "owner": "Organization",
+      "domain_of": [
+        "Organization"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "categories",
+      "range": "OrganizationType",
+      "multivalued": true,
       "@type": "SlotDefinition"
     },
     {
@@ -795,6 +1267,51 @@
       "range": "Person",
       "required": true,
       "@type": "SlotDefinition"
+    },
+    {
+      "name": "InterPersonalRelationship_type",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/type",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "is_a": "type",
+      "domain": "InterPersonalRelationship",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/type",
+      "alias": "type",
+      "owner": "InterPersonalRelationship",
+      "domain_of": [
+        "InterPersonalRelationship"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "type",
+      "range": "string",
+      "required": true,
+      "any_of": [
+        {
+          "range": "FamilialRelationshipType",
+          "@type": "AnonymousSlotExpression"
+        },
+        {
+          "range": "NonFamilialRelationshipType",
+          "@type": "AnonymousSlotExpression"
+        }
+      ],
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "InterPersonalRelationship_related_to",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "is_a": "related_to",
+      "domain": "InterPersonalRelationship",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/related_to",
+      "alias": "related to",
+      "owner": "InterPersonalRelationship",
+      "domain_of": [
+        "InterPersonalRelationship"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "related to",
+      "range": "Person",
+      "required": true,
+      "@type": "SlotDefinition"
     }
   ],
   "classes": [
@@ -810,7 +1327,7 @@
         "id",
         "name",
         "description",
-        "image"
+        "depicted_by"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/examples/personinfo/NamedThing",
@@ -829,22 +1346,26 @@
       ],
       "is_a": "NamedThing",
       "mixins": [
-        "HasAliases"
+        "HasAliases",
+        "HasNewsEvents"
       ],
       "slots": [
         "id",
         "name",
         "description",
-        "image",
+        "depicted_by",
         "Person_primary_email",
         "birth_date",
-        "age_in_years",
+        "Person_age_in_years",
         "gender",
         "current_address",
+        "Person_telephone",
         "has_employment_history",
         "has_familial_relationships",
+        "has_interpersonal_relationships",
         "has_medical_history",
-        "hasAliases__aliases"
+        "hasAliases__aliases",
+        "hasNewsEvents__has_news_events"
       ],
       "slot_usage": {},
       "class_uri": "http://schema.org/Person",
@@ -866,11 +1387,55 @@
           "exact_mappings": [
             "schema:alternateName"
           ],
+          "singular_name": "alias",
           "multivalued": true,
           "@type": "SlotDefinition"
         }
       ],
       "class_uri": "https://w3id.org/linkml/examples/personinfo/HasAliases",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "NewsEvent",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/NewsEvent",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "is_a": "Event",
+      "slots": [
+        "started_at_time",
+        "ended_at_time",
+        "duration",
+        "is_current",
+        "newsEvent__headline"
+      ],
+      "slot_usage": {},
+      "attributes": [
+        {
+          "name": "headline",
+          "@type": "SlotDefinition"
+        }
+      ],
+      "class_uri": "https://w3id.org/linkml/examples/personinfo/NewsEvent",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "HasNewsEvents",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/HasNewsEvents",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "mixin": true,
+      "slots": [
+        "hasNewsEvents__has_news_events"
+      ],
+      "slot_usage": {},
+      "attributes": [
+        {
+          "name": "has_news_events",
+          "singular_name": "has_news_event",
+          "range": "NewsEvent",
+          "multivalued": true,
+          "@type": "SlotDefinition"
+        }
+      ],
+      "class_uri": "https://w3id.org/linkml/examples/personinfo/HasNewsEvents",
       "@type": "ClassDefinition"
     },
     {
@@ -883,20 +1448,50 @@
       ],
       "is_a": "NamedThing",
       "mixins": [
-        "HasAliases"
+        "HasAliases",
+        "HasNewsEvents"
       ],
       "slots": [
         "id",
         "name",
         "description",
-        "image",
+        "depicted_by",
         "mission_statement",
         "founding_date",
         "founding_location",
-        "hasAliases__aliases"
+        "Organization_categories",
+        "score",
+        "min_salary",
+        "hasAliases__aliases",
+        "hasNewsEvents__has_news_events"
       ],
       "slot_usage": {},
       "class_uri": "http://schema.org/Organization",
+      "rules": [
+        {
+          "preconditions": {
+            "slot_conditions": [
+              {
+                "name": "min_salary",
+                "maximum_value": 80000.0,
+                "@type": "SlotDefinition"
+              }
+            ],
+            "@type": "AnonymousClassExpression"
+          },
+          "postconditions": {
+            "slot_conditions": [
+              {
+                "name": "score",
+                "maximum_value": 0,
+                "@type": "SlotDefinition"
+              }
+            ],
+            "@type": "AnonymousClassExpression"
+          },
+          "@type": "ClassRule"
+        }
+      ],
       "@type": "ClassDefinition"
     },
     {
@@ -909,6 +1504,7 @@
       "slots": [
         "id",
         "name",
+        "depicted_by",
         "hasAliases__aliases"
       ],
       "slot_usage": {},
@@ -957,9 +1553,25 @@
         "id",
         "name",
         "description",
-        "image"
+        "depicted_by",
+        "concept__code_system",
+        "concept__mappings"
       ],
       "slot_usage": {},
+      "attributes": [
+        {
+          "name": "code_system",
+          "range": "CodeSystem",
+          "@type": "SlotDefinition"
+        },
+        {
+          "name": "mappings",
+          "slot_uri": "skos:exactMatch",
+          "range": "CrossReference",
+          "multivalued": true,
+          "@type": "SlotDefinition"
+        }
+      ],
       "class_uri": "https://w3id.org/linkml/examples/personinfo/Concept",
       "@type": "ClassDefinition"
     },
@@ -972,7 +1584,9 @@
         "id",
         "name",
         "description",
-        "image"
+        "depicted_by",
+        "concept__code_system",
+        "concept__mappings"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/examples/personinfo/DiagnosisConcept",
@@ -987,10 +1601,69 @@
         "id",
         "name",
         "description",
-        "image"
+        "depicted_by",
+        "concept__code_system",
+        "concept__mappings"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/examples/personinfo/ProcedureConcept",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "IntegerPrimaryKeyObject",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/IntegerPrimaryKeyObject",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slots": [
+        "int_id"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/examples/personinfo/IntegerPrimaryKeyObject",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "OperationProcedureConcept",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/OperationProcedureConcept",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "is_a": "ProcedureConcept",
+      "slots": [
+        "id",
+        "name",
+        "description",
+        "depicted_by",
+        "concept__code_system",
+        "concept__mappings"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/examples/personinfo/OperationProcedureConcept",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "ImagingProcedureConcept",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/ImagingProcedureConcept",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "is_a": "ProcedureConcept",
+      "slots": [
+        "id",
+        "name",
+        "description",
+        "depicted_by",
+        "concept__code_system",
+        "concept__mappings"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/examples/personinfo/ImagingProcedureConcept",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "CodeSystem",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/CodeSystem",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slots": [
+        "id",
+        "name"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/examples/personinfo/CodeSystem",
       "@type": "ClassDefinition"
     },
     {
@@ -1024,6 +1697,22 @@
       "@type": "ClassDefinition"
     },
     {
+      "name": "InterPersonalRelationship",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/InterPersonalRelationship",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "is_a": "Relationship",
+      "slots": [
+        "started_at_time",
+        "ended_at_time",
+        "related_to",
+        "InterPersonalRelationship_type",
+        "InterPersonalRelationship_related_to"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/examples/personinfo/InterPersonalRelationship",
+      "@type": "ClassDefinition"
+    },
+    {
       "name": "EmploymentEvent",
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/EmploymentEvent",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
@@ -1033,7 +1722,8 @@
         "ended_at_time",
         "duration",
         "is_current",
-        "employed_at"
+        "employed_at",
+        "salary"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/examples/personinfo/EmploymentEvent",
@@ -1044,14 +1734,17 @@
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/MedicalEvent",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "is_a": "Event",
+      "mixins": [
+        "WithLocation"
+      ],
       "slots": [
         "started_at_time",
         "ended_at_time",
         "duration",
         "is_current",
-        "in_location",
         "diagnosis",
-        "procedure"
+        "procedure",
+        "in_location"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/examples/personinfo/MedicalEvent",
@@ -1075,7 +1768,8 @@
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "slots": [
         "persons",
-        "organizations"
+        "organizations",
+        "places"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/examples/personinfo/Container",
@@ -1085,9 +1779,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "personinfo.yaml",
-  "source_file_date": "2022-03-10T13:02:37",
-  "source_file_size": 5368,
-  "generation_date": "2022-10-06T14:45:51",
+  "source_file_date": "2025-07-31T20:46:11",
+  "source_file_size": 8392,
+  "generation_date": "2025-07-31T20:49:04",
   "@type": "SchemaDefinition",
   "@context": [
     "personinfo/jsonld/personinfo.context.jsonld",
