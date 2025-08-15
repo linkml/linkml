@@ -2,9 +2,10 @@ persons:
   - id: P:001
     name: fred bloggs
     primary_email: fred.bloggs@example.com
-    age_in_years: 33
+    gender: cisgender man
+    depicted_by: https://example.org/pictures/fred.jpg
   - id: P:002
-    name: joe schmoe
+    name: joe schmö
     primary_email: joe.schmoe@example.com
     has_employment_history:
       - employed_at: ROR:1
@@ -19,12 +20,33 @@ persons:
         diagnosis:
           id: CODE:D0001
           name: headache
+          mappings:
+            - HP:0002315
+            - http://purl.obolibrary.org/obo/SYMP_0000504
+            - http://www.wikidata.org/entity/Q86
         procedure:
           id: CODE:P0001
           name: trepanation
-#    current_address:
-#      street: 1 foo street
-#      city: foo city
+    gender: transgender man
+    current_address:
+      street: 1 foo street
+      city: foo city
 organizations:
-  ROR:1:
+  - id: ROR:1
     name: foo
+    categories:
+      - charity
+      - non profit
+    score: 1
+    min_salary: 99999.00
+  - id: ROR:2
+    name: bar
+    categories:
+      - shell company
+    score: 1.5
+  - id: ROR:3
+    name: MI9922
+    score: 1
+  - id: ROR:4
+    name: Göë Schmöë Höt Dög Empóriüm
+    score: 1.0
