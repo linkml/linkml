@@ -1,12 +1,11 @@
 id: http://example.org/example/loaderror11
 name: loaderror11
-description: slot_usage both a id and a key
+description: type with adequate definition
 
 default_range: string
 
 prefixes:
   xsd: http://www.w3.org/2001/XMLSchema#
-
 
 types:
   string:

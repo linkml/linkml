@@ -279,7 +279,7 @@ def test_sqla_declarative_exec(schema):
     p1.has_news_events.append(news_event)
     p1.current_address = address
     session.add(p1)
-    session.add(mod.Person(id="P2", aliases=["Fred"], has_news_events=[news_event]))
+    session.add(mod.Person(id="P2", name="Ferdinand Giggleheim", aliases=["Fred"], has_news_events=[news_event]))
     # session.add(mod.Person(id='P3', has_familial_relationships=[{"related_to": "P4"}]))
     session.commit()
     q = session.query(mod.NewsEvent)

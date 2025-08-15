@@ -51,79 +51,64 @@ def test_imports_relative(input_path):
     ]
 
 
-@pytest.mark.skip(reason="Re-enable this once we get fully migrated")
-def test_error_paths(input_path):
-    """Test various loader error situations"""
+@pytest.mark.parametrize(
+    ("file", "error"),
+    [
+        (
+            "loadererror1.yaml",
+            r'loadererror1.yaml", line 11, col 13 slot: s1 - unrecognized domain \(foo\)',
+        ),
+        ("loadererror2.yaml", 'type "string" does not declare a URI'),
+        (
+            "loadererror2a.yaml",
+            "slot: s1 - key and identifier slots cannot be optional",
+        ),
+        (
+            "loadererror4.yaml",
+            'loadererror4.yaml", line 6, col 17 Default prefix: foo is not defined',
+        ),
+        (
+            "loadererror5.yaml",
+            r'type "phenotype" must declare a type base or parent \(typeof\)',
+        ),
+        ("loadererror6.yaml", "multiple keys/identifiers not allowed"),
+        ("loadererror7.yaml", "multiple keys/identifiers not allowed"),
+        (
+            "loadererror8.yaml",
+            "A slot cannot be both a key and identifier at the same time",
+        ),
+        (
+            "loadererror9.yaml",
+            "A slot cannot be both a key and identifier at the same time",
+        ),
+        ("loadererror10.yaml", 'type "string" does not declare a URI'),
+        (
+            "loadererror11.yaml",
+            'loadererror11.yaml", line 22, col 16 Subset: sss1 is not defined',
+        ),
+    ],
+)
+def test_error_paths(input_path, file: str, error: str) -> None:
+    """Test various loader error situations."""
+    with pytest.raises(ValueError, match=error):
+        SchemaLoader(input_path(file)).resolve()
 
-    fn = input_path("loadererror1.yaml")
-    with pytest.raises(ValueError, match="Unknown slot domain should fail") as e:
-        SchemaLoader(fn).resolve()
-    assert 'loadererror1.yaml", line 11, col 13' in str(e.value)
 
-    fn = input_path("loadererror2.yaml")
-    with pytest.raises(ValueError, match='type "string" does not declare a URI'):
-        SchemaLoader(fn).resolve()
-
-    fn = input_path("loadererror2a.yaml")
-    with pytest.raises(ValueError, match="slot: s1 - key and identifier slots cannot be optional"):
-        SchemaLoader(fn).resolve()
-
+def test_infer_slot_range_from_default(input_path):
     fn = input_path("loadertest1.yaml")
     schema = SchemaLoader(fn).resolve()
     assert "string" == schema.slots["s1"].range
 
-    fn = input_path("loadererror4.yaml")
-    with pytest.raises(ValueError, match='loadererror4.yaml", line 6, col 17'):
-        SchemaLoader(fn).resolve()
 
-
-@pytest.mark.skip(reason="Re-enable this once we get fully migrated")
-def test_empty_range(input_path):
-    """A type must have either a base or a parent"""
-    fn = input_path("loadererror5.yaml")
-    with pytest.raises(ValueError, match='loadererror5.yaml", line 9, col 3'):
-        SchemaLoader(fn).resolve()
-
-
-def test_multi_key(input_path):
-    """Multiple keys are not supported"""
-    fn = input_path("loadererror6.yaml")
-    with pytest.raises(ValueError, match="multiple keys/identifiers not allowed"):
-        SchemaLoader(fn).resolve()
-
-    fn = input_path("loadererror7.yaml")
-    with pytest.raises(ValueError, match="multiple keys/identifiers not allowed"):
-        SchemaLoader(fn).resolve()
-
-
-def test_key_and_id(input_path):
-    """A slot cannot be both a key and an identifier"""
-    fn = input_path("loadererror8.yaml")
-    with pytest.raises(ValueError, match="A slot cannot be both a key and identifier at the same time"):
-        SchemaLoader(fn).resolve()
-
-    fn = input_path("loadererror9.yaml")
-    with pytest.raises(ValueError, match="A slot cannot be both a key and identifier at the same time"):
-        SchemaLoader(fn).resolve()
-
-
-@pytest.mark.skip(reason="Re-enable this once we get fully migrated")
-def test_missing_type_uri(input_path):
-    """A type with neither a typeof or uri is an error"""
-    fn = input_path("loadererror10.yaml")
-    with pytest.raises(ValueError, match='loadererror10.yaml", line 12, col 3'):
-        SchemaLoader(fn).resolve()
-
+def test_type_definition_ok(input_path):
+    """A type with either a typeof or uri is OK."""
     fn = input_path("loaderpass11.yaml")
-    SchemaLoader(fn).resolve()
-
-
-@pytest.mark.skip(reason="Re-enable this once we get fully migrated")
-def test_undefined_subset(input_path):
-    """Throw an error on an undefined subset reference"""
-    fn = input_path("loadererror11.yaml")
-    with pytest.raises(ValueError, match='loadererror11.yaml", line 22, col 16'):
-        SchemaLoader(fn).resolve()
+    schema = SchemaLoader(fn).resolve()
+    assert set(schema.types) == {"string", "bstring"}
+    assert schema.types["bstring"].base == schema.types["string"].base
+    assert schema.types["bstring"].uri == schema.types["string"].uri
+    assert schema.types["bstring"].typeof == "string"
+    assert schema.types["string"].typeof is None
 
 
 @pytest.mark.network

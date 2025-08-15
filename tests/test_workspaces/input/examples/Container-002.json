@@ -37,10 +37,10 @@
       ]
     }
   ],
-  "organizations": {
-    "ROR:1":
+  "organizations": [
       {
+        "id": "ROR:1",
         "name": "foo"
       }
-  }
+  ]
 }
