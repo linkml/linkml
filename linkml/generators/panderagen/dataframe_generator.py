@@ -41,6 +41,9 @@ class DataframeGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixi
     genmeta: bool = False
     emit_metadata: bool = True
 
+    roll_up_slots: bool = False
+    """whether to include all slots from parents and mixins explicitly in the generated model."""
+
     def __post_init__(self):
         super().__post_init__()
         # Validate template path if provided
@@ -90,6 +93,8 @@ class DataframeGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixi
         """
         if self.template_path is None:
             self.template_path = "panderagen_class_based"  # default fallback
+        elif self.template_path == "panderagen_polars_schema":
+            self.roll_up_slots = True
 
         if rendered_module is not None:
             module = rendered_module
@@ -143,8 +148,14 @@ class DataframeGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixi
 
         oodoc = OODocument(name=module_name, package=self.package, source_schema=sv.schema)
 
+        self.append_classes(oodoc)
+
+        return oodoc
+
+    def append_classes(self, oodoc: OODocument):
         classes = []
 
+        # TODO: move to class mixin
         for c in self.ordered_classes():
             cn = c.name
             safe_cn = camelcase(cn)
@@ -157,25 +168,36 @@ class DataframeGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixi
                 description=c.description,
                 package=self.package,
                 fields=[],
+                all_fields=[],
                 source_class=c,
                 annotations=annotations,
             )
+
+            self.append_mixins(c, ooclass)
+            self.append_slots(c, ooclass)
+
             classes.append(ooclass)
-            if c.mixin:
-                ooclass.mixin = c.mixin
-            if c.mixins:
-                ooclass.mixins = [(x) for x in c.mixins]
-            if c.is_a:
-                ooclass.is_a = self.get_class_name(c.is_a)
-                parent_slots = sv.class_slots(c.is_a)
-            else:
-                parent_slots = []
-            for sn in sv.class_slots(cn):
-                oofield = self.handle_slot(cn, sn)
-                if sn not in parent_slots:
-                    ooclass.fields.append(oofield)
-                ooclass.all_fields.append(oofield)
 
         oodoc.classes = classes
 
-        return oodoc
+    def append_mixins(self, schemaview_class, ooclass: DataframeClass) -> None:
+        if schemaview_class.mixin:
+            ooclass.mixin = schemaview_class.mixin
+        if schemaview_class.mixins:
+            ooclass.mixins = [(x) for x in schemaview_class.mixins]
+
+    def append_slots(self, schemaview_class, ooclass: DataframeClass) -> None:
+        """
+        Append slots to the class.
+        """
+        if schemaview_class.is_a:
+            ooclass.is_a = self.get_class_name(schemaview_class.is_a)
+            parent_slots = self.schemaview.class_slots(schemaview_class.is_a)
+        else:
+            parent_slots = []
+
+        for sn in self.schemaview.class_slots(schemaview_class.name):
+            oofield = self.handle_slot(schemaview_class.name, sn)
+            if sn not in parent_slots:
+                ooclass.fields.append(oofield)
+            ooclass.all_fields.append(oofield)

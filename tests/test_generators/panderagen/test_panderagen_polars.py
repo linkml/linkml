@@ -8,6 +8,8 @@ from linkml.generators.panderagen import PanderaGenerator
 from linkml.generators.panderagen.panderagen import DataframeGeneratorCli
 from linkml.generators.panderagen.polars_schema.polars_schema_dataframe_generator import PolarsSchemaDataframeGenerator
 
+pl = pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
+
 logger = logging.getLogger(__name__)
 
 
@@ -19,12 +21,6 @@ def test_inputs_dir():
 @pytest.fixture
 def cli_runner():
     return CliRunner()
-
-
-@pytest.fixture(scope="module")
-def pl():
-    """The PolaRS package is optional, so use fixtures and importorskip to only run tests when it's installed"""
-    return pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
 
 
 @pytest.fixture(scope="module")
@@ -212,7 +208,7 @@ MODEL_COLUMNS = [
 
 
 @pytest.fixture(scope="module")
-def column_type_instances(pl):
+def column_type_instances():
     """valid ColumnType instances that can be used in tests"""
     return [
         pl.struct(
@@ -229,7 +225,7 @@ def column_type_instances(pl):
 
 
 @pytest.fixture(scope="module")
-def invalid_column_type_instances(pl):
+def invalid_column_type_instances():
     """invalid (float values) ColumnType instances that can trigger failures."""
     return [
         pl.struct(
@@ -412,12 +408,20 @@ def generator():
 
 
 @pytest.fixture(scope="module")
-def polars_generator(generator):
+def polars_generator_cli(generator):
     generator = DataframeGeneratorCli(
         generator=generator, template_path="panderagen_polars_schema", template_file="polars_schema.jinja2"
     )
 
     return generator
+
+
+@pytest.fixture(scope="module")
+def compiled_model(polars_generator_cli):
+    print(polars_generator_cli.serialize())
+    model = polars_generator_cli.generator.compile_dataframe_model()
+
+    return model
 
 
 @pytest.mark.parametrize(
@@ -439,6 +443,14 @@ def polars_generator(generator):
         (
             "polars_Person",
             {
+                "id": ["1", "2", "3"],
+                "name": ["P. One", "P. Two", "P. Three"],
+                "description": ["Person One", "Person Two", "Person Three"],
+                "image": [
+                    "http://example.org/image_one.jpg",
+                    "http://example.org/image_two.jpg",
+                    "http://example.org/image_three.jpg",
+                ],
                 "primary_email": ["one@example.org", "two@example.org", "three@example.org"],
                 "birth_date": ["1900-01-01", "1900-01-02", "1900-01-03"],
                 "age_in_years": [125, 125, 125],
@@ -451,22 +463,31 @@ def polars_generator(generator):
                 "has_employment_history": [None, None, None],
                 "has_familial_relationships": [None, None, None],
                 "has_medical_history": [None, None, None],
-                "aliases": [["1", "uno"], ["2", "dos"], ["3", "tres"]],
+                "aliases": [None, None, None],
             },
         ),
         (
-            "polars_Place",
-            {"id": ["a", "b", "c"], "name": ["one", "two", "three"], "aliases": [["a", "b"], ["c", "d"], ["e", "f"]]},
+            "polars_Organization",
+            {
+                "id": ["a", "b", "c"],
+                "name": ["one", "two", "three"],
+                "description": ["thing one", "thing two", "thing three"],
+                "image": [
+                    "http://example.org/image_one.jpg",
+                    "http://example.org/image_two.jpg",
+                    "http://example.org/image_three.jpg",
+                ],
+                "aliases": [None, None, None],
+                "mission_statement": ["one", "two", "three"],
+                "founding_date": ["1900-01-01", "1900-01-02", "1900-01-03"],
+                "founding_location": ["a", "b", "c"],
+            },
         ),
+        ("polars_Place", {"id": ["a", "b", "c"], "name": ["one", "two", "three"], "aliases": [None, None, None]}),
     ],
 )
-def test_stub(polars_generator, pl, class_name, data):
-    assert polars_generator is not None
-
-    print(polars_generator.serialize())
-    polars_schema = polars_generator.generator.compile_dataframe_model()
-
-    schema_class = getattr(polars_schema, class_name)
+def test_stub(compiled_model, class_name, data):
+    schema_class = getattr(compiled_model, class_name)
     df = pl.DataFrame(data, schema=schema_class)
 
     assert df is not None

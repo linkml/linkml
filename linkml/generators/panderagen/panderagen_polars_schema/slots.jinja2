@@ -18,14 +18,3 @@
             {{ ']' }}
         {%- endif -%},
 {%- endmacro %}
-
-{%- macro render_list_slot(field) %}
-    {{ field.name }}:{{ ' ' }}
-        {%- if (field.required() is none or field.required() is false) and (field.identifier() is not true) -%}
-            Optional[
-        {%- endif %}
-        pl.List({{ field.range }})
-        {%- if (field.required() is none or field.required() is false) and (field.identifier() is not true) -%}
-            {{ ']' }}
-        {%- endif %}
-{%- endmacro %}
