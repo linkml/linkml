@@ -36,6 +36,14 @@
       "prefix_reference": "https://example.org/FamilialRelations#"
     },
     {
+      "prefix_prefix": "bizcodes",
+      "prefix_reference": "https://example.org/bizcodes/"
+    },
+    {
+      "prefix_prefix": "skos",
+      "prefix_reference": "http://www.w3.org/2004/02/skos/core#"
+    },
+    {
       "prefix_prefix": "P",
       "prefix_reference": "http://example.org/P/"
     },
@@ -73,6 +81,36 @@
     }
   ],
   "types": [
+    {
+      "name": "CrossReference",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/CrossReference",
+      "description": "A string URI or CURIE representation of an external identifier, modeled as a Resource in RDF",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "typeof": "uriorcurie",
+      "base": "str",
+      "uri": "http://www.w3.org/2000/01/rdf-schema#Resource",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "ImageURL",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/ImageURL",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "typeof": "uri",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#anyURI",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "SalaryType",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/SalaryType",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "typeof": "decimal",
+      "base": "Decimal",
+      "uri": "http://www.w3.org/2001/XMLSchema#decimal",
+      "@type": "TypeDefinition"
+    },
     {
       "name": "string",
       "definition_uri": "https://w3id.org/linkml/String",
@@ -403,6 +441,27 @@
       ]
     },
     {
+      "name": "NonFamilialRelationshipType",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/NonFamilialRelationshipType",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "permissible_values": [
+        {
+          "text": "COWORKER_OF",
+          "meaning": "famrel:70"
+        },
+        {
+          "text": "ROOMMATE_OF",
+          "meaning": "famrel:71"
+        },
+        {
+          "text": "BEST_FRIEND_OF"
+        },
+        {
+          "text": "MORTAL_ENEMY_OF"
+        }
+      ]
+    },
+    {
       "name": "GenderType",
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/GenderType",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
@@ -436,7 +495,38 @@
     {
       "name": "DiagnosisType",
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/DiagnosisType",
-      "from_schema": "https://w3id.org/linkml/examples/personinfo"
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "permissible_values": [
+        {
+          "text": "todo"
+        }
+      ]
+    },
+    {
+      "name": "OrganizationType",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/OrganizationType",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "permissible_values": [
+        {
+          "text": "non profit"
+        },
+        {
+          "text": "for profit"
+        },
+        {
+          "text": "offshore"
+        },
+        {
+          "text": "charity",
+          "meaning": "bizcodes:001"
+        },
+        {
+          "text": "shell company"
+        },
+        {
+          "text": "loose organization"
+        }
+      ]
     }
   ],
   "slots": [
@@ -449,12 +539,30 @@
       ],
       "slot_uri": "http://schema.org/identifier",
       "identifier": true,
-      "owner": "Place",
+      "owner": "CodeSystem",
       "domain_of": [
         "NamedThing",
-        "Place"
+        "Place",
+        "CodeSystem"
       ],
-      "range": "string",
+      "range": "uriorcurie",
+      "required": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "int_id",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/int_id",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "mappings": [
+        "http://schema.org/int_identifier"
+      ],
+      "slot_uri": "http://schema.org/int_identifier",
+      "identifier": true,
+      "owner": "IntegerPrimaryKeyObject",
+      "domain_of": [
+        "IntegerPrimaryKeyObject"
+      ],
+      "range": "integer",
       "required": true,
       "@type": "SlotDefinition"
     },
@@ -466,12 +574,14 @@
         "http://schema.org/name"
       ],
       "slot_uri": "http://schema.org/name",
-      "owner": "Place",
+      "owner": "CodeSystem",
       "domain_of": [
         "NamedThing",
-        "Place"
+        "Place",
+        "CodeSystem"
       ],
       "range": "string",
+      "required": true,
       "@type": "SlotDefinition"
     },
     {
@@ -497,10 +607,6 @@
         "http://schema.org/image"
       ],
       "slot_uri": "http://schema.org/image",
-      "owner": "NamedThing",
-      "domain_of": [
-        "NamedThing"
-      ],
       "range": "string",
       "@type": "SlotDefinition"
     },
@@ -517,6 +623,22 @@
         "Person"
       ],
       "range": "GenderType",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "telephone",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/telephone",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "mappings": [
+        "http://schema.org/telephone"
+      ],
+      "slot_uri": "http://schema.org/telephone",
+      "owner": "Person",
+      "domain_of": [
+        "Person"
+      ],
+      "range": "string",
+      "pattern": "^[\\d\\(\\)\\-]+$",
       "@type": "SlotDefinition"
     },
     {
@@ -619,13 +741,27 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "has_interpersonal_relationships",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/has_interpersonal_relationships",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/has_interpersonal_relationships",
+      "owner": "Person",
+      "domain_of": [
+        "Person"
+      ],
+      "range": "InterPersonalRelationship",
+      "multivalued": true,
+      "inlined": true,
+      "inlined_as_list": true,
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "in_location",
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/in_location",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "slot_uri": "https://w3id.org/linkml/examples/personinfo/in_location",
       "owner": "WithLocation",
       "domain_of": [
-        "MedicalEvent",
         "WithLocation"
       ],
       "range": "Place",
@@ -649,7 +785,8 @@
       "name": "age_in_years",
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/age_in_years",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
-      "slot_uri": "https://w3id.org/linkml/examples/personinfo/age_in_years",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/age",
+      "alias": "age",
       "owner": "Person",
       "domain_of": [
         "Person"
@@ -657,6 +794,21 @@
       "range": "integer",
       "minimum_value": 0,
       "maximum_value": 999,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "score",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/score",
+      "description": "A score between 0 and 5, represented as a decimal",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/score",
+      "owner": "Organization",
+      "domain_of": [
+        "Organization"
+      ],
+      "range": "decimal",
+      "minimum_value": 0.0,
+      "maximum_value": 5.0,
       "@type": "SlotDefinition"
     },
     {
@@ -668,7 +820,20 @@
       "domain_of": [
         "Relationship"
       ],
-      "range": "string",
+      "range": "Person",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "depicted_by",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/depicted_by",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/depicted_by",
+      "owner": "Place",
+      "domain_of": [
+        "NamedThing",
+        "Place"
+      ],
+      "range": "ImageURL",
       "@type": "SlotDefinition"
     },
     {
@@ -856,11 +1021,64 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "places",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/places",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/places",
+      "owner": "Container",
+      "domain_of": [
+        "Container"
+      ],
+      "range": "Place",
+      "multivalued": true,
+      "inlined": true,
+      "inlined_as_list": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "categories",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/categories",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/categories",
+      "owner": "Organization",
+      "domain_of": [
+        "Organization"
+      ],
+      "range": "string",
+      "multivalued": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "salary",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/salary",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/salary",
+      "owner": "EmploymentEvent",
+      "domain_of": [
+        "EmploymentEvent"
+      ],
+      "range": "SalaryType",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "min_salary",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/min_salary",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/min_salary",
+      "owner": "Organization",
+      "domain_of": [
+        "Organization"
+      ],
+      "range": "SalaryType",
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "hasAliases__aliases",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "exact_mappings": [
         "http://schema.org/alternateName"
       ],
+      "singular_name": "alias",
       "slot_uri": "https://w3id.org/linkml/examples/personinfo/aliases",
       "alias": "aliases",
       "owner": "HasAliases",
@@ -869,6 +1087,69 @@
       ],
       "range": "string",
       "multivalued": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "newsEvent__headline",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/headline",
+      "alias": "headline",
+      "owner": "NewsEvent",
+      "domain_of": [
+        "NewsEvent"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "hasNewsEvents__has_news_events",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "singular_name": "has_news_event",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/has_news_events",
+      "alias": "has_news_events",
+      "owner": "HasNewsEvents",
+      "domain_of": [
+        "HasNewsEvents"
+      ],
+      "range": "NewsEvent",
+      "multivalued": true,
+      "inlined": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "concept__code_system",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/code_system",
+      "alias": "code_system",
+      "owner": "Concept",
+      "domain_of": [
+        "Concept"
+      ],
+      "range": "CodeSystem",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "concept__mappings",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "mappings": [
+        "http://www.w3.org/2004/02/skos/core#exactMatch"
+      ],
+      "slot_uri": "http://www.w3.org/2004/02/skos/core#exactMatch",
+      "alias": "mappings",
+      "owner": "Concept",
+      "domain_of": [
+        "Concept"
+      ],
+      "range": "CrossReference",
+      "multivalued": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "related_to",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/related_to",
+      "range": "Person",
+      "required": true,
       "@type": "SlotDefinition"
     },
     {
@@ -898,8 +1179,8 @@
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "is_a": "age_in_years",
       "domain": "Person",
-      "slot_uri": "https://w3id.org/linkml/examples/personinfo/age_in_years",
-      "alias": "age_in_years",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/age",
+      "alias": "age",
       "owner": "Person",
       "domain_of": [
         "Person"
@@ -910,6 +1191,46 @@
       "recommended": true,
       "minimum_value": 0,
       "maximum_value": 999,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "Person_telephone",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/telephone",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "mappings": [
+        "http://schema.org/telephone"
+      ],
+      "is_a": "telephone",
+      "domain": "Person",
+      "slot_uri": "http://schema.org/telephone",
+      "alias": "telephone",
+      "owner": "Person",
+      "domain_of": [
+        "Person"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "telephone",
+      "range": "string",
+      "recommended": true,
+      "pattern": "^[\\d\\(\\)\\-]+$",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "Organization_categories",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/categories",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "is_a": "categories",
+      "domain": "Organization",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/categories",
+      "alias": "categories",
+      "owner": "Organization",
+      "domain_of": [
+        "Organization"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "categories",
+      "range": "OrganizationType",
+      "multivalued": true,
       "@type": "SlotDefinition"
     },
     {
@@ -932,18 +1253,62 @@
     },
     {
       "name": "FamilialRelationship_related_to",
-      "definition_uri": "https://w3id.org/linkml/examples/personinfo/related_to",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "is_a": "related_to",
       "domain": "FamilialRelationship",
       "slot_uri": "https://w3id.org/linkml/examples/personinfo/related_to",
-      "alias": "related_to",
+      "alias": "related to",
       "owner": "FamilialRelationship",
       "domain_of": [
         "FamilialRelationship"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "related_to",
+      "usage_slot_name": "related to",
+      "range": "Person",
+      "required": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "InterPersonalRelationship_type",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/type",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "is_a": "type",
+      "domain": "InterPersonalRelationship",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/type",
+      "alias": "type",
+      "owner": "InterPersonalRelationship",
+      "domain_of": [
+        "InterPersonalRelationship"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "type",
+      "range": "string",
+      "required": true,
+      "any_of": [
+        {
+          "range": "FamilialRelationshipType",
+          "@type": "AnonymousSlotExpression"
+        },
+        {
+          "range": "NonFamilialRelationshipType",
+          "@type": "AnonymousSlotExpression"
+        }
+      ],
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "InterPersonalRelationship_related_to",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "is_a": "related_to",
+      "domain": "InterPersonalRelationship",
+      "slot_uri": "https://w3id.org/linkml/examples/personinfo/related_to",
+      "alias": "related to",
+      "owner": "InterPersonalRelationship",
+      "domain_of": [
+        "InterPersonalRelationship"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "related to",
       "range": "Person",
       "required": true,
       "@type": "SlotDefinition"
@@ -962,7 +1327,7 @@
         "id",
         "name",
         "description",
-        "image"
+        "depicted_by"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/examples/personinfo/NamedThing",
@@ -981,22 +1346,26 @@
       ],
       "is_a": "NamedThing",
       "mixins": [
-        "HasAliases"
+        "HasAliases",
+        "HasNewsEvents"
       ],
       "slots": [
         "id",
         "name",
         "description",
-        "image",
+        "depicted_by",
         "Person_primary_email",
         "birth_date",
         "Person_age_in_years",
         "gender",
         "current_address",
+        "Person_telephone",
         "has_employment_history",
         "has_familial_relationships",
+        "has_interpersonal_relationships",
         "has_medical_history",
-        "hasAliases__aliases"
+        "hasAliases__aliases",
+        "hasNewsEvents__has_news_events"
       ],
       "slot_usage": {},
       "class_uri": "http://schema.org/Person",
@@ -1018,11 +1387,55 @@
           "exact_mappings": [
             "schema:alternateName"
           ],
+          "singular_name": "alias",
           "multivalued": true,
           "@type": "SlotDefinition"
         }
       ],
       "class_uri": "https://w3id.org/linkml/examples/personinfo/HasAliases",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "NewsEvent",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/NewsEvent",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "is_a": "Event",
+      "slots": [
+        "started_at_time",
+        "ended_at_time",
+        "duration",
+        "is_current",
+        "newsEvent__headline"
+      ],
+      "slot_usage": {},
+      "attributes": [
+        {
+          "name": "headline",
+          "@type": "SlotDefinition"
+        }
+      ],
+      "class_uri": "https://w3id.org/linkml/examples/personinfo/NewsEvent",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "HasNewsEvents",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/HasNewsEvents",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "mixin": true,
+      "slots": [
+        "hasNewsEvents__has_news_events"
+      ],
+      "slot_usage": {},
+      "attributes": [
+        {
+          "name": "has_news_events",
+          "singular_name": "has_news_event",
+          "range": "NewsEvent",
+          "multivalued": true,
+          "@type": "SlotDefinition"
+        }
+      ],
+      "class_uri": "https://w3id.org/linkml/examples/personinfo/HasNewsEvents",
       "@type": "ClassDefinition"
     },
     {
@@ -1035,20 +1448,50 @@
       ],
       "is_a": "NamedThing",
       "mixins": [
-        "HasAliases"
+        "HasAliases",
+        "HasNewsEvents"
       ],
       "slots": [
         "id",
         "name",
         "description",
-        "image",
+        "depicted_by",
         "mission_statement",
         "founding_date",
         "founding_location",
-        "hasAliases__aliases"
+        "Organization_categories",
+        "score",
+        "min_salary",
+        "hasAliases__aliases",
+        "hasNewsEvents__has_news_events"
       ],
       "slot_usage": {},
       "class_uri": "http://schema.org/Organization",
+      "rules": [
+        {
+          "preconditions": {
+            "slot_conditions": [
+              {
+                "name": "min_salary",
+                "maximum_value": 80000.0,
+                "@type": "SlotDefinition"
+              }
+            ],
+            "@type": "AnonymousClassExpression"
+          },
+          "postconditions": {
+            "slot_conditions": [
+              {
+                "name": "score",
+                "maximum_value": 0,
+                "@type": "SlotDefinition"
+              }
+            ],
+            "@type": "AnonymousClassExpression"
+          },
+          "@type": "ClassRule"
+        }
+      ],
       "@type": "ClassDefinition"
     },
     {
@@ -1061,6 +1504,7 @@
       "slots": [
         "id",
         "name",
+        "depicted_by",
         "hasAliases__aliases"
       ],
       "slot_usage": {},
@@ -1109,9 +1553,25 @@
         "id",
         "name",
         "description",
-        "image"
+        "depicted_by",
+        "concept__code_system",
+        "concept__mappings"
       ],
       "slot_usage": {},
+      "attributes": [
+        {
+          "name": "code_system",
+          "range": "CodeSystem",
+          "@type": "SlotDefinition"
+        },
+        {
+          "name": "mappings",
+          "slot_uri": "skos:exactMatch",
+          "range": "CrossReference",
+          "multivalued": true,
+          "@type": "SlotDefinition"
+        }
+      ],
       "class_uri": "https://w3id.org/linkml/examples/personinfo/Concept",
       "@type": "ClassDefinition"
     },
@@ -1124,7 +1584,9 @@
         "id",
         "name",
         "description",
-        "image"
+        "depicted_by",
+        "concept__code_system",
+        "concept__mappings"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/examples/personinfo/DiagnosisConcept",
@@ -1139,10 +1601,69 @@
         "id",
         "name",
         "description",
-        "image"
+        "depicted_by",
+        "concept__code_system",
+        "concept__mappings"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/examples/personinfo/ProcedureConcept",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "IntegerPrimaryKeyObject",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/IntegerPrimaryKeyObject",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slots": [
+        "int_id"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/examples/personinfo/IntegerPrimaryKeyObject",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "OperationProcedureConcept",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/OperationProcedureConcept",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "is_a": "ProcedureConcept",
+      "slots": [
+        "id",
+        "name",
+        "description",
+        "depicted_by",
+        "concept__code_system",
+        "concept__mappings"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/examples/personinfo/OperationProcedureConcept",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "ImagingProcedureConcept",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/ImagingProcedureConcept",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "is_a": "ProcedureConcept",
+      "slots": [
+        "id",
+        "name",
+        "description",
+        "depicted_by",
+        "concept__code_system",
+        "concept__mappings"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/examples/personinfo/ImagingProcedureConcept",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "CodeSystem",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/CodeSystem",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "slots": [
+        "id",
+        "name"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/examples/personinfo/CodeSystem",
       "@type": "ClassDefinition"
     },
     {
@@ -1167,11 +1688,28 @@
       "slots": [
         "started_at_time",
         "ended_at_time",
+        "related_to",
         "FamilialRelationship_type",
         "FamilialRelationship_related_to"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/examples/personinfo/FamilialRelationship",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "InterPersonalRelationship",
+      "definition_uri": "https://w3id.org/linkml/examples/personinfo/InterPersonalRelationship",
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "is_a": "Relationship",
+      "slots": [
+        "started_at_time",
+        "ended_at_time",
+        "related_to",
+        "InterPersonalRelationship_type",
+        "InterPersonalRelationship_related_to"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/examples/personinfo/InterPersonalRelationship",
       "@type": "ClassDefinition"
     },
     {
@@ -1184,7 +1722,8 @@
         "ended_at_time",
         "duration",
         "is_current",
-        "employed_at"
+        "employed_at",
+        "salary"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/examples/personinfo/EmploymentEvent",
@@ -1195,14 +1734,17 @@
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/MedicalEvent",
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "is_a": "Event",
+      "mixins": [
+        "WithLocation"
+      ],
       "slots": [
         "started_at_time",
         "ended_at_time",
         "duration",
         "is_current",
-        "in_location",
         "diagnosis",
-        "procedure"
+        "procedure",
+        "in_location"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/examples/personinfo/MedicalEvent",
@@ -1226,7 +1768,8 @@
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "slots": [
         "persons",
-        "organizations"
+        "organizations",
+        "places"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/examples/personinfo/Container",
@@ -1236,9 +1779,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "personinfo.yaml",
-  "source_file_date": "2025-06-10T13:01:18",
-  "source_file_size": 5396,
-  "generation_date": "2025-06-11T13:48:18",
+  "source_file_date": "2025-07-31T20:46:11",
+  "source_file_size": 8392,
+  "generation_date": "2025-07-31T20:49:04",
   "@type": "SchemaDefinition",
   "@context": [
     "personinfo/jsonld/personinfo.context.jsonld",
