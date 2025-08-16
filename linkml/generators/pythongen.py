@@ -32,11 +32,13 @@ import linkml
 from linkml._version import __version__
 from linkml.generators.pydanticgen.template import Import, Imports, ObjectImport
 from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
-from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.deprecation import deprecation_warning
+from linkml.utils.generator import Generator, deprecated_fields, shared_arguments
 
 logger = logging.getLogger(__name__)
 
 
+@deprecated_fields({"head": "metadata", "emit_metadata": "metadata"})
 @dataclass
 class PythonGenerator(Generator):
     """
@@ -57,7 +59,6 @@ class PythonGenerator(Generator):
     gen_classvars: bool = True
     gen_slots: bool = True
     genmeta: bool = False
-    emit_metadata: bool = True
     dataclass_repr: bool = False
     """
     Whether generated dataclasses should also generate a default __repr__ method.
@@ -244,13 +245,13 @@ class PythonGenerator(Generator):
             f"""# Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}
 # Generation date: {self.schema.generation_date}
 # Schema: {self.schema.name}
-#"""
-            if self.emit_metadata and self.schema.generation_date
+#
+"""
+            if self.metadata and self.schema.generation_date
             else ""
         )
 
-        return f"""{head}
-# id: {self.schema.id}
+        return f"""{head}# id: {self.schema.id}
 # description: {split_description}
 # license: {be(self.schema.license)}
 
@@ -1265,7 +1266,7 @@ class {enum_name}(EnumDefinitionImpl):
 
 @shared_arguments(PythonGenerator)
 @click.command(name="python")
-@click.option("--head/--no-head", default=True, show_default=True, help="Emit metadata heading")
+@click.option("--head/--no-head", show_default=True, help="Emit metadata heading")
 @click.option(
     "--genmeta/--no-genmeta",
     default=False,
@@ -1293,7 +1294,7 @@ class {enum_name}(EnumDefinitionImpl):
 @click.version_option(__version__, "-V", "--version")
 def cli(
     yamlfile,
-    head=True,
+    head=None,
     genmeta=False,
     classvars=True,
     slots=True,
@@ -1301,9 +1302,12 @@ def cli(
     **args,
 ):
     """Generate python classes to represent a LinkML model"""
+    # if specified, `head` determine the value of `metadata`
+    if head is not None:
+        deprecation_warning("metadata-flag")
+        args["metadata"] = head
     gen = PythonGenerator(
         yamlfile,
-        emit_metadata=head,
         genmeta=genmeta,
         gen_classvars=classvars,
         gen_slots=slots,
@@ -1312,7 +1316,7 @@ def cli(
     if validate:
         mod = gen.compile_module()
         logger.info(f"Module {mod} compiled successfully")
-    print(gen.serialize(emit_metadata=head, **args))
+    print(gen.serialize(**args))
 
 
 if __name__ == "__main__":
