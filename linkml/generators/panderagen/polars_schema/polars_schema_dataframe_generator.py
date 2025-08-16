@@ -25,7 +25,7 @@ TYPE_MAP = {
         "xsd:date": "pl.Date",
         "xsd:time": "pl.Time",
         "xsd:anyURI": "pl.Utf8",
-        "xsd:decimal": "pl.Decimal",
+        "xsd:decimal": "pl.Float64",
     },
 }
 

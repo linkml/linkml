@@ -433,7 +433,7 @@ def compiled_model(polars_generator_cli):
                 "id": ["a", "b", "c"],
                 "name": ["one", "two", "three"],
                 "description": ["thing one", "thing two", "thing three"],
-                "image": [
+                "depicted_by": [
                     "http://example.org/image_one.jpg",
                     "http://example.org/image_two.jpg",
                     "http://example.org/image_three.jpg",
@@ -446,23 +446,26 @@ def compiled_model(polars_generator_cli):
                 "id": ["1", "2", "3"],
                 "name": ["P. One", "P. Two", "P. Three"],
                 "description": ["Person One", "Person Two", "Person Three"],
-                "image": [
+                "depicted_by": [
                     "http://example.org/image_one.jpg",
                     "http://example.org/image_two.jpg",
                     "http://example.org/image_three.jpg",
                 ],
                 "primary_email": ["one@example.org", "two@example.org", "three@example.org"],
                 "birth_date": ["1900-01-01", "1900-01-02", "1900-01-03"],
-                "age_in_years": [125, 125, 125],
+                "age": [125, 125, 125],
                 "gender": ["cisgender man", "transgender woman", "cisgender woman"],
                 "current_address": [
                     {"street": "1 Maple Street", "city": "Springfield, AZ", "postal_code": "12345"},
                     {"street": "1 Maple Street", "city": "Springfield, AZ", "postal_code": "12345"},
                     {"street": "1 Maple Street", "city": "Springfield, AZ", "postal_code": "12345"},
                 ],
+                "telephone": ["800-555-1111", "800-555-2222", "800-555-3333"],
                 "has_employment_history": [None, None, None],
                 "has_familial_relationships": [None, None, None],
+                "has_interpersonal_relationships": [None, None, None],
                 "has_medical_history": [None, None, None],
+                "has_news_events": [None, None, None],
                 "aliases": [None, None, None],
             },
         ),
@@ -472,7 +475,7 @@ def compiled_model(polars_generator_cli):
                 "id": ["a", "b", "c"],
                 "name": ["one", "two", "three"],
                 "description": ["thing one", "thing two", "thing three"],
-                "image": [
+                "depicted_by": [
                     "http://example.org/image_one.jpg",
                     "http://example.org/image_two.jpg",
                     "http://example.org/image_three.jpg",
@@ -481,13 +484,37 @@ def compiled_model(polars_generator_cli):
                 "mission_statement": ["one", "two", "three"],
                 "founding_date": ["1900-01-01", "1900-01-02", "1900-01-03"],
                 "founding_location": ["a", "b", "c"],
+                "categories": [None, None, None],
+                "score": [None, None, None],
+                "min_salary": [None, None, None],
+                "has_news_events": [None, None, None],
             },
         ),
-        ("polars_Place", {"id": ["a", "b", "c"], "name": ["one", "two", "three"], "aliases": [None, None, None]}),
+        (
+            "polars_Place",
+            {
+                "id": ["a", "b", "c"],
+                "name": ["one", "two", "three"],
+                "aliases": [None, None, None],
+                "depicted_by": [
+                    "http://example.org/image_one.jpg",
+                    "http://example.org/image_two.jpg",
+                    "http://example.org/image_three.jpg",
+                ],
+            },
+        ),
     ],
 )
 def test_stub(compiled_model, class_name, data):
     schema_class = getattr(compiled_model, class_name)
+    print(
+        "DIFF: "
+        + ", ".join(list(set(schema_class.keys()) - set(data.keys())))
+        + " / , ".join(list(set(data.keys()) - set(schema_class.keys())))
+    )
+    print(schema_class)
+    print(data)
+
     df = pl.DataFrame(data, schema=schema_class)
 
     assert df is not None
