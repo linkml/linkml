@@ -1,4 +1,5 @@
-{{name}}: {{ range }} = Field(default={{ field }}
+{{name}}{{"_" if (name | is_keyword)}}: {{ range }} = Field(default={{ field }}
+{%- if (name | is_keyword) %}, alias="{{name}}"{% endif -%}
 {%- if title != None %}, title="{{title}}"{% endif -%}
 {%- if description %}, description="""{{description}}"""{% endif -%}
 {%- if equals_number != None %}

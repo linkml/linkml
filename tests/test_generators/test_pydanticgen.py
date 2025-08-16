@@ -18,6 +18,7 @@ from jinja2 import DictLoader, Environment, Template
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import ClassDefinition, Definition, SchemaDefinition, SlotDefinition
+from linkml_runtime.loaders import json_loader
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
 from linkml_runtime.utils.schemaview import load_schema_wrap
@@ -240,6 +241,16 @@ enums:
             )
             in gen_output
         )
+
+
+def test_pydantic_unmasked_keywords(input_path):
+    gen = PydanticGenerator(input_path("unmasked_python_keywords_example.yaml"), package=PACKAGE)
+    code = gen.serialize()
+    mod = compile_python(code, PACKAGE)
+    translation_dict = {"from": "del", "to": "eng"}
+    translation_inst = json_loader.loads(translation_dict, mod.Translation)
+    assert translation_inst.from_ == mod.LanguageEnum("del")
+    assert translation_inst.model_dump() == translation_dict
 
 
 def test_pydantic_any_of():
