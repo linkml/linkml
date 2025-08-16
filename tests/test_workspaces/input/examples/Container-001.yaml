@@ -2,6 +2,7 @@ persons:
   - id: P:001
     name: fred bloggs
     primary_email: fred.bloggs@example.com
+    age: 33
     gender: cisgender man
     depicted_by: https://example.org/pictures/fred.jpg
   - id: P:002
