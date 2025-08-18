@@ -1,0 +1,1327 @@
+BASE <https://w3id.org/linkml/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX skosxl: <http://www.w3.org/2008/05/skos-xl#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX oslc: <http://open-services.net/ns/core#>
+PREFIX schema1: <http://schema.org/>
+PREFIX bibo: <http://purl.org/ontology/bibo/>
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
+
+
+<String> xsd:string
+
+<Integer> xsd:integer
+
+<Boolean> xsd:boolean
+
+<Float> xsd:float
+
+<Double> xsd:double
+
+<Decimal> xsd:decimal
+
+<Time> xsd:time
+
+<Date> xsd:date
+
+<Datetime> xsd:dateTime
+
+<DateOrDatetime> <DateOrDatetime>
+
+<Uriorcurie> IRI
+
+<Curie> xsd:string
+
+<Uri> IRI
+
+<Ncname> xsd:string
+
+<Objectidentifier> IRI
+
+<Nodeidentifier> NONLITERAL
+
+<Jsonpointer> xsd:string
+
+<Jsonpath> xsd:string
+
+<Sparqlpath> xsd:string
+
+<AltDescription> CLOSED {
+    (  $<AltDescription_tes> (  <source> @<String> ;
+          <description> @<String>
+       ) ;
+       rdf:type [ <AltDescription> ]
+    )
+}
+
+<Annotatable> {
+    (  $<Annotatable_tes> <annotations> @<Annotation> * ;
+       rdf:type [ <Annotatable> ] ?
+    )
+}
+
+<Annotation> CLOSED {
+    (  $<Annotation_tes> (  &<Extension_tes> ;
+          rdf:type [ <Extension> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          <annotations> @<Annotation> *
+       ) ;
+       rdf:type [ <Annotation> ]
+    )
+}
+
+<AnonymousClassExpression> CLOSED {
+    (  $<AnonymousClassExpression_tes> (  &<AnonymousExpression_tes> ;
+          rdf:type [ <AnonymousExpression> ] ? ;
+          &<ClassExpression_tes> ;
+          rdf:type [ <ClassExpression> ] ? ;
+          <any_of> @<AnonymousClassExpression> * ;
+          <exactly_one_of> @<AnonymousClassExpression> * ;
+          <none_of> @<AnonymousClassExpression> * ;
+          <all_of> @<AnonymousClassExpression> * ;
+          <slot_conditions> @<SlotDefinition> *
+       ) ;
+       rdf:type [ <AnonymousClassExpression> ] ?
+    )
+}
+
+<AnonymousEnumExpression> CLOSED {
+    (  $<AnonymousEnumExpression_tes> (  &<EnumExpression_tes> ;
+          rdf:type [ <EnumExpression> ] ? ;
+          <code_set> @<Uriorcurie> ? ;
+          <code_set_tag> @<String> ? ;
+          <code_set_version> @<String> ? ;
+          <pv_formula> [ <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE>
+             <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING>
+             <https://w3id.org/linkml/PvFormulaOptions#LABEL> ] ? ;
+          <permissible_values> @<PermissibleValue> * ;
+          <include> @<AnonymousEnumExpression> * ;
+          <minus> @<AnonymousEnumExpression> * ;
+          <inherits> @<EnumDefinition> * ;
+          <reachable_from> @<ReachabilityQuery> ? ;
+          <matches> @<MatchQuery> ? ;
+          <concepts> @<Uriorcurie> *
+       ) ;
+       rdf:type [ <AnonymousEnumExpression> ] ?
+    )
+}
+
+<AnonymousExpression>  (
+    @<AnonymousClassExpression> OR @<AnonymousSlotExpression>
+)
+
+<AnonymousExpression_struct> {
+    (  $<AnonymousExpression_tes> (  &<Expression_tes> ;
+          rdf:type [ <Expression> ] ? ;
+          &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          skos:definition @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          dcterms:title @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          skos:altLabel @<String> * ;
+          skosxl:altLabel @<StructuredAlias> * ;
+          skos:mappingRelation @<Uriorcurie> * ;
+          skos:exactMatch @<Uriorcurie> * ;
+          skos:closeMatch @<Uriorcurie> * ;
+          skos:relatedMatch @<Uriorcurie> * ;
+          skos:narrowMatch @<Uriorcurie> * ;
+          skos:broadMatch @<Uriorcurie> * ;
+          pav:createdBy @<Uriorcurie> ? ;
+          dcterms:contributor @<Uriorcurie> * ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ? ;
+          dcterms:subject @<Uriorcurie> * ;
+          schema1:keywords @<String> *
+       ) ;
+       rdf:type [ <AnonymousExpression> ] ?
+    )
+}
+
+<AnonymousSlotExpression> CLOSED {
+    (  $<AnonymousSlotExpression_tes> (  &<AnonymousExpression_tes> ;
+          rdf:type [ <AnonymousExpression> ] ? ;
+          &<SlotExpression_tes> ;
+          rdf:type [ <SlotExpression> ] ? ;
+          <range> @<Element> ? ;
+          <range_expression> @<AnonymousClassExpression> ? ;
+          <enum_range> @<EnumExpression> ? ;
+          <bindings> @<EnumBinding> * ;
+          <required> @<Boolean> ? ;
+          <recommended> @<Boolean> ? ;
+          <multivalued> @<Boolean> ? ;
+          <inlined> @<Boolean> ? ;
+          <inlined_as_list> @<Boolean> ? ;
+          <minimum_value> @<Anything> ? ;
+          <maximum_value> @<Anything> ? ;
+          <pattern> @<String> ? ;
+          <structured_pattern> @<PatternExpression> ? ;
+          qudt:unit @<UnitOfMeasure> ? ;
+          <implicit_prefix> @<String> ? ;
+          <value_presence> [ <https://w3id.org/linkml/PresenceEnum#UNCOMMITTED> <https://w3id.org/linkml/PresenceEnum#PRESENT>
+             <https://w3id.org/linkml/PresenceEnum#ABSENT> ] ? ;
+          <equals_string> @<String> ? ;
+          <equals_string_in> @<String> * ;
+          <equals_number> @<Integer> ? ;
+          <equals_expression> @<String> ? ;
+          <exact_cardinality> @<Integer> ? ;
+          <minimum_cardinality> @<Integer> ? ;
+          <maximum_cardinality> @<Integer> ? ;
+          <has_member> @<AnonymousSlotExpression> ? ;
+          <all_members> @<AnonymousSlotExpression> ? ;
+          <none_of> @<AnonymousSlotExpression> * ;
+          <exactly_one_of> @<AnonymousSlotExpression> * ;
+          <any_of> @<AnonymousSlotExpression> * ;
+          <all_of> @<AnonymousSlotExpression> *
+       ) ;
+       rdf:type [ <AnonymousSlotExpression> ] ?
+    )
+}
+
+<AnonymousTypeExpression> CLOSED {
+    (  $<AnonymousTypeExpression_tes> (  &<TypeExpression_tes> ;
+          rdf:type [ <TypeExpression> ] ? ;
+          <pattern> @<String> ? ;
+          <structured_pattern> @<PatternExpression> ? ;
+          qudt:unit @<UnitOfMeasure> ? ;
+          <implicit_prefix> @<String> ? ;
+          <equals_string> @<String> ? ;
+          <equals_string_in> @<String> * ;
+          <equals_number> @<Integer> ? ;
+          <minimum_value> @<Anything> ? ;
+          <maximum_value> @<Anything> ? ;
+          <none_of> @<AnonymousTypeExpression> * ;
+          <exactly_one_of> @<AnonymousTypeExpression> * ;
+          <any_of> @<AnonymousTypeExpression> * ;
+          <all_of> @<AnonymousTypeExpression> *
+       ) ;
+       rdf:type [ <AnonymousTypeExpression> ] ?
+    )
+}
+
+<Anything> CLOSED {
+    (  $<Anything_tes> rdf:type . * ;
+       rdf:type [ <Any> ] ?
+    )
+}
+
+<AnyValue> CLOSED {
+    (  $<AnyValue_tes> rdf:type . * ;
+       rdf:type [ <Any> ] ?
+    )
+}
+
+<ArrayExpression> CLOSED {
+    (  $<ArrayExpression_tes> (  &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          <exact_number_dimensions> @<Integer> ? ;
+          <minimum_number_dimensions> @<Integer> ? ;
+          <maximum_number_dimensions> @<Anything> ? ;
+          <dimensions> @<DimensionExpression> * ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          skos:definition @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          dcterms:title @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          skos:altLabel @<String> * ;
+          skosxl:altLabel @<StructuredAlias> * ;
+          skos:mappingRelation @<Uriorcurie> * ;
+          skos:exactMatch @<Uriorcurie> * ;
+          skos:closeMatch @<Uriorcurie> * ;
+          skos:relatedMatch @<Uriorcurie> * ;
+          skos:narrowMatch @<Uriorcurie> * ;
+          skos:broadMatch @<Uriorcurie> * ;
+          pav:createdBy @<Uriorcurie> ? ;
+          dcterms:contributor @<Uriorcurie> * ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ? ;
+          dcterms:subject @<Uriorcurie> * ;
+          schema1:keywords @<String> *
+       ) ;
+       rdf:type [ <ArrayExpression> ] ?
+    )
+}
+
+<ClassDefinition> CLOSED {
+    (  $<ClassDefinition_tes> (  &<Definition_tes> ;
+          rdf:type [ <Definition> ] ? ;
+          &<ClassExpression_tes> ;
+          rdf:type [ <ClassExpression> ] ? ;
+          <slots> @<SlotDefinition> * ;
+          <slot_usage> @<SlotDefinition> * ;
+          <attributes> @<SlotDefinition> * ;
+          <class_uri> @<Uriorcurie> ? ;
+          <subclass_of> @<Uriorcurie> ? ;
+          <union_of> @<ClassDefinition> * ;
+          <defining_slots> @<SlotDefinition> * ;
+          <tree_root> @<Boolean> ? ;
+          <unique_keys> @<UniqueKey> * ;
+          sh:rule @<ClassRule> * ;
+          <classification_rules> @<AnonymousClassExpression> * ;
+          <slot_names_unique> @<Boolean> ? ;
+          <represents_relationship> @<Boolean> ? ;
+          <disjoint_with> @<ClassDefinition> * ;
+          <children_are_mutually_disjoint> @<Boolean> ? ;
+          <mixins> @<ClassDefinition> * ;
+          <apply_to> @<ClassDefinition> * ;
+          <any_of> @<AnonymousClassExpression> * ;
+          <exactly_one_of> @<AnonymousClassExpression> * ;
+          <none_of> @<AnonymousClassExpression> * ;
+          <all_of> @<AnonymousClassExpression> * ;
+          <slot_conditions> @<SlotDefinition> *
+       ) ;
+       rdf:type [ <ClassDefinition> ]
+    )
+}
+
+<ClassExpression> {
+    (  $<ClassExpression_tes> (  <any_of> @<AnonymousClassExpression> * ;
+          <exactly_one_of> @<AnonymousClassExpression> * ;
+          <none_of> @<AnonymousClassExpression> * ;
+          <all_of> @<AnonymousClassExpression> * ;
+          <slot_conditions> @<SlotDefinition> *
+       ) ;
+       rdf:type [ <ClassExpression> ] ?
+    )
+}
+
+<ClassLevelRule>  (
+    {
+       (  $<ClassLevelRule_tes> rdf:type . * ;
+          rdf:type [ <ClassLevelRule> ] ?
+       )
+    } OR @<ClassRule>
+)
+
+<ClassRule> CLOSED {
+    (  $<ClassRule_tes> (  &<ClassLevelRule_tes> ;
+          rdf:type [ <ClassLevelRule> ] ? ;
+          &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          sh:condition @<AnonymousClassExpression> ? ;
+          <postconditions> @<AnonymousClassExpression> ? ;
+          <elseconditions> @<AnonymousClassExpression> ? ;
+          <bidirectional> @<Boolean> ? ;
+          <open_world> @<Boolean> ? ;
+          sh:order @<Integer> ? ;
+          sh:deactivated @<Boolean> ? ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          skos:definition @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          dcterms:title @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          skos:altLabel @<String> * ;
+          skosxl:altLabel @<StructuredAlias> * ;
+          skos:mappingRelation @<Uriorcurie> * ;
+          skos:exactMatch @<Uriorcurie> * ;
+          skos:closeMatch @<Uriorcurie> * ;
+          skos:relatedMatch @<Uriorcurie> * ;
+          skos:narrowMatch @<Uriorcurie> * ;
+          skos:broadMatch @<Uriorcurie> * ;
+          pav:createdBy @<Uriorcurie> ? ;
+          dcterms:contributor @<Uriorcurie> * ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          dcterms:subject @<Uriorcurie> * ;
+          schema1:keywords @<String> *
+       ) ;
+       rdf:type [ <ClassRule> ] ?
+    )
+}
+
+<CommonMetadata> {
+    (  $<CommonMetadata_tes> (  skos:definition @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          dcterms:title @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          skos:altLabel @<String> * ;
+          skosxl:altLabel @<StructuredAlias> * ;
+          skos:mappingRelation @<Uriorcurie> * ;
+          skos:exactMatch @<Uriorcurie> * ;
+          skos:closeMatch @<Uriorcurie> * ;
+          skos:relatedMatch @<Uriorcurie> * ;
+          skos:narrowMatch @<Uriorcurie> * ;
+          skos:broadMatch @<Uriorcurie> * ;
+          pav:createdBy @<Uriorcurie> ? ;
+          dcterms:contributor @<Uriorcurie> * ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ? ;
+          dcterms:subject @<Uriorcurie> * ;
+          schema1:keywords @<String> *
+       ) ;
+       rdf:type [ <CommonMetadata> ] ?
+    )
+}
+
+<Definition>  (
+    @<ClassDefinition> OR @<EnumDefinition> OR @<SlotDefinition>
+)
+
+<Definition_struct> {
+    (  $<Definition_tes> (  &<Element_tes> ;
+          rdf:type [ <Element> ] ? ;
+          <abstract> @<Boolean> ? ;
+          <mixin> @<Boolean> ? ;
+          <mixins> @<Definition> * ;
+          <apply_to> @<Definition> * ;
+          <values_from> @<Uriorcurie> * ;
+          <string_serialization> @<String> ?
+       ) ;
+       rdf:type [ <Definition> ]
+    )
+}
+
+<DimensionExpression> CLOSED {
+    (  $<DimensionExpression_tes> (  &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          skos:prefLabel @<String> ? ;
+          <maximum_cardinality> @<Integer> ? ;
+          <minimum_cardinality> @<Integer> ? ;
+          <exact_cardinality> @<Integer> ? ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          skos:definition @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          dcterms:title @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          skos:altLabel @<String> * ;
+          skosxl:altLabel @<StructuredAlias> * ;
+          skos:mappingRelation @<Uriorcurie> * ;
+          skos:exactMatch @<Uriorcurie> * ;
+          skos:closeMatch @<Uriorcurie> * ;
+          skos:relatedMatch @<Uriorcurie> * ;
+          skos:narrowMatch @<Uriorcurie> * ;
+          skos:broadMatch @<Uriorcurie> * ;
+          pav:createdBy @<Uriorcurie> ? ;
+          dcterms:contributor @<Uriorcurie> * ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ? ;
+          dcterms:subject @<Uriorcurie> * ;
+          schema1:keywords @<String> *
+       ) ;
+       rdf:type [ <DimensionExpression> ] ?
+    )
+}
+
+<Element>  (
+    @<Definition> OR @<SchemaDefinition> OR @<SubsetDefinition> OR @<TypeDefinition>
+)
+
+<Element_struct> {
+    (  $<Element_tes> (  &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          <id_prefixes> @<Ncname> * ;
+          <id_prefixes_are_closed> @<Boolean> ? ;
+          <definition_uri> @<Uriorcurie> ? ;
+          <local_names> @<LocalName> * ;
+          dcterms:conformsTo @<String> ? ;
+          <implements> @<Uriorcurie> * ;
+          <instantiates> @<Uriorcurie> * ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          skos:definition @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          dcterms:title @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          skos:altLabel @<String> * ;
+          skosxl:altLabel @<StructuredAlias> * ;
+          skos:mappingRelation @<Uriorcurie> * ;
+          skos:exactMatch @<Uriorcurie> * ;
+          skos:closeMatch @<Uriorcurie> * ;
+          skos:relatedMatch @<Uriorcurie> * ;
+          skos:narrowMatch @<Uriorcurie> * ;
+          skos:broadMatch @<Uriorcurie> * ;
+          pav:createdBy @<Uriorcurie> ? ;
+          dcterms:contributor @<Uriorcurie> * ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ? ;
+          dcterms:subject @<Uriorcurie> * ;
+          schema1:keywords @<String> *
+       ) ;
+       rdf:type [ <Element> ]
+    )
+}
+
+<EnumBinding> CLOSED {
+    (  $<EnumBinding_tes> (  &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          <range> @<EnumDefinition> ? ;
+          <obligation_level> [ <https://w3id.org/linkml/ObligationLevelEnum#REQUIRED>
+             <https://w3id.org/linkml/ObligationLevelEnum#RECOMMENDED> <https://w3id.org/linkml/ObligationLevelEnum#OPTIONAL>
+             <https://w3id.org/linkml/ObligationLevelEnum#EXAMPLE> <https://w3id.org/linkml/ObligationLevelEnum#DISCOURAGED> ] ? ;
+          <binds_value_of> @<String> ? ;
+          <pv_formula> [ <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE>
+             <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING>
+             <https://w3id.org/linkml/PvFormulaOptions#LABEL> ] ? ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          skos:definition @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          dcterms:title @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          skos:altLabel @<String> * ;
+          skosxl:altLabel @<StructuredAlias> * ;
+          skos:mappingRelation @<Uriorcurie> * ;
+          skos:exactMatch @<Uriorcurie> * ;
+          skos:closeMatch @<Uriorcurie> * ;
+          skos:relatedMatch @<Uriorcurie> * ;
+          skos:narrowMatch @<Uriorcurie> * ;
+          skos:broadMatch @<Uriorcurie> * ;
+          pav:createdBy @<Uriorcurie> ? ;
+          dcterms:contributor @<Uriorcurie> * ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ? ;
+          dcterms:subject @<Uriorcurie> * ;
+          schema1:keywords @<String> *
+       ) ;
+       rdf:type [ <EnumBinding> ] ?
+    )
+}
+
+<EnumDefinition> CLOSED {
+    (  $<EnumDefinition_tes> (  &<Definition_tes> ;
+          rdf:type [ <Definition> ] ? ;
+          &<EnumExpression_tes> ;
+          rdf:type [ <EnumExpression> ] ? ;
+          <enum_uri> @<Uriorcurie> ? ;
+          <code_set> @<Uriorcurie> ? ;
+          <code_set_tag> @<String> ? ;
+          <code_set_version> @<String> ? ;
+          <pv_formula> [ <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE>
+             <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING>
+             <https://w3id.org/linkml/PvFormulaOptions#LABEL> ] ? ;
+          <permissible_values> @<PermissibleValue> * ;
+          <include> @<AnonymousEnumExpression> * ;
+          <minus> @<AnonymousEnumExpression> * ;
+          <inherits> @<EnumDefinition> * ;
+          <reachable_from> @<ReachabilityQuery> ? ;
+          <matches> @<MatchQuery> ? ;
+          <concepts> @<Uriorcurie> *
+       ) ;
+       rdf:type [ <EnumDefinition> ]
+    )
+}
+
+<EnumExpression> CLOSED {
+    (  $<EnumExpression_tes> (  &<Expression_tes> ;
+          rdf:type [ <Expression> ] ? ;
+          <code_set> @<Uriorcurie> ? ;
+          <code_set_tag> @<String> ? ;
+          <code_set_version> @<String> ? ;
+          <pv_formula> [ <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE>
+             <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING>
+             <https://w3id.org/linkml/PvFormulaOptions#LABEL> ] ? ;
+          <permissible_values> @<PermissibleValue> * ;
+          <include> @<AnonymousEnumExpression> * ;
+          <minus> @<AnonymousEnumExpression> * ;
+          <inherits> @<EnumDefinition> * ;
+          <reachable_from> @<ReachabilityQuery> ? ;
+          <matches> @<MatchQuery> ? ;
+          <concepts> @<Uriorcurie> *
+       ) ;
+       rdf:type [ <EnumExpression> ] ?
+    )
+}
+
+<Example> CLOSED {
+    (  $<Example_tes> (  skos:example @<String> ? ;
+          <description> @<String> ? ;
+          <object> @<Anything> ?
+       ) ;
+       rdf:type [ <Example> ] ?
+    )
+}
+
+<Expression>  (
+    @<EnumExpression> OR @<SlotExpression> OR @<TypeExpression>
+)
+
+<Expression_struct> {
+    (  $<Expression_tes> rdf:type . * ;
+       rdf:type [ <Expression> ] ?
+    )
+}
+
+<Extensible> {
+    (  $<Extensible_tes> <extensions> @<Extension> * ;
+       rdf:type [ <Extensible> ] ?
+    )
+}
+
+<Extension>  (
+    CLOSED {
+       (  $<Extension_tes> (  <tag> @<Uriorcurie> ;
+             <value> @<AnyValue> ;
+             <extensions> @<Extension> *
+          ) ;
+          rdf:type [ <Extension> ]
+       )
+    } OR @<Annotation>
+)
+
+<ImportExpression> CLOSED {
+    (  $<ImportExpression_tes> (  &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          <import_from> @<Uriorcurie> ;
+          <import_as> @<Ncname> ? ;
+          <import_map> @<Setting> * ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          skos:definition @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          dcterms:title @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          skos:altLabel @<String> * ;
+          skosxl:altLabel @<StructuredAlias> * ;
+          skos:mappingRelation @<Uriorcurie> * ;
+          skos:exactMatch @<Uriorcurie> * ;
+          skos:closeMatch @<Uriorcurie> * ;
+          skos:relatedMatch @<Uriorcurie> * ;
+          skos:narrowMatch @<Uriorcurie> * ;
+          skos:broadMatch @<Uriorcurie> * ;
+          pav:createdBy @<Uriorcurie> ? ;
+          dcterms:contributor @<Uriorcurie> * ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ? ;
+          dcterms:subject @<Uriorcurie> * ;
+          schema1:keywords @<String> *
+       ) ;
+       rdf:type [ <ImportExpression> ] ?
+    )
+}
+
+<LocalName> CLOSED {
+    (  $<LocalName_tes> (  <local_name_source> @<Ncname> ;
+          skos:altLabel @<String>
+       ) ;
+       rdf:type [ <LocalName> ]
+    )
+}
+
+<MatchQuery> CLOSED {
+    (  $<MatchQuery_tes> (  <identifier_pattern> @<String> ? ;
+          <source_ontology> @<Uriorcurie> ?
+       ) ;
+       rdf:type [ <MatchQuery> ] ?
+    )
+}
+
+<PathExpression> CLOSED {
+    (  $<PathExpression_tes> (  &<Expression_tes> ;
+          rdf:type [ <Expression> ] ? ;
+          &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          <followed_by> @<PathExpression> ? ;
+          <none_of> @<PathExpression> * ;
+          <any_of> @<PathExpression> * ;
+          <all_of> @<PathExpression> * ;
+          <exactly_one_of> @<PathExpression> * ;
+          <reversed> @<Boolean> ? ;
+          <traverse> @<SlotDefinition> ? ;
+          <range_expression> @<AnonymousClassExpression> ? ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          skos:definition @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          dcterms:title @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          skos:altLabel @<String> * ;
+          skosxl:altLabel @<StructuredAlias> * ;
+          skos:mappingRelation @<Uriorcurie> * ;
+          skos:exactMatch @<Uriorcurie> * ;
+          skos:closeMatch @<Uriorcurie> * ;
+          skos:relatedMatch @<Uriorcurie> * ;
+          skos:narrowMatch @<Uriorcurie> * ;
+          skos:broadMatch @<Uriorcurie> * ;
+          pav:createdBy @<Uriorcurie> ? ;
+          dcterms:contributor @<Uriorcurie> * ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ? ;
+          dcterms:subject @<Uriorcurie> * ;
+          schema1:keywords @<String> *
+       ) ;
+       rdf:type [ <PathExpression> ] ?
+    )
+}
+
+<PatternExpression> CLOSED {
+    (  $<PatternExpression_tes> (  &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          <syntax> @<String> ? ;
+          <interpolated> @<Boolean> ? ;
+          <partial_match> @<Boolean> ? ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          skos:definition @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          dcterms:title @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          skos:altLabel @<String> * ;
+          skosxl:altLabel @<StructuredAlias> * ;
+          skos:mappingRelation @<Uriorcurie> * ;
+          skos:exactMatch @<Uriorcurie> * ;
+          skos:closeMatch @<Uriorcurie> * ;
+          skos:relatedMatch @<Uriorcurie> * ;
+          skos:narrowMatch @<Uriorcurie> * ;
+          skos:broadMatch @<Uriorcurie> * ;
+          pav:createdBy @<Uriorcurie> ? ;
+          dcterms:contributor @<Uriorcurie> * ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ? ;
+          dcterms:subject @<Uriorcurie> * ;
+          schema1:keywords @<String> *
+       ) ;
+       rdf:type [ <PatternExpression> ] ?
+    )
+}
+
+<PermissibleValue> CLOSED {
+    (  $<PermissibleValue_tes> (  &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          skos:definition @<String> ? ;
+          <meaning> @<Uriorcurie> ? ;
+          qudt:unit @<UnitOfMeasure> ? ;
+          <instantiates> @<Uriorcurie> * ;
+          <implements> @<Uriorcurie> * ;
+          <mixins> @<PermissibleValue> * ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          <alt_descriptions> @<AltDescription> * ;
+          dcterms:title @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          skos:altLabel @<String> * ;
+          skosxl:altLabel @<StructuredAlias> * ;
+          skos:mappingRelation @<Uriorcurie> * ;
+          skos:exactMatch @<Uriorcurie> * ;
+          skos:closeMatch @<Uriorcurie> * ;
+          skos:relatedMatch @<Uriorcurie> * ;
+          skos:narrowMatch @<Uriorcurie> * ;
+          skos:broadMatch @<Uriorcurie> * ;
+          pav:createdBy @<Uriorcurie> ? ;
+          dcterms:contributor @<Uriorcurie> * ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ? ;
+          dcterms:subject @<Uriorcurie> * ;
+          schema1:keywords @<String> *
+       ) ;
+       rdf:type [ <PermissibleValue> ]
+    )
+}
+
+<Prefix> CLOSED {
+    (  $<Prefix_tes> (  sh:prefix @<Ncname> ;
+          sh:namespace @<Uri>
+       ) ;
+       rdf:type [ <Prefix> ]
+    )
+}
+
+<ReachabilityQuery> CLOSED {
+    (  $<ReachabilityQuery_tes> (  <source_ontology> @<Uriorcurie> ? ;
+          <source_nodes> @<Uriorcurie> * ;
+          <relationship_types> @<Uriorcurie> * ;
+          <is_direct> @<Boolean> ? ;
+          <include_self> @<Boolean> ? ;
+          <traverse_up> @<Boolean> ?
+       ) ;
+       rdf:type [ <ReachabilityQuery> ] ?
+    )
+}
+
+<SchemaDefinition> CLOSED {
+    (  $<SchemaDefinition_tes> (  &<Element_tes> ;
+          rdf:type [ <Element> ] ? ;
+          <id> @<Uri> ;
+          pav:version @<String> ? ;
+          <imports> @<Uriorcurie> * ;
+          dcterms:license @<String> ? ;
+          sh:declare @<Prefix> * ;
+          <emit_prefixes> @<Ncname> * ;
+          <default_curi_maps> @<String> * ;
+          <default_prefix> @<String> ? ;
+          <default_range> @<TypeDefinition> ? ;
+          <subsets> @<SubsetDefinition> * ;
+          <types> @<TypeDefinition> * ;
+          <enums> @<EnumDefinition> * ;
+          <slots> @<SlotDefinition> * ;
+          <classes> @<ClassDefinition> * ;
+          <metamodel_version> @<String> ? ;
+          <source_file> @<String> ? ;
+          <source_file_date> @<Datetime> ? ;
+          <source_file_size> @<Integer> ? ;
+          <generation_date> @<Datetime> ? ;
+          <slot_names_unique> @<Boolean> ? ;
+          <settings> @<Setting> * ;
+          <bindings> @<EnumBinding> *
+       ) ;
+       rdf:type [ <SchemaDefinition> ]
+    )
+}
+
+<Setting> CLOSED {
+    (  $<Setting_tes> (  <setting_key> @<Ncname> ;
+          <setting_value> @<String>
+       ) ;
+       rdf:type [ <Setting> ]
+    )
+}
+
+<SlotDefinition> CLOSED {
+    (  $<SlotDefinition_tes> (  &<Definition_tes> ;
+          rdf:type [ <Definition> ] ? ;
+          &<SlotExpression_tes> ;
+          rdf:type [ <SlotExpression> ] ? ;
+          <singular_name> @<String> ? ;
+          <domain> @<ClassDefinition> ? ;
+          <slot_uri> @<Uriorcurie> ? ;
+          <array> @<ArrayExpression> ? ;
+          <inherited> @<Boolean> ? ;
+          <readonly> @<String> ? ;
+          <ifabsent> @<String> ? ;
+          <list_elements_unique> @<Boolean> ? ;
+          <list_elements_ordered> @<Boolean> ? ;
+          <shared> @<Boolean> ? ;
+          <key> @<Boolean> ? ;
+          <identifier> @<Boolean> ? ;
+          <designates_type> @<Boolean> ? ;
+          skos:prefLabel @<String> ? ;
+          <owner> @<Definition> ? ;
+          <domain_of> @<ClassDefinition> * ;
+          rdfs:subPropertyOf @<SlotDefinition> ? ;
+          <symmetric> @<Boolean> ? ;
+          <reflexive> @<Boolean> ? ;
+          <locally_reflexive> @<Boolean> ? ;
+          <irreflexive> @<Boolean> ? ;
+          <asymmetric> @<Boolean> ? ;
+          <transitive> @<Boolean> ? ;
+          owl:inverseOf @<SlotDefinition> ? ;
+          <is_class_field> @<Boolean> ? ;
+          <transitive_form_of> @<SlotDefinition> ? ;
+          <reflexive_transitive_form_of> @<SlotDefinition> ? ;
+          <role> @<String> ? ;
+          <is_usage_slot> @<Boolean> ? ;
+          <usage_slot_name> @<String> ? ;
+          <relational_role> [ rdf:subject rdf:object rdf:predicate <https://w3id.org/linkml/RelationalRoleEnum#NODE>
+             <https://w3id.org/linkml/RelationalRoleEnum#OTHER_ROLE> ] ? ;
+          sh:group @<SlotDefinition> ? ;
+          <is_grouping_slot> @<Boolean> ? ;
+          <path_rule> @<PathExpression> ? ;
+          <disjoint_with> @<SlotDefinition> * ;
+          <children_are_mutually_disjoint> @<Boolean> ? ;
+          <union_of> @<SlotDefinition> * ;
+          <type_mappings> @<TypeMapping> * ;
+          <mixins> @<SlotDefinition> * ;
+          <apply_to> @<SlotDefinition> * ;
+          <range> @<Element> ? ;
+          <range_expression> @<AnonymousClassExpression> ? ;
+          <enum_range> @<EnumExpression> ? ;
+          <bindings> @<EnumBinding> * ;
+          <required> @<Boolean> ? ;
+          <recommended> @<Boolean> ? ;
+          <multivalued> @<Boolean> ? ;
+          <inlined> @<Boolean> ? ;
+          <inlined_as_list> @<Boolean> ? ;
+          <minimum_value> @<Anything> ? ;
+          <maximum_value> @<Anything> ? ;
+          <pattern> @<String> ? ;
+          <structured_pattern> @<PatternExpression> ? ;
+          qudt:unit @<UnitOfMeasure> ? ;
+          <implicit_prefix> @<String> ? ;
+          <value_presence> [ <https://w3id.org/linkml/PresenceEnum#UNCOMMITTED> <https://w3id.org/linkml/PresenceEnum#PRESENT>
+             <https://w3id.org/linkml/PresenceEnum#ABSENT> ] ? ;
+          <equals_string> @<String> ? ;
+          <equals_string_in> @<String> * ;
+          <equals_number> @<Integer> ? ;
+          <equals_expression> @<String> ? ;
+          <exact_cardinality> @<Integer> ? ;
+          <minimum_cardinality> @<Integer> ? ;
+          <maximum_cardinality> @<Integer> ? ;
+          <has_member> @<AnonymousSlotExpression> ? ;
+          <all_members> @<AnonymousSlotExpression> ? ;
+          <none_of> @<AnonymousSlotExpression> * ;
+          <exactly_one_of> @<AnonymousSlotExpression> * ;
+          <any_of> @<AnonymousSlotExpression> * ;
+          <all_of> @<AnonymousSlotExpression> *
+       ) ;
+       rdf:type [ <SlotDefinition> ]
+    )
+}
+
+<SlotExpression> {
+    (  $<SlotExpression_tes> (  &<Expression_tes> ;
+          rdf:type [ <Expression> ] ? ;
+          <range> @<Element> ? ;
+          <range_expression> @<AnonymousClassExpression> ? ;
+          <enum_range> @<EnumExpression> ? ;
+          <bindings> @<EnumBinding> * ;
+          <required> @<Boolean> ? ;
+          <recommended> @<Boolean> ? ;
+          <multivalued> @<Boolean> ? ;
+          <inlined> @<Boolean> ? ;
+          <inlined_as_list> @<Boolean> ? ;
+          <minimum_value> @<Anything> ? ;
+          <maximum_value> @<Anything> ? ;
+          <pattern> @<String> ? ;
+          <structured_pattern> @<PatternExpression> ? ;
+          qudt:unit @<UnitOfMeasure> ? ;
+          <implicit_prefix> @<String> ? ;
+          <value_presence> [ <https://w3id.org/linkml/PresenceEnum#UNCOMMITTED> <https://w3id.org/linkml/PresenceEnum#PRESENT>
+             <https://w3id.org/linkml/PresenceEnum#ABSENT> ] ? ;
+          <equals_string> @<String> ? ;
+          <equals_string_in> @<String> * ;
+          <equals_number> @<Integer> ? ;
+          <equals_expression> @<String> ? ;
+          <exact_cardinality> @<Integer> ? ;
+          <minimum_cardinality> @<Integer> ? ;
+          <maximum_cardinality> @<Integer> ? ;
+          <has_member> @<AnonymousSlotExpression> ? ;
+          <all_members> @<AnonymousSlotExpression> ? ;
+          <none_of> @<AnonymousSlotExpression> * ;
+          <exactly_one_of> @<AnonymousSlotExpression> * ;
+          <any_of> @<AnonymousSlotExpression> * ;
+          <all_of> @<AnonymousSlotExpression> *
+       ) ;
+       rdf:type [ <SlotExpression> ] ?
+    )
+}
+
+<StructuredAlias> CLOSED {
+    (  $<StructuredAlias_tes> (  &<Expression_tes> ;
+          rdf:type [ <Expression> ] ? ;
+          &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          skosxl:literalForm @<String> ;
+          rdf:predicate [ skos:exactMatch skos:relatedMatch skos:broaderMatch skos:narrowerMatch ] ? ;
+          dcterms:subject @<Uriorcurie> * ;
+          <contexts> @<Uri> * ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          skos:definition @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          dcterms:title @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          skos:altLabel @<String> * ;
+          skosxl:altLabel @<StructuredAlias> * ;
+          skos:mappingRelation @<Uriorcurie> * ;
+          skos:exactMatch @<Uriorcurie> * ;
+          skos:closeMatch @<Uriorcurie> * ;
+          skos:relatedMatch @<Uriorcurie> * ;
+          skos:narrowMatch @<Uriorcurie> * ;
+          skos:broadMatch @<Uriorcurie> * ;
+          pav:createdBy @<Uriorcurie> ? ;
+          dcterms:contributor @<Uriorcurie> * ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ? ;
+          schema1:keywords @<String> *
+       ) ;
+       rdf:type [ skosxl:Label ] ?
+    )
+}
+
+<SubsetDefinition> CLOSED {
+    (  $<SubsetDefinition_tes> (  &<Element_tes> ;
+          rdf:type [ <Element> ] ?
+       ) ;
+       rdf:type [ <SubsetDefinition> ]
+    )
+}
+
+<TypeDefinition> CLOSED {
+    (  $<TypeDefinition_tes> (  &<Element_tes> ;
+          rdf:type [ <Element> ] ? ;
+          &<TypeExpression_tes> ;
+          rdf:type [ <TypeExpression> ] ? ;
+          <typeof> @<TypeDefinition> ? ;
+          <base> @<String> ? ;
+          <uri> @<Uriorcurie> ? ;
+          <repr> @<String> ? ;
+          <union_of> @<TypeDefinition> * ;
+          <pattern> @<String> ? ;
+          <structured_pattern> @<PatternExpression> ? ;
+          qudt:unit @<UnitOfMeasure> ? ;
+          <implicit_prefix> @<String> ? ;
+          <equals_string> @<String> ? ;
+          <equals_string_in> @<String> * ;
+          <equals_number> @<Integer> ? ;
+          <minimum_value> @<Anything> ? ;
+          <maximum_value> @<Anything> ? ;
+          <none_of> @<AnonymousTypeExpression> * ;
+          <exactly_one_of> @<AnonymousTypeExpression> * ;
+          <any_of> @<AnonymousTypeExpression> * ;
+          <all_of> @<AnonymousTypeExpression> *
+       ) ;
+       rdf:type [ <TypeDefinition> ]
+    )
+}
+
+<TypeExpression> {
+    (  $<TypeExpression_tes> (  &<Expression_tes> ;
+          rdf:type [ <Expression> ] ? ;
+          <pattern> @<String> ? ;
+          <structured_pattern> @<PatternExpression> ? ;
+          qudt:unit @<UnitOfMeasure> ? ;
+          <implicit_prefix> @<String> ? ;
+          <equals_string> @<String> ? ;
+          <equals_string_in> @<String> * ;
+          <equals_number> @<Integer> ? ;
+          <minimum_value> @<Anything> ? ;
+          <maximum_value> @<Anything> ? ;
+          <none_of> @<AnonymousTypeExpression> * ;
+          <exactly_one_of> @<AnonymousTypeExpression> * ;
+          <any_of> @<AnonymousTypeExpression> * ;
+          <all_of> @<AnonymousTypeExpression> *
+       ) ;
+       rdf:type [ <TypeExpression> ] ?
+    )
+}
+
+<TypeMapping> CLOSED {
+    (  $<TypeMapping_tes> (  &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          <framework> @<String> ;
+          <type> @<TypeDefinition> ? ;
+          <string_serialization> @<String> ? ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          skos:definition @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          dcterms:title @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          skos:altLabel @<String> * ;
+          skosxl:altLabel @<StructuredAlias> * ;
+          skos:mappingRelation @<Uriorcurie> * ;
+          skos:exactMatch @<Uriorcurie> * ;
+          skos:closeMatch @<Uriorcurie> * ;
+          skos:relatedMatch @<Uriorcurie> * ;
+          skos:narrowMatch @<Uriorcurie> * ;
+          skos:broadMatch @<Uriorcurie> * ;
+          pav:createdBy @<Uriorcurie> ? ;
+          dcterms:contributor @<Uriorcurie> * ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ? ;
+          dcterms:subject @<Uriorcurie> * ;
+          schema1:keywords @<String> *
+       ) ;
+       rdf:type [ <TypeMapping> ]
+    )
+}
+
+<UniqueKey> CLOSED {
+    (  $<UniqueKey_tes> (  &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          <unique_key_name> @<String> ;
+          <unique_key_slots> @<SlotDefinition> + ;
+          <consider_nulls_inequal> @<Boolean> ? ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          skos:definition @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          dcterms:title @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          skos:altLabel @<String> * ;
+          skosxl:altLabel @<StructuredAlias> * ;
+          skos:mappingRelation @<Uriorcurie> * ;
+          skos:exactMatch @<Uriorcurie> * ;
+          skos:closeMatch @<Uriorcurie> * ;
+          skos:relatedMatch @<Uriorcurie> * ;
+          skos:narrowMatch @<Uriorcurie> * ;
+          skos:broadMatch @<Uriorcurie> * ;
+          pav:createdBy @<Uriorcurie> ? ;
+          dcterms:contributor @<Uriorcurie> * ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ? ;
+          dcterms:subject @<Uriorcurie> * ;
+          schema1:keywords @<String> *
+       ) ;
+       rdf:type [ <UniqueKey> ]
+    )
+}
+
+<UnitOfMeasure> CLOSED {
+    (  $<UnitOfMeasure_tes> (  qudt:symbol @<String> ? ;
+          qudt:abbreviation @<String> ? ;
+          rdfs:label @<String> ? ;
+          skos:exactMatch @<Uriorcurie> * ;
+          qudt:ucumCode @<String> ? ;
+          <derivation> @<String> ? ;
+          qudt:hasQuantityKind @<Uriorcurie> ? ;
+          qudt:iec61360Code @<String> ?
+       ) ;
+       rdf:type [ qudt:Unit ] ?
+    )
+}
+
+

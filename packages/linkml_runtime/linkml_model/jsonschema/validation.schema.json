@@ -1,0 +1,89 @@
+{
+   "$defs": {
+      "ProblemType": {
+         "description": "",
+         "enum": [
+            "undeclared_slot",
+            "inapplicable_slot",
+            "missing_slot_value",
+            "slot_range_violation",
+            "max_count_violation",
+            "parsing_error"
+         ],
+         "title": "ProblemType",
+         "type": "string"
+      },
+      "SeverityOptions": {
+         "description": "",
+         "enum": [
+            "FATAL",
+            "ERROR",
+            "WARNING",
+            "INFO"
+         ],
+         "title": "SeverityOptions",
+         "type": "string"
+      },
+      "ValidationReport": {
+         "additionalProperties": false,
+         "description": "A report object",
+         "properties": {
+            "results": {
+               "items": {
+                  "$ref": "#/$defs/ValidationResult"
+               },
+               "type": "array"
+            }
+         },
+         "required": [],
+         "title": "ValidationReport",
+         "type": "object"
+      },
+      "ValidationResult": {
+         "additionalProperties": false,
+         "description": "An individual result arising from validation of a data instance using a particular rule",
+         "properties": {
+            "info": {
+               "type": "string"
+            },
+            "instantiates": {
+               "type": "string"
+            },
+            "node_source": {
+               "type": "string"
+            },
+            "object": {
+               "type": "string"
+            },
+            "object_str": {
+               "type": "string"
+            },
+            "predicate": {
+               "type": "string"
+            },
+            "severity": {
+               "$ref": "#/$defs/SeverityOptions"
+            },
+            "subject": {
+               "type": "string"
+            },
+            "type": {
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "ValidationResult",
+         "type": "object"
+      }
+   },
+   "$id": "https://w3id.org/linkml/reporting",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": true,
+   "metamodel_version": "1.7.0",
+   "properties": {},
+   "required": [],
+   "title": "reporting",
+   "type": "object",
+   "version": null
+}
+

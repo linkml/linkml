@@ -1,0 +1,480 @@
+{
+  "name": "reporting",
+  "description": "A datamodel for reports on data, based on SHACL",
+  "title": "LinkML Report Metamodel",
+  "id": "https://w3id.org/linkml/reporting",
+  "imports": [
+    "linkml:types"
+  ],
+  "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "prefixes": [
+    {
+      "prefix_prefix": "linkml",
+      "prefix_reference": "https://w3id.org/linkml/"
+    },
+    {
+      "prefix_prefix": "reporting",
+      "prefix_reference": "https://w3id.org/linkml/report"
+    },
+    {
+      "prefix_prefix": "skos",
+      "prefix_reference": "http://www.w3.org/2004/02/skos/core#"
+    },
+    {
+      "prefix_prefix": "pav",
+      "prefix_reference": "http://purl.org/pav/"
+    },
+    {
+      "prefix_prefix": "schema",
+      "prefix_reference": "http://schema.org/"
+    },
+    {
+      "prefix_prefix": "sh",
+      "prefix_reference": "https://w3id.org/shacl/"
+    }
+  ],
+  "emit_prefixes": [
+    "linkml",
+    "rdf",
+    "rdfs",
+    "xsd",
+    "owl"
+  ],
+  "default_curi_maps": [
+    "semweb_context"
+  ],
+  "default_prefix": "reporting",
+  "default_range": "string",
+  "types": [
+    {
+      "name": "string",
+      "definition_uri": "https://w3id.org/linkml/String",
+      "description": "A character string",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "integer",
+      "definition_uri": "https://w3id.org/linkml/Integer",
+      "description": "An integer",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "int",
+      "uri": "http://www.w3.org/2001/XMLSchema#integer",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "boolean",
+      "definition_uri": "https://w3id.org/linkml/Boolean",
+      "description": "A binary (true or false) value",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "Bool",
+      "uri": "http://www.w3.org/2001/XMLSchema#boolean",
+      "repr": "bool",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "float",
+      "definition_uri": "https://w3id.org/linkml/Float",
+      "description": "A real number that conforms to the xsd:float specification",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "float",
+      "uri": "http://www.w3.org/2001/XMLSchema#float",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "double",
+      "definition_uri": "https://w3id.org/linkml/Double",
+      "description": "A real number that conforms to the xsd:double specification",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "float",
+      "uri": "http://www.w3.org/2001/XMLSchema#double",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "decimal",
+      "definition_uri": "https://w3id.org/linkml/Decimal",
+      "description": "A real number with arbitrary precision that conforms to the xsd:decimal specification",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "Decimal",
+      "uri": "http://www.w3.org/2001/XMLSchema#decimal",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "time",
+      "definition_uri": "https://w3id.org/linkml/Time",
+      "description": "A time object represents a (local) time of day, independent of any particular day",
+      "notes": [
+        "URI is dateTime because OWL reasoners don't work with straight date or time"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "XSDTime",
+      "uri": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "date",
+      "definition_uri": "https://w3id.org/linkml/Date",
+      "description": "a date (year, month and day) in an idealized calendar",
+      "notes": [
+        "URI is dateTime because OWL reasoners don't work with straight date or time"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "XSDDate",
+      "uri": "http://www.w3.org/2001/XMLSchema#date",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "datetime",
+      "definition_uri": "https://w3id.org/linkml/Datetime",
+      "description": "The combination of a date and time",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "XSDDateTime",
+      "uri": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "date_or_datetime",
+      "definition_uri": "https://w3id.org/linkml/DateOrDatetime",
+      "description": "Either a date or a datetime",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "https://w3id.org/linkml/DateOrDatetime",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "uriorcurie",
+      "definition_uri": "https://w3id.org/linkml/Uriorcurie",
+      "description": "a URI or a CURIE",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "URIorCURIE",
+      "uri": "http://www.w3.org/2001/XMLSchema#anyURI",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "uri",
+      "definition_uri": "https://w3id.org/linkml/Uri",
+      "description": "a complete URI",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "URI",
+      "uri": "http://www.w3.org/2001/XMLSchema#anyURI",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "ncname",
+      "definition_uri": "https://w3id.org/linkml/Ncname",
+      "description": "Prefix part of CURIE",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "NCName",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "objectidentifier",
+      "definition_uri": "https://w3id.org/linkml/Objectidentifier",
+      "description": "A URI or CURIE that represents an object in the model.",
+      "comments": [
+        "Used for inheritance and type checking"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "ElementIdentifier",
+      "uri": "http://www.w3.org/ns/shex#iri",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "nodeidentifier",
+      "definition_uri": "https://w3id.org/linkml/Nodeidentifier",
+      "description": "A URI, CURIE or BNODE that represents a node in a model.",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "NodeIdentifier",
+      "uri": "http://www.w3.org/ns/shex#nonLiteral",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    }
+  ],
+  "enums": [
+    {
+      "name": "problem_type",
+      "definition_uri": "https://w3id.org/linkml/reportProblemType",
+      "from_schema": "https://w3id.org/linkml/reporting",
+      "permissible_values": [
+        {
+          "text": "undeclared_slot",
+          "description": "Applies when a slot is used in data but the slot is undeclared in the datamodel"
+        },
+        {
+          "text": "inapplicable_slot",
+          "description": "Applies when a slot is used in an instance of a class where the slot is not applicable for that class"
+        },
+        {
+          "text": "missing_slot_value",
+          "description": "Applies when an instance of a class has a required slot which is not filled in"
+        },
+        {
+          "text": "slot_range_violation",
+          "description": "Applies when the value of a slot is inconsistent with the declared range"
+        },
+        {
+          "text": "max_count_violation",
+          "meaning": "sh:MaxCountConstraintComponent"
+        },
+        {
+          "text": "parsing_error",
+          "description": "The data could not be parsed"
+        }
+      ]
+    },
+    {
+      "name": "severity_options",
+      "definition_uri": "https://w3id.org/linkml/reportSeverityOptions",
+      "from_schema": "https://w3id.org/linkml/reporting",
+      "exact_mappings": [
+        "sh:Severity"
+      ],
+      "permissible_values": [
+        {
+          "text": "FATAL"
+        },
+        {
+          "text": "ERROR",
+          "meaning": "sh:Violation"
+        },
+        {
+          "text": "WARNING",
+          "meaning": "sh:Warning"
+        },
+        {
+          "text": "INFO",
+          "meaning": "sh:Info"
+        }
+      ]
+    }
+  ],
+  "slots": [
+    {
+      "name": "type",
+      "definition_uri": "https://w3id.org/linkml/reporttype",
+      "from_schema": "https://w3id.org/linkml/reporting",
+      "mappings": [
+        "https://w3id.org/shacl/sourceConstraintComponent"
+      ],
+      "slot_uri": "https://w3id.org/shacl/sourceConstraintComponent",
+      "owner": "ValidationResult",
+      "domain_of": [
+        "ValidationResult"
+      ],
+      "range": "nodeidentifier",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "subject",
+      "definition_uri": "https://w3id.org/linkml/reportsubject",
+      "from_schema": "https://w3id.org/linkml/reporting",
+      "mappings": [
+        "https://w3id.org/shacl/focusNode"
+      ],
+      "slot_uri": "https://w3id.org/shacl/focusNode",
+      "owner": "ValidationResult",
+      "domain_of": [
+        "ValidationResult"
+      ],
+      "range": "nodeidentifier",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "instantiates",
+      "definition_uri": "https://w3id.org/linkml/reportinstantiates",
+      "from_schema": "https://w3id.org/linkml/reporting",
+      "exact_mappings": [
+        "https://w3id.org/shacl/sourceShape"
+      ],
+      "slot_uri": "https://w3id.org/linkml/reportinstantiates",
+      "owner": "ValidationResult",
+      "domain_of": [
+        "ValidationResult"
+      ],
+      "range": "nodeidentifier",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "predicate",
+      "definition_uri": "https://w3id.org/linkml/reportpredicate",
+      "from_schema": "https://w3id.org/linkml/reporting",
+      "related_mappings": [
+        "https://w3id.org/shacl/resultPath"
+      ],
+      "slot_uri": "https://w3id.org/linkml/reportpredicate",
+      "owner": "ValidationResult",
+      "domain_of": [
+        "ValidationResult"
+      ],
+      "range": "nodeidentifier",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "object",
+      "definition_uri": "https://w3id.org/linkml/reportobject",
+      "from_schema": "https://w3id.org/linkml/reporting",
+      "mappings": [
+        "https://w3id.org/shacl/value"
+      ],
+      "slot_uri": "https://w3id.org/shacl/value",
+      "owner": "ValidationResult",
+      "domain_of": [
+        "ValidationResult"
+      ],
+      "range": "nodeidentifier",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "object_str",
+      "definition_uri": "https://w3id.org/linkml/reportobject_str",
+      "from_schema": "https://w3id.org/linkml/reporting",
+      "slot_uri": "https://w3id.org/linkml/reportobject_str",
+      "owner": "ValidationResult",
+      "domain_of": [
+        "ValidationResult"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "node_source",
+      "definition_uri": "https://w3id.org/linkml/reportnode_source",
+      "from_schema": "https://w3id.org/linkml/reporting",
+      "slot_uri": "https://w3id.org/linkml/reportnode_source",
+      "owner": "ValidationResult",
+      "domain_of": [
+        "ValidationResult"
+      ],
+      "range": "nodeidentifier",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "severity",
+      "definition_uri": "https://w3id.org/linkml/reportseverity",
+      "from_schema": "https://w3id.org/linkml/reporting",
+      "slot_uri": "https://w3id.org/linkml/reportseverity",
+      "owner": "ValidationResult",
+      "domain_of": [
+        "ValidationResult"
+      ],
+      "range": "severity_options",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "info",
+      "definition_uri": "https://w3id.org/linkml/reportinfo",
+      "from_schema": "https://w3id.org/linkml/reporting",
+      "slot_uri": "https://w3id.org/linkml/reportinfo",
+      "owner": "ValidationResult",
+      "domain_of": [
+        "ValidationResult"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "validationReport__results",
+      "from_schema": "https://w3id.org/linkml/reporting",
+      "slot_uri": "https://w3id.org/linkml/reportresults",
+      "multivalued": true,
+      "alias": "results",
+      "owner": "ValidationReport",
+      "domain_of": [
+        "ValidationReport"
+      ],
+      "range": "ValidationResult",
+      "inlined": true,
+      "@type": "SlotDefinition"
+    }
+  ],
+  "classes": [
+    {
+      "name": "ValidationReport",
+      "definition_uri": "https://w3id.org/linkml/reportValidationReport",
+      "description": "A report object",
+      "todos": [
+        "add prov object"
+      ],
+      "from_schema": "https://w3id.org/linkml/reporting",
+      "mappings": [
+        "sh:ValidationReport"
+      ],
+      "slots": [
+        "validationReport__results"
+      ],
+      "slot_usage": {},
+      "attributes": [
+        {
+          "name": "results",
+          "multivalued": true,
+          "range": "ValidationResult",
+          "@type": "SlotDefinition"
+        }
+      ],
+      "class_uri": "https://w3id.org/shacl/ValidationReport",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "ValidationResult",
+      "definition_uri": "https://w3id.org/linkml/reportValidationResult",
+      "description": "An individual result arising from validation of a data instance using a particular rule",
+      "from_schema": "https://w3id.org/linkml/reporting",
+      "mappings": [
+        "sh:ValidationResult"
+      ],
+      "slots": [
+        "type",
+        "severity",
+        "subject",
+        "instantiates",
+        "predicate",
+        "object",
+        "object_str",
+        "node_source",
+        "info"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/shacl/ValidationResult",
+      "@type": "ClassDefinition"
+    }
+  ],
+  "metamodel_version": "1.7.0",
+  "source_file": "validation.yaml",
+  "source_file_date": "2022-07-14T00:55:10",
+  "source_file_size": 2953,
+  "generation_date": "2022-07-14T00:56:06",
+  "@type": "SchemaDefinition",
+  "@context": [
+    "https://w3id.org/linkml/types.context.jsonld",
+    {
+      "@base": "https://w3id.org/linkml/report"
+    }
+  ]
+}
+

@@ -1,0 +1,74 @@
+{
+   "_comments": "Auto generated from units.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-07-14T00:56:11\n    Schema: units\n    metamodel version: 1.7.0\n    model version: None\n    \n    id: https://w3id.org/linkml/units\n    description: Units datamodel\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "@context": {
+      "IAO": {
+         "@id": "http://purl.obolibrary.org/obo/IAO_",
+         "@prefix": true
+      },
+      "OIO": "http://www.geneontology.org/formats/oboInOwl#",
+      "linkml": "https://w3id.org/linkml/",
+      "qudt": "http://qudt.org/schema/qudt/",
+      "skos": "http://www.w3.org/2004/02/skos/core#",
+      "@vocab": "https://w3id.org/linkml/",
+      "annotations": {
+         "@type": "@id"
+      },
+      "broad_mappings": {
+         "@type": "@id",
+         "@id": "skos:broadMatch"
+      },
+      "close_mappings": {
+         "@type": "@id",
+         "@id": "skos:closeMatch"
+      },
+      "deprecated_element_has_exact_replacement": {
+         "@type": "@id"
+      },
+      "deprecated_element_has_possible_replacement": {
+         "@type": "@id"
+      },
+      "exact_mappings": {
+         "@type": "@id",
+         "@id": "skos:exactMatch"
+      },
+      "tag": {
+         "@type": "@id"
+      },
+      "extensions": {
+         "@type": "@id"
+      },
+      "has_quantity_kind": {
+         "@type": "@id",
+         "@id": "qudt:hasQuantityKind"
+      },
+      "iec61360code": {
+         "@id": "qudt:iec61360Code"
+      },
+      "mappings": {
+         "@type": "@id",
+         "@id": "skos:mappingRelation"
+      },
+      "narrow_mappings": {
+         "@type": "@id",
+         "@id": "skos:narrowMatch"
+      },
+      "related_mappings": {
+         "@type": "@id",
+         "@id": "skos:relatedMatch"
+      },
+      "symbol": {
+         "@id": "qudt:symbol"
+      },
+      "ucum_code": {
+         "@id": "qudt:ucumCode"
+      },
+      "unit": {
+         "@type": "@id",
+         "@id": "qudt:unit"
+      },
+      "UnitOfMeasure": {
+         "@id": "qudt:Unit"
+      }
+   }
+}
+

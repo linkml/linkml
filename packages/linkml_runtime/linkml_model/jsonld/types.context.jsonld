@@ -1,0 +1,10 @@
+{
+   "_comments": "Auto generated from types.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-07-14T00:56:09\n    Schema: types\n    metamodel version: 1.7.0\n    model version: 2.0.0\n    \n    id: https://w3id.org/linkml/types\n    description: Shared type definitions for the core LinkML mode and metamodel\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "@context": {
+      "linkml": "https://w3id.org/linkml/",
+      "shex": "http://www.w3.org/ns/shex#",
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "@vocab": "https://w3id.org/linkml/"
+   }
+}
+
