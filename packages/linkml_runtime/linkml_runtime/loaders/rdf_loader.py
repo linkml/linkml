@@ -1,3 +1,4 @@
+import json
 from typing import Optional, TextIO, Union
 
 from hbreader import FileInfo
