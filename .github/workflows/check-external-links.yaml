@@ -27,7 +27,7 @@ jobs:
           version: ${{ env.UV_VERSION }}
 
       - name: Install docs dependencies
-        run: uv sync --all-packages --group docs
+        run: uv sync
 
       - name: Build documentation.
         run: |
