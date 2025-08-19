@@ -32,7 +32,6 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
-include = ["linkml_runtime"]
 requires-python = ">=3.9"
 dynamic = ["version"]
 dependencies = [
@@ -238,7 +237,6 @@ fallback-version = "0.0.0"
 source = "uv-dynamic-versioning"
 
 [tool.hatch.build.targets.wheel]
-packages = ["."]
 
 [tool.hatch.build.targets.sdist]
 include = ["**/*"]
