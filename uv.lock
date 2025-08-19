@@ -8,6 +8,12 @@ resolution-markers = [
     "python_full_version < '3.10'",
 ]
 
+[manifest]
+members = [
+    "linkml",
+    "linkml-runtime",
+]
+
 [[package]]
 name = "alabaster"
 version = "0.7.16"
@@ -1953,7 +1959,7 @@ requires-dist = [
     { name = "jinja2", specifier = ">=3.1.0" },
     { name = "jsonasobj2", specifier = ">=1.0.3,<2.0.0" },
     { name = "jsonschema", extras = ["format"], specifier = ">=4.0.0" },
-    { name = "linkml-runtime", specifier = ">=1.9.5,<2.0.0" },
+    { name = "linkml-runtime", editable = "packages/linkml_runtime" },
     { name = "openpyxl" },
     { name = "parse" },
     { name = "prefixcommons", specifier = ">=0.1.7" },
@@ -2034,8 +2040,7 @@ typing = [{ name = "numpydantic", specifier = ">=1.6.1" }]
 
 [[package]]
 name = "linkml-runtime"
-version = "1.9.5"
-source = { registry = "https://pypi.org/simple" }
+source = { editable = "packages/linkml_runtime" }
 dependencies = [
     { name = "click" },
     { name = "curies" },
@@ -2052,9 +2057,44 @@ dependencies = [
     { name = "rdflib" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e0/38/38ac19a5b81982f03709cda0a008327dc775d11f008d0cbdc0f2a5389e24/linkml_runtime-1.9.5.tar.gz", hash = "sha256:78dc1383adf11ad5f20bb11b6adde56ed566fbd2429a292d57699ad4596c738a", size = 480288, upload-time = "2025-08-15T22:22:51.098Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/34/28/cdcbe1f0521a98b891dd30249513eef1ddcc7bb406be953b4a8d7825e68f/linkml_runtime-1.9.5-py3-none-any.whl", hash = "sha256:fece3e8aa25a4246165c6528b6a7fe83a929b985d2ce1951cc8a0f4da1a30b90", size = 576405, upload-time = "2025-08-15T22:22:49.264Z" },
+
+[package.optional-dependencies]
+dev = [
+    { name = "coverage" },
+    { name = "requests-cache" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "coverage" },
+    { name = "requests-cache" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "click" },
+    { name = "coverage", marker = "extra == 'dev'" },
+    { name = "curies", specifier = ">=0.5.4" },
+    { name = "deprecated" },
+    { name = "hbreader" },
+    { name = "isodate", marker = "python_full_version < '3.11'", specifier = ">=0.7.2,<1.0.0" },
+    { name = "json-flattener", specifier = ">=0.1.9" },
+    { name = "jsonasobj2", specifier = "==1.*,>=1.0.0,>=1.0.4" },
+    { name = "jsonschema", specifier = ">=3.2.0" },
+    { name = "prefixcommons", specifier = ">=0.1.12" },
+    { name = "prefixmaps", specifier = ">=0.1.4" },
+    { name = "pydantic", specifier = ">=1.10.2,<3.0.0" },
+    { name = "pyyaml" },
+    { name = "rdflib", specifier = ">=6.0.0" },
+    { name = "requests" },
+    { name = "requests-cache", marker = "extra == 'dev'" },
+]
+provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "coverage", specifier = ">=6.2" },
+    { name = "requests-cache", specifier = ">=1.2.0" },
 ]
 
 [[package]]
