@@ -1,10 +1,10 @@
 import unittest
 
 from linkml_runtime.loaders import json_loader, yaml_loader
-from tests.test_loaders_dumpers.environment import env
-from tests.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
-from tests.test_loaders_dumpers.models.books_normalized_pydantic import BookSeries
-from tests.test_loaders_dumpers.models.kitchen_sink_pydantic import Dataset
+from tests.linkml_runtime.test_loaders_dumpers.environment import env
+from tests.linkml_runtime.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
+from tests.linkml_runtime.test_loaders_dumpers.models.books_normalized_pydantic import BookSeries
+from tests.linkml_runtime.test_loaders_dumpers.models.kitchen_sink_pydantic import Dataset
 
 
 class PydanticLoadersUnitTest(LoaderDumperTestCase):

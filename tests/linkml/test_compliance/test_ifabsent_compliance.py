@@ -4,7 +4,7 @@
 
 import pytest
 
-from tests.test_compliance.helper import (
+from tests.linkml.test_compliance.helper import (
     JSON_SCHEMA,
     OWL,
     PANDERA_POLARS_CLASS,
@@ -16,7 +16,7 @@ from tests.test_compliance.helper import (
     check_data,
     validated_schema,
 )
-from tests.test_compliance.test_compliance import CLASS_C, CLASS_D, CORE_FRAMEWORKS, ENUM_E, PV_1, SLOT_ID, SLOT_S1
+from tests.linkml.test_compliance.test_compliance import CLASS_C, CLASS_D, CORE_FRAMEWORKS, ENUM_E, PV_1, SLOT_ID, SLOT_S1
 
 FUZZ_STR = "a b_c!@#$%^&*_+{}|:<>?[]()'\""
 

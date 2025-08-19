@@ -1,6 +1,6 @@
 from linkml_runtime.utils.pattern import PatternResolver, generate_patterns
 from linkml_runtime.utils.schemaview import SchemaView
-from tests.test_utils.environment import env
+from tests.linkml_runtime.test_utils.environment import env
 
 
 def test_generate_patterns():

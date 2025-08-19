@@ -4,7 +4,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 from typing import Optional
 
-from tests.support.filters import ldcontext_metadata_filter
+from tests.linkml_runtime.support.filters import ldcontext_metadata_filter
 
 
 def make_and_clear_directory(dirbase: str) -> None:

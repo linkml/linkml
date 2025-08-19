@@ -4,7 +4,7 @@ import logging
 # Global testing control variables
 import os
 
-from tests.support.test_environment import MismatchAction
+from tests.linkml_runtime.support.test_environment import MismatchAction
 
 # ---------------------------------------------------------------
 #                DO NOT change this file.

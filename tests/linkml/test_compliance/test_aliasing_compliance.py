@@ -12,7 +12,7 @@ import rdflib
 from rdflib import URIRef
 
 from linkml.reporting.model import RDF, RDFS
-from tests.test_compliance.helper import (
+from tests.linkml.test_compliance.helper import (
     JSONLD_CONTEXT,
     OWL,
     PYDANTIC,
@@ -21,7 +21,7 @@ from tests.test_compliance.helper import (
     check_data,
     validated_schema,
 )
-from tests.test_compliance.test_compliance import (
+from tests.linkml.test_compliance.test_compliance import (
     CLASS_C,
     CORE_FRAMEWORKS,
     ENUM_E,

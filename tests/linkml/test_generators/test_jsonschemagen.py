@@ -13,7 +13,7 @@ from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition, SlotD
 from linkml_runtime.loaders import yaml_loader
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
-from tests.test_generators.test_pythongen import make_python
+from tests.linkml.test_generators.test_pythongen import make_python
 
 logger = logging.getLogger(__name__)
 

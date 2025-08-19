@@ -10,8 +10,8 @@ from linkml_runtime.utils.inference_utils import (
     infer_slot_value,
 )
 from linkml_runtime.utils.schemaview import SchemaView
-from tests.test_utils import INPUT_DIR
-from tests.test_utils.model.inference_example import AgeEnum, Container, Evil, Person, Relationship
+from tests.linkml_runtime.test_utils import INPUT_DIR
+from tests.linkml_runtime.test_utils.model.inference_example import AgeEnum, Container, Evil, Person, Relationship
 
 SCHEMA = os.path.join(INPUT_DIR, "inference-example.yaml")
 

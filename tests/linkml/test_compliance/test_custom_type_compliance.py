@@ -3,7 +3,7 @@ import sys
 import pytest
 from linkml_runtime.utils.formatutils import camelcase
 
-from tests.test_compliance.helper import (
+from tests.linkml.test_compliance.helper import (
     JSON_SCHEMA,
     OWL,
     PANDERA_POLARS_CLASS,
@@ -16,7 +16,7 @@ from tests.test_compliance.helper import (
     metamodel_schemaview,
     validated_schema,
 )
-from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
+from tests.linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
 
 
 # TODO: consider merging into normal type test

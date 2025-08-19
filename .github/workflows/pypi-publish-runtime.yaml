@@ -1,4 +1,4 @@
-name: Publish Python Package
+name: Publish linkml-runtime to PyPI
 # Upload to PyPI is triggered by creating & publishing a release in GitHub UI
 env:
   UV_VERSION: "0.7.13"
@@ -6,13 +6,26 @@ on:
   release:
     # Trigger the workflow only for real releases but not for draft releases
     types: [created]
+  workflow_dispatch:
+    inputs:
+      package:
+        description: "Which package to publish"
+        required: true
+        default: "linkml-runtime"
+        type: choice
+        options:
+          - linkml-runtime
+          - skip
 
 jobs:
   build:
-    name: Build Python 🐍 distributions 📦 for publishing to PyPI
+    name: Build linkml-runtime 📦 for publishing to PyPI
+    if: |
+      (github.event_name == 'release' && startsWith(github.event.release.tag_name, 'runtime-v')) ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.package == 'linkml-runtime')
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4.2.2
+    - uses: actions/checkout@v5
       with:
         # Checkout the code including tags required for dynamic versioning
         fetch-depth: 0
@@ -25,21 +38,21 @@ jobs:
     - name: Install uv
       uses: astral-sh/setup-uv@v6
       with:
-        enable-cache: true
         version: ${{ env.UV_VERSION }}
 
-    - name: Build source and wheel archives
+    - name: Build linkml-runtime source and wheel archives
+      working-directory: packages/linkml_runtime
       run: |
         uv build
 
     - name: Store built distribution
       uses: actions/upload-artifact@v4.6.2
       with:
-        name: distribution-files
-        path: dist/
+        name: runtime-distribution-files
+        path: packages/linkml_runtime/dist/
 
   pypi-publish:
-    name: Build and publish Python 🐍 package 📦 to PyPI
+    name: Publish linkml-runtime 📦 to PyPI
     needs: build
     runs-on: ubuntu-latest
     # Uses trusted publishing. https://docs.pypi.org/trusted-publishers/adding-a-publisher/
@@ -50,13 +63,12 @@ jobs:
       id-token: write  # This permission is mandatory for trusted publishing.
     steps:
       - name: Download built distribution
-        uses: actions/download-artifact@v5.0.0
+        uses: actions/download-artifact@v4.3.0
         with:
-          name: distribution-files
+          name: runtime-distribution-files
           path: dist
 
       - name: Publish package 📦 to PyPI
-        if: github.event_name == 'release'
         uses: pypa/gh-action-pypi-publish@v1.12.4
         with:
           verbose: true

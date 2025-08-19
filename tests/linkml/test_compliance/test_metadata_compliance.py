@@ -10,7 +10,7 @@ from copy import deepcopy
 
 import pytest
 
-from tests.test_compliance.helper import (
+from tests.linkml.test_compliance.helper import (
     OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
@@ -18,7 +18,7 @@ from tests.test_compliance.helper import (
     check_data,
     validated_schema,
 )
-from tests.test_compliance.test_compliance import (
+from tests.linkml.test_compliance.test_compliance import (
     CLASS_C,
     CORE_FRAMEWORKS,
     ENUM_E,

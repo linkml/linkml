@@ -1,7 +1,7 @@
 import logging
 
 import tests
-from tests.test_compliance.helper import report
+from tests.linkml.test_compliance.helper import report
 
 logger = logging.getLogger(__name__)
 

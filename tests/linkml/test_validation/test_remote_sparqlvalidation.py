@@ -5,7 +5,7 @@ from linkml_runtime.dumpers import yaml_dumper
 
 from linkml.validators.sparqlvalidator import SparqlDataValidator
 from tests import SKIP_REMOTE_SPARQL_TESTS
-from tests.test_validation.environment import env
+from tests.linkml.test_validation.environment import env
 
 logger = logging.getLogger(__name__)
 

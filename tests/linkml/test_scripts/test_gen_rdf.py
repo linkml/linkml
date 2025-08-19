@@ -5,7 +5,7 @@ from linkml import LOCAL_METAMODEL_LDCONTEXT_FILE
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.rdfgen import cli
 
-from ..conftest import KITCHEN_SINK_PATH
+from tests.conftest import KITCHEN_SINK_PATH
 
 
 def test_help():

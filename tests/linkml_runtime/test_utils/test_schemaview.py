@@ -27,7 +27,7 @@ from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaops import roll_down, roll_up
 from linkml_runtime.utils.schemaview import SchemaUsage, SchemaView
-from tests.test_utils import INPUT_DIR
+from tests.linkml_runtime.test_utils import INPUT_DIR
 
 logger = logging.getLogger(__name__)
 

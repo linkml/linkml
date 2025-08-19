@@ -1,7 +1,7 @@
 import pytest
 from jsonasobj2 import JsonObj
 
-from tests.test_utils.input.inlined_as_dict import E, EInst
+from tests.linkml_runtime.test_utils.input.inlined_as_dict import E, EInst
 
 
 def test_empty_dict_forms():

@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker
 from linkml.utils.schema_builder import SchemaBuilder
 from linkml.utils.schema_fixer import SchemaFixer
 from linkml.utils.sqlutils import SQLStore
-from tests.utils.dict_comparator import compare_objs, compare_yaml
+from tests.linkml.utils.dict_comparator import compare_objs, compare_yaml
 
 
 def test_sqlite_store(person, person_python, tmp_outputs):

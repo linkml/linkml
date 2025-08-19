@@ -1,5 +1,5 @@
 from linkml.generators.javagen import JavaGenerator
-from tests.utils.fileutils import assert_file_contains
+from tests.linkml.utils.fileutils import assert_file_contains
 
 PACKAGE = "org.sink.kitchen"
 

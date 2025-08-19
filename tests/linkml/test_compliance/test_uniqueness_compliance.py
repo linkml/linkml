@@ -1,6 +1,6 @@
 import pytest
 
-from tests.test_compliance.helper import (
+from tests.linkml.test_compliance.helper import (
     JSON_SCHEMA,
     OWL,
     PANDERA_POLARS_CLASS,
@@ -11,7 +11,7 @@ from tests.test_compliance.helper import (
     check_data,
     validated_schema,
 )
-from tests.test_compliance.test_compliance import (
+from tests.linkml.test_compliance.test_compliance import (
     CLASS_C,
     CLASS_CONTAINER,
     CLASS_D,

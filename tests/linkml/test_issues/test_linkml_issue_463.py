@@ -23,7 +23,7 @@ def test_inlined(input_path):
     module = compile_python(pystr)
 
     # Uncomment these two lines for debugging
-    # from tests.test_issues.output.linkml_issue_463 import Container
+    # from tests.linkml.test_issues.output.linkml_issue_463 import Container
     # obj = yaml_loader.loads(data_str, target_class=Container)
     # TODO: this currently yields "TypeError: unhashable type: 'TypeObj'"
     obj = yaml_loader.loads(data_str, target_class=module.Container)

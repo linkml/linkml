@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from tests.test_notebooks import output_directory
+from tests.linkml.test_notebooks import output_directory
 
 logger = logging.getLogger(__name__)
 
@@ -33,8 +33,8 @@ def eval_test(target: str, import_module: str) -> None:
 @pytest.mark.parametrize(
     "test_name, import_module",
     [
-        ("examples.txt", "tests.test_notebooks.input.examples"),
-        ("inheritance.txt", "tests.test_notebooks.input.inheritance"),
+        ("examples.txt", "tests.linkml.test_notebooks.input.examples"),
+        ("inheritance.txt", "tests.linkml.test_notebooks.input.inheritance"),
     ],
 )
 def test_examples(test_name: str, import_module: str) -> None:
@@ -43,4 +43,4 @@ def test_examples(test_name: str, import_module: str) -> None:
 
 @pytest.mark.network
 def test_distributed_models() -> None:
-    eval_test("distributedmodels.txt", "tests.test_notebooks.input.distributedmodels")
+    eval_test("distributedmodels.txt", "tests.linkml.test_notebooks.input.distributedmodels")

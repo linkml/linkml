@@ -11,7 +11,7 @@ from sqlalchemy.sql.sqltypes import Boolean, Date, DateTime, Enum, Float, Intege
 from linkml.generators.sqltablegen import ORACLE_MAX_VARCHAR_LENGTH, SQLTableGenerator
 from linkml.utils.schema_builder import SchemaBuilder
 
-# from tests.test_generators.environment import env
+# from tests.linkml.test_generators.environment import env
 
 # SCHEMA = env.input_path("personinfo.yaml")
 # OUT_PATH = env.expected_path("personinfo.relational.yaml")

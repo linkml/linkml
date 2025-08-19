@@ -8,7 +8,7 @@ from rdflib import URIRef
 
 from linkml_runtime.utils.context_utils import map_import, merge_contexts, parse_import_map
 from linkml_runtime.utils.namespaces import Namespaces
-from tests.test_utils import META_BASE_URI, METAMODEL_CONTEXT_URI
+from tests.linkml_runtime.test_utils import META_BASE_URI, METAMODEL_CONTEXT_URI
 
 json_1 = '{ "ex": "http://example.org/test/", "ex2": "http://example.org/test2/" }'
 json_2 = '{ "foo": 17, "@context": { "ex": "http://example.org/test3/", "ex2": {"@id": "http://example.org/test4/" }}}'

@@ -6,8 +6,8 @@ from rdflib import SKOS, Literal, Namespace
 
 from linkml_runtime.dumpers import json_dumper, rdf_dumper, yaml_dumper
 from linkml_runtime.utils.yamlutils import as_json_object
-from tests.support.clicktestcase import ClickTestCase
-from tests.test_loaders_dumpers import (
+from tests.linkml_runtime.support.clicktestcase import ClickTestCase
+from tests.linkml_runtime.test_loaders_dumpers import (
     GITHUB_LD10_CONTEXT,
     GITHUB_LD11_CONTEXT,
     HTTP_TEST_PORT,
@@ -16,8 +16,8 @@ from tests.test_loaders_dumpers import (
     LD_11_SSL_SVR,
     LD_11_SVR,
 )
-from tests.test_loaders_dumpers.environment import env
-from tests.test_loaders_dumpers.models.termci_schema import ConceptReference, ConceptSystem, Package
+from tests.linkml_runtime.test_loaders_dumpers.environment import env
+from tests.linkml_runtime.test_loaders_dumpers.models.termci_schema import ConceptReference, ConceptSystem, Package
 
 OBO = Namespace("http://purl.obolibrary.org/obo/")
 NCIT = Namespace("http://purl.obolibrary.org/obo/NCI_")
@@ -138,7 +138,7 @@ def test_rdf_dumper(test_package):
 @pytest.mark.skip(reason="Waiting until PyLD learns to handle relative context URI's")
 def test_nested_contexts(test_package):
     """Test JSON-LD with fully nested contexts"""
-    from tests.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
+    from tests.linkml_runtime.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
 
     context_servers = []
     for possible_server in [LD_11_SVR, LD_11_SSL_SVR]:

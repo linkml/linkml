@@ -6,11 +6,11 @@ Tests for annotation compliance.
 
 import pytest
 
-from tests.test_compliance.helper import (
+from tests.linkml.test_compliance.helper import (
     check_data,
     validated_schema,
 )
-from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
+from tests.linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
 
 
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)

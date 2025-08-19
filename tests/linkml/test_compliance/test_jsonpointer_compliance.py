@@ -1,13 +1,13 @@
 import pytest
 
-from tests.test_compliance.helper import (
+from tests.linkml.test_compliance.helper import (
     PANDERA_POLARS_CLASS,
     SHACL,
     ValidationBehavior,
     check_data,
     validated_schema,
 )
-from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_ID
+from tests.linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_ID
 
 
 @pytest.mark.parametrize(

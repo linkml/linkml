@@ -3,8 +3,8 @@ import json
 import pytest
 
 from linkml.generators import ContextGenerator, JSONLDGenerator
-from tests.utils.compare_jsonld_context import CompareJsonldContext
-from tests.utils.validate_jsonld_context import RdfExpectations
+from tests.linkml.utils.compare_jsonld_context import CompareJsonldContext
+from tests.linkml.utils.validate_jsonld_context import RdfExpectations
 
 
 def test_jsonld_context_integration(kitchen_sink_path, snapshot_path):

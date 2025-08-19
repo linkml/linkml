@@ -3,7 +3,7 @@
 import pytest
 import rdflib
 
-from tests.test_compliance.helper import (
+from tests.linkml.test_compliance.helper import (
     JAVA,
     JSON_SCHEMA,
     JSONLD_CONTEXT,

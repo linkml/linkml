@@ -7,7 +7,7 @@ from linkml_runtime.processing.referencevalidator import (
     ReferenceValidator,
 )
 from linkml_runtime.utils.schemaview import SchemaView
-from tests.test_processing import INPUT_DIR
+from tests.linkml_runtime.test_processing import INPUT_DIR
 
 
 @pytest.fixture

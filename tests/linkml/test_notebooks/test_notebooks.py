@@ -7,12 +7,12 @@ import nbformat
 import pytest
 from nbconvert.preprocessors import ExecutePreprocessor
 
-from tests.environment import env
-from tests.test_notebooks.environment import nbenv
-from tests.utils.filters import nb_filter
+from tests.linkml.test_notebooks.environment import env
+from tests.linkml.test_notebooks.environment import nbenv
+from tests.linkml.utils.filters import nb_filter
 
 FORCE_REWRITE = True
-NBBASEDIR = os.path.join(env.cwd, "..", "notebooks")
+NBBASEDIR = os.path.join(env.cwd, "..", "..", "..", "notebooks")
 
 
 @pytest.fixture

@@ -5,11 +5,11 @@ from urllib.parse import urlparse
 from hbreader import FileInfo, hbread
 from pydantic import BaseModel
 
-import tests.environment as test_base
+import tests.linkml_runtime.environment as test_base
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.yamlutils import YAMLRoot
-from tests.support.test_environment import TestEnvironment, TestEnvironmentTestCase
+from tests.linkml_runtime.support.test_environment import TestEnvironment, TestEnvironmentTestCase
 
 
 class LoaderDumperTestCase(TestEnvironmentTestCase):
@@ -66,11 +66,11 @@ class LoaderDumperTestCase(TestEnvironmentTestCase):
         # Make sure metadata gets filled out properly
         rel_path = os.path.abspath(os.path.join(test_base.env.cwd, ".."))
         self.assertEqual(
-            os.path.normpath("tests/test_loaders_dumpers/input"),
+            os.path.normpath("linkml_runtime/test_loaders_dumpers/input"),
             os.path.normpath(os.path.relpath(metadata.base_path, rel_path)),
         )
         self.assertEqual(
-            os.path.normpath(f"tests/test_loaders_dumpers/input/{filename}"),
+            os.path.normpath(f"linkml_runtime/test_loaders_dumpers/input/{filename}"),
             os.path.normpath(os.path.relpath(metadata.source_file, rel_path)),
         )
 

@@ -10,8 +10,8 @@ from copy import deepcopy
 import pytest
 from rdflib import OWL, RDF
 
-import tests.test_compliance.helper as helper
-from tests.test_compliance.helper import (
+import tests.linkml.test_compliance.helper as helper
+from tests.linkml.test_compliance.helper import (
     JSON_SCHEMA,
     PANDERA_POLARS_CLASS,
     PYDANTIC,
@@ -23,7 +23,7 @@ from tests.test_compliance.helper import (
     generate_tree,
     validated_schema,
 )
-from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, ENUM_E, EXAMPLE_NS, SLOT_S1
+from tests.linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, ENUM_E, EXAMPLE_NS, SLOT_S1
 
 
 @pytest.mark.parametrize("include_meaning", [True, False])

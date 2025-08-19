@@ -11,12 +11,12 @@ from io import StringIO
 from pathlib import Path
 from typing import Callable, Optional, Union
 
-from tests.support.dirutils import are_dir_trees_equal
-from tests.support.mismatchlog import MismatchLog
+from tests.linkml_runtime.support.dirutils import are_dir_trees_equal
+from tests.linkml_runtime.support.mismatchlog import MismatchLog
 
 
 def no_click_exit(_self, code=0):
-    from tests import CLIExitException
+    from tests.linkml_runtime import CLIExitException
 
     raise CLIExitException(code)
 
@@ -51,17 +51,26 @@ class TestEnvironment:
         parent = Path(self.cwd).parts[-2]
         if parent.startswith("test"):
             parent_env = import_module("..environment", __package__)
-            self.import_map = parent_env.env.import_map
-            self.mismatch_action = parent_env.env.mismatch_action
-            self.root_input_path = parent_env.env.root_input_path
-            self.root_expected_path = parent_env.env.root_expected_path
-            self.root_temp_file_path = parent_env.env.root_temp_file_path
-            self._log = parent_env.env._log
+            if hasattr(parent_env, 'env'):
+                self.import_map = getattr(parent_env.env, "import_map", None)
+                self.mismatch_action = parent_env.env.mismatch_action
+                self.root_input_path = parent_env.env.root_input_path
+                self.root_expected_path = parent_env.env.root_expected_path
+                self.root_temp_file_path = parent_env.env.root_temp_file_path
+                self._log = parent_env.env._log
+            else:
+                # During initialization, set defaults
+                self.import_map = None
+                self.mismatch_action = MismatchAction.Report
+                self.root_input_path = self.indir
+                self.root_expected_path = self.outdir
+                self.root_temp_file_path = self.tempdir
+                self._log = MismatchLog()
         else:
-            from tests import USE_LOCAL_IMPORT_MAP
+            from tests.linkml_runtime import USE_LOCAL_IMPORT_MAP
 
             self.import_map = self.input_path("local_import_map.json") if USE_LOCAL_IMPORT_MAP else None
-            from tests import DEFAULT_MISMATCH_ACTION
+            from tests.linkml_runtime import DEFAULT_MISMATCH_ACTION
 
             self.mismatch_action = DEFAULT_MISMATCH_ACTION
             self.root_input_path = self.input_path
@@ -219,7 +228,7 @@ class TestEnvironment:
             actual = generator()
         else:
             outf = StringIO()
-            from tests import CLIExitException
+            from tests.linkml_runtime import CLIExitException
 
             with contextlib.redirect_stdout(outf):
                 try:

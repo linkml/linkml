@@ -4,7 +4,7 @@ import pytest
 
 from linkml_runtime.utils.ruleutils import get_range_as_disjunction, subclass_to_rules
 from linkml_runtime.utils.schemaview import SchemaView
-from tests.test_utils import INPUT_DIR
+from tests.linkml_runtime.test_utils import INPUT_DIR
 
 
 @pytest.fixture

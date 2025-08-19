@@ -7,7 +7,7 @@ from pyshex.evaluate import evaluate
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.shexgen import ShExGenerator
-from tests.test_generators.test_pythongen import make_python
+from tests.linkml.test_generators.test_pythongen import make_python
 
 
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="ShEx has issues with python 3.7 at the moment")

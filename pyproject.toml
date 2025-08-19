@@ -2,6 +2,12 @@
 requires = ["hatchling", "uv-dynamic-versioning"]
 build-backend = "hatchling.build"
 
+[tool.uv.workspace]
+members = [".", "packages/linkml_runtime"]
+
+[tool.uv.sources]
+linkml-runtime = { workspace = true }
+
 [project]
 name = "linkml"
 description = "Linked Open Data Modeling Language"
@@ -116,6 +122,7 @@ tests-extra = [
   "mock >= 5.1.0",
   "testcontainers == 3.7.1",
   "jsonpatch >= 1.33",
+  "docker >= 6.1.0",
 ]
 docs = [
   "furo >= 2023.03.27",
@@ -240,6 +247,10 @@ force-exclude = '''
 '''
 
 [tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
 filterwarnings = [
   # https://github.com/RDFLib/rdflib/issues/1830
   "ignore:.*_pytestfixturefunction is not defined in namespace:UserWarning"
@@ -355,3 +366,22 @@ fallback-version = "0.0.0"
 
 [tool.hatch.version]
 source = "uv-dynamic-versioning"
+
+[tool.coverage.run]
+source = ["linkml", "linkml_runtime"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "*/site-packages/*"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]

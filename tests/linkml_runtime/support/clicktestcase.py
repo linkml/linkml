@@ -4,9 +4,9 @@ import unittest
 from typing import Callable, Optional, Union
 from warnings import warn
 
-from tests.support.compare_rdf import compare_rdf
-from tests.support.dirutils import make_and_clear_directory
-from tests.support.test_environment import TestEnvironment, TestEnvironmentTestCase
+from tests.linkml_runtime.support.compare_rdf import compare_rdf
+from tests.linkml_runtime.support.dirutils import make_and_clear_directory
+from tests.linkml_runtime.support.test_environment import TestEnvironment, TestEnvironmentTestCase
 
 
 class ClickTestCase(TestEnvironmentTestCase):

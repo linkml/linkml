@@ -1,4 +1,4 @@
-name: Publish Python Package
+name: Publish linkml to PyPI
 # Upload to PyPI is triggered by creating & publishing a release in GitHub UI
 env:
   UV_VERSION: "0.7.13"
@@ -6,10 +6,23 @@ on:
   release:
     # Trigger the workflow only for real releases but not for draft releases
     types: [created]
+  workflow_dispatch:
+    inputs:
+      package:
+        description: "Which package to publish"
+        required: true
+        default: "linkml"
+        type: choice
+        options:
+          - linkml
+          - skip
 
 jobs:
   build:
-    name: Build Python 🐍 distributions 📦 for publishing to PyPI
+    name: Build linkml 📦 for publishing to PyPI
+    if: |
+      (github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v')) ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.package == 'linkml')
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
@@ -27,18 +40,18 @@ jobs:
       with:
         version: ${{ env.UV_VERSION }}
 
-    - name: Build source and wheel archives
+    - name: Build linkml source and wheel archives
       run: |
         uv build
 
     - name: Store built distribution
       uses: actions/upload-artifact@v4.6.2
       with:
-        name: distribution-files
+        name: linkml-distribution-files
         path: dist/
 
   pypi-publish:
-    name: Build and publish Python 🐍 package 📦 to PyPI
+    name: Publish linkml 📦 to PyPI
     needs: build
     runs-on: ubuntu-latest
     # Uses trusted publishing. https://docs.pypi.org/trusted-publishers/adding-a-publisher/
@@ -51,11 +64,10 @@ jobs:
       - name: Download built distribution
         uses: actions/download-artifact@v4.3.0
         with:
-          name: distribution-files
+          name: linkml-distribution-files
           path: dist
 
       - name: Publish package 📦 to PyPI
-        if: github.event_name == 'release'
         uses: pypa/gh-action-pypi-publish@v1.12.4
         with:
           verbose: true

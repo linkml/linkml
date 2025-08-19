@@ -7,7 +7,7 @@ from click.testing import CliRunner
 
 from linkml.generators import csvgen
 
-from ..conftest import KITCHEN_SINK_PATH
+from tests.conftest import KITCHEN_SINK_PATH
 
 
 def test_help():

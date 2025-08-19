@@ -6,11 +6,11 @@ from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.loaders import yaml_loader
 
-import tests.test_issues.model.issue_1104_classes
+import tests.linkml.test_issues.model.issue_1104_classes
 from linkml.generators.linkmlgen import LinkmlGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.utils.sqlutils import SQLStore
-from tests.test_issues.model.issue_1104_classes import Database
+from tests.linkml.test_issues.model.issue_1104_classes import Database
 
 
 @pytest.fixture
@@ -59,7 +59,7 @@ def test_dump_json(paths):
 
 def test_prepare_dump_sqlite(paths):
     endpoint = SQLStore(paths.SCHEMA, database_path=paths.DB, include_schema_in_database=False)
-    endpoint.native_module = tests.test_issues.model.issue_1104_classes
+    endpoint.native_module = tests.linkml.test_issues.model.issue_1104_classes
     endpoint.db_exists(force=True)
     endpoint.compile()
     yaml_loader.load(paths.DATA, target_class=Database)
@@ -68,7 +68,7 @@ def test_prepare_dump_sqlite(paths):
 
 def test_do_dump_sqlite(paths):
     endpoint = SQLStore(paths.SCHEMA, database_path=paths.DB, include_schema_in_database=False)
-    endpoint.native_module = tests.test_issues.model.issue_1104_classes
+    endpoint.native_module = tests.linkml.test_issues.model.issue_1104_classes
     endpoint.db_exists(force=True)
     endpoint.compile()
     database: Database = yaml_loader.load(paths.DATA, target_class=Database)

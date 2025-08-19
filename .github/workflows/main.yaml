@@ -1,7 +1,7 @@
-# Built from:
-# https://docs.github.com/en/actions/guides/building-and-testing-python
+# Unified CI workflow for linkml monorepo
+# Tests both linkml and linkml-runtime packages together
 
-name: Build and test linkml
+name: Build and test linkml monorepo
 env:
   UV_VERSION: "0.7.13"
 on:
@@ -82,21 +82,44 @@ jobs:
 
       - name: Install dependencies
         run: uv sync --all-groups
+
       - name: Setup Graphviz
         uses: ts-graphviz/setup-graphviz@v2
-      - name: Generate coverage results
+
+      # Test linkml package (excluding runtime tests)
+      - name: Test linkml package
         run: |
-          uv run coverage run -m pytest --with-slow --with-network
-          uv run coverage xml
+          uv run coverage run -m pytest tests/linkml/ --with-slow --with-network
+          uv run coverage xml -o coverage-linkml.xml
           uv run coverage report -m
         shell: bash
-      - name: Upload coverage report
+
+      # Test linkml-runtime package separately
+      - name: Test linkml-runtime package
+        run: |
+          uv run coverage run -m pytest tests/linkml_runtime/ --with-slow --with-network
+          uv run coverage xml -o coverage-linkml_runtime.xml
+          uv run coverage report -m
+        shell: bash
+
+      - name: Upload linkml coverage report
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
         uses: codecov/codecov-action@v5.4.3
         with:
-          name: codecov-results-${{ matrix.os }}-${{ matrix.python-version }}
+          name: codecov-linkml-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage.xml
+          files: coverage-linkml.xml
+          flags: linkml
+          fail_ci_if_error: true
+
+      - name: Upload runtime coverage report
+        if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
+        uses: codecov/codecov-action@v5.4.3
+        with:
+          name: codecov-runtime-${{ matrix.os }}-${{ matrix.python-version }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage-runtime.xml
+          flags: runtime
           fail_ci_if_error: true
 
   test_slow:
@@ -128,7 +151,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: uv sync --all-groups
-      - name: Generate coverage results
+      - name: Generate coverage results for slow tests
         # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668
         shell: bash
         run: |
@@ -144,8 +167,8 @@ jobs:
           files: coverage.xml
           fail_ci_if_error: true
 
-  test_build_package:
-    name: Test Build Package
+  test_build_packages:
+    name: Test Build Packages
     needs:
       - test
     runs-on: ubuntu-latest
@@ -164,5 +187,27 @@ jobs:
         uses: astral-sh/setup-uv@v6
         with:
           version: ${{ env.UV_VERSION }}
-      - name: Build source and wheel archives
+
+      # Build linkml package from root directory
+      - name: Build linkml package
         run: uv build
+
+      # Build linkml-runtime package from its directory
+      - name: Build linkml-runtime package
+        working-directory: packages/linkml_runtime
+        run: uv build
+
+      # Verify the built packages can be installed and imported
+      - name: Test installation of built wheels
+        run: |
+          # Create a fresh test environment
+          uv venv test-env
+
+          # Install the linkml wheel we just built
+          uv pip install --python test-env dist/linkml-*.whl
+
+          # Install the linkml-runtime wheel we just built
+          uv pip install --python test-env packages/linkml_runtime/dist/linkml_runtime-*.whl
+
+          # Verify both packages can be imported
+          uv run --python test-env python -c "import linkml; import linkml_runtime; print('✓ Both packages installed and imported successfully')"

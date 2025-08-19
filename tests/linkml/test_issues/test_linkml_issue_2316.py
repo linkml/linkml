@@ -1,7 +1,7 @@
 from linkml_runtime.loaders import yaml_loader
 
 from linkml.validator.validator import Validator
-from tests.test_generators.test_pythongen import make_python
+from tests.linkml.test_generators.test_pythongen import make_python
 
 
 def test_validate_person_instance_from_personinfo(input_path, personinfo_path):

@@ -10,7 +10,7 @@ from linkml.validators.jsonschemavalidator import (
     JsonSchemaDataValidatorError,
     _generate_jsonschema,
 )
-from tests.test_validation.environment import env
+from tests.linkml.test_validation.environment import env
 
 SCHEMA = env.input_path("kitchen_sink.yaml")
 DATASET_1 = env.input_path("Dataset-01.yaml")

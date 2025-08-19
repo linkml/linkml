@@ -9,7 +9,7 @@ import yaml
 
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.utils.yamlutils import DupCheckYamlLoader, TypedNode, YAMLRoot, from_yaml
-from tests.test_utils.environment import env
+from tests.linkml_runtime.test_utils.environment import env
 
 
 def test_yaml_load_with_dupes() -> None:

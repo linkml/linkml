@@ -10,7 +10,7 @@ Aliases include:
 import pytest
 import rdflib
 
-from tests.test_compliance.helper import (
+from tests.linkml.test_compliance.helper import (
     JSONLD_CONTEXT,
     PANDERA_POLARS_CLASS,
     SHACL,
@@ -19,7 +19,7 @@ from tests.test_compliance.helper import (
     check_data,
     validated_schema,
 )
-from tests.test_compliance.test_compliance import (
+from tests.linkml.test_compliance.test_compliance import (
     CLASS_C,
     CLASS_D,
     CLASS_D1,

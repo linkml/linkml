@@ -1,6 +1,6 @@
 from linkml_runtime.linkml_model.meta import SchemaDefinition
 from linkml_runtime.loaders import yaml_loader
-from tests.test_issues.environment import env
+from tests.linkml_runtime.test_issues.environment import env
 
 # https://github.com/linkml/linkml/issues/3
 

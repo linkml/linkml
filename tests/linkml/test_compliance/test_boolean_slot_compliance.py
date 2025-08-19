@@ -4,7 +4,7 @@ from typing import Optional
 
 import pytest
 
-from tests.test_compliance.helper import (
+from tests.linkml.test_compliance.helper import (
     JSON_SCHEMA,
     JSONLD_CONTEXT,
     OWL,
@@ -17,7 +17,7 @@ from tests.test_compliance.helper import (
     check_data,
     validated_schema,
 )
-from tests.test_compliance.test_compliance import (
+from tests.linkml.test_compliance.test_compliance import (
     CLASS_ANY,
     CLASS_C,
     CLASS_D,

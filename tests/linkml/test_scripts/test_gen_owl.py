@@ -5,7 +5,7 @@ from click.testing import CliRunner
 
 from linkml.generators.owlgen import cli
 
-from ..conftest import KITCHEN_SINK_PATH
+from tests.conftest import KITCHEN_SINK_PATH
 
 
 def test_help():

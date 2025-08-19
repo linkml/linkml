@@ -10,13 +10,13 @@ from typing import Any, Optional, Union
 import pytest
 import rdflib
 
-from tests.test_compliance.helper import (
+from tests.linkml.test_compliance.helper import (
     OWL,
     ValidationBehavior,
     check_data,
     validated_schema,
 )
-from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
+from tests.linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
 
 # use rdflib to create a namespace
 EX = rdflib.Namespace("http://example.org/")
