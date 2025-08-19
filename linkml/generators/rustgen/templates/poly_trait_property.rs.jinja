@@ -1,4 +1,4 @@
-{% set lifetime_needed = range.box_needed or range.containerType %}
+{% set lifetime_needed = range.containerType %}
     fn {{ name }}{% if lifetime_needed %}<'a>{% endif %}(&{% if lifetime_needed %}'a {% endif %}self) -> {{ type_getter }};
     // fn {{ name }}_mut(&mut self) -> &mut {{ type_getter }};
 {% if type_bound %}
