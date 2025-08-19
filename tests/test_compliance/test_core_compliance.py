@@ -820,8 +820,12 @@ def test_non_standard_names(framework, class_name, safe_class_name, slot_name, s
         ("E[x]", "[x]"),
         ("E", "[x]"),
         ("E", "a/b"),
+        # ("E", "a\nb"),  # TODO
         ("E", "a.b"),
-        ("E", "♥️"), # Unicode heart symbol
+        ("E", "a:b"),
+        ("E", "a#b"),
+        ("E", "a{b}"),
+        ("E", "♥️"),  # Unicode heart symbol
     ],
 )
 def test_non_standard_enum_names(framework, enum_name, pv_name):
