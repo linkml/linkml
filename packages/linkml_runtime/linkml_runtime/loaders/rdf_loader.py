@@ -85,7 +85,6 @@ class RDFLoader(Loader):
 
         # If the input is a graph, convert it to JSON-LD
         if isinstance(source, Graph):
-            source = pyld_jsonld_from_rdflib_graph(source)
             jsonld_str = source.serialize(format="json-ld", indent=4)
             source = json.loads(jsonld_str)
             fmt = "json-ld"
