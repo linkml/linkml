@@ -2,11 +2,11 @@ import os
 from copy import deepcopy
 
 from jsonasobj2 import as_dict
-
 from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.walker_utils import traverse_object_tree
 from linkml_runtime.utils.yamlutils import YAMLRoot
+
 from tests.linkml_runtime.test_utils import INPUT_DIR
 
 SCHEMA = os.path.join(INPUT_DIR, "kitchen_sink_noimports.yaml")

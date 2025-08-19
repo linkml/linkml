@@ -9,24 +9,17 @@ from pathlib import Path
 
 import pytest
 from jsonasobj2 import JsonObj
-
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import (
-    ClassDefinition,
-    ClassDefinitionName,
-    EnumDefinition,
-    Example,
-    Prefix,
-    SchemaDefinition,
-    SlotDefinition,
-    SlotDefinitionName,
-    SubsetDefinition,
-    TypeDefinition,
-)
+from linkml_runtime.linkml_model import (ClassDefinition, ClassDefinitionName,
+                                         EnumDefinition, Example, Prefix,
+                                         SchemaDefinition, SlotDefinition,
+                                         SlotDefinitionName, SubsetDefinition,
+                                         TypeDefinition)
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaops import roll_down, roll_up
 from linkml_runtime.utils.schemaview import SchemaUsage, SchemaView
+
 from tests.linkml_runtime.test_utils import INPUT_DIR
 
 logger = logging.getLogger(__name__)

@@ -44,9 +44,7 @@ jobs:
       # install dependencies
       #----------------------------------------------
       - name: Install dependencies
-        run: |
-          uv sync
-          uv pip list | grep linkml
+        run: uv sync --group docs --group lint
 
       - name: Build docs
         working-directory: docs
