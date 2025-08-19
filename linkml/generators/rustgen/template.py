@@ -60,12 +60,12 @@ class RustRange(BaseModel):
         if self.containerType == ContainerType.LIST:
             if not setter:
                 # tp = f"poly_containers::ListView<{tp}>"
-                tp = f"impl poly_containers::SeqRef<{tp}>"
+                tp = f"impl poly_containers::SeqRef<'a, {tp}>"
             else:
                 tp = f"&Vec<{tp}>"
         elif self.containerType == ContainerType.MAPPING:
             if not setter:
-                tp = f"impl poly_containers::MapRef<String,{tp}>"
+                tp = f"impl poly_containers::MapRef<'a, String,{tp}>"
             else:
                 tp = f"&HashMap<String, {tp}>"
         else:
