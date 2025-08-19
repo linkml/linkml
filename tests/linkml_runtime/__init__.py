@@ -1,10 +1,9 @@
 import configparser
-import logging
 
 # Global testing control variables
 import os
 
-from tests.linkml_runtime.support.test_environment import MismatchAction
+from tests.linkml_runtime.support.test_environment import MismatchAction as MismatchAction
 
 # ---------------------------------------------------------------
 #                DO NOT change this file.
