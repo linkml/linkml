@@ -225,7 +225,11 @@ ignore-words-list = [
   # and changes are propagated to linkml
   "GENERARE",
   "re-used",
-  "doesnt"
+  "doesnt",
+  # Additional runtime package exemptions
+  "ND",
+  "MILIARY",
+  "Miliary"
 ]
 quiet-level = 3
 
