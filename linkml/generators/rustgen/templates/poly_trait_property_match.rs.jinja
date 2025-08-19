@@ -1,4 +1,4 @@
-{% set lifetime_needed = range.box_needed or range.containerType %}
+{% set lifetime_needed = range.containerType %}
     fn {{ name}}{% if lifetime_needed %}<'a>{% endif %}(&{% if lifetime_needed %}'a {% endif %}self) -> {{ type_getter }} {
         match self {
             {% for c in cases %}
