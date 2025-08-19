@@ -1251,7 +1251,8 @@ class OwlSchemaGenerator(Generator):
             return URIRef(self.schemaview.expand_curie(pv.meaning))
         else:
             from urllib.parse import quote
-            encoded_text = quote(pv.text.strip(), safe='', encoding='utf-8')
+
+            encoded_text = quote(pv.text.strip(), safe="", encoding="utf-8")
             return URIRef(enum_uri + self.enum_iri_separator + encoded_text)
 
     def slot_owl_type(self, slot: SlotDefinition) -> URIRef:
