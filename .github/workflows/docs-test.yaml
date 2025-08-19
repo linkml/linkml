@@ -44,7 +44,7 @@ jobs:
       # install dependencies
       #----------------------------------------------
       - name: Install dependencies
-        run: uv sync --group docs --group lint
+        run: uv sync --all-packages --group docs --group lint
 
       - name: Build docs
         working-directory: docs
