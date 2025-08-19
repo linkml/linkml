@@ -1,0 +1,29 @@
+default_language_version:
+  python: python3
+# Specify files to exclude - pre-commit hook doesn't parse pyproject.toml
+exclude: linkml_runtime/linkml_model/.*
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+  - id: end-of-file-fixer
+    exclude: __snapshots__
+  - id: check-yaml
+    exclude: test_utils/input/yaml
+  - id: check-toml
+  - id: trailing-whitespace
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  # Ensure this version stays in sync with tox.ini
+  rev: v0.11.13
+  hooks:
+  # Run the linter.
+  - id: ruff-check
+    args: [--fix, --exit-non-zero-on-fix]
+  # Run the formatter.
+  - id: ruff-format
+- repo: https://github.com/codespell-project/codespell
+  rev: v2.4.1
+  hooks:
+  - id: codespell
+    additional_dependencies:
+      - tomli
