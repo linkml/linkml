@@ -139,13 +139,13 @@ def test_bool():
     assert not Bool(Bool(0))
     # Strict mode
     with pytest.raises(ValueError):
-        x = Bool(17)
+        Bool(17)
     with pytest.raises(ValueError):
-        x = Bool("a")
+        Bool("a")
     lax()
-    x = Bool(17)
+    Bool(17)
     assert not Bool.is_valid(17)
-    x = Bool("a")
+    Bool("a")
     assert not Bool.is_valid("a")
     assert Bool.is_valid(True)
     assert Bool.is_valid(Bool(True))

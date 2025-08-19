@@ -28,13 +28,10 @@ jobs:
         run: uv lock --check
       - name: Install tox
         run: python -m pip install tox
-      - name: Run pre-commit checks for linkml
+      - name: Run pre-commit checks
         uses: pre-commit/action@v3.0.1
         with:
-          extra_args: --all-files --config .pre-commit-config.yaml
-      - name: Run pre-commit checks for linkml-runtime
-        run: pre-commit run --all-files
-        working-directory: packages/linkml_runtime
+          extra_args: --all-files
 
   test:
     needs:

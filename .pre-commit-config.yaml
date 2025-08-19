@@ -1,7 +1,7 @@
 default_language_version:
   python: python3
 # Specify files to exclude - pre-commit hook doesn't parse pyproject.toml
-exclude: tests/data/hp.ttl|tests/data/hp_f.ttl|.*\.svg|jsonschema_value_constraints.yaml|packages/linkml_runtime/.*|tests/linkml_runtime/.*
+exclude: tests.*/data/hp.*\.ttl|.*\.svg|jsonschema_value_constraints.yaml|tests/linkml_runtime/test_loaders_dumpers/models/phenopackets.py|tests/linkml_runtime/.*\.yaml|tests/linkml_runtime/support/clicktestcase.py
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.4.0
@@ -22,10 +22,8 @@ repos:
   # Run the linter.
   - id: ruff-check
     args: [--fix, --exit-non-zero-on-fix]
-    exclude: ^(packages/linkml_runtime/|tests/linkml_runtime/)
   # Run the formatter.
   - id: ruff-format
-    exclude: ^(packages/linkml_runtime/|tests/linkml_runtime/)
 - repo: https://github.com/codespell-project/codespell
   rev: v2.4.1
   hooks:

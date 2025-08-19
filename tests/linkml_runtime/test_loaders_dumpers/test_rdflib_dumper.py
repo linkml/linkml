@@ -281,7 +281,7 @@ def _check_objs(view: SchemaView, container: Container):
     p2: Person
     emp = p2.has_employment_history[0]
     assert emp.started_at_time == "2019-01-01"
-    assert emp.is_current == True
+    assert emp.is_current is True
     assert emp.employed_at == o1.id
     frel = p2.has_familial_relationships[0]
     assert frel.related_to == p1.id

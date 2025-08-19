@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel as BaseModel
 from pydantic import Field
@@ -54,11 +54,11 @@ class LifeStatusEnum(str, Enum):
 
 
 class HasAliases(ConfiguredBaseModel):
-    aliases: Optional[list[str]] = Field(default_factory=list)
+    aliases: list[str] | None = Field(default_factory=list)
 
 
 class Friend(ConfiguredBaseModel):
-    name: Optional[str] = Field(None)
+    name: str | None = Field(None)
 
 
 class Person(HasAliases):
@@ -66,18 +66,18 @@ class Person(HasAliases):
     A person, living or dead
     """
 
-    id: Optional[str] = Field(None)
-    name: Optional[str] = Field(None)
-    has_employment_history: Optional[list[EmploymentEvent]] = Field(None)
-    has_familial_relationships: Optional[list[FamilialRelationship]] = Field(None)
-    has_medical_history: Optional[list[MedicalEvent]] = Field(None)
-    age_in_years: Optional[int] = Field(None, description="""number of years since birth""", ge=0, le=999)
-    addresses: Optional[list[Address]] = Field(default_factory=list)
-    has_birth_event: Optional[BirthEvent] = Field(None)
-    species_name: Optional[str] = Field(None)
-    stomach_count: Optional[int] = Field(None)
-    is_living: Optional[LifeStatusEnum] = Field(None)
-    aliases: Optional[list[str]] = Field(default_factory=list)
+    id: str | None = Field(None)
+    name: str | None = Field(None)
+    has_employment_history: list[EmploymentEvent] | None = Field(None)
+    has_familial_relationships: list[FamilialRelationship] | None = Field(None)
+    has_medical_history: list[MedicalEvent] | None = Field(None)
+    age_in_years: int | None = Field(None, description="""number of years since birth""", ge=0, le=999)
+    addresses: list[Address] | None = Field(default_factory=list)
+    has_birth_event: BirthEvent | None = Field(None)
+    species_name: str | None = Field(None)
+    stomach_count: int | None = Field(None)
+    is_living: LifeStatusEnum | None = Field(None)
+    aliases: list[str] | None = Field(default_factory=list)
 
 
 class Organization(HasAliases):
@@ -94,137 +94,137 @@ class Organization(HasAliases):
      * list
     """
 
-    id: Optional[str] = Field(None)
-    name: Optional[str] = Field(None)
-    aliases: Optional[list[str]] = Field(default_factory=list)
+    id: str | None = Field(None)
+    name: str | None = Field(None)
+    aliases: list[str] | None = Field(default_factory=list)
 
 
 class Place(HasAliases):
-    id: Optional[str] = Field(None)
-    name: Optional[str] = Field(None)
-    aliases: Optional[list[str]] = Field(default_factory=list)
+    id: str | None = Field(None)
+    name: str | None = Field(None)
+    aliases: list[str] | None = Field(default_factory=list)
 
 
 class Address(ConfiguredBaseModel):
-    street: Optional[str] = Field(None)
-    city: Optional[str] = Field(None)
+    street: str | None = Field(None)
+    city: str | None = Field(None)
 
 
 class Concept(ConfiguredBaseModel):
-    id: Optional[str] = Field(None)
-    name: Optional[str] = Field(None)
-    in_code_system: Optional[str] = Field(None)
+    id: str | None = Field(None)
+    name: str | None = Field(None)
+    in_code_system: str | None = Field(None)
 
 
 class DiagnosisConcept(Concept):
-    id: Optional[str] = Field(None)
-    name: Optional[str] = Field(None)
-    in_code_system: Optional[str] = Field(None)
+    id: str | None = Field(None)
+    name: str | None = Field(None)
+    in_code_system: str | None = Field(None)
 
 
 class ProcedureConcept(Concept):
-    id: Optional[str] = Field(None)
-    name: Optional[str] = Field(None)
-    in_code_system: Optional[str] = Field(None)
+    id: str | None = Field(None)
+    name: str | None = Field(None)
+    in_code_system: str | None = Field(None)
 
 
 class Event(ConfiguredBaseModel):
-    started_at_time: Optional[date] = Field(None)
-    ended_at_time: Optional[date] = Field(None)
-    is_current: Optional[bool] = Field(None)
-    metadata: Optional[Any] = Field(None, description="""Example of a slot that has an unconstrained range""")
+    started_at_time: date | None = Field(None)
+    ended_at_time: date | None = Field(None)
+    is_current: bool | None = Field(None)
+    metadata: Any | None = Field(None, description="""Example of a slot that has an unconstrained range""")
 
 
 class Relationship(ConfiguredBaseModel):
-    started_at_time: Optional[date] = Field(None)
-    ended_at_time: Optional[date] = Field(None)
-    related_to: Optional[str] = Field(None)
-    type: Optional[str] = Field(None)
+    started_at_time: date | None = Field(None)
+    ended_at_time: date | None = Field(None)
+    related_to: str | None = Field(None)
+    type: str | None = Field(None)
 
 
 class FamilialRelationship(Relationship):
-    started_at_time: Optional[date] = Field(None)
-    ended_at_time: Optional[date] = Field(None)
+    started_at_time: date | None = Field(None)
+    ended_at_time: date | None = Field(None)
     related_to: str = Field(...)
     type: FamilialRelationshipType = Field(...)
 
 
 class BirthEvent(Event):
-    in_location: Optional[str] = Field(None)
-    started_at_time: Optional[date] = Field(None)
-    ended_at_time: Optional[date] = Field(None)
-    is_current: Optional[bool] = Field(None)
-    metadata: Optional[Any] = Field(None, description="""Example of a slot that has an unconstrained range""")
+    in_location: str | None = Field(None)
+    started_at_time: date | None = Field(None)
+    ended_at_time: date | None = Field(None)
+    is_current: bool | None = Field(None)
+    metadata: Any | None = Field(None, description="""Example of a slot that has an unconstrained range""")
 
 
 class EmploymentEvent(Event):
-    employed_at: Optional[str] = Field(None)
-    type: Optional[EmploymentEventType] = Field(None)
-    started_at_time: Optional[date] = Field(None)
-    ended_at_time: Optional[date] = Field(None)
-    is_current: Optional[bool] = Field(None)
-    metadata: Optional[Any] = Field(None, description="""Example of a slot that has an unconstrained range""")
+    employed_at: str | None = Field(None)
+    type: EmploymentEventType | None = Field(None)
+    started_at_time: date | None = Field(None)
+    ended_at_time: date | None = Field(None)
+    is_current: bool | None = Field(None)
+    metadata: Any | None = Field(None, description="""Example of a slot that has an unconstrained range""")
 
 
 class MedicalEvent(Event):
-    in_location: Optional[str] = Field(None)
-    diagnosis: Optional[DiagnosisConcept] = Field(None)
-    procedure: Optional[ProcedureConcept] = Field(None)
-    started_at_time: Optional[date] = Field(None)
-    ended_at_time: Optional[date] = Field(None)
-    is_current: Optional[bool] = Field(None)
-    metadata: Optional[Any] = Field(None, description="""Example of a slot that has an unconstrained range""")
+    in_location: str | None = Field(None)
+    diagnosis: DiagnosisConcept | None = Field(None)
+    procedure: ProcedureConcept | None = Field(None)
+    started_at_time: date | None = Field(None)
+    ended_at_time: date | None = Field(None)
+    is_current: bool | None = Field(None)
+    metadata: Any | None = Field(None, description="""Example of a slot that has an unconstrained range""")
 
 
 class WithLocation(ConfiguredBaseModel):
-    in_location: Optional[str] = Field(None)
+    in_location: str | None = Field(None)
 
 
 class MarriageEvent(WithLocation, Event):
-    married_to: Optional[str] = Field(None)
-    in_location: Optional[str] = Field(None)
-    started_at_time: Optional[date] = Field(None)
-    ended_at_time: Optional[date] = Field(None)
-    is_current: Optional[bool] = Field(None)
-    metadata: Optional[Any] = Field(None, description="""Example of a slot that has an unconstrained range""")
+    married_to: str | None = Field(None)
+    in_location: str | None = Field(None)
+    started_at_time: date | None = Field(None)
+    ended_at_time: date | None = Field(None)
+    is_current: bool | None = Field(None)
+    metadata: Any | None = Field(None, description="""Example of a slot that has an unconstrained range""")
 
 
 class Company(Organization):
-    ceo: Optional[str] = Field(None)
-    id: Optional[str] = Field(None)
-    name: Optional[str] = Field(None)
-    aliases: Optional[list[str]] = Field(default_factory=list)
+    ceo: str | None = Field(None)
+    id: str | None = Field(None)
+    name: str | None = Field(None)
+    aliases: list[str] | None = Field(default_factory=list)
 
 
 class CodeSystem(ConfiguredBaseModel):
-    id: Optional[str] = Field(None)
-    name: Optional[str] = Field(None)
+    id: str | None = Field(None)
+    name: str | None = Field(None)
 
 
 class Dataset(ConfiguredBaseModel):
-    metadata: Optional[Any] = Field(None, description="""Example of a slot that has an unconstrained range""")
-    persons: Optional[list[Person]] = Field(default_factory=list)
-    companies: Optional[list[Company]] = Field(default_factory=list)
-    activities: Optional[list[Activity]] = Field(default_factory=list)
-    code_systems: Optional[dict[str, CodeSystem]] = Field(None)
+    metadata: Any | None = Field(None, description="""Example of a slot that has an unconstrained range""")
+    persons: list[Person] | None = Field(default_factory=list)
+    companies: list[Company] | None = Field(default_factory=list)
+    activities: list[Activity] | None = Field(default_factory=list)
+    code_systems: dict[str, CodeSystem] | None = Field(None)
 
 
 class FakeClass(ConfiguredBaseModel):
-    test_attribute: Optional[str] = Field(None)
+    test_attribute: str | None = Field(None)
 
 
 class ClassWithSpaces(ConfiguredBaseModel):
-    slot_with_space_1: Optional[str] = Field(None)
+    slot_with_space_1: str | None = Field(None)
 
 
 class SubclassTest(ClassWithSpaces):
-    slot_with_space_2: Optional[ClassWithSpaces] = Field(None)
-    slot_with_space_1: Optional[str] = Field(None)
+    slot_with_space_2: ClassWithSpaces | None = Field(None)
+    slot_with_space_1: str | None = Field(None)
 
 
 class SubSubClass2(SubclassTest):
-    slot_with_space_2: Optional[ClassWithSpaces] = Field(None)
-    slot_with_space_1: Optional[str] = Field(None)
+    slot_with_space_2: ClassWithSpaces | None = Field(None)
+    slot_with_space_1: str | None = Field(None)
 
 
 class TubSubClass1(SubclassTest):
@@ -232,8 +232,8 @@ class TubSubClass1(SubclassTest):
     Same depth as Sub sub class 1
     """
 
-    slot_with_space_2: Optional[ClassWithSpaces] = Field(None)
-    slot_with_space_1: Optional[str] = Field(None)
+    slot_with_space_2: ClassWithSpaces | None = Field(None)
+    slot_with_space_1: str | None = Field(None)
 
 
 class Activity(ConfiguredBaseModel):
@@ -241,13 +241,13 @@ class Activity(ConfiguredBaseModel):
     a provence-generating activity
     """
 
-    id: Optional[str] = Field(None)
-    started_at_time: Optional[date] = Field(None)
-    ended_at_time: Optional[date] = Field(None)
-    was_informed_by: Optional[str] = Field(None)
-    was_associated_with: Optional[str] = Field(None)
-    used: Optional[str] = Field(None)
-    description: Optional[str] = Field(None)
+    id: str | None = Field(None)
+    started_at_time: date | None = Field(None)
+    ended_at_time: date | None = Field(None)
+    was_informed_by: str | None = Field(None)
+    was_associated_with: str | None = Field(None)
+    used: str | None = Field(None)
+    description: str | None = Field(None)
 
 
 class Agent(ConfiguredBaseModel):
@@ -255,9 +255,9 @@ class Agent(ConfiguredBaseModel):
     a provence-generating agent
     """
 
-    id: Optional[str] = Field(None)
-    acted_on_behalf_of: Optional[str] = Field(None)
-    was_informed_by: Optional[str] = Field(None)
+    id: str | None = Field(None)
+    acted_on_behalf_of: str | None = Field(None)
+    was_informed_by: str | None = Field(None)
 
 
 # Update forward refs

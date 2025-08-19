@@ -33,7 +33,7 @@ class InferenceUtilsTestCase(unittest.TestCase):
         """
         sv = SchemaView(SCHEMA)
         p = Person(first_name=FIRST, last_name=LAST)
-        v = generate_slot_value(p, "full_name", sv)
+        generate_slot_value(p, "full_name", sv)
 
     def test_string_serialization(self):
         """

@@ -316,6 +316,11 @@ select = [
 
 # Notebooks can have unsorted imports
 "tests/test_notebooks/input/*" = ["E402"]
+"tests/linkml/test_notebooks/input/*" = ["E402"]
+
+# Runtime test files have different conventions
+"tests/linkml_runtime/**/*.py" = ["E402", "E501", "F811", "E741"]
+
 
 [tool.tox]
 requires = ["tox>=4", "tox-uv"]

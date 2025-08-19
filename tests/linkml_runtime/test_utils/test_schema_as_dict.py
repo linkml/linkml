@@ -35,7 +35,7 @@ def test_as_dict(schema_no_imports_path, clean_output_path):
     ystr = schema_as_yaml_dump(view.schema)
     with open(clean_output_path, "w") as stream:
         stream.write(ystr)
-    view2 = SchemaView(ystr)
+    SchemaView(ystr)
     obj = schema_as_dict(view.schema)
     # ensure that prefixes are compacted
     assert obj["prefixes"]["pav"] == "http://purl.org/pav/"

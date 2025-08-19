@@ -66,9 +66,9 @@ def test_missing_intercept() -> None:
         "SchemaDefinition.name is not supplied",
     }
     try:
-        origschd = override(SchemaDefinition)
-        origslotd = override(SlotDefinition)
-        origcd = override(ClassDefinition)
+        override(SchemaDefinition)
+        override(SlotDefinition)
+        override(ClassDefinition)
         yaml_loader.load(test_file, SchemaDefinition)
     finally:
         delattr(SchemaDefinition, "MissingRequiredField")

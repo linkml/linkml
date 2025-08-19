@@ -172,10 +172,23 @@ ignore = [
     "E203",
     "E501",
     "ISC001",
+    "C901",  # complexity checks - runtime package has different conventions
+    "N801",  # invalid-class-name
+    "N802",  # invalid-function-name
+    "F821",  # undefined-name
+    "N818",  # error-suffix-on-exception-name
+    "E741",  # ambiguous-variable-name
+    "N816",  # mixed-case-variable-in-global-scope
+    "UP007", # non-pep604-annotation-union
+    "F811",  # redefined-while-unused
+    "F841",  # unused-variable
+    "E731",  # lambda-assignment
+    "E402",  # module-import-not-at-top-of-file
+    "E712",  # true-false-comparison
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["S101"] # use of assert
+"tests/**/*.py" = ["S101", "E402", "E501", "F811", "E741"] # use of assert, test files have different conventions
 
 [tool.ruff.lint.mccabe]
 # Flag errors (`C901`) whenever the complexity level exceeds 15.
