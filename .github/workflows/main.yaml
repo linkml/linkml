@@ -33,10 +33,9 @@ jobs:
         with:
           extra_args: --all-files --config .pre-commit-config.yaml
       - name: Run pre-commit checks for linkml-runtime
-        working-directory: packages/linkml_runtime
-        uses: pre-commit/action@v3.0.1
-        with:
-          extra_args: --all-files
+        run: |
+          cd packages/linkml_runtime
+          uv run pre-commit run --all-files
 
   test:
     needs:
