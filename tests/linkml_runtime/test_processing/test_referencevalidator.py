@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import Any, Optional, Union
 
 import yaml
-
 from linkml_runtime.dumpers import json_dumper, yaml_dumper
 from linkml_runtime.linkml_model import PermissibleValue, SlotDefinition, SlotDefinitionName
 from linkml_runtime.processing.referencevalidator import (

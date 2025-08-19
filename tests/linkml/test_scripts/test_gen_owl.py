@@ -4,7 +4,6 @@ import pytest
 from click.testing import CliRunner
 
 from linkml.generators.owlgen import cli
-
 from tests.conftest import KITCHEN_SINK_PATH
 
 

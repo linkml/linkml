@@ -1,12 +1,12 @@
 import os
 
 import pytest
-
-import tests.linkml_runtime.test_index.model.container_test as src_dm
 from linkml_runtime.index.object_index import ObjectIndex, ProxyObject
 from linkml_runtime.loaders import yaml_loader
 from linkml_runtime.utils.inference_utils import Config, infer_slot_value
 from linkml_runtime.utils.schemaview import SchemaView
+
+import tests.linkml_runtime.test_index.model.container_test as src_dm
 from tests.linkml_runtime.test_index import INPUT_DIR
 
 SCHEMA = os.path.join(INPUT_DIR, "container_test.yaml")

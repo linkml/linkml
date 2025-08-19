@@ -2,10 +2,10 @@ import os
 
 import pytest
 import yaml.constructor
-
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.loaders import yaml_loader
+
 from tests.linkml_runtime.test_loaders_dumpers import INPUT_DIR
 from tests.linkml_runtime.test_loaders_dumpers.models.model_817 import Container, Person, PersonNoId, VitalStatusEnum
 

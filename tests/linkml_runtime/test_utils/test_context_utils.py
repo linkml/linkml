@@ -4,10 +4,10 @@ import os
 
 import pytest
 from jsonasobj2 import JsonObj, loads
-from rdflib import URIRef
-
 from linkml_runtime.utils.context_utils import map_import, merge_contexts, parse_import_map
 from linkml_runtime.utils.namespaces import Namespaces
+from rdflib import URIRef
+
 from tests.linkml_runtime.test_utils import META_BASE_URI, METAMODEL_CONTEXT_URI
 
 json_1 = '{ "ex": "http://example.org/test/", "ex2": "http://example.org/test2/" }'

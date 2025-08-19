@@ -2,7 +2,6 @@ import json
 from typing import Any
 
 from jsonasobj2 import JsonObj, as_json
-
 from linkml_runtime.utils.formatutils import (
     be,
     camelcase,

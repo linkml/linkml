@@ -2,10 +2,10 @@ import os
 from typing import cast
 
 import pytest
-from rdflib import SKOS, Literal, Namespace
-
 from linkml_runtime.dumpers import json_dumper, rdf_dumper, yaml_dumper
 from linkml_runtime.utils.yamlutils import as_json_object
+from rdflib import SKOS, Literal, Namespace
+
 from tests.linkml_runtime.support.clicktestcase import ClickTestCase
 from tests.linkml_runtime.test_loaders_dumpers import (
     GITHUB_LD10_CONTEXT,

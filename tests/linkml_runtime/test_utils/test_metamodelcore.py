@@ -3,8 +3,6 @@ from dataclasses import dataclass
 
 import pytest
 from jsonasobj2 import as_json
-from rdflib import RDF, XSD, Graph, Literal, Namespace
-
 from linkml_runtime.utils.metamodelcore import (
     URI,
     Bool,
@@ -19,6 +17,7 @@ from linkml_runtime.utils.metamodelcore import (
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.strictness import lax, strict
 from linkml_runtime.utils.yamlutils import YAMLRoot, as_rdf
+from rdflib import RDF, XSD, Graph, Literal, Namespace
 
 
 @pytest.fixture(autouse=True)

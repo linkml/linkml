@@ -2,7 +2,6 @@ from dataclasses import fields
 from typing import Any, Optional, Union
 
 import pytest
-
 from linkml_runtime.linkml_model import (
     ClassDefinition,
     EnumDefinition,

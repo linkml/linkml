@@ -3,10 +3,9 @@ from contextlib import redirect_stdout
 from io import StringIO
 from typing import Optional, Union
 
+from linkml_runtime import LINKML
 from rdflib import RDF, Graph
 from rdflib.compare import IsomorphicGraph, graph_diff, to_isomorphic
-
-from linkml_runtime import LINKML
 
 # TODO: Find out why test_issue_namespace is emitting generation_date in the TYPE namespace
 from tests import SKIP_RDF_COMPARE, SKIP_RDF_COMPARE_REASON

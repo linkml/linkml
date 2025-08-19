@@ -3,17 +3,23 @@ from pathlib import Path
 
 import pytest
 from curies import Converter
-from rdflib import Graph, Literal, Namespace, URIRef
-from rdflib.namespace import RDF, SKOS, XSD
-
 from linkml_runtime import DataNotFoundError, MappingError
 from linkml_runtime.dumpers import rdflib_dumper, yaml_dumper
 from linkml_runtime.linkml_model import Prefix
 from linkml_runtime.loaders import rdflib_loader, yaml_loader
 from linkml_runtime.utils.schemaview import SchemaView
+from rdflib import Graph, Literal, Namespace, URIRef
+from rdflib.namespace import RDF, SKOS, XSD
+
 from tests.linkml_runtime.test_loaders_dumpers import INPUT_DIR, OUTPUT_DIR
 from tests.linkml_runtime.test_loaders_dumpers.models.node_object import NodeObject, Triple
-from tests.linkml_runtime.test_loaders_dumpers.models.personinfo import Address, Container, Organization, OrganizationType, Person
+from tests.linkml_runtime.test_loaders_dumpers.models.personinfo import (
+    Address,
+    Container,
+    Organization,
+    OrganizationType,
+    Person,
+)
 from tests.linkml_runtime.test_loaders_dumpers.models.personinfo_test_issue_429 import Container as Container_429
 from tests.linkml_runtime.test_loaders_dumpers.models.phenopackets import (
     MetaData,

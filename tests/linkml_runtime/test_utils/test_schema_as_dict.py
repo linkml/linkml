@@ -2,11 +2,11 @@ import logging
 import os
 
 import pytest
-
 from linkml_runtime.linkml_model.meta import ClassDefinition
 from linkml_runtime.utils.schema_as_dict import schema_as_dict, schema_as_yaml_dump
 from linkml_runtime.utils.schema_builder import ClassDefinition, SchemaBuilder, SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView
+
 from tests.linkml_runtime.test_utils import INPUT_DIR, OUTPUT_DIR
 
 logger = logging.getLogger(__name__)

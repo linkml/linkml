@@ -9,10 +9,9 @@
 from dataclasses import dataclass
 from typing import Any, ClassVar, Optional, Union
 
-from rdflib import URIRef
-
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.slot import Slot
+from rdflib import URIRef
 
 from .issue_368_imports import ParentClass, SampleEnum
 

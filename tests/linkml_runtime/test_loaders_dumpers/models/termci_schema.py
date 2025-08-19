@@ -9,11 +9,10 @@
 from dataclasses import dataclass
 from typing import Any, ClassVar, Optional, Union
 
-from rdflib import URIRef
-
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.metamodelcore import URI, URIorCURIE, empty_dict, empty_list
 from linkml_runtime.utils.yamlutils import YAMLRoot
+from rdflib import URIRef
 
 metamodel_version = "1.7.0"
 

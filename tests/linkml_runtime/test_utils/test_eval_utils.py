@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
 import pytest
-
 from linkml_runtime.utils.eval_utils import eval_expr
 
 

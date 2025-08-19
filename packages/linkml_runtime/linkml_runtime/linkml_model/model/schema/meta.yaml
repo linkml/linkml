@@ -192,7 +192,7 @@ slots:
     description: >-
       An element in another schema which this element instantiates.
     multivalued: true
-      
+
   categories:
     range: uriorcurie
     singular_name: category
@@ -277,7 +277,7 @@ slots:
       A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.
     see_also:
       - linkml:aliases
-      
+
   aliases:
     aliases:
       - synonyms
@@ -1351,7 +1351,7 @@ slots:
     range: boolean
     description: if true then induced/mangled slot names are not created for class_usage and attributes
     status: testing
-    
+
 
   # -----------------------------------
   # Slot definition slots
@@ -2145,7 +2145,7 @@ slots:
       A collection of type mappings that specify how a slot's range should be mapped or
       serialized in different frameworks
     multivalued: true
-      
+
   framework_key:
     range: string
     alias: framework
@@ -2154,7 +2154,7 @@ slots:
       The name of a format that can be used to serialize LinkML data.
       The string value should be a code from the LinkML frameworks vocabulary,
       but this is not strictly enforced
-    
+
   mapped_type:
     range: type_definition
     alias: type
@@ -2481,7 +2481,7 @@ classes:
 
   Anything:
     class_uri: linkml:Any
-  
+
   common_metadata:
     description: Generic metadata shared across definitions
     mixin: true
@@ -2756,7 +2756,7 @@ classes:
 
   match_query:
     description: >-
-      A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that 
+      A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that
       matches on properties of the external concepts.
     slots:
       - identifier_pattern
@@ -2766,7 +2766,7 @@ classes:
 
   reachability_query:
     description: >-
-      A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a 
+      A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a
       set of source nodes to a set of descendants or ancestors over a set of relationship types.
     slots:
       - source_ontology

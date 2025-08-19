@@ -5,7 +5,6 @@ from rdflib import Graph, URIRef
 from linkml import METAMODEL_NAMESPACE
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator, cli
-
 from tests.conftest import KITCHEN_SINK_PATH
 
 

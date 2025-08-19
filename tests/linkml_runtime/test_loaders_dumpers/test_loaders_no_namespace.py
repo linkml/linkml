@@ -2,10 +2,10 @@ import os
 
 import pytest
 import rdflib
-
 from linkml_runtime.dumpers import rdflib_dumper
 from linkml_runtime.loaders import rdflib_loader, yaml_loader
 from linkml_runtime.utils.schemaview import SchemaView
+
 from tests.linkml_runtime.test_loaders_dumpers import INPUT_DIR
 from tests.linkml_runtime.test_loaders_dumpers.models.issue_576 import Dataset
 

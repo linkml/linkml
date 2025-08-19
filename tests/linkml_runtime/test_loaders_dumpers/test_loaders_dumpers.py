@@ -5,11 +5,11 @@ from decimal import Decimal
 
 import pytest
 import yaml
-from rdflib import Graph, Namespace
-
 from linkml_runtime.dumpers import json_dumper, rdflib_dumper, yaml_dumper
 from linkml_runtime.loaders import json_loader, rdflib_loader, yaml_loader
 from linkml_runtime.utils.schemaview import SchemaView
+from rdflib import Graph, Namespace
+
 from tests.linkml_runtime.test_loaders_dumpers import INPUT_DIR, OUTPUT_DIR
 from tests.linkml_runtime.test_loaders_dumpers.models.node_object import NodeObject, Triple
 from tests.linkml_runtime.test_loaders_dumpers.models.personinfo import Container, Person

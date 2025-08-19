@@ -51,7 +51,7 @@ class TestEnvironment:
         parent = Path(self.cwd).parts[-2]
         if parent.startswith("test"):
             parent_env = import_module("..environment", __package__)
-            if hasattr(parent_env, 'env'):
+            if hasattr(parent_env, "env"):
                 self.import_map = getattr(parent_env.env, "import_map", None)
                 self.mismatch_action = parent_env.env.mismatch_action
                 self.root_input_path = parent_env.env.root_input_path
