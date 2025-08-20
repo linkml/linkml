@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from click.testing import CliRunner
 
-from linkml.generators.panderagen import PanderaGenerator
+from linkml.generators.panderagen import PanderaDataframeGenerator
 from linkml.generators.panderagen.panderagen import DataframeGeneratorCli
 from linkml.generators.panderagen.polars_schema.polars_schema_dataframe_generator import PolarsSchemaDataframeGenerator
 
@@ -389,7 +389,7 @@ def big_synthetic_dataframe(
 
 @pytest.fixture(scope="module")
 def synthetic_schema(synthetic_flat_dataframe_model):
-    return PanderaGenerator(synthetic_flat_dataframe_model)
+    return PanderaDataframeGenerator(synthetic_flat_dataframe_model)
 
 
 @pytest.fixture(scope="module")
@@ -428,7 +428,7 @@ def compiled_model(polars_generator_cli):
     "class_name, data",
     [
         (
-            "polars_NamedThing",
+            "NamedThing",
             {
                 "id": ["a", "b", "c"],
                 "name": ["one", "two", "three"],
@@ -441,7 +441,7 @@ def compiled_model(polars_generator_cli):
             },
         ),
         (
-            "polars_Person",
+            "Person",
             {
                 "id": ["1", "2", "3"],
                 "name": ["P. One", "P. Two", "P. Three"],
@@ -470,7 +470,7 @@ def compiled_model(polars_generator_cli):
             },
         ),
         (
-            "polars_Organization",
+            "Organization",
             {
                 "id": ["a", "b", "c"],
                 "name": ["one", "two", "three"],
@@ -491,7 +491,7 @@ def compiled_model(polars_generator_cli):
             },
         ),
         (
-            "polars_Place",
+            "Place",
             {
                 "id": ["a", "b", "c"],
                 "name": ["one", "two", "three"],

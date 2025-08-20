@@ -1,4 +1,10 @@
 from .dependency_sorter import DependencySorter
-from .panderagen import DataframeGeneratorCli, PanderaGenerator, cli
+from .panderagen import DataframeGeneratorCli, PanderaDataframeGenerator, PolarsSchemaDataframeGenerator, cli
 
-__all__ = ["cli", "PanderaGenerator", "DataframeGeneratorCli", "DependencySorter"]
+__all__ = [
+    "cli",
+    "PanderaDataframeGenerator",
+    "DataframeGeneratorCli",
+    "PolarsSchemaDataframeGenerator",
+    "DependencySorter",
+]

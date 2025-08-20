@@ -21,7 +21,7 @@ TYPE_MAP = {
         "xsd:float": "pl.Float32",
         "xsd:double": "pl.Float64",
         "xsd:boolean": "pl.Boolean",
-        "xsd:dateTime": "pl.Datetime",
+        "xsd:dateTime": 'pl.Datetime(time_unit="ns", time_zone="UTC")',
         "xsd:date": "pl.Date",
         "xsd:time": "pl.Time",
         "xsd:anyURI": "pl.Utf8",
@@ -40,6 +40,15 @@ class PolarsSchemaDataframeGenerator(DataframeGenerator, PolarsSchemaNameHandler
     """
 
     TEMPLATE_DIRECTORY = "panderagen_polars_schema"
+    TEMPLATE_PATH = "polars_schema.jinja2"
+
+    def __post_init__(self):
+        # Ensure template_path and template_file are set to defaults if not provided
+        if self.template_path is None:
+            self.template_path = PolarsSchemaDataframeGenerator.TEMPLATE_DIRECTORY
+        if self.template_file is None:
+            self.template_file = PolarsSchemaDataframeGenerator.TEMPLATE_PATH
+        super().__post_init__()
 
     @staticmethod
     def make_multivalued(range: str) -> str:
@@ -47,7 +56,7 @@ class PolarsSchemaDataframeGenerator(DataframeGenerator, PolarsSchemaNameHandler
 
     def uri_type_map(self, xsd_uri: str, template: str = None):
         if template is None:
-            template = "panderagen_polars_schema"
+            template = PolarsSchemaDataframeGenerator.TEMPLATE_DIRECTORY
         return TYPE_MAP[template].get(xsd_uri)
 
     def get_type_map(self) -> dict:

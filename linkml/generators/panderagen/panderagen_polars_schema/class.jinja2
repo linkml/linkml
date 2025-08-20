@@ -9,11 +9,9 @@
 
 {%- macro render_schema(cls, generator) -%}
     {{ schema_name(cls, generator) }}Dict = pl.Schema({{ '{' }}
-    {%- if generator.roll_up_slots -%}
-    # rolled
+    {%- if generator.roll_up_slots %}
     {%- set fields = cls.all_fields -%}
     {%- else -%}
-    # not rolled
     {%- set fields = cls.fields -%}
     {%- endif -%}
     {%- for field in fields %}

@@ -1,3 +1,5 @@
+import re
+
 from ..name_handler_mixin import NameHandlerBase
 
 
@@ -8,11 +10,14 @@ class PolarsSchemaNameHandler(NameHandlerBase):
 
     _PREFIX = "polars"
 
-    def render_enum_name(self, enum_name: str) -> str:
-        return f"{PolarsSchemaNameHandler._PREFIX}_enum_{enum_name}"
+    def clean(self, name: str) -> str:
+        return re.sub(r"\W+", "_", name)
 
-    def render_class_name(self, cls_name: str) -> str:
-        return f"{PolarsSchemaNameHandler._PREFIX}_{cls_name}"
+    def render_enum_name(self, enum_name: str) -> str:
+        return self.clean(enum_name)
+
+    def render_class_name(self, class_name: str) -> str:
+        return self.clean(class_name)
 
     def render_slot_name(self, slot_name: str) -> str:
-        return f"{PolarsSchemaNameHandler._PREFIX}_slot_{slot_name}"
+        return self.clean(f"{PolarsSchemaNameHandler._PREFIX}_slot_{slot_name}")

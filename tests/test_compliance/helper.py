@@ -30,6 +30,7 @@ from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.yamlutils import YAMLRoot
 from pydantic import BaseModel, ConfigDict
 
+from linkml.generators.panderagen.dict_compare import deep_compare_dicts
 from linkml.transformers.logical_model_transformer import UnsatisfiableAttribute
 
 try:
@@ -78,6 +79,8 @@ JSONLD = "jsonld"
 SQL_ALCHEMY_IMPERATIVE = "sqlalchemy_imperative"
 SQL_ALCHEMY_DECLARATIVE = "sqlalchemy_declarative"
 PANDERA_POLARS_CLASS = "pandera_polars_class"
+DATAFRAME_POLARS_SCHEMA = "dataframe_polars_schema"
+POLARS_SCHEMA = "polars_schema"
 SQL_DDL_SQLITE = "sql_ddl_sqlite"
 SQL_DDL_POSTGRES = "sql_ddl_postgres"
 OWL = "owl"
@@ -98,7 +101,8 @@ GENERATORS: dict[FRAMEWORK, Union[type[Generator], tuple[type[Generator], dict[s
         generators.SQLAlchemyGenerator,
         {"template": sqlalchemygen.TemplateEnum.DECLARATIVE},
     ),
-    PANDERA_POLARS_CLASS: generators.PanderaGenerator,
+    PANDERA_POLARS_CLASS: generators.PanderaDataframeGenerator,
+    DATAFRAME_POLARS_SCHEMA: generators.PolarsSchemaDataframeGenerator,
     SQL_DDL_SQLITE: (generators.SQLTableGenerator, {"dialect": "sqlite"}),
     SQL_DDL_POSTGRES: (generators.SQLTableGenerator, {"dialect": "postgresql"}),
     OWL: (
@@ -813,6 +817,10 @@ def check_data(
             plugins = [JsonschemaValidationPlugin(closed=True, include_range_class_descendants=False)]
         elif isinstance(gen, GENERATORS[PANDERA_POLARS_CLASS]):
             check_data_pandera(schema, output, target_class, object_to_validate, coerced, expected_behavior, valid)
+        elif isinstance(gen, GENERATORS[DATAFRAME_POLARS_SCHEMA]):
+            check_data_polars_schema(
+                schema, output, target_class, object_to_validate, coerced, expected_behavior, valid
+            )
         elif isinstance(gen, ContextGenerator):
             context_dir = _schema_out_path(schema) / "generated" / "jsonld_context.context.jsonld"
             if not context_dir.exists() and tests.WITH_OUTPUT:
@@ -912,6 +920,62 @@ def check_data(
                 notes=str(notes),
             )
         )
+
+
+def check_data_polars_schema(schema, output, target_class, object_to_validate, coerced, expected_behavior, valid):
+    """
+    Note: this test passes even if invalid objects are loaded, because the schema is not a validator.
+    """
+
+    for n in [
+        "test_non_standard_num_names",
+        "test_identifier",
+        "test_jsonpointer",
+        "test_inlined",
+        "test_unique_keys",
+        "test_nested_key",
+        "test_date_types",
+        "test_array",
+        "test_slot_any_of",
+        "test_membership",
+        "test_inlined-INLFalse_IALFalse_MVTrue_FKTrue",
+    ]:
+        if schema["name"].startswith(n):
+            pytest.skip(reason="Not implemented")
+        else:
+            logger.info(f"Checking schema {schema['name']}")
+    pl = pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
+
+    try:
+        logger.info(
+            f"Validating {target_class} against {object_to_validate} / {coerced} / {expected_behavior} / "
+            f"{valid}\n\n{yaml.dump(schema)}\n\n{output}"
+        )
+
+        logger.info(f"Behavior: {expected_behavior}")
+        logger.info(f"Valid: {valid}")
+        logger.info(f"Expected: {object_to_validate}")
+
+        mod = compile_python(output)
+        py_cls = getattr(mod, target_class)
+
+        dataframe_to_validate = pl.from_dicts([object_to_validate], schema=py_cls)
+
+        # logger.info(dataframe_to_validate)
+
+        same = deep_compare_dicts(object_to_validate, dataframe_to_validate.to_dicts()[0])
+
+        logger.info(f"Actual: {dataframe_to_validate.to_dicts()[0]}")
+        logger.info(f"Same: {same}")
+
+        if same and not valid:
+            logger.warning("PolaRS schema accepted an invalid object. Note the schema is not a full validator.")
+        assert same
+    except Exception as e:
+        logger.info("Actual: EXCEPTION")
+        logger.info("Same: N/A")
+        if valid:
+            raise e
 
 
 def check_data_pandera(schema, output, target_class, object_to_validate, coerced, expected_behavior, valid):

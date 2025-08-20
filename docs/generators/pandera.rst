@@ -13,7 +13,7 @@ for data validation on dataframe-like objects.
 `PolaRS <https://docs.pola.rs/>`__ is a fast dataframe library.
 
 The Pandera Generator produces Pandera models using the class-based API
-using the PolaRS integration.
+using the PolaRS integration. It can also produce PolaRS schemas for use in loading data.
 
 The implementation of the generator is incomplete. Because Pandera is a dataframe library,
 the first priority is implementing models of literal and nested data types and checks for single tables as shown below.
@@ -209,7 +209,7 @@ Generator
 ---------
 
 
-.. autoclass:: PanderaGenerator
+.. autoclass:: PanderaDataframeGenerator
     :members:
 
 
@@ -219,7 +219,7 @@ Templates
 The panderagen module uses a templating system that allows generating different target APIs.
 The only template currently provided is the default `panderagen_class_based` template.
 
-The :class:`.PanderaGenerator` then serves as a translation layer between
+The :class:`.PanderaDataframeGenerator` then serves as a translation layer between
 the source models from :mod:`linkml_runtime` and the target models under
 :mod:`.panderagen` , making clear what is needed to generate
 schema code as well as what parts of the linkml metamodel are supported.

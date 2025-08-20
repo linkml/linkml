@@ -7,7 +7,7 @@ import pytest
 from click.testing import CliRunner
 
 from linkml.cli.main import linkml as linkml_cli
-from linkml.generators.panderagen import PanderaGenerator, cli
+from linkml.generators.panderagen import PanderaDataframeGenerator, cli
 
 # The following packages are required for these tests but optional for linkml
 # avoid pytest collection errors if not installed
@@ -380,7 +380,7 @@ def big_synthetic_dataframe(
 
 @pytest.fixture(scope="module")
 def synthetic_schema(synthetic_flat_dataframe_model):
-    return PanderaGenerator(synthetic_flat_dataframe_model)
+    return PanderaDataframeGenerator(synthetic_flat_dataframe_model)
 
 
 @pytest.fixture(scope="module")

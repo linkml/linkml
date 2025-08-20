@@ -79,11 +79,7 @@ class DataframeGeneratorCli:
         return self.generator.serialize(rendered_module=rendered_module)
 
 
-# For backward compatibility see OOGenerator
-PanderaGenerator = PanderaDataframeGenerator
-
-
-# @shared_arguments(PanderaGenerator)
+# @shared_arguments(PanderaDataframeGenerator)
 @click.option("--package", help="Package name where relevant for generated class files")
 @click.option("--template-path", help="Optional jinja2 template directory within module")
 @click.option("--template-file", help="Optional jinja2 template to use for class generation")

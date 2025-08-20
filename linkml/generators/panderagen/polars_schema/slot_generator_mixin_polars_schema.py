@@ -17,10 +17,10 @@ class SlotGeneratorMixinPolarsSchema(SlotGeneratorMixinBase):
 
     # constants used to render the schema
     # these will be moved to a dialect-specific place
-    ANY_RANGE_STRING = "Object"
-    CLASS_RANGE_STRING = "Struct"
-    SIMPLE_DICT_RANGE_STRING = "Struct"
-    ENUM_RANGE_STRING = "Enum"
+    ANY_RANGE_STRING = "pl.Object"
+    CLASS_RANGE_STRING = "pl.Struct"
+    SIMPLE_DICT_RANGE_STRING = "pl.Struct"
+    ENUM_RANGE_STRING = "pl.Enum"
 
     # When nested inlining is done, the Pandera validator needs a specific range
     INLINED_FORM_RANGE_PANDERA = {

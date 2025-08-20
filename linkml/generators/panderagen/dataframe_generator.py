@@ -34,7 +34,7 @@ class DataframeGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixi
 
     # ObjectVars
     template_file: Optional[str] = None
-    template_path: str = None
+    template_path: Optional[str] = None
 
     gen_classvars: bool = True
     gen_slots: bool = True
@@ -80,10 +80,14 @@ class DataframeGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixi
         """Get the type map for this generator."""
         pass
 
+    def default_template_path(self):
+        """Get the default template path for this generator."""
+        return "panderagen_class_based"
+
     def load_template(self, template_filename, template_path=None):
         """Load the template for code generation."""
         if template_path is None:
-            template_path = "panderagen_class_based"  # default fallback
+            template_path = self.default_template_path()
         jinja_env = Environment(loader=PackageLoader("linkml.generators.panderagen", template_path))
         return jinja_env.get_template(template_filename)
 
