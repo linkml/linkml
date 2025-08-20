@@ -8,12 +8,12 @@
 
 <https://w3id.org/linkml/examples/personinfo/personinfo> a linkml:SchemaDefinition ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
-    sh:declare [ sh:namespace <https://w3id.org/linkml/examples/personinfo/> ;
-            sh:prefix "ex" ],
-        [ sh:namespace schema1: ;
+    sh:declare [ sh:namespace schema1: ;
             sh:prefix "sdo" ],
         [ sh:namespace linkml: ;
-            sh:prefix "linkml" ] ;
+            sh:prefix "linkml" ],
+        [ sh:namespace <https://w3id.org/linkml/examples/personinfo/> ;
+            sh:prefix "ex" ] ;
     linkml:classes <https://w3id.org/linkml/examples/personinfo/GeoAge>,
         <https://w3id.org/linkml/examples/personinfo/GeoObject>,
         <https://w3id.org/linkml/examples/personinfo/Organization>,
@@ -430,7 +430,7 @@
 
 <https://w3id.org/linkml/examples/personinfo/string> a linkml:TypeDefinition ;
     skos:definition "A character string" ;
-    skos:editorialNote "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
+    skos:editorialNote "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string. If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
     skos:exactMatch schema1:Text ;
     skos:inScheme linkml:types ;
     linkml:base "str" ;
@@ -472,4 +472,3 @@
         <https://w3id.org/linkml/examples/personinfo/person__age>,
         <https://w3id.org/linkml/examples/personinfo/person__aliases>,
         <https://w3id.org/linkml/examples/personinfo/person__phone> .
-

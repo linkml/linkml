@@ -246,7 +246,7 @@ linkml:related_mappings a linkml:SlotDefinition ;
 
 linkml:string a linkml:TypeDefinition ;
     skos:definition "A character string" ;
-    skos:editorialNote "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
+    skos:editorialNote "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string. If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
     skos:exactMatch schema1:Text ;
     skos:inScheme linkml:types ;
     linkml:base "str" ;
@@ -293,14 +293,14 @@ linkml:mappings a linkml:SchemaDefinition,
         "LinkML model for mappings" ;
     skos:inScheme linkml:mappings ;
     skos:mappingRelation skos:mappingRelation ;
-    sh:declare [ sh:namespace linkml: ;
-            sh:prefix "linkml" ],
-        [ sh:namespace OIO: ;
-            sh:prefix "OIO" ],
+    sh:declare [ sh:namespace <http://purl.obolibrary.org/obo/IAO_> ;
+            sh:prefix "IAO" ],
         [ sh:namespace skos: ;
             sh:prefix "skos" ],
-        [ sh:namespace <http://purl.obolibrary.org/obo/IAO_> ;
-            sh:prefix "IAO" ] ;
+        [ sh:namespace OIO: ;
+            sh:prefix "OIO" ],
+        [ sh:namespace linkml: ;
+            sh:prefix "linkml" ] ;
     linkml:default_curi_maps "semweb_context" ;
     linkml:default_prefix "linkml" ;
     linkml:default_range linkml:string ;
@@ -349,4 +349,3 @@ linkml:mappings a linkml:SchemaDefinition,
         linkml:time,
         linkml:uri,
         linkml:uriorcurie .
-

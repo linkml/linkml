@@ -101,7 +101,12 @@ class SnapshotFile(Snapshot):
             if not is_eq:
                 # TODO: probably better to use something other than this pytest
                 # private method. See https://docs.python.org/3/library/difflib.html
-                self.eq_state = "\n".join(_diff_text(actual, expected, self.config.getoption("verbose")))
+                # Use a simple identity highlighter function
+                def identity_highlighter(text, **kwargs):
+                    return text
+
+                verbose_level = self.config.getoption("verbose")
+                self.eq_state = "\n".join(_diff_text(actual, expected, identity_highlighter, verbose_level))
             return is_eq
 
 

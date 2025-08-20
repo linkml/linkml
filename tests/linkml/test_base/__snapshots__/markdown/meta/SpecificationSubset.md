@@ -14,10 +14,10 @@ URI: [linkml:SpecificationSubset](https://w3id.org/linkml/SpecificationSubset)
  * [ClassRule](ClassRule.md) - A rule that applies to instances of a class
  * [EnumBinding](EnumBinding.md) - A binding of a slot or a class to a permissible value from an enumeration.
  * [EnumDefinition](EnumDefinition.md) - an element whose instances must be drawn from a specified set of permissible values
- * [MatchQuery](MatchQuery.md) - A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that  matches on properties of the external concepts.
+ * [MatchQuery](MatchQuery.md) - A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts.
  * [PermissibleValue](PermissibleValue.md) - a permissible value, accompanied by intended text and an optional mapping to a concept URI
  * [Prefix](Prefix.md) - prefix URI tuple
- * [ReachabilityQuery](ReachabilityQuery.md) - A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a  set of source nodes to a set of descendants or ancestors over a set of relationship types.
+ * [ReachabilityQuery](ReachabilityQuery.md) - A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types.
  * [SchemaDefinition](SchemaDefinition.md) - A collection of definitions that make up a schema or a data model.
  * [Setting](Setting.md) - assignment of a key to a value
  * [SlotDefinition](SlotDefinition.md) - an element that describes how instances are related to other instances

@@ -38,7 +38,7 @@ refer to the official URI for each construct, e.g.
 
  * [AnyValue](AnyValue.md)
  * [Anything](Anything.md)
- * [UnitOfMeasure](UnitOfMeasure.md) - A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for  measuring other quantities the same kind (more generally of equivalent dimension).
+ * [UnitOfMeasure](UnitOfMeasure.md) - A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension).
  * [AltDescription](AltDescription.md) - an attributed description
  * [AnonymousEnumExpression](AnonymousEnumExpression.md) - An enum_expression that is not named
  * [AnonymousExpression](AnonymousExpression.md) - An abstract parent class for any nested expression
@@ -63,12 +63,12 @@ refer to the official URI for each construct, e.g.
      * [Annotation](Annotation.md) - a tag/value pair with the semantics of OWL Annotation
  * [ImportExpression](ImportExpression.md) - an expression describing an import
  * [LocalName](LocalName.md) - an attributed label
- * [MatchQuery](MatchQuery.md) - A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that  matches on properties of the external concepts.
+ * [MatchQuery](MatchQuery.md) - A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts.
  * [PathExpression](PathExpression.md) - An expression that describes an abstract path from an object to another through a sequence of slot lookups
  * [PatternExpression](PatternExpression.md) - a regular expression pattern used to evaluate conformance of a string
  * [PermissibleValue](PermissibleValue.md) - a permissible value, accompanied by intended text and an optional mapping to a concept URI
  * [Prefix](Prefix.md) - prefix URI tuple
- * [ReachabilityQuery](ReachabilityQuery.md) - A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a  set of source nodes to a set of descendants or ancestors over a set of relationship types.
+ * [ReachabilityQuery](ReachabilityQuery.md) - A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types.
  * [Setting](Setting.md) - assignment of a key to a value
  * [StructuredAlias](StructuredAlias.md) - object that contains meta data about a synonym or alias including where it came from (source) and its scope (narrow, broad, etc.)
  * [TypeMapping](TypeMapping.md) - Represents how a slot or type can be serialized to a format.
@@ -89,7 +89,7 @@ refer to the official URI for each construct, e.g.
 
 ### Slots
 
- * [abbreviation](abbreviation.md) - An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in  contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance  readability. When a power of a base unit needs to be expressed, such as squares this can be done using  abbreviations rather than symbols (source: qudt)
+ * [abbreviation](abbreviation.md) - An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance readability. When a power of a base unit needs to be expressed, such as squares this can be done using abbreviations rather than symbols (source: qudt)
  * [abstract](abstract.md) - Indicates the class or slot cannot be directly instantiated and is intended for grouping purposes.
  * [alias](alias.md) - the name used for a slot in the context of its owning class.  If present, this is used instead of the actual slot name.
  * [structured_alias➞contexts](alias_contexts.md) - The context in which an alias should be applied

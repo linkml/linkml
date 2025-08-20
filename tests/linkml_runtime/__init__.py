@@ -1,4 +1,5 @@
 import configparser
+import logging  # noqa: F401 - used in eval() statement on line 36
 
 # Global testing control variables
 import os

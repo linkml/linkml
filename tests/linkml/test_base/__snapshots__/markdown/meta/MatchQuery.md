@@ -1,7 +1,7 @@
 
 # Class: match_query
 
-A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that  matches on properties of the external concepts.
+A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts.
 
 URI: [linkml:MatchQuery](https://w3id.org/linkml/MatchQuery)
 

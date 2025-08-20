@@ -1,7 +1,7 @@
 
 # Class: reachability_query
 
-A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a  set of source nodes to a set of descendants or ancestors over a set of relationship types.
+A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types.
 
 URI: [linkml:ReachabilityQuery](https://w3id.org/linkml/ReachabilityQuery)
 

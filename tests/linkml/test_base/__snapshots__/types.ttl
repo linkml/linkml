@@ -185,7 +185,7 @@ linkml:uriorcurie a linkml:TypeDefinition ;
 
 linkml:string a linkml:TypeDefinition ;
     skos:definition "A character string" ;
-    skos:editorialNote "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
+    skos:editorialNote "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string. If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
     skos:exactMatch schema1:Text ;
     skos:inScheme linkml:types ;
     linkml:base "str" ;
@@ -196,12 +196,12 @@ linkml:types a linkml:SchemaDefinition ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
     dcterms:title "Core LinkML metamodel types" ;
     skos:definition "Shared type definitions for the core LinkML mode and metamodel" ;
-    sh:declare [ sh:namespace <http://www.w3.org/ns/shex#> ;
-            sh:prefix "shex" ],
-        [ sh:namespace schema1: ;
+    sh:declare [ sh:namespace schema1: ;
             sh:prefix "schema" ],
         [ sh:namespace xsd: ;
             sh:prefix "xsd" ],
+        [ sh:namespace <http://www.w3.org/ns/shex#> ;
+            sh:prefix "shex" ],
         [ sh:namespace linkml: ;
             sh:prefix "linkml" ] ;
     linkml:default_prefix "linkml" ;
@@ -231,4 +231,3 @@ linkml:types a linkml:SchemaDefinition ;
         linkml:time,
         linkml:uri,
         linkml:uriorcurie .
-

@@ -1,7 +1,7 @@
 
 # Class: UnitOfMeasure
 
-A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for  measuring other quantities the same kind (more generally of equivalent dimension).
+A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension).
 
 URI: [linkml:UnitOfMeasure](https://w3id.org/linkml/UnitOfMeasure)
 
@@ -21,7 +21,7 @@ URI: [linkml:UnitOfMeasure](https://w3id.org/linkml/UnitOfMeasure)
      * Description: name of the unit encoded as a symbol
      * Range: [String](types/String.md)
  * [abbreviation](abbreviation.md)  <sub>0..1</sub>
-     * Description: An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in  contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance  readability. When a power of a base unit needs to be expressed, such as squares this can be done using  abbreviations rather than symbols (source: qudt)
+     * Description: An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance readability. When a power of a base unit needs to be expressed, such as squares this can be done using abbreviations rather than symbols (source: qudt)
      * Range: [String](types/String.md)
  * [descriptive_name](descriptive_name.md)  <sub>0..1</sub>
      * Description: the spelled out name of the unit, for example, meter

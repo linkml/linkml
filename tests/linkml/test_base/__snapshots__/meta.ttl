@@ -718,7 +718,7 @@ linkml:AnyValue a linkml:ClassDefinition ;
     linkml:slot_usage [ ] .
 
 linkml:abbreviation a linkml:SlotDefinition ;
-    skos:definition "An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in  contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance  readability. When a power of a base unit needs to be expressed, such as squares this can be done using  abbreviations rather than symbols (source: qudt)" ;
+    skos:definition "An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance readability. When a power of a base unit needs to be expressed, such as squares this can be done using abbreviations rather than symbols (source: qudt)" ;
     skos:inScheme linkml:units ;
     skos:mappingRelation qudt:abbreviation ;
     linkml:definition_uri linkml:abbreviation ;
@@ -1880,9 +1880,9 @@ linkml:maximum_number_dimensions a linkml:SlotDefinition ;
     skos:inScheme linkml:meta ;
     skos:note "maximum_number_dimensions cannot be less than minimum_number_dimensions" ;
     linkml:any_of [ a linkml:AnonymousSlotExpression ;
-            linkml:range linkml:boolean ],
+            linkml:range linkml:integer ],
         [ a linkml:AnonymousSlotExpression ;
-            linkml:range linkml:integer ] ;
+            linkml:range linkml:boolean ] ;
     linkml:definition_uri linkml:maximum_number_dimensions ;
     linkml:domain linkml:ArrayExpression ;
     linkml:domain_of linkml:ArrayExpression ;
@@ -3372,7 +3372,7 @@ linkml:values_from a linkml:SlotDefinition ;
 
 linkml:MatchQuery a linkml:ClassDefinition ;
     OIO:inSubset linkml:SpecificationSubset ;
-    skos:definition "A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that  matches on properties of the external concepts." ;
+    skos:definition "A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts." ;
     skos:inScheme linkml:meta ;
     linkml:class_uri linkml:MatchQuery ;
     linkml:definition_uri linkml:MatchQuery ;
@@ -4719,7 +4719,7 @@ linkml:Extensible a linkml:ClassDefinition ;
 
 linkml:ReachabilityQuery a linkml:ClassDefinition ;
     OIO:inSubset linkml:SpecificationSubset ;
-    skos:definition "A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a  set of source nodes to a set of descendants or ancestors over a set of relationship types." ;
+    skos:definition "A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types." ;
     skos:inScheme linkml:meta ;
     linkml:class_uri linkml:ReachabilityQuery ;
     linkml:definition_uri linkml:ReachabilityQuery ;
@@ -4732,17 +4732,17 @@ linkml:ReachabilityQuery a linkml:ClassDefinition ;
         linkml:traverse_up .
 
 linkml:UnitOfMeasure a linkml:ClassDefinition ;
-    skos:definition "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for  measuring other quantities the same kind (more generally of equivalent dimension)." ;
+    skos:definition "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension)." ;
     skos:inScheme linkml:units ;
     skos:mappingRelation qudt:Unit ;
     linkml:any_of [ a linkml:AnonymousClassExpression ;
             linkml:slot_conditions linkml:symbol ],
         [ a linkml:AnonymousClassExpression ;
-            linkml:slot_conditions linkml:iec61360code ],
+            linkml:slot_conditions linkml:ucum_code ],
         [ a linkml:AnonymousClassExpression ;
             linkml:slot_conditions linkml:exact_mappings ],
         [ a linkml:AnonymousClassExpression ;
-            linkml:slot_conditions linkml:ucum_code ] ;
+            linkml:slot_conditions linkml:iec61360code ] ;
     linkml:class_uri qudt:Unit ;
     linkml:definition_uri linkml:UnitOfMeasure ;
     linkml:imported_from "linkml:units" ;
@@ -5693,7 +5693,7 @@ linkml:SlotExpression a linkml:ClassDefinition ;
 
 linkml:string a linkml:TypeDefinition ;
     skos:definition "A character string" ;
-    skos:editorialNote "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
+    skos:editorialNote "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string. If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
     skos:exactMatch schema1:Text ;
     skos:inScheme linkml:types ;
     linkml:base "str" ;
@@ -5975,42 +5975,42 @@ There are many subsets of *profiles* of the metamodel, for different purposes:
 For canonical reference documentation on any metamodel construct,
 refer to the official URI for each construct, e.g.
 [https://w3id.org/linkml/is_a](https://w3id.org/linkml/is_a)""" ;
-    sh:declare [ sh:namespace oslc: ;
-            sh:prefix "oslc" ],
-        [ sh:namespace prov: ;
-            sh:prefix "prov" ],
-        [ sh:namespace <http://semanticscience.org/resource/SIO_> ;
-            sh:prefix "SIO" ],
-        [ sh:namespace bibo: ;
-            sh:prefix "bibo" ],
-        [ sh:namespace vann1: ;
-            sh:prefix "vann" ],
-        [ sh:namespace pav: ;
-            sh:prefix "pav" ],
-        [ sh:namespace skosxl: ;
-            sh:prefix "skosxl" ],
-        [ sh:namespace OIO: ;
-            sh:prefix "OIO" ],
-        [ sh:namespace linkml: ;
-            sh:prefix "linkml" ],
-        [ sh:namespace skos: ;
-            sh:prefix "skos" ],
-        [ sh:namespace NCIT: ;
-            sh:prefix "NCIT" ],
-        [ sh:namespace schema1: ;
-            sh:prefix "schema" ],
-        [ sh:namespace cdisc: ;
-            sh:prefix "cdisc" ],
-        [ sh:namespace qudt: ;
-            sh:prefix "qudt" ],
-        [ sh:namespace qb: ;
+    sh:declare [ sh:namespace qb: ;
             sh:prefix "qb" ],
         [ sh:namespace owl: ;
             sh:prefix "owl" ],
+        [ sh:namespace vann1: ;
+            sh:prefix "vann" ],
+        [ sh:namespace skosxl: ;
+            sh:prefix "skosxl" ],
+        [ sh:namespace linkml: ;
+            sh:prefix "linkml" ],
+        [ sh:namespace prov: ;
+            sh:prefix "prov" ],
+        [ sh:namespace skos: ;
+            sh:prefix "skos" ],
+        [ sh:namespace swrl: ;
+            sh:prefix "swrl" ],
+        [ sh:namespace cdisc: ;
+            sh:prefix "cdisc" ],
+        [ sh:namespace oslc: ;
+            sh:prefix "oslc" ],
+        [ sh:namespace qudt: ;
+            sh:prefix "qudt" ],
+        [ sh:namespace pav: ;
+            sh:prefix "pav" ],
+        [ sh:namespace NCIT: ;
+            sh:prefix "NCIT" ],
+        [ sh:namespace bibo: ;
+            sh:prefix "bibo" ],
         [ sh:namespace sh: ;
             sh:prefix "sh" ],
-        [ sh:namespace swrl: ;
-            sh:prefix "swrl" ] ;
+        [ sh:namespace OIO: ;
+            sh:prefix "OIO" ],
+        [ sh:namespace schema1: ;
+            sh:prefix "schema" ],
+        [ sh:namespace <http://semanticscience.org/resource/SIO_> ;
+            sh:prefix "SIO" ] ;
     linkml:classes linkml:AltDescription,
         linkml:Annotatable,
         linkml:Annotation,
@@ -6518,4 +6518,3 @@ linkml:SlotDefinition a linkml:ClassDefinition ;
         linkml:usage_slot_name,
         linkml:value_presence,
         linkml:values_from .
-
