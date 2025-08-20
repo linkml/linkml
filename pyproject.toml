@@ -255,6 +255,7 @@ markers = [
   "pydanticgen_split: Split module generation in pydanticgen",
   "pydanticgen_npd: tests for the numpydantic array generator",
   "panderagen: tests for the pandera generator",
+  "dataframe_polars_schema: tests for the polars schema dataframe generator",
   "pythongen: Tests for python generator",
   "pydanticgen: Tests for pydantic generator",
   "javagen: Tests for java generator",
