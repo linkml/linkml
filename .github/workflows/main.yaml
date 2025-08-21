@@ -197,17 +197,15 @@ jobs:
         working-directory: packages/linkml_runtime
         run: uv build
 
-      # Verify the built packages can be installed and imported
       - name: Test installation of built wheels
         run: |
-          # Create a fresh test environment
           uv venv test-env
-
-          # Install the linkml wheel we just built
-          uv pip install --python test-env dist/linkml-*.whl
-
-          # Install the linkml-runtime wheel we just built
-          uv pip install --python test-env packages/linkml_runtime/dist/linkml_runtime-*.whl
-
-          # Verify both packages can be imported
+          for wheel in dist/linkml-*.whl; do
+            uv pip install --python test-env "$wheel"
+            break
+          done
+          for wheel in dist/linkml_runtime-*.whl; do
+            uv pip install --python test-env "$wheel"
+            break
+          done
           uv run --python test-env python -c "import linkml; import linkml_runtime; print('✓ Both packages installed and imported successfully')"
