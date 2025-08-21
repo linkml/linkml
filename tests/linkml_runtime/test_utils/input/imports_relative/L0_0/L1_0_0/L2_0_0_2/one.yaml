@@ -1,0 +1,14 @@
+id: one
+name: import_one
+title: Import One
+description: |
+  Import loaded by the StepChild class.
+imports:
+  - linkml:types
+  - two
+classes:
+  One:
+    attributes:
+      value:
+        range: string
+        ifabsent: "One"

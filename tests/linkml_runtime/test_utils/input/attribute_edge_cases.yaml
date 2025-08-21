@@ -1,0 +1,83 @@
+id: https://w3id.org/linkml/examples/
+name: attribute-example
+description: This demonstrates attribute edge cases
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://w3id.org/linkml/examples/patterns/
+  sh: https://w3id.org/shacl/
+
+default_prefix: ex
+default_range: string
+
+slots:
+  s1:
+    description: s1
+  s2:
+    description: s2
+  s3:
+    description: s3
+
+classes:
+
+  Root:
+    attributes:
+      a1:
+        description: a1
+      a2:
+        description: a2
+      a3:
+        description: a3
+    slots:
+      - s1
+      - s2
+      - s3
+  MixinRoot:
+    mixin: true
+    attributes:
+      a4:
+        description: a4
+  Mixin1:
+    mixin: true
+    is_a: MixinRoot
+    attributes:
+      m1:
+        description: m1
+    slot_usage:
+      a1:
+        required: true
+        description: a1m1
+  Mixin2:
+    mixin: true
+    is_a: MixinRoot
+    attributes:
+      m2:
+        description: m2
+    slot_usage:
+      a1:
+        required: false
+        description: a1m2
+      a4:
+        required: true
+        description: a4m2
+  C1:
+    is_a: Root
+    mixins:
+      - Mixin1
+    slot_usage:
+      a2:
+        required: true
+        description: a2c1
+  C2:
+    is_a: Root
+    mixins:
+      - Mixin2
+    slot_usage:
+      a2:
+        required: true
+        description: a2c2
+  C1x:
+    is_a: C1
+    slot_usage:
+      a2:
+        description: a2c1x

@@ -1,0 +1,42 @@
+title: Simple Schema for inlined_as_dict
+name: inlined_as_dict
+id: https://example.org/inlined_as_dict
+
+description: Test schema for inlined_as_dict
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  ex: https://example.org/inlined_as_dict#
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+default_prefix: ex
+default_range: string
+
+types:
+  string:
+    uri: xsd:string
+    base: str
+    description: A character string
+
+  integer:
+    uri: xsd:integer
+    base: int
+    description: An integer
+
+classes:
+  EInst:
+    attributes:
+      s1:
+        range: string
+        identifier: true
+      s2:
+        range: string
+      s3:
+        range: string
+
+  E:
+    attributes:
+      ev:
+        range: EInst
+        multivalued: true
+        inlined_as_list: true
