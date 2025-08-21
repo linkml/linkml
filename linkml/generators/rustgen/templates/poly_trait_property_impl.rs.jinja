@@ -1,18 +1,46 @@
-    fn {{ name}}(&self) -> {{ type_getter }} {
+{% set lifetime_needed = range.containerType %}
+    fn {{ name}}{% if lifetime_needed %}<'a>{% endif %}(&{% if lifetime_needed %}'a {% endif %}self) -> {{ type_getter }} {
 {%  if range.box_needed %}
-// {{ ct }}
 {% if ct == 'list' %}
+        {% if range.optional %}
+        return self.{{ name }}.as_ref().map(|x| poly_containers::ListView::new(x));
+        {% else %}
         return poly_containers::ListView::new(&self.{{ name }});
+        {% endif %}
 {% elif ct == "mapping" %}
+        {% if range.optional %}
+        return self.{{ name}}
+                .as_ref()
+                .map(poly_containers::MapView::new);
+        {% else %}
         return poly_containers::MapView::new(&self.{{ name }});
+        {% endif %}
 {% else %}
+        {% if is_copy %}
+        return self.{{ name }};
+        {% else %}
         return self.{{ name }}.as_deref();
+        {% endif %}
 {% endif %}
 {% else %}
-{% if range.optional and range.is_class_range and not range.is_reference and ct == 'None' %}
+{% if range.optional %}
+        {% if type_getter == 'Option<&str>' %}
+        return self.{{ name }}.as_deref();
+        {% elif ct != 'list' and ct != 'mapping' %}
+        {% if is_copy %}
+        return self.{{ name }};
+        {% else %}
         return self.{{ name }}.as_ref();
+        {% endif %}
+        {% else %}
+        return self.{{ name }}.as_ref();
+        {% endif %}
+{% else %}
+{% if need_option_wrap %}
+        return Some(&self.{{ name }});
 {% else %}
         return &self.{{ name }};
+{% endif %}
 {% endif %}
 {% endif %}
     }

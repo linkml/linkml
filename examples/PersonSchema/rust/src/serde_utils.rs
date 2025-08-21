@@ -121,26 +121,6 @@ where
     }
 }
 
-#[cfg(feature = "serde")]
-pub fn deserialize_inlined_dict_map_optional<'de, D, T>(
-    de: D,
-) -> Result<Option<HashMap<T::Key, T>>, D::Error>
-where
-    D: Deserializer<'de>,
-    T: InlinedPair + Deserialize<'de>,
-{
-    let ast: Value = Value::deserialize(de)?;
-    match ast {
-        Value::Unit => Ok(None),
-        Value::Map(_) | Value::Seq(_) => {
-            let map = deserialize_inlined_dict_map(ValueDeserializer::<D::Error>::new(ast))?;
-            Ok(Some(map))
-        }
-        _ => Err(D::Error::custom("expected mapping, sequence, or unit")),
-    }
-}
-
-
 pub fn deserialize_primitive_list_or_single_value<'de, D, T>(
     deserializer:  D
 ) -> Result<Vec<T>, D::Error> where D: Deserializer<'de>, T: Deserialize<'de> {
@@ -157,20 +137,6 @@ pub fn deserialize_primitive_list_or_single_value<'de, D, T>(
                 ValueDeserializer::<D::Error>::new(other)
             ).map_err(D::Error::custom)?;
             Ok(vec![single_value])
-        }
-    }
-}
-
-
-pub fn deserialize_primitive_list_or_single_value_optional<'de, D, T>(
-    deserializer:  D
-) -> Result<Option<Vec<T>>, D::Error> where D: Deserializer<'de>, T: Deserialize<'de> {
-    let ast: Value = Value::deserialize(deserializer)?;
-    match ast {
-        Value::Unit => Ok(None),
-        _ => {
-            let d = deserialize_primitive_list_or_single_value(ValueDeserializer::<D::Error>::new(ast))?;
-            Ok(Some(d))
         }
     }
 }

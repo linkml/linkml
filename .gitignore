@@ -109,3 +109,6 @@ Pipfile.lock
 
 # User defined
 .vscode/*
+
+examples/PersonSchema/rust/target
+examples/PersonSchema/rust/Cargo.lock
