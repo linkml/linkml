@@ -1,3 +1,5 @@
+import platform
+
 import pytest
 from click.testing import CliRunner
 
@@ -27,6 +29,7 @@ def test_metamodel(arguments, snapshot_file, snapshot):
 
 
 @pytest.mark.network
+@pytest.mark.skipif(platform.system() == "Windows", reason="YuML external service generates platform-specific content")
 @pytest.mark.parametrize(
     "arguments,snapshot_dir",
     [
@@ -50,6 +53,7 @@ def test_invalid_classname():
 
 @pytest.mark.parametrize("format", YumlGenerator.valid_formats)
 @pytest.mark.network
+@pytest.mark.skipif(platform.system() == "Windows", reason="YuML external service generates platform-specific content")
 def test_formats(format, tmp_path, snapshot):
     runner = CliRunner()
     result = runner.invoke(cli, ["-f", format, "-c", "Person", "-d", str(tmp_path), KITCHEN_SINK_PATH])
@@ -58,6 +62,7 @@ def test_formats(format, tmp_path, snapshot):
 
 
 @pytest.mark.network
+@pytest.mark.skipif(platform.system() == "Windows", reason="YuML external service generates platform-specific content")
 def test_specified_diagram_name(tmp_path, snapshot):
     runner = CliRunner()
     result = runner.invoke(cli, ["--diagram-name", "specified_name", "-d", str(tmp_path), KITCHEN_SINK_PATH])
