@@ -307,8 +307,8 @@ slots:
     gen = PydanticGenerator(schema_str, package=PACKAGE)
     code = gen.serialize()
     assert "inlined_things: Optional[dict[str, Union[A, B]]] = Field(default=None" in code
-    assert "inlined_as_list_things: Optional[list[Union[A, B]]] = Field(default=None" in code
-    assert "not_inlined_things: Optional[list[str]] = Field(default=None" in code
+    assert "inlined_as_list_things: Optional[list[Union[A, B]]] = Field(default=[]" in code
+    assert "not_inlined_things: Optional[list[str]] = Field(default=[]" in code
 
 
 @pytest.mark.parametrize(
@@ -388,8 +388,8 @@ slots:
 def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_identifier, expected, notes):
     # Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
     expected_default_factories = {
-        "Optional[list[str]]": "Field(default=None",
-        "Optional[list[B]]": "Field(default=None",
+        "Optional[list[str]]": "Field(default=[]",
+        "Optional[list[B]]": "Field(default=[]",
         "Optional[dict[str, B]]": "Field(default=None",
         "Optional[dict[str, str]]": "Field(default=None",
         "Optional[dict[str, Union[str, B]]]": "Field(default=None",
