@@ -94,7 +94,10 @@ DEFAULT_IMPORTS = (
             ObjectImport(name="ConfigDict"),
             ObjectImport(name="Field"),
             ObjectImport(name="RootModel"),
+            ObjectImport(name="SerializationInfo"),
+            ObjectImport(name="SerializerFunctionWrapHandler"),
             ObjectImport(name="field_validator"),
+            ObjectImport(name="model_serializer"),
         ],
     )
 )
