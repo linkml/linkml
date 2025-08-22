@@ -1117,6 +1117,19 @@ def test_attribute_field():
         assert attr.model_dump()["field"] == "..."
 
 
+def test_append_to_optional_lists(kitchen_sink_path):
+    """
+    Optional multivalued fields should be initialised as empty lists
+    """
+    gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE)
+    code = gen.serialize()
+    mod = compile_python(code, PACKAGE)
+    p = mod.Person(id="P:1")
+    d = mod.Dataset()
+    d.persons.append(p)
+    assert d.model_dump(exclude_none=True) == {"persons": [{"id": "P:1"}]}
+
+
 def test_class_validators():
     """
     PydanticClass should create validators from attributes that have `patterns`
