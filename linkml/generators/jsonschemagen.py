@@ -169,8 +169,8 @@ class JsonSchema(dict):
         return ref
 
     @classmethod
-    def array_of(cls, subschema: "JsonSchema", required: bool = True) -> "JsonSchema":
-        if required:
+    def array_of(cls, subschema: "JsonSchema", include_null: bool, required: bool = True) -> "JsonSchema":
+        if required or not include_null:
             typ = "array"
         else:
             typ = ["array", "null"]
@@ -534,7 +534,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                     "additionalProperties": True,
                 }
             )
-            return JsonSchema.array_of(prop, required=slot.required)
+            return JsonSchema.array_of(prop, include_null, required=slot.required)
         slot_is_multivalued = "multivalued" in slot and slot.multivalued
         slot_is_inlined = self.schemaview.is_inlined(slot)
         slot_is_boolean = any([slot.any_of, slot.all_of, slot.exactly_one_of, slot.none_of])
@@ -579,7 +579,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                         prop = JsonSchema({"type": typ, "additionalProperties": additionalProps})
                         self.top_level_schema.add_lax_def(reference, self.aliased_slot_name(range_id_slot))
                     else:
-                        prop = JsonSchema.array_of(JsonSchema.ref_for(reference), required=slot.required)
+                        prop = JsonSchema.array_of(JsonSchema.ref_for(reference), include_null, required=slot.required)
                 else:
                     prop = JsonSchema.ref_for(reference, required=slot.required or not include_null)
 
@@ -592,7 +592,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                     prop = JsonSchema({"type": typ, "format": fmt})
 
                 if slot_is_multivalued:
-                    prop = JsonSchema.array_of(prop, required=slot.required)
+                    prop = JsonSchema.array_of(prop, include_null, required=slot.required)
                 else:
                     # handle optionals - bools like any_of, etc. below as they call this method recursively
                     if not slot.required and not slot_is_boolean and include_null:
