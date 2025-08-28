@@ -3,7 +3,8 @@
     {
       "id": "P:701",
       "name": "fred bloggs",
-      "primary_email": "fred.bloggs@example.com"
+      "primary_email": "fred.bloggs@example.com",
+      "age": 33
     },
     {
       "id": "P:702",
