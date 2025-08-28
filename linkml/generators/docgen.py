@@ -759,7 +759,7 @@ class DocGenerator(Generator):
         elif self.diagram_type.value == DiagramType.mermaid_class_diagram.value:
             self.logger.info("This is currently handled in the jinja templates")
         elif self.diagram_type.value == DiagramType.plantuml_class_diagram.value:
-            plantumlgen = PlantumlGenerator(self.schema)
+            plantumlgen = PlantumlGenerator(self.schema, preserve_names=self.preserve_names)
             plantuml_diagram = plantumlgen.serialize(classes=class_names)
             self.logger.debug(f"Created PlantUML diagram for class: {class_names}")
             return plantuml_diagram
