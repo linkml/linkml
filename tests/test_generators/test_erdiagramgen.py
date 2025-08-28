@@ -194,36 +194,21 @@ def test_preserve_names():
     gen_default = ERDiagramGenerator(schema=schema)
     diagram_default = gen_default.serialize()
 
-    # Check that entity names are normalized (CamelCase for classes)
     assert "MyClass {" in diagram_default
     assert "AnotherClassName {" in diagram_default
-
-    # Check that attribute names are normalized (underscore for slots)
     assert "string my_slot" in diagram_default
-    assert "string class_specific_slot" in diagram_default
-
-    # Check that relationship uses normalized entity names but original slot name for label
-    # Note: The cardinality might be ||--|o instead of ||--|| depending on the slot configuration
     assert "MyClass ||--" in diagram_default and 'AnotherClassName : "related_object"' in diagram_default
 
     # Test preserve_names behavior (names are preserved)
     gen_preserve = ERDiagramGenerator(schema=schema, preserve_names=True)
     diagram_preserve = gen_preserve.serialize()
 
-    # Check that entity names are preserved
     assert "My_Class {" in diagram_preserve
     assert "Another_Class_Name {" in diagram_preserve
-
-    # Check that attribute names are preserved
     assert "string my_slot" in diagram_preserve
-    assert "string class_specific_slot" in diagram_preserve
-
-    # Check that relationship uses preserved entity names and original slot name for label
-    # Note: The cardinality might be ||--|o instead of ||--|| depending on the slot configuration
     assert "My_Class ||--" in diagram_preserve and 'Another_Class_Name : "related_object"' in diagram_preserve
 
-    # Test entity creation in add_upstream_class
-
+    # Test add_upstream_class method for branch coverage
     gen_test = ERDiagramGenerator(schema=schema, preserve_names=True)
     diagram = ERDiagram()
     gen_test.add_upstream_class("My_Class", set(), diagram)

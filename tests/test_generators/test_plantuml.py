@@ -230,8 +230,7 @@ def test_preserve_names():
     assert "class_specific_slot" in diagram_preserve
     assert ": string" in diagram_preserve
 
-    # Test filename generation with directory
-
+    # Test filename generation with directory for branch coverage
     mock_response = MagicMock()
     mock_response.ok = True
     mock_response.iter_content.return_value = [b"svg"]

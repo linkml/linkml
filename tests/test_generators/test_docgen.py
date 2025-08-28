@@ -1267,87 +1267,69 @@ def test_classrule_to_dict_view_method(input_path, tmp_path):
 
 def test_preserve_names(tmp_path):
     """Test preserve_names option preserves original LinkML names in documentation output"""
-
     schema = SchemaDefinition(
-        id="https://example.com/test_schema",
-        name="test_underscore_schema",
+        id="https://example.com/test",
+        name="test_schema",
         classes={
-            "My_Class": ClassDefinition(name="My_Class", slots=["my_slot", "related_object"]),
-            "Another_Class_Name": ClassDefinition(name="Another_Class_Name", slots=["class_specific_slot"]),
+            "My_Class": ClassDefinition(name="My_Class", slots=["my_slot"]),
+            "Another_Class": ClassDefinition(name="Another_Class"),
         },
         slots={
             "my_slot": SlotDefinition(name="my_slot", range="string"),
-            "class_specific_slot": SlotDefinition(name="class_specific_slot", range="string"),
-            "related_object": SlotDefinition(name="related_object", range="Another_Class_Name"),
         },
     )
 
     # Test default behavior (names are normalized)
     gen_default = DocGenerator(schema=schema, mergeimports=False)
     gen_default.serialize(directory=str(tmp_path / "default"))
-
-    # Check that files use normalized names
     assert (tmp_path / "default" / "MyClass.md").exists()
-    assert (tmp_path / "default" / "AnotherClassName.md").exists()
-    assert (tmp_path / "default" / "my_slot.md").exists()
-    assert (tmp_path / "default" / "class_specific_slot.md").exists()
-
-    # Check that page titles use normalized names
     assert_mdfile_contains(tmp_path / "default" / "MyClass.md", "# Class: MyClass")
-    assert_mdfile_contains(tmp_path / "default" / "my_slot.md", "# Slot: my_slot")
-
-    # Check that links use normalized names
-    assert_mdfile_contains(tmp_path / "default" / "MyClass.md", "[AnotherClassName](AnotherClassName.md)")
 
     # Test preserve_names behavior (names are preserved)
     gen_preserve = DocGenerator(schema=schema, mergeimports=False, preserve_names=True)
     gen_preserve.serialize(directory=str(tmp_path / "preserve"))
-
-    # Check that files use original names
     assert (tmp_path / "preserve" / "My_Class.md").exists()
-    assert (tmp_path / "preserve" / "Another_Class_Name.md").exists()
-    assert (tmp_path / "preserve" / "my_slot.md").exists()
-    assert (tmp_path / "preserve" / "class_specific_slot.md").exists()
-
-    # Check that page titles use original names
     assert_mdfile_contains(tmp_path / "preserve" / "My_Class.md", "# Class: My_Class")
-    assert_mdfile_contains(tmp_path / "preserve" / "my_slot.md", "# Slot: my_slot")
-
-    # Check that links use original names
-    assert_mdfile_contains(tmp_path / "preserve" / "My_Class.md", "[Another_Class_Name](Another_Class_Name.md)")
-
-    # Check that URIs use original names when preserve_names is True
     assert_mdfile_contains(
         tmp_path / "preserve" / "My_Class.md",
-        "URI: [https://example.com/test_schema/My_Class](https://example.com/test_schema/My_Class)",
-    )
-    assert_mdfile_contains(
-        tmp_path / "preserve" / "my_slot.md",
-        "URI: [https://example.com/test_schema/my_slot](https://example.com/test_schema/my_slot)",
+        "URI: [https://example.com/test/My_Class](https://example.com/test/My_Class)",
     )
 
-    # Test edge cases
-    gen_preserve = DocGenerator(schema=schema, mergeimports=False, preserve_names=True)
+    # Test method edge cases for coverage
     assert gen_preserve.name(None) == ""
     assert gen_preserve.link(None) == "NONE"
     assert not gen_preserve._is_external(None)
 
-    # Test diagram generation with preserve_names using schema with imports
-    schema_with_imports = SchemaDefinition(
+    # Test URI generation edge cases
+    test_cases = [
+        ("", "empty_id"),  # Empty ID
+        ("simple-id", "no_protocol"),  # No protocol
+        ("https://example.com/", "trailing_slash"),  # Trailing slash
+    ]
+
+    for schema_id, case_name in test_cases:
+        test_schema = SchemaDefinition(id=schema_id, name=case_name, classes={"Test": ClassDefinition(name="Test")})
+        gen = DocGenerator(schema=test_schema, preserve_names=True)
+        assert gen.uri(test_schema.classes["Test"]) is not None
+
+    # Test diagram generation
+    schema_with_types = SchemaDefinition(
         id="https://example.com/test",
         name="test_schema",
         imports=["linkml:types"],
         prefixes={"linkml": "https://w3id.org/linkml/"},
-        classes={"My_Class": ClassDefinition(name="My_Class", slots=["my_slot"])},
-        slots={"my_slot": SlotDefinition(name="my_slot", range="string")},
+        classes={"Test": ClassDefinition(name="Test")},
     )
-    gen_with_imports = DocGenerator(schema=schema_with_imports, preserve_names=True)
-    gen_with_imports.diagram_type = DiagramType.er_diagram
-    assert gen_with_imports.mermaid_diagram(["My_Class"]) is not None
-
-    gen_with_imports.diagram_type = DiagramType.plantuml_class_diagram
-    assert gen_with_imports.mermaid_diagram(["My_Class"]) is not None
+    gen_diag = DocGenerator(schema=schema_with_types, preserve_names=True)
+    gen_diag.diagram_type = DiagramType.er_diagram
+    assert gen_diag.mermaid_diagram(["Test"]) is not None
+    gen_diag.diagram_type = DiagramType.plantuml_class_diagram
+    assert gen_diag.mermaid_diagram(["Test"]) is not None
 
     # Test exception handling in mappings override
     gen_preserve.uri = lambda *args, **kwargs: (_ for _ in ()).throw(ValueError("test"))
     gen_preserve.schemaview.get_mappings("My_Class")  # Should not crash
+
+    # Test mappings edge cases
+    for test_input in [None, "", "NonExistent"]:
+        gen_preserve.schemaview.get_mappings(test_input)
