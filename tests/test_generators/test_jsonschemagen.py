@@ -474,3 +474,54 @@ def assert_dict_subset(subset: dict, full: dict, path=""):
             assert_dict_subset(subset[key], full[key], new_path)
         else:
             assert full[key] == subset[key], f"in path {new_path}"
+
+
+def test_preserve_names():
+    """Test that preserve_names option preserves original LinkML names in JSON Schema.
+    
+    Tests both class names and property names with underscores and mixed case.
+    """
+    schema = SchemaDefinition(
+        id="https://example.com/test",
+        name="test_schema",
+        classes={
+            "foo": ClassDefinition(name="foo", slots=["_bar", "mySlot"]),
+            "My_Class": ClassDefinition(name="My_Class", slots=["other"]),
+        },
+        slots={
+            "_bar": SlotDefinition(name="_bar", range="string"),
+            "mySlot": SlotDefinition(name="mySlot", range="integer"),
+            "other": SlotDefinition(name="other", range="My_Class", inlined=True),
+        }
+    )
+    
+    # Test default behavior (names are normalized)
+    generator_default = JsonSchemaGenerator(schema=schema)
+    json_schema_default = json.loads(generator_default.serialize())
+    
+    assert "Foo" in json_schema_default["$defs"]
+    assert "MyClass" in json_schema_default["$defs"]
+    assert "foo" not in json_schema_default["$defs"]
+    assert "My_Class" not in json_schema_default["$defs"]
+    
+    properties_default = json_schema_default["$defs"]["Foo"]["properties"]
+    assert "_bar" in properties_default
+    assert "mySlot" in properties_default
+    
+    # Test preserve_names behavior (names are preserved)
+    generator_preserve = JsonSchemaGenerator(schema=schema, preserve_names=True)
+    json_schema_preserve = json.loads(generator_preserve.serialize())
+    
+    assert "foo" in json_schema_preserve["$defs"]
+    assert "My_Class" in json_schema_preserve["$defs"]
+    assert "Foo" not in json_schema_preserve["$defs"]
+    assert "MyClass" not in json_schema_preserve["$defs"]
+    
+    properties_preserve = json_schema_preserve["$defs"]["foo"]["properties"]
+    assert "_bar" in properties_preserve
+    assert "mySlot" in properties_preserve
+    
+    # Test that references also use preserved names
+    other_property = json_schema_preserve["$defs"]["My_Class"]["properties"]["other"]
+    assert "anyOf" in other_property
+    assert other_property["anyOf"][0]["$ref"] == "#/$defs/My_Class"
