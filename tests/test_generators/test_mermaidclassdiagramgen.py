@@ -1,4 +1,4 @@
-from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition
+from linkml_runtime.linkml_model.meta import ClassDefinition, EnumDefinition, SchemaDefinition, SlotDefinition, TypeDefinition
 
 from linkml.generators.mermaidclassdiagramgen import MermaidClassDiagramGenerator
 
@@ -60,3 +60,22 @@ def test_preserve_names():
 
     assert gen_preserve.name(my_class) == "My_Class"
     assert gen_preserve.name(my_slot) == "my_slot"
+
+    # Test edge cases for coverage
+    # Test name() method with None (for coverage)
+    assert gen_preserve.name(None) == ""
+
+    # Test with different element types for coverage
+
+    enum_def = EnumDefinition(name="Test_Enum")
+    type_def = TypeDefinition(name="Custom_Type", typeof="string")
+
+    assert gen_preserve.name(enum_def) == "Test_Enum"
+    assert gen_preserve.name(type_def) == "Custom_Type"
+
+    # Test default behavior for different element types
+    assert gen_default.name(enum_def) == "TestEnum"
+    assert gen_default.name(type_def) == "CustomType"
+
+    # Test generate_class_diagrams method
+    gen_preserve.generate_class_diagrams()

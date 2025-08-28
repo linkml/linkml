@@ -9,7 +9,7 @@ import pytest
 import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper
-from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition, SlotDefinition
+from linkml_runtime.linkml_model import ClassDefinition, EnumDefinition, PermissibleValue, SchemaDefinition, SlotDefinition
 from linkml_runtime.loaders import yaml_loader
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
@@ -544,3 +544,48 @@ def test_preserve_names():
     assert "MyClass" in json_schema_default_top["$defs"]
     if "$ref" in json_schema_default_top:
         assert json_schema_default_top["$ref"] == "#/$defs/MyClass"
+
+    # Test additional edge cases for coverage
+
+    # Test with enum for coverage
+    enum_schema = SchemaDefinition(
+        id="https://example.com/test_enum",
+        name="test_enum_schema",
+        classes={
+            "Test_Class": ClassDefinition(name="Test_Class", slots=["enum_slot"]),
+        },
+        slots={
+            "enum_slot": SlotDefinition(name="enum_slot", range="Test_Enum"),
+        },
+        enums={
+            "Test_Enum": EnumDefinition(
+                name="Test_Enum",
+                permissible_values={
+                    "VALUE_ONE": PermissibleValue(text="VALUE_ONE"),
+                },
+            ),
+        },
+    )
+
+    # Test preserve_names with enum
+    generator_enum = JsonSchemaGenerator(schema=enum_schema, preserve_names=True)
+    json_schema_enum = json.loads(generator_enum.serialize())
+
+    # Check that enum names are preserved
+    assert "Test_Enum" in json_schema_enum["$defs"]
+    assert "Test_Class" in json_schema_enum["$defs"]
+
+    # Check that enum values are handled correctly
+    enum_def = json_schema_enum["$defs"]["Test_Enum"]
+    assert "VALUE_ONE" in enum_def["enum"]
+
+    # Test add_lax_def canonical name assignment
+    gen_lax = JsonSchemaGenerator(schema=enum_schema, preserve_names=False)
+    json_obj = gen_lax.generate()
+    json_obj.add_lax_def(["Test_Name"], "id")
+    assert "TestName" in json_obj._lax_forward_refs
+
+    gen_preserve = JsonSchemaGenerator(schema=enum_schema, preserve_names=True)
+    json_obj_preserve = gen_preserve.generate()
+    json_obj_preserve.add_lax_def(["Test_Name"], "id")
+    assert "Test_Name" in json_obj_preserve._lax_forward_refs

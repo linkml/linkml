@@ -1,4 +1,6 @@
 import os
+import tempfile
+from unittest.mock import MagicMock, patch
 from xml.dom import minidom
 
 import pytest
@@ -227,3 +229,14 @@ def test_preserve_names():
     assert "my_slot" in diagram_preserve
     assert "class_specific_slot" in diagram_preserve
     assert ": string" in diagram_preserve
+
+    # Test filename generation with directory
+
+    mock_response = MagicMock()
+    mock_response.ok = True
+    mock_response.iter_content.return_value = [b"svg"]
+
+    with tempfile.TemporaryDirectory() as temp_dir, patch("requests.get", return_value=mock_response):
+        gen = PlantumlGenerator(schema=schema, preserve_names=True, dry_run=False)
+        gen.visit_schema(classes={"My_Class"}, directory=temp_dir)
+        assert gen.output_file_name.endswith("My_Class.svg")

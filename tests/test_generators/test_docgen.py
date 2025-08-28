@@ -17,7 +17,7 @@ from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, 
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
 
-from linkml.generators.docgen import DocGenerator
+from linkml.generators.docgen import DiagramType, DocGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -1325,3 +1325,29 @@ def test_preserve_names(tmp_path):
         tmp_path / "preserve" / "my_slot.md",
         "URI: [https://example.com/test_schema/my_slot](https://example.com/test_schema/my_slot)",
     )
+
+    # Test edge cases
+    gen_preserve = DocGenerator(schema=schema, mergeimports=False, preserve_names=True)
+    assert gen_preserve.name(None) == ""
+    assert gen_preserve.link(None) == "NONE"
+    assert not gen_preserve._is_external(None)
+
+    # Test diagram generation with preserve_names using schema with imports
+    schema_with_imports = SchemaDefinition(
+        id="https://example.com/test",
+        name="test_schema",
+        imports=["linkml:types"],
+        prefixes={"linkml": "https://w3id.org/linkml/"},
+        classes={"My_Class": ClassDefinition(name="My_Class", slots=["my_slot"])},
+        slots={"my_slot": SlotDefinition(name="my_slot", range="string")},
+    )
+    gen_with_imports = DocGenerator(schema=schema_with_imports, preserve_names=True)
+    gen_with_imports.diagram_type = DiagramType.er_diagram
+    assert gen_with_imports.mermaid_diagram(["My_Class"]) is not None
+
+    gen_with_imports.diagram_type = DiagramType.plantuml_class_diagram
+    assert gen_with_imports.mermaid_diagram(["My_Class"]) is not None
+
+    # Test exception handling in mappings override
+    gen_preserve.uri = lambda *args, **kwargs: (_ for _ in ()).throw(ValueError("test"))
+    gen_preserve.schemaview.get_mappings("My_Class")  # Should not crash

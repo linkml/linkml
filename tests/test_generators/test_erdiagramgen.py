@@ -6,7 +6,7 @@ import pytest
 from click.testing import CliRunner
 from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition
 
-from linkml.generators.erdiagramgen import ERDiagramGenerator, cli
+from linkml.generators.erdiagramgen import ERDiagram, ERDiagramGenerator, cli
 
 
 @pytest.fixture
@@ -221,3 +221,10 @@ def test_preserve_names():
     # Check that relationship uses preserved entity names and original slot name for label
     # Note: The cardinality might be ||--|o instead of ||--|| depending on the slot configuration
     assert "My_Class ||--" in diagram_preserve and 'Another_Class_Name : "related_object"' in diagram_preserve
+
+    # Test entity creation in add_upstream_class
+
+    gen_test = ERDiagramGenerator(schema=schema, preserve_names=True)
+    diagram = ERDiagram()
+    gen_test.add_upstream_class("My_Class", set(), diagram)
+    assert any(e.name == "My_Class" for e in diagram.entities)
