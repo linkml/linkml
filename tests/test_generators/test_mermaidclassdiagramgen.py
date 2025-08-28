@@ -32,6 +32,8 @@ def test_preserve_names():
     schema = SchemaDefinition(
         id="https://example.com/test_schema",
         name="test_underscore_schema",
+        imports=["linkml:types"],
+        prefixes={"linkml": "https://w3id.org/linkml/"},
         classes={
             "My_Class": ClassDefinition(name="My_Class", slots=["my_slot", "related_object"]),
             "Another_Class_Name": ClassDefinition(name="Another_Class_Name", slots=["class_specific_slot"]),
