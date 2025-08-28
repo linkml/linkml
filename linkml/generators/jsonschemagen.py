@@ -275,7 +275,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             self.top_class = self.topClass
 
         super().__post_init__()
-        
+
         # Set the class variable for JsonSchema to use
         JsonSchema.PRESERVE_NAMES = self.preserve_names
 
@@ -385,9 +385,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 (self.preserve_names and self.top_class == cls.name)
                 or (not self.preserve_names and camelcase(self.top_class) == camelcase(cls.name))
             )
-        ) or (
-            self.top_class is None and cls.tree_root
-        ):
+        ) or (self.top_class is None and cls.tree_root):
             for key, value in class_subschema.items():
                 # check this first to ensure we don't overwrite things like additionalProperties
                 # or description on the root. But we do want to copy over properties, required,

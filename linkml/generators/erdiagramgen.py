@@ -283,7 +283,9 @@ class ERDiagramGenerator(Generator):
         rel = Relationship(
             first_entity=entity.name,
             relationship_type=rel_type,
-            second_entity=(sv.get_class(slot.range).name if self.preserve_names else camelcase(sv.get_class(slot.range).name)),
+            second_entity=(
+                sv.get_class(slot.range).name if self.preserve_names else camelcase(sv.get_class(slot.range).name)
+            ),
             relationship_label=(slot.name if self.preserve_names else underscore(slot.name)),
         )
         diagram.relationships.append(rel)
