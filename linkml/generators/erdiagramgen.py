@@ -286,7 +286,7 @@ class ERDiagramGenerator(Generator):
             second_entity=(
                 sv.get_class(slot.range).name if self.preserve_names else camelcase(sv.get_class(slot.range).name)
             ),
-            relationship_label=(slot.name if self.preserve_names else underscore(slot.name)),
+            relationship_label=slot.name,
         )
         diagram.relationships.append(rel)
 
