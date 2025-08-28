@@ -525,3 +525,22 @@ def test_preserve_names():
     other_property = json_schema_preserve["$defs"]["My_Class"]["properties"]["other"]
     assert "anyOf" in other_property
     assert other_property["anyOf"][0]["$ref"] == "#/$defs/My_Class"
+
+    # Test top-level schema selection with preserve_names
+    generator_preserve_top = JsonSchemaGenerator(schema=schema, preserve_names=True, top_class="My_Class")
+    json_schema_preserve_top = json.loads(generator_preserve_top.serialize())
+
+    # When preserve_names=True, top_class should match exactly with class name
+    # The schema should have the preserved class name in $defs and reference it
+    assert "My_Class" in json_schema_preserve_top["$defs"]
+    if "$ref" in json_schema_preserve_top:
+        assert json_schema_preserve_top["$ref"] == "#/$defs/My_Class"
+
+    # Test default behavior for top-level schema selection
+    generator_default_top = JsonSchemaGenerator(schema=schema, top_class="My_Class")
+    json_schema_default_top = json.loads(generator_default_top.serialize())
+
+    # When preserve_names=False (default), top_class should be normalized for comparison
+    assert "MyClass" in json_schema_default_top["$defs"]
+    if "$ref" in json_schema_default_top:
+        assert json_schema_default_top["$ref"] == "#/$defs/MyClass"

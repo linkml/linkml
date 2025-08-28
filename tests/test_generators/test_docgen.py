@@ -13,6 +13,7 @@ from pathlib import Path
 
 import pytest
 import yaml
+from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
 
@@ -1262,3 +1263,65 @@ def test_classrule_to_dict_view_method(input_path, tmp_path):
 
     # Test that elseconditions is None since it's not defined in the rule
     assert rule_dict["elseconditions"] is None
+
+
+def test_preserve_names(tmp_path):
+    """Test preserve_names option preserves original LinkML names in documentation output"""
+
+    schema = SchemaDefinition(
+        id="https://example.com/test_schema",
+        name="test_underscore_schema",
+        classes={
+            "My_Class": ClassDefinition(name="My_Class", slots=["my_slot", "related_object"]),
+            "Another_Class_Name": ClassDefinition(name="Another_Class_Name", slots=["class_specific_slot"]),
+        },
+        slots={
+            "my_slot": SlotDefinition(name="my_slot", range="string"),
+            "class_specific_slot": SlotDefinition(name="class_specific_slot", range="string"),
+            "related_object": SlotDefinition(name="related_object", range="Another_Class_Name"),
+        },
+    )
+
+    # Test default behavior (names are normalized)
+    gen_default = DocGenerator(schema=schema, mergeimports=False)
+    gen_default.serialize(directory=str(tmp_path / "default"))
+
+    # Check that files use normalized names
+    assert (tmp_path / "default" / "MyClass.md").exists()
+    assert (tmp_path / "default" / "AnotherClassName.md").exists()
+    assert (tmp_path / "default" / "my_slot.md").exists()
+    assert (tmp_path / "default" / "class_specific_slot.md").exists()
+
+    # Check that page titles use normalized names
+    assert_mdfile_contains(tmp_path / "default" / "MyClass.md", "# Class: MyClass")
+    assert_mdfile_contains(tmp_path / "default" / "my_slot.md", "# Slot: my_slot")
+
+    # Check that links use normalized names
+    assert_mdfile_contains(tmp_path / "default" / "MyClass.md", "[AnotherClassName](AnotherClassName.md)")
+
+    # Test preserve_names behavior (names are preserved)
+    gen_preserve = DocGenerator(schema=schema, mergeimports=False, preserve_names=True)
+    gen_preserve.serialize(directory=str(tmp_path / "preserve"))
+
+    # Check that files use original names
+    assert (tmp_path / "preserve" / "My_Class.md").exists()
+    assert (tmp_path / "preserve" / "Another_Class_Name.md").exists()
+    assert (tmp_path / "preserve" / "my_slot.md").exists()
+    assert (tmp_path / "preserve" / "class_specific_slot.md").exists()
+
+    # Check that page titles use original names
+    assert_mdfile_contains(tmp_path / "preserve" / "My_Class.md", "# Class: My_Class")
+    assert_mdfile_contains(tmp_path / "preserve" / "my_slot.md", "# Slot: my_slot")
+
+    # Check that links use original names
+    assert_mdfile_contains(tmp_path / "preserve" / "My_Class.md", "[Another_Class_Name](Another_Class_Name.md)")
+
+    # Check that URIs use original names when preserve_names is True
+    assert_mdfile_contains(
+        tmp_path / "preserve" / "My_Class.md",
+        "URI: [https://example.com/test_schema/My_Class](https://example.com/test_schema/My_Class)",
+    )
+    assert_mdfile_contains(
+        tmp_path / "preserve" / "my_slot.md",
+        "URI: [https://example.com/test_schema/my_slot](https://example.com/test_schema/my_slot)",
+    )

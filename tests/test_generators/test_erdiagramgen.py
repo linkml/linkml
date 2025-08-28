@@ -4,6 +4,7 @@ Tests generation of mermaidfrom LinkML schemas
 
 import pytest
 from click.testing import CliRunner
+from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition
 
 from linkml.generators.erdiagramgen import ERDiagramGenerator, cli
 
@@ -170,3 +171,53 @@ def test_exclude_abstract_classes(kitchen_sink_path):
     assert "Friend{" not in mermaid, "Friend abstract class should be excluded"
     assert "Person{" in mermaid, "Person concrete class should still be included"
     assert "Agent{" in mermaid, "Agent concrete class should still be included"
+
+
+def test_preserve_names():
+    """Test preserve_names option preserves original LinkML names in ER diagram output"""
+
+    schema = SchemaDefinition(
+        id="https://example.com/test_schema",
+        name="test_underscore_schema",
+        classes={
+            "My_Class": ClassDefinition(name="My_Class", slots=["my_slot", "related_object"]),
+            "Another_Class_Name": ClassDefinition(name="Another_Class_Name", slots=["class_specific_slot"]),
+        },
+        slots={
+            "my_slot": SlotDefinition(name="my_slot", range="string"),
+            "class_specific_slot": SlotDefinition(name="class_specific_slot", range="string"),
+            "related_object": SlotDefinition(name="related_object", range="Another_Class_Name"),
+        },
+    )
+
+    # Test default behavior (names are normalized)
+    gen_default = ERDiagramGenerator(schema=schema)
+    diagram_default = gen_default.serialize()
+
+    # Check that entity names are normalized (CamelCase for classes)
+    assert "MyClass {" in diagram_default
+    assert "AnotherClassName {" in diagram_default
+
+    # Check that attribute names are normalized (underscore for slots)
+    assert "string my_slot" in diagram_default
+    assert "string class_specific_slot" in diagram_default
+
+    # Check that relationship uses normalized entity names but original slot name for label
+    # Note: The cardinality might be ||--|o instead of ||--|| depending on the slot configuration
+    assert "MyClass ||--" in diagram_default and 'AnotherClassName : "related_object"' in diagram_default
+
+    # Test preserve_names behavior (names are preserved)
+    gen_preserve = ERDiagramGenerator(schema=schema, preserve_names=True)
+    diagram_preserve = gen_preserve.serialize()
+
+    # Check that entity names are preserved
+    assert "My_Class {" in diagram_preserve
+    assert "Another_Class_Name {" in diagram_preserve
+
+    # Check that attribute names are preserved
+    assert "string my_slot" in diagram_preserve
+    assert "string class_specific_slot" in diagram_preserve
+
+    # Check that relationship uses preserved entity names and original slot name for label
+    # Note: The cardinality might be ||--|o instead of ||--|| depending on the slot configuration
+    assert "My_Class ||--" in diagram_preserve and 'Another_Class_Name : "related_object"' in diagram_preserve

@@ -387,6 +387,8 @@ class DocGenerator(Generator):
         :return: slot name or numeric portion of CURIE prefixed
             slot_uri
         """
+        if element is None:
+            return ""
         if self.preserve_names:
             return element.name
         elif type(element).class_name == "slot_definition":
@@ -473,6 +475,8 @@ class DocGenerator(Generator):
             return "NONE"
         if not isinstance(e, Definition):
             e = self.schemaview.get_element(e)
+            if e is None:
+                return "NONE"
         if self._is_external(e):
             return self.uri_link(e)
         elif isinstance(e, ClassDefinition):
@@ -531,6 +535,8 @@ class DocGenerator(Generator):
         return self._is_external(t) and not self.schemaview.schema.id.startswith("https://w3id.org/linkml/")
 
     def _is_external(self, element: Element) -> bool:
+        if element is None:
+            return False
         if element.from_schema == "https://w3id.org/linkml/types" and not self.genmeta:
             return True
         else:
