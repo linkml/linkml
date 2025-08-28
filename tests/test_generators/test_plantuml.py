@@ -211,8 +211,8 @@ def test_preserve_names():
     )
 
     # Test default behavior (names are normalized)
-    gen_default = PlantumlGenerator(schema=schema, dry_run=True)
-    diagram_default = gen_default.serialize()
+    gen_default = PlantumlGenerator(schema=schema)
+    diagram_default = gen_default.visit_schema()
 
     # Check that slot names and ranges are normalized (underscore)
     assert "my_slot" in diagram_default
@@ -220,8 +220,8 @@ def test_preserve_names():
     assert ": string" in diagram_default
 
     # Test preserve_names behavior (names are preserved)
-    gen_preserve = PlantumlGenerator(schema=schema, preserve_names=True, dry_run=True)
-    diagram_preserve = gen_preserve.serialize()
+    gen_preserve = PlantumlGenerator(schema=schema, preserve_names=True)
+    diagram_preserve = gen_preserve.visit_schema()
 
     # Check that slot names and ranges are preserved
     assert "my_slot" in diagram_preserve
