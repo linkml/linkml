@@ -1,4 +1,10 @@
-from linkml_runtime.linkml_model.meta import ClassDefinition, EnumDefinition, SchemaDefinition, SlotDefinition, TypeDefinition
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    EnumDefinition,
+    SchemaDefinition,
+    SlotDefinition,
+    TypeDefinition,
+)
 
 from linkml.generators.mermaidclassdiagramgen import MermaidClassDiagramGenerator
 

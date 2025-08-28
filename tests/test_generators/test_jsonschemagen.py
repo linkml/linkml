@@ -9,7 +9,13 @@ import pytest
 import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper
-from linkml_runtime.linkml_model import ClassDefinition, EnumDefinition, PermissibleValue, SchemaDefinition, SlotDefinition
+from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    EnumDefinition,
+    PermissibleValue,
+    SchemaDefinition,
+    SlotDefinition,
+)
 from linkml_runtime.loaders import yaml_loader
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
