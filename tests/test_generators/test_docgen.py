@@ -10,6 +10,7 @@ from collections import Counter
 from collections.abc import Generator
 from copy import copy
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 import yaml
@@ -1325,6 +1326,22 @@ def test_preserve_names(tmp_path):
     assert gen_diag.mermaid_diagram(["Test"]) is not None
     gen_diag.diagram_type = DiagramType.plantuml_class_diagram
     assert gen_diag.mermaid_diagram(["Test"]) is not None
+
+    # Test mappings with valid element
+    assert gen_preserve.schemaview.get_mappings("My_Class") is not None
+
+    # Cover case where element exists but 'self'/'native' mappings are absent
+    with patch("linkml_runtime.utils.schemaview.SchemaView.get_mappings", return_value={"other": ["x"]}):
+        gen_no_keys = DocGenerator(schema=schema, preserve_names=True)
+        assert gen_no_keys.schemaview.get_mappings("My_Class") is not None
+
+    # Cover case where mappings exist but the element cannot be resolved
+    with (
+        patch("linkml_runtime.utils.schemaview.SchemaView.get_mappings", return_value={"self": ["x"]}),
+        patch("linkml_runtime.utils.schemaview.SchemaView.get_element", return_value=None),
+    ):
+        gen_no_element = DocGenerator(schema=schema, preserve_names=True)
+        assert gen_no_element.schemaview.get_mappings("My_Class") is not None
 
     # Test exception handling in mappings override
     gen_preserve.uri = lambda *args, **kwargs: (_ for _ in ()).throw(ValueError("test"))
