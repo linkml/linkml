@@ -195,10 +195,11 @@ class DocGenerator(Generator):
         super().__post_init__()
         self.logger = logging.getLogger(__name__)
         self.schemaview = SchemaView(self.schema, merge_imports=self.mergeimports)
-        
+
         # Override schemaview's get_mappings to use preserved URIs when needed
         if self.preserve_names:
             original_get_mappings = self.schemaview.get_mappings
+
             def get_mappings_with_preserved_uris(element_name, **kwargs):
                 mappings = original_get_mappings(element_name, **kwargs)
                 if mappings and element_name:
@@ -213,6 +214,7 @@ class DocGenerator(Generator):
                     except Exception:
                         pass
                 return mappings
+
             self.schemaview.get_mappings = get_mappings_with_preserved_uris
 
     def serialize(self, directory: str = None) -> None:
