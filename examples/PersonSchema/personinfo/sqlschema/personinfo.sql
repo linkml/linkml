@@ -422,7 +422,7 @@ CREATE TABLE "ImagingProcedureConcept_mappings" (
 	mappings TEXT,
 	PRIMARY KEY ("ImagingProcedureConcept_id", mappings),
 	FOREIGN KEY("ImagingProcedureConcept_id") REFERENCES "ImagingProcedureConcept" (id)
-);CREATE INDEX "ix_ImagingProcedureConcept_mappings_mappings" ON "ImagingProcedureConcept_mappings" (mappings);CREATE INDEX "ix_ImagingProcedureConcept_mappings_ImagingProcedureConcept_id" ON "ImagingProcedureConcept_mappings" ("ImagingProcedureConcept_id");
+);CREATE INDEX "ix_ImagingProcedureConcept_mappings_ImagingProcedureConcept_id" ON "ImagingProcedureConcept_mappings" ("ImagingProcedureConcept_id");CREATE INDEX "ix_ImagingProcedureConcept_mappings_mappings" ON "ImagingProcedureConcept_mappings" (mappings);
 CREATE TABLE "EmploymentEvent" (
 	id INTEGER NOT NULL,
 	employed_at TEXT,
@@ -454,4 +454,4 @@ CREATE TABLE "Organization_has_news_event" (
 	PRIMARY KEY ("Organization_id", has_news_event_id),
 	FOREIGN KEY("Organization_id") REFERENCES "Organization" (id),
 	FOREIGN KEY(has_news_event_id) REFERENCES "NewsEvent" (id)
-);CREATE INDEX "ix_Organization_has_news_event_has_news_event_id" ON "Organization_has_news_event" (has_news_event_id);CREATE INDEX "ix_Organization_has_news_event_Organization_id" ON "Organization_has_news_event" ("Organization_id");
+);CREATE INDEX "ix_Organization_has_news_event_Organization_id" ON "Organization_has_news_event" ("Organization_id");CREATE INDEX "ix_Organization_has_news_event_has_news_event_id" ON "Organization_has_news_event" (has_news_event_id);
