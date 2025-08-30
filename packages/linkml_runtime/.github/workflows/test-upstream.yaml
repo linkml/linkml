@@ -82,7 +82,7 @@ jobs:
           echo "upstream_repo=${{ inputs.upstream_repo }}" >> "$GITHUB_ENV"
 
       - name: checkout upstream
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5
         with:
           repository: "${{ env.upstream_repo }}"
           path: linkml
@@ -90,7 +90,7 @@ jobs:
           fetch-depth: 0
 
       - name: checkout linkml-runtime
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5
         with:
           path: linkml-runtime
           fetch-depth: 0
