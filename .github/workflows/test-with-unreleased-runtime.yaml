@@ -76,7 +76,7 @@ jobs:
           echo "upstream_repo=${{ inputs.upstream_repo }}" >> "$GITHUB_ENV"
 
       - name: checkout upstream linkml-runtime
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: "${{ env.upstream_repo }}"
           path: linkml-runtime
@@ -84,7 +84,7 @@ jobs:
           fetch-depth: 0
 
       - name: checkout linkml
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           # don't specify repository like this or else we won't get pull request branches correctly
           # repository: linkml/linkml
