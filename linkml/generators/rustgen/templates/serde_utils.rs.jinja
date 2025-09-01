@@ -141,6 +141,34 @@ where
 }
 
 
+#[cfg(feature = "serde")]
+pub fn deserialize_inlined_dict_list_optional<'de, D, T>(
+    de: D,
+) -> Result<Option<Vec<T>>, D::Error>
+where
+    D: Deserializer<'de>,
+    T: InlinedPair + Deserialize<'de>,
+{
+    let ast: Value = Value::deserialize(de)?;
+    match ast {
+        Value::Unit => Ok(None),
+        Value::Map(_) => {
+            let list = deserialize_inlined_dict_list(ValueDeserializer::<D::Error>::new(ast))?;
+            Ok(Some(list))
+        }
+        Value::Seq(seq) => {
+            let mut out = Vec::with_capacity(seq.len());
+            for v_ast in seq {
+                let val: T = Deserialize::deserialize(ValueDeserializer::<D::Error>::new(v_ast))
+                    .map_err(D::Error::custom)?;
+                out.push(val);
+            }
+            Ok(Some(out))
+        }
+        _ => Err(D::Error::custom("expected mapping, sequence, or unit")),
+    }
+}
+
 pub fn deserialize_primitive_list_or_single_value<'de, D, T>(
     deserializer:  D
 ) -> Result<Vec<T>, D::Error> where D: Deserializer<'de>, T: Deserialize<'de> {
