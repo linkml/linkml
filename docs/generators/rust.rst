@@ -20,7 +20,7 @@ Overview
 The Rust Generator produces a Rust crate with structs and enums from a LinkML model, with optional pyo3 and serde support.
 It additionally generates a trait for every struct to provide polymorphic access, in the `poly.rs` file.
 
-For all classes having subclasses, an extra enum is generated to represent an object of the class or a subtype. 
+For all classes having subclasses, an extra enum is generated to represent an object of the class or a subtype.
 All the enums implement the trait, so they can be (optionally) directly used without match statement.
 
 
@@ -32,7 +32,7 @@ Given a definition of a Person class:
 
 .. code-block:: yaml
 
-     
+
   Event:
     slots:
       - started_at_time
@@ -84,7 +84,7 @@ The generate rust looks like this (serde and pyo3 annotations omitted for brevit
         pub is_current: Option<bool>
     }
 
-    pub enum EventOrSubtype {    
+    pub enum EventOrSubtype {
         Event(Event),
         EmploymentEvent(EmploymentEvent),
         MedicalEvent(MedicalEvent)
@@ -106,7 +106,7 @@ polymorphic traits are implemented:
         fn in_location(&self) -> Option<&str>;
         fn diagnosis(&self) -> Option<&crate::DiagnosisConcept>;
         fn procedure(&self) -> Option<&crate::ProcedureConcept>;
-    }    
+    }
 
     impl Event for crate::MedicalEvent {
             fn started_at_time(&self) -> Option<&NaiveDate> {
@@ -171,11 +171,10 @@ Command Line
 .. click:: linkml.generators.rustgen:cli
     :prog: gen-rust
     :nested: short
-        
+
 Generator
 ---------
 
-        
+
 .. autoclass:: RustGenerator
     :members:
-

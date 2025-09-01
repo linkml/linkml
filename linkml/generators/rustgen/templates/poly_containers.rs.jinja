@@ -404,7 +404,7 @@ pub enum ListAny<'a, T> {
  *  SeqRef implementation
  * ------------------------------------------------------------------ */
 impl<'a, T> SeqRef<'a, T> for ListAny<'a, T> {
-    type Iter<'x> = ListIter<'x, T> where Self: 'x, T: 'x; 
+    type Iter<'x> = ListIter<'x, T> where Self: 'x, T: 'x;
     //type Iter<'b> =
     //    std::boxed::Box<dyn Iterator<Item = &'b T> + ExactSizeIterator + 'b>
     //    where Self: 'b, T: 'b;
@@ -430,7 +430,7 @@ impl<'a, T> SeqRef<'a, T> for ListAny<'a, T> {
     fn to_any(self) -> ListAny<'a, T>
     where
         Self: Sized,
-         { 
+         {
             match self {
                 Self::Vec(v)  => ListAny::Vec(v),
                 Self::View(v) => ListAny::View(v),

@@ -9,7 +9,7 @@ pub enum {{ enum_name }} {
 {%- for t in struct_names -%}
     {% if type_designator_field  %}
     {% set tds = type_designators[t] %}
-    #[serde(rename = "{{ tds[0] }}",  {% for t in tds[1:] %} alias="{{ t }}", {% endfor %} )] 
+    #[serde(rename = "{{ tds[0] }}",  {% for t in tds[1:] %} alias="{{ t }}", {% endfor %} )]
     {% endif %}
     {{ t }}({{ t }}){% if not loop.last %}, {% endif %}
 {%- endfor -%}
