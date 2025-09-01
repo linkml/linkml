@@ -314,7 +314,11 @@ def get_rust_range_info(
         box_needed=inline_mode == SlotInlineMode.INLINE and can_contain_reference_to_class(s, cls, sv),
         is_class_range=all_ranges[0] in sv.all_classes() if len(all_ranges) == 1 else False,
         is_reference=inline_mode == SlotInlineMode.REFERENCE,
-        has_class_subtypes=(has_real_subtypes(sv, all_ranges[0]) if len(all_ranges) == 1 and all_ranges[0] in sv.all_classes() else False),
+        has_class_subtypes=(
+            has_real_subtypes(sv, all_ranges[0])
+            if (len(all_ranges) == 1 and all_ranges[0] in sv.all_classes())
+            else False
+        ),
         type_=(
             underscore(uncamelcase(cls.name)) + "_utl::" + get_name(s) + "_range"
             if len(sub_ranges) > 1
@@ -948,7 +952,11 @@ class RustGenerator(Generator, LifecycleMixin):
                 child_ranges=None,
                 is_class_range=single not in ("String", "bool", "f64", "isize"),
                 is_reference=False,
-                has_class_subtypes=(has_real_subtypes(self.schemaview, single_src_class) if single_src_class is not None else False),
+                has_class_subtypes=(
+                    has_real_subtypes(self.schemaview, single_src_class)
+                    if single_src_class is not None
+                    else False
+                ),
                 type_=single,
             )
 

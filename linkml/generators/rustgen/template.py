@@ -1,8 +1,8 @@
 from enum import Enum
-from typing import ClassVar, List, Optional
+from typing import ClassVar, Optional
 
 from jinja2 import Environment, PackageLoader
-from linkml_runtime.utils.formatutils import underscore, uncamelcase
+from linkml_runtime.utils.formatutils import uncamelcase, underscore
 from pydantic import BaseModel, Field, computed_field, field_validator
 
 from linkml.generators.common.template import Import as Import_
@@ -23,7 +23,7 @@ class RustRange(BaseModel):
     is_reference: bool = False
     box_needed: bool = False
     has_class_subtypes: bool = False
-    child_ranges: Optional[List["RustRange"]] = None
+    child_ranges: Optional[list["RustRange"]] = None
     type_: str
 
     def type_name(self) -> str:
@@ -380,7 +380,7 @@ class RustClassModule(RustTemplateModel):
     class_name: str
     class_name_snakecase: str
     template: ClassVar[str] = "class_module.rs.jinja"
-    slot_ranges: List[SlotRangeAsUnion]
+    slot_ranges: list[SlotRangeAsUnion]
 
 
 class RustStruct(RustTemplateModel):
@@ -578,12 +578,12 @@ class PolyTraitPropertyImpl(RustTemplateModel):
         return self.definition_range.type_bound_for_setter(crateref="crate")
 
     @computed_field
-    def union_conversion_arms(self) -> List[str]:
+    def union_conversion_arms(self) -> list[str]:
         """Pre-rendered match arms to convert current union -> base union.
 
         Example: Current::A(x) => Base::A(x.clone()),
         """
-        arms: List[str] = []
+        arms: list[str] = []
         if self.definition_range.child_ranges is not None and len(self.definition_range.child_ranges) > 1:
             base = self.union_type
             cur = self.current_union_type
@@ -598,7 +598,7 @@ class PolyTraitImpl(RustTemplateModel):
     template: ClassVar[str] = "poly_trait_impl.rs.jinja"
     name: str
     struct_name: str
-    attrs: List[PolyTraitPropertyImpl]
+    attrs: list[PolyTraitPropertyImpl]
 
 
 class PolyTraitPropertyMatch(RustTemplateModel):
@@ -606,7 +606,7 @@ class PolyTraitPropertyMatch(RustTemplateModel):
     name: str
     range: RustRange
     struct_name: str
-    cases: List[str]
+    cases: list[str]
 
 
     @computed_field
@@ -658,7 +658,7 @@ class PolyTraitImplForSubtypeEnum(RustTemplateModel):
     template: ClassVar[str] = "poly_trait_impl_orsubtype.rs.jinja"
     enum_name: str
     name: str
-    attrs: List[PolyTraitPropertyMatch]
+    attrs: list[PolyTraitPropertyMatch]
 
 
 class PolyTrait(RustTemplateModel):
@@ -666,10 +666,10 @@ class PolyTrait(RustTemplateModel):
 
     template: ClassVar[str] = "poly_trait.rs.jinja"
     name: str
-    attrs: List[PolyTraitProperty]
-    superclass_names: List[str]
-    impls: List[PolyTraitImpl]
-    subtypes: List[PolyTraitImplForSubtypeEnum]
+    attrs: list[PolyTraitProperty]
+    superclass_names: list[str]
+    impls: list[PolyTraitImpl]
+    subtypes: list[PolyTraitImplForSubtypeEnum]
 
 
 class PolyFile(RustTemplateModel):
@@ -677,7 +677,7 @@ class PolyFile(RustTemplateModel):
 
     template: ClassVar[str] = "poly.rs.jinja"
     imports: Imports = Imports()
-    traits: List[PolyTrait]
+    traits: list[PolyTrait]
 
 
 class RustFile(RustTemplateModel):
@@ -725,7 +725,7 @@ class RangeEnum(RustTemplateModel):
 
     template: ClassVar[str] = "range_enum.rs.jinja"
     name: str
-    type_: List[str]
+    type_: list[str]
 
 
 class RustCargo(RustTemplateModel):
