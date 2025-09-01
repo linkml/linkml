@@ -84,7 +84,7 @@ where
 
                 // ----------------- decide by the *value* shape
                 let obj = match v_ast {
-                    // ① full object (mapping) → deserialize directly
+                    // (1) full object (mapping) -> deserialize directly
                     Value::Map(_) => {
                         let m: Value = Deserialize::deserialize(
                             ValueDeserializer::<D::Error>::new(v_ast)
@@ -102,7 +102,7 @@ where
             Ok(out)
         }
 
-        // ---------- [ value, … ] form -------------
+        // ---------- [ value, ... ] form -------------
         Value::Seq(seq) => {
             let mut out = HashMap::with_capacity(seq.len());
             for v_ast in seq {
