@@ -179,10 +179,10 @@ class RustRange(BaseModel):
         return tp
 
     def element_type_borrowed(self, crateref: Optional[str]) -> str:
-        """Element type for borrowed getters (avoids allocations).
+        """Element type for borrowed getters; includes OrSubtype for class hierarchies.
 
-        Mirrors trait borrowing semantics: class scalars use `OrSubtype` when
-        the hierarchy admits subtypes, otherwise add `crate::` as needed.
+        Use OrSubtype when a class admits true subtypes to match stored field
+        types and avoid mismatches; otherwise add crate prefixes for stability.
         """
         if self.child_ranges is not None and len(self.child_ranges) > 1:
             return self.type_
@@ -797,6 +797,20 @@ class RustFile(RustTemplateModel):
     def struct_names(self) -> list[str]:
         """Names of all the structs we have!"""
         return [c.name for c in self.structs]
+
+    @computed_field
+    def pyclass_struct_names(self) -> list[str]:
+        """Names of structs that implement PyClass and should be registered.
+
+        Excludes special cases like `Anything` (and its alias `AnyValue`) which
+        are not exposed as #[pyclass] in the special-case template.
+        """
+        out: list[str] = []
+        for c in self.structs:
+            if c.name in ("Anything", "AnyValue"):
+                continue
+            out.append(c.name)
+        return out
 
 
 class RangeEnum(RustTemplateModel):

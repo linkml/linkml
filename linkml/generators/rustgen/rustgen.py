@@ -791,24 +791,39 @@ class RustGenerator(Generator, LifecycleMixin):
         Container and optionality are taken from the base class slot.
         """
         sv = self.schemaview
-        # Collect rust type names for all ranges across base + descendants
+        # Collect rust type names for all ranges across base + descendants, and remember
+        # the source class name (if any) responsible for each rust type so we can
+        # correctly determine subtype presence against the metamodel (using class names,
+        # not rust type identifiers).
         type_names: list[str] = []
+        rust_to_class: dict[str, Optional[str]] = {}
 
         def add_for_slot(slot_def: SlotDefinition):
             for r in sv.slot_range_as_union(slot_def):
                 if r in sv.all_classes():
+                    # Special-case: treat Anything/AnyValue as inline to ensure
+                    # promoted unions include the corresponding variant.
+                    if r in {"Anything", "AnyValue"}:
+                        tname = get_rust_type(r, sv, True)
+                        rust_to_class[tname] = r
+                        if tname not in type_names:
+                            type_names.append(tname)
+                        continue
                     # Prefer concrete observations: only add String if explicitly non-inlined
                     inl = slot_def.inlined
                     inl_list = slot_def.inlined_as_list
                     if inl is True or inl_list is True:
                         tname = get_rust_type(r, sv, True)
+                        rust_to_class[tname] = r
                     elif inl is False and (inl_list is False or inl_list is None):
                         tname = "String"
+                        rust_to_class[tname] = None
                     else:
                         # Unknown inlining at this definition; skip adding a guess
                         continue
                 else:
                     tname = get_rust_type(r, sv, True)
+                    rust_to_class[tname] = None
                 if tname not in type_names:
                     type_names.append(tname)
 
@@ -905,14 +920,17 @@ class RustGenerator(Generator, LifecycleMixin):
                             tname = get_rust_type(r, sv, True)
                             if tname not in type_names:
                                 type_names.append(tname)
+                                rust_to_class[tname] = r
                     else:
                         tname = get_rust_type(r, sv, True)
                         if tname not in type_names:
                             type_names.append(tname)
+                            rust_to_class[tname] = None
             # If still empty, fall back to original per-class range info
             if len(type_names) == 0:
                 return get_rust_range_info(cls, s, sv)
             single = type_names[0]
+            single_src_class = rust_to_class.get(single, None)
             return RustRange(
                 optional=base_optional,
                 has_default=base_optional or (s.multivalued or False),
@@ -926,7 +944,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 child_ranges=None,
                 is_class_range=single not in ("String", "bool", "f64", "isize"),
                 is_reference=False,
-                has_class_subtypes=(has_real_subtypes(self.schemaview, single) if single in self.schemaview.all_classes() else False),
+                has_class_subtypes=(has_real_subtypes(self.schemaview, single_src_class) if single_src_class is not None else False),
                 type_=single,
             )
 

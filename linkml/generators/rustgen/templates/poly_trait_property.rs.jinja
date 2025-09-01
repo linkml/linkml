@@ -1,7 +1,5 @@
 {% set lifetime_needed = needs_lifetime %}
     fn {{ name }}{% if lifetime_needed %}<'a>{% endif %}(&{% if lifetime_needed %}'a {% endif %}self) -> {{ type_getter }};
-{% set typed_lifetime_needed = typed_needs_lifetime %}
-    fn {{ name }}_typed{% if typed_lifetime_needed %}<'a>{% endif %}(&{% if typed_lifetime_needed %}'a {% endif %}self) -> {{ typed_type_getter }};
     // fn {{ name }}_mut(&mut self) -> &mut {{ type_getter }};
 {% if type_bound %}
     // fn set_{{ name }}<E>(&mut self, value: {{ type_setter }}) where E: {{ type_bound }};

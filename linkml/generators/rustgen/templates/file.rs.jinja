@@ -37,7 +37,7 @@ pub mod poly_containers;
 #[pymodule]
 #[pyo3(name="{{ name }}")]
 fn {{ name }}(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    {% for s in struct_names %}
+    {% for s in pyclass_struct_names %}
     m.add_class::<{{ s }}>()?;
     {% endfor %}
     Ok(())

@@ -9,36 +9,4 @@
         }
     }
 
-{% set typed_lifetime_needed = typed_needs_lifetime %}
-    fn {{ name }}_typed{% if typed_lifetime_needed %}<'a>{% endif %}(&{% if typed_lifetime_needed %}'a {% endif %}self) -> {{ type_getter_typed }} {
-        match self {
-            {% for c in cases %}
-                {{ struct_name }}::{{c}}(val) => {
-                    {% if is_container %}
-                        {# containers #}
-                        {% if range.child_ranges and (range.child_ranges | length) > 1 %}
-                            {# union container by value #}
-                            val.{{name}}_typed()
-                        {% else %}
-                            {# borrowed container, normalize to Any for opaque impl #}
-                            let v = val.{{name}}();
-                            {% if is_optional %}
-                            v.map(|x| x.to_any())
-                            {% else %}
-                            v.to_any()
-                            {% endif %}
-                        {% endif %}
-                    {% else %}
-                        {# scalars #}
-                        {% if range.child_ranges and (range.child_ranges | length) > 1 %}
-                            {# union scalar: forward struct typed (already base union and Option-aware) #}
-                            val.{{name}}_typed()
-                        {% else %}
-                            {# borrowed scalar; use non-typed to get correct Option/& shape #}
-                            val.{{name}}()
-                        {% endif %}
-                    {% endif %}
-                },
-            {% endfor %}
-        }
-    }
+    
