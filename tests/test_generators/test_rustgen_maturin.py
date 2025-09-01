@@ -1,12 +1,12 @@
-from pathlib import Path
 import os
 import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
+from linkml_runtime.utils.introspection import package_schemaview
 
 from linkml.generators.rustgen import RustGenerator
-from linkml_runtime.utils.introspection import package_schemaview
 
 
 @pytest.mark.rustgen
