@@ -110,20 +110,20 @@ class RustRange(BaseModel):
             if not self.is_copy():
                 convert_ref = True
         if not setter and convert_ref and (not self.optional or (self.is_class_range and not self.is_reference)):
-            tp = f"&{tp}"
+            tp = f"&'a {tp}"
         if self.optional:
             if self.containerType or (self.is_class_range and not self.is_reference):
                 tp = f"Option<{tp}>"
             else:
                 if tp == "String":
-                    tp = "Option<&str>"
+                    tp = "Option<&'a str>"
                 else:
                     if self.is_copy():
                         tp = f"Option<{tp}>"
                     else:
-                        tp = f"Option<&{tp}>"
-        if tp == "&String":
-            tp = "&str"
+                        tp = f"Option<&'a {tp}>"
+        if tp == "&'a String":
+            tp = "&'a str"
         return tp
 
     def type_for_trait_value(self, crateref: Optional[str]) -> str:
