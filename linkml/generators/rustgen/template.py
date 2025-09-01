@@ -48,7 +48,7 @@ class RustRange(BaseModel):
         borrow. The set is intentionally conservative and limited to common
         numeric and boolean primitives.
         """
-        return self.type_ in ["i8", "i16", "i32", "i64", "u8", "u16", "u32", "u64", "f32", "f64", "bool"]
+        return self.type_ in ["i8", "i16", "i32", "i64", "u8", "u16", "u32", "u64", "f32", "f64", "bool", "isize"]
 
     def type_for_field(self):
         """Concrete Rust type to store in a struct field.
