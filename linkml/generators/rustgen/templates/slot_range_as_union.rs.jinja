@@ -7,10 +7,6 @@
     {% endfor %}    
     }
 
-    // Intentionally no Display impl for {{ slot_name }}_range to avoid
-    // imposing Display on inner class variants.
-
-
     #[cfg(feature = "pyo3")]
     impl<'py> FromPyObject<'py> for {{ slot_name }}_range {
         fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
