@@ -168,7 +168,7 @@ Command Line
 
 .. currentmodule:: linkml.generators.rustgen
 
-.. click:: linkml.generators.rustgen:cli
+.. click:: linkml.generators.rustgen.cli:cli
     :prog: gen-rust
     :nested: short
 

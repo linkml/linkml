@@ -16,7 +16,7 @@ from linkml.utils.generator import shared_arguments
 @click.option("-n", "--crate-name", type=str, default=None)
 @click.option("-o", "--output", type=click.Path(dir_okay=True))
 @click.version_option(__version__, "-V", "--version")
-@click.command(name="pydantic")
+@click.command(name="rust")
 def cli(
     yamlfile: Path,
     mode: RUST_MODES = "crate",
