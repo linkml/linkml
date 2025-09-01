@@ -693,6 +693,10 @@ class RustFile(RustTemplateModel):
     structs: list[RustStruct] = Field(default_factory=list)
     enums: list[RustEnum] = Field(default_factory=list)
     slots: list[RustTypeAlias] = Field(default_factory=list)
+    # Single-file generation knobs
+    inline_serde_utils: bool = False
+    emit_poly: bool = True
+    serde_utils: Optional[SerdeUtilsFile] = None
 
     @computed_field
     def struct_names(self) -> list[str]:

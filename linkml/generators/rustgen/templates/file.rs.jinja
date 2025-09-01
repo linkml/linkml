@@ -1,9 +1,16 @@
 #![allow(non_camel_case_types)]
 
+{% if inline_serde_utils %}
+#[cfg(feature = "serde")]
+mod serde_utils { {{ serde_utils }} }
+{% else %}
 #[cfg(feature = "serde")]
 mod serde_utils;
+{% endif %}
+{% if emit_poly %}
 pub mod poly;
 pub mod poly_containers;
+{% endif %}
 
 {{ imports }}
 
