@@ -691,6 +691,10 @@ class RustGenerator(Generator, LifecycleMixin):
             res = CrateResult(cargo=cargo, file=file, pyproject=pyproject, source=sv.schema, extra_files=extra_files)
             return res
         else:
+            # Single file: inline serde utils, and skip poly modules
+            file.inline_serde_utils = True
+            file.emit_poly = False
+            file.serde_utils = SerdeUtilsFile()
             res = FileResult(file=file, source=sv.schema)
             return res
 
