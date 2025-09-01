@@ -7,9 +7,9 @@ pub struct Anything(
 
 #[cfg(feature = "serde")]
 impl Serialize for Anything {
-    fn serialize<S>(&self, ser: S) -> Result<S::Ok, S::Error>
+    fn serialize<S>(&self, to_ser: S) -> Result<S::Ok, S::Error>
     where S: serde::Serializer {
-        self.0.serialize(ser)
+        self.0.serialize(to_ser)
     }
 }
 

@@ -4,13 +4,12 @@ Models for intermediate build results
 (see PydanticGenerator for example implementation and use)
 """
 
-from abc import abstractmethod
 from typing import TypeVar
 
 try:
     from typing import Annotated
 except ImportError:
-    from typing_extensions import Annotated
+    from typing import Annotated
 
 
 from linkml_runtime.linkml_model import (
