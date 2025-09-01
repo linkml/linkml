@@ -39,7 +39,7 @@ def test_rustgen_personschema_maturin(input_path, temp_dir):
     # to fetch crates unless dependencies are cached.
     build_cmd = ["maturin", "build"]
 
-    env = dict(**{k: v for k, v in dict(**os.environ).items()}) if 'os' in globals() else None
+    env = dict(**{k: v for k, v in dict(**os.environ).items()}) if "os" in globals() else None
     # Enable Rust backtraces for richer diagnostics
     if env is not None:
         env["RUST_BACKTRACE"] = "1"
@@ -99,7 +99,7 @@ def test_rustgen_metamodel_maturin(temp_dir):
         pytest.skip("maturin and/or cargo not installed; skipping build test")
 
     build_cmd = ["maturin", "build"]
-    env = dict(**{k: v for k, v in dict(**os.environ).items()}) if 'os' in globals() else None
+    env = dict(**{k: v for k, v in dict(**os.environ).items()}) if "os" in globals() else None
     if env is not None:
         env["RUST_BACKTRACE"] = "1"
     result = subprocess.run(build_cmd, cwd=out_dir, capture_output=True, text=True, env=env)

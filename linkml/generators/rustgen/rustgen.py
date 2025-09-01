@@ -866,10 +866,12 @@ class RustGenerator(Generator, LifecycleMixin):
         container_mode, _ = determine_slot_mode(s, sv)
         # Optionality across descendants/mixin users: optional if not all are required
         all_required = True
+
         def consider_required(slot_def: SlotDefinition):
             nonlocal all_required
             if not bool(slot_def.required):
                 all_required = False
+
         if base_slot is not None:
             consider_required(base_slot)
         for d in sv.class_descendants(cls.name):
@@ -953,9 +955,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 is_class_range=single not in ("String", "bool", "f64", "isize"),
                 is_reference=False,
                 has_class_subtypes=(
-                    has_real_subtypes(self.schemaview, single_src_class)
-                    if single_src_class is not None
-                    else False
+                    has_real_subtypes(self.schemaview, single_src_class) if single_src_class is not None else False
                 ),
                 type_=single,
             )

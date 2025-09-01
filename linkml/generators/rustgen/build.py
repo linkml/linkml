@@ -1,4 +1,3 @@
-
 from linkml.generators.common.build import (
     BuildResult,
     SchemaResult,
