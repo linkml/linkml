@@ -1,4 +1,3 @@
-from typing import Dict
 
 from linkml.generators.common.build import (
     BuildResult,
@@ -84,7 +83,7 @@ class CrateResult(RustBuildResult, SchemaResult):
 
     cargo: RustCargo
     file: RustFile
-    extra_files: Dict[str, RustTemplateModel]
+    extra_files: dict[str, RustTemplateModel]
     pyproject: RustPyProject
 
 
