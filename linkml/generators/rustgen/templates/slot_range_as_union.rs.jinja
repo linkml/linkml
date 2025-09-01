@@ -7,15 +7,8 @@
     {% endfor %}    
     }
 
-    impl core::fmt::Display for {{ slot_name }}_range {
-        fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-            match self {
-            {% for t in ranges %}
-                {{ slot_name }}_range::{{ t }}(val) => write!(f, "{}", val),
-            {% endfor %}
-            }
-        }
-    }
+    // Intentionally no Display impl for {{ slot_name }}_range to avoid
+    // imposing Display on inner class variants.
 
 
     #[cfg(feature = "pyo3")]

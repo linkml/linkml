@@ -16,7 +16,6 @@ impl core::fmt::Display for {{ name }} {
     }
 }
 
-{% if pyo3 %}
 #[cfg(feature = "pyo3")]
 impl<'py> IntoPyObject<'py> for {{ name }} {
     type Target = PyAny;
@@ -51,4 +50,3 @@ impl<'py> FromPyObject<'py> for {{ name }} {
         }
     }
 }
-{% endif %}
