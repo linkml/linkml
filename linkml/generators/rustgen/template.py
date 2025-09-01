@@ -26,13 +26,39 @@ class RustRange(BaseModel):
     child_ranges: Optional[List["RustRange"]] = None
     type_: str
 
-    def is_copy(self) -> bool:
+    def type_name(self) -> str:
         """
-        Whether this range is a copy type
+        Canonical Rust type name (no module path).
+
+        Centralizes how we derive a display/type identifier for variants,
+        avoiding ad-hoc string splitting in templates or other models.
+        """
+        # For references, range.type_ is already "String" in current generator,
+        # but keep behavior robust even if callers pass a namespaced path.
+        t = self.type_
+        # Trim any module path qualifiers like crate::mod::Type
+        if "::" in t:
+            t = t.split("::")[-1]
+        return t
+
+    def is_copy(self) -> bool:
+        """Return True when values of this range implement Rust's Copy.
+
+        Used to decide whether scalar getters can return by value or must
+        borrow. The set is intentionally conservative and limited to common
+        numeric and boolean primitives.
         """
         return self.type_ in ["i8", "i16", "i32", "i64", "u8", "u16", "u32", "u64", "f32", "f64", "bool"]
 
     def type_for_field(self):
+        """Concrete Rust type to store in a struct field.
+
+        Applies structural adjustments in this order:
+        - Promote class types with subtypes to `OrSubtype` (unless references).
+        - Box inlined class values when needed to break recursive ownership.
+        - Wrap in `Vec<>` or `HashMap<String, _>` for list/map slots.
+        - Wrap in `Option<>` when the slot is optional.
+        """
         tp = self.type_
         if self.has_class_subtypes:
             if not self.is_reference:
@@ -48,6 +74,18 @@ class RustRange(BaseModel):
         return tp
 
     def type_for_trait(self, crateref: Optional[str], setter: bool = False):
+        """Signature type for trait getters/setters over this range.
+
+        - For getters (setter=False):
+          - Lists/Maps return borrowed views (`SeqRef`/`MapRef`) with explicit lifetimes.
+          - Scalars borrow `&T` for non-Copy values; Copy values return by value.
+          - Class types without subtypes are prefixed with `crate::` for stability;
+            with subtypes, use `OrSubtype`.
+          - Optional scalars collapse to `Option<&str>` for strings and borrow for others.
+        - For setters (setter=True):
+          - Lists/Maps accept `&Vec<_>`/`&HashMap<_, _>`.
+          - Class scalars accept a generic `E` with `Into<T>` bound (computed separately).
+        """
         tp = self.type_
         if self.is_class_range and not self.has_class_subtypes and not setter:
             if crateref and not self.is_reference:
@@ -89,7 +127,12 @@ class RustRange(BaseModel):
         return tp
 
     def type_for_trait_value(self, crateref: Optional[str]) -> str:
-        """Return a by-value type for trait getter, with crate prefix for class types."""
+        """By-value getter type for trait methods.
+
+        Used when the trait returns a canonical union or otherwise needs owned
+        values. Containers become `Vec<_>`/`HashMap<_, _>`. For class scalars,
+        add `crate::` unless the range admits subtypes (then use `OrSubtype`).
+        """
         # Union type: already canonical
         if self.child_ranges is not None and len(self.child_ranges) > 1:
             tp = self.type_
@@ -109,13 +152,23 @@ class RustRange(BaseModel):
         return tp
 
     def type_bound_for_setter(self, crateref: Optional[str]) -> Optional[str]:
+        """Generic bound to accept convertible values in setter signatures.
+
+        For class ranges, setters use a type parameter `E` constrained as
+        `Into<T>` to allow ergonomic conversions. Non-class ranges do not
+        require a bound and return None.
+        """
         if self.is_class_range:
             tp = self.type_
             return f"Into<{tp}>"
         return None
 
     def element_type_value(self, crateref: Optional[str]) -> str:
-        """Element/value type (by value) of this range (for list/map/scalar)."""
+        """Element type by value for list/map/scalar views.
+
+        For unions, returns the union type unchanged. For class scalars,
+        prefixes with `crate::` when provided to keep stable paths in traits.
+        """
         # Union type stays as-is
         if self.child_ranges is not None and len(self.child_ranges) > 1:
             return self.type_
@@ -126,7 +179,11 @@ class RustRange(BaseModel):
         return tp
 
     def element_type_borrowed(self, crateref: Optional[str]) -> str:
-        """Element type for borrowed getters; includes OrSubtype for class hierarchies."""
+        """Element type for borrowed getters (avoids allocations).
+
+        Mirrors trait borrowing semantics: class scalars use `OrSubtype` when
+        the hierarchy admits subtypes, otherwise add `crate::` as needed.
+        """
         if self.child_ranges is not None and len(self.child_ranges) > 1:
             return self.type_
         tp = self.type_
@@ -158,6 +215,122 @@ class RustTemplateModel(TemplateModel):
     Whether serde serialization/deserialization annotations should be added.
     """
     attributes: dict[str, str] = Field(default_factory=dict)
+
+
+class RustTypeViews(BaseModel):
+    """Precomputed trait signature fragments for a slot's range.
+
+    Encapsulates the decisions around by-value vs borrowed returns, container
+    view types, optional wrapping, and whether explicit lifetimes are required
+    in the generated method signature. Templates consume these strings directly
+    to avoid branching on typing details.
+    """
+
+    type_getter: str
+    typed_type_getter: str
+    needs_lifetime: bool
+    typed_needs_lifetime: bool
+
+
+def _needs_lifetime(sig: str) -> bool:
+    """Heuristic to detect if a signature string requires an explicit lifetime.
+
+    We consider borrowed types (`&T`), container views (`SeqRef`/`MapRef`), and
+    explicit generics (`<'a>`) as requiring a lifetime parameter on the method.
+    """
+    return ("&" in sig) or ("SeqRef" in sig) or ("MapRef" in sig) or ("<'a>" in sig)
+
+
+def build_trait_views_for_promoted(promoted: "RustRange") -> RustTypeViews:
+    """Return signature strings for a trait using the promoted (max) range.
+
+    - Raw getter: by-value for unions; otherwise borrowed/container view types.
+    - Typed getter: by-value for unions; otherwise borrowed/container view types
+      with `SeqRef`/`MapRef` and optional wrapping.
+    The goal is consistency across a class hierarchy regardless of concrete fields.
+    """
+    # Raw getter: by-value union if union; else borrowed/containers
+    if promoted.child_ranges is not None and len(promoted.child_ranges) > 1:
+        raw = promoted.type_for_trait_value(crateref="crate")
+    else:
+        raw = promoted.type_for_trait(setter=False, crateref="crate")
+
+    # Typed getter: by-value union if union; else borrowed with container views
+    if promoted.child_ranges is not None and len(promoted.child_ranges) > 1:
+        typed = promoted.type_for_trait_value(crateref="crate")
+    else:
+        if promoted.containerType == ContainerType.LIST:
+            et = promoted.element_type_borrowed(crateref="crate")
+            typed = (
+                f"Option<impl poly_containers::SeqRef<'a, {et}>>" if promoted.optional else f"impl poly_containers::SeqRef<'a, {et}>"
+            )
+        elif promoted.containerType == ContainerType.MAPPING:
+            et = promoted.element_type_borrowed(crateref="crate")
+            typed = (
+                f"Option<impl poly_containers::MapRef<'a, String, {et}>>"
+                if promoted.optional
+                else f"impl poly_containers::MapRef<'a, String, {et}>"
+            )
+        else:
+            et = promoted.element_type_borrowed(crateref="crate")
+            if et == "String":
+                typed = "Option<&str>" if promoted.optional else "&str"
+            elif promoted.is_copy():
+                typed = f"Option<{et}>" if promoted.optional else f"{et}"
+            else:
+                typed = f"Option<&{et}>" if promoted.optional else f"&{et}"
+
+    return RustTypeViews(
+        type_getter=raw,
+        typed_type_getter=typed,
+        needs_lifetime=_needs_lifetime(raw),
+        typed_needs_lifetime=_needs_lifetime(typed),
+    )
+
+
+def build_trait_views_for_range(rng: "RustRange") -> RustTypeViews:
+    """Return signature strings for a concrete (non-promoted) range.
+
+    Mirrors the promoted logic but based on the actual field's range, used in
+    impls so that borrow vs value and container view decisions match the trait.
+    """
+    # Raw getter
+    if rng.child_ranges is not None and len(rng.child_ranges) > 1:
+        raw = rng.type_for_trait_value(crateref="crate")
+    else:
+        raw = rng.type_for_trait(setter=False, crateref="crate")
+
+    # Typed getter mirrors promoted logic but using the specific range
+    if rng.child_ranges is not None and len(rng.child_ranges) > 1:
+        typed = rng.type_for_trait_value(crateref="crate")
+    else:
+        if rng.containerType == ContainerType.LIST:
+            et = rng.element_type_borrowed(crateref="crate")
+            typed = (
+                f"Option<impl poly_containers::SeqRef<'a, {et}>>" if rng.optional else f"impl poly_containers::SeqRef<'a, {et}>"
+            )
+        elif rng.containerType == ContainerType.MAPPING:
+            et = rng.element_type_borrowed(crateref="crate")
+            typed = (
+                f"Option<impl poly_containers::MapRef<'a, String, {et}>>"
+                if rng.optional
+                else f"impl poly_containers::MapRef<'a, String, {et}>"
+            )
+        else:
+            et = rng.element_type_borrowed(crateref="crate")
+            if et == "String":
+                typed = "Option<&str>" if rng.optional else "&str"
+            elif rng.is_copy():
+                typed = f"Option<{et}>" if rng.optional else f"{et}"
+            else:
+                typed = f"Option<&{et}>" if rng.optional else f"&{et}"
+
+    return RustTypeViews(
+        type_getter=raw,
+        typed_type_getter=typed,
+        needs_lifetime=_needs_lifetime(raw),
+        typed_needs_lifetime=_needs_lifetime(typed),
+    )
 
 
 class PolyContainersFile(RustTemplateModel):
@@ -350,48 +523,25 @@ class PolyTraitProperty(RustTemplateModel):
 
     @computed_field
     def type_getter(self) -> str:
-        # Use promoted max range for trait signature. If it collapses to a single type,
-        # keep ergonomic borrowed views; if multiple, return by-value union.
-        if self.promoted_range.child_ranges is not None and len(self.promoted_range.child_ranges) > 1:
-            return self.promoted_range.type_for_trait_value(crateref="crate")
-        return self.promoted_range.type_for_trait(setter=False, crateref="crate")
+        # Centralized via RustTypeViews builder
+        views = build_trait_views_for_promoted(self.promoted_range)
+        return views.type_getter
 
     @computed_field
     def typed_type_getter(self) -> str:
-        """Return type for typed getter.
-
-        - If promoted union: by-value union/container of union
-        - Else: borrowed views for containers; borrowed scalar without OrSubtype
-        """
-        pr = self.promoted_range
-        if pr.child_ranges is not None and len(pr.child_ranges) > 1:
-            return pr.type_for_trait_value(crateref="crate")
-        # single type: borrowed
-        if pr.containerType == ContainerType.LIST:
-            et = pr.element_type_borrowed(crateref="crate")
-            return (f"Option<impl poly_containers::SeqRef<'a, {et}>>" if pr.optional else f"impl poly_containers::SeqRef<'a, {et}>")
-        if pr.containerType == ContainerType.MAPPING:
-            et = pr.element_type_borrowed(crateref="crate")
-            return (f"Option<impl poly_containers::MapRef<'a, String, {et}>>" if pr.optional else f"impl poly_containers::MapRef<'a, String, {et}>")
-        # scalar borrowed (avoid OrSubtype)
-        et = pr.element_type_borrowed(crateref="crate")
-        if et == "String":
-            return "Option<&str>" if pr.optional else "&str"
-        elif pr.is_copy():
-            return f"Option<{et}>" if pr.optional else f"{et}"
-        else:
-            return f"Option<&{et}>" if pr.optional else f"&{et}"
+        views = build_trait_views_for_promoted(self.promoted_range)
+        return views.typed_type_getter
 
     @computed_field
     def typed_needs_lifetime(self) -> bool:
-        t = self.typed_type_getter
-        return ("<'a>" in t) or ("SeqRef" in t) or ("MapRef" in t) or ("&" in t)
+        views = build_trait_views_for_promoted(self.promoted_range)
+        return views.typed_needs_lifetime
 
     @computed_field
     def needs_lifetime(self) -> bool:
         """Whether the trait getter requires an explicit lifetime."""
-        t = self.type_getter
-        return ("&" in t) or ("SeqRef" in t) or ("MapRef" in t)
+        views = build_trait_views_for_promoted(self.promoted_range)
+        return views.needs_lifetime
 
     @computed_field
     def type_setter(self) -> str:
@@ -440,41 +590,26 @@ class PolyTraitPropertyImpl(RustTemplateModel):
 
     @computed_field
     def type_getter(self) -> str:
-        # Mirror the trait-level signature exactly
-        # If trait uses promoted union, return by-value promoted type
+        # Mirror trait signature: promoted union by value; else concrete borrowed
         if self.definition_range.child_ranges is not None and len(self.definition_range.child_ranges) > 1:
-            return self.definition_range.type_for_trait_value(crateref="crate")
-        return self.trait_range.type_for_trait(setter=False, crateref="crate")
+            return build_trait_views_for_promoted(self.definition_range).type_getter
+        return build_trait_views_for_range(self.trait_range).type_getter
 
     @computed_field
     def needs_lifetime(self) -> bool:
-        t = self.type_getter
-        return ("&" in t) or ("SeqRef" in t) or ("MapRef" in t)
+        sig = self.type_getter
+        return ("&" in sig) or ("SeqRef" in sig) or ("MapRef" in sig)
 
     @computed_field
     def type_getter_typed(self) -> str:
         # Mirror trait typed signature (avoid OrSubtype for single-type)
-        pr = self.definition_range
-        if pr.child_ranges is not None and len(pr.child_ranges) > 1:
-            return pr.type_for_trait_value(crateref="crate")
-        if pr.containerType == ContainerType.LIST:
-            et = pr.element_type_borrowed(crateref="crate")
-            return (f"Option<impl poly_containers::SeqRef<'a, {et}>>" if pr.optional else f"impl poly_containers::SeqRef<'a, {et}>")
-        if pr.containerType == ContainerType.MAPPING:
-            et = pr.element_type_borrowed(crateref="crate")
-            return (f"Option<impl poly_containers::MapRef<'a, String, {et}>>" if pr.optional else f"impl poly_containers::MapRef<'a, String, {et}>")
-        et = pr.element_type_borrowed(crateref="crate")
-        if et == "String":
-            return "Option<&str>" if pr.optional else "&str"
-        elif pr.is_copy():
-            return f"Option<{et}>" if pr.optional else f"{et}"
-        else:
-            return f"Option<&{et}>" if pr.optional else f"&{et}"
+        views = build_trait_views_for_promoted(self.definition_range)
+        return views.typed_type_getter
 
     @computed_field
     def typed_needs_lifetime(self) -> bool:
-        t = self.type_getter_typed
-        return ("&" in t) or ("SeqRef" in t) or ("MapRef" in t) or ("<'a>" in t)
+        sig = self.type_getter_typed
+        return ("&" in sig) or ("SeqRef" in sig) or ("MapRef" in sig) or ("<'a>" in sig)
 
     @computed_field
     def union_type(self) -> str:
@@ -482,10 +617,8 @@ class PolyTraitPropertyImpl(RustTemplateModel):
 
     @computed_field
     def range_variant(self) -> str:
-        # Use leaf type name as variant; fall back to String for references
-        if self.range.is_reference:
-            return "String"
-        return self.range.type_.split("::")[-1]
+        # Use centralized type-name logic for a variant identifier
+        return self.range.type_name()
 
     @computed_field
     def current_union_types(self) -> dict[str, str]:
@@ -500,7 +633,7 @@ class PolyTraitPropertyImpl(RustTemplateModel):
         vs: list[str] = []
         if self.definition_range.child_ranges is not None and len(self.definition_range.child_ranges) > 1:
             for cr in self.definition_range.child_ranges:
-                vs.append(cr.type_.split("::")[-1])
+                vs.append(cr.type_name())
         return vs
 
     @computed_field
@@ -517,6 +650,20 @@ class PolyTraitPropertyImpl(RustTemplateModel):
         The type bound for the setter method
         """
         return self.definition_range.type_bound_for_setter(crateref="crate")
+
+    @computed_field
+    def union_conversion_arms(self) -> List[str]:
+        """Pre-rendered match arms to convert current union -> base union.
+
+        Example: Current::A(x) => Base::A(x.clone()),
+        """
+        arms: List[str] = []
+        if self.definition_range.child_ranges is not None and len(self.definition_range.child_ranges) > 1:
+            base = self.union_type
+            cur = self.current_union_type
+            for vn in self.base_union_variants:
+                arms.append(f"{cur}::{vn}(x) => {base}::{vn}(x.clone()),")
+        return arms
 
 
 class PolyTraitImpl(RustTemplateModel):
@@ -592,9 +739,8 @@ class PolyTraitPropertyMatch(RustTemplateModel):
 
     @computed_field
     def range_variant(self) -> str:
-        if self.range.is_reference:
-            return "String"
-        return self.range.type_.split("::")[-1]
+        # Always use centralized type name logic
+        return self.range.type_name()
 
     @computed_field
     def current_union_types(self) -> dict[str, str]:
