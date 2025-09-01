@@ -687,5 +687,3 @@ impl Container for crate::Container {
         return &self.organizations;
     }
 }
-
-

@@ -143,7 +143,7 @@ impl<'py> FromPyObject<'py> for Box<NamedThing> {
 #[cfg(feature = "serde")]
 impl serde_utils::InlinedPair for NamedThing {
     type Key   = String;
-        
+
     type Value = String;
     type Error = String;
 
@@ -165,7 +165,7 @@ impl serde_utils::InlinedPair for NamedThing {
     }
 
 
-        
+
     fn from_pair_simple(k: Self::Key, v: Value) -> Result<Self,Self::Error> {
         let mut map:  BTreeMap<Value, Value> = BTreeMap::new();
         map.insert(Value::String("id".into()), Value::String(k));
@@ -174,7 +174,7 @@ impl serde_utils::InlinedPair for NamedThing {
         match serde_path_to_error::deserialize(de) {
             Ok(ok)  => Ok(ok),
             Err(e)  => Err(format!("at `{}`: {}", e.path(), e.inner())),
-        }        
+        }
 
     }
 }
@@ -380,7 +380,7 @@ impl<'py> FromPyObject<'py> for Box<Person> {
 #[cfg(feature = "serde")]
 impl serde_utils::InlinedPair for Person {
     type Key   = String;
-        
+
     type Value = String;
     type Error = String;
 
@@ -402,7 +402,7 @@ impl serde_utils::InlinedPair for Person {
     }
 
 
-        
+
     fn from_pair_simple(k: Self::Key, v: Value) -> Result<Self,Self::Error> {
         let mut map:  BTreeMap<Value, Value> = BTreeMap::new();
         map.insert(Value::String("id".into()), Value::String(k));
@@ -411,7 +411,7 @@ impl serde_utils::InlinedPair for Person {
         match serde_path_to_error::deserialize(de) {
             Ok(ok)  => Ok(ok),
             Err(e)  => Err(format!("at `{}`: {}", e.path(), e.inner())),
-        }        
+        }
 
     }
 }
@@ -577,7 +577,7 @@ impl<'py> FromPyObject<'py> for Box<Organization> {
 #[cfg(feature = "serde")]
 impl serde_utils::InlinedPair for Organization {
     type Key   = String;
-        
+
     type Value = String;
     type Error = String;
 
@@ -599,7 +599,7 @@ impl serde_utils::InlinedPair for Organization {
     }
 
 
-        
+
     fn from_pair_simple(k: Self::Key, v: Value) -> Result<Self,Self::Error> {
         let mut map:  BTreeMap<Value, Value> = BTreeMap::new();
         map.insert(Value::String("id".into()), Value::String(k));
@@ -608,7 +608,7 @@ impl serde_utils::InlinedPair for Organization {
         match serde_path_to_error::deserialize(de) {
             Ok(ok)  => Ok(ok),
             Err(e)  => Err(format!("at `{}`: {}", e.path(), e.inner())),
-        }        
+        }
 
     }
 }
@@ -657,7 +657,7 @@ impl<'py> FromPyObject<'py> for Box<Place> {
 #[cfg(feature = "serde")]
 impl serde_utils::InlinedPair for Place {
     type Key   = String;
-        
+
     type Value = String;
     type Error = String;
 
@@ -679,7 +679,7 @@ impl serde_utils::InlinedPair for Place {
     }
 
 
-        
+
     fn from_pair_simple(k: Self::Key, v: Value) -> Result<Self,Self::Error> {
         let mut map:  BTreeMap<Value, Value> = BTreeMap::new();
         map.insert(Value::String("id".into()), Value::String(k));
@@ -688,7 +688,7 @@ impl serde_utils::InlinedPair for Place {
         match serde_path_to_error::deserialize(de) {
             Ok(ok)  => Ok(ok),
             Err(e)  => Err(format!("at `{}`: {}", e.path(), e.inner())),
-        }        
+        }
 
     }
 }
@@ -891,7 +891,7 @@ impl<'py> FromPyObject<'py> for Box<Concept> {
 #[cfg(feature = "serde")]
 impl serde_utils::InlinedPair for Concept {
     type Key   = String;
-        
+
     type Value = String;
     type Error = String;
 
@@ -913,7 +913,7 @@ impl serde_utils::InlinedPair for Concept {
     }
 
 
-        
+
     fn from_pair_simple(k: Self::Key, v: Value) -> Result<Self,Self::Error> {
         let mut map:  BTreeMap<Value, Value> = BTreeMap::new();
         map.insert(Value::String("id".into()), Value::String(k));
@@ -922,7 +922,7 @@ impl serde_utils::InlinedPair for Concept {
         match serde_path_to_error::deserialize(de) {
             Ok(ok)  => Ok(ok),
             Err(e)  => Err(format!("at `{}`: {}", e.path(), e.inner())),
-        }        
+        }
 
     }
 }
@@ -1077,7 +1077,7 @@ impl<'py> FromPyObject<'py> for Box<DiagnosisConcept> {
 #[cfg(feature = "serde")]
 impl serde_utils::InlinedPair for DiagnosisConcept {
     type Key   = String;
-        
+
     type Value = String;
     type Error = String;
 
@@ -1099,7 +1099,7 @@ impl serde_utils::InlinedPair for DiagnosisConcept {
     }
 
 
-        
+
     fn from_pair_simple(k: Self::Key, v: Value) -> Result<Self,Self::Error> {
         let mut map:  BTreeMap<Value, Value> = BTreeMap::new();
         map.insert(Value::String("id".into()), Value::String(k));
@@ -1108,7 +1108,7 @@ impl serde_utils::InlinedPair for DiagnosisConcept {
         match serde_path_to_error::deserialize(de) {
             Ok(ok)  => Ok(ok),
             Err(e)  => Err(format!("at `{}`: {}", e.path(), e.inner())),
-        }        
+        }
 
     }
 }
@@ -1159,7 +1159,7 @@ impl<'py> FromPyObject<'py> for Box<ProcedureConcept> {
 #[cfg(feature = "serde")]
 impl serde_utils::InlinedPair for ProcedureConcept {
     type Key   = String;
-        
+
     type Value = String;
     type Error = String;
 
@@ -1181,7 +1181,7 @@ impl serde_utils::InlinedPair for ProcedureConcept {
     }
 
 
-        
+
     fn from_pair_simple(k: Self::Key, v: Value) -> Result<Self,Self::Error> {
         let mut map:  BTreeMap<Value, Value> = BTreeMap::new();
         map.insert(Value::String("id".into()), Value::String(k));
@@ -1190,7 +1190,7 @@ impl serde_utils::InlinedPair for ProcedureConcept {
         match serde_path_to_error::deserialize(de) {
             Ok(ok)  => Ok(ok),
             Err(e)  => Err(format!("at `{}`: {}", e.path(), e.inner())),
-        }        
+        }
 
     }
 }
@@ -1522,6 +1522,3 @@ impl<'py> FromPyObject<'py> for Box<Container> {
         ))
     }
 }
-
-
-
