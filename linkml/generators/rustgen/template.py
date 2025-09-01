@@ -227,9 +227,7 @@ class RustTypeViews(BaseModel):
     """
 
     type_getter: str
-    typed_type_getter: str
     needs_lifetime: bool
-    typed_needs_lifetime: bool
 
 
 def _needs_lifetime(sig: str) -> bool:
@@ -255,36 +253,9 @@ def build_trait_views_for_promoted(promoted: "RustRange") -> RustTypeViews:
     else:
         raw = promoted.type_for_trait(setter=False, crateref="crate")
 
-    # Typed getter: by-value union if union; else borrowed with container views
-    if promoted.child_ranges is not None and len(promoted.child_ranges) > 1:
-        typed = promoted.type_for_trait_value(crateref="crate")
-    else:
-        if promoted.containerType == ContainerType.LIST:
-            et = promoted.element_type_borrowed(crateref="crate")
-            typed = (
-                f"Option<impl poly_containers::SeqRef<'a, {et}>>" if promoted.optional else f"impl poly_containers::SeqRef<'a, {et}>"
-            )
-        elif promoted.containerType == ContainerType.MAPPING:
-            et = promoted.element_type_borrowed(crateref="crate")
-            typed = (
-                f"Option<impl poly_containers::MapRef<'a, String, {et}>>"
-                if promoted.optional
-                else f"impl poly_containers::MapRef<'a, String, {et}>"
-            )
-        else:
-            et = promoted.element_type_borrowed(crateref="crate")
-            if et == "String":
-                typed = "Option<&str>" if promoted.optional else "&str"
-            elif promoted.is_copy():
-                typed = f"Option<{et}>" if promoted.optional else f"{et}"
-            else:
-                typed = f"Option<&{et}>" if promoted.optional else f"&{et}"
-
     return RustTypeViews(
         type_getter=raw,
-        typed_type_getter=typed,
         needs_lifetime=_needs_lifetime(raw),
-        typed_needs_lifetime=_needs_lifetime(typed),
     )
 
 
@@ -300,36 +271,9 @@ def build_trait_views_for_range(rng: "RustRange") -> RustTypeViews:
     else:
         raw = rng.type_for_trait(setter=False, crateref="crate")
 
-    # Typed getter mirrors promoted logic but using the specific range
-    if rng.child_ranges is not None and len(rng.child_ranges) > 1:
-        typed = rng.type_for_trait_value(crateref="crate")
-    else:
-        if rng.containerType == ContainerType.LIST:
-            et = rng.element_type_borrowed(crateref="crate")
-            typed = (
-                f"Option<impl poly_containers::SeqRef<'a, {et}>>" if rng.optional else f"impl poly_containers::SeqRef<'a, {et}>"
-            )
-        elif rng.containerType == ContainerType.MAPPING:
-            et = rng.element_type_borrowed(crateref="crate")
-            typed = (
-                f"Option<impl poly_containers::MapRef<'a, String, {et}>>"
-                if rng.optional
-                else f"impl poly_containers::MapRef<'a, String, {et}>"
-            )
-        else:
-            et = rng.element_type_borrowed(crateref="crate")
-            if et == "String":
-                typed = "Option<&str>" if rng.optional else "&str"
-            elif rng.is_copy():
-                typed = f"Option<{et}>" if rng.optional else f"{et}"
-            else:
-                typed = f"Option<&{et}>" if rng.optional else f"&{et}"
-
     return RustTypeViews(
         type_getter=raw,
-        typed_type_getter=typed,
         needs_lifetime=_needs_lifetime(raw),
-        typed_needs_lifetime=_needs_lifetime(typed),
     )
 
 
@@ -527,15 +471,6 @@ class PolyTraitProperty(RustTemplateModel):
         views = build_trait_views_for_promoted(self.promoted_range)
         return views.type_getter
 
-    @computed_field
-    def typed_type_getter(self) -> str:
-        views = build_trait_views_for_promoted(self.promoted_range)
-        return views.typed_type_getter
-
-    @computed_field
-    def typed_needs_lifetime(self) -> bool:
-        views = build_trait_views_for_promoted(self.promoted_range)
-        return views.typed_needs_lifetime
 
     @computed_field
     def needs_lifetime(self) -> bool:
@@ -600,16 +535,7 @@ class PolyTraitPropertyImpl(RustTemplateModel):
         sig = self.type_getter
         return ("&" in sig) or ("SeqRef" in sig) or ("MapRef" in sig)
 
-    @computed_field
-    def type_getter_typed(self) -> str:
-        # Mirror trait typed signature (avoid OrSubtype for single-type)
-        views = build_trait_views_for_promoted(self.definition_range)
-        return views.typed_type_getter
-
-    @computed_field
-    def typed_needs_lifetime(self) -> bool:
-        sig = self.type_getter_typed
-        return ("&" in sig) or ("SeqRef" in sig) or ("MapRef" in sig) or ("<'a>" in sig)
+    # Note: typed getters removed
 
     @computed_field
     def union_type(self) -> str:
@@ -704,34 +630,9 @@ class PolyTraitPropertyMatch(RustTemplateModel):
         return self.range.type_for_trait(setter=False, crateref="crate")
 
     @computed_field
-    def type_getter_typed(self) -> str:
-        # Union -> by-value; otherwise borrowed (mirrors PolyTraitProperty), with optionality
-        if self.range.child_ranges is not None and len(self.range.child_ranges) > 1:
-            return self.range.type_for_trait_value(crateref="crate")
-        # single type borrowed
-        if self.range.containerType == ContainerType.LIST:
-            et = self.range.element_type_borrowed(crateref="crate")
-            return (f"Option<impl poly_containers::SeqRef<'a, {et}>>" if self.range.optional else f"impl poly_containers::SeqRef<'a, {et}>")
-        if self.range.containerType == ContainerType.MAPPING:
-            et = self.range.element_type_borrowed(crateref="crate")
-            return (f"Option<impl poly_containers::MapRef<'a, String, {et}>>" if self.range.optional else f"impl poly_containers::MapRef<'a, String, {et}>")
-        et = self.range.element_type_borrowed(crateref="crate")
-        if et == "String":
-            return "Option<&str>" if self.range.optional else "&str"
-        elif self.range.is_copy():
-            return f"Option<{et}>" if self.range.optional else f"{et}"
-        else:
-            return f"Option<&{et}>" if self.range.optional else f"&{et}"
-
-    @computed_field
     def needs_lifetime(self) -> bool:
         t = self.type_getter
         return ("&" in t) or ("SeqRef" in t) or ("MapRef" in t)
-
-    @computed_field
-    def typed_needs_lifetime(self) -> bool:
-        t = self.type_getter_typed
-        return ("&" in t) or ("SeqRef" in t) or ("MapRef" in t) or ("<'a>" in t)
 
     @computed_field
     def base_union_type(self) -> str:
