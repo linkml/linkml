@@ -471,7 +471,6 @@ class PolyTraitProperty(RustTemplateModel):
         views = build_trait_views_for_promoted(self.promoted_range)
         return views.type_getter
 
-
     @computed_field
     def needs_lifetime(self) -> bool:
         """Whether the trait getter requires an explicit lifetime."""
@@ -608,14 +607,13 @@ class PolyTraitPropertyMatch(RustTemplateModel):
     struct_name: str
     cases: list[str]
 
-
     @computed_field
     def is_optional(self) -> bool:
         """
         Whether this property is optional
         """
         return self.range.optional
-    
+
     @computed_field
     def is_container(self) -> bool:
         """
