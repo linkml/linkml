@@ -10,8 +10,6 @@ from linkml_runtime.utils.introspection import package_schemaview
 
 
 @pytest.mark.rustgen
-@pytest.mark.network
-@pytest.mark.slow
 def test_rustgen_personschema_maturin(input_path, temp_dir):
     """
     Generate a Rust crate from personinfo.yaml and try to build
@@ -73,8 +71,6 @@ def test_rustgen_personschema_maturin(input_path, temp_dir):
 
 
 @pytest.mark.rustgen
-@pytest.mark.network
-@pytest.mark.slow
 def test_rustgen_metamodel_maturin(temp_dir):
     """
     Generate a Rust crate from the LinkML metamodel (via package_schemaview)

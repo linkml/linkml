@@ -97,7 +97,7 @@
 {% endif %}
 {% else %}
 {% if range.optional %}
-        {% if type_getter == 'Option<&str>' %}
+        {% if type_getter == 'Option<&str>' or type_getter == "Option<&'a str>" %}
         return self.{{ name }}.as_deref();
         {% elif type_getter == 'Option<String>' %}
         return self.{{ name }}.as_ref().map(|x| x.to_string());
@@ -118,7 +118,13 @@
         return Some(&self.{{ name }});
         {% endif %}
 {% else %}
+        {% if is_copy %}
+        return self.{{ name }};
+        {% elif type_getter == "&'a str" or type_getter == "&str" %}
+        return &self.{{ name }}[..];
+        {% else %}
         return &self.{{ name }};
+        {% endif %}
 {% endif %}
 {% endif %}
 {% endif %}
