@@ -95,17 +95,17 @@ polymorphic traits are implemented:
 
 .. code-block:: rust
 
-    pub trait Event   {
-        fn started_at_time(&self) -> Option<&NaiveDate>;
-        fn ended_at_time(&self) -> Option<&NaiveDate>;
-        fn duration(&self) -> Option<&f64>;
-        fn is_current(&self) -> Option<&bool>;
+    pub trait Event {
+        fn started_at_time<'a>(&'a self) -> Option<&'a NaiveDate>;
+        fn ended_at_time<'a>(&'a self) -> Option<&'a NaiveDate>;
+        fn duration<'a>(&'a self) -> Option<&'a f64>;
+        fn is_current<'a>(&'a self) -> Option<&'a bool>;
     }
 
-    pub trait MedicalEvent : Event   {
-        fn in_location(&self) -> Option<&str>;
-        fn diagnosis(&self) -> Option<&crate::DiagnosisConcept>;
-        fn procedure(&self) -> Option<&crate::ProcedureConcept>;
+    pub trait MedicalEvent: Event {
+        fn in_location<'a>(&'a self) -> Option<&'a str>;
+        fn diagnosis<'a>(&'a self) -> Option<&'a crate::DiagnosisConcept>;
+        fn procedure<'a>(&'a self) -> Option<&'a crate::ProcedureConcept>;
     }
 
     impl Event for crate::MedicalEvent {
@@ -178,3 +178,17 @@ Generator
 
 .. autoclass:: RustGenerator
     :members:
+
+Features
+--------
+
+- Serde: Code that depends on Serde is behind the Cargo feature ``serde`` (``#[cfg(feature = "serde")]``).
+- PyO3: Python bindings are behind the Cargo feature ``pyo3`` (``#[cfg(feature = "pyo3")]``).
+- Enable features when building your crate (e.g., ``--features serde,pyo3``) to include the corresponding code paths.
+
+Single-File Mode
+----------------
+
+- When generating a single ``.rs`` file (``--mode file``):
+  - ``serde_utils`` is inlined into the file (no separate module file).
+  - Polymorphic traits/containers (``poly.rs``/``poly_containers.rs``) are not emitted — they are crate-mode only.
