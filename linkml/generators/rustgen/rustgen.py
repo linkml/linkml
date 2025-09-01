@@ -248,6 +248,11 @@ def get_rust_type(
         if tdef := sv.all_types().get(t, None):
             rsrange = get_rust_type(tdef, sv, pyo3)
             no_add_crate = True
+        elif t in sv.all_enums():
+            # Map LinkML enums to generated Rust enums rather than collapsing to String
+            e = sv.get_enum(t)
+            rsrange = get_name(e)
+            no_add_crate = True
         elif t in sv.all_classes():
             c = sv.get_class(t)
             rsrange = get_name(c)
@@ -420,11 +425,22 @@ class RustGenerator(Generator, LifecycleMixin):
         induced_attrs = self.before_generate_slots(induced_attrs, self.schemaview)
         slot_range_unions = []
         for a in induced_attrs:
-            ranges = self.schemaview.slot_range_as_union(a)
+            # Promote union across descendants for canonical union enum in base module
+            ranges = []
+            for r in self.schemaview.slot_range_as_union(a):
+                ranges.append(r)
+            for d in self.schemaview.class_descendants(cls.name):
+                sdesc = self.schemaview.induced_slot(a.name, d)
+                if sdesc is None:
+                    continue
+                for r in self.schemaview.slot_range_as_union(sdesc):
+                    if r not in ranges:
+                        ranges.append(r)
             if len(ranges) > 1:
                 slot_range_unions.append(
                     SlotRangeAsUnion(
-                        slot_name=get_name(a), ranges=[get_rust_type(r, self.schemaview, True) for r in ranges]
+                        slot_name=get_name(a),
+                        ranges=[get_rust_type(r, self.schemaview, True) for r in ranges],
                     )
                 )
 
@@ -502,6 +518,10 @@ class RustGenerator(Generator, LifecycleMixin):
                     if attr.required:
                         value_args_no_default.append(attr)
         if key_attr is not None:
+            # If there is a key/identifier but no single-valued non-multivalued
+            # attribute to serve as the value, do not treat this as a key/value class.
+            if len(value_attrs) == 0:
+                return None
             return AsKeyValue(
                 name=get_name(cls),
                 key_property_name=get_name(key_attr),
@@ -677,8 +697,9 @@ class RustGenerator(Generator, LifecycleMixin):
         rust_attribs = []
         for a in attribs:
             n = get_name(a)
-            ri = get_rust_range_info(cls, a, self.schemaview)
-            rust_attribs.append(PolyTraitProperty(name=n, range=ri))
+            base_ri = get_rust_range_info(cls, a, self.schemaview)
+            promoted_ri = self.get_rust_range_info_across_descendants(cls, a)
+            rust_attribs.append(PolyTraitProperty(name=n, range=base_ri, promoted_range=promoted_ri))
 
         subtype_impls = []
         for sc in self.schemaview.class_descendants(cls.name):
@@ -695,7 +716,8 @@ class RustGenerator(Generator, LifecycleMixin):
                 PolyTraitPropertyImpl(
                     name=get_name(a),
                     range=get_rust_range_info(sco, find_slot(a.name), self.schemaview),
-                    definition_range=get_rust_range_info(cls, a, self.schemaview),
+                    definition_range=self.get_rust_range_info_across_descendants(cls, a),
+                    trait_range=self.get_rust_range_info_across_descendants(cls, a),
                     struct_name=get_name(sco),
                 )
                 for a in attribs
@@ -707,7 +729,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 matches = [
                     PolyTraitPropertyMatch(
                         name=get_name(a),
-                        range=get_rust_range_info(sco, find_slot(a.name), self.schemaview),
+                        range=self.get_rust_range_info_across_descendants(cls, a),
                         cases=cases,
                         struct_name=f"{get_name(sco)}OrSubtype",
                     )
@@ -747,6 +769,151 @@ class RustGenerator(Generator, LifecycleMixin):
                 f.write(serialized)
 
         return serialized
+
+    def get_rust_range_info_across_descendants(self, cls: ClassDefinition, s: SlotDefinition) -> RustRange:
+        """Compute a RustRange representing the union of a slot's ranges across a class and all its descendants.
+
+        Container and optionality are taken from the base class slot.
+        """
+        sv = self.schemaview
+        # Collect rust type names for all ranges across base + descendants
+        type_names: list[str] = []
+
+        def add_for_slot(slot_def: SlotDefinition):
+            for r in sv.slot_range_as_union(slot_def):
+                if r in sv.all_classes():
+                    # Prefer concrete observations: only add String if explicitly non-inlined
+                    inl = slot_def.inlined
+                    inl_list = slot_def.inlined_as_list
+                    if inl is True or inl_list is True:
+                        tname = get_rust_type(r, sv, True)
+                    elif inl is False and (inl_list is False or inl_list is None):
+                        tname = "String"
+                    else:
+                        # Unknown inlining at this definition; skip adding a guess
+                        continue
+                else:
+                    tname = get_rust_type(r, sv, True)
+                if tname not in type_names:
+                    type_names.append(tname)
+
+        base_slot = sv.induced_slot(s.name, cls.name)
+        if base_slot is not None:
+            add_for_slot(base_slot)
+
+        # Include descendants in the class inheritance tree
+        for d in sv.class_descendants(cls.name):
+            ds = sv.induced_slot(s.name, d)
+            if ds is not None:
+                add_for_slot(ds)
+
+        # If this is a mixin, include classes that use the mixin and their descendants
+        try:
+            all_classes = list(sv.all_classes())
+        except Exception:
+            all_classes = []
+        for cname in all_classes:
+            cdef = sv.get_class(cname)
+            if cdef is None:
+                continue
+            if cls.name in (cdef.mixins or []):
+                ds = sv.induced_slot(s.name, cname)
+                if ds is not None:
+                    add_for_slot(ds)
+                for dd in sv.class_descendants(cname):
+                    dslot = sv.induced_slot(s.name, dd)
+                    if dslot is not None:
+                        add_for_slot(dslot)
+
+        container_mode, _ = determine_slot_mode(s, sv)
+        # Optionality across descendants/mixin users: optional if not all are required
+        all_required = True
+        def consider_required(slot_def: SlotDefinition):
+            nonlocal all_required
+            if not bool(slot_def.required):
+                all_required = False
+        if base_slot is not None:
+            consider_required(base_slot)
+        for d in sv.class_descendants(cls.name):
+            ds = sv.induced_slot(s.name, d)
+            if ds is not None:
+                consider_required(ds)
+        try:
+            all_classes = list(sv.all_classes())
+        except Exception:
+            all_classes = []
+        for cname in all_classes:
+            cdef = sv.get_class(cname)
+            if cdef is None:
+                continue
+            if cls.name in (cdef.mixins or []):
+                ds = sv.induced_slot(s.name, cname)
+                if ds is not None:
+                    consider_required(ds)
+                for dd in sv.class_descendants(cname):
+                    dslot = sv.induced_slot(s.name, dd)
+                    if dslot is not None:
+                        consider_required(dslot)
+        base_optional = not all_required
+
+        if len(type_names) > 1:
+            child_ranges = [
+                RustRange(
+                    type_=t,
+                    is_class_range=t not in ("String", "bool", "f64", "isize"),
+                )
+                for t in type_names
+            ]
+            return RustRange(
+                optional=base_optional,
+                has_default=base_optional or (s.multivalued or False),
+                containerType=(
+                    ContainerType.LIST
+                    if container_mode == SlotContainerMode.LIST
+                    else ContainerType.MAPPING
+                    if container_mode == SlotContainerMode.MAPPING
+                    else None
+                ),
+                child_ranges=child_ranges,
+                is_class_range=False,
+                is_reference=False,
+                type_=underscore(uncamelcase(cls.name)) + "_utl::" + get_name(s) + "_range",
+            )
+        else:
+            # Fall back to base definition only if nothing was observed concretely
+            if len(type_names) == 0 and base_slot is not None:
+                for r in sv.slot_range_as_union(base_slot):
+                    if r in sv.all_classes():
+                        inl = base_slot.inlined
+                        inl_list = base_slot.inlined_as_list
+                        if inl is True or inl_list is True:
+                            tname = get_rust_type(r, sv, True)
+                            if tname not in type_names:
+                                type_names.append(tname)
+                    else:
+                        tname = get_rust_type(r, sv, True)
+                        if tname not in type_names:
+                            type_names.append(tname)
+            # If still empty, fall back to original per-class range info
+            if len(type_names) == 0:
+                return get_rust_range_info(cls, s, sv)
+            single = type_names[0]
+            return RustRange(
+                optional=base_optional,
+                has_default=base_optional or (s.multivalued or False),
+                containerType=(
+                    ContainerType.LIST
+                    if container_mode == SlotContainerMode.LIST
+                    else ContainerType.MAPPING
+                    if container_mode == SlotContainerMode.MAPPING
+                    else None
+                ),
+                child_ranges=None,
+                is_class_range=single not in ("String", "bool", "f64", "isize"),
+                is_reference=False,
+                has_class_subtypes=(len(self.schemaview.class_descendants(single))>1 if single in self.schemaview.all_classes() else False),
+                type_=single,
+            )
 
     def write_crate(
         self, output: Optional[Path] = None, rendered: Union[FileResult, CrateResult] = None, force: bool = False
