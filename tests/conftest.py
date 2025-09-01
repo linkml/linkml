@@ -196,7 +196,9 @@ def pytest_addoption(parser):
     )
     parser.addoption("--without-cache", action="store_true", help="Don't use a sqlite cache for network requests")
     parser.addoption("--with-biolink", action="store_true", help="Include tests marked as for the biolink model")
-    parser.addoption("--with-rustgen", action="store_true", help="Include tests marked as rustgen (Rust codegen/maturin)")
+    parser.addoption(
+        "--with-rustgen", action="store_true", help="Include tests marked as rustgen (Rust codegen/maturin)"
+    )
 
 
 def pytest_collection_modifyitems(config, items: list[pytest.Item]):
