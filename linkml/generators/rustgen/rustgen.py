@@ -171,6 +171,25 @@ def get_identifier_slot(cls: ClassDefinition, sv: SchemaView) -> Optional[SlotDe
     return None
 
 
+def class_real_descendants(sv: SchemaView, class_name: str) -> list[str]:
+    """Return true descendants of a class, excluding the class itself.
+
+    Some SchemaView implementations include the class in `class_descendants`.
+    We normalize here to avoid off-by-one errors when deciding if a class has
+    subtypes (for OrSubtype generation and trait typing decisions).
+    """
+    try:
+        descs = list(sv.class_descendants(class_name))
+    except Exception:
+        descs = []
+    return [d for d in descs if d != class_name]
+
+
+def has_real_subtypes(sv: SchemaView, class_name: str) -> bool:
+    """True when the class has at least one real subtype (excluding itself)."""
+    return len(class_real_descendants(sv, class_name)) > 0
+
+
 def determine_slot_mode(s: SlotDefinition, sv: SchemaView) -> tuple[SlotContainerMode, SlotInlineMode]:
     """Return container and inline modes for a slot."""
 
@@ -276,7 +295,7 @@ def get_rust_range_info(
         RustRange(
             type_="String" if inline_mode == SlotInlineMode.REFERENCE else get_rust_type(r, sv, True, crate_ref),
             is_class_range=r in sv.all_classes(),
-            has_class_subtypes=len(sv.class_descendants(r)) > 1 if r in sv.all_classes() else False,
+            has_class_subtypes=has_real_subtypes(sv, r) if r in sv.all_classes() else False,
         )
         for r in all_ranges
     ]
@@ -295,11 +314,7 @@ def get_rust_range_info(
         box_needed=inline_mode == SlotInlineMode.INLINE and can_contain_reference_to_class(s, cls, sv),
         is_class_range=all_ranges[0] in sv.all_classes() if len(all_ranges) == 1 else False,
         is_reference=inline_mode == SlotInlineMode.REFERENCE,
-        has_class_subtypes=(
-            len(sv.class_descendants(all_ranges[0])) > 1
-            if len(all_ranges) == 1 and all_ranges[0] in sv.all_classes()
-            else False
-        ),
+        has_class_subtypes=(has_real_subtypes(sv, all_ranges[0]) if len(all_ranges) == 1 and all_ranges[0] in sv.all_classes() else False),
         type_=(
             underscore(uncamelcase(cls.name)) + "_utl::" + get_name(s) + "_range"
             if len(sub_ranges) > 1
@@ -477,7 +492,7 @@ class RustGenerator(Generator, LifecycleMixin):
         return res
 
     def gen_struct_or_subtype_enum(self, cls: ClassDefinition) -> Optional[RustStructOrSubtypeEnum]:
-        descendants = self.schemaview.class_descendants(cls.name)
+        descendants = class_real_descendants(self.schemaview, cls.name)
         td = self.schemaview.get_type_designator_slot(cls.name)
         td_mapping = {}
         if td is not None:
@@ -485,7 +500,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 d_class = self.schemaview.get_class(d)
                 values = get_accepted_type_designator_values(self.schemaview, td, d_class)
                 td_mapping[d] = values
-        if len(descendants) > 1:
+        if len(descendants) > 0:
             return RustStructOrSubtypeEnum(
                 enum_name=get_name(cls) + "OrSubtype",
                 struct_names=[get_name(self.schemaview.get_class(d)) for d in descendants],
@@ -723,9 +738,9 @@ class RustGenerator(Generator, LifecycleMixin):
                 for a in attribs
             ]
             impls.append(PolyTraitImpl(name=class_name, struct_name=get_name(sco), attrs=ptis))
-            has_subtypes = len(self.schemaview.class_descendants(sc)) > 1
+            has_subtypes = has_real_subtypes(self.schemaview, sc)
             if has_subtypes:
-                cases = [get_name(self.schemaview.get_class(x)) for x in self.schemaview.class_descendants(sc)]
+                cases = [get_name(self.schemaview.get_class(x)) for x in class_real_descendants(self.schemaview, sc)]
                 matches = [
                     PolyTraitPropertyMatch(
                         name=get_name(a),
@@ -911,7 +926,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 child_ranges=None,
                 is_class_range=single not in ("String", "bool", "f64", "isize"),
                 is_reference=False,
-                has_class_subtypes=(len(self.schemaview.class_descendants(single))>1 if single in self.schemaview.all_classes() else False),
+                has_class_subtypes=(has_real_subtypes(self.schemaview, single) if single in self.schemaview.all_classes() else False),
                 type_=single,
             )
 
