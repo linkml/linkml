@@ -46,11 +46,11 @@ jobs:
           cargo -V
 
       - name: Install Python deps (rustgen tests)
-        run: uv sync --group dev --group tests-rustgen
+        run: uv sync --group dev --group tests-rustgen --group tests-extra
 
-      - name: Run rustgen tests (maturin) with coverage
+      - name: Run rustgen tests with coverage
         run: |
-          uv run --group dev --group tests-rustgen coverage run -m pytest tests/test_generators/test_rustgen_maturin.py --with-slow --with-rustgen
+          uv run --group dev --group tests-rustgen coverage run -m pytest -m rustgen --with-rustgen
           uv run coverage xml
           uv run coverage report -m
 
