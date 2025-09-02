@@ -8,6 +8,7 @@ from typing import Optional
 import click
 from jinja2 import Environment, FileSystemLoader
 from linkml_runtime.linkml_model.meta import Element, SlotDefinition
+from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.generators.docgen import DocGenerator
@@ -34,6 +35,7 @@ class MermaidClassDiagramGenerator(Generator):
     directory: Optional[str] = None  # output directory with generated markdown files
     template_file: Optional[str] = None  # custom/default jinja template for class diagrams
     classes: list[str] = field(default_factory=list)  # optional subset of classes
+    preserve_names: bool = False  # preserve original LinkML names in diagram output
 
     def __post_init__(self):
         super().__post_init__()
@@ -59,7 +61,7 @@ class MermaidClassDiagramGenerator(Generator):
         template_name = os.path.basename(self.template_file)
         loader = FileSystemLoader(template_folder)
         env = Environment(loader=loader)
-        temp_doc_gen = DocGenerator(self.schema, mergeimports=self.mergeimports)
+        temp_doc_gen = DocGenerator(self.schema, mergeimports=self.mergeimports, preserve_names=self.preserve_names)
         temp_doc_gen.customize_environment(env)
 
         template = env.get_template(template_name)
@@ -74,7 +76,8 @@ class MermaidClassDiagramGenerator(Generator):
         for cn, class_def in class_items:
             self.logger.info(f"Generating Mermaid diagram for class: {cn}")
             rendered = template.render(gen=self, element=class_def, schemaview=self.schemaview)
-            outfile = self.output_directory / f"{cn}.md"
+            filename = self.name(class_def) if self.preserve_names else cn
+            outfile = self.output_directory / f"{filename}.md"
             with open(outfile, "w", encoding="utf-8") as f:
                 f.write(rendered)
 
@@ -88,7 +91,16 @@ class MermaidClassDiagramGenerator(Generator):
 
     def name(self, element: Element) -> str:
         """Returns the canonical name for an element."""
-        return element.name
+        if element is None:
+            return ""
+        if self.preserve_names:
+            return element.name
+        elif type(element).class_name == "slot_definition":
+            return underscore(element.name)
+        elif type(element).class_name == "class_definition":
+            return camelcase(element.name)
+        else:
+            return camelcase(element.name)
 
     def link_mermaid(self, element):
         """Generates a link for the given element."""
@@ -120,6 +132,12 @@ class MermaidClassDiagramGenerator(Generator):
     multiple=True,
     help="One or more classes in the schema for which to generate diagrams. "
     "If omitted, diagrams for all classes are generated.",
+)
+@click.option(
+    "--preserve-names/--normalize-names",
+    default=False,
+    show_default=True,
+    help="Preserve original LinkML names in Mermaid diagram output (e.g., for class names, slot names, file names).",
 )
 @click.version_option(click.__version__, "-V", "--version")
 def cli(yamlfile, template_file, directory, classes, **args):

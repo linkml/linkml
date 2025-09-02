@@ -173,6 +173,9 @@ class DocGenerator(Generator):
     hierarchical_class_view: bool = False
     render_imports: bool = False
 
+    preserve_names: bool = False
+    """If true, preserve LinkML element names in docs instead of camelcase/underscore."""
+
     def __post_init__(self):
         dialect = self.dialect
         if dialect is not None:
@@ -192,6 +195,27 @@ class DocGenerator(Generator):
         super().__post_init__()
         self.logger = logging.getLogger(__name__)
         self.schemaview = SchemaView(self.schema, merge_imports=self.mergeimports)
+
+        # Override schemaview's get_mappings to use preserved URIs when needed
+        if self.preserve_names:
+            original_get_mappings = self.schemaview.get_mappings
+
+            def get_mappings_with_preserved_uris(element_name, **kwargs):
+                mappings = original_get_mappings(element_name, **kwargs)
+                if mappings and element_name:
+                    try:
+                        element = self.schemaview.get_element(element_name)
+                        if element:
+                            preserved_uri = self.uri(element, expand=True)
+                            # Fix self and native mappings to use preserved URI
+                            for key in ("self", "native"):
+                                if key in mappings:
+                                    mappings[key] = [preserved_uri]
+                    except Exception:
+                        pass
+                return mappings
+
+            self.schemaview.get_mappings = get_mappings_with_preserved_uris
 
     def serialize(self, directory: str = None) -> None:
         """
@@ -363,19 +387,21 @@ class DocGenerator(Generator):
         :return: slot name or numeric portion of CURIE prefixed
             slot_uri
         """
-        if type(element).class_name == "slot_definition":
+        if element is None:
+            return ""
+        if self.preserve_names:
+            return element.name
+        elif type(element).class_name == "slot_definition":
             if self.use_slot_uris:
                 curie = self.schemaview.get_uri(element)
                 if curie:
                     return curie.split(":")[1]
-
             return underscore(element.name)
         elif type(element).class_name == "class_definition":
             if self.use_class_uris:
                 curie = self.schemaview.get_uri(element)
                 if curie:
                     return curie.split(":")[1]
-
             return camelcase(element.name)
         else:
             return camelcase(element.name)
@@ -390,6 +416,13 @@ class DocGenerator(Generator):
         if isinstance(element, SubsetDefinition):
             # Subsets have no uri attribute
             return self.name(element)
+
+        # Simple URI composition for preserved names
+        if self.preserve_names and not (self.use_class_uris or self.use_slot_uris):
+            base = self.schemaview.schema.id
+            if base and ("://" in base or base.startswith("http")):
+                sep = "" if base.endswith(("/", "#", "_", ":")) else "/"
+                return f"{base}{sep}{self.name(element)}"
 
         if self.subfolder_type_separation:
             return self.schemaview.get_uri(element, expand=expand, use_element_type=True)
@@ -442,6 +475,8 @@ class DocGenerator(Generator):
             return "NONE"
         if not isinstance(e, Definition):
             e = self.schemaview.get_element(e)
+            if e is None:
+                return "NONE"
         if self._is_external(e):
             return self.uri_link(e)
         elif isinstance(e, ClassDefinition):
@@ -454,12 +489,12 @@ class DocGenerator(Generator):
                         subfolder=subfolder + CLASS_SUBFOLDER if self.subfolder_type_separation else None,
                     )
             return self._markdown_link(
-                camelcase(e.name),
+                self.name(e),
                 subfolder=subfolder + CLASS_SUBFOLDER if self.subfolder_type_separation else None,
             )
         elif isinstance(e, EnumDefinition):
             return self._markdown_link(
-                camelcase(e.name),
+                self.name(e),
                 subfolder=subfolder + ENUM_SUBFOLDER if self.subfolder_type_separation else None,
             )
         elif isinstance(e, SlotDefinition):
@@ -472,17 +507,17 @@ class DocGenerator(Generator):
                         subfolder=subfolder + SLOT_SUBFOLDER if self.subfolder_type_separation else None,
                     )
             return self._markdown_link(
-                underscore(e.name),
+                self.name(e),
                 subfolder=subfolder + SLOT_SUBFOLDER if self.subfolder_type_separation else None,
             )
         elif isinstance(e, TypeDefinition):
             return self._markdown_link(
-                camelcase(e.name),
+                self.name(e),
                 subfolder=subfolder + TYPE_SUBFOLDER if self.subfolder_type_separation else None,
             )
         elif isinstance(e, SubsetDefinition):
             return self._markdown_link(
-                camelcase(e.name),
+                self.name(e),
                 subfolder=subfolder + SUBSET_SUBFOLDER if self.subfolder_type_separation else None,
             )
         else:
@@ -500,6 +535,8 @@ class DocGenerator(Generator):
         return self._is_external(t) and not self.schemaview.schema.id.startswith("https://w3id.org/linkml/")
 
     def _is_external(self, element: Element) -> bool:
+        if element is None:
+            return False
         if element.from_schema == "https://w3id.org/linkml/types" and not self.genmeta:
             return True
         else:
@@ -714,7 +751,7 @@ class DocGenerator(Generator):
         :return:
         """
         if self.diagram_type.value == DiagramType.er_diagram.value:
-            erdgen = ERDiagramGenerator(self.schemaview.schema, format="mermaid")
+            erdgen = ERDiagramGenerator(self.schemaview.schema, format="mermaid", preserve_names=self.preserve_names)
             if class_names:
                 return erdgen.serialize_classes(class_names, follow_references=True, max_hops=2)
             else:
@@ -722,7 +759,7 @@ class DocGenerator(Generator):
         elif self.diagram_type.value == DiagramType.mermaid_class_diagram.value:
             self.logger.info("This is currently handled in the jinja templates")
         elif self.diagram_type.value == DiagramType.plantuml_class_diagram.value:
-            plantumlgen = PlantumlGenerator(self.schema)
+            plantumlgen = PlantumlGenerator(self.schema, preserve_names=self.preserve_names)
             plantuml_diagram = plantumlgen.serialize(classes=class_names)
             self.logger.debug(f"Created PlantUML diagram for class: {class_names}")
             return plantuml_diagram
@@ -1138,6 +1175,12 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 Whether to truncate long (potentially spanning multiple lines) descriptions of classes, slots, etc., in the docs.
 Set to true for truncated descriptions, and false to display full descriptions.""",
 )
+@click.option(
+    "--preserve-names/--normalize-names",
+    default=False,
+    show_default=True,
+    help="Preserve original LinkML names in documentation output (e.g., for page titles, links, and file names).",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="doc")
 def cli(
@@ -1152,6 +1195,7 @@ def cli(
     subfolder_type_separation,
     render_imports,
     truncate_descriptions,
+    preserve_names,
     **args,
 ):
     """Generate documentation folder from a LinkML YAML schema
@@ -1185,6 +1229,7 @@ def cli(
         subfolder_type_separation=subfolder_type_separation,
         render_imports=render_imports,
         truncate_descriptions=truncate_descriptions,
+        preserve_names=preserve_names,
         **args,
     )
     print(gen.serialize())
