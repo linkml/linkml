@@ -4,12 +4,7 @@ Models for intermediate build results
 (see PydanticGenerator for example implementation and use)
 """
 
-from typing import TypeVar
-
-try:
-    from typing import Annotated
-except ImportError:
-    from typing import Annotated
+from typing import Annotated, TypeVar
 
 
 from linkml_runtime.linkml_model import (
