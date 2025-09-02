@@ -6,7 +6,6 @@ Models for intermediate build results
 
 from typing import Annotated, TypeVar
 
-
 from linkml_runtime.linkml_model import (
     ClassDefinition,
     Definition,
