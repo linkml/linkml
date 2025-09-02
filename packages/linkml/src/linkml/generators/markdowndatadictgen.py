@@ -156,6 +156,8 @@ class MarkdownDataDictGen(Generator):
     warn_on_exist: bool = False
     gen_classes: Optional[set[ClassDefinitionName]] = None
     gen_classes_neighborhood: Optional[References] = None
+    separate_erd_components: bool = True
+    omit_standalone_classes: bool = False
 
     schema_classes = set[ClassDefinition]
 
@@ -211,11 +213,59 @@ class MarkdownDataDictGen(Generator):
         items.append(self.header(2, "Class Diagram"))
         items.append(f"```mermaid\n{self.full_class_diagram()}\n```")
 
-        # ERD Diagram
-        erd_gen = ERDiagramGenerator(self.schema_location, exclude_abstract_classes=True, exclude_attributes=False)
-        items.append(self.header(2, "ERD Diagram"))
-        items.append(erd_gen.serialize())
+        # ERD Diagram(s)
+        if self.separate_erd_components:
+            items.extend(self._generate_component_erd_diagrams())
+        else:
+            # Original single ERD diagram
+            erd_gen = ERDiagramGenerator(self.schema_location, exclude_abstract_classes=True, exclude_attributes=False)
+            items.append(self.header(2, "ERD Diagram"))
+            items.append(erd_gen.serialize())
 
+        return items
+
+    def _generate_component_erd_diagrams(self) -> list[str]:
+        """Generate separate ERD diagrams for each connected component."""
+        items = []
+        
+        connected_components, base_classes, truly_standalone_classes = self._detect_erd_connected_components()
+        
+        # Generate diagrams for connected components
+        if connected_components:
+            if len(connected_components) == 1:
+                items.append(self.header(2, "ERD Diagram"))
+            else:
+                items.append(self.header(2, "ERD Diagrams"))
+            
+            for i, component in enumerate(connected_components, 1):
+                if len(connected_components) > 1:
+                    # Sort component classes for consistent output
+                    sorted_classes = sorted(component)
+                    component_name = f"Component {i} ({', '.join(sorted_classes[:3])}{'...' if len(sorted_classes) > 3 else ''})"
+                    items.append(self.header(3, component_name))
+                
+                erd_gen = ERDiagramGenerator(self.schema_location, exclude_abstract_classes=True, exclude_attributes=False)
+                component_diagram = erd_gen.serialize_classes(list(component), follow_references=False, max_hops=0)
+                items.append(component_diagram)
+        
+        # Generate section for base classes (classes used as parents but have no direct relationships)
+        if base_classes and not self.omit_standalone_classes:
+            items.append(self.header(2, "Base Classes"))
+            items.append(self.para("These classes have no direct relationships but serve as base classes for other classes:"))
+            
+            erd_gen = ERDiagramGenerator(self.schema_location, exclude_abstract_classes=True, exclude_attributes=False)
+            base_diagram = erd_gen.serialize_classes(list(base_classes), follow_references=False, max_hops=0)
+            items.append(base_diagram)
+        
+        # Generate section for truly standalone classes
+        if truly_standalone_classes and not self.omit_standalone_classes:
+            items.append(self.header(2, "Standalone Classes"))
+            items.append(self.para("These classes are completely isolated with no relationships and are not used as base classes:"))
+            
+            erd_gen = ERDiagramGenerator(self.schema_location, exclude_abstract_classes=True, exclude_attributes=False)
+            standalone_diagram = erd_gen.serialize_classes(list(truly_standalone_classes), follow_references=False, max_hops=0)
+            items.append(standalone_diagram)
+        
         return items
 
     def _generate_class_sections(self) -> list[str]:
@@ -287,6 +337,113 @@ class MarkdownDataDictGen(Generator):
                 items.extend(self.describe_enum(enum))
 
         return items
+
+    def _detect_erd_connected_components(self) -> tuple[list[set[str]], set[str], set[str]]:
+        """Detect connected components in the ERD graph and classify standalone classes.
+        
+        Returns:
+            tuple: (list of connected components, set of base classes, set of truly standalone classes)
+                  - connected components: sets of class names connected via relationships
+                  - base classes: no relationships but serve as parents for classes that do have relationships  
+                  - truly standalone classes: no relationships and not used as base classes
+        """
+        # Build adjacency list of class relationships
+        adjacency = {}
+        all_classes = set()
+        
+        # Get all concrete classes (non-abstract, non-mixin)
+        for cls in self.schema.classes.values():
+            if not cls.abstract and not cls.mixin:
+                all_classes.add(cls.name)
+                adjacency[cls.name] = set()
+        
+        # Add edges based on slot relationships
+        for cls in self.schema.classes.values():
+            if not cls.abstract and not cls.mixin:
+                # Check all slots for this class
+                for slot_name in cls.slots:
+                    slot = self.schema.slots.get(slot_name)
+                    if slot and slot.range in all_classes:
+                        # Add bidirectional edge
+                        adjacency[cls.name].add(slot.range)
+                        adjacency[slot.range].add(cls.name)
+                
+                # Also check attributes (inline slots)
+                if cls.attributes:
+                    for attr_name, attr_def in cls.attributes.items():
+                        if attr_def.range in all_classes:
+                            adjacency[cls.name].add(attr_def.range)
+                            adjacency[attr_def.range].add(cls.name)
+        
+        # Find connected components using DFS
+        visited = set()
+        components = []
+        
+        def dfs(node, component):
+            if node in visited:
+                return
+            visited.add(node)
+            component.add(node)
+            for neighbor in adjacency.get(node, set()):
+                dfs(neighbor, component)
+        
+        for cls_name in all_classes:
+            if cls_name not in visited:
+                component = set()
+                dfs(cls_name, component)
+                components.append(component)
+        
+        # Separate connected components from singleton components
+        connected_components = []
+        singleton_classes = set()
+        
+        for component in components:
+            if len(component) == 1:
+                singleton_classes.update(component)
+            else:
+                connected_components.append(component)
+        
+        # Now classify singleton classes into base classes vs truly standalone
+        base_classes = set()
+        truly_standalone_classes = set()
+        
+        # Get all classes that are in connected components (have relationships)
+        classes_with_relationships = set()
+        for component in connected_components:
+            classes_with_relationships.update(component)
+        
+        for singleton_class in singleton_classes:
+            # Check if this singleton class is used as a parent (is_a) by any class with relationships
+            is_base_class = False
+            
+            for cls in self.schema.classes.values():
+                if not cls.abstract and not cls.mixin and cls.is_a == singleton_class:
+                    # Check if this descendant class has relationships (is in connected components)
+                    if cls.name in classes_with_relationships:
+                        is_base_class = True
+                        break
+                    # Also check if descendant has relationships through inheritance chain
+                    if self._class_descendants_have_relationships(cls.name, classes_with_relationships):
+                        is_base_class = True
+                        break
+            
+            if is_base_class:
+                base_classes.add(singleton_class)
+            else:
+                truly_standalone_classes.add(singleton_class)
+        
+        return connected_components, base_classes, truly_standalone_classes
+    
+    def _class_descendants_have_relationships(self, class_name: str, classes_with_relationships: set[str]) -> bool:
+        """Check if any descendants of a class have relationships (recursively)."""
+        for cls in self.schema.classes.values():
+            if not cls.abstract and not cls.mixin and cls.is_a == class_name:
+                if cls.name in classes_with_relationships:
+                    return True
+                # Recursively check descendants
+                if self._class_descendants_have_relationships(cls.name, classes_with_relationships):
+                    return True
+        return False
 
     def local_class_diagram(self, cls: ClassDefinition) -> ClassDiagram:
         """Generate a local class diagram showing relationships for a specific class."""
@@ -996,6 +1153,17 @@ def pad_heading(text: str) -> str:
     type=click.Choice(["mkdocs", "confluence"], case_sensitive=False),
     default="confluence",
     help="Choose anchor style: 'mkdocs' for lowercase markdown link anchors, 'confluence' to keep as is",
+)
+@click.option(
+    "--separate-erd-components/--single-erd",
+    default=True,
+    help="Generate separate ERD diagrams for each connected component (default: True)",
+)
+@click.option(
+    "--omit-standalone-classes",
+    is_flag=True,
+    default=False,
+    help="Omit standalone classes (classes with no relationships) from ERD diagrams",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
