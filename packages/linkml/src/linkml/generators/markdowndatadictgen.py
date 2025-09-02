@@ -703,85 +703,76 @@ class MarkdownDataDictGen(Generator):
         return markdown_table(attributes).set_params(quote=False, row_sep="markdown").get_markdown()
 
     def _collect_all_class_slots(self, cls: ClassDefinition) -> list[SlotDefinition]:
-        """Collect all slots for a class including those from mixins and inheritance."""
-        all_slot_names = set()
-        all_slots = []
-
-        # Add direct slots
-        for slot_name in cls.slots:
-            if slot_name not in all_slot_names:
-                all_slot_names.add(slot_name)
-                all_slots.append(self.schema.slots[slot_name])
-
-        # Add direct attributes (slots defined inline)
-        if cls.attributes:
-            for attr_name, attr_def in cls.attributes.items():
-                if attr_name not in all_slot_names:
-                    all_slot_names.add(attr_name)
-                    all_slots.append(attr_def)
-
-        # Add slots from mixins
-        if cls.mixins:
-            for mixin_name in cls.mixins:
-                mixin_cls = self.schema.classes.get(mixin_name)
-                if mixin_cls:
-                    # Add mixin slots
-                    for slot_name in mixin_cls.slots:
-                        if slot_name not in all_slot_names:
-                            all_slot_names.add(slot_name)
-                            all_slots.append(self.schema.slots[slot_name])
-
-                    # Add mixin attributes (inline slots)
-                    if mixin_cls.attributes:
-                        for attr_name, attr_def in mixin_cls.attributes.items():
-                            if attr_name not in all_slot_names:
-                                all_slot_names.add(attr_name)
-                                all_slots.append(attr_def)
-
-        # Add slots from parent classes (inheritance)
-        if cls.is_a:
-            parent_cls = self.schema.classes.get(cls.is_a)
-            if parent_cls:
-                parent_slots = self._collect_all_class_slots(parent_cls)
-                for slot in parent_slots:
-                    if slot.name not in all_slot_names:
-                        all_slot_names.add(slot.name)
-                        all_slots.append(slot)
-
-        return all_slots
+        """Collect all slots for a class using SchemaView's canonical slot resolution.
+        
+        This avoids duplication by using SchemaView.class_induced_slots() which provides
+        the definitive view of what slots a class has, properly handling inheritance,
+        mixins, and slot overrides without creating duplicates.
+        """
+        # Use SchemaView to get the canonical set of induced slots for this class
+        # This automatically handles inheritance, mixins, and deduplication
+        from linkml_runtime import SchemaView
+        
+        if not hasattr(self, '_schema_view'):
+            self._schema_view = SchemaView(self.schema_location)
+        
+        induced_slots = self._schema_view.class_induced_slots(cls.name)
+        return list(induced_slots)
 
     def _get_slot_source(self, slot: SlotDefinition, cls: ClassDefinition) -> dict[str, Any]:
-        """Determine where a slot comes from (own, mixin, or inheritance)."""
-        # Check if it's directly owned by this class (in domain_of or attributes)
-        if cls.name in slot.domain_of:
+        """Determine where a slot comes from (own, mixin, or inheritance) using SchemaView."""
+        if not hasattr(self, '_schema_view'):
+            from linkml_runtime import SchemaView
+            self._schema_view = SchemaView(self.schema_location)
+        
+        # Use SchemaView to determine slot ownership
+        slot_definition = self._schema_view.induced_slot(slot.name, cls.name)
+        
+        # Check if it's directly defined in this class
+        # A slot is "own" if this class is in its domain_of
+        if cls.name in slot_definition.domain_of:
             return {"type": "own", "source": cls.name}
-
+        
         # Check if it's a direct attribute of this class
         if cls.attributes and slot.name in cls.attributes:
             return {"type": "own", "source": cls.name}
-
-        # Check if it comes from a mixin
+        
+        # Use SchemaView to get all ancestors (mixins + inheritance chain)
+        ancestors = []
+        
+        # Add mixins first
         if cls.mixins:
-            for mixin_name in cls.mixins:
-                mixin_cls = self.schema.classes.get(mixin_name)
-                if mixin_cls:
-                    # Check mixin slots
-                    if slot.name in mixin_cls.slots:
-                        return {"type": "mixin", "source": mixin_name}
-                    # Check mixin attributes
-                    if mixin_cls.attributes and slot.name in mixin_cls.attributes:
-                        return {"type": "mixin", "source": mixin_name}
-
-        # Check if it comes from inheritance
+            ancestors.extend(cls.mixins)
+        
+        # Add inheritance chain
         if cls.is_a:
-            parent_cls = self.schema.classes.get(cls.is_a)
-            if parent_cls:
-                parent_source = self._get_slot_source(slot, parent_cls)
-                if parent_source["type"] == "own":
-                    return {"type": "inherited", "source": parent_source["source"]}
-                else:
-                    return parent_source
-
+            inheritance_chain = []
+            current = cls.is_a
+            while current:
+                inheritance_chain.append(current)
+                parent_cls = self.schema.classes.get(current)
+                current = parent_cls.is_a if parent_cls else None
+            ancestors.extend(inheritance_chain)
+        
+        # Check each ancestor to find the source
+        for ancestor_name in ancestors:
+            ancestor_cls = self.schema.classes.get(ancestor_name)
+            if ancestor_cls:
+                # Check if slot is defined in this ancestor
+                if ancestor_name in slot_definition.domain_of:
+                    # Determine if this ancestor is a mixin or inheritance
+                    if ancestor_name in (cls.mixins or []):
+                        return {"type": "mixin", "source": ancestor_name}
+                    else:
+                        return {"type": "inherited", "source": ancestor_name}
+                
+                # Check if it's a direct attribute of this ancestor
+                if ancestor_cls.attributes and slot.name in ancestor_cls.attributes:
+                    if ancestor_name in (cls.mixins or []):
+                        return {"type": "mixin", "source": ancestor_name}
+                    else:
+                        return {"type": "inherited", "source": ancestor_name}
+        
         return {"type": "unknown", "source": "unknown"}
 
     def _format_slot_name(self, slot_name: str, source_info: dict[str, Any]) -> str:
