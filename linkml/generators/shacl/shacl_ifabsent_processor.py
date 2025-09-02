@@ -61,13 +61,34 @@ class ShaclIfAbsentProcessor(IfAbsentProcessor):
         return Literal(f"{year}-{month}-{day}T{hour}:{minutes}:{seconds}", datatype=ShaclDataType.DATETIME.uri_ref)
 
     def map_uri_or_curie_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+
+        is_curie = False
+        if default_value in self.CURIE_SPECIAL_CASES:
+            is_curie = True
+            default_value = self._map_curie_special_case(default_value, slot, cls)
+        elif default_value in self.URI_SPECIAL_CASES:
+            default_value = self._map_uri_special_case(default_value, slot, cls)
+        else:
+            if ":" in default_value and "://" not in default_value and len(default_value.split(":")) == 2:
+                is_curie = True
+
+        if is_curie:
+            return Literal(default_value, datatype=ShaclDataType.CURIE.uri_ref)
+        else:
+            return Literal(default_value, datatype=ShaclDataType.URI.uri_ref)
+
         uri = URIRef(self.schema_view.expand_curie(default_value))
         return Literal(uri, datatype=ShaclDataType.URI.uri_ref)
 
+
     def map_curie_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        if default_value in self.CURIE_SPECIAL_CASES:
+            default_value = self._map_curie_special_case(default_value, slot, cls)
         return Literal(default_value, datatype=ShaclDataType.CURIE.uri_ref)
 
     def map_uri_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        if default_value in self.URI_SPECIAL_CASES:
+            default_value = self._map_uri_special_case(default_value, slot, cls)
         return Literal(default_value, datatype=ShaclDataType.URI.uri_ref)
 
     def map_nc_name_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
@@ -87,3 +108,9 @@ class ShaclIfAbsentProcessor(IfAbsentProcessor):
 
     def map_sparql_path_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
         raise NotImplementedError()
+
+    def _map_default_range_special_case(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition) -> str:
+        return Literal(
+            self.schema_view.get_uri(self.schema_view.schema.default_range),
+            datatype=ShaclDataType.CURIE.uri_ref,
+        )
