@@ -12,9 +12,9 @@ jobs:
   quality-checks:
     runs-on: ubuntu-latest
     steps:
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5.0.0
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v6.6.1
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
@@ -48,7 +48,7 @@ jobs:
 
     steps:
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v6.6.1
         with:
           enable-cache: true
           version: ${{ env.UV_VERSION }}
@@ -56,7 +56,7 @@ jobs:
 
 
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v5.0.0
         with:
           # Fetch all history for all branches and all tags.
           # The tags are required for dynamic versioning.

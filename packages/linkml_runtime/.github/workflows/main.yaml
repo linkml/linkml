@@ -17,9 +17,9 @@ jobs:
   quality-checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5.0.0
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v6.6.1
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
@@ -58,7 +58,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v5.0.0
         with:
           fetch-depth: 0
 
@@ -66,7 +66,7 @@ jobs:
       #          install uv
       #----------------------------------------------
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v6.6.1
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
@@ -74,17 +74,17 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       #----------------------------------------------
-      #    install your root project, if required 
-      #----------------------------------------------      
+      #    install your root project, if required
+      #----------------------------------------------
       - name: Install dependencies
         run: |
-          uv sync --group dev 
+          uv sync --group dev
 
       - name: Verify uv.lock is up-to-date
         run: uv lock --check
 
       #----------------------------------------------
-      #              coverage report   
+      #              coverage report
       #----------------------------------------------
       - name: Generate coverage results
         # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668
@@ -98,7 +98,7 @@ jobs:
       #           upload coverage results
       #----------------------------------------------
       - name: Upload coverage report
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v5.4.3
         with:
           name: codecov-results-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}

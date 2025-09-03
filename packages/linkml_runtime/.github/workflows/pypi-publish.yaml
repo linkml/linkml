@@ -12,7 +12,7 @@ jobs:
     name: Build Python 🐍 distributions 📦 for publishing to PyPI
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v5.0.0
       with:
         # Checkout the code including tags required for dynamic versioning
         fetch-depth: 0
@@ -23,7 +23,7 @@ jobs:
         python-version: 3.13
 
     - name: Install uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v6.6.1
       with:
         enable-cache: true
         version: ${{ env.UV_VERSION }}
