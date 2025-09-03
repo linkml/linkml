@@ -1,43 +1,145 @@
+import importlib
+import os
+import shutil
+import subprocess
+import sys
+import zipfile
+from pathlib import Path
+
 import pytest
-from linkml_runtime.utils.schemaview import SchemaView
+import tomllib
+from linkml_runtime.utils.introspection import package_schemaview
 
 from linkml.generators.rustgen import RustGenerator
-from linkml.generators.rustgen.rustgen import (
-    SlotContainerMode,
-    SlotInlineMode,
-    determine_slot_mode,
-)
+
+# Mark entire module as rustgen and skip if toolchain is missing
+pytestmark = [
+    pytest.mark.rustgen,
+    pytest.mark.skipif(
+        shutil.which("maturin") is None or shutil.which("cargo") is None,
+        reason="requires maturin and cargo",
+    ),
+]
 
 
-@pytest.mark.rustgen
-def test_generate_crate(kitchen_sink_path, temp_dir):
-    gen = RustGenerator(kitchen_sink_path, mode="crate", output=temp_dir)
-    _ = gen.serialize(force=True)
+def _generate_rust_crate(schema_input, out_dir: Path) -> Path:
+    """
+    Generate a Rust crate with PyO3 bindings for the given schema input
+    into the provided output directory and perform basic sanity checks.
+
+    Returns the output directory.
+    """
+    out_dir.mkdir(parents=True, exist_ok=True)
+    gen = RustGenerator(schema_input, mode="crate", pyo3=True, serde=True, output=str(out_dir))
+    gen.serialize(force=True)
+
+    cargo_toml = out_dir / "Cargo.toml"
+    pyproject_toml = out_dir / "pyproject.toml"
+    assert cargo_toml.exists(), "Cargo.toml not generated"
+    assert pyproject_toml.exists(), "pyproject.toml not generated"
+    return out_dir
 
 
-def test_determine_slot_mode(kitchen_sink_path):
-    sv = SchemaView(kitchen_sink_path)
+def _build_rust_crate(out_dir: Path, context: str = "") -> list[Path]:
+    """
+    Build the Rust crate at out_dir using maturin and assert a wheel is produced.
+    Returns list of produced wheel paths.
+    """
+    build_cmd = ["maturin", "build"]
+    env = os.environ.copy()
+    env["RUST_BACKTRACE"] = "1"
+    result = subprocess.run(build_cmd, cwd=out_dir, capture_output=True, text=True, env=env)
+    if result.returncode != 0:
+        prefix = f" for {context}" if context else ""
+        pytest.fail(
+            f"maturin build failed{prefix}. See output below for diagnostics.\n\n"
+            f"cmd: {' '.join(build_cmd)}\n"
+            f"exit: {result.returncode}\n"
+            f"stdout:\n{result.stdout}\n"
+            f"stderr:\n{result.stderr}\n"
+        )
 
-    age_slot = sv.get_slot("age in years")
-    assert determine_slot_mode(age_slot, sv) == (
-        SlotContainerMode.SINGLE_VALUE,
-        SlotInlineMode.PRIMITIVE,
-    )
+    wheels_dir = out_dir / "target" / "wheels"
+    assert wheels_dir.exists(), f"maturin did not produce target/wheels{(' for ' + context) if context else ''}"
+    wheels = list(wheels_dir.glob("*.whl"))
+    assert wheels, f"no wheel produced by maturin{(' for ' + context) if context else ''}"
+    return wheels
 
-    aliases_slot = sv.get_slot("aliases")
-    assert determine_slot_mode(aliases_slot, sv) == (
-        SlotContainerMode.LIST,
-        SlotInlineMode.PRIMITIVE,
-    )
 
-    hist_slot = sv.get_slot("has employment history")
-    assert determine_slot_mode(hist_slot, sv) == (
-        SlotContainerMode.LIST,
-        SlotInlineMode.INLINE,
-    )
+def _import_built_wheel(out_dir: Path, module_name: str | None = None):
+    """
+    Add the built wheel to sys.path and import its top-level module.
+    If module_name is not provided, infer it from pyproject's [project].name.
+    Returns the imported module.
+    """
+    if module_name is None:
+        pyproject_toml = out_dir / "pyproject.toml"
+        with pyproject_toml.open("rb") as f:
+            data = tomllib.load(f)
+        module_name = data["project"]["name"]
 
-    employed_slot = sv.get_slot("employed at")
-    assert determine_slot_mode(employed_slot, sv) == (
-        SlotContainerMode.SINGLE_VALUE,
-        SlotInlineMode.REFERENCE,
-    )
+    wheels_dir = out_dir / "target" / "wheels"
+    wheels = sorted(wheels_dir.glob("*.whl"), key=lambda p: p.stat().st_mtime, reverse=True)
+    assert wheels, "no wheel produced by maturin"
+    wheel_path = wheels[0]
+
+    # Binary extensions cannot be imported directly from a zip file.
+    # Extract the wheel to a temp dir and import from there.
+    extract_dir = out_dir / ".wheel_extract"
+    if extract_dir.exists():
+        # Clean previous extraction to avoid stale artifacts
+        for p in sorted(extract_dir.rglob("*"), reverse=True):
+            try:
+                p.unlink()
+            except IsADirectoryError:
+                p.rmdir()
+        extract_dir.rmdir()
+    extract_dir.mkdir(parents=True, exist_ok=True)
+
+    with zipfile.ZipFile(wheel_path) as zf:
+        zf.extractall(extract_dir)
+
+    sys.path.insert(0, str(extract_dir))
+    try:
+        mod = importlib.import_module(module_name)
+    finally:
+        if sys.path and sys.path[0] == str(extract_dir):
+            sys.path.pop(0)
+    return mod
+
+
+def test_rustgen_personschema_maturin(input_path, temp_dir):
+    """
+    Generate a Rust crate from personinfo.yaml and try to build
+    the Python bindings with maturin.
+    """
+
+    # Resolve schema and output directory
+    schema_path = Path(input_path("personinfo.yaml"))
+    out_dir = _generate_rust_crate(str(schema_path), Path(temp_dir) / "personinfo_rust")
+
+    # Try to build a wheel via maturin. This may require network access
+    # to fetch crates unless dependencies are cached.
+    _build_rust_crate(out_dir)
+    # Try importing the generated wheel/module and sanity-check a class
+    mod = _import_built_wheel(out_dir)
+    assert hasattr(mod, "Person"), "Expected class 'Person' not found in module"
+
+
+def test_rustgen_metamodel_maturin(temp_dir):
+    """
+    Generate a Rust crate from the LinkML metamodel (via package_schemaview)
+    and build Python bindings with maturin.
+
+    This exercises enum PyO3 conversions and union handling used throughout
+    the metamodel, mirroring common downstream usage.
+    """
+
+    # Resolve SchemaDefinition for the runtime metamodel
+    metamodel_sv = package_schemaview("linkml_runtime.linkml_model.meta")
+    out_dir = _generate_rust_crate(metamodel_sv.schema, Path(temp_dir) / "metamodel_rust")
+
+    _build_rust_crate(out_dir, context="metamodel")
+    # Try importing the generated wheel/module and sanity-check a metamodel class
+    mod = _import_built_wheel(out_dir)
+    assert hasattr(mod, "ClassDefinition"), "Expected class 'ClassDefinition' not found in metamodel module"
