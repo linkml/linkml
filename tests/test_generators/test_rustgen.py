@@ -1,24 +1,17 @@
 import importlib
 import os
-import shutil
 import subprocess
 import sys
 import zipfile
 from pathlib import Path
 
 import pytest
-import tomllib
 from linkml_runtime.utils.introspection import package_schemaview
 
 from linkml.generators.rustgen import RustGenerator
 
-# Mark entire module as rustgen and skip if toolchain is missing
 pytestmark = [
     pytest.mark.rustgen,
-    pytest.mark.skipif(
-        shutil.which("maturin") is None or shutil.which("cargo") is None,
-        reason="requires maturin and cargo",
-    ),
 ]
 
 
@@ -66,17 +59,11 @@ def _build_rust_crate(out_dir: Path, context: str = "") -> list[Path]:
     return wheels
 
 
-def _import_built_wheel(out_dir: Path, module_name: str | None = None):
+def _import_built_wheel(out_dir: Path, module_name: str):
     """
     Add the built wheel to sys.path and import its top-level module.
-    If module_name is not provided, infer it from pyproject's [project].name.
     Returns the imported module.
     """
-    if module_name is None:
-        pyproject_toml = out_dir / "pyproject.toml"
-        with pyproject_toml.open("rb") as f:
-            data = tomllib.load(f)
-        module_name = data["project"]["name"]
 
     wheels_dir = out_dir / "target" / "wheels"
     wheels = sorted(wheels_dir.glob("*.whl"), key=lambda p: p.stat().st_mtime, reverse=True)
@@ -122,7 +109,7 @@ def test_rustgen_personschema_maturin(input_path, temp_dir):
     # to fetch crates unless dependencies are cached.
     _build_rust_crate(out_dir)
     # Try importing the generated wheel/module and sanity-check a class
-    mod = _import_built_wheel(out_dir)
+    mod = _import_built_wheel(out_dir, module_name="personinfo")
     assert hasattr(mod, "Person"), "Expected class 'Person' not found in module"
 
 
@@ -141,5 +128,5 @@ def test_rustgen_metamodel_maturin(temp_dir):
 
     _build_rust_crate(out_dir, context="metamodel")
     # Try importing the generated wheel/module and sanity-check a metamodel class
-    mod = _import_built_wheel(out_dir)
+    mod = _import_built_wheel(out_dir, module_name=metamodel_sv.schema.name)
     assert hasattr(mod, "ClassDefinition"), "Expected class 'ClassDefinition' not found in metamodel module"
