@@ -2635,8 +2635,3 @@ impl<'py> FromPyObject<'py> for Box<Container> {
         ))
     }
 }
-
-
-
-
-

@@ -788,6 +788,7 @@ class RustGenerator(Generator, LifecycleMixin):
             serialized = self.write_crate(output, rendered, force)
         else:
             serialized = rendered.file.render(self.template_environment)
+            serialized = serialized.rstrip("\n") + "\n"
             with open(output, "w") as f:
                 f.write(serialized)
 
@@ -968,16 +969,20 @@ class RustGenerator(Generator, LifecycleMixin):
             rendered = self.render(mode="crate")
 
         cargo = rendered.cargo.render(self.template_environment)
+        # Normalize EOF: exactly one trailing newline
+        cargo = cargo.rstrip("\n") + "\n"
         cargo_file = output / "Cargo.toml"
         with open(cargo_file, "w") as cfile:
             cfile.write(cargo)
 
         pyproject = rendered.pyproject.render(self.template_environment)
+        pyproject = pyproject.rstrip("\n") + "\n"
         pyproject_file = output / "pyproject.toml"
         with open(pyproject_file, "w") as pyfile:
             pyfile.write(pyproject)
 
         rust_file = rendered.file.render(self.template_environment)
+        rust_file = rust_file.rstrip("\n") + "\n"
         src_dir = output / "src"
         src_dir.mkdir(exist_ok=True)
         lib_file = src_dir / "lib.rs"
@@ -986,6 +991,7 @@ class RustGenerator(Generator, LifecycleMixin):
 
         for k, f in rendered.extra_files.items():
             extra_file = f.render(self.template_environment)
+            extra_file = extra_file.rstrip("\n") + "\n"
             extra_file_name = f"{k}.rs"
             extra_file_path = src_dir / extra_file_name
             with open(extra_file_path, "w") as ef:

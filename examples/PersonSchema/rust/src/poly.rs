@@ -1044,5 +1044,3 @@ impl Container for crate::Container {
         return self.places.as_ref();
     }
 }
-
-
