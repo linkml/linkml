@@ -152,7 +152,7 @@ impl<'a, K: Eq + Hash, V> IntoIterator for &'a MapView<'a, K, V> {
     fn into_iter(self) -> Self::IntoIter { self.inner.iter().map(as_pair) }
 }
 
-/* ─────────────────────────────── mutable view ────────────────────── */
+/* ------------------------------- mutable view ---------------------- */
 pub struct MapViewMut<'a, K, V> {
     inner: &'a mut HashMap<K, Box<V>>,
 }
