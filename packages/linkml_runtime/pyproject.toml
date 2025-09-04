@@ -84,6 +84,9 @@ ignore-words-list = [
   # dropped when upstream is fixed
   "GENERARE",
   "re-used",
+  "ot",
+  "VRSATILE",
+  "vrsatile"
 ]
 quiet-level = 3
 # https://docs.astral.sh/ruff/settings/
