@@ -72,7 +72,7 @@ are correct and expected given the context of the PR.
 2. Install all the dependencies from your project, which are typically specified in a `uv.lock` file.
 
 ```
-uv sync --all-extras --dev  
+uv sync --all-extras --dev
 ```
 
 3. Run any python scripts or CLI commands by prefixing with `uv run`.
