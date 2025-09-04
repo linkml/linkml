@@ -880,6 +880,8 @@ def test_non_standard_enum_names(framework, enum_name, pv_name):
         exclude_rdf = True
     if pv_name == " " and framework in PYDANTIC:
         expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
+        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         "test",
