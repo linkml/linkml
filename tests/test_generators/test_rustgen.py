@@ -130,3 +130,13 @@ def test_rustgen_metamodel_maturin(temp_dir):
     # Try importing the generated wheel/module and sanity-check a metamodel class
     mod = _import_built_wheel(out_dir, module_name=metamodel_sv.schema.name)
     assert hasattr(mod, "ClassDefinition"), "Expected class 'ClassDefinition' not found in metamodel module"
+
+    # Verify Anything/AnyValue is accessible from Python via a field
+    # Extension.value in the metamodel has range AnyValue.
+    assert hasattr(mod, "Extension"), "Expected class 'Extension' not found in metamodel module"
+    # Create an Extension with a simple string value. If Anything conversions work,
+    # Python should see a native str for .value.
+    # Constructor uses positional args only with current PyO3 generator
+    ext = mod.Extension("test:tag", "hello-any", None)
+    assert isinstance(ext.extension_value, str)
+    assert ext.extension_value == "hello-any"
