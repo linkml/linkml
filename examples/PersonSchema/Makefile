@@ -5,10 +5,17 @@ RUN = uv run
 OUTDIR = $(NAME)
 BUILD = build
 INDEX_SLOT = persons
+RUST_OUTDIR = rust
 
 all: gen
-gen:
+
+gen: gen-code gen-rust
+
+gen-code:
 	$(RUN) gen-project -d $(OUTDIR) $(SRC)
+
+gen-rust:
+	$(RUN) gen-rust $(SRC) -n $(NAME) -o $(RUST_OUTDIR) --force
 
 validate_all: validate-example_personinfo_data
 validate-%: data/%.yaml
