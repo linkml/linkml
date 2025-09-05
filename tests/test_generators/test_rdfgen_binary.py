@@ -1,8 +1,8 @@
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
 
-import pytest
 from rdflib import Graph
+
 from linkml.generators.rdfgen import RDFGenerator
 
 
@@ -23,7 +23,7 @@ def _write_min_schema(p: Path) -> Path:
 
 def test_with_output_binary_path_on_decode_error(monkeypatch, tmp_path):
     """On UnicodeDecodeError: write via destination, keep stdout empty."""
-    calls: Dict[str, Any] = {"destination_called": False, "format": None}
+    calls: dict[str, Any] = {"destination_called": False, "format": None}
 
     def fake_serialize(self, *args, **kwargs):
         if "destination" not in kwargs:
@@ -55,7 +55,7 @@ def test_with_output_binary_path_on_decode_error(monkeypatch, tmp_path):
 
 def test_with_output_text_path_returns_text_and_writes_file(monkeypatch, tmp_path):
     """If serialization returns text, write UTF-8 file and return the same text."""
-    calls: Dict[str, Any] = {"destination_called": False, "format": None}
+    calls: dict[str, Any] = {"destination_called": False, "format": None}
 
     def fake_serialize(self, *args, **kwargs):
         if "destination" in kwargs:
@@ -83,6 +83,7 @@ def test_with_output_text_path_returns_text_and_writes_file(monkeypatch, tmp_pat
 
 def test_without_output_returns_text(monkeypatch, tmp_path):
     """Without -o, return text."""
+
     def fake_serialize(self, *args, **kwargs):
         assert "destination" not in kwargs
         return "# fake turtle content"
