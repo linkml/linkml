@@ -8,7 +8,7 @@ from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
-from linkml.generators.panderagen import PanderaGenerator
+from linkml.generators.panderagen import PanderaDataframeGenerator, PolarsSchemaDataframeGenerator
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
@@ -43,7 +43,8 @@ __all__ = [
     "yumlgen",
     "OwlSchemaGenerator",
     "PydanticGenerator",
-    "PanderaGenerator",
+    "PanderaDataframeGenerator",
+    "PolarsSchemaDataframeGenerator",
     "PythonGenerator",
     "JavaGenerator",
     "ContextGenerator",

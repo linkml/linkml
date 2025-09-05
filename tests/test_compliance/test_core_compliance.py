@@ -8,6 +8,7 @@ import pytest
 from linkml_runtime.utils.formatutils import underscore
 
 from tests.test_compliance.helper import (
+    DATAFRAME_POLARS_SCHEMA,
     JSON_SCHEMA,
     OWL,
     PANDERA_POLARS_CLASS,
@@ -92,6 +93,7 @@ def test_attributes(framework, description, object, is_valid):
                         PYDANTIC: "s1: Optional[str] = Field(default=None",
                         PYTHON_DATACLASSES: "s1: Optional[str] = None",
                         PANDERA_POLARS_CLASS: "s1: Optional[str] = pla.Field(nullable=True, )",
+                        DATAFRAME_POLARS_SCHEMA: '"s1": Optional[pl.Utf8]',
                     }
                 },
                 SLOT_S2: {},
@@ -100,6 +102,7 @@ def test_attributes(framework, description, object, is_valid):
                 PYDANTIC: f"class C({PYDANTIC_ROOT_CLASS}):",
                 PYTHON_DATACLASSES: f"@dataclass(repr=False)\nclass C({PYTHON_DATACLASSES_ROOT_CLASS}):",
                 PANDERA_POLARS_CLASS: f"class C({PANDERA_ROOT_CLASS})",
+                DATAFRAME_POLARS_SCHEMA: "C = pl.Schema(",
                 JSON_SCHEMA: {
                     "$defs": {
                         "C": {
@@ -879,6 +882,8 @@ def test_non_standard_enum_names(framework, enum_name, pv_name):
         expected_behavior = ValidationBehavior.INCOMPLETE
         exclude_rdf = True
     if pv_name == " " and framework in PYDANTIC:
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
