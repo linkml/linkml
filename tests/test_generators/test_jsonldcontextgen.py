@@ -54,3 +54,22 @@ def test_expected_rdf(input_path, schema):
     output = JSONLDGenerator(schema_path).serialize()
     rdf_expects = RdfExpectations(schema_path, json.loads(output))
     rdf_expects.check_expectations()
+
+
+@pytest.mark.parametrize(
+    "fix_container,attribute,container_type",
+    [
+        [False, "int_list", ""],
+        [False, "int_inlined_list", ""],
+        [False, "int_dict", ""],
+        [True, "int_list", "@set"],
+        [True, "int_inlined_list", "@set"],
+        [True, "int_dict", "@index"],
+    ],
+)
+def test_container_list(input_path, fix_container, attribute, container_type):
+    schema_path = input_path("jsonld_context_multivalued_slot_cardinality.yaml")
+    context = json.loads(ContextGenerator(schema_path, fix_multivalue_containers=fix_container).serialize())
+    assert ("@container" in context["@context"][attribute].keys()) == fix_container
+    if fix_container:
+        assert context["@context"][attribute]["@container"] == container_type
