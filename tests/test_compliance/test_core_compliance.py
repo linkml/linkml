@@ -819,9 +819,16 @@ def test_non_standard_names(framework, class_name, safe_class_name, slot_name, s
         ("E", "'"),
         ("E[x]", "[x]"),
         ("E", "[x]"),
+        ("E", "a/b"),
+        # ("E", "a\nb"),  # TODO
+        ("E", "a.b"),
+        ("E", "a:b"),
+        ("E", "a#b"),
+        ("E", "a{b}"),
+        ("E", "♥️"),  # Unicode heart symbol
     ],
 )
-def test_non_standard_num_names(framework, enum_name, pv_name):
+def test_non_standard_enum_names(framework, enum_name, pv_name):
     """
     Tests that non-standard enum and permissible value names are handled gracefully.
 
@@ -848,7 +855,7 @@ def test_non_standard_num_names(framework, enum_name, pv_name):
     }
     name = ensafeify(f"EN{enum_name}_PV{pv_name}")
     schema = validated_schema(
-        test_non_standard_num_names,
+        test_non_standard_enum_names,
         name,
         framework,
         classes=classes,
