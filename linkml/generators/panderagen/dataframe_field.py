@@ -1,3 +1,5 @@
+from contextlib import suppress
+
 from linkml.generators.oocodegen import OOField
 
 
@@ -13,10 +15,9 @@ class DataframeField(OOField):
         return self.source_slot.annotations._get("inline_form", None)
 
     def reference_class(self):
-        try:
+        with suppress(AttributeError, KeyError):
             return self.source_slot.annotations._get("reference_class", None)
-        except Exception:
-            return None
+        return None
 
     def maximum_value(self):
         return self.source_slot.maximum_value
