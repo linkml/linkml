@@ -445,11 +445,11 @@
         "@id": "tag"
       },
       "value": {
-        "@type": "linkml:Any",
+        "@type": "@id",
         "@id": "value"
       },
       "extensions": {
-        "@type": "linkml:Extension",
+        "@type": "@id",
         "@id": "extensions"
       },
       "AnyValue": {

@@ -35,11 +35,11 @@
          "@id": "core:acted_on_behalf_of"
       },
       "activity_set": {
-         "@type": "core:Activity",
+         "@type": "@id",
          "@id": "core:activity_set"
       },
       "addresses": {
-         "@type": "ks:Address",
+         "@type": "@id",
          "@id": "addresses"
       },
       "age_in_years": {
@@ -47,7 +47,7 @@
          "@id": "age_in_years"
       },
       "agent_set": {
-         "@type": "core:Agent",
+         "@type": "@id",
          "@id": "core:agent_set"
       },
       "altitude": {
@@ -82,26 +82,26 @@
          "@id": "cordialness"
       },
       "activities": {
-         "@type": "core:Activity",
+         "@type": "@id",
          "@id": "activities"
       },
       "code_systems": {
-         "@type": "ks:CodeSystem",
+         "@type": "@id",
          "@id": "code_systems"
       },
       "companies": {
-         "@type": "ks:Company",
+         "@type": "@id",
          "@id": "companies"
       },
       "persons": {
-         "@type": "ks:Person",
+         "@type": "@id",
          "@id": "persons"
       },
       "description": {
          "@id": "core:description"
       },
       "diagnosis": {
-         "@type": "ks:DiagnosisConcept",
+         "@type": "@id",
          "@id": "diagnosis"
       },
       "employed_at": {
@@ -122,23 +122,23 @@
          "@id": "test_attribute"
       },
       "has_birth_event": {
-         "@type": "ks:BirthEvent",
+         "@type": "@id",
          "@id": "has_birth_event"
       },
       "has_employment_history": {
-         "@type": "ks:EmploymentEvent",
+         "@type": "@id",
          "@id": "has_employment_history"
       },
       "has_familial_relationships": {
-         "@type": "ks:FamilialRelationship",
+         "@type": "@id",
          "@id": "has_familial_relationships"
       },
       "has_marriage_history": {
-         "@type": "ks:MarriageEvent",
+         "@type": "@id",
          "@id": "has_marriage_history"
       },
       "has_medical_history": {
-         "@type": "ks:MedicalEvent",
+         "@type": "@id",
          "@id": "has_medical_history"
       },
       "aliases": {
@@ -170,7 +170,7 @@
          "@id": "married_to"
       },
       "metadata": {
-         "@type": "ks:AnyObject",
+         "@type": "@id",
          "@id": "metadata"
       },
       "mixin_slot_I": {
@@ -188,7 +188,7 @@
          "@id": "is_living"
       },
       "procedure": {
-         "@type": "ks:ProcedureConcept",
+         "@type": "@id",
          "@id": "procedure"
       },
       "related_to": {
@@ -209,7 +209,7 @@
          "@id": "street"
       },
       "slot_with_space_2": {
-         "@type": "ks:ClassWithSpaces",
+         "@type": "@id",
          "@id": "slot_with_space_2"
       },
       "tree_slot_A": {
