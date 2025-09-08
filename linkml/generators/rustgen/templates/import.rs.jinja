@@ -1,0 +1,4 @@
+{% if feature_flag %}
+#[cfg(feature = "{{ feature_flag }}")]
+{% endif %}
+use {{ module.replace('-','_') }}{% if objects %}::{{ "{" if objects|length > 1 else "" }}{% for obj in objects %}{{ obj.name }}{% if obj.alias %} as {{ obj.alias}}{% endif %}{% if not loop.last %},{% endif %}{% endfor %}{{ "}" if objects|length > 1 else "" }}{% else %}{% if alias %} as {{ alias }} {% endif %}{% endif %};
