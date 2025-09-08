@@ -16,6 +16,7 @@ See: https://github.com/linkml/linkml/issues/923
 """
 
 import abc
+import functools
 import logging
 import os
 import re
@@ -24,7 +25,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import Callable, ClassVar, Optional, TextIO, Union, cast
+from typing import Callable, ClassVar, Optional, TextIO, TypeVar, Union, cast
 
 import click
 from click import Argument, Command, Option
@@ -52,6 +53,7 @@ from linkml_runtime.utils.namespaces import Namespaces
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.cli.logging import DEFAULT_LOG_LEVEL_INT, log_level_option
+from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.mergeutils import alias_root
 from linkml.utils.schemaloader import SchemaLoader
 from linkml.utils.typereferences import References
@@ -74,6 +76,61 @@ def _resolved_metamodel(mergeimports):
     )
     metamodel.resolve()
     return metamodel
+
+
+T = TypeVar("T")
+
+
+def deprecated_fields(deprecated_map: dict[str, str]):
+    """
+    Decorator to handle deprecated fields in dataclasses.
+
+    Args:
+        deprecated_map: Mapping from old field names to new field names
+    """
+
+    def decorator(cls: type[T]) -> type[T]:
+        # Store the original __init__ method
+        original_init = cls.__init__
+
+        # Create a new __init__ that handles deprecated fields
+        @functools.wraps(original_init)
+        def new_init(self, *args, **kwargs):
+            # Process kwargs to handle deprecated fields
+            for old_field, new_field in deprecated_map.items():
+                if old_field in kwargs:
+                    deprecation_warning("metadata-flag")
+                    if new_field not in kwargs:
+                        kwargs[new_field] = kwargs[old_field]
+                    # Remove the old field to prevent the "unexpected keyword argument" error
+                    del kwargs[old_field]
+
+            # Call the original __init__ with the processed kwargs
+            original_init(self, *args, **kwargs)
+
+        # Replace the __init__ method
+        cls.__init__ = new_init
+
+        # Add property accessors for deprecated fields
+        for old_field, new_field in deprecated_map.items():
+            # Create a property for the deprecated field using a closure
+            def make_property(old_name, new_name):
+                def getter(self):
+                    deprecation_warning("metadata-flag")
+                    return getattr(self, new_name)
+
+                def setter(self, value):
+                    deprecation_warning("metadata-flag")
+                    setattr(self, new_name, value)
+
+                return property(getter, setter)
+
+            # Add the property to the class
+            setattr(cls, old_field, make_property(old_field, new_field))
+
+        return cls
+
+    return decorator
 
 
 @dataclass
@@ -202,8 +259,6 @@ class Generator(metaclass=abc.ABCMeta):
         if isinstance(schema, Path):
             schema = str(schema)
 
-        # TODO: remove aliasing
-        self.emit_metadata = self.metadata
         if self.uses_schemaloader:
             self._initialize_using_schemaloader(schema)
         else:
@@ -248,7 +303,7 @@ class Generator(metaclass=abc.ABCMeta):
                 importmap=self.importmap,
                 logger=self.logger,
                 mergeimports=self.mergeimports,
-                emit_metadata=self.metadata,
+                metadata=self.metadata,
                 source_file_date=self.source_file_date,
                 source_file_size=self.source_file_size,
             )
@@ -286,6 +341,14 @@ class Generator(metaclass=abc.ABCMeta):
         :return: Generated output
         """
         out = ""
+
+        deprecation_map = {"emit_metadata": "metadata", "head": "metadata"}
+        for flag in deprecation_map:
+            if flag in kwargs:
+                deprecation_warning("metadata-flag")
+                new_flag = deprecation_map[flag]
+                kwargs[new_flag] = flag
+                del kwargs[flag]
 
         # the default is to use the Visitor Pattern; each individual generator may
         # choose to override methods {visit,end}_{element}.
