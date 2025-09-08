@@ -199,6 +199,8 @@ class Deprecation:
 
     def warn(self, **kwargs):
         if self.deprecated:
+            # ensure filter has expected value
+            warnings.filterwarnings("default", category=DeprecationWarning)
             warnings.warn(message=str(self), category=DeprecationWarning, stacklevel=3, **kwargs)
 
 
