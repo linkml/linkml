@@ -31,6 +31,7 @@ from linkml_runtime.utils.yamlutils import YAMLRoot
 from pydantic import BaseModel, ConfigDict
 
 from linkml.transformers.logical_model_transformer import UnsatisfiableAttribute
+from .helper_rust import check_data_rustgen
 
 try:
     from yaml import CSafeDumper as SafeDumper
@@ -78,6 +79,7 @@ JSONLD = "jsonld"
 SQL_ALCHEMY_IMPERATIVE = "sqlalchemy_imperative"
 SQL_ALCHEMY_DECLARATIVE = "sqlalchemy_declarative"
 PANDERA_POLARS_CLASS = "pandera_polars_class"
+RUST_GEN = "rust_gen"
 SQL_DDL_SQLITE = "sql_ddl_sqlite"
 SQL_DDL_POSTGRES = "sql_ddl_postgres"
 OWL = "owl"
@@ -99,6 +101,7 @@ GENERATORS: dict[FRAMEWORK, Union[type[Generator], tuple[type[Generator], dict[s
         {"template": sqlalchemygen.TemplateEnum.DECLARATIVE},
     ),
     PANDERA_POLARS_CLASS: generators.PanderaGenerator,
+    RUST_GEN: (generators.RustGenerator, { "mode": "crate", "pyo3": True, "serde": True }),
     SQL_DDL_SQLITE: (generators.SQLTableGenerator, {"dialect": "sqlite"}),
     SQL_DDL_POSTGRES: (generators.SQLTableGenerator, {"dialect": "postgresql"}),
     OWL: (
@@ -306,6 +309,19 @@ def _generate_framework_output(
                     path = os.path.join(root, file)
                     with open(path) as stream:
                         output += stream.read()
+        elif framework == RUST_GEN:
+            generated_path = _schema_out_path(schema) / "rustgen"
+            generated_path.mkdir(parents=True, exist_ok=True)
+            gen.serialize(output=generated_path, force=True)
+            output = ""
+            for root, _dirs, files in os.walk(generated_path):
+                for file in files:
+                    path = os.path.join(root, file)
+                    with open(path) as stream:
+                        try:
+                            output += stream.read()
+                        except Exception as e:
+                            logging.info(f"Not including binary file {file}")
         else:
             output = gen.serialize()
 
@@ -460,7 +476,7 @@ def _make_schema(
     :param kwargs:
     :return: schema as dict, plus mappings between framework and expected output
     """
-    schema_name = f"{test.__name__}-{name}"
+    schema_name = f"{test.__name__}_{name}"
     if schema is None:
         schema = {
             "id": f"http://example.org/{name}",
@@ -813,6 +829,9 @@ def check_data(
             plugins = [JsonschemaValidationPlugin(closed=True, include_range_class_descendants=False)]
         elif isinstance(gen, GENERATORS[PANDERA_POLARS_CLASS]):
             check_data_pandera(schema, output, target_class, object_to_validate, expected_behavior, valid)
+        elif isinstance(gen, GENERATORS[RUST_GEN]):
+            out_dir = _schema_out_path(schema) / "rustgen"
+            check_data_rustgen(schema, output, out_dir, target_class, object_to_validate, expected_behavior, valid)
         elif isinstance(gen, ContextGenerator):
             context_dir = _schema_out_path(schema) / "generated" / "jsonld_context.context.jsonld"
             if not context_dir.exists() and tests.WITH_OUTPUT:
@@ -912,7 +931,6 @@ def check_data(
                 notes=str(notes),
             )
         )
-
 
 def check_data_pandera(schema, output, target_class, object_to_validate, expected_behavior, valid):
     pl = pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")

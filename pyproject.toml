@@ -260,6 +260,7 @@ markers = [
   "plantumlgen: Tests for the plantuml generator",
   "pydanticgen_split: Split module generation in pydanticgen",
   "pydanticgen_npd: tests for the numpydantic array generator",
+  "rustgen: tests for the rust generator",
   "panderagen: tests for the pandera generator",
   "pythongen: Tests for python generator",
   "pydanticgen: Tests for pydantic generator",
