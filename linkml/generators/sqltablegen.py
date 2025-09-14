@@ -11,7 +11,7 @@ from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
-from sqlalchemy import Column, ForeignKey, Index, MetaData, Table, UniqueConstraint, create_mock_engine, Numeric
+from sqlalchemy import Column, ForeignKey, Index, MetaData, Numeric, Table, UniqueConstraint, create_mock_engine
 from sqlalchemy.dialects.oracle import VARCHAR2
 from sqlalchemy.types import Boolean, Date, DateTime, Enum, Float, Integer, Text, Time
 
