@@ -35,13 +35,13 @@ def test_pydantic_generation_with_at_symbols():
     imports:
       - linkml:types
     default_range: string
-    
+
     classes:
       Entity:
         slots:
           - "@id"
           - "@type"
-    
+
     slots:
       "@id":
         identifier: true
@@ -69,7 +69,7 @@ def test_validation_with_at_symbols():
     imports:
       - linkml:types
     default_range: string
-    
+
     classes:
       Container:
         tree_root: true
@@ -82,7 +82,7 @@ def test_validation_with_at_symbols():
         slots:
           - "@id"
           - "@type"
-    
+
     slots:
       "@id":
         identifier: true
@@ -105,7 +105,7 @@ def test_validation_with_python_field_names():
     imports:
       - linkml:types
     default_range: string
-    
+
     classes:
       Container:
         tree_root: true
@@ -118,7 +118,7 @@ def test_validation_with_python_field_names():
         slots:
           - "@id"
           - "@type"
-    
+
     slots:
       "@id":
         identifier: true
