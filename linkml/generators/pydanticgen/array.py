@@ -26,7 +26,7 @@ else:
 
 from linkml.generators.pydanticgen.build import RangeResult
 from linkml.generators.pydanticgen.template import ConditionalImport, Import, Imports, ObjectImport
-from linkml.utils.exceptions import ValidationError
+from linkml.utils.exceptions import SchemaValidationError
 
 
 class ArrayRepresentation(Enum):
@@ -85,7 +85,7 @@ class ArrayValidator:
         Validate an array expression.
 
         Raises:
-            :class:`.ValidationError` if invalid
+            :class:`.SchemaValidationError` if invalid
         """
         cls.array_exact_dimensions(array)
         cls.array_consistent_n_dimensions(array)
@@ -102,7 +102,7 @@ class ArrayValidator:
         Validate a single array dimension
 
         Raises:
-            :class:`.ValidationError` if invalid
+            :class:`.SchemaValidationError` if invalid
         """
         cls.dimension_exact_cardinality(dimension)
         cls.dimension_ordinal(dimension)
@@ -113,7 +113,7 @@ class ArrayValidator:
         if array.exact_number_dimensions is not None and (
             array.minimum_number_dimensions is not None or array.maximum_number_dimensions is not None
         ):
-            raise ValidationError(
+            raise SchemaValidationError(
                 f"Can only specify EITHER exact_number_dimensions OR minimum/maximum dimensions, got: {array}"
             )
 
@@ -129,7 +129,7 @@ class ArrayValidator:
         for field_name in _BOUNDED_ARRAY_FIELDS:
             field = getattr(array, field_name, None)
             if field and field < len(array.dimensions):
-                raise ValidationError(
+                raise SchemaValidationError(
                     "if exact/minimum/maximum_number_dimensions is provided, "
                     "it must be greater than the parameterized dimensions. "
                     f"got\n- {field_name}: {field}\n- dimensions: {array.dimensions}"
@@ -142,7 +142,7 @@ class ArrayValidator:
         """
         if array.minimum_number_dimensions is not None and array.maximum_number_dimensions:
             if array.minimum_number_dimensions > array.maximum_number_dimensions:
-                raise ValidationError(
+                raise SchemaValidationError(
                     "minimum_number_dimensions must be lesser than maximum_number_dimensions when both are set. "
                     f"got minimum: {array.minimum_number_dimensions}, maximum: {array.maximum_number_dimensions}"
                 )
@@ -156,10 +156,13 @@ class ArrayValidator:
         dimensions to avoid ambiguity.
         """
         if array.minimum_number_dimensions is not None and array.maximum_number_dimensions is None and array.dimensions:
-            raise ValidationError(
-                "Cannot specify a minimum_number_dimensions while maximum is None while using labeled dimensions - "
-                "either use exact_number_dimensions > len(dimensions) for extra parameterized dimensions or set "
-                "maximum_number_dimensions explicitly to False for unbounded dimensions"
+            raise SchemaValidationError(
+                (
+                    "Cannot specify a minimum_number_dimensions while maximum is None while using labeled dimensions - "
+                    "either use exact_number_dimensions > len(dimensions) for extra parameterized dimensions or set "
+                    "maximum_number_dimensions explicitly to False for unbounded dimensions"
+                )
+
             )
 
     @staticmethod
@@ -168,7 +171,7 @@ class ArrayValidator:
         if dimension.exact_cardinality is not None and (
             dimension.minimum_cardinality is not None or dimension.maximum_cardinality is not None
         ):
-            raise ValidationError(
+            raise SchemaValidationError(
                 f"Can only specify EITHER exact_cardinality OR minimum/maximum cardinality, got: {dimension}"
             )
 
@@ -177,7 +180,7 @@ class ArrayValidator:
         """minimum_cardinality must be less than maximum_cardinality when both are set"""
         if dimension.minimum_cardinality is not None and dimension.maximum_cardinality is not None:
             if dimension.minimum_cardinality > dimension.maximum_cardinality:
-                raise ValidationError(
+                raise SchemaValidationError(
                     "minimum_cardinality must be lesser than maximum_cardinality when both are set. "
                     f"got minimum: {dimension.minimum_cardinality}, maximum: {dimension.maximum_cardinality}"
                 )
@@ -240,7 +243,7 @@ class ArrayRangeGenerator(ABC):
             rather than when an array is generated
 
         Raises:
-            :class:`.ValidationError` if the schema is invalid
+            :class:`.SchemaValidationError` if the schema is invalid
         """
         ArrayValidator.validate(self.array)
 
