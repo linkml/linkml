@@ -266,10 +266,10 @@ type AccessibleDnaRegion implements GenomicEntity, ChemicalEntityOrGeneOrGenePro
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasBiologicalSequence: BiologicalSequence
@@ -285,10 +285,10 @@ type Activity implements ActivityAndBehavior
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
   }
 
 interface ActivityAndBehavior
@@ -305,10 +305,10 @@ interface AdministrativeEntity
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
   }
 
 type Agent
@@ -319,11 +319,11 @@ type Agent
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
-    affiliation: [Uriorcurie]
+    category: [String]!
+    affiliation: [String]
     address: String
     id: String!
     name: LabelType
@@ -338,10 +338,10 @@ type AnatomicalEntity implements PhysicalEssence
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -368,7 +368,7 @@ interface AnatomicalEntityToAnatomicalEntityAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -385,7 +385,7 @@ interface AnatomicalEntityToAnatomicalEntityAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: AnatomicalEntity!
     object: AnatomicalEntity!
   }
@@ -410,7 +410,7 @@ type AnatomicalEntityToAnatomicalEntityOntogenicAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -427,7 +427,7 @@ type AnatomicalEntityToAnatomicalEntityOntogenicAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: AnatomicalEntity!
     object: AnatomicalEntity!
     predicate: PredicateType!
@@ -453,7 +453,7 @@ type AnatomicalEntityToAnatomicalEntityPartOfAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -470,7 +470,7 @@ type AnatomicalEntityToAnatomicalEntityPartOfAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: AnatomicalEntity!
     object: AnatomicalEntity!
     predicate: PredicateType!
@@ -490,21 +490,21 @@ type Article
     providedBy: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
     authors: [Agent]
     pages: [String]
     summary: String
     keywords: [String]
-    meshTerms: [Uriorcurie]
-    xref: [Uriorcurie]
+    meshTerms: [String]
+    xref: [String]
     publicationType: [String]!
     id: String!
     name: LabelType
-    publishedIn: Uriorcurie!
+    publishedIn: String!
     isoAbbreviation: String
     volume: String
     issue: String
@@ -533,7 +533,7 @@ type Association
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -550,7 +550,7 @@ type Association
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
   }
 
 type Attribute implements OntologyClass
@@ -561,10 +561,10 @@ type Attribute implements OntologyClass
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -581,10 +581,10 @@ type Bacterium
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -600,10 +600,10 @@ type Behavior implements OntologyClass, ActivityAndBehavior
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasInput: [NamedThing]
@@ -632,7 +632,7 @@ type BehaviorToBehavioralFeatureAssociation implements EntityToPhenotypicFeature
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -649,7 +649,7 @@ type BehaviorToBehavioralFeatureAssociation implements EntityToPhenotypicFeature
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: Behavior!
     object: BehavioralFeature!
     frequencyQualifier: FrequencyValue
@@ -660,13 +660,13 @@ type BehaviorToBehavioralFeatureAssociation implements EntityToPhenotypicFeature
     qualifiedPredicate: String
     sexQualifier: BiologicalSex
     diseaseContextQualifier: Disease
-    subjectSpecializationQualifier: Uriorcurie
-    objectSpecializationQualifier: Uriorcurie
+    subjectSpecializationQualifier: String
+    objectSpecializationQualifier: String
     anatomicalContextQualifier: String
-    hasCount: Integer
-    hasTotal: Integer
-    hasQuotient: Double
-    hasPercentage: Double
+    hasCount: Int
+    hasTotal: Int
+    hasQuotient: Float
+    hasPercentage: Float
   }
 
 type BehavioralExposure implements ExposureEvent
@@ -677,10 +677,10 @@ type BehavioralExposure implements ExposureEvent
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -699,10 +699,10 @@ type BehavioralFeature
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
   }
@@ -721,10 +721,10 @@ type BiologicalEntity implements ThingWithTaxon
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
   }
@@ -739,10 +739,10 @@ type BiologicalProcess implements Occurrent, OntologyClass
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasInput: [NamedThing]
@@ -760,10 +760,10 @@ type BiologicalProcessOrActivity implements Occurrent, OntologyClass
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasInput: [NamedThing]
@@ -779,10 +779,10 @@ type BiologicalSex
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -798,10 +798,10 @@ type BioticExposure implements ExposureEvent
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -819,17 +819,17 @@ type Book
     providedBy: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
     authors: [Agent]
     pages: [String]
     summary: String
     keywords: [String]
-    meshTerms: [Uriorcurie]
-    xref: [Uriorcurie]
+    meshTerms: [String]
+    xref: [String]
     publicationType: [String]!
     name: LabelType
     id: String!
@@ -846,21 +846,21 @@ type BookChapter
     providedBy: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
     authors: [Agent]
     pages: [String]
     summary: String
     keywords: [String]
-    meshTerms: [Uriorcurie]
-    xref: [Uriorcurie]
+    meshTerms: [String]
+    xref: [String]
     publicationType: [String]!
     id: String!
     name: LabelType
-    publishedIn: Uriorcurie!
+    publishedIn: String!
     volume: String
     chapter: String
   }
@@ -874,10 +874,10 @@ type Case implements SubjectOfInvestigation
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -913,7 +913,7 @@ type CaseToPhenotypicFeatureAssociation implements EntityToPhenotypicFeatureAsso
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -930,7 +930,7 @@ type CaseToPhenotypicFeatureAssociation implements EntityToPhenotypicFeatureAsso
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     frequencyQualifier: FrequencyValue
     subjectAspectQualifier: String
     subjectDirectionQualifier: DirectionQualifierEnum
@@ -939,13 +939,13 @@ type CaseToPhenotypicFeatureAssociation implements EntityToPhenotypicFeatureAsso
     qualifiedPredicate: String
     sexQualifier: BiologicalSex
     diseaseContextQualifier: Disease
-    subjectSpecializationQualifier: Uriorcurie
-    objectSpecializationQualifier: Uriorcurie
+    subjectSpecializationQualifier: String
+    objectSpecializationQualifier: String
     anatomicalContextQualifier: String
-    hasCount: Integer
-    hasTotal: Integer
-    hasQuotient: Double
-    hasPercentage: Double
+    hasCount: Int
+    hasTotal: Int
+    hasQuotient: Float
+    hasPercentage: Float
   }
 
 type CausalGeneToDiseaseAssociation implements EntityToDiseaseAssociationMixin, GeneToEntityAssociationMixin
@@ -968,7 +968,7 @@ type CausalGeneToDiseaseAssociation implements EntityToDiseaseAssociationMixin, 
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -985,7 +985,7 @@ type CausalGeneToDiseaseAssociation implements EntityToDiseaseAssociationMixin, 
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subjectAspectQualifier: GeneOrGeneProductOrChemicalEntityAspectEnum
     objectDirectionQualifier: DirectionQualifierEnum
     predicate: PredicateType!
@@ -995,13 +995,13 @@ type CausalGeneToDiseaseAssociation implements EntityToDiseaseAssociationMixin, 
     qualifiedPredicate: String
     sexQualifier: BiologicalSex
     diseaseContextQualifier: Disease
-    subjectSpecializationQualifier: Uriorcurie
-    objectSpecializationQualifier: Uriorcurie
+    subjectSpecializationQualifier: String
+    objectSpecializationQualifier: String
     anatomicalContextQualifier: String
-    hasCount: Integer
-    hasTotal: Integer
-    hasQuotient: Double
-    hasPercentage: Double
+    hasCount: Int
+    hasTotal: Int
+    hasQuotient: Float
+    hasPercentage: Float
     subject: GeneOrGeneProduct!
     object: Disease!
   }
@@ -1015,10 +1015,10 @@ type Cell
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -1033,10 +1033,10 @@ type CellLine implements SubjectOfInvestigation
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -1064,7 +1064,7 @@ type CellLineAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMi
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -1081,7 +1081,7 @@ type CellLineAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMi
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: CellLine!
     frequencyQualifier: FrequencyValue
     subjectAspectQualifier: String
@@ -1114,7 +1114,7 @@ type CellLineToDiseaseOrPhenotypicFeatureAssociation implements CellLineToEntity
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -1131,7 +1131,7 @@ type CellLineToDiseaseOrPhenotypicFeatureAssociation implements CellLineToEntity
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: DiseaseOrPhenotypicFeature!
   }
 
@@ -1151,10 +1151,10 @@ type CellularComponent
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -1169,10 +1169,10 @@ type CellularOrganism implements SubjectOfInvestigation
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -1198,7 +1198,7 @@ type ChemicalAffectsGeneAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -1215,7 +1215,7 @@ type ChemicalAffectsGeneAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subjectFormOrVariantQualifier: ChemicalOrGeneOrGeneProductFormOrVariantEnum
     subjectPartQualifier: GeneOrGeneProductOrChemicalPartQualifierEnum
     subjectDerivativeQualifier: ChemicalEntityDerivativeEnum
@@ -1246,10 +1246,10 @@ type ChemicalEntity implements PhysicalEssence, ChemicalOrDrugOrTreatment, Chemi
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     tradeName: String
     availableFrom: [DrugAvailabilityEnum]
     maxToleratedDose: String
@@ -1277,7 +1277,7 @@ type ChemicalEntityAssessesNamedThingAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -1294,7 +1294,7 @@ type ChemicalEntityAssessesNamedThingAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: ChemicalEntity!
     object: NamedThing!
     predicate: PredicateType!
@@ -1324,7 +1324,7 @@ type ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -1341,7 +1341,7 @@ type ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     objectDirectionQualifier: DirectionQualifierEnum
     predicate: PredicateType!
     subject: ChemicalEntityOrGeneOrGeneProduct!
@@ -1367,10 +1367,10 @@ type ChemicalExposure implements ExposureEvent
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQualitativeValue: NamedThing
@@ -1399,7 +1399,7 @@ type ChemicalGeneInteractionAssociation implements ChemicalToEntityAssociationMi
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -1416,7 +1416,7 @@ type ChemicalGeneInteractionAssociation implements ChemicalToEntityAssociationMi
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subjectFormOrVariantQualifier: ChemicalOrGeneOrGeneProductFormOrVariantEnum
     subjectPartQualifier: GeneOrGeneProductOrChemicalPartQualifierEnum
     subjectDerivativeQualifier: ChemicalEntityDerivativeEnum
@@ -1440,10 +1440,10 @@ type ChemicalMixture
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     tradeName: String
     availableFrom: [DrugAvailabilityEnum]
     maxToleratedDose: String
@@ -1481,7 +1481,7 @@ type ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation im
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -1498,7 +1498,7 @@ type ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation im
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     fDAAdverseEventLevel: FDAIDAAdverseEventEnum
     frequencyQualifier: FrequencyValue
     subjectAspectQualifier: String
@@ -1532,7 +1532,7 @@ type ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation implements
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -1549,7 +1549,7 @@ type ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation implements
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     fDAAdverseEventLevel: FDAIDAAdverseEventEnum
     predicate: PredicateType!
     frequencyQualifier: FrequencyValue
@@ -1569,10 +1569,10 @@ type ChemicalRole
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -1600,7 +1600,7 @@ type ChemicalToChemicalAssociation implements ChemicalToEntityAssociationMixin
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -1617,7 +1617,7 @@ type ChemicalToChemicalAssociation implements ChemicalToEntityAssociationMixin
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: NamedThing!
     predicate: PredicateType!
     object: ChemicalEntity!
@@ -1643,7 +1643,7 @@ type ChemicalToChemicalDerivationAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -1660,7 +1660,7 @@ type ChemicalToChemicalDerivationAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     catalystQualifier: [MacromolecularMachineMixin]
     subject: ChemicalEntity!
     object: ChemicalEntity!
@@ -1689,7 +1689,7 @@ type ChemicalToDiseaseOrPhenotypicFeatureAssociation implements ChemicalToEntity
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -1706,7 +1706,7 @@ type ChemicalToDiseaseOrPhenotypicFeatureAssociation implements ChemicalToEntity
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     object: DiseaseOrPhenotypicFeature!
   }
 
@@ -1738,7 +1738,7 @@ type ChemicalToPathwayAssociation implements ChemicalToEntityAssociationMixin
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -1755,7 +1755,7 @@ type ChemicalToPathwayAssociation implements ChemicalToEntityAssociationMixin
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: ChemicalEntity!
     object: Pathway!
   }
@@ -1770,14 +1770,14 @@ type ChiSquaredAnalysisResult
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
   }
 
 type ClinicalAttribute
@@ -1788,10 +1788,10 @@ type ClinicalAttribute
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -1807,10 +1807,10 @@ type ClinicalCourse
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -1828,10 +1828,10 @@ type ClinicalEntity
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
   }
 
 type ClinicalFinding
@@ -1843,10 +1843,10 @@ type ClinicalFinding
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [ClinicalAttribute]
@@ -1862,10 +1862,10 @@ type ClinicalIntervention
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
   }
 
 type ClinicalMeasurement
@@ -1876,10 +1876,10 @@ type ClinicalMeasurement
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasQuantitativeValue: [QuantityValue]
     hasQualitativeValue: NamedThing
@@ -1895,10 +1895,10 @@ type ClinicalModifier
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -1916,10 +1916,10 @@ type ClinicalTrial
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
   }
 
 type CodingSequence implements GenomicEntity
@@ -1932,10 +1932,10 @@ type CodingSequence implements GenomicEntity
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasBiologicalSequence: BiologicalSequence
@@ -1950,10 +1950,10 @@ type Cohort implements SubjectOfInvestigation
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -1969,14 +1969,14 @@ type CommonDataElement
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
   }
 
 type ComplexChemicalExposure
@@ -1987,10 +1987,10 @@ type ComplexChemicalExposure
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -2008,10 +2008,10 @@ type ComplexMolecularMixture
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     tradeName: String
     availableFrom: [DrugAvailabilityEnum]
     maxToleratedDose: String
@@ -2033,14 +2033,14 @@ type ConceptCountAnalysisResult
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
   }
 
 type ConfidenceLevel
@@ -2053,14 +2053,14 @@ type ConfidenceLevel
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
   }
 
 type ContributorAssociation
@@ -2082,7 +2082,7 @@ type ContributorAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -2099,7 +2099,7 @@ type ContributorAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: InformationContentEntity!
     predicate: PredicateType!
     object: Agent!
@@ -2126,7 +2126,7 @@ type CorrelatedGeneToDiseaseAssociation implements EntityToDiseaseAssociationMix
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -2143,7 +2143,7 @@ type CorrelatedGeneToDiseaseAssociation implements EntityToDiseaseAssociationMix
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subjectAspectQualifier: GeneOrGeneProductOrChemicalEntityAspectEnum
     objectDirectionQualifier: DirectionQualifierEnum
     predicate: PredicateType!
@@ -2153,13 +2153,13 @@ type CorrelatedGeneToDiseaseAssociation implements EntityToDiseaseAssociationMix
     qualifiedPredicate: String
     sexQualifier: BiologicalSex
     diseaseContextQualifier: Disease
-    subjectSpecializationQualifier: Uriorcurie
-    objectSpecializationQualifier: Uriorcurie
+    subjectSpecializationQualifier: String
+    objectSpecializationQualifier: String
     anatomicalContextQualifier: String
-    hasCount: Integer
-    hasTotal: Integer
-    hasQuotient: Double
-    hasPercentage: Double
+    hasCount: Int
+    hasTotal: Int
+    hasQuotient: Float
+    hasPercentage: Float
     subject: GeneOrGeneProduct!
     object: Disease!
   }
@@ -2174,14 +2174,14 @@ type Dataset
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
   }
 
 type DatasetDistribution
@@ -2194,14 +2194,14 @@ type DatasetDistribution
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
     distributionDownloadUrl: String
   }
 
@@ -2215,14 +2215,14 @@ type DatasetSummary
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
     sourceWebPage: String
     sourceLogo: String
   }
@@ -2237,14 +2237,14 @@ type DatasetVersion
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
     hasDataset: Dataset
     ingestDate: String
     hasDistribution: DatasetDistribution
@@ -2260,10 +2260,10 @@ type Device
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
   }
 
 type DiagnosticAid
@@ -2276,10 +2276,10 @@ type DiagnosticAid
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
   }
 
 type Disease
@@ -2292,10 +2292,10 @@ type Disease
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
   }
@@ -2310,10 +2310,10 @@ type DiseaseOrPhenotypicFeature
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
   }
@@ -2326,10 +2326,10 @@ type DiseaseOrPhenotypicFeatureExposure implements ExposureEvent, PathologicalEn
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -2370,7 +2370,7 @@ type DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation implements Diseas
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -2387,7 +2387,7 @@ type DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation implements Diseas
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     predicate: PredicateType!
     object: GeneticInheritance!
   }
@@ -2414,7 +2414,7 @@ type DiseaseOrPhenotypicFeatureToLocationAssociation implements DiseaseOrPhenoty
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -2431,7 +2431,7 @@ type DiseaseOrPhenotypicFeatureToLocationAssociation implements DiseaseOrPhenoty
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     object: AnatomicalEntity!
   }
 
@@ -2465,7 +2465,7 @@ type DiseaseToExposureEventAssociation implements DiseaseToEntityAssociationMixi
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -2482,7 +2482,7 @@ type DiseaseToExposureEventAssociation implements DiseaseToEntityAssociationMixi
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
   }
 
 type DiseaseToPhenotypicFeatureAssociation implements FrequencyQuantifier, EntityToPhenotypicFeatureAssociationMixin, DiseaseToEntityAssociationMixin
@@ -2506,7 +2506,7 @@ type DiseaseToPhenotypicFeatureAssociation implements FrequencyQuantifier, Entit
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -2523,14 +2523,14 @@ type DiseaseToPhenotypicFeatureAssociation implements FrequencyQuantifier, Entit
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     onsetQualifier: Onset
     subject: Disease!
     object: PhenotypicFeature!
-    hasCount: Integer
-    hasTotal: Integer
-    hasQuotient: Double
-    hasPercentage: Double
+    hasCount: Int
+    hasTotal: Int
+    hasQuotient: Float
+    hasPercentage: Float
     frequencyQualifier: FrequencyValue
     subjectAspectQualifier: String
     subjectDirectionQualifier: DirectionQualifierEnum
@@ -2539,8 +2539,8 @@ type DiseaseToPhenotypicFeatureAssociation implements FrequencyQuantifier, Entit
     qualifiedPredicate: String
     sexQualifier: BiologicalSex
     diseaseContextQualifier: Disease
-    subjectSpecializationQualifier: Uriorcurie
-    objectSpecializationQualifier: Uriorcurie
+    subjectSpecializationQualifier: String
+    objectSpecializationQualifier: String
     anatomicalContextQualifier: String
   }
 
@@ -2554,10 +2554,10 @@ type Drug implements ChemicalOrDrugOrTreatment, OntologyClass
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     tradeName: String
     availableFrom: [DrugAvailabilityEnum]
     maxToleratedDose: String
@@ -2577,10 +2577,10 @@ type DrugExposure implements ExposureEvent
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQualitativeValue: NamedThing
@@ -2599,17 +2599,17 @@ type DrugLabel
     providedBy: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
     authors: [Agent]
     pages: [String]
     summary: String
     keywords: [String]
-    meshTerms: [Uriorcurie]
-    xref: [Uriorcurie]
+    meshTerms: [String]
+    xref: [String]
     publicationType: [String]!
     id: String!
     name: LabelType
@@ -2644,7 +2644,7 @@ type DrugToGeneAssociation implements DrugToEntityAssociationMixin
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -2661,7 +2661,7 @@ type DrugToGeneAssociation implements DrugToEntityAssociationMixin
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     object: GeneOrGeneProduct!
   }
 
@@ -2673,10 +2673,10 @@ type DrugToGeneInteractionExposure implements GeneGroupingMixin
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQualitativeValue: NamedThing
@@ -2705,7 +2705,7 @@ type DruggableGeneToDiseaseAssociation implements EntityToDiseaseAssociationMixi
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -2722,7 +2722,7 @@ type DruggableGeneToDiseaseAssociation implements EntityToDiseaseAssociationMixi
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subjectAspectQualifier: GeneOrGeneProductOrChemicalEntityAspectEnum
     objectDirectionQualifier: DirectionQualifierEnum
     frequencyQualifier: FrequencyValue
@@ -2731,13 +2731,13 @@ type DruggableGeneToDiseaseAssociation implements EntityToDiseaseAssociationMixi
     qualifiedPredicate: String
     sexQualifier: BiologicalSex
     diseaseContextQualifier: Disease
-    subjectSpecializationQualifier: Uriorcurie
-    objectSpecializationQualifier: Uriorcurie
+    subjectSpecializationQualifier: String
+    objectSpecializationQualifier: String
     anatomicalContextQualifier: String
-    hasCount: Integer
-    hasTotal: Integer
-    hasQuotient: Double
-    hasPercentage: Double
+    hasCount: Int
+    hasTotal: Int
+    hasQuotient: Float
+    hasPercentage: Float
     object: Disease!
     subject: GeneOrGeneProduct!
     predicate: PredicateType!
@@ -2748,7 +2748,7 @@ interface Entity
   {
     id: String!
     iri: IriType
-    category: [Uriorcurie]
+    category: [String]
     type: [String]
     name: LabelType
     description: NarrativeText
@@ -2779,7 +2779,7 @@ type EntityToDiseaseAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -2796,7 +2796,7 @@ type EntityToDiseaseAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     clinicalApprovalStatus: ClinicalApprovalStatusEnum
     maxResearchPhase: ResearchPhaseEnum
   }
@@ -2873,7 +2873,7 @@ type EntityToPhenotypicFeatureAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -2890,7 +2890,7 @@ type EntityToPhenotypicFeatureAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     clinicalApprovalStatus: ClinicalApprovalStatusEnum
     maxResearchPhase: ResearchPhaseEnum
   }
@@ -2908,13 +2908,13 @@ type EntityToPhenotypicFeatureAssociationMixin implements FrequencyQuantifier
     object: PhenotypicFeature!
     sexQualifier: BiologicalSex
     diseaseContextQualifier: Disease
-    subjectSpecializationQualifier: Uriorcurie
-    objectSpecializationQualifier: Uriorcurie
+    subjectSpecializationQualifier: String
+    objectSpecializationQualifier: String
     anatomicalContextQualifier: String
-    hasCount: Integer
-    hasTotal: Integer
-    hasQuotient: Double
-    hasPercentage: Double
+    hasCount: Int
+    hasTotal: Int
+    hasQuotient: Float
+    hasPercentage: Float
   }
 
 type EnvironmentalExposure implements ExposureEvent
@@ -2925,10 +2925,10 @@ type EnvironmentalExposure implements ExposureEvent
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -2947,10 +2947,10 @@ type EnvironmentalFeature
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
   }
 
 type EnvironmentalFoodContaminant
@@ -2963,10 +2963,10 @@ type EnvironmentalFoodContaminant
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     tradeName: String
     availableFrom: [DrugAvailabilityEnum]
     maxToleratedDose: String
@@ -2984,10 +2984,10 @@ type EnvironmentalProcess implements Occurrent
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
   }
 
 type EpidemiologicalOutcome implements Outcome
@@ -3009,10 +3009,10 @@ type Event
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
   }
 
 type EvidenceType
@@ -3025,14 +3025,14 @@ type EvidenceType
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
   }
 
 type Exon
@@ -3045,10 +3045,10 @@ type Exon
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
   }
@@ -3074,7 +3074,7 @@ type ExonToTranscriptRelationship
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -3091,7 +3091,7 @@ type ExonToTranscriptRelationship
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: Exon!
     object: Transcript!
   }
@@ -3125,7 +3125,7 @@ type ExposureEventToOutcomeAssociation implements EntityToOutcomeAssociationMixi
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -3142,7 +3142,7 @@ type ExposureEventToOutcomeAssociation implements EntityToOutcomeAssociationMixi
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     populationContextQualifier: PopulationOfIndividualOrganisms
     temporalContextQualifier: TimeType
   }
@@ -3169,7 +3169,7 @@ type ExposureEventToPhenotypicFeatureAssociation implements EntityToPhenotypicFe
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -3186,7 +3186,7 @@ type ExposureEventToPhenotypicFeatureAssociation implements EntityToPhenotypicFe
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: ExposureEvent!
     frequencyQualifier: FrequencyValue
     subjectAspectQualifier: String
@@ -3196,13 +3196,13 @@ type ExposureEventToPhenotypicFeatureAssociation implements EntityToPhenotypicFe
     qualifiedPredicate: String
     sexQualifier: BiologicalSex
     diseaseContextQualifier: Disease
-    subjectSpecializationQualifier: Uriorcurie
-    objectSpecializationQualifier: Uriorcurie
+    subjectSpecializationQualifier: String
+    objectSpecializationQualifier: String
     anatomicalContextQualifier: String
-    hasCount: Integer
-    hasTotal: Integer
-    hasQuotient: Double
-    hasPercentage: Double
+    hasCount: Int
+    hasTotal: Int
+    hasQuotient: Float
+    hasPercentage: Float
   }
 
 interface FeatureOrDiseaseQualifiersToEntityMixin
@@ -3228,10 +3228,10 @@ type Food
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     tradeName: String
     availableFrom: [DrugAvailabilityEnum]
     maxToleratedDose: String
@@ -3253,10 +3253,10 @@ type FoodAdditive
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     tradeName: String
     availableFrom: [DrugAvailabilityEnum]
     maxToleratedDose: String
@@ -3274,10 +3274,10 @@ interface FrequencyQualifierMixin
 
 interface FrequencyQuantifier
   {
-    hasCount: Integer
-    hasTotal: Integer
-    hasQuotient: Double
-    hasPercentage: Double
+    hasCount: Int
+    hasTotal: Int
+    hasQuotient: Float
+    hasPercentage: Float
   }
 
 type FunctionalAssociation
@@ -3301,7 +3301,7 @@ type FunctionalAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -3318,7 +3318,7 @@ type FunctionalAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: MacromolecularMachineMixin!
     object: OntologyClass!
   }
@@ -3332,10 +3332,10 @@ type Fungus
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -3353,11 +3353,11 @@ type Gene implements GeneOrGeneProduct, GenomicEntity, ChemicalEntityOrGeneOrGen
     providedBy: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     symbol: String
-    xref: [Uriorcurie]
+    xref: [String]
     hasBiologicalSequence: BiologicalSequence
   }
 
@@ -3381,7 +3381,7 @@ type GeneAffectsChemicalAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -3398,7 +3398,7 @@ type GeneAffectsChemicalAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subjectFormOrVariantQualifier: ChemicalOrGeneOrGeneProductFormOrVariantEnum
     subjectPartQualifier: GeneOrGeneProductOrChemicalPartQualifierEnum
     subjectDerivativeQualifier: String
@@ -3440,7 +3440,7 @@ type GeneAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMixin,
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -3457,7 +3457,7 @@ type GeneAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMixin,
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subjectAspectQualifier: GeneOrGeneProductOrChemicalEntityAspectEnum
     objectDirectionQualifier: DirectionQualifierEnum
     predicate: PredicateType!
@@ -3467,13 +3467,13 @@ type GeneAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMixin,
     qualifiedPredicate: String
     sexQualifier: BiologicalSex
     diseaseContextQualifier: Disease
-    subjectSpecializationQualifier: Uriorcurie
-    objectSpecializationQualifier: Uriorcurie
+    subjectSpecializationQualifier: String
+    objectSpecializationQualifier: String
     anatomicalContextQualifier: String
-    hasCount: Integer
-    hasTotal: Integer
-    hasQuotient: Double
-    hasPercentage: Double
+    hasCount: Int
+    hasTotal: Int
+    hasQuotient: Float
+    hasPercentage: Float
     object: Disease!
     subject: GeneOrGeneProduct!
   }
@@ -3496,10 +3496,10 @@ type GeneFamily implements GeneGroupingMixin, ChemicalEntityOrGeneOrGeneProduct
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasGeneOrGeneProduct: [Gene]
@@ -3530,7 +3530,7 @@ type GeneHasVariantThatContributesToDiseaseAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -3547,7 +3547,7 @@ type GeneHasVariantThatContributesToDiseaseAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subjectAspectQualifier: GeneOrGeneProductOrChemicalEntityAspectEnum
     objectDirectionQualifier: DirectionQualifierEnum
     frequencyQualifier: FrequencyValue
@@ -3556,13 +3556,13 @@ type GeneHasVariantThatContributesToDiseaseAssociation
     qualifiedPredicate: String
     sexQualifier: BiologicalSex
     diseaseContextQualifier: Disease
-    subjectSpecializationQualifier: Uriorcurie
-    objectSpecializationQualifier: Uriorcurie
+    subjectSpecializationQualifier: String
+    objectSpecializationQualifier: String
     anatomicalContextQualifier: String
-    hasCount: Integer
-    hasTotal: Integer
-    hasQuotient: Double
-    hasPercentage: Double
+    hasCount: Int
+    hasTotal: Int
+    hasQuotient: Float
+    hasPercentage: Float
     subjectFormOrVariantQualifier: String
     subject: GeneOrGeneProduct!
     object: Disease!
@@ -3578,14 +3578,14 @@ interface GeneProductIsoformMixin
   {
     name: SymbolType
     synonym: [LabelType]
-    xref: [Uriorcurie]
+    xref: [String]
   }
 
 interface GeneProductMixin
   {
     name: SymbolType
     synonym: [LabelType]
-    xref: [Uriorcurie]
+    xref: [String]
   }
 
 type GeneRegulatesGeneAssociation
@@ -3608,7 +3608,7 @@ type GeneRegulatesGeneAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -3625,7 +3625,7 @@ type GeneRegulatesGeneAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     objectAspectQualifier: GeneOrGeneProductOrChemicalEntityAspectEnum!
     objectDirectionQualifier: DirectionQualifierEnum!
     qualifiedPredicate: String!
@@ -3655,7 +3655,7 @@ type GeneToDiseaseAssociation implements EntityToDiseaseAssociationMixin, GeneTo
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -3672,7 +3672,7 @@ type GeneToDiseaseAssociation implements EntityToDiseaseAssociationMixin, GeneTo
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subjectAspectQualifier: GeneOrGeneProductOrChemicalEntityAspectEnum
     objectDirectionQualifier: DirectionQualifierEnum
     predicate: PredicateType!
@@ -3682,13 +3682,13 @@ type GeneToDiseaseAssociation implements EntityToDiseaseAssociationMixin, GeneTo
     qualifiedPredicate: String
     sexQualifier: BiologicalSex
     diseaseContextQualifier: Disease
-    subjectSpecializationQualifier: Uriorcurie
-    objectSpecializationQualifier: Uriorcurie
+    subjectSpecializationQualifier: String
+    objectSpecializationQualifier: String
     anatomicalContextQualifier: String
-    hasCount: Integer
-    hasTotal: Integer
-    hasQuotient: Double
-    hasPercentage: Double
+    hasCount: Int
+    hasTotal: Int
+    hasQuotient: Float
+    hasPercentage: Float
     subject: GeneOrGeneProduct!
     object: Disease!
   }
@@ -3713,7 +3713,7 @@ type GeneToDiseaseOrPhenotypicFeatureAssociation implements EntityToPhenotypicFe
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -3730,7 +3730,7 @@ type GeneToDiseaseOrPhenotypicFeatureAssociation implements EntityToPhenotypicFe
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subjectAspectQualifier: GeneOrGeneProductOrChemicalEntityAspectEnum
     objectDirectionQualifier: DirectionQualifierEnum
     subject: GeneOrGeneProduct!
@@ -3742,13 +3742,13 @@ type GeneToDiseaseOrPhenotypicFeatureAssociation implements EntityToPhenotypicFe
     qualifiedPredicate: String
     sexQualifier: BiologicalSex
     diseaseContextQualifier: Disease
-    subjectSpecializationQualifier: Uriorcurie
-    objectSpecializationQualifier: Uriorcurie
+    subjectSpecializationQualifier: String
+    objectSpecializationQualifier: String
     anatomicalContextQualifier: String
-    hasCount: Integer
-    hasTotal: Integer
-    hasQuotient: Double
-    hasPercentage: Double
+    hasCount: Int
+    hasTotal: Int
+    hasQuotient: Float
+    hasPercentage: Float
   }
 
 interface GeneToEntityAssociationMixin
@@ -3778,7 +3778,7 @@ type GeneToExpressionSiteAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -3795,7 +3795,7 @@ type GeneToExpressionSiteAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     stageQualifier: LifeStage
     quantifierQualifier: OntologyClass
     subject: GeneOrGeneProduct!
@@ -3824,7 +3824,7 @@ interface GeneToGeneAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -3841,7 +3841,7 @@ interface GeneToGeneAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: GeneOrGeneProduct!
     object: GeneOrGeneProduct!
   }
@@ -3866,7 +3866,7 @@ type GeneToGeneCoexpressionAssociation implements GeneExpressionMixin
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -3883,7 +3883,7 @@ type GeneToGeneCoexpressionAssociation implements GeneExpressionMixin
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: GeneOrGeneProduct!
     object: GeneOrGeneProduct!
     predicate: PredicateType!
@@ -3913,7 +3913,7 @@ type GeneToGeneFamilyAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -3930,7 +3930,7 @@ type GeneToGeneFamilyAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: Gene!
     object: GeneFamily!
     predicate: PredicateType!
@@ -3956,7 +3956,7 @@ type GeneToGeneHomologyAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -3973,7 +3973,7 @@ type GeneToGeneHomologyAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: GeneOrGeneProduct!
     predicate: PredicateType!
     object: GeneOrGeneProduct!
@@ -3999,7 +3999,7 @@ type GeneToGeneProductRelationship
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -4016,7 +4016,7 @@ type GeneToGeneProductRelationship
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: Gene!
     object: GeneProductMixin!
     predicate: PredicateType!
@@ -4043,7 +4043,7 @@ type GeneToGoTermAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -4060,7 +4060,7 @@ type GeneToGoTermAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: Gene!
     object: OntologyClass!
   }
@@ -4086,7 +4086,7 @@ type GeneToPathwayAssociation implements GeneToEntityAssociationMixin
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -4103,7 +4103,7 @@ type GeneToPathwayAssociation implements GeneToEntityAssociationMixin
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: GeneOrGeneProduct!
     object: Pathway!
   }
@@ -4128,7 +4128,7 @@ type GeneToPhenotypicFeatureAssociation implements EntityToPhenotypicFeatureAsso
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -4145,7 +4145,7 @@ type GeneToPhenotypicFeatureAssociation implements EntityToPhenotypicFeatureAsso
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subjectAspectQualifier: GeneOrGeneProductOrChemicalEntityAspectEnum
     objectDirectionQualifier: DirectionQualifierEnum
     predicate: PredicateType!
@@ -4155,13 +4155,13 @@ type GeneToPhenotypicFeatureAssociation implements EntityToPhenotypicFeatureAsso
     qualifiedPredicate: String
     sexQualifier: BiologicalSex
     diseaseContextQualifier: Disease
-    subjectSpecializationQualifier: Uriorcurie
-    objectSpecializationQualifier: Uriorcurie
+    subjectSpecializationQualifier: String
+    objectSpecializationQualifier: String
     anatomicalContextQualifier: String
-    hasCount: Integer
-    hasTotal: Integer
-    hasQuotient: Double
-    hasPercentage: Double
+    hasCount: Int
+    hasTotal: Int
+    hasQuotient: Float
+    hasPercentage: Float
     subject: GeneOrGeneProduct!
     object: PhenotypicFeature!
   }
@@ -4176,10 +4176,10 @@ type GeneticInheritance
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
   }
@@ -4194,10 +4194,10 @@ type Genome implements GenomicEntity, PhysicalEssence, OntologyClass
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasBiologicalSequence: BiologicalSequence
@@ -4211,10 +4211,10 @@ type GenomicBackgroundExposure implements ExposureEvent, GeneGroupingMixin, Phys
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -4252,7 +4252,7 @@ type GenomicSequenceLocalization
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -4269,9 +4269,9 @@ type GenomicSequenceLocalization
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
-    startInterbaseCoordinate: Integer
-    endInterbaseCoordinate: Integer
+    category: [String]
+    startInterbaseCoordinate: Int
+    endInterbaseCoordinate: Int
     genomeBuild: StrandEnum
     strand: StrandEnum
     phase: PhaseEnum
@@ -4290,10 +4290,10 @@ type Genotype implements PhysicalEssence, GenomicEntity, OntologyClass
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasZygosity: Zygosity
@@ -4320,7 +4320,7 @@ type GenotypeAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMi
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -4337,7 +4337,7 @@ type GenotypeAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMi
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     predicate: PredicateType!
     object: NamedThing!
     frequencyQualifier: FrequencyValue
@@ -4370,7 +4370,7 @@ type GenotypeToDiseaseAssociation implements GenotypeToEntityAssociationMixin, E
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -4387,7 +4387,7 @@ type GenotypeToDiseaseAssociation implements GenotypeToEntityAssociationMixin, E
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: NamedThing!
     predicate: PredicateType!
     object: NamedThing!
@@ -4427,7 +4427,7 @@ type GenotypeToGeneAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -4444,7 +4444,7 @@ type GenotypeToGeneAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     predicate: PredicateType!
     subject: Genotype!
     object: Gene!
@@ -4470,7 +4470,7 @@ type GenotypeToGenotypePartAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -4487,7 +4487,7 @@ type GenotypeToGenotypePartAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     predicate: PredicateType!
     subject: Genotype!
     object: Genotype!
@@ -4514,7 +4514,7 @@ type GenotypeToPhenotypicFeatureAssociation implements EntityToPhenotypicFeature
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -4531,7 +4531,7 @@ type GenotypeToPhenotypicFeatureAssociation implements EntityToPhenotypicFeature
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     predicate: PredicateType!
     subject: Genotype!
     frequencyQualifier: FrequencyValue
@@ -4542,13 +4542,13 @@ type GenotypeToPhenotypicFeatureAssociation implements EntityToPhenotypicFeature
     qualifiedPredicate: String
     sexQualifier: BiologicalSex
     diseaseContextQualifier: Disease
-    subjectSpecializationQualifier: Uriorcurie
-    objectSpecializationQualifier: Uriorcurie
+    subjectSpecializationQualifier: String
+    objectSpecializationQualifier: String
     anatomicalContextQualifier: String
-    hasCount: Integer
-    hasTotal: Integer
-    hasQuotient: Double
-    hasPercentage: Double
+    hasCount: Int
+    hasTotal: Int
+    hasQuotient: Float
+    hasPercentage: Float
   }
 
 type GenotypeToVariantAssociation
@@ -4571,7 +4571,7 @@ type GenotypeToVariantAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -4588,7 +4588,7 @@ type GenotypeToVariantAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     predicate: PredicateType!
     subject: Genotype!
     object: SequenceVariant!
@@ -4602,10 +4602,10 @@ type GenotypicSex
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -4621,10 +4621,10 @@ type GeographicExposure implements ExposureEvent
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -4643,10 +4643,10 @@ type GeographicLocation
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     latitude: Float
     longitude: Float
   }
@@ -4661,10 +4661,10 @@ type GeographicLocationAtTime
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     latitude: Float
     longitude: Float
     timepoint: TimeType
@@ -4679,10 +4679,10 @@ type GrossAnatomicalStructure
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -4698,10 +4698,10 @@ type Haplotype implements GenomicEntity, PhysicalEssence, OntologyClass
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasBiologicalSequence: BiologicalSequence
@@ -4717,10 +4717,10 @@ type Hospitalization
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
   }
 
 type HospitalizationOutcome implements Outcome
@@ -4736,10 +4736,10 @@ type Human implements SubjectOfInvestigation
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -4754,10 +4754,10 @@ type IndividualOrganism implements SubjectOfInvestigation
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -4773,14 +4773,14 @@ interface InformationContentEntity
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
   }
 
 type InformationContentEntityToNamedThingAssociation
@@ -4803,7 +4803,7 @@ type InformationContentEntityToNamedThingAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -4820,7 +4820,7 @@ type InformationContentEntityToNamedThingAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: NamedThing!
     object: NamedThing!
     predicate: PredicateType!
@@ -4835,10 +4835,10 @@ type Invertebrate
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -4854,21 +4854,21 @@ type JournalArticle
     providedBy: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
     authors: [Agent]
     pages: [String]
     summary: String
     keywords: [String]
-    meshTerms: [Uriorcurie]
-    xref: [Uriorcurie]
+    meshTerms: [String]
+    xref: [String]
     publicationType: [String]!
     id: String!
     name: LabelType
-    publishedIn: Uriorcurie!
+    publishedIn: String!
     isoAbbreviation: String
     volume: String
     issue: String
@@ -4883,10 +4883,10 @@ type LifeStage
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -4902,14 +4902,14 @@ type LogOddsAnalysisResult
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
   }
 
 type MacromolecularComplex implements MacromolecularMachineMixin
@@ -4922,10 +4922,10 @@ type MacromolecularComplex implements MacromolecularMachineMixin
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
   }
@@ -4956,7 +4956,7 @@ type MacromolecularMachineToBiologicalProcessAssociation implements Macromolecul
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -4973,7 +4973,7 @@ type MacromolecularMachineToBiologicalProcessAssociation implements Macromolecul
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: MacromolecularMachineMixin!
     object: BiologicalProcess!
     speciesContextQualifier: OrganismTaxon
@@ -5000,7 +5000,7 @@ type MacromolecularMachineToCellularComponentAssociation implements Macromolecul
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -5017,7 +5017,7 @@ type MacromolecularMachineToCellularComponentAssociation implements Macromolecul
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: MacromolecularMachineMixin!
     object: CellularComponent!
     speciesContextQualifier: OrganismTaxon
@@ -5052,7 +5052,7 @@ type MacromolecularMachineToMolecularActivityAssociation implements Macromolecul
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -5069,7 +5069,7 @@ type MacromolecularMachineToMolecularActivityAssociation implements Macromolecul
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: MacromolecularMachineMixin!
     object: MolecularActivity!
     speciesContextQualifier: OrganismTaxon
@@ -5084,10 +5084,10 @@ type Mammal implements SubjectOfInvestigation
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -5108,10 +5108,10 @@ type MaterialSample implements SubjectOfInvestigation
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
   }
 
 type MaterialSampleDerivationAssociation
@@ -5134,7 +5134,7 @@ type MaterialSampleDerivationAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -5151,7 +5151,7 @@ type MaterialSampleDerivationAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: MaterialSample!
     predicate: PredicateType!
     object: NamedThing!
@@ -5180,7 +5180,7 @@ type MaterialSampleToDiseaseOrPhenotypicFeatureAssociation implements MaterialSa
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -5197,7 +5197,7 @@ type MaterialSampleToDiseaseOrPhenotypicFeatureAssociation implements MaterialSa
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
   }
 
 interface MaterialSampleToEntityAssociationMixin
@@ -5217,10 +5217,10 @@ type MicroRNA
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
   }
@@ -5242,10 +5242,10 @@ type MolecularActivity implements Occurrent, OntologyClass
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasInput: [MolecularEntity]
@@ -5274,7 +5274,7 @@ type MolecularActivityToChemicalEntityAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -5291,7 +5291,7 @@ type MolecularActivityToChemicalEntityAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: MolecularActivity!
     object: ChemicalEntity!
   }
@@ -5317,7 +5317,7 @@ type MolecularActivityToMolecularActivityAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -5334,7 +5334,7 @@ type MolecularActivityToMolecularActivityAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: MolecularActivity!
     object: MolecularActivity!
   }
@@ -5359,7 +5359,7 @@ type MolecularActivityToPathwayAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -5376,7 +5376,7 @@ type MolecularActivityToPathwayAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: MolecularActivity!
     object: Pathway!
     predicate: PredicateType!
@@ -5392,10 +5392,10 @@ type MolecularEntity
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     tradeName: String
     availableFrom: [DrugAvailabilityEnum]
     maxToleratedDose: String
@@ -5414,10 +5414,10 @@ type MolecularMixture
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     tradeName: String
     availableFrom: [DrugAvailabilityEnum]
     maxToleratedDose: String
@@ -5443,10 +5443,10 @@ type NamedThing
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
   }
 
 type NamedThingAssociatedWithLikelihoodOfNamedThingAssociation
@@ -5469,7 +5469,7 @@ type NamedThingAssociatedWithLikelihoodOfNamedThingAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -5486,7 +5486,7 @@ type NamedThingAssociatedWithLikelihoodOfNamedThingAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: NamedThing!
     subjectAspectQualifier: String
     subjectContextQualifier: OntologyClass
@@ -5507,10 +5507,10 @@ type NoncodingRNAProduct
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
   }
@@ -5525,10 +5525,10 @@ type NucleicAcidEntity implements GenomicEntity, ThingWithTaxon, PhysicalEssence
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     tradeName: String
     availableFrom: [DrugAvailabilityEnum]
     maxToleratedDose: String
@@ -5550,10 +5550,10 @@ type NucleicAcidSequenceMotif
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
   }
@@ -5568,10 +5568,10 @@ type NucleosomeModification implements GeneProductIsoformMixin, GenomicEntity, E
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasBiologicalSequence: BiologicalSequence
@@ -5587,14 +5587,14 @@ type ObservedExpectedFrequencyAnalysisResult
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
   }
 
 interface Occurrent
@@ -5609,10 +5609,10 @@ type Onset
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -5633,10 +5633,10 @@ type OrganismAttribute
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -5654,10 +5654,10 @@ type OrganismTaxon
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     hasTaxonomicRank: TaxonomicRank
   }
 
@@ -5688,7 +5688,7 @@ type OrganismTaxonToEnvironmentAssociation implements OrganismTaxonToEntityAssoc
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -5705,7 +5705,7 @@ type OrganismTaxonToEnvironmentAssociation implements OrganismTaxonToEntityAssoc
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: OrganismTaxon!
     object: NamedThing!
     predicate: PredicateType!
@@ -5732,7 +5732,7 @@ type OrganismTaxonToOrganismTaxonAssociation implements OrganismTaxonToEntityAss
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -5749,7 +5749,7 @@ type OrganismTaxonToOrganismTaxonAssociation implements OrganismTaxonToEntityAss
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: OrganismTaxon!
     object: OrganismTaxon!
   }
@@ -5774,7 +5774,7 @@ type OrganismTaxonToOrganismTaxonInteraction
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -5791,7 +5791,7 @@ type OrganismTaxonToOrganismTaxonInteraction
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     associatedEnvironmentalContext: String
     subject: OrganismTaxon!
     object: OrganismTaxon!
@@ -5818,7 +5818,7 @@ type OrganismTaxonToOrganismTaxonSpecialization
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -5835,7 +5835,7 @@ type OrganismTaxonToOrganismTaxonSpecialization
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: OrganismTaxon!
     object: OrganismTaxon!
     predicate: PredicateType!
@@ -5862,7 +5862,7 @@ type OrganismToOrganismAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -5879,7 +5879,7 @@ type OrganismToOrganismAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: IndividualOrganism!
     object: IndividualOrganism!
   }
@@ -5893,10 +5893,10 @@ type OrganismalEntity implements SubjectOfInvestigation
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -5924,7 +5924,7 @@ type OrganismalEntityAsAModelOfDiseaseAssociation implements ModelToDiseaseAssoc
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -5941,7 +5941,7 @@ type OrganismalEntityAsAModelOfDiseaseAssociation implements ModelToDiseaseAssoc
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: OrganismalEntity!
     frequencyQualifier: FrequencyValue
     subjectAspectQualifier: String
@@ -5976,7 +5976,7 @@ type PairwiseGeneToGeneInteraction
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -5993,7 +5993,7 @@ type PairwiseGeneToGeneInteraction
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: GeneOrGeneProduct!
     object: GeneOrGeneProduct!
     predicate: PredicateType!
@@ -6018,7 +6018,7 @@ type PairwiseMolecularInteraction
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -6035,7 +6035,7 @@ type PairwiseMolecularInteraction
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     interactingMoleculesCategory: OntologyClass
     subject: MolecularEntity!
     id: String!
@@ -6053,17 +6053,17 @@ type Patent
     providedBy: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
     authors: [Agent]
     pages: [String]
     summary: String
     keywords: [String]
-    meshTerms: [Uriorcurie]
-    xref: [Uriorcurie]
+    meshTerms: [String]
+    xref: [String]
     publicationType: [String]!
     id: String!
     name: LabelType
@@ -6081,10 +6081,10 @@ type PathologicalAnatomicalExposure implements ExposureEvent
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -6106,10 +6106,10 @@ type PathologicalAnatomicalStructure implements PathologicalEntityMixin
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -6129,10 +6129,10 @@ type PathologicalProcess implements PathologicalEntityMixin
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasInput: [NamedThing]
@@ -6148,10 +6148,10 @@ type PathologicalProcessExposure implements ExposureEvent
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -6174,10 +6174,10 @@ type Pathway implements OntologyClass
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasInput: [NamedThing]
@@ -6195,10 +6195,10 @@ type Phenomenon implements Occurrent
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
   }
 
 type PhenotypicFeature
@@ -6211,10 +6211,10 @@ type PhenotypicFeature
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
   }
@@ -6241,7 +6241,7 @@ type PhenotypicFeatureToDiseaseAssociation implements EntityToDiseaseAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -6258,7 +6258,7 @@ type PhenotypicFeatureToDiseaseAssociation implements EntityToDiseaseAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     predicate: PredicateType!
     frequencyQualifier: FrequencyValue
     subjectAspectQualifier: String
@@ -6268,10 +6268,10 @@ type PhenotypicFeatureToDiseaseAssociation implements EntityToDiseaseAssociation
     qualifiedPredicate: String
     diseaseContextQualifier: Disease
     sexQualifier: BiologicalSex
-    hasCount: Integer
-    hasTotal: Integer
-    hasQuotient: Double
-    hasPercentage: Double
+    hasCount: Int
+    hasTotal: Int
+    hasQuotient: Float
+    hasPercentage: Float
   }
 
 type PhenotypicFeatureToEntityAssociationMixin implements FrequencyQuantifier
@@ -6286,10 +6286,10 @@ type PhenotypicFeatureToEntityAssociationMixin implements FrequencyQuantifier
     qualifiedPredicate: String
     sexQualifier: BiologicalSex
     subject: PhenotypicFeature!
-    hasCount: Integer
-    hasTotal: Integer
-    hasQuotient: Double
-    hasPercentage: Double
+    hasCount: Int
+    hasTotal: Int
+    hasQuotient: Float
+    hasPercentage: Float
   }
 
 type PhenotypicFeatureToPhenotypicFeatureAssociation implements PhenotypicFeatureToEntityAssociationMixin, EntityToPhenotypicFeatureAssociationMixin
@@ -6315,7 +6315,7 @@ type PhenotypicFeatureToPhenotypicFeatureAssociation implements PhenotypicFeatur
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -6332,7 +6332,7 @@ type PhenotypicFeatureToPhenotypicFeatureAssociation implements PhenotypicFeatur
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     frequencyQualifier: FrequencyValue
     subjectAspectQualifier: String
     subjectDirectionQualifier: DirectionQualifierEnum
@@ -6340,13 +6340,13 @@ type PhenotypicFeatureToPhenotypicFeatureAssociation implements PhenotypicFeatur
     objectDirectionQualifier: DirectionQualifierEnum
     qualifiedPredicate: String
     sexQualifier: BiologicalSex
-    hasCount: Integer
-    hasTotal: Integer
-    hasQuotient: Double
-    hasPercentage: Double
+    hasCount: Int
+    hasTotal: Int
+    hasQuotient: Float
+    hasPercentage: Float
     diseaseContextQualifier: Disease
-    subjectSpecializationQualifier: Uriorcurie
-    objectSpecializationQualifier: Uriorcurie
+    subjectSpecializationQualifier: String
+    objectSpecializationQualifier: String
     anatomicalContextQualifier: String
   }
 
@@ -6358,10 +6358,10 @@ type PhenotypicQuality
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -6377,10 +6377,10 @@ type PhenotypicSex
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -6398,10 +6398,10 @@ type PhysicalEntity implements PhysicalEssence
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
   }
 
 interface PhysicalEssence
@@ -6422,10 +6422,10 @@ type PhysiologicalProcess implements OntologyClass
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasInput: [NamedThing]
@@ -6443,10 +6443,10 @@ type PlanetaryEntity
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
   }
 
 type Plant
@@ -6458,10 +6458,10 @@ type Plant
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -6477,10 +6477,10 @@ type Polypeptide implements ChemicalEntityOrGeneOrGeneProduct, ChemicalEntityOrP
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
   }
@@ -6494,10 +6494,10 @@ type PopulationOfIndividualOrganisms implements SubjectOfInvestigation
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -6523,7 +6523,7 @@ type PopulationToPopulationAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -6540,7 +6540,7 @@ type PopulationToPopulationAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: PopulationOfIndividualOrganisms!
     object: PopulationOfIndividualOrganisms!
     predicate: PredicateType!
@@ -6556,10 +6556,10 @@ type PosttranslationalModification implements GeneProductIsoformMixin
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
   }
@@ -6599,17 +6599,17 @@ type PreprintPublication
     providedBy: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
     authors: [Agent]
     pages: [String]
     summary: String
     keywords: [String]
-    meshTerms: [Uriorcurie]
-    xref: [Uriorcurie]
+    meshTerms: [String]
+    xref: [String]
     publicationType: [String]!
     id: String!
     name: LabelType
@@ -6625,10 +6625,10 @@ type Procedure implements ActivityAndBehavior
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
   }
 
 type ProcessRegulatesProcessAssociation
@@ -6651,7 +6651,7 @@ type ProcessRegulatesProcessAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -6668,7 +6668,7 @@ type ProcessRegulatesProcessAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: BiologicalProcess!
     predicate: PredicateType!
     object: BiologicalProcess!
@@ -6684,10 +6684,10 @@ type ProcessedMaterial
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     tradeName: String
     availableFrom: [DrugAvailabilityEnum]
     maxToleratedDose: String
@@ -6709,10 +6709,10 @@ type Protein implements GeneProductMixin
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
   }
@@ -6727,10 +6727,10 @@ type ProteinDomain implements GeneGroupingMixin, ChemicalEntityOrGeneOrGeneProdu
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasGeneOrGeneProduct: [Gene]
@@ -6746,10 +6746,10 @@ type ProteinFamily implements GeneGroupingMixin, ChemicalEntityOrGeneOrGeneProdu
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasGeneOrGeneProduct: [Gene]
@@ -6765,10 +6765,10 @@ type ProteinIsoform implements GeneProductIsoformMixin
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
   }
@@ -6783,17 +6783,17 @@ type Publication
     providedBy: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
     authors: [Agent]
     pages: [String]
     summary: String
     keywords: [String]
-    meshTerms: [Uriorcurie]
-    xref: [Uriorcurie]
+    meshTerms: [String]
+    xref: [String]
     publicationType: [String]!
     id: String!
     name: LabelType
@@ -6802,7 +6802,7 @@ type Publication
 type QuantityValue
   {
     hasUnit: Unit
-    hasNumericValue: Double
+    hasNumericValue: Float
   }
 
 type ReactionToCatalystAssociation
@@ -6825,7 +6825,7 @@ type ReactionToCatalystAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -6842,9 +6842,9 @@ type ReactionToCatalystAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     predicate: PredicateType!
-    stoichiometry: Integer
+    stoichiometry: Int
     reactionDirection: ReactionDirectionEnum
     reactionSide: ReactionSideEnum
     subject: MolecularEntity!
@@ -6871,7 +6871,7 @@ type ReactionToParticipantAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -6888,10 +6888,10 @@ type ReactionToParticipantAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     predicate: PredicateType!
     object: ChemicalEntity!
-    stoichiometry: Integer
+    stoichiometry: Int
     reactionDirection: ReactionDirectionEnum
     reactionSide: ReactionSideEnum
     subject: MolecularEntity!
@@ -6907,10 +6907,10 @@ type ReagentTargetedGene implements GenomicEntity, PhysicalEssence, OntologyClas
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasBiologicalSequence: BiologicalSequence
@@ -6926,10 +6926,10 @@ type RegulatoryRegion implements GenomicEntity, ChemicalEntityOrGeneOrGeneProduc
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasBiologicalSequence: BiologicalSequence
@@ -6954,14 +6954,14 @@ type RelativeFrequencyAnalysisResult
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
   }
 
 type RetrievalSource
@@ -6976,15 +6976,15 @@ type RetrievalSource
     providedBy: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
-    resourceId: Uriorcurie!
+    creationDate: String
+    resourceId: String!
     resourceRole: ResourceRoleEnum!
-    upstreamResourceIds: Uriorcurie
-    xref: [Uriorcurie]
+    upstreamResourceIds: String
+    xref: [String]
   }
 
 type RNAProduct implements GeneProductMixin
@@ -6997,10 +6997,10 @@ type RNAProduct implements GeneProductMixin
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
   }
@@ -7015,10 +7015,10 @@ type RNAProductIsoform implements GeneProductIsoformMixin
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
   }
@@ -7050,7 +7050,7 @@ type SequenceAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -7067,7 +7067,7 @@ type SequenceAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
   }
 
 type SequenceFeatureRelationship
@@ -7091,7 +7091,7 @@ type SequenceFeatureRelationship
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -7108,7 +7108,7 @@ type SequenceFeatureRelationship
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: NucleicAcidEntity!
     object: NucleicAcidEntity!
   }
@@ -7122,10 +7122,10 @@ type SequenceVariant implements GenomicEntity, PhysicalEssence, OntologyClass
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasGene: [Gene]
@@ -7154,7 +7154,7 @@ interface SequenceVariantModulatesTreatmentAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -7171,7 +7171,7 @@ interface SequenceVariantModulatesTreatmentAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: SequenceVariant!
     object: Treatment!
   }
@@ -7185,17 +7185,17 @@ type Serial
     providedBy: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
     authors: [Agent]
     pages: [String]
     summary: String
     keywords: [String]
-    meshTerms: [Uriorcurie]
-    xref: [Uriorcurie]
+    meshTerms: [String]
+    xref: [String]
     publicationType: [String]!
     name: LabelType
     isoAbbreviation: String
@@ -7213,10 +7213,10 @@ type SeverityValue
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -7234,10 +7234,10 @@ type SiRNA
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
   }
@@ -7252,10 +7252,10 @@ type SmallMolecule
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     tradeName: String
     availableFrom: [DrugAvailabilityEnum]
     maxToleratedDose: String
@@ -7273,10 +7273,10 @@ type Snv
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasGene: [Gene]
@@ -7292,10 +7292,10 @@ type SocioeconomicAttribute
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -7310,10 +7310,10 @@ type SocioeconomicExposure implements ExposureEvent
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
@@ -7341,10 +7341,10 @@ type Study
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
   }
 
 type StudyPopulation
@@ -7356,10 +7356,10 @@ type StudyPopulation
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -7375,14 +7375,14 @@ interface StudyResult
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
   }
 
 type StudyVariable
@@ -7395,14 +7395,14 @@ type StudyVariable
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
   }
 
 interface SubjectOfInvestigation
@@ -7430,7 +7430,7 @@ type TaxonToTaxonAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -7447,7 +7447,7 @@ type TaxonToTaxonAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: OrganismTaxon!
     object: OrganismTaxon!
   }
@@ -7467,14 +7467,14 @@ type TextMiningResult
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
   }
 
 interface ThingWithTaxon
@@ -7493,10 +7493,10 @@ type Transcript
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
   }
@@ -7522,7 +7522,7 @@ type TranscriptToGeneRelationship
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -7539,7 +7539,7 @@ type TranscriptToGeneRelationship
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: Transcript!
     object: Gene!
   }
@@ -7554,10 +7554,10 @@ type TranscriptionFactorBindingSite implements GenomicEntity, ChemicalEntityOrGe
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasBiologicalSequence: BiologicalSequence
@@ -7573,10 +7573,10 @@ type Treatment implements ExposureEvent, ChemicalOrDrugOrTreatment
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     hasDrug: [Drug]
     hasDevice: [Device]
     hasProcedure: [Procedure]
@@ -7603,7 +7603,7 @@ type VariantAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMix
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -7620,7 +7620,7 @@ type VariantAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMix
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     predicate: PredicateType!
     object: NamedThing!
     frequencyQualifier: FrequencyValue
@@ -7653,7 +7653,7 @@ type VariantToDiseaseAssociation implements VariantToEntityAssociationMixin, Ent
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -7670,7 +7670,7 @@ type VariantToDiseaseAssociation implements VariantToEntityAssociationMixin, Ent
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: NamedThing!
     predicate: PredicateType!
     object: NamedThing!
@@ -7711,7 +7711,7 @@ type VariantToGeneAssociation implements VariantToEntityAssociationMixin
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -7728,7 +7728,7 @@ type VariantToGeneAssociation implements VariantToEntityAssociationMixin
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     object: Gene!
     predicate: PredicateType!
   }
@@ -7754,7 +7754,7 @@ type VariantToGeneExpressionAssociation implements GeneExpressionMixin
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -7771,7 +7771,7 @@ type VariantToGeneExpressionAssociation implements GeneExpressionMixin
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     object: Gene!
     predicate: PredicateType!
     quantifierQualifier: OntologyClass
@@ -7802,7 +7802,7 @@ type VariantToPhenotypicFeatureAssociation implements VariantToEntityAssociation
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -7819,7 +7819,7 @@ type VariantToPhenotypicFeatureAssociation implements VariantToEntityAssociation
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: SequenceVariant!
     frequencyQualifier: FrequencyValue
     subjectAspectQualifier: String
@@ -7829,13 +7829,13 @@ type VariantToPhenotypicFeatureAssociation implements VariantToEntityAssociation
     qualifiedPredicate: String
     sexQualifier: BiologicalSex
     diseaseContextQualifier: Disease
-    subjectSpecializationQualifier: Uriorcurie
-    objectSpecializationQualifier: Uriorcurie
+    subjectSpecializationQualifier: String
+    objectSpecializationQualifier: String
     anatomicalContextQualifier: String
-    hasCount: Integer
-    hasTotal: Integer
-    hasQuotient: Double
-    hasPercentage: Double
+    hasCount: Int
+    hasTotal: Int
+    hasQuotient: Float
+    hasPercentage: Float
   }
 
 type VariantToPopulationAssociation implements VariantToEntityAssociationMixin, FrequencyQuantifier, FrequencyQualifierMixin
@@ -7859,7 +7859,7 @@ type VariantToPopulationAssociation implements VariantToEntityAssociationMixin, 
     agentType: AgentTypeEnum!
     timepoint: TimeType
     originalSubject: String
-    originalPredicate: Uriorcurie
+    originalPredicate: String
     originalObject: String
     subjectCategory: OntologyClass
     objectCategory: OntologyClass
@@ -7876,13 +7876,13 @@ type VariantToPopulationAssociation implements VariantToEntityAssociationMixin, 
     adjustedPValue: Float
     hasSupportingStudies: [Study]
     type: [String]
-    category: [Uriorcurie]
+    category: [String]
     subject: SequenceVariant!
     object: PopulationOfIndividualOrganisms!
-    hasQuotient: Double
-    hasCount: Integer
-    hasTotal: Integer
-    hasPercentage: Double
+    hasQuotient: Float
+    hasCount: Int
+    hasTotal: Int
+    hasPercentage: Float
     frequencyQualifier: FrequencyValue
   }
 
@@ -7895,10 +7895,10 @@ type Vertebrate
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -7913,10 +7913,10 @@ type Virus implements SubjectOfInvestigation
     description: NarrativeText
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
@@ -7932,17 +7932,17 @@ type WebPage
     providedBy: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     license: String
     rights: String
     format: String
-    creationDate: Date
+    creationDate: String
     authors: [Agent]
     pages: [String]
     summary: String
     keywords: [String]
-    meshTerms: [Uriorcurie]
-    xref: [Uriorcurie]
+    meshTerms: [String]
+    xref: [String]
     publicationType: [String]!
     id: String!
     name: LabelType
@@ -7956,10 +7956,10 @@ type Zygosity
     hasAttribute: [Attribute]
     deprecated: Boolean
     providedBy: [String]
-    xref: [Uriorcurie]
+    xref: [String]
     fullName: LabelType
     synonym: [LabelType]
-    category: [Uriorcurie]!
+    category: [String]!
     name: LabelType
     hasAttributeType: OntologyClass!
     hasQuantitativeValue: [QuantityValue]
