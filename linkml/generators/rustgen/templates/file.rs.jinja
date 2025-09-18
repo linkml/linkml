@@ -39,6 +39,16 @@ pub mod poly_containers;
 {% endfor %}
 
 
+{% if needs_overwrite_except_none %}
+/// Overwrite `left` with `right` unless `right` is `None`.
+fn overwrite_except_none<T>(left: &mut Option<T>, right: Option<T>) {
+    if right.is_some() {
+        *left = right;
+    }
+}
+{% endif %}
+
+
 {% if pyo3 %}
 #[cfg(feature = "pyo3")]
 #[pymodule]

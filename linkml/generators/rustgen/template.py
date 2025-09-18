@@ -322,7 +322,7 @@ class RustProperty(RustTemplateModel):
     @computed_field
     def merge_strategy(self) -> str:
         if self.type_.optional:
-            return "strategy = merge::option::overwrite_none"
+            return "strategy = overwrite_except_none"
         elif self.type_.containerType == ContainerType.LIST:
             return "skip"
         elif self.type_.containerType == ContainerType.MAPPING:
@@ -714,6 +714,11 @@ class RustFile(RustTemplateModel):
                 continue
             out.append(c.name)
         return out
+
+    @computed_field
+    def needs_overwrite_except_none(self) -> bool:
+        """Whether any struct uses the custom merge helper."""
+        return any(s.generate_merge for s in self.structs)
 
 
 class RangeEnum(RustTemplateModel):
