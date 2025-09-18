@@ -2,13 +2,13 @@ import json
 import os
 
 import pytest
+from click.testing import CliRunner
 
 from linkml.generators import ContextGenerator, JSONLDGenerator
-from tests.utils.compare_jsonld_context import CompareJsonldContext
-from tests.utils.validate_jsonld_context import RdfExpectations
 from linkml.generators.jsonldcontextgen import ContextGenerator as FrameContextGenerator
 from linkml.generators.jsonldcontextgen import cli as jsonld_context_cli
-from click.testing import CliRunner
+from tests.utils.compare_jsonld_context import CompareJsonldContext
+from tests.utils.validate_jsonld_context import RdfExpectations
 
 
 def test_jsonld_context_integration(kitchen_sink_path, snapshot_path):
@@ -275,5 +275,5 @@ classes:
         assert os.path.exists("mini_cli.frame.jsonld")
 
         # sanity-check: frame has @embed
-        jfrm = json.loads(open("mini_cli.frame.jsonld", "r", encoding="utf-8").read())
+        jfrm = json.loads(open("mini_cli.frame.jsonld", encoding="utf-8").read())
         assert jfrm["friend"]["@embed"] == "@always"
