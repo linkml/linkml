@@ -21,7 +21,7 @@ When this JSON-LD context is combined with JSON it generates valid RDF
 Note there are some features missing from JSON-LD generation:
 
  * `@type` information is not generated at all levels
- * `@embed` is not generated for JSON-LD framing, limiting the ability to translate from RDF to JSON
+ * `@embed` is generated for JSON-LD framing only when `--emit-frame` is used
 
 These should be addressed in future LinkML releases
 

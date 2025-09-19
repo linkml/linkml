@@ -1,10 +1,10 @@
 JSON-LD Contexts
 ================
 
-.. warning ::
+.. note ::
 
-    The JSON-LD context generator does not yet include ``@embed``
-    directives necessary for conversion *from* RDF.
+    When run with ``--emit-frame``, the generator writes a ``.frame.jsonld`` with ``@embed`` directives
+    derived from slot ``inlined`` settings (``@always`` / ``@never``).
 
 .. warning ::
 
