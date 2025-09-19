@@ -204,7 +204,7 @@ The concept of inlining only makes sense with JSON-like tree-oriented data seria
 
 When serializing data as RDF triples or in a relational database, the value for the slot will always be a reference.
 
-The inlined slot in LinkML corresponds to `@embed` in JSON-LD 
+The inlined slot in LinkML corresponds to `@embed` in JSON-LD
 
 ## When should inlining be used?
 
