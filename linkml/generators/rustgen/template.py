@@ -201,37 +201,6 @@ class RustRange(BaseModel):
             return f"Into<{tp}>"
         return None
 
-    def element_type_value(self, crateref: Optional[str]) -> str:
-        """Element type by value for list/map/scalar views.
-
-        For unions, returns the union type unchanged. For class scalars,
-        prefixes with `crate::` when provided to keep stable paths in traits.
-        """
-        # Union type stays as-is
-        if self.child_ranges is not None and len(self.child_ranges) > 1:
-            return self.type_
-        tp = self.type_
-        if self.is_class_range and not self.is_reference:
-            if crateref:
-                tp = f"{crateref}::{tp}"
-        return tp
-
-    def element_type_borrowed(self, crateref: Optional[str]) -> str:
-        """Element type for borrowed getters; includes OrSubtype for class hierarchies.
-
-        Use OrSubtype when a class admits true subtypes to match stored field
-        types and avoid mismatches; otherwise add crate prefixes for stability.
-        """
-        if self.child_ranges is not None and len(self.child_ranges) > 1:
-            return self.type_
-        tp = self.type_
-        if self.is_class_range and not self.is_reference:
-            if self.has_class_subtypes:
-                tp = f"{tp}OrSubtype"
-            elif crateref:
-                tp = f"{crateref}::{tp}"
-        return tp
-
 
 class RustTemplateModel(TemplateModel):
     """

@@ -383,7 +383,6 @@ class RustGenerator(Generator, LifecycleMixin):
     _environment: Optional[Environment] = None
 
     def __post_init__(self):
-        # TODO: consider moving up a level
         self.schemaview: SchemaView = SchemaView(self.schema)
         super().__post_init__()
 
@@ -400,7 +399,6 @@ class RustGenerator(Generator, LifecycleMixin):
         return slot
 
     def generate_enum(self, enum: EnumDefinition) -> EnumResult:
-        # TODO: this
         enum = self.before_generate_enum(enum, self.schemaview)
         items = [
             RustEnumItem(
@@ -679,8 +677,6 @@ class RustGenerator(Generator, LifecycleMixin):
             imports += MERGE_IMPORTS
         for result in [*enums, *slots, *classes]:
             imports += result.imports
-
-        # TODO: get imports from all results
 
         file = RustFile(
             name=sv.schema.name,
@@ -1039,7 +1035,4 @@ class RustGenerator(Generator, LifecycleMixin):
     def template_environment(self) -> Environment:
         if self._environment is None:
             self._environment = RustTemplateModel.environment()
-        # if self.template_dir is not None:
-        #     loader = ChoiceLoader([FileSystemLoader(self.template_dir), env.loader])
-        #     env.loader = loader
         return self._environment
