@@ -412,17 +412,33 @@ class RustStruct(RustTemplateModel):
 
     @computed_field()
     def property_names_and_types(self) -> dict[str, str]:
-        return [(p.name, p.type_.type_for_constructor()) for p in self.properties]
+        return [(p.name, p.type_.type_for_constructor()) for p in self.constructor_params]
 
     @computed_field()
     def property_names(self) -> list[str]:
         return [p.name for p in self.properties]
 
     @computed_field()
+    def constructor_params(self) -> list[RustProperty]:
+        required = [p for p in self.properties if not p.type_.optional]
+        optional = [p for p in self.properties if p.type_.optional]
+        return required + optional
+
+    @computed_field()
+    def constructor_signature(self) -> str:
+        parts: list[str] = []
+        for prop in self.constructor_params:
+            if prop.type_.optional:
+                parts.append(f"{prop.name}=None")
+            else:
+                parts.append(prop.name)
+        return "*, " + ", ".join(parts)
+
+    @computed_field()
     def constructor_conversions(self) -> list[tuple[str, str]]:
         return [
             (p.name, p.type_.convert_constructor_value(p.name))
-            for p in self.properties
+            for p in self.constructor_params
             if p.type_.needs_constructor_conversion()
         ]
 
