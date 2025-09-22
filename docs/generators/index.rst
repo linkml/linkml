@@ -46,6 +46,7 @@ OWL, or translated to shape languages such as ShEx and SHACL.
    shex
    shacl
    owl
+   yarrrml
 
 Documentation Generation
 ------------------------
