@@ -1,16 +1,18 @@
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum {{ name }} {
-{% for i in items %}
-    {{ i }},
+{% for item in items %}
+    {% if serde %}#[cfg_attr(feature = "serde", serde(rename = "{{ item.text_literal }}"))]
+    {% endif %}
+    {{ item.variant }},
 {% endfor %}
 }
 
 impl core::fmt::Display for {{ name }} {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
-        {% for i in items %}
-            {{ name }}::{{ i }} => f.write_str("{{ i }}"),
+        {% for item in items %}
+            {{ name }}::{{ item.variant }} => f.write_str("{{ item.text_literal }}"),
         {% endfor %}
         }
     }
@@ -23,8 +25,8 @@ impl<'py> IntoPyObject<'py> for {{ name }} {
     type Error = PyErr;
     fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
         let s: &str = match self {
-        {% for i in items %}
-            {{ name }}::{{ i }} => "{{ i }}",
+        {% for item in items %}
+            {{ name }}::{{ item.variant }} => "{{ item.text_literal }}",
         {% endfor %}
         };
         Ok(pyo3::types::PyString::new(py, s).into_any())
@@ -36,8 +38,8 @@ impl<'py> FromPyObject<'py> for {{ name }} {
     fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
         if let Ok(s) = ob.extract::<&str>() {
             match s {
-            {% for i in items %}
-                "{{ i }}" => Ok({{ name }}::{{ i }}),
+            {% for item in items %}
+                {{ item.python_match_pattern }} => Ok({{ name }}::{{ item.variant }}),
             {% endfor %}
                 _ => Err(PyErr::new::<pyo3::exceptions::PyValueError, _>(
                     format!("invalid value for {{ name }}: {}", s),

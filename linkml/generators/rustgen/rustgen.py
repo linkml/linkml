@@ -42,6 +42,7 @@ from linkml.generators.rustgen.template import (
     RustCargo,
     RustClassModule,
     RustEnum,
+    RustEnumItem,
     RustFile,
     RustProperty,
     RustPyProject,
@@ -401,11 +402,18 @@ class RustGenerator(Generator, LifecycleMixin):
     def generate_enum(self, enum: EnumDefinition) -> EnumResult:
         # TODO: this
         enum = self.before_generate_enum(enum, self.schemaview)
+        items = [
+            RustEnumItem(
+                variant=get_name(pv),
+                text=pv.text or name,
+            )
+            for name, pv in enum.permissible_values.items()
+        ]
         res = EnumResult(
             source=enum,
             enum=RustEnum(
                 name=get_name(enum),
-                items=[get_name(i) for i in enum.permissible_values.values()],
+                items=items,
                 pyo3=self.pyo3,
                 serde=self.serde,
             ),

@@ -95,14 +95,15 @@ def _import_built_wheel(out_dir: Path, module_name: str):
     return mod
 
 
-def test_rustgen_personschema_maturin(input_path, temp_dir):
+def test_rustgen_personschema_maturin(temp_dir):
     """
     Generate a Rust crate from personinfo.yaml and try to build
     the Python bindings with maturin.
     """
 
     # Resolve schema and output directory
-    schema_path = Path(input_path("personinfo.yaml"))
+    schema_path = Path(__file__).resolve().parents[2] / "examples" / "PersonSchema" / "personinfo.yaml"
+    assert schema_path.exists(), f"Schema not found at {schema_path}"
     out_dir = _generate_rust_crate(str(schema_path), Path(temp_dir) / "personinfo_rust")
 
     # Try to build a wheel via maturin. This may require network access
@@ -111,6 +112,32 @@ def test_rustgen_personschema_maturin(input_path, temp_dir):
     # Try importing the generated wheel/module and sanity-check a class
     mod = _import_built_wheel(out_dir, module_name="personinfo")
     assert hasattr(mod, "Person"), "Expected class 'Person' not found in module"
+
+    person_data = {
+        "id": "1",
+        "name": "P. One",
+        "description": "Person One",
+        "depicted_by": "http://example.org/image_one.jpg",
+        "primary_email": "one@example.org",
+        "birth_date": "1900-01-01",
+        "age_in_years": 125,
+        "gender": "cisgender man",  # matches GenderType enum value
+        "current_address": {
+            "street": "1 Maple Street",
+            "city": "Springfield, AZ",
+            "postal_code": "12345",
+        },  # compliance tests will have a dict here.
+        "telephone": "800-555-1111",
+        "has_employment_history": None,
+        "has_familial_relationships": None,
+        "has_interpersonal_relationships": None,
+        "has_medical_history": None,
+        "has_news_events": None,
+        "aliases": None,
+    }
+
+    person = mod.Person(**person_data)
+    assert person.name == "P. One"
 
 
 def test_rustgen_metamodel_maturin(temp_dir):

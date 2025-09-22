@@ -73,6 +73,44 @@ class RustRange(BaseModel):
             tp = f"Option<{tp}>"
         return tp
 
+    def type_without_option(self) -> str:
+        """Field type without the outer Option wrapper."""
+
+        tp = self.type_for_field()
+        if self.optional and tp.startswith("Option<") and tp.endswith(">"):
+            return tp[7:-1]
+        return tp
+
+    def type_for_constructor(self) -> str:
+        """Parameter type for struct constructors (PyO3 new).
+
+        Class ranges accept a serde-backed adapter that can deserialize
+        dictionaries or reuse existing pyclass instances. Other ranges
+        keep their field types unchanged.
+        """
+
+        if self.is_class_range and not self.is_reference:
+            inner = self.type_without_option()
+            wrapped = f"serde_utils::PyValue<{inner}>"
+            if self.optional:
+                return f"Option<{wrapped}>"
+            return wrapped
+        return self.type_for_field()
+
+    def needs_constructor_conversion(self) -> bool:
+        """True when constructor arguments need post-processing."""
+
+        return self.is_class_range and not self.is_reference
+
+    def convert_constructor_value(self, var_name: str) -> str:
+        """Expression to convert constructor argument into field value."""
+
+        if not self.needs_constructor_conversion():
+            return var_name
+        if self.optional:
+            return f"{var_name}.map(|v| v.into_inner())"
+        return f"{var_name}.into_inner()"
+
     def type_for_trait(self, crateref: Optional[str], setter: bool = False):
         """Signature type for trait getters/setters over this range.
 
@@ -405,11 +443,19 @@ class RustStruct(RustTemplateModel):
 
     @computed_field()
     def property_names_and_types(self) -> dict[str, str]:
-        return [(p.name, p.type_.type_for_field()) for p in self.properties]
+        return [(p.name, p.type_.type_for_constructor()) for p in self.properties]
 
     @computed_field()
     def property_names(self) -> list[str]:
         return [p.name for p in self.properties]
+
+    @computed_field()
+    def constructor_conversions(self) -> list[tuple[str, str]]:
+        return [
+            (p.name, p.type_.convert_constructor_value(p.name))
+            for p in self.properties
+            if p.type_.needs_constructor_conversion()
+        ]
 
 
 class RustEnum(RustTemplateModel):
@@ -420,7 +466,44 @@ class RustEnum(RustTemplateModel):
     template: ClassVar[str] = "enum.rs.jinja"
 
     name: str
-    items: list[str]
+    items: list["RustEnumItem"]
+
+
+class RustEnumItem(BaseModel):
+    """Single enum variant with its original permissible value text."""
+
+    variant: str
+    text: str
+
+    @computed_field
+    def python_literals(self) -> list[str]:
+        """Return acceptable string literals when converting from Python."""
+
+        literals = [self.text]
+        if self.variant != self.text:
+            literals.append(self.variant)
+        return literals
+
+    @staticmethod
+    def _escape(value: str) -> str:
+        return value.replace("\\", "\\\\").replace('"', '\\"')
+
+    @computed_field
+    def text_literal(self) -> str:
+        """Escaped literal suitable for embedding in Rust source."""
+
+        return self._escape(self.text)
+
+    @computed_field
+    def python_match_pattern(self) -> str:
+        """Match arm pattern accepting any permitted Python literal."""
+
+        literals = []
+        for literal in self.python_literals:
+            if literal not in literals:
+                literals.append(literal)
+        escaped = [f'"{self._escape(lit)}"' for lit in literals]
+        return " | ".join(escaped)
 
 
 class RustTypeAlias(RustTemplateModel):

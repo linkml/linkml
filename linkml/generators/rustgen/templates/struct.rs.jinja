@@ -26,6 +26,9 @@ pub struct {{ name }} {
 impl {{ name }} {
     #[new]
     pub fn new({% for (n, t) in property_names_and_types %}{{ n }}: {{ t }}{% if not loop.last  %}, {% endif %}{% endfor %}) -> Self {
+{% for name, expr in constructor_conversions %}
+        let {{ name }} = {{ expr }};
+{% endfor %}
         {{ name }}{{ "{" }}{% for (p, _) in property_names_and_types %}{{ p }}{% if not loop.last %}, {% endif %}{% endfor %}{{ "}" }}
     }
 }

@@ -369,7 +369,7 @@ def _render(
     elif isinstance(item, dict):
         return {k: _render(v, environment) for k, v in item.items()}
     elif isinstance(item, BaseModel):
-        fields = item.model_fields
+        fields = {**item.model_fields, **getattr(item, "model_computed_fields", {})}
         return {k: _render(getattr(item, k, None), environment) for k in fields.keys()}
     else:
         return item
