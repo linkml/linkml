@@ -52,6 +52,7 @@ from linkml.generators.rustgen.template import (
     RustTypeAlias,
     SerdeUtilsFile,
     SlotRangeAsUnion,
+    StubGenBin,
 )
 from linkml.utils.generator import Generator
 
@@ -139,6 +140,22 @@ PYTHON_IMPORTS = Imports(
             features=["chrono"],
         ),
         # Import(module="serde_pyobject", version="0.6.1", objects=[], feature_flag="pyo3", features=[]),
+    ]
+)
+
+STUBGEN_IMPORTS = Imports(
+    imports=[
+        Import(
+            module="pyo3-stub-gen",
+            version="0.13.1",
+            objects=[
+                ObjectImport(name="define_stub_info_gatherer"),
+                ObjectImport(name="derive::gen_stub_pyclass"),
+                ObjectImport(name="derive::gen_stub_pymethods"),
+            ],
+            feature_flag="stubgen",
+            feature_dependencies=["pyo3"],
+        ),
     ]
 )
 
@@ -368,6 +385,8 @@ class RustGenerator(Generator, LifecycleMixin):
     pyo3_version: str = ">=0.21.1"
     serde: bool = True
     """Generate serde derive serialization/deserialization attributes"""
+    stubgen: bool = True
+    """Generate pyo3-stub-gen instrumentation alongside PyO3 bindings"""
     mode: RUST_MODES = "crate"
     """Generate a cargo.toml file"""
     output: Optional[Path] = None
@@ -391,7 +410,10 @@ class RustGenerator(Generator, LifecycleMixin):
         res = TypeResult(
             source=type_,
             type_=RustTypeAlias(
-                name=get_name(type_), type_=get_rust_type(type_.base, self.schemaview, self.pyo3), pyo3=self.pyo3
+                name=get_name(type_),
+                type_=get_rust_type(type_.base, self.schemaview, self.pyo3),
+                pyo3=self.pyo3,
+                stubgen=self.stubgen,
             ),
             imports=self.get_imports(type_),
         )
@@ -408,6 +430,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 items=[get_name(i) for i in enum.permissible_values.values()],
                 pyo3=self.pyo3,
                 serde=self.serde,
+                stubgen=self.stubgen,
             ),
         )
         res = self.after_generate_enum(res, self.schemaview)
@@ -429,6 +452,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 multivalued=slot.multivalued,
                 pyo3=self.pyo3,
                 class_range=class_range,
+                stubgen=self.stubgen,
             ),
             imports=self.get_imports(slot),
         )
@@ -460,6 +484,7 @@ class RustGenerator(Generator, LifecycleMixin):
                     SlotRangeAsUnion(
                         slot_name=get_name(a),
                         ranges=[get_rust_type(r, self.schemaview, True) for r in ranges],
+                        stubgen=self.stubgen,
                     )
                 )
 
@@ -467,6 +492,7 @@ class RustGenerator(Generator, LifecycleMixin):
             class_name=get_name(cls),
             class_name_snakecase=underscore(uncamelcase(cls.name)),
             slot_ranges=slot_range_unions,
+            stubgen=self.stubgen,
         )
 
         attributes = [self.generate_attribute(attr, cls) for attr in induced_attrs]
@@ -483,6 +509,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 unsendable=unsendable,
                 pyo3=self.pyo3,
                 serde=self.serde,
+                stubgen=self.stubgen,
                 as_key_value=self.generate_class_as_key_value(cls),
                 struct_or_subtype_enum=self.gen_struct_or_subtype_enum(cls),
                 class_module=cls_mod,
@@ -551,6 +578,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 can_convert_from_empty=len(value_args_no_default) == 0,
                 serde=self.serde,
                 pyo3=self.pyo3,
+                stubgen=self.stubgen,
             )
         return None
 
@@ -577,6 +605,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 and self.generate_class_as_key_value(self.schemaview.get_class(attr.range)) is not None,
                 pyo3=self.pyo3,
                 serde=self.serde,
+                stubgen=self.stubgen,
             ),
             imports=self.get_imports(attr),
         )
@@ -596,6 +625,7 @@ class RustGenerator(Generator, LifecycleMixin):
             pyo3_version=self.pyo3_version,
             pyo3=self.pyo3,
             serde=self.serde,
+            stubgen=self.stubgen,
         )
 
     def generate_pyproject(self) -> RustPyProject:
@@ -667,6 +697,8 @@ class RustGenerator(Generator, LifecycleMixin):
         imports = DEFAULT_IMPORTS.model_copy()
         imports += PYTHON_IMPORTS
         imports += SERDE_IMPORTS
+        if self.stubgen:
+            imports += STUBGEN_IMPORTS
         if need_merge_crate:
             imports += MERGE_IMPORTS
         for result in [*enums, *slots, *classes]:
@@ -683,6 +715,7 @@ class RustGenerator(Generator, LifecycleMixin):
             structs=[c.cls for c in classes],
             pyo3=self.pyo3,
             serde=self.serde,
+            stubgen=self.stubgen,
         )
 
         if mode == "crate":
@@ -692,7 +725,17 @@ class RustGenerator(Generator, LifecycleMixin):
             extra_files["poly_containers"] = PolyContainersFile()
             cargo = self.generate_cargo(imports)
             pyproject = self.generate_pyproject()
-            res = CrateResult(cargo=cargo, file=file, pyproject=pyproject, source=sv.schema, extra_files=extra_files)
+            bin_files = {}
+            if self.stubgen:
+                bin_files["bin/stub_gen"] = StubGenBin(crate_name=cargo.name, stubgen=self.stubgen)
+            res = CrateResult(
+                cargo=cargo,
+                file=file,
+                pyproject=pyproject,
+                source=sv.schema,
+                extra_files=extra_files,
+                bin_files=bin_files,
+            )
             return res
         else:
             # Single file: inline serde utils, and skip poly modules
@@ -996,6 +1039,15 @@ class RustGenerator(Generator, LifecycleMixin):
             extra_file_path = src_dir / extra_file_name
             with open(extra_file_path, "w") as ef:
                 ef.write(extra_file)
+
+        if getattr(rendered, "bin_files", None):
+            for rel_path, template in rendered.bin_files.items():
+                rendered_bin = template.render(self.template_environment)
+                rendered_bin = rendered_bin.rstrip("\n") + "\n"
+                bin_path = (src_dir / rel_path).with_suffix(".rs")
+                bin_path.parent.mkdir(exist_ok=True, parents=True)
+                with open(bin_path, "w") as bf:
+                    bf.write(rendered_bin)
 
         return rust_file
 

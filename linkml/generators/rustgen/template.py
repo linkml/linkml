@@ -214,6 +214,10 @@ class RustTemplateModel(TemplateModel):
     """
     Whether serde serialization/deserialization annotations should be added.
     """
+    stubgen: bool = False
+    """
+    Whether pyo3-stub-gen instrumentation should be emitted.
+    """
     attributes: dict[str, str] = Field(default_factory=dict)
 
 
@@ -290,6 +294,8 @@ class Import(Import_, RustTemplateModel):
     """Features to require in Cargo.toml"""
     ## whether this import should be behind a feature flag
     feature_flag: Optional[str] = None
+    feature_dependencies: list[str] = Field(default_factory=list)
+    """Additional crate features to enable alongside the optional dependency."""
 
 
 class Imports(Imports_, RustTemplateModel):
@@ -449,6 +455,13 @@ class SerdeUtilsFile(RustTemplateModel):
     """
 
     template: ClassVar[str] = "serde_utils.rs.jinja"
+
+
+class StubGenBin(RustTemplateModel):
+    """Binary entry point to orchestrate stub generation checks."""
+
+    template: ClassVar[str] = "stub_gen.rs.jinja"
+    crate_name: str
 
 
 class PolyTraitProperty(RustTemplateModel):
@@ -746,14 +759,19 @@ class RustCargo(RustTemplateModel):
 
     @computed_field
     def cratefeatures(self) -> dict[str, list[str]]:
-        feature_flags = {}
+        feature_flags: dict[str, list[str]] = {}
         for i in self.imports.imports:
             assert isinstance(i, Import)
-            if i.feature_flag is not None:
-                if i.feature_flag not in feature_flags:
-                    feature_flags[i.feature_flag] = [i.module]
-                else:
-                    feature_flags[i.feature_flag].append(i.module)
+            if i.feature_flag is None:
+                continue
+            deps = feature_flags.setdefault(i.feature_flag, [])
+            module = i.module.split("::")[0]
+            dep_entry = f"dep:{module}"
+            if dep_entry not in deps:
+                deps.append(dep_entry)
+            for extra in i.feature_dependencies:
+                if extra not in deps:
+                    deps.append(extra)
         return feature_flags
 
     @field_validator("name", mode="after")

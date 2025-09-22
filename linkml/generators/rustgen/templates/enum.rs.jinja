@@ -50,3 +50,13 @@ impl<'py> FromPyObject<'py> for {{ name }} {
         }
     }
 }
+
+#[cfg(feature = "stubgen")]
+impl ::pyo3_stub_gen::PyStubType for {{ name }} {
+    fn type_output() -> ::pyo3_stub_gen::TypeInfo {
+        ::pyo3_stub_gen::TypeInfo::with_module(
+            "typing.Literal['{{ items|join("', '") }}']",
+            "typing".into(),
+        )
+    }
+}

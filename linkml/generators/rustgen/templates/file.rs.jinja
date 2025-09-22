@@ -48,6 +48,11 @@ fn overwrite_except_none<T>(left: &mut Option<T>, right: Option<T>) {
 }
 {% endif %}
 
+{% if stubgen %}
+#[cfg(feature = "stubgen")]
+define_stub_info_gatherer!(stub_info);
+{% endif %}
+
 
 {% if pyo3 %}
 #[cfg(feature = "pyo3")]
