@@ -432,7 +432,7 @@ class RustStruct(RustTemplateModel):
                 parts.append(f"{prop.name}=None")
             else:
                 parts.append(prop.name)
-        return "*, " + ", ".join(parts)
+        return ", ".join(parts)
 
     @computed_field()
     def constructor_conversions(self) -> list[tuple[str, str]]:
