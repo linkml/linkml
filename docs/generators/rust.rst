@@ -17,6 +17,12 @@ The traits:
 Overview
 --------
 
+.. warning ::
+
+    The rust generator is still currently under development. Notable missing features are ``ifabsent`` processing
+    and the enforcement of rules and constraints.
+
+
 The Rust Generator produces a Rust crate with structs and enums from a LinkML model, with optional pyo3 and serde support.
 It additionally generates a trait for every struct to provide polymorphic access, in the `poly.rs` file.
 
@@ -110,16 +116,16 @@ polymorphic traits are implemented:
 
     impl Event for crate::MedicalEvent {
             fn started_at_time(&self) -> Option<&NaiveDate> {
-            return self.started_at_time.as_ref();
+            self.started_at_time.as_ref()
         }
             fn ended_at_time(&self) -> Option<&NaiveDate> {
-            return self.ended_at_time.as_ref();
+            self.ended_at_time.as_ref()
         }
             fn duration(&self) -> Option<&f64> {
-            return self.duration.as_ref();
+            self.duration.as_ref()
         }
             fn is_current(&self) -> Option<&bool> {
-            return self.is_current.as_ref();
+            self.is_current.as_ref()
         }
     }
 
