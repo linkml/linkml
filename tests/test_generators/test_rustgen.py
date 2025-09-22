@@ -88,6 +88,8 @@ def _import_built_wheel(out_dir: Path, module_name: str):
 
     sys.path.insert(0, str(extract_dir))
     try:
+        if module_name in sys.modules:
+            del sys.modules[module_name]
         mod = importlib.import_module(module_name)
     finally:
         if sys.path and sys.path[0] == str(extract_dir):
