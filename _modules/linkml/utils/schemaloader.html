@@ -798,10 +798,62 @@
             <span class="c1"># Inline any class definitions that don&#39;t have identifiers.  Note that keys ARE inlined</span>
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
                 <span class="n">range_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">cast</span><span class="p">(</span><span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)]</span>
-                <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="n">range_has_identifier</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
                     <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">range_class</span><span class="o">.</span><span class="n">slots</span><span class="p">]</span>
-                <span class="p">):</span>
-                    <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="c1"># the inference and validation of class inlining is quite complex</span>
+                <span class="c1"># slot.inlined and slot.inlined_as_list can have three different values:</span>
+                <span class="c1"># True, False or None (if nothing specified in the schema)</span>
+                <span class="c1"># range_has_identifier can only be True or False</span>
+                <span class="k">if</span> <span class="n">range_has_identifier</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                            <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;Slot &#39;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;: &#39;inlining&#39; as list requested. &quot;</span>
+                                <span class="o">+</span> <span class="s2">&quot;Overriding inconsistent `inlined: False`!!&quot;</span>
+                            <span class="p">)</span>
+                        <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;Slot &#39;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;: Specifying a value for &#39;inlined_as_list&#39; does not &quot;</span>
+                                <span class="o">+</span> <span class="s2">&quot;make any sense for non-inlined classes.&quot;</span>
+                            <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                            <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;Slot &#39;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;: A value for &#39;inlined_as_list&#39; specified, but no &#39;inlined&#39; &quot;</span>
+                                <span class="o">+</span> <span class="s2">&quot;specification. `inlined: True` has been automatically set!&quot;</span>
+                            <span class="p">)</span>
+                        <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;Slot &#39;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;: A value for &#39;inlined_as_list&#39; specified, but no &quot;</span>
+                                <span class="o">+</span> <span class="s2">&quot;&#39;inlined&#39; specification.&quot;</span>
+                            <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;Slot &#39;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;: A class without identifiers (</span><span class="si">{</span><span class="n">range_class</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">) cannot be &quot;</span>
+                                <span class="o">+</span> <span class="s2">&quot;&#39;inlined&#39; as a dictionary.&quot;</span>
+                            <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                        <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Slot &#39;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;: A class without identifiers (</span><span class="si">{</span><span class="n">range_class</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">) MUST be &quot;</span>
+                            <span class="o">+</span> <span class="s2">&quot;&#39;inlined&#39;, but non-inlined specified. `inlined: True` has been automatically set!&quot;</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Slot &#39;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;: A class without identifiers (</span><span class="si">{</span><span class="n">range_class</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">) MUST be &quot;</span>
+                            <span class="o">+</span> <span class="s2">&quot;inlined, but nothing specified. `inlined: True` has been automatically set!&quot;</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;Slot &#39;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;: A class without identifiers (</span><span class="si">{</span><span class="n">range_class</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">) cannot be &quot;</span>
+                                <span class="o">+</span> <span class="s2">&quot;&#39;inlined&#39; as a dictionary.&quot;</span>
+                            <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">slot_uri</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">slot</span><span class="o">.</span><span class="n">mappings</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">slot_uri</span><span class="p">)</span>
