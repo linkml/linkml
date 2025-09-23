@@ -30,6 +30,42 @@ For all classes having subclasses, an extra enum is generated to represent an ob
 All the enums implement the trait, so they can be (optionally) directly used without match statement.
 
 
+Feature Compliance
+------------------
+
+The current implementation status is summarised below. These notes mirror the ongoing work tracked in
+`linkml/linkml#2360 <https://github.com/linkml/linkml/issues/2360>`_.
+
+Supported
+~~~~~~~~~
+- Core schema constructs: slots, classes, enums, and type aliases are emitted as Rust structs, enums, and aliases.
+- Basic metamodel features: multivalued slots, required vs. optional cardinalities, inheritance (``is_a``), union slots
+  (``any_of``), inline list/dict slots, and slot aliases.
+- Build targets: both single-file output and full Cargo crates (with ``Cargo.toml``).
+- Fundamental scalar types: ``string``, ``integer``, ``bool``, and ``float`` map to native Rust types.
+- Temporal scalars: ``date`` and ``datetime`` map to ``chrono``'s ``NaiveDate`` and ``NaiveDateTime`` respectively.
+- Traits for polymorphic access to class hierarchies, along with enums for class-or-subtype containers.
+- PyO3 bindings for the generated structs (behind a Cargo feature flag).
+- Basic ``serde`` deserialization (behind a Cargo feature flag).
+
+Partially Supported
+~~~~~~~~~~~~~~~~~~~
+- Many scalar types (e.g. ``time``, URI-related types) currently fall back to ``String`` representations.
+- ``serde`` deserialization works; serialization still lacks the normalisation, and will not always produce correct yaml.
+- Testing covers unit-level behaviour with a dedicated Rust CI workflow; dynamic compilation and compliance suites are
+  still pending.
+
+Not Yet Supported
+~~~~~~~~~~~~~~~~~
+- Default handling (``ifabsent``) and broader constraint enforcement (``values_from``, ``value_presence``, equality and
+  cardinality checks, numeric bounds, and ``pattern``).
+- Schema metadata exports (``linkml_meta`` hash maps and module-level constants such as ``id`` and ``version``) .
+- Serde data normalisation for serialization
+- Compliance test integration
+- Rule/expression support
+- Dynamic enumerations
+
+
 
 Example
 ^^^^^^^
