@@ -1,6 +1,11 @@
+import logging
+
 import pytest
+from graphql import parse
 
 from linkml.generators.graphqlgen import GraphqlGenerator
+
+logger = logging.getLogger(__name__)
 
 PERSON = """
 type Person implements HasAliases
@@ -10,11 +15,11 @@ type Person implements HasAliases
     hasEmploymentHistory: [EmploymentEvent]
     hasFamilialRelationships: [FamilialRelationship]
     hasMedicalHistory: [MedicalEvent]
-    ageInYears: Integer
+    ageInYears: Int
     addresses: [Address]
     hasBirthEvent: BirthEvent
     speciesName: String
-    stomachCount: Integer
+    stomachCount: Int
     isLiving: LifeStatusEnum
     aliases: [String]
   }
@@ -23,8 +28,8 @@ type Person implements HasAliases
 MEDICALEVENT = """
 type MedicalEvent
   {
-    startedAtTime: Date
-    endedAtTime: Date
+    startedAtTime: String
+    endedAtTime: String
     isCurrent: Boolean
     metadata: AnyObject
     inLocation: Place
@@ -36,8 +41,8 @@ type MedicalEvent
 FAMILIALRELATIONSHIP = """
 type FamilialRelationship
   {
-    startedAtTime: Date
-    endedAtTime: Date
+    startedAtTime: String
+    endedAtTime: String
     cordialness: String
     type: FamilialRelationshipType!
     relatedTo: Person!
@@ -64,13 +69,6 @@ enum FamilialRelationshipType
   }
 """
 
-OTHERCODES = """
-enum OtherCodes
-  {
-    a_b
-  }
-"""
-
 
 @pytest.mark.parametrize(
     "input_class,expected",
@@ -81,7 +79,6 @@ enum OtherCodes
         ("MedicalEvent", MEDICALEVENT),
         ("FamilialRelationship", FAMILIALRELATIONSHIP),
         ("FamilialRelationshipType", FAMILIALRELATIONSHIPTYPE),
-        ("OtherCodes", OTHERCODES),
     ],
 )
 def test_serialize_selected(input_class, expected, kitchen_sink_path):
@@ -97,3 +94,21 @@ def test_snapshot(kitchen_sink_path, snapshot):
     generator = GraphqlGenerator(kitchen_sink_path)
     generated = generator.serialize()
     assert generated == snapshot("kitchen_sink.graphql")
+
+
+def test_graphql_validity(kitchen_sink_path):
+    generator = GraphqlGenerator(kitchen_sink_path)
+    generated = generator.serialize()
+    logger.info("\nGenerated GraphQL schema:")
+    logger.info("vvvvvv Start GraphQL vvvvvv")
+    logger.info(generated)
+    logger.info("^^^^^^^ End GraphQL ^^^^^^^")
+    try:
+        parse(generated)
+    except Exception as ex:
+        pytest.fail(
+            "Generated GraphQL appears to be wrong, it cannot be parsed!\n"
+            + "vvvvvv Start Error Message vvvvvv\n"
+            + f"{str(ex)}\n"
+            + "^^^^^^^ End Error Message ^^^^^^^"
+        )
