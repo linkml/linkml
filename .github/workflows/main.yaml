@@ -15,9 +15,9 @@ jobs:
   quality-checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5.0.0
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v6.6.1
         with:
           version: ${{ env.UV_VERSION }}
 
@@ -58,7 +58,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v5.0.0
         with:
           fetch-depth: 0
 
@@ -69,7 +69,7 @@ jobs:
           git fetch upstream --tags
 
       - name: Install uv and setup uv caching
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v6.6.1
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
@@ -83,7 +83,7 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-groups
       - name: Setup Graphviz
-        uses: ts-graphviz/setup-graphviz@v2
+        uses: ts-graphviz/setup-graphviz@v2.0.2
       - name: Generate coverage results
         run: |
           uv run coverage run -m pytest --with-slow --with-network
@@ -92,7 +92,7 @@ jobs:
         shell: bash
       - name: Upload coverage report
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v5.4.3
+        uses: codecov/codecov-action@v5.5.0
         with:
           name: codecov-results-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -114,9 +114,9 @@ jobs:
         shell: bash
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v5.0.0
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v6.6.1
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
@@ -137,7 +137,7 @@ jobs:
           uv run coverage report -m
       - name: Upload coverage report
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v5.4.3
+        uses: codecov/codecov-action@v5.5.0
         with:
           name: codecov-results-slow-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -151,7 +151,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5.0.0
         with:
           fetch-depth: 0
 
@@ -161,7 +161,7 @@ jobs:
           python-version: 3.13
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v6.6.1
         with:
           version: ${{ env.UV_VERSION }}
       - name: Build source and wheel archives
