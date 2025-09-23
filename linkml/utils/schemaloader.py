@@ -1,5 +1,6 @@
 import logging
 import os
+import warnings
 from collections import OrderedDict
 from collections.abc import Iterator, Mapping
 from copy import deepcopy
@@ -26,11 +27,14 @@ from linkml_runtime.utils.metamodelcore import Bool
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.yamlutils import TypedNode
 
+from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.mergeutils import merge_classes, merge_schemas, merge_slots, slot_usage_name
 from linkml.utils.rawloader import load_raw_schema
 from linkml.utils.schemasynopsis import SchemaSynopsis
 
 lgr = logging.getLogger(__name__)
+
+_NOT_PROVIDED = object()
 
 
 class SchemaLoader:
@@ -43,7 +47,8 @@ class SchemaLoader:
         importmap: Optional[Mapping[str, str]] = None,
         logger: Optional[logging.Logger] = None,
         mergeimports: Optional[bool] = True,
-        emit_metadata: Optional[bool] = True,
+        metadata: Optional[bool] = True,
+        emit_metadata: Optional[bool] = _NOT_PROVIDED,
         source_file_date: Optional[str] = None,
         source_file_size: Optional[int] = None,
     ) -> None:
@@ -85,7 +90,13 @@ class SchemaLoader:
         self.schema_location: Optional[str] = None
         self.schema_defaults: dict[str, str] = {}  # Map from schema URI to default namespace
         self.merge_modules = mergeimports
-        self.emit_metadata = emit_metadata
+        self.metadata = metadata
+        if emit_metadata is not _NOT_PROVIDED:
+            deprecation_warning("metadata-flag")
+            warnings.warn(
+                f"Value of flag `emit_metadata` (='{emit_metadata}') will overwrite value of flag `metadata`!"
+            )
+            self.metadata = emit_metadata
 
     def resolve(self) -> SchemaDefinition:
         """Reconcile a loaded schema, applying is_a, mixins, apply_to's and other such things.  Also validate the
@@ -124,7 +135,7 @@ class SchemaLoader:
                 sname + ".yaml",
                 base_dir=os.path.dirname(self.schema.source_file) if self.schema.source_file else self.base_dir,
                 merge_modules=self.merge_modules,
-                emit_metadata=self.emit_metadata,
+                metadata=self.metadata,
             )
             loaded_schema = (str(sname), import_schemadefinition.version)
             if import_schemadefinition.id in self.loaded:

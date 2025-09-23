@@ -25,9 +25,10 @@ from linkml_runtime.utils.yamlutils import YAMLRoot
 from linkml import METAMODEL_CONTEXT_URI
 from linkml._version import __version__
 from linkml.generators.jsonldcontextgen import ContextGenerator
-from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.generator import Generator, deprecated_fields, shared_arguments
 
 
+@deprecated_fields({"emit_metadata": "metadata"})
 @dataclass
 class JSONLDGenerator(Generator):
     """
