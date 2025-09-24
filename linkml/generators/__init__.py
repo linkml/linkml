@@ -14,6 +14,7 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
+from linkml.generators.solrgen import SolrSchemaGenerator
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator
 from linkml.generators.sqltablegen import SQLTableGenerator
 
@@ -37,6 +38,7 @@ __all__ = [
     "rdfgen",
     "shexgen",
     "shaclgen",
+    "solrgen",
     "sssomgen",
     "summarygen",
     "yamlgen",
@@ -51,6 +53,7 @@ __all__ = [
     "JsonSchemaGenerator",
     "ShaclGenerator",
     "ShExGenerator",
+    "SolrSchemaGenerator",
     "SQLAlchemyGenerator",
     "SQLTableGenerator",
     "RDFGenerator",
