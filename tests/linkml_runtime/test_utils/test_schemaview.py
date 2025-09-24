@@ -26,21 +26,35 @@ from linkml_runtime.linkml_model import (
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaops import roll_down, roll_up
-from linkml_runtime.utils.schemaview import SchemaUsage, SchemaView
+from linkml_runtime.utils.schemaview import (
+    CLASSES,
+    ELEMENTS,
+    ENUMS,
+    PREFIXES,
+    SLOTS,
+    SUBSETS,
+    TYPES,
+    SchemaUsage,
+    SchemaView,
+)
 from tests.test_utils import INPUT_DIR
+
+INPUT_DIR_PATH = Path(INPUT_DIR)
 
 logger = logging.getLogger(__name__)
 
-SCHEMA_NO_IMPORTS = Path(INPUT_DIR) / "kitchen_sink_noimports.yaml"
-SCHEMA_WITH_IMPORTS = Path(INPUT_DIR) / "kitchen_sink.yaml"
-SCHEMA_WITH_STRUCTURED_PATTERNS = Path(INPUT_DIR) / "pattern-example.yaml"
-SCHEMA_IMPORT_TREE = Path(INPUT_DIR) / "imports" / "main.yaml"
-SCHEMA_RELATIVE_IMPORT_TREE = Path(INPUT_DIR) / "imports_relative" / "L0_0" / "L1_0_0" / "main.yaml"
-SCHEMA_RELATIVE_IMPORT_TREE2 = Path(INPUT_DIR) / "imports_relative" / "L0_2" / "main.yaml"
+SCHEMA_NO_IMPORTS = INPUT_DIR_PATH / "kitchen_sink_noimports.yaml"
+SCHEMA_WITH_IMPORTS = INPUT_DIR_PATH / "kitchen_sink.yaml"
+SCHEMA_RELATIVE_IMPORT_TREE = INPUT_DIR_PATH / "imports_relative" / "L0_0" / "L1_0_0" / "main.yaml"
+SCHEMA_RELATIVE_IMPORT_TREE2 = INPUT_DIR_PATH / "imports_relative" / "L0_2" / "main.yaml"
 
 CREATURE_SCHEMA = "creature_schema"
 CREATURE_SCHEMA_BASE_URL = "https://github.com/linkml/linkml-runtime/tests/test_utils/input/mcc"
-CREATURE_SCHEMA_BASE_PATH = Path(INPUT_DIR) / "mcc"
+CREATURE_SCHEMA_RAW_URL = (
+    "https://github.com/linkml/linkml-runtime/raw/main/tests/test_utils/input/mcc/creature_schema.yaml"
+)
+
+CREATURE_SCHEMA_BASE_PATH = INPUT_DIR_PATH / "mcc"
 
 yaml_loader = YAMLLoader()
 IS_CURRENT = "is current"
@@ -51,19 +65,19 @@ ACTIVITY = "activity"
 RELATED_TO = "related to"
 AGE_IN_YEARS = "age in years"
 
-ELEMENTS = ["prefixes", "classes", "slots", "enums", "types", "subsets"]
+ALL_ELEMENTS = [PREFIXES, *ELEMENTS]
 EXPECTED = {
-    "prefixes": {"sc1p1", "sc2p1"},
-    "classes": {"sc1c1", "sc1c2", "sc2c1", "sc2c2"},
-    "slots": {"sc1s1", "sc1s2", "sc2s1", "sc2s2"},
-    "enums": {"sc1e1", "sc2e1"},
-    "types": {"sc1t1", "sc2t1"},
-    "subsets": {"sc1ss1", "sc2ss1"},
+    PREFIXES: {"sc1p1", "sc2p1"},
+    CLASSES: {"sc1c1", "sc1c2", "sc2c1", "sc2c2"},
+    SLOTS: {"sc1s1", "sc1s2", "sc2s1", "sc2s2"},
+    ENUMS: {"sc1e1", "sc2e1"},
+    TYPES: {"sc1t1", "sc2t1"},
+    SUBSETS: {"sc1ss1", "sc2ss1"},
 }
 
 # workaround for the annoying plural version of "class"
 PLURAL = {
-    "class": "classes",
+    "class": CLASSES,
 }
 
 
@@ -80,26 +94,50 @@ def schema_view_with_imports() -> SchemaView:
 
 
 @pytest.fixture(scope="session")
+def sv_import_tree() -> SchemaView:
+    """Fixture for a SchemaView for testing imports and ordering."""
+    return SchemaView(INPUT_DIR_PATH / "imports" / "main.yaml")
+
+
+@pytest.fixture(scope="session")
 def sv_attributes() -> SchemaView:
     """Fixture for a SchemaView for testing attribute edge cases."""
-    return SchemaView(os.path.join(INPUT_DIR, "attribute_edge_cases.yaml"))
+    return SchemaView(INPUT_DIR_PATH / "attribute_edge_cases.yaml")
+
+
+@pytest.fixture(scope="session")
+def sv_inlined() -> SchemaView:
+    """Fixture for a SchemaView for testing inlined slots."""
+    return SchemaView(INPUT_DIR_PATH / "schemaview_is_inlined.yaml")
+
+
+@pytest.fixture(scope="session")
+def sv_structured_patterns() -> SchemaView:
+    """Fixture for a SchemaView for testing structured patterns."""
+    return SchemaView(INPUT_DIR_PATH / "pattern-example.yaml")
 
 
 @pytest.fixture(scope="session")
 def creature_view() -> SchemaView:
-    return SchemaView(str(CREATURE_SCHEMA_BASE_PATH / "creature_schema.yaml"))
+    return SchemaView(CREATURE_SCHEMA_BASE_PATH / "creature_schema.yaml")
 
 
 @pytest.fixture(scope="session")
 def creature_view_remote() -> SchemaView:
     """Fixture for a SchemaView for testing remote imports."""
-    return SchemaView(str(CREATURE_SCHEMA_BASE_PATH / "creature_schema_remote.yaml"))
+    return SchemaView(CREATURE_SCHEMA_BASE_PATH / "creature_schema_remote.yaml")
 
 
 @pytest.fixture(scope="session")
 def creature_view_local() -> SchemaView:
     """Fixture for a SchemaView for testing local relative file path imports."""
-    return SchemaView(str(CREATURE_SCHEMA_BASE_PATH / "creature_schema_local.yaml"))
+    return SchemaView(CREATURE_SCHEMA_BASE_PATH / "creature_schema_local.yaml")
+
+
+@pytest.fixture(scope="session")
+def creature_view_direct_url() -> SchemaView:
+    """Fixture for a SchemaView called directly by using the URL."""
+    return SchemaView(CREATURE_SCHEMA_RAW_URL)
 
 
 def make_schema(
@@ -364,7 +402,7 @@ def test_imports(schema_view_with_imports: SchemaView) -> None:
     logger.debug(view.imports_closure())
     assert set(view.imports_closure()) == {"kitchen_sink", "core", "linkml:types"}
 
-    for t in view.all_types().keys():
+    for t in view.all_types():
         logger.debug(f"T={t} in={view.in_schema(t)}")
     assert view.in_schema(ClassDefinitionName("Person")) == "kitchen_sink"
     assert view.in_schema(SlotDefinitionName("id")) == "core"
@@ -465,10 +503,9 @@ def test_imports_from_schemaview(schema_view_with_imports: SchemaView) -> None:
     assert len(view.all_classes(imports=False)) == len(view2.all_classes(imports=False))
 
 
-def test_imports_closure_order() -> None:
+def test_imports_closure_order(sv_import_tree: SchemaView) -> None:
     """Imports should override in a python-like order."""
-    sv = SchemaView(SCHEMA_IMPORT_TREE)
-    closure = sv.imports_closure(imports=True)
+    closure = sv_import_tree.imports_closure(imports=True)
     target = [
         "linkml:types",
         "s1_1",
@@ -489,12 +526,11 @@ def test_imports_closure_order() -> None:
     assert closure == target
 
 
-def test_imports_overrides() -> None:
+def test_imports_overrides(sv_import_tree: SchemaView) -> None:
     """Classes defined in the importing module should override same-named classes in imported modules."""
-    sv = SchemaView(SCHEMA_IMPORT_TREE)
     defaults = {}
     target = {}
-    for name, cls in sv.all_classes(imports=True).items():
+    for name, cls in sv_import_tree.all_classes(imports=True).items():
         target[name] = name
         defaults[name] = cls.attributes["value"].ifabsent
 
@@ -773,7 +809,9 @@ for value in CREATURE_EXPECTED.values():
         CREATURE_EXPECTED["element"][s_name].update(el)
 
 
-@pytest.mark.parametrize("schema", ["creature_view", "creature_view_remote", "creature_view_local"])
+@pytest.mark.parametrize(
+    "schema", ["creature_view", "creature_view_remote", "creature_view_local", "creature_view_direct_url"]
+)
 @pytest.mark.parametrize("entity", CREATURE_EXPECTED.keys())
 def test_creature_schema_entities_with_without_imports(
     schema: str, entity: str, request: pytest.FixtureRequest
@@ -789,12 +827,13 @@ def test_creature_schema_entities_with_without_imports(
     - creature_view: the main schema with all entities
     - creature_view_remote: imports the creature schema using a curie and a remote URL
     - creature_view_local: imports the creature schema using a local relative file path
+    - creature_view_direct_url: imports the creature schema using a direct URL
     """
     creature_view = request.getfixturevalue(schema)
 
     # use the PLURAL mapping to get the correct method name to retrieve all entities of the given type
     get_all_fn = "all_" + PLURAL.get(entity, f"{entity}s")
-    if schema == "creature_view":
+    if schema in ("creature_view", "creature_view_direct_url"):
         assert set(getattr(creature_view, get_all_fn)(imports=False)) == CREATURE_EXPECTED[entity][CREATURE_SCHEMA]
     else:
         assert set(getattr(creature_view, get_all_fn)(imports=False)) == set()
@@ -927,7 +966,20 @@ def test_alias_slot(schema_view_no_imports: SchemaView) -> None:
 
 
 def test_schemaview_enums(schema_view_no_imports: SchemaView) -> None:
-    """Test various aspects of Enum representation."""
+    """Test various aspects of Enum representation.
+
+    CAT:
+    LION:
+      is_a: CAT
+    ANGRY_LION:
+      is_a: LION
+    TABBY:
+      is_a: CAT
+    BIRD:
+    EAGLE:
+      is_a: BIRD
+    """
+
     view = schema_view_no_imports
 
     # Test for ValueError when passing incorrect parameters
@@ -1191,7 +1243,7 @@ def test_get_classes_modifying_slot() -> None:
 
     https://github.com/linkml/linkml/issues/1126
     """
-    classes_mod_slot_file = Path(INPUT_DIR) / "issue_1126.yaml"
+    classes_mod_slot_file = INPUT_DIR_PATH / "issue_1126.yaml"
     view = SchemaView(str(classes_mod_slot_file))
     slot_definition = view.get_slot("type")
     slot_classes = view.get_classes_modifying_slot(slot_definition)
@@ -1440,33 +1492,30 @@ def test_get_classes_by_slot(schema_view_with_imports: SchemaView) -> None:
     assert sorted(actual_result) == sorted(expected_result)
 
 
-def test_materialize_patterns() -> None:
+def test_materialize_patterns(sv_structured_patterns: SchemaView) -> None:
     """Test pattern materialization."""
-    sv = SchemaView(SCHEMA_WITH_STRUCTURED_PATTERNS)
-    sv.materialize_patterns()
+    sv_structured_patterns.materialize_patterns()
 
-    height_slot = sv.get_slot("height")
-    weight_slot = sv.get_slot("weight")
+    height_slot = sv_structured_patterns.get_slot("height")
+    weight_slot = sv_structured_patterns.get_slot("weight")
 
     assert height_slot.pattern == r"\d+[\.\d+] (centimeter|meter|inch)"
     assert weight_slot.pattern == r"\d+[\.\d+] (kg|g|lbs|stone)"
 
 
-def test_materialize_patterns_slot_usage() -> None:
+def test_materialize_patterns_slot_usage(sv_structured_patterns: SchemaView) -> None:
     """Test pattern materialization with slot_usage."""
-    sv = SchemaView(SCHEMA_WITH_STRUCTURED_PATTERNS)
-    sv.materialize_patterns()
+    sv_structured_patterns.materialize_patterns()
 
-    name_slot_usage = sv.get_class("FancyPersonInfo").slot_usage["name"]
+    name_slot_usage = sv_structured_patterns.get_class("FancyPersonInfo").slot_usage["name"]
     assert name_slot_usage.pattern == r"\S+ \S+-\S+"
 
 
-def test_materialize_patterns_attribute() -> None:
+def test_materialize_patterns_attribute(sv_structured_patterns: SchemaView) -> None:
     """Test pattern materialization with attributes."""
-    sv = SchemaView(SCHEMA_WITH_STRUCTURED_PATTERNS)
-    sv.materialize_patterns()
+    sv_structured_patterns.materialize_patterns()
 
-    weight_attribute = sv.get_class("ClassWithAttributes").attributes["weight"]
+    weight_attribute = sv_structured_patterns.get_class("ClassWithAttributes").attributes["weight"]
     assert weight_attribute.pattern == r"\d+[\.\d+] (kg|g|lbs|stone)"
 
 
@@ -1484,15 +1533,14 @@ def test_materialize_patterns_attribute() -> None:
         ("inlined_as_list_integer", False),
     ],
 )
-def test_is_inlined(schema_view_inlined: SchemaView, slot_name: str, expected_result: bool) -> None:
+def test_is_inlined(sv_inlined: SchemaView, slot_name: str, expected_result: bool) -> None:
     """Tests for slots being inlined or not."""
-    slot = schema_view_inlined.get_slot(slot_name)
-    assert schema_view_inlined.is_inlined(slot) == expected_result
+    slot = sv_inlined.get_slot(slot_name)
+    assert sv_inlined.is_inlined(slot) == expected_result
 
 
 def test_materialize_nonscalar_slot_usage() -> None:
-    schema_path = os.path.join(INPUT_DIR, "DJ_controller_schema.yaml")
-    sv = SchemaView(schema_path)
+    sv = SchemaView(str(INPUT_DIR_PATH / "DJ_controller_schema.yaml"))
     cls = sv.induced_class("DJController")
 
     assert cls.attributes["jog_wheels"].range == "integer"
@@ -1539,7 +1587,7 @@ merge_schema tests: https://github.com/linkml/linkml/issues/1143
 def test_merge_schema_merge_into_empty(sv_merge_1: SchemaView, sv_empty: SchemaView) -> None:
     """Trivial case: merge a schema into an empty schema."""
     sv_empty.merge_schema(sv_merge_1.schema)
-    for k in ELEMENTS:
+    for k in ALL_ELEMENTS:
         assert getattr(sv_empty.schema, k) == getattr(sv_merge_1.schema, k)
 
 
@@ -1548,7 +1596,7 @@ def test_merge_schema_merge_empty(sv_merge_1: SchemaView, sv_empty: SchemaView) 
     sv_merge_1_orig = deepcopy(sv_merge_1)
     sv_merge_1.merge_schema(sv_empty.schema)
 
-    for k in ELEMENTS:
+    for k in ALL_ELEMENTS:
         assert getattr(sv_merge_1_orig.schema, k) == getattr(sv_merge_1.schema, k)
 
 
@@ -1569,13 +1617,13 @@ def _get_clobbered_field_val(element: str) -> tuple[str, str]:
 def test_merge_schema_no_clobber(sv_merge_1: SchemaView, sv_merge_2: SchemaView) -> None:
     """Merge non-disjoint schemas, ensuring that elements in the source schema are not clobbered."""
     sv_merge_2.merge_schema(sv_merge_1.schema)
-    for element in ELEMENTS:
+    for element in ALL_ELEMENTS:
         (field, val) = _get_clobbered_field_val(element)
         for v in getattr(sv_merge_1.schema, element).values():
             setattr(v, field, val)
 
     sv_merge_2.merge_schema(sv_merge_1.schema, clobber=False)
-    for element in ELEMENTS:
+    for element in ALL_ELEMENTS:
         (field, val) = _get_clobbered_field_val(element)
         for k, v in getattr(sv_merge_2.schema, element).items():
             if k in getattr(sv_merge_1.schema, element):
@@ -1585,44 +1633,44 @@ def test_merge_schema_no_clobber(sv_merge_1: SchemaView, sv_merge_2: SchemaView)
 def test_merge_schema_clobber(sv_merge_1: SchemaView, sv_merge_2: SchemaView) -> None:
     """Merge non-disjoint schemas, ensuring that elements in source schema are clobbered."""
     sv_merge_2.merge_schema(sv_merge_1.schema)
-    for element in ELEMENTS:
+    for element in ALL_ELEMENTS:
         (field, val) = _get_clobbered_field_val(element)
         for v in getattr(sv_merge_1.schema, element).values():
             setattr(v, field, val)
 
     sv_merge_2.merge_schema(sv_merge_1.schema, clobber=True)
-    for element in ELEMENTS:
+    for element in ALL_ELEMENTS:
         (field, val) = _get_clobbered_field_val(element)
         for k, v in getattr(sv_merge_2.schema, element).items():
             if k in getattr(sv_merge_1.schema, element):
                 assert getattr(v, field) == val
 
 
-def test_get_slots_by_enum_schema_slot(sv_issue_998) -> None:
+def test_get_slots_by_enum_schema_slot(sv_issue_998: SchemaView) -> None:
     enum_slots = sv_issue_998.get_slots_by_enum("EmploymentStatusEnum")
     assert len(enum_slots) == 2
 
 
-def test_get_slots_by_enum_no_duplicates(sv_issue_998) -> None:
+def test_get_slots_by_enum_no_duplicates(sv_issue_998: SchemaView) -> None:
     enum_slots = sv_issue_998.get_slots_by_enum("PersonStatusEnum")
     assert len(enum_slots) == 1
     assert enum_slots[0].name == "status"
 
 
-def test_get_slots_by_enum_attribute_slot(sv_issue_998) -> None:
+def test_get_slots_by_enum_attribute_slot(sv_issue_998: SchemaView) -> None:
     enum_slots = sv_issue_998.get_slots_by_enum("EmploymentStatusEnum")
     assert len(enum_slots) == 2
     assert sorted([slot.name for slot in enum_slots]) == ["employed", "past_employer"]
 
 
-def test_get_slots_by_enum_schema_and_attribute_slots(sv_issue_998) -> None:
+def test_get_slots_by_enum_schema_and_attribute_slots(sv_issue_998: SchemaView) -> None:
     enum_slots = sv_issue_998.get_slots_by_enum("RelationshipStatusEnum")
     assert len(enum_slots) == 2
     assert enum_slots[0].name == "relationship"
     assert enum_slots[1].name == "past_relationship"
 
 
-def test_get_slots_by_enum_slot_usage_range(sv_issue_998) -> None:
+def test_get_slots_by_enum_slot_usage_range(sv_issue_998: SchemaView) -> None:
     enum_slots = sv_issue_998.get_slots_by_enum("TypeEnum")
     assert len(enum_slots) == 1
     assert enum_slots[0].name == "type"
@@ -1633,7 +1681,7 @@ def test_get_slot_gets_attr_not_slot() -> None:
 
     See https://github.com/linkml/linkml/issues/998.
     """
-    schema_file = Path(INPUT_DIR) / "issue_590.yaml"
+    schema_file = INPUT_DIR_PATH / "issue_590.yaml"
 
     sv = SchemaView(str(schema_file))
     # check that multivalued is set to False as in schema
@@ -1645,7 +1693,7 @@ def test_class_name_mappings() -> None:
 
     See https://github.com/linkml/linkml/issues/478
     """
-    schema_file = Path(INPUT_DIR) / "issue_478.yaml"
+    schema_file = INPUT_DIR_PATH / "issue_478.yaml"
     view = SchemaView(str(schema_file))
 
     # class names => normalised class names:
