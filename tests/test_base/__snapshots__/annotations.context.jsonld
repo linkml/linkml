@@ -9,7 +9,7 @@
       "linkml": "https://w3id.org/linkml/",
       "@vocab": "https://w3id.org/linkml/",
       "annotations": {
-         "@type": "linkml:Annotation",
+         "@type": "@id",
          "@id": "annotations"
       },
       "tag": {
@@ -17,11 +17,11 @@
          "@id": "tag"
       },
       "value": {
-         "@type": "linkml:Any",
+         "@type": "@id",
          "@id": "value"
       },
       "extensions": {
-         "@type": "linkml:Extension",
+         "@type": "@id",
          "@id": "extensions"
       },
       "@base": "https://w3id.org/linkml/",
