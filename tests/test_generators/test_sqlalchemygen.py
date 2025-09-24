@@ -268,10 +268,8 @@ def test_sqla_declarative_exec(schema):
     # aliases =['x']
     # aliases = []
     address = mod.Address(street="1 a street", city="big city", postal_code="ZZ1 ZZ2")
-    # p1 = mod.Person(id='P1', name='a b', aliases=aliases, age_in_years=22,
+    # p1 = mod.Person(id='P1', name='a b', aliases=aliases, age=22,
     #                 has_medical_history=[e1, e2], current_address=address)
-    # TODO: Is this a bug? The slot is called age_in_years, and it has an alias of age.
-    #       Generator generates a column called age.. is this right?
     p1 = mod.Person(id="P1", name="a b", age=22, has_medical_history=[e1, e2])
     p1.aliases = ["Anne"]
     # p1.aliases_rel = [mod.Person_alias(alias='zzz')]
