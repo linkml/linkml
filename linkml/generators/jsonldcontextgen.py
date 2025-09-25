@@ -131,39 +131,29 @@ class ContextGenerator(Generator):
             with open(output, "w", encoding="UTF-8") as outf:
                 outf.write(as_json(context))
 
-        # If --emit-frame: always write the context file next to the YAML;
-        # write the frame only when @embed rules exist.
-        if self.emit_frame:
-            src = self.schema.source_file or self.output or "schema"
-            yaml_path = Path(src)
-            context_path = yaml_path.with_suffix(".context.jsonld")
-            with open(context_path, "w", encoding="UTF-8") as outf:
-                outf.write(as_json(context))
+        if self.emit_frame and self.frame_body and output:
+            root_name = None
+            for cname, c in self.schema.classes.items():
+                if getattr(c, "tree_root", False):
+                    root_name = cname
+                    break
+            if root_name is None and self.schema.classes:
+                root_name = next(iter(self.schema.classes))
 
-            if self.frame_body:
-                # choose frame root: prefer tree_root, else first class
-                root_name = None
-                for cname, c in self.schema.classes.items():
-                    if getattr(c, "tree_root", False):
-                        root_name = cname
-                        break
-                if root_name is None and self.schema.classes:
-                    root_name = next(iter(self.schema.classes))
+            frame = {
+                "@context": Path(output).name,
+                "@omitGraph": True,
+            }
+            if root_name:
+                root_cls = self.schema.classes[root_name]
+                frame["@type"] = root_cls.class_uri or root_cls.name
 
-                frame = {
-                    "@context": context_path.name,
-                    "@omitGraph": True,
-                }
-                if root_name:
-                    root_cls = self.schema.classes[root_name]
-                    frame["@type"] = root_cls.class_uri or root_cls.name
+            for prop, rule in self.frame_body.items():
+                frame[prop] = rule
 
-                for prop, rule in self.frame_body.items():
-                    frame[prop] = rule
-
-                frame_path = yaml_path.with_suffix(".frame.jsonld")
-                with open(frame_path, "w", encoding="UTF-8") as f:
-                    json.dump(frame, f, indent=2, ensure_ascii=False)
+            frame_path = Path(output).with_suffix(".frame.jsonld")
+            with open(frame_path, "w", encoding="UTF-8") as f:
+                json.dump(frame, f, indent=2, ensure_ascii=False)
 
         return str(as_json(context)) + "\n"
 
@@ -282,12 +272,20 @@ class ContextGenerator(Generator):
     show_default=True,
     help="Also emit a <schema>.frame.jsonld file with @embed rules for framing",
 )
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(),
+    help="Output file name",
+)
 @click.version_option(__version__, "-V", "--version")
-def cli(yamlfile, emit_frame, **args):
+def cli(yamlfile, emit_frame, output, **args):
     """Generate jsonld @context definition from LinkML model"""
+    if emit_frame and not output:
+        raise click.UsageError("--emit-frame requires --output")
     gen = ContextGenerator(yamlfile, **args)
     gen.emit_frame = emit_frame
-    print(gen.serialize(**args))
+    print(gen.serialize(output=output, **args))
 
 
 if __name__ == "__main__":

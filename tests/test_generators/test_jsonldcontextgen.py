@@ -1,5 +1,4 @@
 import json
-import os
 
 import pytest
 from click.testing import CliRunner
@@ -56,7 +55,6 @@ def test_expected_rdf(input_path, schema):
 
 
 def test_emit_frame_inline_rules(tmp_path):
-    """When framing is on and schema uses inlined true/false, both files are written with proper @embed."""
     schema = tmp_path / "mini_inline.yaml"
     schema.write_text(
         """
@@ -81,15 +79,11 @@ classes:
 
     gen = FrameContextGenerator(str(schema))
     gen.emit_frame = True
-    cwd = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        gen.serialize()
-    finally:
-        os.chdir(cwd)
+    out_path = tmp_path / "mini_inline.context.jsonld"
+    gen.serialize(output=str(out_path))
 
-    ctx = (tmp_path / "mini_inline.context.jsonld").read_text(encoding="utf-8")
-    frm = (tmp_path / "mini_inline.frame.jsonld").read_text(encoding="utf-8")
+    ctx = out_path.read_text(encoding="utf-8")
+    frm = out_path.with_suffix(".frame.jsonld").read_text(encoding="utf-8")
 
     jctx = json.loads(ctx)
     assert "friend" in jctx["@context"]
@@ -101,7 +95,6 @@ classes:
 
 
 def test_emit_frame_not_written_without_inlined(tmp_path):
-    """No frame should be written when there are no inlined slots, even if framing is enabled."""
     schema = tmp_path / "mini_no_inline.yaml"
     schema.write_text(
         """
@@ -126,22 +119,14 @@ classes:
 
     gen = FrameContextGenerator(str(schema))
     gen.emit_frame = True
-    cwd = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        gen.serialize()
-    finally:
-        os.chdir(cwd)
+    out_path = tmp_path / "mini_no_inline.context.jsonld"
+    gen.serialize(output=str(out_path))
 
-    frm_path = tmp_path / "mini_no_inline.frame.jsonld"
+    frm_path = out_path.with_suffix(".frame.jsonld")
     assert not frm_path.exists(), "Frame must not be written when no inlined slots are present"
 
 
-# -------------------- NEW TESTS --------------------
-
-
 def test_emit_frame_tree_root_preferred(tmp_path):
-    """Frame @type should prefer the class marked as tree_root, not an arbitrary first class."""
     schema = tmp_path / "mini_root.yaml"
     schema.write_text(
         """
@@ -170,21 +155,15 @@ classes:
 
     gen = FrameContextGenerator(str(schema))
     gen.emit_frame = True
-    cwd = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        gen.serialize()
-    finally:
-        os.chdir(cwd)
+    out_path = tmp_path / "mini_root.context.jsonld"
+    gen.serialize(output=str(out_path))
 
-    frm = json.loads((tmp_path / "mini_root.frame.jsonld").read_text(encoding="utf-8"))
+    frm = json.loads(out_path.with_suffix(".frame.jsonld").read_text(encoding="utf-8"))
     assert frm["@type"] == "ex:B"
-    # Only 'rel' should be present with @embed rule
     assert frm["rel"]["@embed"] == "@always"
 
 
 def test_emit_frame_only_for_class_ranges(tmp_path):
-    """Only slots with range=class and explicit inlined should appear in frame; datatypes/enums/URIs must not."""
     schema = tmp_path / "mini_mixed.yaml"
     schema.write_text(
         """
@@ -221,16 +200,11 @@ classes:
 
     gen = FrameContextGenerator(str(schema))
     gen.emit_frame = True
-    cwd = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        gen.serialize()
-    finally:
-        os.chdir(cwd)
+    out_path = tmp_path / "mini_mixed.context.jsonld"
+    gen.serialize(output=str(out_path))
 
-    frm_path = tmp_path / "mini_mixed.frame.jsonld"
+    frm_path = out_path.with_suffix(".frame.jsonld")
     frm = json.loads(frm_path.read_text(encoding="utf-8"))
-    # Only 'ref' should be framed; 'title'/'color'/'link' must not be present
     assert "ref" in frm and frm["ref"]["@embed"] == "@always"
     assert "title" not in frm
     assert "color" not in frm
@@ -238,9 +212,7 @@ classes:
 
 
 def test_cli_emit_frame_writes_files(tmp_path):
-    """CLI: invoking --emit-frame writes both files next to the schema."""
-    schema_name = "mini_cli.yaml"
-    schema = tmp_path / schema_name
+    schema = tmp_path / "mini_cli.yaml"
     schema.write_text(
         """
 id: ex
@@ -262,18 +234,41 @@ classes:
     )
 
     runner = CliRunner()
-    with runner.isolated_filesystem():
-        # copy schema into isolated FS
-        with open(schema_name, "w", encoding="utf-8") as f:
-            f.write(schema.read_text(encoding="utf-8"))
-        # run CLI
-        result = runner.invoke(jsonld_context_cli, [schema_name, "--emit-frame"])
-        assert result.exit_code == 0
+    out_path = tmp_path / "mini_cli.context.jsonld"
+    result = runner.invoke(
+        jsonld_context_cli,
+        [str(schema), "--emit-frame", "--output", str(out_path)],
+    )
+    assert result.exit_code == 0
+    assert out_path.exists()
+    assert out_path.with_suffix(".frame.jsonld").exists()
 
-        # files should exist
-        assert os.path.exists("mini_cli.context.jsonld")
-        assert os.path.exists("mini_cli.frame.jsonld")
+    jfrm = json.loads(out_path.with_suffix(".frame.jsonld").read_text(encoding="utf-8"))
+    assert jfrm["friend"]["@embed"] == "@always"
 
-        # sanity-check: frame has @embed
-        jfrm = json.loads(open("mini_cli.frame.jsonld", encoding="utf-8").read())
-        assert jfrm["friend"]["@embed"] == "@always"
+
+def test_cli_emit_frame_requires_output(tmp_path):
+    schema = tmp_path / "mini_cli2.yaml"
+    schema.write_text(
+        """
+id: ex
+name: mini_cli2
+default_prefix: ex
+imports:
+  - linkml:types
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: http://example.org/
+  xsd: http://www.w3.org/2001/XMLSchema#
+classes:
+  Person:
+    attributes:
+      id: {identifier: true, range: string}
+      friend: {range: Person, inlined: true}
+""",
+        encoding="utf-8",
+    )
+    runner = CliRunner()
+    result = runner.invoke(jsonld_context_cli, [str(schema), "--emit-frame"])
+    assert result.exit_code != 0
+    assert "--emit-frame requires --output" in result.output
