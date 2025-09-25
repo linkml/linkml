@@ -1332,7 +1332,8 @@ def test_alias_slot(schema_view_no_imports: SchemaView) -> None:
 
     There are three schemas used in these tests:
 
-    The `range_local` (RL) schema        - based on RANGE_DATA["schema_path"]["range_local"]
+    The `range_local` (RL) schema
+        - based on RANGE_DATA["schema_path"]["range_local"]
         - the default_range value in this schema is referred to as local_default;
 
     The `range_importer` (RI) schema, which imports the range_local schema
@@ -1530,11 +1531,10 @@ def sv_range_import_whatever(
         return check_generated_schemaview(sv, range_tuple)
 
     # schema that imports the range_importer schema (just specified as text, no need to save it)
-    schema_text = f"id: https://example.com/{RII}\nname: {RII}\n"
-    schema_text += f"\nimports:\n  - {RI}\n\n"
+    schema_text = f"id: https://example.com/{RII}\nname: {RII}\nimports:\n  - {RI}\n"
 
     if import_importer_default:
-        schema_text += f"\n\ndefault_range: {import_importer_default}\n\n"
+        schema_text += f"\ndefault_range: {import_importer_default}\n\n"
 
     sv = SchemaView(schema_text, importmap=importmap)
 
@@ -1544,7 +1544,15 @@ def sv_range_import_whatever(
 def check_generated_schemaview(
     sv: SchemaView, range_tuple: tuple[str, str | None, str | None]
 ) -> tuple[SchemaView, tuple[str, str | None, str | None]]:
-    # post schema generation tests:
+    """Check that the generated SchemaView has the expected default_range values.
+
+    :param sv: the SchemaView to check
+    :type sv: SchemaView
+    :param range_tuple: the default_range values for the local, importer, and import_importer schemas
+    :type range_tuple: tuple[str, str | None, str | None]
+    :return: _description_
+    :rtype: tuple[SchemaView, tuple[str, str | None, str | None]]
+    """
     (local_default, importer_default, import_importer_default) = range_tuple
 
     sv.all_schema()
@@ -1606,6 +1614,11 @@ CD = "class_definition"
 ED = "enum_definition"
 TD = "type_definition"
 # Expected results for the various range tests run in test_slot_range.
+# The values are:
+# - the expected value of slot.range
+# - the expected set of values returned by slot_range_as_union()
+# - the expected set of values returned by induced_slot_range() - COMING SOON!
+# - the expected set of class/enum/type definitions returned by slot_applicable_range_elements()
 ranges_no_defaults = {
     "none_range": [None, set(), set(), ValueError],
     "string_range": ["string", {"string"}, {"string"}, {TD}],
@@ -1637,6 +1650,7 @@ ranges_no_defaults = {
 
 # These are the expected ranges for slots where the range is replaced by
 # the default_range of the local, importer, or import_importer schema.
+# Same ordering as ranges_no_defaults.
 ranges_replaced_by_defaults = {
     "none_range": {
         # these tuples replicate what is in RANGE_TUPLES
