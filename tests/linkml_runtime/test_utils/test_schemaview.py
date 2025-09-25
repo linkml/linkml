@@ -70,8 +70,6 @@ ACTIVITY = "activity"
 RELATED_TO = "related to"
 AGE_IN_YEARS = "age in years"
 EMPTY = ""
-
-EMPTY = ""
 ID = "identifier"
 KEY = "key"
 
@@ -1326,6 +1324,383 @@ def test_alias_slot(schema_view_no_imports: SchemaView) -> None:
     postal_code_slot = view.induced_slot("postal code", "Address")
     assert postal_code_slot.name == "postal code"  # Assert name is 'postal code'
     assert postal_code_slot.alias == "zip"  # Assert alias is 'zip'
+
+
+"""Tests of SchemaView range-related functions.
+
+    These tests cover range determination for slots in schemas with various combinations of default_range values and linkml:Any range declarations.
+
+    There are three schemas used in these tests:
+
+    The `range_local` (RL) schema        - based on RANGE_DATA["schema_path"]["range_local"]
+        - the default_range value in this schema is referred to as local_default;
+
+    The `range_importer` (RI) schema, which imports the range_local schema
+        - the range referred to as importer_default;
+        - the file contents are based on RANGE_DATA["schema_path"]["range_importer"]
+
+    The `range_import_importer` (RII) schema, which imports the range_importer schema
+        - the range is import_importer_default;
+        - the schema is generated as a text string, rather than being read from a file.
+
+    The range_tuple parameter specifies the default_range values for each of these schemas in the order
+    range_local, range_importer, range_import_importer.
+
+    A value of "" (EMPTY) means that there is no default_range set.
+    A value of None means that this file should not be generated.
+
+    RANGE_TUPLES contains all the combinations of range_tuple that are valid.
+
+"""
+
+RL = "range_local"
+RI = "range_importer"
+RII = "range_import_importer"
+
+RANGE_DATA = {
+    # value of the default_range in the schema
+    "default": {r: f"{r}_default" for r in [RL, RI, RII]},
+    # path to the original schema file
+    "schema_path": {r: INPUT_DIR_PATH / f"{r}.yaml" for r in [RL, RI]},
+}
+
+RLD = RANGE_DATA["default"][RL]
+RID = RANGE_DATA["default"][RI]
+RIID = RANGE_DATA["default"][RII]
+
+RANGE_TUPLES = [
+    # local schema only
+    (EMPTY, None, None),
+    (RLD, None, None),
+    # local imported by `importer` schema
+    (EMPTY, EMPTY, None),
+    (RLD, EMPTY, None),
+    (EMPTY, RID, None),
+    (RLD, RID, None),
+    # `importer` schema imported by a third schema
+    (EMPTY, EMPTY, EMPTY),
+    (EMPTY, RID, EMPTY),
+    (EMPTY, EMPTY, RIID),
+    (EMPTY, RID, RIID),
+    (RLD, EMPTY, EMPTY),
+    (RLD, RID, EMPTY),
+    (RLD, EMPTY, RIID),
+    (RLD, RID, RIID),
+]
+
+
+def save_temp_file(contents: str, filename: str, tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """Save contents to a temporary file and return the path.
+
+    :param contents: the contents to save
+    :type contents: str
+    :param filename: the name of the file to create
+    :type filename: str
+    :param tmp_path_factory: pytest fixture for generating temporary paths
+    :type tmp_path_factory: pytest.TempPathFactory
+    :return: path to the generated file
+    :rtype: Path
+    """
+    tmp_file = tmp_path_factory.mktemp("test_schemaview") / filename
+    tmp_file.write_text(contents)
+    return tmp_file
+
+
+def gen_schema_name(range_tuple: tuple[str, str | None, str | None]) -> str | None:
+    """Generate a schema name from a range tuple.
+
+    :param range_tuple: tuple of the values for the local, importer, and import_importer default_range values.
+    :type range_tuple: tuple[str, str | None, str | None]
+    :raises ValueError: if the tuple is not the correct length
+    :return: a generated schema name, or None if the combination is invalid
+    :rtype: str | None
+    """
+    if len(range_tuple) != 3:
+        err_msg = (
+            "A schema name requires three parts: local, importer, and import_importer. You supplied\n"
+            + range_tuple
+            + "\n"
+        )
+        raise ValueError(err_msg)
+
+    (local, importer, import_importer) = range_tuple
+
+    # invalid combination
+    if importer is None and import_importer is not None:
+        return None
+
+    schema_name = "sv_range"
+    schema_name += "_local_default" if local else "_local"
+
+    if importer:
+        schema_name += "__importer_default"
+    elif importer == EMPTY:
+        schema_name += "__importer"
+
+    if import_importer:
+        schema_name += "__import_importer_default"
+    elif import_importer == EMPTY:
+        schema_name += "__import_importer"
+    return schema_name
+
+
+def gen_range_file_with_default(range_id: str, tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """Generate a copy of the range file with a default_range added and return the path.
+    Obviates the need for maintaining a copy with a default_range tagged to the end.
+
+    :param range_id: the range file to use; must be one of RL, RI
+    :type range_id: str
+    :param tmp_path_factory: pytest fixture for generating temporary paths
+    :type tmp_path_factory: pytest.TempPathFactory
+    :return: path to the generated file
+    :rtype: Path
+    """
+    schema_yaml = RANGE_DATA["schema_path"][range_id].read_text()
+    default_range = RANGE_DATA["default"][range_id]
+    range_default_yaml = f"{schema_yaml}\n\ndefault_range: {default_range}\n"
+    return save_temp_file(range_default_yaml, f"{default_range}.yaml", tmp_path_factory)
+
+
+@pytest.fixture(scope="session")
+def range_local_default_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """Generate a copy of the range_local file with a default range specified and return the path."""
+    return gen_range_file_with_default(RL, tmp_path_factory)
+
+
+@pytest.fixture(scope="session")
+def range_importer_default_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """Generate a copy of the range importer file with a default range specified and return the path."""
+    return gen_range_file_with_default(RI, tmp_path_factory)
+
+
+def sv_range_import_whatever(
+    request: pytest.FixtureRequest, range_tuple: tuple[str, str | None, str | None]
+) -> tuple[SchemaView, tuple[str, str | None, str | None]]:
+    """Generate a schema and optionally, schemas that import that schema.
+
+    There are three potential schemas generated:
+    - the range schema, based on RANGE_DATA["schema_path"]["range_local"]; the range is referred to as local_default;
+    - the importer schema, which imports the range schema; the range referred to as importer_default;
+      the file contents are based on RANGE_DATA["schema_path"]["range_importer"]
+    - the import_importer schema, which imports the importer schema; the range is import_importer_default;
+      the schema is constructed in this function.
+
+    The range_tuple parameter specifies the default_range values for each of these schemas in the order
+    range_local, range_importer, range_import_importer.
+
+    A value of "" (EMPTY) means that there is no default_range set.
+    A value of None means that this file should not be generated.
+
+    :param request: fixture request object for retrieving fixture-related stuff
+    :type request: pytest.FixtureRequest
+    :param range_tuple: the default_range for the range schema; if the value of local_default is "", the default_range is not set.
+    :type range_tuple: tuple[str, str|None, str|None]
+    :return: a loaded SchemaView for the appropriate schema(s)
+    :rtype: SchemaView
+    """
+    (local_default, importer_default, import_importer_default) = range_tuple
+
+    if importer_default is None and import_importer_default is not None:
+        err_msg = "If the importer is not used, any import_importer value other than None is not valid"
+        raise ValueError(err_msg)
+
+    range_local_path = RANGE_DATA["schema_path"][RL]
+    range_importer_path = RANGE_DATA["schema_path"][RI]
+    importmap = {}
+
+    if local_default:
+        # make a copy of RANGE_DATA["schema_path"][RL] with a default added
+        range_local_path = request.getfixturevalue("range_local_default_path")
+
+    if importer_default:
+        # make a copy of RANGE_DATA["schema_path"][RI] with a default added
+        range_importer_path = request.getfixturevalue("range_importer_default_path")
+
+    importmap[RL] = str(range_local_path.parent / range_local_path.stem)
+    importmap[RI] = str(range_importer_path.parent / range_importer_path.stem)
+
+    if import_importer_default is None:
+        sv = None
+        # no import, so just use the range_local schema
+        if importer_default is None:
+            sv = SchemaView(range_local_path)
+        else:
+            # importing the range_local schema using the range_importer schema
+            sv = SchemaView(range_importer_path, importmap=importmap)
+        return check_generated_schemaview(sv, range_tuple)
+
+    # schema that imports the range_importer schema (just specified as text, no need to save it)
+    schema_text = f"id: https://example.com/{RII}\nname: {RII}\n"
+    schema_text += f"\nimports:\n  - {RI}\n\n"
+
+    if import_importer_default:
+        schema_text += f"\n\ndefault_range: {import_importer_default}\n\n"
+
+    sv = SchemaView(schema_text, importmap=importmap)
+
+    return check_generated_schemaview(sv, range_tuple)
+
+
+def check_generated_schemaview(
+    sv: SchemaView, range_tuple: tuple[str, str | None, str | None]
+) -> tuple[SchemaView, tuple[str, str | None, str | None]]:
+    # post schema generation tests:
+    (local_default, importer_default, import_importer_default) = range_tuple
+
+    sv.all_schema()
+
+    if local_default:
+        assert sv.schema_map[RL].default_range == local_default
+    else:
+        assert sv.schema_map[RL].default_range is None
+
+    # importer_default is None => there are no imports, sv.schema == sv.schema_map[RL]
+    if importer_default is None:
+        assert RI not in sv.schema_map
+        assert RII not in sv.schema_map
+        assert sv.schema.default_range == sv.schema_map[RL].default_range
+        return sv, range_tuple
+
+    if importer_default == EMPTY:
+        assert sv.schema_map[RI].default_range is None
+    else:
+        assert sv.schema_map[RI].default_range == importer_default
+
+    # import_importer_default is None => importer imports local
+    # therefore sv.schema == sv.schema_map[RI]
+    if import_importer_default is None:
+        assert RII not in sv.schema_map
+        assert sv.schema.default_range == sv.schema_map[RI].default_range
+        return sv, range_tuple
+
+    # import_importer_default is populated => top level schema imports importer,
+    # which imports local
+    # therefore sv.schema == sv.schema_map[RII]
+    assert RII in sv.schema_map
+    assert sv.schema.default_range == sv.schema_map[RII].default_range
+
+    if import_importer_default == EMPTY:
+        assert sv.schema_map[RII].default_range is None
+    else:
+        assert sv.schema_map[RII].default_range == import_importer_default
+
+    return sv, range_tuple
+
+
+@pytest.fixture(scope="module", params=RANGE_TUPLES, ids=lambda i: gen_schema_name(i))
+def sv_range_riid_gen(request: pytest.FixtureRequest) -> tuple[SchemaView, tuple[str, str | None, str | None]]:
+    """Generate a set of fixtures comprising a SchemaView and the appropriate range_tuple.
+
+    See sv_range_import_whatever for details of the schema generation.
+
+    :param request: fixture request object for retrieving the parameters for schema generation
+    :type request: pytest.FixtureRequest
+    :return: tuple of the generated SchemaView and the range_tuple used to generate it
+    :rtype: tuple[SchemaView, tuple[str, str | None, str | None]]
+    """
+    # the range tuple of (local, importer, import_importer) is stored in request.param
+    return sv_range_import_whatever(request, range_tuple=request.param)
+
+
+ranges_no_defaults = {
+    "none_range": [None, set(), set()],
+    "string_range": ["string", {"string"}, {"string"}],
+    "class_range": ["RangeClass", {"RangeClass"}, {"RangeClass"}],
+    "enum_range": ["RangeEnum", {"RangeEnum"}, {"RangeEnum"}],
+    "any_range": ["AnyOldRange", {"AnyOldRange"}, {"AnyOldRange"}],
+    "exactly_one_of_range": ["AnyOldRange", {"AnyOldRange", "range_string", "string"}, {"range_string", "string"}],
+    "any_of_range": [
+        "AnyOldRange",
+        {"AnyOldRange", "RangeEnum", "RangeClass", "string"},
+        {"RangeEnum", "RangeClass", "string"},
+    ],
+    "any_of_and_exactly_one_of_range": [
+        "AnyOldRange",
+        {"AnyOldRange", "RangeEnum", "RangeClass", "string", "range_string"},
+        {"RangeEnum", "RangeClass", "string", "range_string"},
+    ],
+    "invalid_any_range_no_linkml_any": [None, {"string", "range_string"}, set()],
+    "invalid_any_range_enum": ["RangeEnum", {"RangeEnum", "string", "range_string"}, {"RangeEnum"}],
+    "invalid_any_range_class": ["RangeClass", {"RangeClass", "string", "range_string"}, {"RangeClass"}],
+}
+
+ranges_replaced_by_defaults = {
+    "none_range": {
+        # these tuples replicate what is in RANGE_TUPLES
+        # local schema only
+        (EMPTY, None, None): [None, {None}, set()],
+        (RLD, None, None): [RLD, {RLD}, {RLD}],
+        # local imported by `importer` schema
+        (EMPTY, EMPTY, None): [None, {None}, set()],
+        (EMPTY, RID, None): [RID, {RID}, {RID}],
+        (RLD, EMPTY, None): [None, {None}, set()],
+        (RLD, RID, None): [RID, {RID}, {RID}],
+        # `importer` schema imported by a third schema
+        (EMPTY, EMPTY, EMPTY): [None, {None}, set()],
+        (EMPTY, RID, EMPTY): [None, {None}, set()],
+        (EMPTY, EMPTY, RIID): [RIID, {RIID}, {RIID}],
+        (EMPTY, RID, RIID): [RIID, {RIID}, {RIID}],
+        (RLD, EMPTY, EMPTY): [None, {None}, set()],
+        (RLD, RID, EMPTY): [None, {None}, set()],
+        (RLD, EMPTY, RIID): [RIID, {RIID}, {RIID}],
+        (RLD, RID, RIID): [RIID, {RIID}, {RIID}],
+    }
+}
+ranges_replaced_by_defaults["invalid_any_range_no_linkml_any"] = {
+    key: [value[0], {*value[1], "string", "range_string"}, value[2]]
+    for key, value in ranges_replaced_by_defaults["none_range"].items()
+}
+
+
+def test_generated_range_schema(sv_range_riid_gen: tuple[SchemaView, tuple[str, str | None, str | None]]) -> None:
+    """Tests for generation of range schemas.
+
+    This is a "meta-test" to ensure that the sv_range_import_whatever function is working as expected.
+    """
+    (sv_range, range_tuple) = sv_range_riid_gen
+    schema_name = gen_schema_name(range_tuple)
+    if schema_name is None:
+        # not a valid combination -- no tests required
+        pytest.skip("Invalid combination of local, importer, and import_importer arguments; skipping test")
+
+    assert isinstance(sv_range, SchemaView)
+
+
+@pytest.mark.parametrize("range_function", ["slot_range", "slot_range_as_union"])  # , "induced_slot_range"])
+@pytest.mark.parametrize("slot_name", ranges_no_defaults.keys())
+def test_slot_range(
+    range_function: str,
+    slot_name: str,
+    sv_range_riid_gen: tuple[SchemaView, tuple[str, str | None, str | None]],
+) -> None:
+    """Test the range of a slot using various methods.
+
+    :param range_function: name of the range function or property to call
+    :type range_function: str
+    :param slot_name: name of the slot to test
+    :type slot_name: str
+    :param sv_range_riid_gen: tuple of the SchemaView and the range_tuple used to generate it
+    :type sv_range_riid_gen: tuple[SchemaView, tuple[str, str | None, str | None]]
+    """
+    (sv_range, range_tuple) = sv_range_riid_gen
+
+    slots_by_name = {s.name: s for s in sv_range.class_induced_slots("ClassWithRanges")}
+    expected = ranges_no_defaults[slot_name]
+    if slot_name in ranges_replaced_by_defaults:
+        expected = ranges_replaced_by_defaults[slot_name][range_tuple]
+    if range_function == "slot_range":
+        assert slots_by_name[slot_name].range == expected[0]
+    elif range_function == "slot_range_as_union":
+        assert set(sv_range.slot_range_as_union(slots_by_name[slot_name])) == expected[1]
+    elif range_function == "induced_slot_range":
+        assert sv_range.induced_slot_range(slots_by_name[slot_name]) == expected[2]
+    elif range_function == "slot_applicable_range_elements":
+        assert set(sv_range.slot_applicable_range_elements(slots_by_name[slot_name])) == expected[3]
+    else:
+        pytest.fail(f"Unexpected range_function value: {range_function}")
+
+
+"""End of range-related tests. Phew!"""
 
 
 def test_permissible_value_relationships(schema_view_no_imports: SchemaView) -> None:
