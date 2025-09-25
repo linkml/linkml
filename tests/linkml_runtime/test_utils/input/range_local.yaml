@@ -92,18 +92,20 @@ types:
     description: A character string
 
   range_string:
-    uri: xsd:string
-    base: str
+    typeof: string
     description: A character string that describes a range.
 
   range_local_default:
-    typeof: string
+    uri: xsd:integer
+    base: int
     description: Set as default range within this file.
 
-  range_mid_default:
-    typeof: string
+  range_importer_default:
+    uri: xsd:float
+    base: float
     description: Set as default range of a schema that imports this file.
 
-  range_global_default:
-    typeof: string
+  range_import_importer_default:
+    uri: xsd:boolean
+    base: boolean
     description: Set as default range at the top level of the schema.

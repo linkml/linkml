@@ -1289,48 +1289,61 @@ def sv_range_riid_gen(request: pytest.FixtureRequest) -> tuple[SchemaView, tuple
     return sv_range_import_whatever(request, range_tuple=request.param)
 
 
+CD = "class_definition"
+ED = "enum_definition"
+TD = "type_definition"
+# Expected results for the various range tests run in test_slot_range.
 ranges_no_defaults = {
-    "none_range": [None, set(), set()],
-    "string_range": ["string", {"string"}, {"string"}],
-    "class_range": ["RangeClass", {"RangeClass"}, {"RangeClass"}],
-    "enum_range": ["RangeEnum", {"RangeEnum"}, {"RangeEnum"}],
-    "any_range": ["AnyOldRange", {"AnyOldRange"}, {"AnyOldRange"}],
-    "exactly_one_of_range": ["AnyOldRange", {"AnyOldRange", "range_string", "string"}, {"range_string", "string"}],
+    "none_range": [None, set(), set(), ValueError],
+    "string_range": ["string", {"string"}, {"string"}, {TD}],
+    "class_range": ["RangeClass", {"RangeClass"}, {"RangeClass"}, {CD}],
+    "enum_range": ["RangeEnum", {"RangeEnum"}, {"RangeEnum"}, {ED}],
+    "any_range": ["AnyOldRange", {"AnyOldRange"}, {"AnyOldRange"}, {CD, ED, TD}],
+    "exactly_one_of_range": [
+        "AnyOldRange",
+        {"AnyOldRange", "range_string", "string"},
+        {"range_string", "string"},
+        {CD, ED, TD},
+    ],
     "any_of_range": [
         "AnyOldRange",
         {"AnyOldRange", "RangeEnum", "RangeClass", "string"},
         {"RangeEnum", "RangeClass", "string"},
+        {CD, ED, TD},
     ],
     "any_of_and_exactly_one_of_range": [
         "AnyOldRange",
         {"AnyOldRange", "RangeEnum", "RangeClass", "string", "range_string"},
         {"RangeEnum", "RangeClass", "string", "range_string"},
+        {CD, ED, TD},
     ],
-    "invalid_any_range_no_linkml_any": [None, {"string", "range_string"}, set()],
-    "invalid_any_range_enum": ["RangeEnum", {"RangeEnum", "string", "range_string"}, {"RangeEnum"}],
-    "invalid_any_range_class": ["RangeClass", {"RangeClass", "string", "range_string"}, {"RangeClass"}],
+    "invalid_any_range_no_linkml_any": [None, {"string", "range_string"}, set(), {TD}],
+    "invalid_any_range_enum": ["RangeEnum", {"RangeEnum", "string", "range_string"}, {"RangeEnum"}, {ED, TD}],
+    "invalid_any_range_class": ["RangeClass", {"RangeClass", "string", "range_string"}, {"RangeClass"}, {CD, TD}],
 }
 
+# These are the expected ranges for slots where the range is replaced by
+# the default_range of the local, importer, or import_importer schema.
 ranges_replaced_by_defaults = {
     "none_range": {
         # these tuples replicate what is in RANGE_TUPLES
         # local schema only
         (EMPTY, None, None): [None, {None}, set()],
-        (RLD, None, None): [RLD, {RLD}, {RLD}],
+        (RLD, None, None): [RLD, {RLD}, {RLD}, {TD}],
         # local imported by `importer` schema
         (EMPTY, EMPTY, None): [None, {None}, set()],
-        (EMPTY, RID, None): [RID, {RID}, {RID}],
+        (EMPTY, RID, None): [RID, {RID}, {RID}, {TD}],
         (RLD, EMPTY, None): [None, {None}, set()],
-        (RLD, RID, None): [RID, {RID}, {RID}],
+        (RLD, RID, None): [RID, {RID}, {RID}, {TD}],
         # `importer` schema imported by a third schema
         (EMPTY, EMPTY, EMPTY): [None, {None}, set()],
         (EMPTY, RID, EMPTY): [None, {None}, set()],
-        (EMPTY, EMPTY, RIID): [RIID, {RIID}, {RIID}],
-        (EMPTY, RID, RIID): [RIID, {RIID}, {RIID}],
+        (EMPTY, EMPTY, RIID): [RIID, {RIID}, {RIID}, {TD}],
+        (EMPTY, RID, RIID): [RIID, {RIID}, {RIID}, {TD}],
         (RLD, EMPTY, EMPTY): [None, {None}, set()],
         (RLD, RID, EMPTY): [None, {None}, set()],
-        (RLD, EMPTY, RIID): [RIID, {RIID}, {RIID}],
-        (RLD, RID, RIID): [RIID, {RIID}, {RIID}],
+        (RLD, EMPTY, RIID): [RIID, {RIID}, {RIID}, {TD}],
+        (RLD, RID, RIID): [RIID, {RIID}, {RIID}, {TD}],
     }
 }
 ranges_replaced_by_defaults["invalid_any_range_no_linkml_any"] = {
@@ -1342,7 +1355,8 @@ ranges_replaced_by_defaults["invalid_any_range_no_linkml_any"] = {
 def test_generated_range_schema(sv_range_riid_gen: tuple[SchemaView, tuple[str, str | None, str | None]]) -> None:
     """Tests for generation of range schemas.
 
-    This is a "meta-test" to ensure that the sv_range_import_whatever function is working as expected.
+    This is a "meta-test" to ensure that the sv_range_import_whatever function is
+    generating the correct schemas.
     """
     (sv_range, range_tuple) = sv_range_riid_gen
     schema_name = gen_schema_name(range_tuple)
@@ -1353,7 +1367,7 @@ def test_generated_range_schema(sv_range_riid_gen: tuple[SchemaView, tuple[str, 
     assert isinstance(sv_range, SchemaView)
 
 
-@pytest.mark.parametrize("range_function", ["slot_range", "slot_range_as_union"])  # , "induced_slot_range"])
+@pytest.mark.parametrize("range_function", ["slot_range", "slot_range_as_union", "slot_applicable_range_elements"])
 @pytest.mark.parametrize("slot_name", ranges_no_defaults.keys())
 def test_slot_range(
     range_function: str,
@@ -1382,7 +1396,13 @@ def test_slot_range(
     elif range_function == "induced_slot_range":
         assert sv_range.induced_slot_range(slots_by_name[slot_name]) == expected[2]
     elif range_function == "slot_applicable_range_elements":
-        assert set(sv_range.slot_applicable_range_elements(slots_by_name[slot_name])) == expected[3]
+        if slot_name in ranges_replaced_by_defaults and len(expected) < 4:
+            expected = ranges_no_defaults[slot_name]
+        if isinstance(expected[3], set):
+            assert set(sv_range.slot_applicable_range_elements(slots_by_name[slot_name])) == expected[3]
+        else:
+            with pytest.raises(expected[3], match="Unrecognized range: None"):
+                sv_range.slot_applicable_range_elements(slots_by_name[slot_name])
     else:
         pytest.fail(f"Unexpected range_function value: {range_function}")
 
