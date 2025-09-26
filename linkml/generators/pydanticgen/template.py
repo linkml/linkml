@@ -181,6 +181,7 @@ class PydanticAttribute(PydanticTemplateModel):
     meta_exclude: ClassVar[list[str]] = ["from_schema", "owner", "range", "inlined", "inlined_as_list"]
 
     name: str
+    alias: Optional[str] = None
     required: bool = False
     identifier: bool = False
     key: bool = False
