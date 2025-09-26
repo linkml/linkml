@@ -84,8 +84,8 @@ tests = [
 ]
 dev = [
   {include-group = "tests" },
+  {include-group = "tests-extra" },
   {include-group = "pandera"},
-  "pytest >= 7.4.0",
   "chardet",
   "ipykernel",
   "ipython-genutils",
@@ -95,10 +95,10 @@ dev = [
   "coverage >= 6.4.1",
   "tox >= 4",
   "tox-uv",
-  "requests-cache >= 1.2.0",
   "myst-nb >= 1.0.0; python_version >= '3.9'",
   "sphinx-design >= 0.5.0",
-  "rich >= 13.7.1"
+  "rich >= 13.7.1",
+  "gql>=4.0.0",
 ]
 
 pandera = [
@@ -106,6 +106,10 @@ pandera = [
   "polars-lts-cpu >= 1.0.0",
   "pandas"
 ]
+tests-rustgen = [
+  "maturin >= 1.9.4"
+]
+
 tests-extra = [
   "pytest >= 7.4.0",
   "pytest-subtests >= 0.11.0",
@@ -161,6 +165,7 @@ gen-terminusdb = "linkml.generators.terminusdbgen:cli"
 gen-yuml = "linkml.generators.yumlgen:cli"
 gen-yaml = "linkml.generators.yamlgen:cli"
 gen-erdiagram = "linkml.generators.erdiagramgen:cli"
+gen-rust = "linkml.generators.rustgen.cli:cli"
 gen-sqla = "linkml.generators.sqlalchemygen:cli"
 gen-sqlddl = "linkml.generators.sqltablegen:cli"
 gen-sqltables = "linkml.generators.sqltablegen:cli"
@@ -218,7 +223,8 @@ ignore-words-list = [
   # and changes are propagated to linkml
   "GENERARE",
   "re-used",
-  "doesnt"
+  "doesnt",
+  "crate"
 ]
 quiet-level = 3
 
@@ -264,6 +270,7 @@ markers = [
   "jsonldgen: Test for JSON-LD generator",
   "jsonldcontextgen: Test for JSON-LD context generator",
   "rdfgen: Tests for the RDFGenerator",
+  "rustgen: Tests for the RustGenerator",
   "sqlalchemygen: Tests for SQL Alchemy generator",
   "sqlddlgen: Tests for SQL DDL generator",
   "sqlddlpostgresgen: Tests for SQL DDL postgres generator",
