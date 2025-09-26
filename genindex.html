@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="generators/pydantic.html">Pydantic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/java.html">Java</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/typescript.html">Typescript</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators/rust.html">Rust</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/sqltable.html">SQL DDL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/sqlalchemy.html">SQL Alchemy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/linkml.html">LinkML Generators</a></li>
@@ -552,6 +553,15 @@
 </li>
         </ul></li>
         <li>
+    --crate-name
+
+        <ul>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-n">gen-rust command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-n">linkml-generate-(full)-rust command line option</a>
+</li>
+        </ul></li>
+        <li>
     --csv-field-size-limit
 
         <ul>
@@ -771,6 +781,15 @@
 </li>
         </ul></li>
         <li>
+    --force
+
+        <ul>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-f">gen-rust command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-f">linkml-generate-(full)-rust command line option</a>
+</li>
+        </ul></li>
+        <li>
     --format
 
         <ul>
@@ -807,6 +826,8 @@
           <li><a href="generators/python.html#cmdoption-gen-python-f">gen-python command line option</a>
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-f">gen-rdf command line option</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-0">gen-rust command line option</a>
 </li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-f">gen-shacl command line option</a>
 </li>
@@ -869,6 +890,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-python-f">linkml-generate-(full)-python command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-f">linkml-generate-(full)-rdf command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-(full)-rust-0">linkml-generate-(full)-rust command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-f">linkml-generate-(full)-shacl command line option</a>
 </li>
@@ -1030,6 +1053,8 @@
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-im">gen-rdf command line option</a>
 </li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-im">gen-rust command line option</a>
+</li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-im">gen-shacl command line option</a>
 </li>
           <li><a href="generators/shex.html#cmdoption-gen-shex-im">gen-shex command line option</a>
@@ -1091,6 +1116,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-python-im">linkml-generate-(full)-python command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-im">linkml-generate-(full)-rdf command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-im">linkml-generate-(full)-rust command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-im">linkml-generate-(full)-shacl command line option</a>
 </li>
@@ -1345,6 +1372,8 @@
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-log_level">gen-rdf command line option</a>
 </li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-log_level">gen-rust command line option</a>
+</li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-log_level">gen-shacl command line option</a>
 </li>
           <li><a href="generators/shex.html#cmdoption-gen-shex-log_level">gen-shex command line option</a>
@@ -1408,6 +1437,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-python-log_level">linkml-generate-(full)-python command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-log_level">linkml-generate-(full)-rdf command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-log_level">linkml-generate-(full)-rust command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-log_level">linkml-generate-(full)-shacl command line option</a>
 </li>
@@ -1526,6 +1557,8 @@
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-mergeimports">gen-rdf command line option</a>
 </li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-mergeimports">gen-rust command line option</a>
+</li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-mergeimports">gen-shacl command line option</a>
 </li>
           <li><a href="generators/shex.html#cmdoption-gen-shex-mergeimports">gen-shex command line option</a>
@@ -1589,6 +1622,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-python-mergeimports">linkml-generate-(full)-python command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-mergeimports">linkml-generate-(full)-rdf command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-mergeimports">linkml-generate-(full)-rust command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-mergeimports">linkml-generate-(full)-shacl command line option</a>
 </li>
@@ -1667,6 +1702,8 @@
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-metadata">gen-rdf command line option</a>
 </li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-metadata">gen-rust command line option</a>
+</li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-metadata">gen-shacl command line option</a>
 </li>
           <li><a href="generators/shex.html#cmdoption-gen-shex-metadata">gen-shex command line option</a>
@@ -1728,6 +1765,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-python-metadata">linkml-generate-(full)-python command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-metadata">linkml-generate-(full)-rdf command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-metadata">linkml-generate-(full)-rust command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-metadata">linkml-generate-(full)-shacl command line option</a>
 </li>
@@ -1797,6 +1836,8 @@
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-useuris">gen-rdf command line option</a>
 </li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-useuris">gen-rust command line option</a>
+</li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-useuris">gen-shacl command line option</a>
 </li>
           <li><a href="generators/shex.html#cmdoption-gen-shex-useuris">gen-shex command line option</a>
@@ -1859,6 +1900,8 @@
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-useuris">linkml-generate-(full)-rdf command line option</a>
 </li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-useuris">linkml-generate-(full)-rust command line option</a>
+</li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-useuris">linkml-generate-(full)-shacl command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shex-useuris">linkml-generate-(full)-shex command line option</a>
@@ -1887,6 +1930,15 @@
           <li><a href="generators/owl.html#cmdoption-gen-owl-mixins-as-expressions">gen-owl command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-owl-mixins-as-expressions">linkml-generate-(full)-owl command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --mode
+
+        <ul>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-m">gen-rust command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-m">linkml-generate-(full)-rust command line option</a>
 </li>
         </ul></li>
         <li>
@@ -2156,6 +2208,8 @@
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-mergeimports">gen-rdf command line option</a>
 </li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-mergeimports">gen-rust command line option</a>
+</li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-mergeimports">gen-shacl command line option</a>
 </li>
           <li><a href="generators/shex.html#cmdoption-gen-shex-mergeimports">gen-shex command line option</a>
@@ -2219,6 +2273,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-python-mergeimports">linkml-generate-(full)-python command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-mergeimports">linkml-generate-(full)-rdf command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-mergeimports">linkml-generate-(full)-rust command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-mergeimports">linkml-generate-(full)-shacl command line option</a>
 </li>
@@ -2288,6 +2344,8 @@
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-metadata">gen-rdf command line option</a>
 </li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-metadata">gen-rust command line option</a>
+</li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-metadata">gen-shacl command line option</a>
 </li>
           <li><a href="generators/shex.html#cmdoption-gen-shex-metadata">gen-shex command line option</a>
@@ -2349,6 +2407,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-python-metadata">linkml-generate-(full)-python command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-metadata">linkml-generate-(full)-rdf command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-metadata">linkml-generate-(full)-rust command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-metadata">linkml-generate-(full)-shacl command line option</a>
 </li>
@@ -2483,6 +2543,8 @@
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-stacktrace">gen-rdf command line option</a>
 </li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-stacktrace">gen-rust command line option</a>
+</li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-stacktrace">gen-shacl command line option</a>
 </li>
           <li><a href="generators/shex.html#cmdoption-gen-shex-stacktrace">gen-shex command line option</a>
@@ -2544,6 +2606,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-python-stacktrace">linkml-generate-(full)-python command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-stacktrace">linkml-generate-(full)-rdf command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-stacktrace">linkml-generate-(full)-rust command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-stacktrace">linkml-generate-(full)-shacl command line option</a>
 </li>
@@ -2728,6 +2792,8 @@
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-o">gen-rdf command line option</a>
 </li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-o">gen-rust command line option</a>
+</li>
           <li><a href="generators/shex.html#cmdoption-gen-shex-o">gen-shex command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-o">gen-sssom command line option</a>
@@ -2747,6 +2813,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-prefix-map-o">linkml-generate-(full)-prefix-map command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-o">linkml-generate-(full)-rdf command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-o">linkml-generate-(full)-rust command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shex-o">linkml-generate-(full)-shex command line option</a>
 </li>
@@ -2825,6 +2893,15 @@
 </li>
         </ul></li>
         <li>
+    --pyo3
+
+        <ul>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-p">gen-rust command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-p">linkml-generate-(full)-rust command line option</a>
+</li>
+        </ul></li>
+        <li>
     --python-import
 
         <ul>
@@ -2889,6 +2966,15 @@
           <li><a href="cli/validate.html#cmdoption-linkml-validate-jsonschema-s">linkml-validate-jsonschema command line option</a>
 </li>
           <li><a href="cli/validate.html#cmdoption-linkml-validate-sparql-s">linkml-validate-sparql command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --serde
+
+        <ul>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-s">gen-rust command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-s">linkml-generate-(full)-rust command line option</a>
 </li>
         </ul></li>
         <li>
@@ -2965,6 +3051,8 @@
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-stacktrace">gen-rdf command line option</a>
 </li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-stacktrace">gen-rust command line option</a>
+</li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-stacktrace">gen-shacl command line option</a>
 </li>
           <li><a href="generators/shex.html#cmdoption-gen-shex-stacktrace">gen-shex command line option</a>
@@ -3026,6 +3114,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-python-stacktrace">linkml-generate-(full)-python command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-stacktrace">linkml-generate-(full)-rdf command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-stacktrace">linkml-generate-(full)-rust command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-stacktrace">linkml-generate-(full)-shacl command line option</a>
 </li>
@@ -3256,6 +3346,8 @@
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-useuris">gen-rdf command line option</a>
 </li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-useuris">gen-rust command line option</a>
+</li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-useuris">gen-shacl command line option</a>
 </li>
           <li><a href="generators/shex.html#cmdoption-gen-shex-useuris">gen-shex command line option</a>
@@ -3317,6 +3409,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-python-useuris">linkml-generate-(full)-python command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-useuris">linkml-generate-(full)-rdf command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-useuris">linkml-generate-(full)-rust command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-useuris">linkml-generate-(full)-shacl command line option</a>
 </li>
@@ -3404,6 +3498,8 @@
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-v">gen-rdf command line option</a>
 </li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-v">gen-rust command line option</a>
+</li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-v">gen-shacl command line option</a>
 </li>
           <li><a href="generators/shex.html#cmdoption-gen-shex-v">gen-shex command line option</a>
@@ -3465,6 +3561,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-python-v">linkml-generate-(full)-python command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-v">linkml-generate-(full)-rdf command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-v">linkml-generate-(full)-rust command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-v">linkml-generate-(full)-shacl command line option</a>
 </li>
@@ -3532,6 +3630,8 @@
           <li><a href="generators/python.html#cmdoption-gen-python-V">gen-python command line option</a>
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-V">gen-rdf command line option</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-V">gen-rust command line option</a>
 </li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-V">gen-shacl command line option</a>
 </li>
@@ -3606,6 +3706,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-python-V">linkml-generate-(full)-python command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-V">linkml-generate-(full)-rdf command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-V">linkml-generate-(full)-rust command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-V">linkml-generate-(full)-shacl command line option</a>
 </li>
@@ -3779,6 +3881,8 @@
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-f">gen-rdf command line option</a>
 </li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-0">gen-rust command line option</a>, <a href="generators/rust.html#cmdoption-gen-rust-f">[1]</a>
+</li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-f">gen-shacl command line option</a>
 </li>
           <li><a href="generators/shex.html#cmdoption-gen-shex-f">gen-shex command line option</a>
@@ -3842,6 +3946,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-python-f">linkml-generate-(full)-python command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-f">linkml-generate-(full)-rdf command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-(full)-rust-0">linkml-generate-(full)-rust command line option</a>, <a href="cli/generate.html#cmdoption-linkml-generate-full-rust-f">[1]</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-f">linkml-generate-(full)-shacl command line option</a>
 </li>
@@ -3958,6 +4064,8 @@
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-im">gen-rdf command line option</a>
 </li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-im">gen-rust command line option</a>
+</li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-im">gen-shacl command line option</a>
 </li>
           <li><a href="generators/shex.html#cmdoption-gen-shex-im">gen-shex command line option</a>
@@ -4020,6 +4128,8 @@
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-im">linkml-generate-(full)-rdf command line option</a>
 </li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-im">linkml-generate-(full)-rust command line option</a>
+</li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-im">linkml-generate-(full)-shacl command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shex-im">linkml-generate-(full)-shex command line option</a>
@@ -4070,11 +4180,24 @@
     -m
 
         <ul>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-m">gen-rust command line option</a>
+</li>
           <li><a href="data/conversion.html#cmdoption-linkml-convert-m">linkml-convert command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-m">linkml-generate-(full)-rust command line option</a>
 </li>
           <li><a href="cli/validate.html#cmdoption-linkml-validate-m">linkml-validate command line option</a>, <a href="code/validator.html#cmdoption-linkml-validate-m">[1]</a>, <a href="data/validating-data.html#cmdoption-linkml-validate-m">[2]</a>
 </li>
           <li><a href="cli/validate.html#cmdoption-linkml-validate-jsonschema-m">linkml-validate-jsonschema command line option</a>
+</li>
+        </ul></li>
+        <li>
+    -n
+
+        <ul>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-n">gen-rust command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-n">linkml-generate-(full)-rust command line option</a>
 </li>
         </ul></li>
         <li>
@@ -4090,6 +4213,8 @@
           <li><a href="generators/prefixmap.html#cmdoption-gen-prefix-map-o">gen-prefix-map command line option</a>
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-o">gen-rdf command line option</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-o">gen-rust command line option</a>
 </li>
           <li><a href="generators/shex.html#cmdoption-gen-shex-o">gen-shex command line option</a>
 </li>
@@ -4111,6 +4236,8 @@
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-o">linkml-generate-(full)-rdf command line option</a>
 </li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-o">linkml-generate-(full)-rust command line option</a>
+</li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shex-o">linkml-generate-(full)-shex command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sssom-o">linkml-generate-(full)-sssom command line option</a>
@@ -4127,6 +4254,15 @@
 
         <ul>
           <li><a href="data/conversion.html#cmdoption-linkml-convert-P">linkml-convert command line option</a>
+</li>
+        </ul></li>
+        <li>
+    -p
+
+        <ul>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-p">gen-rust command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-p">linkml-generate-(full)-rust command line option</a>
 </li>
         </ul></li>
         <li>
@@ -4160,11 +4296,15 @@
     -s
 
         <ul>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-s">gen-rust command line option</a>
+</li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-s">gen-shacl command line option</a>
 </li>
           <li><a href="data/conversion.html#cmdoption-linkml-convert-s">linkml-convert command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-cli-s">linkml-generate-(full)-cli command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-s">linkml-generate-(full)-rust command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-s">linkml-generate-(full)-shacl command line option</a>
 </li>
@@ -4252,6 +4392,8 @@
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-V">gen-rdf command line option</a>
 </li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-V">gen-rust command line option</a>
+</li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-V">gen-shacl command line option</a>
 </li>
           <li><a href="generators/shex.html#cmdoption-gen-shex-V">gen-shex command line option</a>
@@ -4326,6 +4468,8 @@
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-V">linkml-generate-(full)-rdf command line option</a>
 </li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-V">linkml-generate-(full)-rust command line option</a>
+</li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-V">linkml-generate-(full)-shacl command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shex-V">linkml-generate-(full)-shex command line option</a>
@@ -4395,6 +4539,8 @@
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-v">gen-rdf command line option</a>
 </li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-v">gen-rust command line option</a>
+</li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-v">gen-shacl command line option</a>
 </li>
           <li><a href="generators/shex.html#cmdoption-gen-shex-v">gen-shex command line option</a>
@@ -4456,6 +4602,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-python-v">linkml-generate-(full)-python command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-v">linkml-generate-(full)-rdf command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-v">linkml-generate-(full)-rust command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-v">linkml-generate-(full)-shacl command line option</a>
 </li>
@@ -4548,10 +4696,6 @@
         <li><a href="schemas/arrays.html#alias">alias (built-in variable)</a>
 
         <ul>
-          <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Import.alias">(linkml.generators.pydanticgen.template.Import attribute)</a>
-</li>
-          <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.ObjectImport.alias">(linkml.generators.pydanticgen.template.ObjectImport attribute)</a>
-</li>
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.DimensionExpression.alias">(linkml_runtime.linkml_model.meta.DimensionExpression attribute)</a>
 </li>
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.alias">(linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
@@ -4591,10 +4735,10 @@
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.TypeDefinition.all_of">(linkml_runtime.linkml_model.meta.TypeDefinition attribute)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_schema">all_schema() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_slot">all_slot() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.all_slots">all_slots() (linkml.utils.generator.Generator method)</a>
@@ -4617,8 +4761,6 @@
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.DimensionExpression.alt_descriptions">(linkml_runtime.linkml_model.meta.DimensionExpression attribute)</a>
 </li>
         </ul></li>
-        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.ConditionalImport.alternative">alternative (linkml.generators.pydanticgen.template.ConditionalImport attribute)</a>
-</li>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.ancestors">ancestors() (linkml.utils.generator.Generator method)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.annotation_dict">annotation_dict() (linkml_runtime.utils.schemaview.SchemaView method)</a>
@@ -4837,10 +4979,10 @@
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.TypeDefinition.class_name">(linkml_runtime.linkml_model.meta.TypeDefinition attribute)</a>
 </li>
         </ul></li>
-        <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_name_mappings">class_name_mappings() (linkml_runtime.utils.schemaview.SchemaView method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_name_mappings">class_name_mappings() (linkml_runtime.utils.schemaview.SchemaView method)</a>
+</li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticModule.class_names">class_names (linkml.generators.pydanticgen.template.PydanticModule property)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.class_or_type_for">class_or_type_for() (linkml.utils.generator.Generator method)</a>
@@ -4906,8 +5048,6 @@
         <li><a href="generators/pandera.html#linkml.generators.panderagen.PanderaGenerator.compile_pandera">compile_pandera() (linkml.generators.panderagen.PanderaGenerator method)</a>
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.EnumDefinition.concepts">concepts (linkml_runtime.linkml_model.meta.EnumDefinition attribute)</a>
-</li>
-        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.ConditionalImport.condition">condition (linkml.generators.pydanticgen.template.ConditionalImport attribute)</a>
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.ConditionalImport">ConditionalImport (class in linkml.generators.pydanticgen.template)</a>
 </li>
@@ -6081,8 +6221,6 @@
           <li><a href="generators/prefixmap.html#cmdoption-gen-prefix-map-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     gen-project command line option
 
@@ -6120,6 +6258,8 @@
           <li><a href="generators/project-generator.html#cmdoption-gen-project-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     gen-proto command line option
 
@@ -6318,6 +6458,69 @@
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-v">-v</a>
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-arg-YAMLFILE">YAMLFILE</a>
+</li>
+        </ul></li>
+        <li>
+    gen-rust command line option
+
+        <ul>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-n">--crate-name</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-f">--force</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-0">--format</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-im">--importmap</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-log_level">--log_level</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-mergeimports">--mergeimports</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-metadata">--metadata</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-useuris">--metauris</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-m">--mode</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-mergeimports">--no-mergeimports</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-metadata">--no-metadata</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-stacktrace">--no-stacktrace</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-o">--output</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-p">--pyo3</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-s">--serde</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-stacktrace">--stacktrace</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-useuris">--useuris</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-v">--verbose</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-V">--version</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-0">-f</a>, <a href="generators/rust.html#cmdoption-gen-rust-f">[1]</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-im">-im</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-m">-m</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-n">-n</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-o">-o</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-p">-p</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-s">-s</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-V">-V</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-v">-v</a>
+</li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
         <li>
@@ -6720,13 +6923,23 @@
         </ul></li>
         <li><a href="generators/yuml.html#linkml.generators.yumlgen.YumlGenerator.gen_classes">gen_classes (linkml.generators.yumlgen.YumlGenerator attribute)</a>
 </li>
+        <li><a href="generators/rust.html#linkml.generators.rustgen.RustGenerator.generate_attribute">generate_attribute() (linkml.generators.rustgen.RustGenerator method)</a>
+</li>
+        <li><a href="generators/rust.html#linkml.generators.rustgen.RustGenerator.generate_cargo">generate_cargo() (linkml.generators.rustgen.RustGenerator method)</a>
+</li>
+        <li><a href="generators/rust.html#linkml.generators.rustgen.RustGenerator.generate_class">generate_class() (linkml.generators.rustgen.RustGenerator method)</a>
+</li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.generate_collection_key">generate_collection_key() (linkml.generators.pydanticgen.PydanticGenerator method)</a>
 </li>
         <li><a href="generators/csv.html#linkml.generators.csvgen.CsvGenerator.generate_header">generate_header() (linkml.generators.csvgen.CsvGenerator method)</a>
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.generate_module_import">generate_module_import() (linkml.generators.pydanticgen.PydanticGenerator method)</a>
 </li>
+        <li><a href="generators/rust.html#linkml.generators.rustgen.RustGenerator.generate_pyproject">generate_pyproject() (linkml.generators.rustgen.RustGenerator method)</a>
+</li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.generate_python_range">generate_python_range() (linkml.generators.pydanticgen.PydanticGenerator method)</a>
+</li>
+        <li><a href="generators/rust.html#linkml.generators.rustgen.RustGenerator.generate_slot">generate_slot() (linkml.generators.rustgen.RustGenerator method)</a>
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.generate_split">generate_split() (linkml.generators.pydanticgen.PydanticGenerator class method)</a>
 </li>
@@ -6749,6 +6962,8 @@
 </li>
           <li><a href="generators/rdf.html#linkml.generators.rdfgen.RDFGenerator.generatorname">(linkml.generators.rdfgen.RDFGenerator attribute)</a>
 </li>
+          <li><a href="generators/rust.html#linkml.generators.rustgen.RustGenerator.generatorname">(linkml.generators.rustgen.RustGenerator attribute)</a>
+</li>
           <li><a href="generators/yuml.html#linkml.generators.yumlgen.YumlGenerator.generatorname">(linkml.generators.yumlgen.YumlGenerator attribute)</a>
 </li>
           <li><a href="code/utils.html#linkml.utils.generator.Generator.generatorname">(linkml.utils.generator.Generator attribute)</a>
@@ -6766,6 +6981,8 @@
           <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.generatorversion">(linkml.generators.pydanticgen.PydanticGenerator attribute)</a>
 </li>
           <li><a href="generators/rdf.html#linkml.generators.rdfgen.RDFGenerator.generatorversion">(linkml.generators.rdfgen.RDFGenerator attribute)</a>
+</li>
+          <li><a href="generators/rust.html#linkml.generators.rustgen.RustGenerator.generatorversion">(linkml.generators.rustgen.RustGenerator attribute)</a>
 </li>
           <li><a href="generators/yuml.html#linkml.generators.yumlgen.YumlGenerator.generatorversion">(linkml.generators.yumlgen.YumlGenerator attribute)</a>
 </li>
@@ -6809,6 +7026,8 @@
         <li><a href="code/utils.html#linkml.utils.generator.Generator.get_metamodel_slot_name">get_metamodel_slot_name() (linkml.utils.generator.Generator method)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.helpers.get_range_associated_slots">get_range_associated_slots() (in module linkml.utils.helpers)</a>
+</li>
+        <li><a href="generators/rust.html#linkml.generators.rustgen.RustGenerator.get_rust_range_info_across_descendants">get_rust_range_info_across_descendants() (linkml.generators.rustgen.RustGenerator method)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_slot">get_slot() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
@@ -6904,8 +7123,6 @@
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SchemaDefinition.imports">(linkml_runtime.linkml_model.meta.SchemaDefinition attribute)</a>
 </li>
         </ul></li>
-        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Imports.imports_are_merged">imports_are_merged() (linkml.generators.pydanticgen.template.Imports class method)</a>
-</li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.imports_closure">imports_closure() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.in_language">in_language (linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
@@ -7006,8 +7223,6 @@
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.is_multivalued">is_multivalued() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.is_relationship">is_relationship() (linkml_runtime.utils.schemaview.SchemaView method)</a>
-</li>
-        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Import.is_schema">is_schema (linkml.generators.pydanticgen.template.Import attribute)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.helpers.is_simple_dict">is_simple_dict() (in module linkml.utils.helpers)</a>
 </li>
@@ -8249,8 +8464,6 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-prefix-map-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     linkml-generate-(full)-project command line option
 
@@ -8288,6 +8501,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-project-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     linkml-generate-(full)-proto command line option
 
@@ -8486,6 +8701,69 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-v">-v</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-arg-YAMLFILE">YAMLFILE</a>
+</li>
+        </ul></li>
+        <li>
+    linkml-generate-(full)-rust command line option
+
+        <ul>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-n">--crate-name</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-f">--force</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-(full)-rust-0">--format</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-im">--importmap</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-log_level">--log_level</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-mergeimports">--mergeimports</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-metadata">--metadata</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-useuris">--metauris</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-m">--mode</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-mergeimports">--no-mergeimports</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-metadata">--no-metadata</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-stacktrace">--no-stacktrace</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-o">--output</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-p">--pyo3</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-s">--serde</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-stacktrace">--stacktrace</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-useuris">--useuris</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-v">--verbose</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-V">--version</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-(full)-rust-0">-f</a>, <a href="cli/generate.html#cmdoption-linkml-generate-full-rust-f">[1]</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-im">-im</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-m">-m</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-n">-n</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-o">-o</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-p">-p</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-s">-s</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-V">-V</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-v">-v</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
         <li>
@@ -9528,8 +9806,6 @@
         <ul>
           <li><a href="generators/common/build.html#linkml.generators.common.build.SchemaResult.merge">(linkml.generators.common.build.SchemaResult method)</a>
 </li>
-          <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Import.merge">(linkml.generators.pydanticgen.template.Import method)</a>
-</li>
         </ul></li>
         <li><a href="code/utils.html#linkml.utils.schemaloader.SchemaLoader.merge_class">merge_class() (linkml.utils.schemaloader.SchemaLoader method)</a>
 </li>
@@ -9635,6 +9911,8 @@
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.mixins">(linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
         </ul></li>
+        <li><a href="generators/rust.html#linkml.generators.rustgen.RustGenerator.mode">mode (linkml.generators.rustgen.RustGenerator attribute)</a>
+</li>
         <li><a href="generators/common/build.html#linkml.generators.common.build.BuildResult.model_config">model_config (linkml.generators.common.build.BuildResult attribute)</a>
 
         <ul>
@@ -9657,8 +9935,6 @@
           <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Import.model_config">(linkml.generators.pydanticgen.template.Import attribute)</a>
 </li>
           <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Imports.model_config">(linkml.generators.pydanticgen.template.Imports attribute)</a>
-</li>
-          <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.ObjectImport.model_config">(linkml.generators.pydanticgen.template.ObjectImport attribute)</a>
 </li>
           <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticAttribute.model_config">(linkml.generators.pydanticgen.template.PydanticAttribute attribute)</a>
 </li>
@@ -9740,8 +10016,6 @@
           <li><a href="code/validator.html#module-linkml.validator.plugins">linkml.validator.plugins</a>
 </li>
         </ul></li>
-        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Import.module">module (linkml.generators.pydanticgen.template.Import attribute)</a>
-</li>
         <li><a href="code/utils.html#linkml.utils.rawloader.mrf">mrf() (in module linkml.utils.rawloader)</a>
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticAttribute.multivalued">multivalued (linkml.generators.pydanticgen.template.PydanticAttribute attribute)</a>
@@ -9758,11 +10032,9 @@
   <h2>N</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.ObjectImport.name">name (linkml.generators.pydanticgen.template.ObjectImport attribute)</a>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticAttribute.name">name (linkml.generators.pydanticgen.template.PydanticAttribute attribute)</a>
 
         <ul>
-          <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticAttribute.name">(linkml.generators.pydanticgen.template.PydanticAttribute attribute)</a>
-</li>
           <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticBaseModel.name">(linkml.generators.pydanticgen.template.PydanticBaseModel attribute)</a>
 </li>
           <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticClass.name">(linkml.generators.pydanticgen.template.PydanticClass attribute)</a>
@@ -9828,10 +10100,6 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.obj_for">obj_for() (linkml.utils.generator.Generator method)</a>
 </li>
-        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.ObjectImport">ObjectImport (class in linkml.generators.pydanticgen.template)</a>
-</li>
-        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Import.objects">objects (linkml.generators.pydanticgen.template.Import attribute)</a>
-</li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.ordered">ordered() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="generators/jsonld.html#linkml.generators.jsonldgen.JSONLDGenerator.original_schema">original_schema (linkml.generators.jsonldgen.JSONLDGenerator attribute)</a>
@@ -9840,9 +10108,11 @@
           <li><a href="generators/rdf.html#linkml.generators.rdfgen.RDFGenerator.original_schema">(linkml.generators.rdfgen.RDFGenerator attribute)</a>
 </li>
         </ul></li>
-        <li><a href="code/utils.html#linkml.utils.execute_tutorial.Block.output">output (linkml.utils.execute_tutorial.Block attribute)</a>
+        <li><a href="generators/rust.html#linkml.generators.rustgen.RustGenerator.output">output (linkml.generators.rustgen.RustGenerator attribute)</a>
 
         <ul>
+          <li><a href="code/utils.html#linkml.utils.execute_tutorial.Block.output">(linkml.utils.execute_tutorial.Block attribute)</a>
+</li>
           <li><a href="code/utils.html#linkml.utils.generator.Generator.output">(linkml.utils.generator.Generator attribute)</a>
 </li>
         </ul></li>
@@ -9912,10 +10182,10 @@
 </li>
         <li><a href="developers/deprecation.html#linkml.utils.deprecation.SemVer.pre_n">pre_n (linkml.utils.deprecation.SemVer attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticAttribute.predefined">predefined (linkml.generators.pydanticgen.template.PydanticAttribute attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.predefined_slot_values">predefined_slot_values (linkml.generators.pydanticgen.PydanticGenerator property)</a>
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SchemaDefinition.prefixes">prefixes (linkml_runtime.linkml_model.meta.SchemaDefinition attribute)</a>
@@ -9951,6 +10221,8 @@
         <li><a href="code/validator.html#linkml.validator.plugins.PydanticValidationPlugin">PydanticValidationPlugin (class in linkml.validator.plugins)</a>
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticValidator">PydanticValidator (class in linkml.generators.pydanticgen.template)</a>
+</li>
+        <li><a href="generators/rust.html#linkml.generators.rustgen.RustGenerator.pyo3">pyo3 (linkml.generators.rustgen.RustGenerator attribute)</a>
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticModule.python_imports">python_imports (linkml.generators.pydanticgen.template.PydanticModule attribute)</a>
 </li>
@@ -10035,13 +10307,11 @@
         <ul>
           <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.render">(linkml.generators.pydanticgen.PydanticGenerator method)</a>
 </li>
-          <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Imports.render">(linkml.generators.pydanticgen.template.Imports method)</a>
-</li>
           <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticTemplateModel.render">(linkml.generators.pydanticgen.template.PydanticTemplateModel method)</a>
 </li>
-        </ul></li>
-        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Imports.render_sorted">render_sorted (linkml.generators.pydanticgen.template.Imports attribute)</a>
+          <li><a href="generators/rust.html#linkml.generators.rustgen.RustGenerator.render">(linkml.generators.rustgen.RustGenerator method)</a>
 </li>
+        </ul></li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.TypeDefinition.repr">repr (linkml_runtime.linkml_model.meta.TypeDefinition attribute)</a>
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ClassDefinition.represents_relationship">represents_relationship (linkml_runtime.linkml_model.meta.ClassDefinition attribute)</a>
@@ -10071,6 +10341,8 @@
         <li><a href="code/utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.roots">roots (linkml.utils.schemasynopsis.SchemaSynopsis attribute)</a>
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ClassDefinition.rules">rules (linkml_runtime.linkml_model.meta.ClassDefinition attribute)</a>
+</li>
+        <li><a href="generators/rust.html#linkml.generators.rustgen.RustGenerator">RustGenerator (class in linkml.generators.rustgen)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -10123,6 +10395,8 @@
 </li>
         <li><a href="generators/csv.html#linkml.generators.csvgen.CsvGenerator.sep">sep (linkml.generators.csvgen.CsvGenerator attribute)</a>
 </li>
+        <li><a href="generators/rust.html#linkml.generators.rustgen.RustGenerator.serde">serde (linkml.generators.rustgen.RustGenerator attribute)</a>
+</li>
         <li><a href="generators/docgen.html#linkml.generators.docgen.DocGenerator.serialize">serialize() (linkml.generators.docgen.DocGenerator method)</a>
 
         <ul>
@@ -10149,6 +10423,8 @@
           <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.serialize">(linkml.generators.pydanticgen.PydanticGenerator method)</a>
 </li>
           <li><a href="generators/python.html#linkml.generators.pythongen.PythonGenerator.serialize">(linkml.generators.pythongen.PythonGenerator method)</a>
+</li>
+          <li><a href="generators/rust.html#linkml.generators.rustgen.RustGenerator.serialize">(linkml.generators.rustgen.RustGenerator method)</a>
 </li>
           <li><a href="generators/shacl.html#linkml.generators.shaclgen.ShaclGenerator.serialize">(linkml.generators.shaclgen.ShaclGenerator method)</a>
 </li>
@@ -10189,8 +10465,6 @@
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.singular_name">singular_name (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
-        <li><a href="generators/common/build.html#linkml.generators.common.build.SkipValidation">SkipValidation (class in linkml.generators.common.build)</a>
-</li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_ancestors">slot_ancestors() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_applicable_range_elements">slot_applicable_range_elements() (linkml_runtime.utils.schemaview.SchemaView method)</a>
@@ -10213,10 +10487,10 @@
 </li>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.slot_name">slot_name() (linkml.utils.generator.Generator method)</a>
 </li>
-        <li><a href="code/utils.html#linkml.utils.schemaloader.SchemaLoader.slot_name_for">slot_name_for() (linkml.utils.schemaloader.SchemaLoader static method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="code/utils.html#linkml.utils.schemaloader.SchemaLoader.slot_name_for">slot_name_for() (linkml.utils.schemaloader.SchemaLoader static method)</a>
+</li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_name_mappings">slot_name_mappings() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ClassDefinition.slot_names_unique">slot_names_unique (linkml_runtime.linkml_model.meta.ClassDefinition attribute)</a>
@@ -10263,14 +10537,8 @@
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.SNAKE_CASE">SNAKE_CASE (linkml.generators.pydanticgen.PydanticGenerator attribute)</a>
 </li>
-        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.ConditionalImport.sort">sort() (linkml.generators.pydanticgen.template.ConditionalImport method)</a>
-
-        <ul>
-          <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Import.sort">(linkml.generators.pydanticgen.template.Import method)</a>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Imports.sort">sort() (linkml.generators.pydanticgen.template.Imports method)</a>
 </li>
-          <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Imports.sort">(linkml.generators.pydanticgen.template.Imports method)</a>
-</li>
-        </ul></li>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.sort_class_slots">sort_class_slots (linkml.utils.generator.Generator attribute)</a>
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.sort_classes">sort_classes() (linkml.generators.pydanticgen.PydanticGenerator static method)</a>
@@ -10528,6 +10796,8 @@
 </li>
           <li><a href="generators/rdf.html#linkml.generators.rdfgen.RDFGenerator.valid_formats">(linkml.generators.rdfgen.RDFGenerator attribute)</a>
 </li>
+          <li><a href="generators/rust.html#linkml.generators.rustgen.RustGenerator.valid_formats">(linkml.generators.rustgen.RustGenerator attribute)</a>
+</li>
           <li><a href="generators/yuml.html#linkml.generators.yumlgen.YumlGenerator.valid_formats">(linkml.generators.yumlgen.YumlGenerator attribute)</a>
 </li>
           <li><a href="code/utils.html#linkml.utils.generator.Generator.valid_formats">(linkml.utils.generator.Generator attribute)</a>
@@ -10695,6 +10965,8 @@
 </li>
           <li><a href="generators/rdf.html#cmdoption-gen-rdf-arg-YAMLFILE">gen-rdf command line option</a>
 </li>
+          <li><a href="generators/rust.html#cmdoption-gen-rust-arg-YAMLFILE">gen-rust command line option</a>
+</li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-arg-YAMLFILE">gen-shacl command line option</a>
 </li>
           <li><a href="generators/shex.html#cmdoption-gen-shex-arg-YAMLFILE">gen-shex command line option</a>
@@ -10760,6 +11032,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-python-arg-YAMLFILE">linkml-generate-(full)-python command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rdf-arg-YAMLFILE">linkml-generate-(full)-rdf command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-rust-arg-YAMLFILE">linkml-generate-(full)-rust command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-arg-YAMLFILE">linkml-generate-(full)-shacl command line option</a>
 </li>
