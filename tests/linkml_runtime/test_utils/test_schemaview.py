@@ -1049,455 +1049,67 @@ def test_enums_and_enum_relationships(schema_view_no_imports: SchemaView) -> Non
     with pytest.raises(ValueError, match='No such enum: "not_an_enum"'):
         view.permissible_value_parent("not_a_pv", "not_an_enum")
 
-    for en, e in view.all_enums().items():
-        if e.name == "Animals":
-            for pv in e.permissible_values:
-                if pv == "CAT":
-                    assert view.permissible_value_parent(pv, e.name) is None
-                    assert view.permissible_value_ancestors(pv, e.name) == ["CAT"]
-                    assert "LION" in view.permissible_value_descendants(pv, e.name)
-                    assert "ANGRY_LION" in view.permissible_value_descendants(pv, e.name)
-                    assert "TABBY" in view.permissible_value_descendants(pv, e.name)
-                    assert "TABBY" in view.permissible_value_children(pv, e.name)
-                    assert "LION" in view.permissible_value_children(pv, e.name)
-                    assert "EAGLE" not in view.permissible_value_descendants(pv, e.name)
-
-                if pv == "LION":
-                    assert "ANGRY_LION" in view.permissible_value_children(pv, e.name)
-
-                if pv == "ANGRY_LION":
-                    assert view.permissible_value_parent(pv, e.name) == ["LION"]
-                    assert view.permissible_value_ancestors(pv, e.name) == ["ANGRY_LION", "LION", "CAT"]
-                    assert view.permissible_value_descendants(pv, e.name) == ["ANGRY_LION"]
-
-    for cn, c in view.all_classes().items():
-        if c.name == "Adult":
-            assert view.class_ancestors(c.name) == ["Adult", "Person", "HasAliases", "Thing"]
-
-
-"""Tests of SchemaView range-related functions.
-
-    These tests cover range determination for slots in schemas with various combinations of default_range values and linkml:Any range declarations.
-
-    There are three schemas used in these tests:
-
-    The `range_local` (RL) schema
-        - based on RANGE_DATA["schema_path"]["range_local"]
-        - the default_range value in this schema is referred to as local_default;
-
-    The `range_importer` (RI) schema, which imports the range_local schema
-        - the range referred to as importer_default;
-        - the file contents are based on RANGE_DATA["schema_path"]["range_importer"]
-
-    The `range_import_importer` (RII) schema, which imports the range_importer schema
-        - the range is import_importer_default;
-        - the schema is generated as a text string, rather than being read from a file.
-
-    The range_tuple parameter specifies the default_range values for each of these schemas in the order
-    range_local, range_importer, range_import_importer.
-
-    A value of "" (EMPTY) means that there is no default_range set.
-    A value of None means that this file should not be generated.
-
-    RANGE_TUPLES contains all the combinations of range_tuple that are valid.
-
-"""
-
-RL = "range_local"
-RI = "range_importer"
-RII = "range_import_importer"
-
-RANGE_DATA = {
-    # value of the default_range in the schema
-    "default": {r: f"{r}_default" for r in [RL, RI, RII]},
-    # path to the original schema file
-    "schema_path": {r: INPUT_DIR_PATH / f"{r}.yaml" for r in [RL, RI]},
-}
-
-RLD = RANGE_DATA["default"][RL]
-RID = RANGE_DATA["default"][RI]
-RIID = RANGE_DATA["default"][RII]
-
-RANGE_TUPLES = [
-    # local schema only
-    (EMPTY, None, None),
-    (RLD, None, None),
-    # local imported by `importer` schema
-    (EMPTY, EMPTY, None),
-    (RLD, EMPTY, None),
-    (EMPTY, RID, None),
-    (RLD, RID, None),
-    # `importer` schema imported by a third schema
-    (EMPTY, EMPTY, EMPTY),
-    (EMPTY, RID, EMPTY),
-    (EMPTY, EMPTY, RIID),
-    (EMPTY, RID, RIID),
-    (RLD, EMPTY, EMPTY),
-    (RLD, RID, EMPTY),
-    (RLD, EMPTY, RIID),
-    (RLD, RID, RIID),
-]
-
-
-def save_temp_file(contents: str, filename: str, tmp_path_factory: pytest.TempPathFactory) -> Path:
-    """Save contents to a temporary file and return the path.
-
-    :param contents: the contents to save
-    :type contents: str
-    :param filename: the name of the file to create
-    :type filename: str
-    :param tmp_path_factory: pytest fixture for generating temporary paths
-    :type tmp_path_factory: pytest.TempPathFactory
-    :return: path to the generated file
-    :rtype: Path
-    """
-    tmp_file = tmp_path_factory.mktemp("test_schemaview") / filename
-    tmp_file.write_text(contents)
-    return tmp_file
-
-
-def gen_schema_name(range_tuple: tuple[str, str | None, str | None]) -> str | None:
-    """Generate a schema name from a range tuple.
-
-    :param range_tuple: tuple of the values for the local, importer, and import_importer default_range values.
-    :type range_tuple: tuple[str, str | None, str | None]
-    :raises ValueError: if the tuple is not the correct length
-    :return: a generated schema name, or None if the combination is invalid
-    :rtype: str | None
-    """
-    if len(range_tuple) != 3:
-        err_msg = (
-            "A schema name requires three parts: local, importer, and import_importer. You supplied\n"
-            + range_tuple
-            + "\n"
-        )
-        raise ValueError(err_msg)
-
-    (local, importer, import_importer) = range_tuple
-
-    # invalid combination
-    if importer is None and import_importer is not None:
-        return None
-
-    schema_name = "sv_range"
-    schema_name += "_local_default" if local else "_local"
-
-    if importer:
-        schema_name += "__importer_default"
-    elif importer == EMPTY:
-        schema_name += "__importer"
-
-    if import_importer:
-        schema_name += "__import_importer_default"
-    elif import_importer == EMPTY:
-        schema_name += "__import_importer"
-    return schema_name
-
-
-def gen_range_file_with_default(range_id: str, tmp_path_factory: pytest.TempPathFactory) -> Path:
-    """Generate a copy of the range file with a default_range added and return the path.
-    Obviates the need for maintaining a copy with a default_range tagged to the end.
-
-    :param range_id: the range file to use; must be one of RL, RI
-    :type range_id: str
-    :param tmp_path_factory: pytest fixture for generating temporary paths
-    :type tmp_path_factory: pytest.TempPathFactory
-    :return: path to the generated file
-    :rtype: Path
-    """
-    schema_yaml = RANGE_DATA["schema_path"][range_id].read_text()
-    default_range = RANGE_DATA["default"][range_id]
-    range_default_yaml = f"{schema_yaml}\n\ndefault_range: {default_range}\n"
-    return save_temp_file(range_default_yaml, f"{default_range}.yaml", tmp_path_factory)
-
-
-@pytest.fixture(scope="session")
-def range_local_default_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
-    """Generate a copy of the range_local file with a default range specified and return the path."""
-    return gen_range_file_with_default(RL, tmp_path_factory)
-
-
-@pytest.fixture(scope="session")
-def range_importer_default_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
-    """Generate a copy of the range importer file with a default range specified and return the path."""
-    return gen_range_file_with_default(RI, tmp_path_factory)
-
-
-def sv_range_import_whatever(
-    request: pytest.FixtureRequest, range_tuple: tuple[str, str | None, str | None]
-) -> tuple[SchemaView, tuple[str, str | None, str | None]]:
-    """Generate a schema and optionally, schemas that import that schema.
-
-    There are three potential schemas generated:
-    - the range schema, based on RANGE_DATA["schema_path"]["range_local"]; the range is referred to as local_default;
-    - the importer schema, which imports the range schema; the range referred to as importer_default;
-      the file contents are based on RANGE_DATA["schema_path"]["range_importer"]
-    - the import_importer schema, which imports the importer schema; the range is import_importer_default;
-      the schema is constructed in this function.
-
-    The range_tuple parameter specifies the default_range values for each of these schemas in the order
-    range_local, range_importer, range_import_importer.
-
-    A value of "" (EMPTY) means that there is no default_range set.
-    A value of None means that this file should not be generated.
-
-    :param request: fixture request object for retrieving fixture-related stuff
-    :type request: pytest.FixtureRequest
-    :param range_tuple: the default_range for the range schema; if the value of local_default is "", the default_range is not set.
-    :type range_tuple: tuple[str, str|None, str|None]
-    :return: a loaded SchemaView for the appropriate schema(s)
-    :rtype: SchemaView
-    """
-    (local_default, importer_default, import_importer_default) = range_tuple
-
-    if importer_default is None and import_importer_default is not None:
-        err_msg = "If the importer is not used, any import_importer value other than None is not valid"
-        raise ValueError(err_msg)
-
-    range_local_path = RANGE_DATA["schema_path"][RL]
-    range_importer_path = RANGE_DATA["schema_path"][RI]
-    importmap = {}
-
-    if local_default:
-        # make a copy of RANGE_DATA["schema_path"][RL] with a default added
-        range_local_path = request.getfixturevalue("range_local_default_path")
-
-    if importer_default:
-        # make a copy of RANGE_DATA["schema_path"][RI] with a default added
-        range_importer_path = request.getfixturevalue("range_importer_default_path")
-
-    importmap[RL] = str(range_local_path.parent / range_local_path.stem)
-    importmap[RI] = str(range_importer_path.parent / range_importer_path.stem)
-
-    if import_importer_default is None:
-        sv = None
-        # no import, so just use the range_local schema
-        if importer_default is None:
-            sv = SchemaView(range_local_path)
-        else:
-            # importing the range_local schema using the range_importer schema
-            sv = SchemaView(range_importer_path, importmap=importmap)
-        return check_generated_schemaview(sv, range_tuple)
-
-    # schema that imports the range_importer schema (just specified as text, no need to save it)
-    schema_text = f"id: https://example.com/{RII}\nname: {RII}\nimports:\n  - {RI}\n"
-
-    if import_importer_default:
-        schema_text += f"\ndefault_range: {import_importer_default}\n\n"
-
-    sv = SchemaView(schema_text, importmap=importmap)
-
-    return check_generated_schemaview(sv, range_tuple)
-
-
-def check_generated_schemaview(
-    sv: SchemaView, range_tuple: tuple[str, str | None, str | None]
-) -> tuple[SchemaView, tuple[str, str | None, str | None]]:
-    """Check that the generated SchemaView has the expected default_range values.
-
-    :param sv: the SchemaView to check
-    :type sv: SchemaView
-    :param range_tuple: the default_range values for the local, importer, and import_importer schemas
-    :type range_tuple: tuple[str, str | None, str | None]
-    :return: _description_
-    :rtype: tuple[SchemaView, tuple[str, str | None, str | None]]
-    """
-    (local_default, importer_default, import_importer_default) = range_tuple
-
-    sv.all_schema()
-
-    if local_default:
-        assert sv.schema_map[RL].default_range == local_default
-    else:
-        assert sv.schema_map[RL].default_range is None
-
-    # importer_default is None => there are no imports, sv.schema == sv.schema_map[RL]
-    if importer_default is None:
-        assert RI not in sv.schema_map
-        assert RII not in sv.schema_map
-        assert sv.schema.default_range == sv.schema_map[RL].default_range
-        return sv, range_tuple
-
-    if importer_default == EMPTY:
-        assert sv.schema_map[RI].default_range is None
-    else:
-        assert sv.schema_map[RI].default_range == importer_default
-
-    # import_importer_default is None => importer imports local
-    # therefore sv.schema == sv.schema_map[RI]
-    if import_importer_default is None:
-        assert RII not in sv.schema_map
-        assert sv.schema.default_range == sv.schema_map[RI].default_range
-        return sv, range_tuple
-
-    # import_importer_default is populated => top level schema imports importer,
-    # which imports local
-    # therefore sv.schema == sv.schema_map[RII]
-    assert RII in sv.schema_map
-    assert sv.schema.default_range == sv.schema_map[RII].default_range
-
-    if import_importer_default == EMPTY:
-        assert sv.schema_map[RII].default_range is None
-    else:
-        assert sv.schema_map[RII].default_range == import_importer_default
-
-    return sv, range_tuple
-
-
-@pytest.fixture(scope="module", params=RANGE_TUPLES, ids=lambda i: gen_schema_name(i))
-def sv_range_riid_gen(request: pytest.FixtureRequest) -> tuple[SchemaView, tuple[str, str | None, str | None]]:
-    """Generate a set of fixtures comprising a SchemaView and the appropriate range_tuple.
-
-    See sv_range_import_whatever for details of the schema generation.
-
-    :param request: fixture request object for retrieving the parameters for schema generation
-    :type request: pytest.FixtureRequest
-    :return: tuple of the generated SchemaView and the range_tuple used to generate it
-    :rtype: tuple[SchemaView, tuple[str, str | None, str | None]]
-    """
-    # the range tuple of (local, importer, import_importer) is stored in request.param
-    return sv_range_import_whatever(request, range_tuple=request.param)
-
-
-CD = "class_definition"
-ED = "enum_definition"
-TD = "type_definition"
-# Expected results for the various range tests run in test_slot_range.
-# The values are:
-# - the expected value of slot.range
-# - the expected set of values returned by slot_range_as_union()
-# - the expected set of values returned by induced_slot_range() - COMING SOON!
-# - the expected set of class/enum/type definitions returned by slot_applicable_range_elements()
-ranges_no_defaults = {
-    "none_range": [None, set(), set(), ValueError],
-    "string_range": ["string", {"string"}, {"string"}, {TD}],
-    "class_range": ["RangeClass", {"RangeClass"}, {"RangeClass"}, {CD}],
-    "enum_range": ["RangeEnum", {"RangeEnum"}, {"RangeEnum"}, {ED}],
-    "any_range": ["AnyOldRange", {"AnyOldRange"}, {"AnyOldRange"}, {CD, ED, TD}],
-    "exactly_one_of_range": [
-        "AnyOldRange",
-        {"AnyOldRange", "range_string", "string"},
-        {"range_string", "string"},
-        {CD, ED, TD},
-    ],
-    "any_of_range": [
-        "AnyOldRange",
-        {"AnyOldRange", "RangeEnum", "RangeClass", "string"},
-        {"RangeEnum", "RangeClass", "string"},
-        {CD, ED, TD},
-    ],
-    # invalid - can't have both any_of and exactly_one_of
-    "any_of_and_exactly_one_of_range": [
-        "AnyOldRange",
-        {"AnyOldRange", "RangeEnum", "RangeClass", "string", "range_string"},
-        {"RangeEnum", "RangeClass", "string", "range_string"},
-        {CD, ED, TD},
-    ],
-    # invalid: linkml:Any not specified
-    "invalid_any_range_no_linkml_any": [None, {"string", "range_string"}, set(), {TD}],
-    # invalid: RangeEnum instead of linkml:Any
-    "invalid_any_range_enum": ["RangeEnum", {"RangeEnum", "string", "range_string"}, {"RangeEnum"}, {ED, TD}],
-    # invalid: RangeClass instead of linkml:Any
-    "invalid_any_range_class": ["RangeClass", {"RangeClass", "string", "range_string"}, {"RangeClass"}, {CD, TD}],
-}
-
-# These are the expected ranges for slots where the range is replaced by
-# the default_range of the local, importer, or import_importer schema.
-# Same ordering as ranges_no_defaults.
-ranges_replaced_by_defaults = {
-    "none_range": {
-        # these tuples replicate what is in RANGE_TUPLES
-        # local schema only
-        (EMPTY, None, None): [None, {None}, set()],
-        (RLD, None, None): [RLD, {RLD}, {RLD}, {TD}],
-        # local imported by `importer` schema
-        (EMPTY, EMPTY, None): [None, {None}, set()],
-        (EMPTY, RID, None): [RID, {RID}, {RID}, {TD}],
-        (RLD, EMPTY, None): [None, {None}, set()],
-        (RLD, RID, None): [RID, {RID}, {RID}, {TD}],
-        # `importer` schema imported by a third schema
-        (EMPTY, EMPTY, EMPTY): [None, {None}, set()],
-        (EMPTY, RID, EMPTY): [None, {None}, set()],
-        (EMPTY, EMPTY, RIID): [RIID, {RIID}, {RIID}, {TD}],
-        (EMPTY, RID, RIID): [RIID, {RIID}, {RIID}, {TD}],
-        (RLD, EMPTY, EMPTY): [None, {None}, set()],
-        (RLD, RID, EMPTY): [None, {None}, set()],
-        (RLD, EMPTY, RIID): [RIID, {RIID}, {RIID}, {TD}],
-        (RLD, RID, RIID): [RIID, {RIID}, {RIID}, {TD}],
-    }
-}
-ranges_replaced_by_defaults["invalid_any_range_no_linkml_any"] = {
-    key: [value[0], {*value[1], "string", "range_string"}, value[2]]
-    for key, value in ranges_replaced_by_defaults["none_range"].items()
-}
-
-
-def test_generated_range_schema(sv_range_riid_gen: tuple[SchemaView, tuple[str, str | None, str | None]]) -> None:
-    """Tests for generation of range schemas.
-
-    This is a "meta-test" to ensure that the sv_range_import_whatever function is
-    generating the correct schemas.
-    """
-    (sv_range, range_tuple) = sv_range_riid_gen
-    schema_name = gen_schema_name(range_tuple)
-    if schema_name is None:
-        # not a valid combination -- no tests required
-        pytest.skip("Invalid combination of local, importer, and import_importer arguments; skipping test")
-
-    assert isinstance(sv_range, SchemaView)
-
-
-@pytest.mark.parametrize("range_function", ["slot_range", "slot_range_as_union", "slot_applicable_range_elements"])
-@pytest.mark.parametrize("slot_name", ranges_no_defaults.keys())
-def test_slot_range(
-    range_function: str,
-    slot_name: str,
-    sv_range_riid_gen: tuple[SchemaView, tuple[str, str | None, str | None]],
-) -> None:
-    """Test the range of a slot using various methods.
-
-    :param range_function: name of the range function or property to call
-    :type range_function: str
-    :param slot_name: name of the slot to test
-    :type slot_name: str
-    :param sv_range_riid_gen: tuple of the SchemaView and the range_tuple used to generate it
-    :type sv_range_riid_gen: tuple[SchemaView, tuple[str, str | None, str | None]]
-    """
-    (sv_range, range_tuple) = sv_range_riid_gen
-
-    slots_by_name = {s.name: s for s in sv_range.class_induced_slots("ClassWithRanges")}
-    expected = ranges_no_defaults[slot_name]
-    if slot_name in ranges_replaced_by_defaults:
-        expected = ranges_replaced_by_defaults[slot_name][range_tuple]
-    if range_function == "slot_range":
-        assert slots_by_name[slot_name].range == expected[0]
-    elif range_function == "slot_range_as_union":
-        assert set(sv_range.slot_range_as_union(slots_by_name[slot_name])) == expected[1]
-    elif range_function == "induced_slot_range":
-        assert sv_range.induced_slot_range(slots_by_name[slot_name]) == expected[2]
-    elif range_function == "slot_applicable_range_elements":
-        if slot_name in ranges_replaced_by_defaults and len(expected) < 4:
-            expected = ranges_no_defaults[slot_name]
-        if isinstance(expected[3], set):
-            assert set(sv_range.slot_applicable_range_elements(slots_by_name[slot_name])) == expected[3]
-        else:
-            with pytest.raises(expected[3], match="Unrecognized range: None"):
-                sv_range.slot_applicable_range_elements(slots_by_name[slot_name])
-    else:
-        pytest.fail(f"Unexpected range_function value: {range_function}")
-
-
-"""End of range-related tests. Phew!"""
-
-
-def test_schemaview(schema_view_no_imports: SchemaView) -> None:
-    """General SchemaView tests."""
+    animals = "Animals"
+    animal_enum = view.get_enum(animals)
+    assert animal_enum.name == animals
+
+    pv_cat = animal_enum.permissible_values["CAT"]
+    assert pv_cat.text == "CAT"
+    assert pv_cat.is_a is None
+    assert view.permissible_value_parent("CAT", animals) is None
+    assert view.permissible_value_ancestors("CAT", animals) == ["CAT"]
+    assert set(view.permissible_value_children("CAT", animals)) == {"LION", "TABBY"}
+    assert set(view.permissible_value_descendants("CAT", animals)) == {"CAT", "LION", "ANGRY_LION", "TABBY"}
+
+    pv_tabby = animal_enum.permissible_values["TABBY"]
+    assert pv_tabby.is_a == "CAT"
+    assert view.permissible_value_parent("TABBY", animals) == ["CAT"]
+    assert view.permissible_value_ancestors("TABBY", animals) == ["TABBY", "CAT"]
+    assert view.permissible_value_children("TABBY", animals) == []
+    assert view.permissible_value_descendants("TABBY", animals) == ["TABBY"]
+
+    pv_lion = animal_enum.permissible_values["LION"]
+    assert pv_lion.is_a == "CAT"
+    assert view.permissible_value_parent("LION", animals) == ["CAT"]
+    assert view.permissible_value_ancestors("LION", animals) == ["LION", "CAT"]
+    assert view.permissible_value_children("LION", animals) == ["ANGRY_LION"]
+    assert view.permissible_value_descendants("LION", animals) == ["LION", "ANGRY_LION"]
+
+    pv_angry_lion = animal_enum.permissible_values["ANGRY_LION"]
+    assert pv_angry_lion.is_a == "LION"
+    assert view.permissible_value_parent("ANGRY_LION", animals) == ["LION"]
+    assert view.permissible_value_ancestors("ANGRY_LION", animals) == ["ANGRY_LION", "LION", "CAT"]
+    assert view.permissible_value_children("ANGRY_LION", animals) == []
+    assert view.permissible_value_descendants("ANGRY_LION", animals) == ["ANGRY_LION"]
+
+
+# FIXME: improve testing of dynamic enums
+def test_dynamic_enum(schema_view_with_imports: SchemaView) -> None:
+    """Rudimentary test of dynamic enum."""
+    view = schema_view_with_imports
+
+    # dynamic enums
+    e = view.get_enum("HCAExample")
+    assert set(e.include[0].reachable_from.source_nodes) == {"GO:0007049", "GO:0022403"}
+
+
+def test_get_elements_applicable_by_identifier(schema_view_no_imports: SchemaView) -> None:
+    """Test get_elements_applicable_by_identifier method."""
     view = schema_view_no_imports
-    logger.debug(view.imports_closure())
-    assert len(view.imports_closure()) == 1
+    elements = view.get_elements_applicable_by_identifier("ORCID:1234")
+    assert PERSON in elements
+    elements = view.get_elements_applicable_by_identifier("PMID:1234")
+    assert "Organization" in elements
+    elements = view.get_elements_applicable_by_identifier("http://www.ncbi.nlm.nih.gov/pubmed/1234")
+    assert "Organization" in elements
+    elements = view.get_elements_applicable_by_identifier("TEST:1234")
+    assert "anatomical entity" not in elements
 
-    all_cls = view.all_classes()
-    logger.debug(f"n_cls = {len(all_cls)}")
+
+# FIXME: improve test to actually test the annotations
+def test_annotation_dict_annotations(schema_view_no_imports: SchemaView) -> None:
+    """Test annotation_dict method for both annotations and slot_definition_annotations."""
+    view = schema_view_no_imports
 
     assert list(view.annotation_dict(IS_CURRENT).values()) == ["bar"]
     logger.debug(view.annotation_dict(EMPLOYED_AT))
@@ -1506,15 +1118,6 @@ def test_schemaview(schema_view_no_imports: SchemaView) -> None:
     e = view.get_element("has employment history")
     logger.debug(e.annotations)
 
-    elements = view.get_elements_applicable_by_identifier("ORCID:1234")
-    assert "Person" in elements
-    elements = view.get_elements_applicable_by_identifier("PMID:1234")
-    assert "Organization" in elements
-    elements = view.get_elements_applicable_by_identifier("http://www.ncbi.nlm.nih.gov/pubmed/1234")
-    assert "Organization" in elements
-    elements = view.get_elements_applicable_by_identifier("TEST:1234")
-    assert "anatomical entity" not in elements
-
     assert list(view.annotation_dict(SlotDefinitionName(IS_CURRENT)).values()) == ["bar"]
     logger.debug(view.annotation_dict(SlotDefinitionName(EMPLOYED_AT)))
     element = view.get_element(SlotDefinitionName(EMPLOYED_AT))
@@ -1522,37 +1125,61 @@ def test_schemaview(schema_view_no_imports: SchemaView) -> None:
     element = view.get_element(SlotDefinitionName("has employment history"))
     logger.debug(element.annotations)
 
+
+def test_is_mixin(schema_view_no_imports: SchemaView) -> None:
+    """Test is_mixin method."""
+    view = schema_view_no_imports
     assert view.is_mixin("WithLocation")
     assert not view.is_mixin("BirthEvent")
 
+
+def test_inverse(schema_view_no_imports: SchemaView) -> None:
+    """Test inverse method."""
+    view = schema_view_no_imports
     assert view.inverse("employment history of") == "has employment history"
     assert view.inverse("has employment history") == "employment history of"
 
+
+# FIXME: improve test - use simpler schema if needed
+def test_get_mapping_index(schema_view_no_imports: SchemaView) -> None:
+    """Test get_mapping_index method."""
+    view = schema_view_no_imports
     mapping = view.get_mapping_index()
     assert mapping is not None
 
+
+def test_get_element_by_mapping(schema_view_no_imports: SchemaView) -> None:
+    """Test get_element_by_mapping method."""
+    view = schema_view_no_imports
     category_mapping = view.get_element_by_mapping("GO:0005198")
     assert category_mapping == [ACTIVITY]
 
+
+def test_is_multivalued(schema_view_no_imports: SchemaView) -> None:
+    """Test is_multivalued method."""
+    view = schema_view_no_imports
     assert view.is_multivalued("aliases")
     assert not view.is_multivalued("id")
     assert view.is_multivalued("dog addresses")
 
+
+def test_slot_is_true_for_metadata_property(schema_view_no_imports: SchemaView) -> None:
+    """Test slot_is_true_for_metadata_property method."""
+    view = schema_view_no_imports
     assert view.slot_is_true_for_metadata_property("aliases", "multivalued")
     assert view.slot_is_true_for_metadata_property("id", "identifier")
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match='property to introspect must be of type "boolean"'):
         view.slot_is_true_for_metadata_property("aliases", "aliases")
 
-    for tn, t in view.all_types().items():
-        logger.info(f"TN = {tn}")
-        assert t.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
 
-    for sn, s in view.all_slots().items():
-        logger.info(f"SN = {sn} RANGE={s.range}")
-        assert s.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
-        rng = view.induced_slot(sn).range
-        assert rng is not None
+# FIXME: improve tests, remove debug logging
+def test_relativity(schema_view_no_imports: SchemaView) -> None:
+    """Log the output of various methods that depend on class hierarchy."""
+    view = schema_view_no_imports
+
+    all_cls = view.all_classes()
+    logger.debug(f"n_cls = {len(all_cls)}")
 
     for cn in all_cls.keys():
         c = view.get_class(cn)
@@ -1573,13 +1200,20 @@ def test_schemaview(schema_view_no_imports: SchemaView) -> None:
 
     logger.debug(f"ALL = {view.all_elements().keys()}")
 
-    # -- TEST ANCESTOR/DESCENDANTS FUNCTIONS --
 
-    assert set(view.class_ancestors(COMPANY)) == {"Company", "Organization", "HasAliases", "Thing"}
-    assert set(view.class_ancestors(COMPANY, reflexive=False)) == {"Organization", "HasAliases", "Thing"}
-    assert set(view.class_descendants("Thing")) == {"Thing", "Person", "Organization", COMPANY, "Adult"}
+def test_ancestors_descendants(schema_view_no_imports: SchemaView) -> None:
+    """Test class_ancestors and class_descendants methods."""
+    view = schema_view_no_imports
 
-    # -- TEST CLASS SLOTS --
+    assert set(view.class_ancestors(ADULT)) == {ADULT, PERSON, "HasAliases", THING}
+    assert set(view.class_ancestors(COMPANY)) == {COMPANY, "Organization", "HasAliases", THING}
+    assert set(view.class_ancestors(COMPANY, reflexive=False)) == {"Organization", "HasAliases", THING}
+    assert set(view.class_descendants(THING)) == {THING, PERSON, "Organization", COMPANY, ADULT}
+
+
+def test_class_slots(schema_view_no_imports: SchemaView) -> None:
+    """Test class_slots method."""
+    view = schema_view_no_imports
 
     assert set(view.class_slots(PERSON)) == {
         "id",
@@ -1596,58 +1230,39 @@ def test_schemaview(schema_view_no_imports: SchemaView) -> None:
     assert view.class_slots(PERSON) == view.class_slots(ADULT)
     assert set(view.class_slots(COMPANY)) == {"id", "name", "ceo", "aliases"}
 
-    assert view.get_class(AGENT).class_uri == "prov:Agent"
-    assert view.get_uri(AGENT) == "prov:Agent"
-    logger.debug(view.get_class(COMPANY).class_uri)
 
-    assert view.get_uri(COMPANY) == "ks:Company"
-
-    # test induced slots
-    for c in [COMPANY, "Person", "Organization"]:
-        islot = view.induced_slot("aliases", c)
-        assert islot.multivalued is True
-        assert islot.owner == c
-        assert view.get_uri(islot, expand=True) == "https://w3id.org/linkml/tests/kitchen_sink/aliases"
-
-    assert view.get_identifier_slot("Company").name == "id"
-    assert view.get_identifier_slot("Thing").name == "id"
-    assert view.get_identifier_slot("FamilialRelationship") is None
-
-    for c in [COMPANY, "Person", "Organization", "Thing"]:
-        assert view.induced_slot("id", c).identifier
-        assert not view.induced_slot("name", c).identifier
-        assert not view.induced_slot("name", c).required
-        assert view.induced_slot("name", c).range == "string"
-        assert view.induced_slot("id", c).owner == c
-        assert view.induced_slot("name", c).owner == c
-
-    for c in ["Event", "EmploymentEvent", "MedicalEvent"]:
-        s = view.induced_slot("started at time", c)
-        logger.debug(f"s={s.range} // c = {c}")
-        assert s.range == "date"
-        assert s.slot_uri == "prov:startedAtTime"
-        assert s.owner == c
-
-        c_induced = view.induced_class(c)
-        assert c_induced.slots == []
-        assert c_induced.attributes != []
-        s2 = c_induced.attributes["started at time"]
-        assert s2.range == "date"
-        assert s2.slot_uri == "prov:startedAtTime"
-
-    # test slot_usage
-    assert view.induced_slot(AGE_IN_YEARS, "Person").minimum_value == 0
-    assert view.induced_slot(AGE_IN_YEARS, "Adult").minimum_value == 16
-    assert view.induced_slot("name", "Person").pattern is not None
-    assert view.induced_slot("type", "FamilialRelationship").range == "FamilialRelationshipType"
-    assert view.induced_slot(RELATED_TO, "FamilialRelationship").range == "Person"
-    assert view.get_slot(RELATED_TO).range == "Thing"
-    assert view.induced_slot(RELATED_TO, "Relationship").range == "Thing"
-    assert set(view.induced_slot("name").domain_of) == {"Thing", "Place"}
+def test_get_mappings(schema_view_no_imports: SchemaView) -> None:
+    """Test get_mappings and *_mappings methods."""
+    view = schema_view_no_imports
 
     a = view.get_class(ACTIVITY)
-    assert set(a.exact_mappings) == {"prov:Activity"}
-    logger.debug(view.get_mappings(ACTIVITY, expand=True))
+    assert view.get_mappings(ACTIVITY) == {
+        "self": ["ks:Activity"],
+        "native": ["ks:Activity"],
+        "exact": ["prov:Activity"],
+        "narrow": ["GO:0005198"],
+        "broad": [],
+        "related": [],
+        "close": [],
+        "undefined": [],
+    }
+    assert view.get_mappings(ACTIVITY, expand=True) == {
+        "self": ["https://w3id.org/linkml/tests/kitchen_sink/Activity"],
+        "native": ["https://w3id.org/linkml/tests/kitchen_sink/Activity"],
+        "exact": ["http://www.w3.org/ns/prov#Activity"],
+        "narrow": ["http://purl.obolibrary.org/obo/GO_0005198"],
+        "broad": [],
+        "related": [],
+        "close": [],
+        "undefined": [],
+    }
+
+    assert a.exact_mappings == ["prov:Activity"]
+    assert a.narrow_mappings == ["GO:0005198"]
+    assert a.broad_mappings == []
+    assert a.related_mappings == []
+    assert a.close_mappings == []
+
     assert set(view.get_mappings(ACTIVITY)["exact"]) == {"prov:Activity"}
     assert set(view.get_mappings(ACTIVITY, expand=True)["exact"]) == {"http://www.w3.org/ns/prov#Activity"}
 
@@ -1737,10 +1352,12 @@ def test_get_classes_modifying_slot() -> None:
     assert slot_classes[1] == ClassDefinitionName("Administrator")
 
 
-def test_rollup_rolldown(schema_view_no_imports: SchemaView) -> None:
+# FIXME: this test modifies the schema - may be better to use simpler schema
+# FIXME: remove debug logging and replace with assertions
+def test_rollup_rolldown() -> None:
     """Test rolling up and rolling down."""
-    # no import schema
-    view = schema_view_no_imports
+    # create the schemaview within the test to avoid modifying the test fixture
+    view = SchemaView(SCHEMA_NO_IMPORTS)
     element_name = "Event"
     roll_up(view, element_name)
     for slot in view.class_induced_slots(element_name):
@@ -1905,6 +1522,77 @@ def test_induced_slot(sv_induced_slots: SchemaView) -> None:
     assert not s2_induced_c2_1b.required
     assert s2_induced_c2_1b.description == "mixin slot2"
     assert s2_induced_c2_1b.range == "mixin1b"
+
+
+def test_induced_slot_again(schema_view_no_imports: SchemaView) -> None:
+    """Test induced slots (again)."""
+    view = schema_view_no_imports
+
+    for sn, s in view.all_slots().items():
+        assert s.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
+        rng = view.induced_slot(sn).range
+        assert rng is not None
+
+    # test induced slots
+    for cn in [COMPANY, PERSON, "Organization"]:
+        islot = view.induced_slot("aliases", cn)
+        assert islot.multivalued is True
+        assert islot.owner == cn
+        assert view.get_uri(islot, expand=True) == "https://w3id.org/linkml/tests/kitchen_sink/aliases"
+
+    assert view.get_identifier_slot(COMPANY).name == "id"
+    assert view.get_identifier_slot(THING).name == "id"
+    assert view.get_identifier_slot("FamilialRelationship") is None
+
+    for cn in [COMPANY, PERSON, "Organization", THING]:
+        assert view.induced_slot("id", cn).identifier
+        assert not view.induced_slot("name", cn).identifier
+        assert not view.induced_slot("name", cn).required
+        assert view.induced_slot("name", cn).range == "string"
+        assert view.induced_slot("id", cn).owner == cn
+        assert view.induced_slot("name", cn).owner == cn
+
+    for cn in ["Event", "EmploymentEvent", "MedicalEvent"]:
+        s = view.induced_slot("started at time", cn)
+        assert s.range == "date"
+        assert s.slot_uri == "prov:startedAtTime"
+        assert s.owner == cn
+
+        c_induced = view.induced_class(cn)
+        assert c_induced.slots == []
+        assert c_induced.attributes != []
+        s2 = c_induced.attributes["started at time"]
+        assert s2.range == "date"
+        assert s2.slot_uri == "prov:startedAtTime"
+
+    # test slot_usage
+    assert view.induced_slot(AGE_IN_YEARS, PERSON).minimum_value == 0
+    assert view.induced_slot(AGE_IN_YEARS, ADULT).minimum_value == 16
+    assert view.induced_slot("name", PERSON).pattern is not None
+    assert view.induced_slot("type", "FamilialRelationship").range == "FamilialRelationshipType"
+    assert view.induced_slot(RELATED_TO, "FamilialRelationship").range == PERSON
+    assert view.get_slot(RELATED_TO).range == THING
+    assert view.induced_slot(RELATED_TO, "Relationship").range == THING
+    assert set(view.induced_slot("name").domain_of) == {THING, "Place"}
+
+
+def test_induced_slot_yet_again(schema_view_with_imports: SchemaView) -> None:
+    """Test induced slots yet again - no such thing as too many induced_slot tests, right?"""
+    view = schema_view_with_imports
+
+    for cn in [COMPANY, PERSON, "Organization", THING]:
+        assert view.induced_slot("id", cn).identifier
+        assert not view.induced_slot("name", cn).identifier
+        assert not view.induced_slot("name", cn).required
+        assert view.induced_slot("name", cn).range == "string"
+
+    for cn in ["Event", "EmploymentEvent", "MedicalEvent"]:
+        s = view.induced_slot("started at time", cn)
+        assert s.range == "date"
+        assert s.slot_uri == "prov:startedAtTime"
+
+    assert view.induced_slot(AGE_IN_YEARS, PERSON).minimum_value == 0
+    assert view.induced_slot(AGE_IN_YEARS, ADULT).minimum_value == 16
 
 
 @pytest.mark.parametrize(
