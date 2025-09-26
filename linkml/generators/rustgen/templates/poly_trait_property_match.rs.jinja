@@ -1,0 +1,10 @@
+{% set lifetime_needed = range.containerType %}
+{% set lifetime_needed = needs_lifetime %}
+    fn {{ name}}{% if lifetime_needed %}<'a>{% endif %}(&{% if lifetime_needed %}'a {% endif %}self) -> {{ type_getter }} {
+        match self {
+            {% for c in cases %}
+                {{ struct_name }}::{{c}}(val) => val.{{name}}(){% if is_container %}{% if is_optional %}.map(|x| x.to_any()){% else %}.to_any(){% endif %}{% endif %},
+            {% endfor %}
+
+        }
+    }
