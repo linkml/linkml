@@ -1,5 +1,5 @@
 {{name}}: {{ range }} = Field(default={{ field }}
-{%- if alias != None and alias != name %}, alias="{{alias}}"{% endif -%}
+{%- if alias %}, alias="{{alias}}"{% endif -%}
 {%- if title != None %}, title="{{title}}"{% endif -%}
 {%- if description %}, description="""{{description}}"""{% endif -%}
 {%- if equals_number != None %}

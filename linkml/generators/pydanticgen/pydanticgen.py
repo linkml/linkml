@@ -1,4 +1,5 @@
 import inspect
+import keyword
 import logging
 import os
 import re
@@ -141,6 +142,41 @@ class SplitMode(str, Enum):
 
 DefinitionType = TypeVar("DefinitionType", bound=Union[SchemaDefinition, ClassDefinition, SlotDefinition])
 TemplateType = TypeVar("TemplateType", bound=Union[PydanticModule, PydanticClass, PydanticAttribute])
+
+
+def make_valid_python_identifier(name: str) -> str:
+    """
+    Convert a string to a valid Python identifier.
+
+    This is used when slot names contain characters that are not valid in Python
+    identifiers (e.g., '@id', '@type'). The original name can be preserved using
+    Pydantic field aliases.
+
+    Args:
+        name: The original name that may contain invalid characters
+
+    Returns:
+        A valid Python identifier that doesn't start with underscore (Pydantic restriction)
+    """
+    # Replace invalid characters with underscores
+    identifier = re.sub(r"[^a-zA-Z0-9_]", "_", name)
+
+    # Remove leading underscores (Pydantic doesn't allow field names starting with _)
+    identifier = identifier.lstrip("_")
+
+    # Ensure it doesn't start with a number
+    if identifier and identifier[0].isdigit():
+        identifier = f"field_{identifier}"
+
+    # Ensure it's not a keyword
+    if keyword.iskeyword(identifier):
+        identifier = f"{identifier}_"
+
+    # Ensure it's not empty
+    if not identifier:
+        identifier = "field"
+
+    return identifier
 
 
 @dataclass
@@ -461,7 +497,19 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             if getattr(slot, k, None) is not None
         }
         slot_alias = slot.alias if slot.alias else slot.name
-        slot_args["name"] = underscore(slot_alias)
+
+        # Create a valid Python identifier for the field name
+        python_field_name = make_valid_python_identifier(underscore(slot_alias))
+        slot_args["name"] = python_field_name
+
+        # If the original name is different from the Python identifier, set an alias
+        if slot_alias != python_field_name:
+            slot_args["alias"] = slot_alias
+        else:
+            # Remove any existing alias if the names are the same
+            if "alias" in slot_args:
+                del slot_args["alias"]
+
         slot_args["description"] = slot.description.replace('"', '\\"') if slot.description is not None else None
         predef = self.predefined_slot_values.get(camelcase(cls.name), {}).get(slot.name, None)
         if predef is not None:
@@ -1241,7 +1289,7 @@ def cli(
         metadata_mode=meta,
         **args,
     )
-    print(gen.serialize())
+    print(gen.serialize(), end="")
 
 
 if __name__ == "__main__":

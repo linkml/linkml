@@ -101,7 +101,6 @@ schema:
 
 data:
 
-
 ```yaml
 - id: NCBITaxon:40674
   name: mammals
@@ -148,7 +147,6 @@ Consider a variant of the above schema, with a non-multivalued slot
 
 data:
 
-
 ```yaml
 - id: NCBITaxon:9606
   name: human
@@ -158,7 +156,6 @@ data:
     has_parent:
       id: NCBITaxon:40674
       name: mammals
-
 ```
 
 ## Inlining as simple dictionaries
@@ -204,7 +201,28 @@ The concept of inlining only makes sense with JSON-like tree-oriented data seria
 
 When serializing data as RDF triples or in a relational database, the value for the slot will always be a reference.
 
-The inlined slot in LinkML corresponds to `@embed` in JSON-LD
+The inlined slot in LinkML corresponds to `@embed` in JSON-LD.
+
+### Using framing in JSON-LD
+
+When generating a JSON-LD context, you can request a companion frame
+that represents the same inlining rules in JSON-LD. The frame uses the
+`@embed` directive to follow the slot-level `inlined` settings:
+
+* `inlined: true` → `@embed: @always`
+* `inlined: false` → `@embed: @never`
+
+This is enabled with the ``--emit-frame`` option (requires ``--output``):
+
+    gen-jsonld-context schema.yaml --output schema.context.jsonld --emit-frame
+
+This produces two files:
+
+* ``schema.context.jsonld`` – the JSON-LD context
+* ``schema.frame.jsonld`` – the JSON-LD frame with `@embed` rules
+
+The root class for the frame is taken from a class marked with ``tree_root: true``,
+or defaults to the first class in the schema if none is explicitly marked.
 
 ## When should inlining be used?
 
