@@ -13,6 +13,7 @@ gen: gen-code gen-rust
 
 gen-code:
 	$(RUN) gen-project -d $(OUTDIR) $(SRC)
+	$(RUN) gen-pydantic --meta full  $(SRC) > $(NAME)_pydantic.py
 
 gen-rust:
 	$(RUN) gen-rust $(SRC) -n $(NAME) -o $(RUST_OUTDIR) --force
