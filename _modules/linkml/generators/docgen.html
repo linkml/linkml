@@ -569,6 +569,9 @@
     <span class="n">hierarchical_class_view</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">render_imports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 
+    <span class="n">preserve_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If true, preserve LinkML element names in docs instead of camelcase/underscore.&quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">dialect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialect</span>
         <span class="k">if</span> <span class="n">dialect</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -588,6 +591,27 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">merge_imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">)</span>
+
+        <span class="c1"># Override schemaview&#39;s get_mappings to use preserved URIs when needed</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preserve_names</span><span class="p">:</span>
+            <span class="n">original_get_mappings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_mappings</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">get_mappings_with_preserved_uris</span><span class="p">(</span><span class="n">element_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="n">mappings</span> <span class="o">=</span> <span class="n">original_get_mappings</span><span class="p">(</span><span class="n">element_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">mappings</span> <span class="ow">and</span> <span class="n">element_name</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_element</span><span class="p">(</span><span class="n">element_name</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">element</span><span class="p">:</span>
+                            <span class="n">preserved_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                            <span class="c1"># Fix self and native mappings to use preserved URI</span>
+                            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;self&quot;</span><span class="p">,</span> <span class="s2">&quot;native&quot;</span><span class="p">):</span>
+                                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">mappings</span><span class="p">:</span>
+                                    <span class="n">mappings</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">preserved_uri</span><span class="p">]</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                <span class="k">return</span> <span class="n">mappings</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_mappings</span> <span class="o">=</span> <span class="n">get_mappings_with_preserved_uris</span>
 
 <div class="viewcode-block" id="DocGenerator.serialize">
 <a class="viewcode-back" href="../../../generators/docgen.html#linkml.generators.docgen.DocGenerator.serialize">[docs]</a>
@@ -762,19 +786,21 @@
 <span class="sd">        :return: slot name or numeric portion of CURIE prefixed</span>
 <span class="sd">            slot_uri</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">element</span><span class="p">)</span><span class="o">.</span><span class="n">class_name</span> <span class="o">==</span> <span class="s2">&quot;slot_definition&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">element</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preserve_names</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">element</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">element</span><span class="p">)</span><span class="o">.</span><span class="n">class_name</span> <span class="o">==</span> <span class="s2">&quot;slot_definition&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_slot_uris</span><span class="p">:</span>
                 <span class="n">curie</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">curie</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">curie</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-
             <span class="k">return</span> <span class="n">underscore</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">element</span><span class="p">)</span><span class="o">.</span><span class="n">class_name</span> <span class="o">==</span> <span class="s2">&quot;class_definition&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_class_uris</span><span class="p">:</span>
                 <span class="n">curie</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">curie</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">curie</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-
             <span class="k">return</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
@@ -789,6 +815,13 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">SubsetDefinition</span><span class="p">):</span>
             <span class="c1"># Subsets have no uri attribute</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+
+        <span class="c1"># Simple URI composition for preserved names</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preserve_names</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">use_class_uris</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_slot_uris</span><span class="p">):</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span>
+            <span class="k">if</span> <span class="n">base</span> <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;://&quot;</span> <span class="ow">in</span> <span class="n">base</span> <span class="ow">or</span> <span class="n">base</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;http&quot;</span><span class="p">)):</span>
+                <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">base</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">))</span> <span class="k">else</span> <span class="s2">&quot;/&quot;</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base</span><span class="si">}{</span><span class="n">sep</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">element</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subfolder_type_separation</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="n">expand</span><span class="p">,</span> <span class="n">use_element_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -841,6 +874,8 @@
             <span class="k">return</span> <span class="s2">&quot;NONE&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">Definition</span><span class="p">):</span>
             <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_element</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;NONE&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_external</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">uri_link</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">):</span>
@@ -853,12 +888,12 @@
                         <span class="n">subfolder</span><span class="o">=</span><span class="n">subfolder</span> <span class="o">+</span> <span class="n">CLASS_SUBFOLDER</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subfolder_type_separation</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_markdown_link</span><span class="p">(</span>
-                <span class="n">camelcase</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
                 <span class="n">subfolder</span><span class="o">=</span><span class="n">subfolder</span> <span class="o">+</span> <span class="n">CLASS_SUBFOLDER</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subfolder_type_separation</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_markdown_link</span><span class="p">(</span>
-                <span class="n">camelcase</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
                 <span class="n">subfolder</span><span class="o">=</span><span class="n">subfolder</span> <span class="o">+</span> <span class="n">ENUM_SUBFOLDER</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subfolder_type_separation</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">):</span>
@@ -871,17 +906,17 @@
                         <span class="n">subfolder</span><span class="o">=</span><span class="n">subfolder</span> <span class="o">+</span> <span class="n">SLOT_SUBFOLDER</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subfolder_type_separation</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_markdown_link</span><span class="p">(</span>
-                <span class="n">underscore</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
                 <span class="n">subfolder</span><span class="o">=</span><span class="n">subfolder</span> <span class="o">+</span> <span class="n">SLOT_SUBFOLDER</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subfolder_type_separation</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">TypeDefinition</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_markdown_link</span><span class="p">(</span>
-                <span class="n">camelcase</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
                 <span class="n">subfolder</span><span class="o">=</span><span class="n">subfolder</span> <span class="o">+</span> <span class="n">TYPE_SUBFOLDER</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subfolder_type_separation</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">SubsetDefinition</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_markdown_link</span><span class="p">(</span>
-                <span class="n">camelcase</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
                 <span class="n">subfolder</span><span class="o">=</span><span class="n">subfolder</span> <span class="o">+</span> <span class="n">SUBSET_SUBFOLDER</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subfolder_type_separation</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -899,6 +934,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_external</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;https://w3id.org/linkml/&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_is_external</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">element</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">from_schema</span> <span class="o">==</span> <span class="s2">&quot;https://w3id.org/linkml/types&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">genmeta</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1113,7 +1150,7 @@
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">diagram_type</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">DiagramType</span><span class="o">.</span><span class="n">er_diagram</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
-            <span class="n">erdgen</span> <span class="o">=</span> <span class="n">ERDiagramGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;mermaid&quot;</span><span class="p">)</span>
+            <span class="n">erdgen</span> <span class="o">=</span> <span class="n">ERDiagramGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;mermaid&quot;</span><span class="p">,</span> <span class="n">preserve_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">preserve_names</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">class_names</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">erdgen</span><span class="o">.</span><span class="n">serialize_classes</span><span class="p">(</span><span class="n">class_names</span><span class="p">,</span> <span class="n">follow_references</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_hops</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1121,7 +1158,7 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">diagram_type</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">DiagramType</span><span class="o">.</span><span class="n">mermaid_class_diagram</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;This is currently handled in the jinja templates&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">diagram_type</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">DiagramType</span><span class="o">.</span><span class="n">plantuml_class_diagram</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
-            <span class="n">plantumlgen</span> <span class="o">=</span> <span class="n">PlantumlGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+            <span class="n">plantumlgen</span> <span class="o">=</span> <span class="n">PlantumlGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">preserve_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">preserve_names</span><span class="p">)</span>
             <span class="n">plantuml_diagram</span> <span class="o">=</span> <span class="n">plantumlgen</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">classes</span><span class="o">=</span><span class="n">class_names</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created PlantUML diagram for class: </span><span class="si">{</span><span class="n">class_names</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">plantuml_diagram</span>
@@ -1538,6 +1575,12 @@
 <span class="s2">Whether to truncate long (potentially spanning multiple lines) descriptions of classes, slots, etc., in the docs.</span>
 <span class="s2">Set to true for truncated descriptions, and false to display full descriptions.&quot;&quot;&quot;</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--preserve-names/--normalize-names&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Preserve original LinkML names in documentation output (e.g., for page titles, links, and file names).&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;doc&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span>
@@ -1552,6 +1595,7 @@
     <span class="n">subfolder_type_separation</span><span class="p">,</span>
     <span class="n">render_imports</span><span class="p">,</span>
     <span class="n">truncate_descriptions</span><span class="p">,</span>
+    <span class="n">preserve_names</span><span class="p">,</span>
     <span class="o">**</span><span class="n">args</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate documentation folder from a LinkML YAML schema</span>
@@ -1585,6 +1629,7 @@
         <span class="n">subfolder_type_separation</span><span class="o">=</span><span class="n">subfolder_type_separation</span><span class="p">,</span>
         <span class="n">render_imports</span><span class="o">=</span><span class="n">render_imports</span><span class="p">,</span>
         <span class="n">truncate_descriptions</span><span class="o">=</span><span class="n">truncate_descriptions</span><span class="p">,</span>
+        <span class="n">preserve_names</span><span class="o">=</span><span class="n">preserve_names</span><span class="p">,</span>
         <span class="o">**</span><span class="n">args</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">gen</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
