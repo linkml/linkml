@@ -1,10 +1,21 @@
 JSON-LD Contexts
 ================
 
-.. warning ::
+.. note ::
 
-    The JSON-LD context generator does not yet include ``@embed``
-    directives necessary for conversion *from* RDF.
+    When run with ``--emit-frame``, the generator writes a ``.frame.jsonld`` with ``@embed`` directives
+    derived from slot ``inlined`` settings (``@always`` / ``@never``).
+
+    Example::
+
+        gen-jsonld-context schema.yaml --output schema.context.jsonld --emit-frame
+
+    This produces two files:
+
+    * ``schema.context.jsonld`` – the JSON-LD context
+    * ``schema.frame.jsonld`` – the JSON-LD frame (only if @embed rules are present)
+
+    ``--emit-frame`` requires ``--output``.
 
 .. warning ::
 

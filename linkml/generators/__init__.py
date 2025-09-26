@@ -12,6 +12,7 @@ from linkml.generators.panderagen import PanderaGenerator
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
+from linkml.generators.rustgen import RustGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator
@@ -49,6 +50,7 @@ __all__ = [
     "ContextGenerator",
     "JSONLDGenerator",
     "JsonSchemaGenerator",
+    "RustGenerator",
     "ShaclGenerator",
     "ShExGenerator",
     "SQLAlchemyGenerator",
