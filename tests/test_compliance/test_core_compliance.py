@@ -528,7 +528,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
     choices = {
         (PYDANTIC, False, False): "Optional[str] = Field(default=None",
         (PYDANTIC, False, True): "str = Field(default=...",
-        (PYDANTIC, True, False): "Optional[list[str]] = Field(default=None",
+        (PYDANTIC, True, False): "Optional[list[str]] = Field(default=[]",
         (PYDANTIC, True, True): "list[str] = Field(default=...",
         # TODO: values
         (PYTHON_DATACLASSES, False, False): "",

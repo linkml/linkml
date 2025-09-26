@@ -212,6 +212,8 @@ class PydanticAttribute(PydanticTemplateModel):
         elif self.required or self.identifier or self.key:
             return "..."
         else:
+            if self.range and self.range.startswith("Optional[list"):
+                return "[]"
             return "None"
 
 
