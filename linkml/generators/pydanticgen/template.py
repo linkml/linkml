@@ -1,5 +1,4 @@
 import sys
-from collections.abc import Generator
 from importlib.util import find_spec
 from typing import Any, ClassVar, Literal, Optional, Union, get_args
 
@@ -7,7 +6,19 @@ from jinja2 import Environment, PackageLoader
 from pydantic import BaseModel, Field, field_validator
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
-from linkml.generators.common.template import TemplateModel
+from linkml.generators.common.template import (
+    ConditionalImport as ConditionalImport_,
+)
+from linkml.generators.common.template import (
+    Import as Import_,
+)
+from linkml.generators.common.template import (
+    Imports as Imports_,
+)
+from linkml.generators.common.template import (
+    ObjectImport,  # noqa: F401
+    TemplateModel,
+)
 from linkml.utils.deprecation import deprecation_warning
 
 try:
@@ -251,18 +262,7 @@ class PydanticClass(PydanticTemplateModel):
         return self.attributes
 
 
-class ObjectImport(BaseModel):
-    """
-    An object to be imported from within a module.
-
-    See :class:`.Import` for examples
-    """
-
-    name: str
-    alias: Optional[str] = None
-
-
-class Import(PydanticTemplateModel):
+class Import(Import_, PydanticTemplateModel):
     """
     A python module, or module and classes to be imported.
 
@@ -293,15 +293,6 @@ class Import(PydanticTemplateModel):
     """
 
     template: ClassVar[str] = "imports.py.jinja"
-    module: str
-    alias: Optional[str] = None
-    objects: Optional[list[ObjectImport]] = None
-    is_schema: bool = False
-    """
-    Whether or not this ``Import`` is importing another schema imported by the main schema --
-    ie. that it is not expected to be provided by the environment, but imported locally from within the package.
-    Used primarily in split schema generation, see :func:`.pydanticgen.generate_split` for example usage.
-    """
 
     @computed_field
     def group(self) -> IMPORT_GROUPS:
@@ -325,72 +316,8 @@ class Import(PydanticTemplateModel):
         else:
             return "thirdparty"
 
-    def merge(self, other: "Import") -> list["Import"]:
-        """
-        Merge one import with another, see :meth:`.Imports` for an example.
 
-        * If module don't match, return both
-        * If one or the other are a :class:`.ConditionalImport`, return both
-        * If modules match, neither contain objects, but the other has an alias, return the other
-        * If modules match, one contains objects but the other doesn't, return both
-        * If modules match, both contain objects, merge the object lists, preferring objects with aliases
-        """
-        # return both if we are orthogonal
-        if self.module != other.module:
-            return [self, other]
-
-        # handle conditionals
-        if isinstance(self, ConditionalImport) and isinstance(other, ConditionalImport):
-            # If our condition is the same, return the newer version
-            if self.condition == other.condition:
-                return [other]
-        if isinstance(self, ConditionalImport) or isinstance(other, ConditionalImport):
-            # we don't have a good way of combining conditionals, just return both
-            return [self, other]
-
-        # handle module vs. object imports
-        elif other.objects is None and self.objects is None:
-            # both are modules, return the other only if it updates the alias
-            if other.alias:
-                return [other]
-            else:
-                return [self]
-        elif other.objects is not None and self.objects is not None:
-            # both are object imports, merge and return
-            alias = self.alias if other.alias is None else other.alias
-            # FIXME: super awkward implementation
-            # keep ours if it has an alias and the other doesn't,
-            # otherwise take the other's version
-            self_objs = {obj.name: obj for obj in self.objects}
-            other_objs = {
-                obj.name: obj for obj in other.objects if obj.name not in self_objs or self_objs[obj.name].alias is None
-            }
-            self_objs.update(other_objs)
-
-            return [
-                Import(
-                    module=self.module,
-                    alias=alias,
-                    objects=list(self_objs.values()),
-                    is_schema=self.is_schema or other.is_schema,
-                )
-            ]
-        else:
-            # one is a module, the other imports objects, keep both
-            return [self, other]
-
-    def sort(self) -> None:
-        """
-        Sort imported objects
-
-        * First by whether the first letter is capitalized or not,
-        * Then alphabetically (by object name rather than alias)
-        """
-        if self.objects:
-            self.objects = sorted(self.objects, key=lambda obj: (obj.name[0].islower(), obj.name))
-
-
-class ConditionalImport(Import):
+class ConditionalImport(ConditionalImport_, PydanticTemplateModel):
     """
     Import that depends on some condition in the environment, common when
     using backported features or straddling dependency versions.
@@ -431,22 +358,13 @@ class ConditionalImport(Import):
     """
 
     template: ClassVar[str] = "conditional_import.py.jinja"
-    condition: str
-    alternative: Import
 
     @computed_field
     def group(self) -> Literal["conditional"]:
         return "conditional"
 
-    def sort(self) -> None:
-        """
-        :meth:`.Import.sort` called for self and :attr:`.alternative`
-        """
-        super().sort()
-        self.alternative.sort()
 
-
-class Imports(PydanticTemplateModel):
+class Imports(Imports_, PydanticTemplateModel):
     """
     Container class for imports that can handle merging!
 
@@ -483,135 +401,6 @@ class Imports(PydanticTemplateModel):
     imports: list[Union[Import, ConditionalImport]] = Field(default_factory=list)
     group_order: tuple[str, ...] = get_args(IMPORT_GROUPS)
     """Order in which to sort imports by their :attr:`.Import.group`"""
-    render_sorted: bool = True
-    """When rendering, render in sorted groups"""
-
-    @classmethod
-    def _merge(
-        cls, imports: list[Union[Import, ConditionalImport]], other: Union[Import, "Imports", list[Import]]
-    ) -> list[Union[Import, ConditionalImport]]:
-        """
-        Add a new import to an existing imports list, handling deduplication and flattening.
-
-        Mutates and returns ``imports``
-
-        Generally will prefer the imports in ``other`` , updating those in ``imports``.
-        If ``other`` ...
-        - doesn't match any ``module`` in ``imports``, add it!
-        - matches a single ``module`` in imports, :meth:`.Import.merge` the object imports
-        - matches multiple ``module``s in imports, then there must have been another
-            :class:`.ConditionalImport` already present, so we :meth:`.Import.merge` the existing
-            :class:`.Import` if it is one, and if it's a :class:`.ConditionalImport` just YOLO
-            and append it since there isn't a principled way to merge them from strings.
-        - is :class:`.Imports`  or a list of :class:`.Import` s, call this recursively for each
-          item.
-
-        Since imports can be merged in an undefined order depending on the generator configuration,
-        default behavior for imports with matching ``module`` is to remove them and append to the
-        end of the imports list (rather than keeping it in the position of the existing
-        :class:`.Import` ). :class:`.ConditionalImports` make it possible to have namespace
-        conflicts, so in imperative import style we assume the most recently added :class:`.Import`
-        is the one that should prevail.
-        """
-        #
-        if isinstance(other, Imports) or (isinstance(other, list) and all([isinstance(i, Import) for i in other])):
-            for i in other:
-                imports = cls._merge(imports, i)
-            return imports
-
-        existing = [i for i in imports if i.module == other.module]
-
-        # if we have nothing importing from this module yet, add it!
-        if len(existing) == 0:
-            imports.append(other)
-        elif len(existing) == 1:
-            imports.remove(existing[0])
-            imports.extend(existing[0].merge(other))
-        else:
-            # we have both a conditional and at least one nonconditional already.
-            # If this is another conditional, we just add it, otherwise, we merge it
-            # with the single nonconditional
-            if isinstance(other, ConditionalImport):
-                imports.append(other)
-            else:
-                for e in existing:
-                    if isinstance(e, Import):
-                        imports.remove(e)
-                        merged = e.merge(other)
-                        imports.extend(merged)
-                        break
-
-        # SPECIAL CASE - __future__ annotations must happen at the top of a file
-        # sort here outside of sort method because our imports are invalid without it,
-        # where calling ``sort`` should be optional.
-        imports = sorted(imports, key=lambda i: i.module == "__future__", reverse=True)
-        return imports
-
-    def __add__(self, other: Union[Import, "Imports", list[Import]]) -> "Imports":
-        imports = self.imports.copy()
-        imports = self._merge(imports, other)
-        return Imports.model_construct(
-            imports=imports, **{k: getattr(self, k, None) for k in self.model_fields if k != "imports"}
-        )
-
-    def __len__(self) -> int:
-        return len(self.imports)
-
-    def __iter__(self) -> Generator[Import, None, None]:
-        yield from self.imports
-
-    def __getitem__(self, item: Union[int, str]) -> Import:
-        if isinstance(item, int):
-            return self.imports[item]
-        elif isinstance(item, str):
-            # the name of the module
-            an_import = [i for i in self.imports if i.module == item]
-            if len(an_import) == 0:
-                raise KeyError(f"No import with module {item} was found.\nWe have: {self.imports}")
-            return an_import[0]
-        else:
-            raise TypeError(f"Can only index with an int or a string as the name of the module,\nGot: {type(item)}")
-
-    def __contains__(self, item: Union[Import, "Imports", list[Import]]) -> bool:
-        """
-        Check if all the objects are imported from the given module(s)
-
-        If the import is a bare module import (ie its :attr:`~.Import.objects` is ``None`` )
-        then we must also have a bare module import in this Imports (because even if
-        we import from the module, unless we import it specifically its name won't be
-        available in the namespace.
-
-        :attr:`.Import.alias` must always match for the same reason.
-        """
-        if isinstance(item, Imports):
-            return all([i in self for i in item.imports])
-        elif isinstance(item, list):
-            return all([i in self for i in item])
-        elif isinstance(item, Import):
-            try:
-                an_import = self[item.module]
-            except KeyError:
-                return False
-            if item.objects is None:
-                return an_import == item
-            else:
-                return all([obj in an_import.objects for obj in item.objects])
-        else:
-            raise TypeError(f"Imports only contains single Import objects or other Imports\nGot: {type(item)}")
-
-    @field_validator("imports", mode="after")
-    @classmethod
-    def imports_are_merged(
-        cls, imports: list[Union[Import, ConditionalImport]]
-    ) -> list[Union[Import, ConditionalImport]]:
-        """
-        When creating from a list of imports, construct model as if we have done so by iteratively
-        constructing with __add__ calls
-        """
-        merged_imports = []
-        for i in imports:
-            merged_imports = cls._merge(merged_imports, i)
-        return merged_imports
 
     @computed_field
     def import_groups(self) -> list[IMPORT_GROUPS]:
@@ -637,11 +426,6 @@ class Imports(PydanticTemplateModel):
         for i in imports:
             i.sort()
         self.imports = imports
-
-    def render(self, environment: Optional[Environment] = None, black: bool = False) -> str:
-        if self.render_sorted:
-            self.sort()
-        return super().render(environment=environment, black=black)
 
 
 class PydanticModule(PydanticTemplateModel):
