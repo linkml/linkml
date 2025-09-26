@@ -5,7 +5,7 @@ import {{ module }}
 import {{ module }} as {{ alias }}
 {%- else %}
     {% if objects | length == 1 %}
-from {{ module }} import {{ objects[0]['name'] }} {% if objects[0]['alias'] is not none %} as {{ objects[0]['alias'] }} {% endif %}
+from {{ module }} import {{ objects[0]['name'] }}{% if objects[0]['alias'] is not none %} as {{ objects[0]['alias'] }}{% endif %}
     {%- else %}
 from {{ module }} import (
     {% for object in objects %}

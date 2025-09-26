@@ -9,7 +9,13 @@ import pytest
 import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper
-from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition, SlotDefinition
+from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    EnumDefinition,
+    PermissibleValue,
+    SchemaDefinition,
+    SlotDefinition,
+)
 from linkml_runtime.loaders import yaml_loader
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
@@ -474,3 +480,118 @@ def assert_dict_subset(subset: dict, full: dict, path=""):
             assert_dict_subset(subset[key], full[key], new_path)
         else:
             assert full[key] == subset[key], f"in path {new_path}"
+
+
+def test_preserve_names():
+    """Test that preserve_names option preserves original LinkML names in JSON Schema.
+
+    Tests both class names and property names with underscores and mixed case.
+    """
+    schema = SchemaDefinition(
+        id="https://example.com/test",
+        name="test_schema",
+        classes={
+            "foo": ClassDefinition(name="foo", slots=["_bar", "mySlot"]),
+            "My_Class": ClassDefinition(name="My_Class", slots=["other"]),
+        },
+        slots={
+            "_bar": SlotDefinition(name="_bar", range="string"),
+            "mySlot": SlotDefinition(name="mySlot", range="integer"),
+            "other": SlotDefinition(name="other", range="My_Class", inlined=True),
+        },
+    )
+
+    # Test default behavior (names are normalized)
+    generator_default = JsonSchemaGenerator(schema=schema)
+    json_schema_default = json.loads(generator_default.serialize())
+
+    assert "Foo" in json_schema_default["$defs"]
+    assert "MyClass" in json_schema_default["$defs"]
+    assert "foo" not in json_schema_default["$defs"]
+    assert "My_Class" not in json_schema_default["$defs"]
+
+    properties_default = json_schema_default["$defs"]["Foo"]["properties"]
+    assert "_bar" in properties_default
+    assert "mySlot" in properties_default
+
+    # Test preserve_names behavior (names are preserved)
+    generator_preserve = JsonSchemaGenerator(schema=schema, preserve_names=True)
+    json_schema_preserve = json.loads(generator_preserve.serialize())
+
+    assert "foo" in json_schema_preserve["$defs"]
+    assert "My_Class" in json_schema_preserve["$defs"]
+    assert "Foo" not in json_schema_preserve["$defs"]
+    assert "MyClass" not in json_schema_preserve["$defs"]
+
+    properties_preserve = json_schema_preserve["$defs"]["foo"]["properties"]
+    assert "_bar" in properties_preserve
+    assert "mySlot" in properties_preserve
+
+    # Test that references also use preserved names
+    other_property = json_schema_preserve["$defs"]["My_Class"]["properties"]["other"]
+    assert "anyOf" in other_property
+    assert other_property["anyOf"][0]["$ref"] == "#/$defs/My_Class"
+
+    # Test top-level schema selection with preserve_names
+    generator_preserve_top = JsonSchemaGenerator(schema=schema, preserve_names=True, top_class="My_Class")
+    json_schema_preserve_top = json.loads(generator_preserve_top.serialize())
+
+    # When preserve_names=True, top_class should match exactly with class name
+    # The schema should have the preserved class name in $defs and reference it
+    assert "My_Class" in json_schema_preserve_top["$defs"]
+    if "$ref" in json_schema_preserve_top:
+        assert json_schema_preserve_top["$ref"] == "#/$defs/My_Class"
+
+    # Test default behavior for top-level schema selection
+    generator_default_top = JsonSchemaGenerator(schema=schema, top_class="My_Class")
+    json_schema_default_top = json.loads(generator_default_top.serialize())
+
+    # When preserve_names=False (default), top_class should be normalized for comparison
+    assert "MyClass" in json_schema_default_top["$defs"]
+    if "$ref" in json_schema_default_top:
+        assert json_schema_default_top["$ref"] == "#/$defs/MyClass"
+
+    # Test additional edge cases for coverage
+
+    # Test with enum for coverage
+    enum_schema = SchemaDefinition(
+        id="https://example.com/test_enum",
+        name="test_enum_schema",
+        classes={
+            "Test_Class": ClassDefinition(name="Test_Class", slots=["enum_slot"]),
+        },
+        slots={
+            "enum_slot": SlotDefinition(name="enum_slot", range="Test_Enum"),
+        },
+        enums={
+            "Test_Enum": EnumDefinition(
+                name="Test_Enum",
+                permissible_values={
+                    "VALUE_ONE": PermissibleValue(text="VALUE_ONE"),
+                },
+            ),
+        },
+    )
+
+    # Test preserve_names with enum
+    generator_enum = JsonSchemaGenerator(schema=enum_schema, preserve_names=True)
+    json_schema_enum = json.loads(generator_enum.serialize())
+
+    # Check that enum names are preserved
+    assert "Test_Enum" in json_schema_enum["$defs"]
+    assert "Test_Class" in json_schema_enum["$defs"]
+
+    # Check that enum values are handled correctly
+    enum_def = json_schema_enum["$defs"]["Test_Enum"]
+    assert "VALUE_ONE" in enum_def["enum"]
+
+    # Test add_lax_def canonical name assignment
+    gen_lax = JsonSchemaGenerator(schema=enum_schema, preserve_names=False)
+    json_obj = gen_lax.generate()
+    json_obj.add_lax_def(["Test_Name"], "id")
+    assert "TestName" in json_obj._lax_forward_refs
+
+    gen_preserve = JsonSchemaGenerator(schema=enum_schema, preserve_names=True)
+    json_obj_preserve = gen_preserve.generate()
+    json_obj_preserve.add_lax_def(["Test_Name"], "id")
+    assert "Test_Name" in json_obj_preserve._lax_forward_refs
