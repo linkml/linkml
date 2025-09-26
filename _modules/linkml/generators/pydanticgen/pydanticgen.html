@@ -393,6 +393,7 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for linkml.generators.pydanticgen.pydanticgen</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">keyword</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
@@ -535,6 +536,41 @@
 
 <span class="n">DefinitionType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;DefinitionType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Union</span><span class="p">[</span><span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">])</span>
 <span class="n">TemplateType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;TemplateType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Union</span><span class="p">[</span><span class="n">PydanticModule</span><span class="p">,</span> <span class="n">PydanticClass</span><span class="p">,</span> <span class="n">PydanticAttribute</span><span class="p">])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_valid_python_identifier</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a string to a valid Python identifier.</span>
+
+<span class="sd">    This is used when slot names contain characters that are not valid in Python</span>
+<span class="sd">    identifiers (e.g., &#39;@id&#39;, &#39;@type&#39;). The original name can be preserved using</span>
+<span class="sd">    Pydantic field aliases.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name: The original name that may contain invalid characters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A valid Python identifier that doesn&#39;t start with underscore (Pydantic restriction)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Replace invalid characters with underscores</span>
+    <span class="n">identifier</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^a-zA-Z0-9_]&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="c1"># Remove leading underscores (Pydantic doesn&#39;t allow field names starting with _)</span>
+    <span class="n">identifier</span> <span class="o">=</span> <span class="n">identifier</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Ensure it doesn&#39;t start with a number</span>
+    <span class="k">if</span> <span class="n">identifier</span> <span class="ow">and</span> <span class="n">identifier</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+        <span class="n">identifier</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;field_</span><span class="si">{</span><span class="n">identifier</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Ensure it&#39;s not a keyword</span>
+    <span class="k">if</span> <span class="n">keyword</span><span class="o">.</span><span class="n">iskeyword</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
+        <span class="n">identifier</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">identifier</span><span class="si">}</span><span class="s2">_&quot;</span>
+
+    <span class="c1"># Ensure it&#39;s not empty</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">identifier</span><span class="p">:</span>
+        <span class="n">identifier</span> <span class="o">=</span> <span class="s2">&quot;field&quot;</span>
+
+    <span class="k">return</span> <span class="n">identifier</span>
 
 
 <div class="viewcode-block" id="PydanticGenerator">
@@ -863,7 +899,19 @@
             <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="p">}</span>
         <span class="n">slot_alias</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="k">else</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span>
-        <span class="n">slot_args</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">slot_alias</span><span class="p">)</span>
+
+        <span class="c1"># Create a valid Python identifier for the field name</span>
+        <span class="n">python_field_name</span> <span class="o">=</span> <span class="n">make_valid_python_identifier</span><span class="p">(</span><span class="n">underscore</span><span class="p">(</span><span class="n">slot_alias</span><span class="p">))</span>
+        <span class="n">slot_args</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">python_field_name</span>
+
+        <span class="c1"># If the original name is different from the Python identifier, set an alias</span>
+        <span class="k">if</span> <span class="n">slot_alias</span> <span class="o">!=</span> <span class="n">python_field_name</span><span class="p">:</span>
+            <span class="n">slot_args</span><span class="p">[</span><span class="s2">&quot;alias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot_alias</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Remove any existing alias if the names are the same</span>
+            <span class="k">if</span> <span class="s2">&quot;alias&quot;</span> <span class="ow">in</span> <span class="n">slot_args</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">slot_args</span><span class="p">[</span><span class="s2">&quot;alias&quot;</span><span class="p">]</span>
+
         <span class="n">slot_args</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&quot;&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">predef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predefined_slot_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">predef</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
