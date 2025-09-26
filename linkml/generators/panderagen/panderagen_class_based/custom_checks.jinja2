@@ -1,0 +1,27 @@
+
+{%- macro nested_checks(field) -%}
+{#-
+    field: DataframeField
+    Render a class method that follows nested structures
+    other than the simple_dict form.
+-#}
+    {%- if field.inline_form() %}
+    @pla.check("{{ field.name }}")
+    def check_nested_struct_{{ field.name }}(cls, data: PolarsData):
+        {% if field.inline_form() == 'inline_list_dict' -%}
+        return cls._check_nested_struct(data)
+        {% elif field.inline_form() == 'simple_dict' -%}
+        return cls._check_simple_dict(data)
+        {% elif field.inline_form() == 'inline_collection_dict' -%}
+        return cls._check_collection_struct(data)
+        {% else -%}
+        return cls._check_nested_list_struct(data)
+        {% endif -%}
+    {%- endif -%}
+{%- endmacro -%}
+
+{%- macro render_custom_checks(cls) -%}
+    {%- for field in cls.fields -%}
+    {{ nested_checks(field) }}
+    {%- endfor %}
+{%- endmacro -%}

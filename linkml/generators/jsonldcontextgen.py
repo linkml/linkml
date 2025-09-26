@@ -1,11 +1,12 @@
 """
 Generate JSON-LD contexts
-
 """
 
+import json
 import os
 import re
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, Optional, Union
 
 import click
@@ -49,6 +50,11 @@ class ContextGenerator(Generator):
     output: Optional[str] = None
     prefixes: Optional[bool] = True
     flatprefixes: Optional[bool] = False
+
+    # Framing (opt-in via CLI flag)
+    emit_frame: bool = False
+    frame_body: dict = field(default_factory=lambda: dict())
+    frame_root: Optional[str] = None
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -125,6 +131,30 @@ class ContextGenerator(Generator):
             with open(output, "w", encoding="UTF-8") as outf:
                 outf.write(as_json(context))
 
+        if self.emit_frame and self.frame_body and output:
+            root_name = None
+            for cname, c in self.schema.classes.items():
+                if getattr(c, "tree_root", False):
+                    root_name = cname
+                    break
+            if root_name is None and self.schema.classes:
+                root_name = next(iter(self.schema.classes))
+
+            frame = {
+                "@context": Path(output).name,
+                "@omitGraph": True,
+            }
+            if root_name:
+                root_cls = self.schema.classes[root_name]
+                frame["@type"] = root_cls.class_uri or root_cls.name
+
+            for prop, rule in self.frame_body.items():
+                frame[prop] = rule
+
+            frame_path = Path(output).with_suffix(".frame.jsonld")
+            with open(frame_path, "w", encoding="UTF-8") as f:
+                json.dump(frame, f, indent=2, ensure_ascii=False)
+
         return str(as_json(context)) + "\n"
 
     def visit_class(self, cls: ClassDefinition) -> bool:
@@ -135,6 +165,10 @@ class ContextGenerator(Generator):
         self._build_element_id(class_def, cls.class_uri)
         if class_def:
             self.slot_class_maps[cn] = class_def
+
+        # prefer explicit tree_root for frame @type
+        if getattr(cls, "tree_root", False):
+            self.frame_root = cls.name
 
         # We don't bother to visit class slots - just all slots
         return True
@@ -174,7 +208,12 @@ class ContextGenerator(Generator):
                 self._build_element_id(slot_def, slot.slot_uri)
                 self.add_mappings(slot)
         if slot_def:
-            self.context_body[underscore(aliased_slot_name)] = slot_def
+            key = underscore(aliased_slot_name)
+            self.context_body[key] = slot_def
+
+            # collect @embed only for object-valued slots (range is a class)
+            if slot.range in self.schema.classes and slot.inlined is not None:
+                self.frame_body[key] = {"@embed": "@always" if bool(slot.inlined) else "@never"}
 
     def _build_element_id(self, definition: Any, uri: str) -> None:
         """
@@ -227,10 +266,26 @@ class ContextGenerator(Generator):
     show_default=True,
     help="Emit non-JSON-LD compliant prefixes as an object (deprecated: use gen-prefix-map instead).",
 )
+@click.option(
+    "--emit-frame/--no-emit-frame",
+    default=False,
+    show_default=True,
+    help="Also emit a <schema>.frame.jsonld file with @embed rules for framing",
+)
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(),
+    help="Output file name",
+)
 @click.version_option(__version__, "-V", "--version")
-def cli(yamlfile, **args):
+def cli(yamlfile, emit_frame, output, **args):
     """Generate jsonld @context definition from LinkML model"""
-    print(ContextGenerator(yamlfile, **args).serialize(**args))
+    if emit_frame and not output:
+        raise click.UsageError("--emit-frame requires --output")
+    gen = ContextGenerator(yamlfile, **args)
+    gen.emit_frame = emit_frame
+    print(gen.serialize(output=output, **args))
 
 
 if __name__ == "__main__":
