@@ -1,8 +1,11 @@
 import os
+import tempfile
+from unittest.mock import MagicMock, patch
 from xml.dom import minidom
 
 import pytest
 from docker.errors import ImageNotFound
+from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
 
@@ -189,3 +192,50 @@ def test_generate_svg(tmp_path, kitchen_sink_path, kroki_url):
     assert "FamilialRelationship_Person" in relationships_list
     assert "Dataset_Person" in relationships_list
     assert "Dataset_MarriageEvent" not in relationships_list
+
+
+def test_preserve_names():
+    """Test preserve_names option preserves original LinkML names in PlantUML diagram output"""
+    schema = SchemaDefinition(
+        id="https://example.com/test_schema",
+        name="test_underscore_schema",
+        imports=["linkml:types"],
+        prefixes={"linkml": "https://w3id.org/linkml/"},
+        classes={
+            "My_Class": ClassDefinition(name="My_Class", slots=["my_slot", "related_object"]),
+            "Another_Class_Name": ClassDefinition(name="Another_Class_Name", slots=["class_specific_slot"]),
+        },
+        slots={
+            "my_slot": SlotDefinition(name="my_slot", range="string"),
+            "class_specific_slot": SlotDefinition(name="class_specific_slot", range="string"),
+            "related_object": SlotDefinition(name="related_object", range="Another_Class_Name"),
+        },
+    )
+
+    # Test default behavior (names are normalized)
+    gen_default = PlantumlGenerator(schema=schema)
+    diagram_default = gen_default.visit_schema()
+
+    # Check that slot names and ranges are normalized (underscore)
+    assert "my_slot" in diagram_default
+    assert "class_specific_slot" in diagram_default
+    assert ": string" in diagram_default
+
+    # Test preserve_names behavior (names are preserved)
+    gen_preserve = PlantumlGenerator(schema=schema, preserve_names=True)
+    diagram_preserve = gen_preserve.visit_schema()
+
+    # Check that slot names and ranges are preserved
+    assert "my_slot" in diagram_preserve
+    assert "class_specific_slot" in diagram_preserve
+    assert ": string" in diagram_preserve
+
+    # Test filename generation with directory for branch coverage
+    mock_response = MagicMock()
+    mock_response.ok = True
+    mock_response.iter_content.return_value = [b"svg"]
+
+    with tempfile.TemporaryDirectory() as temp_dir, patch("requests.get", return_value=mock_response):
+        gen = PlantumlGenerator(schema=schema, preserve_names=True, dry_run=False)
+        gen.visit_schema(classes={"My_Class"}, directory=temp_dir)
+        assert gen.output_file_name.endswith("My_Class.svg")
