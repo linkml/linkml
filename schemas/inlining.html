@@ -575,7 +575,28 @@ on a collection of classes is as follows:</p>
 <li><p>Programmatic representations such as Python object trees</p></li>
 </ul>
 <p>When serializing data as RDF triples or in a relational database, the value for the slot will always be a reference.</p>
-<p>The inlined slot in LinkML corresponds to <code class="docutils literal notranslate"><span class="pre">&#64;embed</span></code> in JSON-LD</p>
+<p>The inlined slot in LinkML corresponds to <code class="docutils literal notranslate"><span class="pre">&#64;embed</span></code> in JSON-LD.</p>
+<section id="using-framing-in-json-ld">
+<h3>Using framing in JSON-LD<a class="headerlink" href="#using-framing-in-json-ld" title="Link to this heading">¶</a></h3>
+<p>When generating a JSON-LD context, you can request a companion frame
+that represents the same inlining rules in JSON-LD. The frame uses the
+<code class="docutils literal notranslate"><span class="pre">&#64;embed</span></code> directive to follow the slot-level <code class="docutils literal notranslate"><span class="pre">inlined</span></code> settings:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">inlined:</span> <span class="pre">true</span></code> → <code class="docutils literal notranslate"><span class="pre">&#64;embed:</span> <span class="pre">&#64;always</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inlined:</span> <span class="pre">false</span></code> → <code class="docutils literal notranslate"><span class="pre">&#64;embed:</span> <span class="pre">&#64;never</span></code></p></li>
+</ul>
+<p>This is enabled with the <code class="docutils literal notranslate"><span class="pre">--emit-frame</span></code> option (requires <code class="docutils literal notranslate"><span class="pre">--output</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>gen-jsonld-context schema.yaml --output schema.context.jsonld --emit-frame
+</pre></div>
+</div>
+<p>This produces two files:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">schema.context.jsonld</span></code> – the JSON-LD context</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">schema.frame.jsonld</span></code> – the JSON-LD frame with <code class="docutils literal notranslate"><span class="pre">&#64;embed</span></code> rules</p></li>
+</ul>
+<p>The root class for the frame is taken from a class marked with <code class="docutils literal notranslate"><span class="pre">tree_root:</span> <span class="pre">true</span></code>,
+or defaults to the first class in the schema if none is explicitly marked.</p>
+</section>
 </section>
 <section id="when-should-inlining-be-used">
 <h2>When should inlining be used?<a class="headerlink" href="#when-should-inlining-be-used" title="Link to this heading">¶</a></h2>
@@ -645,7 +666,10 @@ on a collection of classes is as follows:</p>
 <li><a class="reference internal" href="#inlining-as-a-dictionary">Inlining as a dictionary</a></li>
 <li><a class="reference internal" href="#inlining-a-single-valued-object">Inlining a single-valued object</a></li>
 <li><a class="reference internal" href="#inlining-as-simple-dictionaries">Inlining as simple dictionaries</a></li>
-<li><a class="reference internal" href="#inlining-with-non-json-serializations">Inlining with non-JSON serializations</a></li>
+<li><a class="reference internal" href="#inlining-with-non-json-serializations">Inlining with non-JSON serializations</a><ul>
+<li><a class="reference internal" href="#using-framing-in-json-ld">Using framing in JSON-LD</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#when-should-inlining-be-used">When should inlining be used?</a></li>
 </ul>
 </li>
