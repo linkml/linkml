@@ -408,9 +408,10 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.schemaview</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.oocodegen</span><span class="w"> </span><span class="kn">import</span> <span class="n">OOClass</span><span class="p">,</span> <span class="n">OOCodeGenerator</span><span class="p">,</span> <span class="n">OODocument</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.oocodegen</span><span class="w"> </span><span class="kn">import</span> <span class="n">OOCodeGenerator</span><span class="p">,</span> <span class="n">OODocument</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.class_generator_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassGeneratorMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dataframe_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataframeClass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.enum_generator_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnumGeneratorMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.slot_generator_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">SlotGeneratorMixin</span>
 
@@ -422,6 +423,7 @@
     <span class="s2">&quot;panderagen_class_based&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;xsd:string&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
         <span class="s2">&quot;xsd:integer&quot;</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;xsd:int&quot;</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span>
         <span class="s2">&quot;xsd:float&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
         <span class="s2">&quot;xsd:double&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
         <span class="s2">&quot;xsd:boolean&quot;</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span>
@@ -482,6 +484,8 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">make_multivalued</span><span class="p">(</span><span class="nb">range</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">range</span> <span class="o">==</span> <span class="s2">&quot;Struct&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;pl.List&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;List[</span><span class="si">{</span><span class="nb">range</span><span class="si">}</span><span class="s2">]&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">uri_type_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xsd_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
@@ -491,14 +495,21 @@
         <span class="k">return</span> <span class="n">TYPEMAP</span><span class="p">[</span><span class="n">template</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">xsd_uri</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">map_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">TypeDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;type_map definition: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">typ</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">uri</span><span class="p">:</span>
             <span class="n">typ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uri_type_map</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">typ</span>
+            <span class="k">if</span> <span class="n">typ</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">typ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_type</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">typeof</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">t</span><span class="o">.</span><span class="n">typeof</span><span class="p">:</span>
             <span class="n">typ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_type</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">typeof</span><span class="p">))</span>
-            <span class="k">return</span> <span class="n">typ</span>
-        <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">typ</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> cannot be mapped to a type&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">typ</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">load_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_filename</span><span class="p">):</span>
         <span class="n">jinja_env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">PackageLoader</span><span class="p">(</span><span class="s2">&quot;linkml.generators.panderagen&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_path</span><span class="p">))</span>
@@ -542,6 +553,7 @@
             <span class="n">coerce</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">coerce</span><span class="p">,</span>
             <span class="n">type_map</span><span class="o">=</span><span class="n">TYPEMAP</span><span class="p">,</span>
             <span class="n">template_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">template_path</span><span class="p">,</span>
+            <span class="n">pandera_validator_code</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">code</span></div>
 
@@ -563,12 +575,17 @@
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ordered_classes</span><span class="p">():</span>
             <span class="n">cn</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span>
             <span class="n">safe_cn</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
-            <span class="n">ooclass</span> <span class="o">=</span> <span class="n">OOClass</span><span class="p">(</span>
+            <span class="n">annotations</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">identifier_or_key_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_identifier_or_key_slot</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">identifier_or_key_slot</span><span class="p">:</span>
+                <span class="n">annotations</span><span class="p">[</span><span class="s2">&quot;identifier_key_slot&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">identifier_or_key_slot</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">ooclass</span> <span class="o">=</span> <span class="n">DataframeClass</span><span class="p">(</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">safe_cn</span><span class="p">,</span>
                 <span class="n">description</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
                 <span class="n">package</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">package</span><span class="p">,</span>
                 <span class="n">fields</span><span class="o">=</span><span class="p">[],</span>
                 <span class="n">source_class</span><span class="o">=</span><span class="n">c</span><span class="p">,</span>
+                <span class="n">annotations</span><span class="o">=</span><span class="n">annotations</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">classes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ooclass</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">mixin</span><span class="p">:</span>

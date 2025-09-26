@@ -408,109 +408,175 @@ for data validation on dataframe-like objects.
 <p>The Pandera Generator produces Pandera models using the class-based API
 using the PolaRS integration.</p>
 <p>The implementation of the generator is incomplete. Because Pandera is a dataframe library,
-the first priority is implementing models of literal data types and checks for flat tables as shown below.
+the first priority is implementing models of literal and nested data types and checks for single tables as shown below.
 <cite>tests/test_generators/test_panderagen.py</cite> also has an example using supported LinkML features.</p>
-<p>Currently supported features are:</p>
+<p>Currently supported LinkML features are:</p>
 <ul class="simple">
 <li><p>literal slot ranges: string, integer, float, boolean, date, datetime</p></li>
 <li><p>enums</p></li>
 <li><p>constraints: required, pattern, minimum_value, maximum_value, multivalued</p></li>
+<li><p>inlining: nested single-valued objects, lists of literals, lists of objects</p></li>
+<li><p><strong>note:</strong> nested dictionary collections (including ‘simple’ dicts) inlining is inefficient and incomplete, use inlined-as-list instead.</p></li>
 </ul>
 <p>Future priorities that are currently not supported include:</p>
 <ul class="simple">
-<li><p>inheritance</p></li>
-<li><p>inline / nested struct columns</p></li>
-<li><p>array columns</p></li>
-<li><p>modeling unnested class ranges (references to separate dataframes)</p></li>
+<li><p>foreign key association to other tables</p></li>
+<li><p>model and slot inheritance</p></li>
+<li><p>aliases</p></li>
+<li><p>different target dataframe libraries</p></li>
 </ul>
 <section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h3>
-<p>Given a definition of a synthetic flat table:</p>
+<p>Given a definition of a synthetic flat table with some nested/inlined columns:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">PanderaSyntheticTable</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A flat table with a reasonably complete assortment of datatypes.</span>
-<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">identifier_column</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">identifier</span>
-<span class="w">      </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
-<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
-<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
-<span class="w">    </span><span class="nt">bool_column</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test boolean column</span>
-<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">boolean</span>
-<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
-<span class="w">    </span><span class="nt">integer_column</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test integer column with min/max values</span>
-<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
-<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
-<span class="w">      </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
-<span class="w">      </span><span class="nt">maximum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999</span>
-<span class="w">    </span><span class="nt">float_column</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test float column</span>
-<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
-<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
-<span class="w">    </span><span class="nt">string_column</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test string column</span>
-<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
-<span class="w">    </span><span class="nt">date_column</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test date column</span>
-<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">date</span>
-<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
-<span class="w">    </span><span class="nt">datetime_column</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test datetime column</span>
-<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">datetime</span>
-<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
-<span class="w">    </span><span class="nt">enum_column</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test enum column</span>
-<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SyntheticEnum</span>
-<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
-<span class="w">    </span><span class="nt">ontology_enum_column</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test enum column with ontology values</span>
-<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SyntheticEnumOnt</span>
-<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
-<span class="w">    </span><span class="nt">multivalued_column</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">one-to-many form</span>
-<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
-<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
-<span class="w">      </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
-<span class="w">      </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A flat table with a reasonably complete assortment of datatypes.</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">identifier_column</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">identifier</span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">bool_column</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test boolean column</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">boolean</span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">integer_column</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test integer column with min/max values</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">        </span><span class="nt">maximum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999</span>
+<span class="w">      </span><span class="nt">float_column</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test float column</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">string_column</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test string column</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^(this)|(that)|(whatever)$&quot;</span>
+<span class="w">      </span><span class="nt">date_column</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test date column</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">date</span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">datetime_column</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test datetime column</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">datetime</span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">enum_column</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test enum column</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SyntheticEnum</span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">ontology_enum_column</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test enum column with ontology values</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SyntheticEnumOnt</span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">multivalued_column</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">one-to-many form</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">any_type_column</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">needs to have type object</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AnyType</span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">inlined_class_column</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test column with another class inlined as a struct</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ColumnType</span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">inlined</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">inlined_as_list_column</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test column with another class inlined as a list</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ColumnType</span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">inlined</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">inlined_simple_dict_column</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test column inlined using simple dict form</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SimpleDictType</span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">inlined</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
-<p>(some details omitted for brevity, including header information)</p>
+<p>(details omitted, including header information, slots, enums and nested class definitions)</p>
 <p>The generate python looks like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">PanderaSyntheticTable</span><span class="p">(</span><span class="n">pla</span><span class="o">.</span><span class="n">DataFrameModel</span><span class="p">,</span> <span class="n">_LinkmlPanderaValidator</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A flat table with a reasonably complete assortment of datatypes.&quot;&quot;&quot;</span>
+<span class="w">      </span><span class="sd">&quot;&quot;&quot;A flat table with a reasonably complete assortment of datatypes.&quot;&quot;&quot;</span>
 
 
-    <span class="n">identifier_column</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;identifier&quot;&quot;&quot;</span>
+      <span class="n">identifier_column</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
+<span class="w">      </span><span class="sd">&quot;&quot;&quot;identifier&quot;&quot;&quot;</span>
 
-    <span class="n">bool_column</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;test boolean column&quot;&quot;&quot;</span>
+      <span class="n">bool_column</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
+<span class="w">      </span><span class="sd">&quot;&quot;&quot;test boolean column&quot;&quot;&quot;</span>
 
-    <span class="n">integer_column</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">999</span><span class="p">,</span> <span class="p">)</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;test integer column with min/max values&quot;&quot;&quot;</span>
+      <span class="n">integer_column</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">999</span><span class="p">,</span> <span class="p">)</span>
+<span class="w">      </span><span class="sd">&quot;&quot;&quot;test integer column with min/max values&quot;&quot;&quot;</span>
 
-    <span class="n">float_column</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;test float column&quot;&quot;&quot;</span>
+      <span class="n">float_column</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
+<span class="w">      </span><span class="sd">&quot;&quot;&quot;test float column&quot;&quot;&quot;</span>
 
-    <span class="n">string_column</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;test string column&quot;&quot;&quot;</span>
+      <span class="n">string_column</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
+<span class="w">      </span><span class="sd">&quot;&quot;&quot;test string column&quot;&quot;&quot;</span>
 
-    <span class="n">date_column</span><span class="p">:</span> <span class="n">Date</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;test date column&quot;&quot;&quot;</span>
+      <span class="n">date_column</span><span class="p">:</span> <span class="n">Date</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
+<span class="w">      </span><span class="sd">&quot;&quot;&quot;test date column&quot;&quot;&quot;</span>
 
-    <span class="n">datetime_column</span><span class="p">:</span> <span class="n">DateTime</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;test datetime column&quot;&quot;&quot;</span>
+      <span class="n">datetime_column</span><span class="p">:</span> <span class="n">DateTime</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
+<span class="w">      </span><span class="sd">&quot;&quot;&quot;test datetime column&quot;&quot;&quot;</span>
 
-    <span class="n">enum_column</span><span class="p">:</span> <span class="n">Enum</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">dtype_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;categories&quot;</span><span class="p">:(</span><span class="s1">&#39;ANIMAL&#39;</span><span class="p">,</span><span class="s1">&#39;VEGETABLE&#39;</span><span class="p">,</span><span class="s1">&#39;MINERAL&#39;</span><span class="p">,)})</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;test enum column&quot;&quot;&quot;</span>
+      <span class="n">enum_column</span><span class="p">:</span> <span class="n">Enum</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">dtype_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;categories&quot;</span><span class="p">:(</span><span class="s1">&#39;ANIMAL&#39;</span><span class="p">,</span><span class="s1">&#39;VEGETABLE&#39;</span><span class="p">,</span><span class="s1">&#39;MINERAL&#39;</span><span class="p">,)})</span>
+<span class="w">      </span><span class="sd">&quot;&quot;&quot;test enum column&quot;&quot;&quot;</span>
 
-    <span class="n">ontology_enum_column</span><span class="p">:</span> <span class="n">Enum</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">dtype_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;categories&quot;</span><span class="p">:(</span><span class="s1">&#39;fiction&#39;</span><span class="p">,</span><span class="s1">&#39;non fiction&#39;</span><span class="p">,)})</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;test enum column with ontology values&quot;&quot;&quot;</span>
+      <span class="n">ontology_enum_column</span><span class="p">:</span> <span class="n">Enum</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">dtype_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;categories&quot;</span><span class="p">:(</span><span class="s1">&#39;fiction&#39;</span><span class="p">,</span><span class="s1">&#39;non fiction&#39;</span><span class="p">,)})</span>
+<span class="w">      </span><span class="sd">&quot;&quot;&quot;test enum column with ontology values&quot;&quot;&quot;</span>
 
-    <span class="n">multivalued_column</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;one-to-many form&quot;&quot;&quot;</span>
+      <span class="n">multivalued_column</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
+<span class="w">      </span><span class="sd">&quot;&quot;&quot;one-to-many form&quot;&quot;&quot;</span>
+
+      <span class="n">any_type_column</span><span class="p">:</span> <span class="n">Object</span> <span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
+<span class="w">      </span><span class="sd">&quot;&quot;&quot;needs to have type object&quot;&quot;&quot;</span>
+
+      <span class="n">inlined_class_column</span><span class="p">:</span> <span class="n">Struct</span> <span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
+<span class="w">      </span><span class="sd">&quot;&quot;&quot;test column with another class inlined as a struct&quot;&quot;&quot;</span>
+
+      <span class="n">inlined_as_list_column</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">List</span> <span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
+<span class="w">      </span><span class="sd">&quot;&quot;&quot;test column with another class inlined as a list&quot;&quot;&quot;</span>
+
+      <span class="n">inlined_simple_dict_column</span><span class="p">:</span> <span class="n">Struct</span> <span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
+<span class="w">      </span><span class="sd">&quot;&quot;&quot;test column inlined using simple dict form&quot;&quot;&quot;</span>
+
+      <span class="nd">@pla</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">&quot;inlined_class_column&quot;</span><span class="p">)</span>
+      <span class="k">def</span><span class="w"> </span><span class="nf">check_nested_struct_inlined_class_column</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">PolarsData</span><span class="p">):</span>
+          <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_check_collection_struct</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+      <span class="nd">@pla</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">&quot;inlined_as_list_column&quot;</span><span class="p">)</span>
+      <span class="k">def</span><span class="w"> </span><span class="nf">check_nested_struct_inlined_as_list_column</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">PolarsData</span><span class="p">):</span>
+          <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_check_nested_list_struct</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+      <span class="nd">@pla</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">&quot;inlined_simple_dict_column&quot;</span><span class="p">)</span>
+      <span class="k">def</span><span class="w"> </span><span class="nf">check_nested_struct_inlined_simple_dict_column</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">PolarsData</span><span class="p">):</span>
+          <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_check_simple_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+      <span class="n">_NESTED_RANGES</span> <span class="o">=</span> <span class="p">{</span>
+          <span class="s2">&quot;inlined_class_column&quot;</span><span class="p">:</span> <span class="s2">&quot;ColumnType&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;inlined_as_list_column&quot;</span><span class="p">:</span> <span class="s2">&quot;ColumnType&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;inlined_simple_dict_column&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleDictType&quot;</span><span class="p">,</span>
+      <span class="p">}</span>
+      <span class="n">_INLINE_FORM</span> <span class="o">=</span> <span class="p">{</span>
+          <span class="s2">&quot;inlined_class_column&quot;</span><span class="p">:</span> <span class="s2">&quot;inline_collection_dict&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;inlined_as_list_column&quot;</span><span class="p">:</span> <span class="s2">&quot;inlined_list_dict&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;inlined_simple_dict_column&quot;</span><span class="p">:</span> <span class="s2">&quot;simple_dict&quot;</span><span class="p">,</span>
+      <span class="p">}</span>
+      <span class="n">_INLINE_DETAILS</span> <span class="o">=</span> <span class="p">{</span>
+          <span class="s2">&quot;inlined_simple_dict_column&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;other&#39;</span><span class="p">:</span> <span class="s1">&#39;x&#39;</span><span class="p">},</span>
+      <span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -630,8 +696,10 @@ schema code as well as what parts of the linkml metamodel are supported.</p>
 <section id="additional-notes">
 <h2>Additional Notes<a class="headerlink" href="#additional-notes" title="Link to this heading">¶</a></h2>
 <p>When possible the Pandera Generator implements LinkML constraints directly as Pandera checks.
-Support for additional checks using Pandera custom checks is planned for the future.</p>
-<p>The Python code is currently generated in a single file output to the console.</p>
+Support for nested columns uses Pandera custom checks to first isolate the nested column
+and then recursvely call Pandera validation.</p>
+<p>The Python code is currently output to the console.
+The generated class depends on helper methods in the LinkML library at runtime to perform nested checks.</p>
 </section>
 <section id="usage-example">
 <h2>Usage Example<a class="headerlink" href="#usage-example" title="Link to this heading">¶</a></h2>
@@ -657,6 +725,34 @@ No exceptions are raised because the data matches the model.</p>
 <span class="n">Person</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
 </pre></div>
 </div>
+</section>
+<section id="development-notes">
+<h2>Development Notes<a class="headerlink" href="#development-notes" title="Link to this heading">¶</a></h2>
+<p>This generator primarily supports Pandera, which is a validator. The underlying dataframe libraries are only partially supported.
+As a consequence, loading data from many of the unit tests (into a dataframe format) can be challenging when the library
+does not support some of the LinkML conventions. These include ‘simple’ dict inlining and polymorphism from row to row.</p>
+<p>Following nested objects (and eventually foreign-key associations) relies on using PolaRS expressions API for efficiency.
+These may make greater use of the Narwhals API for more general support of additional dataframe libraries in the future.</p>
+</section>
+<section id="future-roadmap">
+<h2>Future Roadmap<a class="headerlink" href="#future-roadmap" title="Link to this heading">¶</a></h2>
+<p>The following major features need to be prioritized</p>
+<ul class="simple">
+<li><p>Foreign key associations</p></li>
+<li><p>Model and slot inheritance, including abstract models</p></li>
+<li><p>Make transformer module more general rather than performing operations only at validation time.</p></li>
+<li><p>Generalize support for additional dataframe libraries
+- PolaRS independent of Pandera to help loading tables prior to validation
+- Parquet/PyArrow storage formats
+- PySpark (also supported by Pandera)
+- Narwhals (general dataframe API wrapper)</p></li>
+<li><p>Improve modularity
+- leverage and align with existing linkml-runtime modules and tables</p></li>
+<li><p>Conversion mechanism (loaders) for models using inlined-as-dictionary and inlined-as-simple-dict forms to inlined-as-list.</p></li>
+<li><p>Top-level validator cli tool under linkml/validators</p></li>
+<li><p>Ability to use the generated Pandera without a runtime LinkML dependency.</p></li>
+<li><p>Cardinality checks over entire dataframe columns</p></li>
+</ul>
 </section>
 </section>
 
@@ -731,6 +827,8 @@ No exceptions are raised because the data matches the model.</p>
 <li><a class="reference internal" href="#templates">Templates</a></li>
 <li><a class="reference internal" href="#additional-notes">Additional Notes</a></li>
 <li><a class="reference internal" href="#usage-example">Usage Example</a></li>
+<li><a class="reference internal" href="#development-notes">Development Notes</a></li>
+<li><a class="reference internal" href="#future-roadmap">Future Roadmap</a></li>
 </ul>
 </li>
 </ul>
