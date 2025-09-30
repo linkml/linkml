@@ -504,4 +504,3 @@ slots.canonicalPrefixesConfig__prefixmaps_contexts = Slot(uri=LINTCFG.prefixmaps
 
 slots.noEmptyTitleConfig__exclude_type = Slot(uri=LINTCFG.exclude_type, name="noEmptyTitleConfig__exclude_type", curie=LINTCFG.curie('exclude_type'),
                    model_uri=LINTCFG.noEmptyTitleConfig__exclude_type, domain=None, range=Optional[Union[Union[str, "MetamodelElementTypeEnum"], list[Union[str, "MetamodelElementTypeEnum"]]]])
-
