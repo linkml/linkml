@@ -242,6 +242,20 @@ enums:
         )
 
 
+def test_pydantic_unmasked_keywords(input_path):
+    gen = PydanticGenerator(input_path("unmasked_python_keywords_example.yaml"), package=PACKAGE)
+    code = gen.serialize()
+    try:
+        mod = compile_python(code, PACKAGE)
+    except SyntaxError as e:
+        assert False, f"Failed to compile generated bindings: {str(e)}"
+    translation_dict = {"from": "eng", "to": "del"}
+    translation_inst = mod.Translation.model_validate(translation_dict)
+    assert translation_inst.from_ == mod.LanguageEnum("eng")
+    assert translation_inst.to == mod.LanguageEnum("del")
+    assert translation_inst.model_dump() == translation_dict
+
+
 def test_pydantic_any_of():
     # TODO: convert to SchemaBuilder and parameterize?
     schema_str = """
