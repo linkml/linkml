@@ -16,19 +16,21 @@ def file_text(txt_or_fname: str) -> str:
     return txt_or_fname
 
 
-def compile_python(text_or_fn: str, package_path: str = None) -> ModuleType:
+def compile_python(text_or_fn: str, package_path: str | None = None, module_name: str | None = None) -> ModuleType:
     """
     Compile the text or file and return the resulting module
     @param text_or_fn: Python text or file name that references python file
-    @param package_path: Root package path.  If omitted and we've got a python file, the package is the containing
-    directory
+    @param package_path: Root package path.  If omitted and we've got a python file, the package is the containing directory
+    @param module_name: to be used in an import statement, default 'test'
     @return: Compiled module
     """
+    if module_name is None:
+        module_name = "test"
     python_txt = file_text(text_or_fn)
     if package_path is None and python_txt != text_or_fn:
         package_path = text_or_fn
-    spec = compile(python_txt, 'test', 'exec')
-    module = ModuleType('test')
+    spec = compile(python_txt, module_name, 'exec')
+    module = ModuleType(module_name)
     if package_path:
         package_path_abs = os.path.join(os.getcwd(), package_path)
         # We have to calculate the path to expected path relative to the current working directory
