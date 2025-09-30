@@ -325,7 +325,7 @@ where
     for (k, v) in ordered.iter() {
         if let Some(simple) = v.simple_value() {
             let val = to_value(simple)
-                .map_err(|e| <S::Error as serde::{{ 'se' ~ 'r' }}::Error>::custom(e))?;
+                .map_err(|e| <S::Error as serde::ser::Error>::custom(e))?;
             as_values.insert((*k).clone(), val);
             continue;
         }
@@ -334,7 +334,7 @@ where
             continue;
         }
         let val = to_value(*v)
-            .map_err(|e| <S::Error as serde::{{ 'se' ~ 'r' }}::Error>::custom(e))?;
+            .map_err(|e| <S::Error as serde::ser::Error>::custom(e))?;
         as_values.insert((*k).clone(), val);
     }
     as_values.serialize(serializer)
@@ -379,7 +379,7 @@ where
     for (k, v) in ordered.iter() {
         if let Some(simple) = v.simple_value() {
             let val = to_value(simple)
-                .map_err(|e| <S::Error as serde::{{ 'se' ~ 'r' }}::Error>::custom(e))?;
+                .map_err(|e| <S::Error as serde::ser::Error>::custom(e))?;
             as_values.insert((*k).clone(), val);
             continue;
         }
@@ -388,7 +388,7 @@ where
             continue;
         }
         let val = to_value(*v)
-            .map_err(|e| <S::Error as serde::{{ 'se' ~ 'r' }}::Error>::custom(e))?;
+            .map_err(|e| <S::Error as serde::ser::Error>::custom(e))?;
         as_values.insert((*k).clone(), val);
     }
     as_values.serialize(serializer)
