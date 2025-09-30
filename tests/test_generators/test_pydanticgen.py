@@ -307,8 +307,8 @@ slots:
     gen = PydanticGenerator(schema_str, package=PACKAGE)
     code = gen.serialize()
     assert "inlined_things: Optional[dict[str, Union[A, B]]] = Field(default=None" in code
-    assert "inlined_as_list_things: Optional[list[Union[A, B]]] = Field(default=None" in code
-    assert "not_inlined_things: Optional[list[str]] = Field(default=None" in code
+    assert "inlined_as_list_things: Optional[list[Union[A, B]]] = Field(default=[]" in code
+    assert "not_inlined_things: Optional[list[str]] = Field(default=[]" in code
 
 
 @pytest.mark.parametrize(
@@ -388,8 +388,8 @@ slots:
 def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_identifier, expected, notes):
     # Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
     expected_default_factories = {
-        "Optional[list[str]]": "Field(default=None",
-        "Optional[list[B]]": "Field(default=None",
+        "Optional[list[str]]": "Field(default=[]",
+        "Optional[list[B]]": "Field(default=[]",
         "Optional[dict[str, B]]": "Field(default=None",
         "Optional[dict[str, str]]": "Field(default=None",
         "Optional[dict[str, Union[str, B]]]": "Field(default=None",
@@ -1115,6 +1115,19 @@ def test_attribute_field():
     for item in ("required", "identifier", "key"):
         attr = PydanticAttribute(name="attr", **{item: True})
         assert attr.model_dump()["field"] == "..."
+
+
+def test_append_to_optional_lists(kitchen_sink_path):
+    """
+    Optional multivalued fields should be initialised as empty lists
+    """
+    gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE)
+    code = gen.serialize()
+    mod = compile_python(code, PACKAGE)
+    p = mod.Person(id="P:1")
+    d = mod.Dataset()
+    d.persons.append(p)
+    assert d.model_dump(exclude_none=True) == {"persons": [{"id": "P:1"}]}
 
 
 def test_class_validators():
