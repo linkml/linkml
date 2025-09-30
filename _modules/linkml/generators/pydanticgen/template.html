@@ -642,6 +642,8 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">required</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;...&quot;</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">range</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">range</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Optional[list&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="s2">&quot;[]&quot;</span>
             <span class="k">return</span> <span class="s2">&quot;None&quot;</span>
 
 <div class="viewcode-block" id="PydanticAttribute.alias_python_keywords">
