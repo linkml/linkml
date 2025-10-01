@@ -11,6 +11,7 @@ from linkml_runtime.linkml_model.meta import SchemaDefinition, metamodel_version
 from linkml_runtime.loaders import yaml_loader
 from linkml_runtime.utils.yamlutils import YAMLMark, YAMLRoot
 
+from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.mergeutils import set_from_schema
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -28,6 +29,8 @@ def mrf(self, field_name: str) -> None:
 
 SchemaDefinition.MissingRequiredField = mrf
 
+_NOT_PROVIDED = object()
+
 
 def load_raw_schema(
     data: Union[str, dict, TextIO, Path],
@@ -36,7 +39,8 @@ def load_raw_schema(
     source_file_size: Optional[int] = None,
     base_dir: Optional[str] = None,
     merge_modules: Optional[bool] = True,
-    emit_metadata: Optional[bool] = True,
+    metadata: Optional[bool] = True,
+    emit_metadata: Optional[bool] = _NOT_PROVIDED,
 ) -> SchemaDefinition:
     """Load and flatten SchemaDefinition from a file name, a URL or a block of text
 
@@ -52,6 +56,10 @@ def load_raw_schema(
 
     def _name_from_url(url) -> str:
         return urlparse(url).path.rsplit("/", 1)[-1].rsplit(".", 1)[0]
+
+    if emit_metadata is not _NOT_PROVIDED:
+        deprecation_warning("metadata-flag")
+        metadata = emit_metadata
 
     # Passing a URL or file name
     if detect_type(data, base_dir) not in (HBType.STRING, HBType.STRINGABLE):
@@ -93,7 +101,7 @@ def load_raw_schema(
         # TODO: figure out how to generate this from the default_prefix and namespace map
         raise ValueError("Schema identifier must be supplied")
 
-    if emit_metadata:
+    if metadata:
         schema.source_file = schema_metadata.source_file
         src_date = schema_metadata.source_file_date
         try:
