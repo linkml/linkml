@@ -14,11 +14,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Install uv
-        uses: astral-sh/setup-uv@v6.6.1
+        uses: astral-sh/setup-uv@v6.8.0
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
-      - uses: actions/setup-python@v5.6.0
+      - uses: actions/setup-python@v6.0.0
         with:
           python-version: 3.13
       - name: Install tox
@@ -48,7 +48,7 @@ jobs:
 
     steps:
       - name: Install uv
-        uses: astral-sh/setup-uv@v6.6.1
+        uses: astral-sh/setup-uv@v6.8.0
         with:
           enable-cache: true
           version: ${{ env.UV_VERSION }}
