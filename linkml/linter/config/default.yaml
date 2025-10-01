@@ -22,6 +22,10 @@ rules:
     level: disabled
   no_undeclared_ranges:
     level: disabled
+  one_identifier_per_class:
+    level: disabled
+  one_key_per_class:
+    level: disabled
   root_type_checks:
     level: disabled
   standard_naming:

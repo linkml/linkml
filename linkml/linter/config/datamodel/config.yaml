@@ -37,32 +37,17 @@ classes:
       Each attribute of this class represents a rule that can be enabled and possibly
       configured by a configuration file.
     attributes:
+      canonical_prefixes:
+        range: CanonicalPrefixesConfig
+        description: >-
+          Enforce canonical prefixes by verifying that the mappings defined in the `prefixes`
+          slot agree with those provided by the [prefixmaps](https://github.com/linkml/prefixmaps)
+          package. Not auto-fixable.
       no_empty_title:
         range: NoEmptyTitleConfig
         description: >-
           Disallow empty titles on schema elements. Autofix will transform the element's
           name into a title.
-      permissible_values_format:
-        range: PermissibleValuesFormatRuleConfig
-        description: >-
-          Enforce consistent formatting of enum permissible values. This rule may conflict
-          with the standard_naming rule. Not auto-fixable.
-      tree_root_class:
-        range: TreeRootClassRuleConfig
-        description: >-
-          Require a single class with `tree_root: true` and optionally verify that class's
-          name. Autofix will create a new class with `tree_root: true`, a name based on
-          the rule configuration, and slots for existing classes.
-      recommended:
-        range: RecommendedRuleConfig
-        description: >-
-          Require any slot in the metamodel with `recommended: true` (e.g. description)
-          to be provided. Not auto-fixable.
-      no_xsd_int_type:
-        range: RuleConfig
-        description: >-
-          Disallow use of `uri: xsd:int` in type definitions. Autofix will change the
-          uri to xsd:integer.
       no_invalid_slot_usage:
         range: RuleConfig
         description: >-
@@ -78,6 +63,29 @@ classes:
         description: >-
           Disallow the use of ranges in slot specifications if any of the ranges used
           do not refer to an existing type, class, or enum. Not auto-fixable.
+      no_xsd_int_type:
+        range: RuleConfig
+        description: >-
+          Disallow use of `uri: xsd:int` in type definitions. Autofix will change the
+          uri to xsd:integer.
+      one_identifier_per_class:
+        range: RuleConfig
+        description: >-
+          Ensure that there is only one slot with the `identifier` attribute set to True per class.
+      one_key_per_class:
+        range: RuleConfig
+        description: >-
+          Ensure that there is only one slot with the `key` attribute set to True per class.
+      permissible_values_format:
+        range: PermissibleValuesFormatRuleConfig
+        description: >-
+          Enforce consistent formatting of enum permissible values. This rule may conflict
+          with the standard_naming rule. Not auto-fixable.
+      recommended:
+        range: RecommendedRuleConfig
+        description: >-
+          Require any slot in the metamodel with `recommended: true` (e.g. description)
+          to be provided. Not auto-fixable.
       root_type_checks:
         range: RuleConfig
         description: >-
@@ -90,12 +98,12 @@ classes:
           CamelCase for enums, snake_case (default) or UPPER_SNAKE for permissible_values
           (see permissible_values_upper_case option). This rule may conflict with the
           permissible_values_format rule. Not auto-fixable.
-      canonical_prefixes:
-        range: CanonicalPrefixesConfig
+      tree_root_class:
+        range: TreeRootClassRuleConfig
         description: >-
-          Enforce canonical prefixes by verifying that the mappings defined in the `prefixes`
-          slot agree with those provided by the [prefixmaps](https://github.com/linkml/prefixmaps)
-          package. Not auto-fixable.
+          Require a single class with `tree_root: true` and optionally verify that class's
+          name. Autofix will create a new class with `tree_root: true`, a name based on
+          the rule configuration, and slots for existing classes.
 
   RuleConfig:
     description: >-
