@@ -137,6 +137,10 @@ def test_get_identifier_get_key_slot(
     # ensure that the correct slots are in the schema
     assert set(test_class_slots) == {"slot_a", "slot_b", *[s for s in [*all_id_slots, *all_key_slots] if s]}
 
+    # Collect the expected slots to be returned by `get_***_slot` for identifiers and keys.
+    # Note that id_slot_false and key_slot_false have `identifier` and `key` set to `false`,
+    # so we would not expect `get_identifier_slot` or `get_key_slot` to return these slots.
+    # If the value from the parameters is EMPTY, the attribute is not present and should be deleted.
     exp_slots = {ID: {id_slot_a, id_slot_b}, KEY: {key_slot_a, key_slot_b}}
     for slot_set in exp_slots.values():
         slot_set.discard(EMPTY)
@@ -147,8 +151,11 @@ def test_get_identifier_get_key_slot(
     }
 
     for attr_type, val in exp_slots.items():
+        # if there is more than one slot of the identifier or key type present, we expect an error
         if len(val) > 1:
             assert len(problems[attr_type]) == 1
             msg = f"Class 'TestClass' has more than one '{attr_type}' slot: "
             msg += ", ".join(sorted(val))
             assert {p.message for p in problems[attr_type]} == {msg}
+        else:
+            assert problems[attr_type] == []
