@@ -12,6 +12,23 @@ ID = "identifier"
 KEY = "key"
 
 
+def check_schema(test_schema: str, check_identifier: bool) -> list[LinterProblem]:  # noqa: FBT001
+    """Check a schema using a OnePerClass linter.
+
+    :param test_schema: schema to test, as a string
+    :type test_schema: str
+    :param check_identifier: whether to check the `identifier` field or the `key` field
+    :type check_identifier: bool
+    :return: list of linting problems discovered
+    :rtype: list[LinterProblem]
+    """
+    schema_view = SchemaView(test_schema)
+    config = RuleConfig(level=RuleLevel.error.text)
+
+    rule = OneIdentifierPerClass(config) if check_identifier else OneKeyPerClass(config)
+    return list(rule.check(schema_view, fix=False))
+
+
 @pytest.fixture(scope="module")
 def identifier_key_schema() -> str:
     """Return a schema that defines a set of slots with identifiers and keys, and a test class to populate."""
@@ -79,6 +96,34 @@ def test_get_identifier_get_key_slot(
 
     The parameters represent the slots to be added to the test class; if the value of the parameter is EMPTY,
     the slot is not added. If the parameter is a string, that slot is added to the test class.
+
+    For example, given the following set of parameters:
+
+    id_slot_a: "id_slot_a"
+    id_slot_b: EMPTY
+    id_slot_false: "id_slot_false"
+    key_slot_a: EMPTY
+    key_slot_b: EMPTY
+    key_slot_false: "key_slot_false"
+
+    The following lines would be added to the bottom of the identifier_key_schema:
+
+          - id_slot_a
+          - id_slot_false
+          - key_slot_false
+
+    resulting in the following structure for `TestClass`:
+
+    classes:
+      TestClass:
+        slots:
+          - slot_a
+          - slot_b
+          - id_slot_a
+          - id_slot_false
+          - key_slot_false
+
+    This allows the testing of a large number of combinations without having to generate them all manually.
     """
     all_id_slots = [id_slot_a, id_slot_b, id_slot_false]
     all_key_slots = [key_slot_a, key_slot_b, key_slot_false]
@@ -107,20 +152,3 @@ def test_get_identifier_get_key_slot(
             msg = f"Class 'TestClass' has more than one '{attr_type}' slot: "
             msg += ", ".join(sorted(val))
             assert {p.message for p in problems[attr_type]} == {msg}
-
-
-def check_schema(test_schema: str, check_identifier: bool) -> list[LinterProblem]:  # noqa: FBT001
-    """Check a schema using a OnePerClass linter.
-
-    :param test_schema: schema to test, as a string
-    :type test_schema: str
-    :param check_identifier: whether to check the `identifier` field or the `key` field
-    :type check_identifier: bool
-    :return: list of linting problems discovered
-    :rtype: list[LinterProblem]
-    """
-    schema_view = SchemaView(test_schema)
-    config = RuleConfig(level=RuleLevel.error.text)
-
-    rule = OneIdentifierPerClass(config) if check_identifier else OneKeyPerClass(config)
-    return list(rule.check(schema_view, fix=False))
