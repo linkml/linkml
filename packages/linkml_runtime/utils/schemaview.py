@@ -61,8 +61,8 @@ SLOTS = "slots"
 ENUMS = "enums"
 TYPES = "types"
 SUBSETS = "subsets"
-ELEMENTS = [CLASSES, SLOTS, ENUMS, SUBSETS, TYPES]
 PREFIXES = "prefixes"
+SCHEMA_ELEMENTS = [CLASSES, SLOTS, ENUMS, SUBSETS, TYPES]
 
 WINDOWS = sys.platform == "win32"
 
@@ -118,8 +118,7 @@ def load_schema_wrap(path: str, **kwargs: dict[str, Any]) -> SchemaDefinition:
     from linkml_runtime.loaders.yaml_loader import YAMLLoader
 
     yaml_loader = YAMLLoader()
-    schema: SchemaDefinition
-    schema = yaml_loader.load(path, target_class=SchemaDefinition, **kwargs)
+    schema: SchemaDefinition = yaml_loader.load(path, target_class=SchemaDefinition, **kwargs)
     if "\n" not in path:
         # if "\n" not in path and "://" not in path:
         # only set path if the input is not a yaml string or URL.
@@ -305,7 +304,7 @@ class SchemaView:
         :param clobber: if True, then overwrite existing elements
         """
         dest = self.schema
-        for el in [PREFIXES, *ELEMENTS]:
+        for el in [PREFIXES, *SCHEMA_ELEMENTS]:
             # for each key/value pair of the element type
             for k, v in getattr(schema, el).items():
                 # if clobber is True or the key does not exist in the destination schema
@@ -448,8 +447,7 @@ class SchemaView:
         :param imports: include imports closure
         :return: all schemas
         """
-        m = self.schema_map
-        return [m[sn] for sn in self.imports_closure(imports)]
+        return [self.schema_map[sn] for sn in self.imports_closure(imports)]
 
     @lru_cache(None)
     def namespaces(self) -> Namespaces:
@@ -690,7 +688,7 @@ class SchemaView:
         ix = {}
         schemas = self.all_schema(True)
         for schema in schemas:
-            for type_key in ELEMENTS:
+            for type_key in SCHEMA_ELEMENTS:
                 for k in getattr(schema, type_key, {}):
                     ix[k] = schema.name
             for c in schema.classes.values():
