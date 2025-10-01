@@ -92,7 +92,7 @@ jobs:
         shell: bash
       - name: Upload coverage report
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v5.5.0
+        uses: codecov/codecov-action@v5.5.1
         with:
           name: codecov-results-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -137,7 +137,7 @@ jobs:
           uv run coverage report -m
       - name: Upload coverage report
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v5.5.0
+        uses: codecov/codecov-action@v5.5.1
         with:
           name: codecov-results-slow-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
