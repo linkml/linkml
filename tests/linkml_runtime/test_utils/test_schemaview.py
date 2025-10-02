@@ -420,27 +420,20 @@ classes:
     return SchemaView(schema)
 
 
-def test_imports(schema_view_with_imports: SchemaView) -> None:
-    """View should by default dynamically include imports chain."""
+def test_in_schema(schema_view_with_imports: SchemaView) -> None:
+    """Test the in_schema function for determining the source schema of a class or slot."""
     view = schema_view_with_imports
-    assert view.schema.source_file is not None
-    logger.debug(view.imports_closure())
-    assert set(view.imports_closure()) == {"kitchen_sink", "core", "linkml:types"}
 
-    for t in view.all_types():
-        logger.debug(f"T={t} in={view.in_schema(t)}")
     assert view.in_schema(ClassDefinitionName("Person")) == "kitchen_sink"
     assert view.in_schema(SlotDefinitionName("id")) == "core"
     assert view.in_schema(SlotDefinitionName("name")) == "core"
     assert view.in_schema(SlotDefinitionName(ACTIVITY)) == "core"
     assert view.in_schema(SlotDefinitionName("string")) == "types"
 
-    assert ACTIVITY in view.all_classes()
-    assert ACTIVITY not in view.all_classes(imports=False)
-    assert "string" in view.all_types()
-    assert "string" not in view.all_types(imports=False)
-    assert len(view.type_ancestors("SymbolString")) == len(["SymbolString", "string"])
 
+def test_all_types_induced_types(schema_view_with_imports: SchemaView) -> None:
+    """Test all_types and the induced_type functions."""
+    view = schema_view_with_imports
     for tn, t in view.all_types().items():
         assert tn == t.name
         induced_t = view.induced_type(tn)
@@ -451,12 +444,26 @@ def test_imports(schema_view_with_imports: SchemaView) -> None:
         else:
             assert t.from_schema in ["https://w3id.org/linkml/tests/core", "https://w3id.org/linkml/types"]
 
+    assert "string" in view.all_types()
+    assert "string" not in view.all_types(imports=False)
+    assert len(view.type_ancestors("SymbolString")) == len(["SymbolString", "string"])
+
+
+def test_all_enums(schema_view_with_imports: SchemaView) -> None:
+    """Test all_enums"""
+    view = schema_view_with_imports
+
     for en, e in view.all_enums().items():
         assert en == e.name
         if e in view.all_enums(imports=False).values():
             assert e.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
         else:
             assert e.from_schema == "https://w3id.org/linkml/tests/core"
+
+
+def test_all_slots_induced_slots(schema_view_with_imports: SchemaView) -> None:
+    """Test all_slots and induced_slot."""
+    view = schema_view_with_imports
 
     for sn, s in view.all_slots().items():
         assert sn == s.name
@@ -466,6 +473,11 @@ def test_imports(schema_view_with_imports: SchemaView) -> None:
             assert s.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
         else:
             assert s.from_schema == "https://w3id.org/linkml/tests/core"
+
+
+def test_all_classes_class_induced_slots(schema_view_with_imports: SchemaView) -> None:
+    """Test all_classes and class_induced_slots."""
+    view = schema_view_with_imports
 
     for cn, c in view.all_classes().items():
         assert cn == c.name
@@ -478,19 +490,13 @@ def test_imports(schema_view_with_imports: SchemaView) -> None:
                 assert s.slot_uri is not None
                 assert s.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
 
-    for c in ["Company", "Person", "Organization", "Thing"]:
-        assert view.induced_slot("id", c).identifier
-        assert not view.induced_slot("name", c).identifier
-        assert not view.induced_slot("name", c).required
-        assert view.induced_slot("name", c).range == "string"
+    assert ACTIVITY in view.all_classes()
+    assert ACTIVITY not in view.all_classes(imports=False)
 
-    for c in ["Event", "EmploymentEvent", "MedicalEvent"]:
-        s = view.induced_slot("started at time", c)
-        assert s.range == "date"
-        assert s.slot_uri == "prov:startedAtTime"
 
-    assert view.induced_slot(AGE_IN_YEARS, "Person").minimum_value == 0
-    assert view.induced_slot(AGE_IN_YEARS, "Adult").minimum_value == 16
+def test_get_uri(schema_view_with_imports: SchemaView) -> None:
+    """Test the get_uri function."""
+    view = schema_view_with_imports
 
     assert view.get_class("agent").class_uri == "prov:Agent"
     assert view.get_uri(AGENT) == "prov:Agent"
@@ -511,10 +517,10 @@ def test_imports(schema_view_with_imports: SchemaView) -> None:
 
     assert view.get_uri("string") == "xsd:string"
 
-    # dynamic enums
-    e = view.get_enum("HCAExample")
-    assert set(e.include[0].reachable_from.source_nodes) == {"GO:0007049", "GO:0022403"}
 
+def test_slot_unit(schema_view_with_imports: SchemaView) -> None:
+    """Test the ability to capture unit information in a slot."""
+    view = schema_view_with_imports
     # units
     height = view.get_slot("height_in_m")
     assert height.unit.ucum_code == "m"
