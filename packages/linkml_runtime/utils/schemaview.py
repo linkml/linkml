@@ -1707,7 +1707,8 @@ class SchemaView:
 
             id_slot = self.get_identifier_slot(slot_range, imports=imports)
             # if slot_id is None, it must be inlined as has no identifier
-            # if slot_id is defined, it not explicitly declared inline and has an identifier: assume is ref, not inlined
+            # if slot_id is defined, not explicitly declared inline, and has an identifier:
+            # assume it is a ref, not inlined
             return id_slot is None
         return False
 
@@ -1854,7 +1855,6 @@ class SchemaView:
                                 attr_name = f"{attr_name}[range]"
                             if "[range]" in attr_name:
                                 attr_name = attr_name.split("[")[0] + "[range]"
-                            attr_name = attr_name.split("[")[0] + "[range]" if "[range]" in attr_name else attr_name
                             usage = SchemaUsage(used_by=cn, slot=sn, metaslot=attr_name, used=real_a_value)
                             usage.inferred = sn in direct_slots
                             ix[real_a_value].append(usage)
