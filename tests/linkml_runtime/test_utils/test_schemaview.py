@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import logging
-import os
-from copy import copy, deepcopy
+from copy import deepcopy
 from pathlib import Path
+from typing import Any
 
 import pytest
 from jsonasobj2 import JsonObj
@@ -28,9 +28,9 @@ from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaops import roll_down, roll_up
 from linkml_runtime.utils.schemaview import (
     CLASSES,
-    ELEMENTS,
     ENUMS,
     PREFIXES,
+    SCHEMA_ELEMENTS,
     SLOTS,
     SUBSETS,
     TYPES,
@@ -45,6 +45,8 @@ logger = logging.getLogger(__name__)
 
 SCHEMA_NO_IMPORTS = INPUT_DIR_PATH / "kitchen_sink_noimports.yaml"
 SCHEMA_WITH_IMPORTS = INPUT_DIR_PATH / "kitchen_sink.yaml"
+# one of the schemas (along with linkml:types) imported by kitchen_sink.yaml
+SCHEMA_CORE = INPUT_DIR_PATH / "core.yaml"
 SCHEMA_RELATIVE_IMPORT_TREE = INPUT_DIR_PATH / "imports_relative" / "L0_0" / "L1_0_0" / "main.yaml"
 SCHEMA_RELATIVE_IMPORT_TREE2 = INPUT_DIR_PATH / "imports_relative" / "L0_2" / "main.yaml"
 
@@ -60,13 +62,16 @@ yaml_loader = YAMLLoader()
 IS_CURRENT = "is current"
 EMPLOYED_AT = "employed at"
 COMPANY = "Company"
+PERSON = "Person"
+ADULT = "Adult"
+THING = "Thing"
 AGENT = "agent"
 ACTIVITY = "activity"
 RELATED_TO = "related to"
 AGE_IN_YEARS = "age in years"
 EMPTY = ""
 
-ALL_ELEMENTS = [PREFIXES, *ELEMENTS]
+ALL_ELEMENTS = [PREFIXES, *SCHEMA_ELEMENTS]
 EXPECTED = {
     PREFIXES: {"sc1p1", "sc2p1"},
     CLASSES: {"sc1c1", "sc1c2", "sc2c1", "sc2c2"},
@@ -84,14 +89,34 @@ PLURAL = {
 
 @pytest.fixture
 def schema_view_no_imports() -> SchemaView:
-    """Fixture for SchemaView with a schema with no imports."""
+    """Fixture for a SchemaView of the kitchen_sink_no_imports.yaml schema."""
     return SchemaView(SCHEMA_NO_IMPORTS)
 
 
 @pytest.fixture
 def schema_view_with_imports() -> SchemaView:
-    """Fixture for SchemaView with imports."""
+    """Fixture for a SchemaView of the kitchen_sink.yaml schema, which uses imports."""
     return SchemaView(SCHEMA_WITH_IMPORTS)
+
+
+@pytest.fixture(scope="module")
+def sv_merged_imports_keyword() -> SchemaView:
+    """Kitchen sink SchemaView with imports merged through the `merge_imports` keyword."""
+    return SchemaView(SCHEMA_WITH_IMPORTS, merge_imports=True)
+
+
+@pytest.fixture(scope="module")
+def sv_merged_imports_method() -> SchemaView:
+    """Kitchen sink SchemaView with imports merged through running the `merge_imports()` method."""
+    sv = SchemaView(SCHEMA_WITH_IMPORTS, merge_imports=False)
+    sv.merge_imports()
+    return sv
+
+
+@pytest.fixture(scope="module")
+def schema_view_core() -> SchemaView:
+    """Fixture for SchemaView containing the core schema, as imported by kitchen_sink.yaml."""
+    return SchemaView(SCHEMA_CORE, merge_imports=False)
 
 
 @pytest.fixture(scope="session")
@@ -162,24 +187,19 @@ def make_schema(
     :return:
     """
     schema = SchemaDefinition(id=name, name=name)
-    if prefixes:
-        for p in prefixes:
-            schema.prefixes[p.prefix_prefix] = p
-    if classes:
-        for c in classes:
-            schema.classes[c.name] = c
-    if slots:
-        for s in slots:
-            schema.slots[s.name] = s
-    if enums:
-        for e in enums:
-            schema.enums[e.name] = e
-    if types:
-        for t in types:
-            schema.types[t.name] = t
-    if subsets:
-        for s in subsets:
-            schema.subsets[s.name] = s
+    for p in prefixes or []:
+        schema.prefixes[p.prefix_prefix] = p
+
+    for c in classes or []:
+        schema.classes[c.name] = c
+    for s in slots or []:
+        schema.slots[s.name] = s
+    for e in enums or []:
+        schema.enums[e.name] = e
+    for t in types or []:
+        schema.types[t.name] = t
+    for s in subsets or []:
+        schema.subsets[s.name] = s
     return SchemaView(schema)
 
 
@@ -504,6 +524,19 @@ def test_imports_from_schemaview(schema_view_with_imports: SchemaView) -> None:
     assert len(view.all_classes(imports=False)) == len(view2.all_classes(imports=False))
 
 
+@pytest.mark.parametrize(
+    ("schema", "imports_closure"),
+    [
+        ("schema_view_no_imports", {"kitchen_sink"}),
+        ("schema_view_with_imports", {"kitchen_sink", "core", "linkml:types"}),
+    ],
+)
+def test_imports_closure(schema: str, imports_closure: set[str], request: pytest.FixtureRequest) -> None:
+    """Test the imports closure on a schema with or without imports."""
+    view = request.getfixturevalue(schema)
+    assert set(view.imports_closure()) == imports_closure
+
+
 def test_imports_closure_order(sv_import_tree: SchemaView) -> None:
     """Imports should override in a python-like order."""
     closure = sv_import_tree.imports_closure(imports=True)
@@ -603,9 +636,9 @@ def test_imports_remote_url_with_imports() -> None:
     sv = SchemaView(url)
     assert sv.schema.name == "kitchen_sink"
 
-    assert "activity" in sv.all_classes()
-    assert "activity" in sv.all_classes(imports=True)
-    assert "activity" not in sv.all_classes(imports=False)
+    assert ACTIVITY in sv.all_classes()
+    assert ACTIVITY in sv.all_classes(imports=True)
+    assert ACTIVITY not in sv.all_classes(imports=False)
 
 
 def test_imports_remote_repo_mixs() -> None:
@@ -642,62 +675,82 @@ def test_direct_remote_imports_additional() -> None:
     assert len(view.all_classes()) > 0
 
 
-def test_import_map() -> None:
-    """Path to import file should be configurable."""
-    for im in [{"core": "/no/such/file"}, {"linkml:": "/no/such/file"}]:
-        view = SchemaView(SCHEMA_WITH_IMPORTS, importmap=im)
-        with pytest.raises(FileNotFoundError):
-            view.all_classes()
-
-    for im in [None, {}, {"core": "core"}]:
-        view = SchemaView(SCHEMA_WITH_IMPORTS, importmap=im)
+@pytest.mark.parametrize("importmap", [{"core": "/no/such/file"}, {"linkml:": "/no/such/file"}])
+def test_import_map_fail(importmap: dict[str, Any]) -> None:
+    view = SchemaView(SCHEMA_WITH_IMPORTS, importmap=importmap)
+    with pytest.raises(FileNotFoundError, match="No such file or directory:"):
         view.all_classes()
-        assert (
-            view.imports_closure().sort() == ["kitchen_sink", "core", "linkml:types"].sort()
-        )  # Assert imports closure
-        assert ACTIVITY in view.all_classes()  # Assert ACTIVITY is in all classes
-        assert ACTIVITY not in view.all_classes(imports=False)  # Assert ACTIVITY is not in classes without imports
 
 
-def test_mergeimports() -> None:
+@pytest.mark.parametrize("importmap", [None, {}, {"core": "core"}, {"core": str(INPUT_DIR_PATH / "core")}])
+def test_import_map(importmap: dict[str, Any]) -> None:
+    """Path to import file should be configurable."""
+    view = SchemaView(SCHEMA_WITH_IMPORTS, importmap=importmap)
+    view.all_classes()
+    # ensure that all imports have loaded
+    assert set(view.imports_closure()) == {"kitchen_sink", "core", "linkml:types"}
+    # ensure that ACTIVITY only appears in all_classes if imports are enabled
+    assert ACTIVITY in view.all_classes()
+    assert ACTIVITY not in view.all_classes(imports=False)
+
+
+def test_merge_imports_kwargs(schema_view_with_imports: SchemaView, sv_merged_imports_keyword: SchemaView) -> None:
     """Ensure that imports are or are not merged, depending on the kwargs."""
-    # note the change here to include an extra param not in the fixture
-    sv = SchemaView(SCHEMA_WITH_IMPORTS, merge_imports=False)
-    classes_list = list(sv.schema.classes.keys())
-    assert "activity" not in classes_list
 
-    slots_list = list(sv.schema.slots.keys())
-    assert "was generated by" not in slots_list
+    assert ACTIVITY in schema_view_with_imports.all_classes()
+    # ACTIVITY is only present in the imported schema
+    assert ACTIVITY not in schema_view_with_imports.all_classes(imports=False)
+    assert ACTIVITY not in schema_view_with_imports.schema.classes
 
-    prefixes_list = list(sv.schema.prefixes.keys())
-    assert prefixes_list == ["pav", "dce", "lego", "linkml", "biolink", "ks", "RO", "BFO", "tax"]
+    # all the imports have been merged together, so it doesn't matter if we call `all_classes`
+    # with imports=True or imports=False
+    assert ACTIVITY in sv_merged_imports_keyword.all_classes()
+    assert ACTIVITY in sv_merged_imports_keyword.all_classes(imports=False)
+    assert ACTIVITY in sv_merged_imports_keyword.schema.classes
 
-    sv = SchemaView(SCHEMA_WITH_IMPORTS, merge_imports=True)
-    classes_list = list(sv.schema.classes.keys())
-    assert "activity" in classes_list
+    assert "was generated by" not in schema_view_with_imports.schema.slots
+    assert "was generated by" in sv_merged_imports_keyword.schema.slots
 
-    slots_list = list(sv.schema.slots.keys())
-    assert "was generated by" in slots_list
+    ks_prefixes = {"pav", "dce", "lego", "linkml", "biolink", "ks", "RO", "BFO", "tax"}
+    assert set(schema_view_with_imports.schema.prefixes.keys()) == ks_prefixes
 
-    prefixes_list = list(sv.schema.prefixes.keys())
-    if "schema" not in prefixes_list:
-        prefixes_list.append("schema")
-    assert sorted(prefixes_list) == sorted(
-        ["pav", "dce", "lego", "linkml", "biolink", "ks", "RO", "BFO", "tax", "core", "prov", "xsd", "schema", "shex"]
-    )
+    merged_ks_prefixes = {*ks_prefixes, "core", "prov", "xsd", "schema", "shex"}
+    assert set(sv_merged_imports_keyword.schema.prefixes.keys()) == merged_ks_prefixes
 
 
-def test_merge_imports(schema_view_with_imports: SchemaView) -> None:
-    """Ensure merging and merging imports closure works."""
+@pytest.mark.parametrize("fn_name", [f"all_{el}" for el in [*SCHEMA_ELEMENTS, "elements"]])
+@pytest.mark.parametrize("merge_type", ["keyword", "method"])
+def test_merge_imports_merge_method(
+    fn_name: str,
+    merge_type: str,
+    schema_view_with_imports: SchemaView,
+    request: pytest.FixtureRequest,
+) -> None:
+    """Ensure merging via keyword and or via the merge_imports method work identically."""
+
+    # use the schemaview with imports not merged on init as the base for comparison
     view = schema_view_with_imports
-    all_c = copy(view.all_classes())
-    all_c_noi = copy(view.all_classes(imports=False))
-    assert len(all_c_noi) < len(all_c)
-    view.merge_imports()
-    all_c2 = copy(view.all_classes())
-    assert len(all_c) == len(all_c2)
-    all_c2_noi = copy(view.all_classes(imports=False))
-    assert len(all_c2_noi) == len(all_c2)
+
+    all_elements = set(view.all_elements())
+    all_elements_no_imports = set(view.all_elements(imports=False))
+    # there should be more elements in the schema when imports are included
+    assert len(all_elements) > len(all_elements_no_imports)
+    assert all_elements.issuperset(all_elements_no_imports)
+
+    # compare it to the SV with imports already merged
+    if merge_type == "keyword":
+        # sv with imports merged using SchemaView(path, merge_imports=True)
+        test_view = request.getfixturevalue("sv_merged_imports_keyword")
+    else:
+        # sv with imports merged using sv.merge_imports()
+        test_view = request.getfixturevalue("sv_merged_imports_method")
+
+    # check the merged view has the same classes as the original version, with or without imports
+    assert set(getattr(view, fn_name)(imports=True)) == set(getattr(test_view, fn_name)(imports=True))
+
+    # if we merged on init or by calling merge_imports, then the imports should be merged and it
+    # shouldn't matter if we call with or without imports
+    assert set(getattr(test_view, fn_name)(imports=False)) == set(getattr(test_view, fn_name)(imports=True))
 
 
 def test_metamodel_imports() -> None:
@@ -935,8 +988,7 @@ def schema_view_inlined() -> SchemaView:
 def test_children_method(schema_view_no_imports: SchemaView) -> None:
     """Test retrieval of the children of a class."""
     view = schema_view_no_imports
-    children = view.get_children("Person")
-    assert children == ["Adult"]
+    assert view.get_children(PERSON) == [ADULT]
 
 
 def test_all_aliases(schema_view_no_imports: SchemaView) -> None:
@@ -946,7 +998,7 @@ def test_all_aliases(schema_view_no_imports: SchemaView) -> None:
     assert "identifier" in aliases["id"]
     assert "A" in aliases["subset A"]
     assert "B" in aliases["subset B"]
-    assert "dad" in aliases["Adult"]
+    assert "dad" in aliases[ADULT]
 
 
 def test_alias_slot(schema_view_no_imports: SchemaView) -> None:
@@ -954,7 +1006,6 @@ def test_alias_slot(schema_view_no_imports: SchemaView) -> None:
 
     The induced slot alias should always be populated. For induced slots, it should default to the
     name field if not present.
-
     """
     view = schema_view_no_imports
     for c in view.all_classes().values():
@@ -966,7 +1017,7 @@ def test_alias_slot(schema_view_no_imports: SchemaView) -> None:
     assert postal_code_slot.alias == "zip"  # Assert alias is 'zip'
 
 
-def test_schemaview_enums(schema_view_no_imports: SchemaView) -> None:
+def test_enums_and_enum_relationships(schema_view_no_imports: SchemaView) -> None:
     """Test various aspects of Enum representation.
 
     CAT:
@@ -980,11 +1031,10 @@ def test_schemaview_enums(schema_view_no_imports: SchemaView) -> None:
     EAGLE:
       is_a: BIRD
     """
-
     view = schema_view_no_imports
 
     # Test for ValueError when passing incorrect parameters
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match='No such enum: "not_an_enum"'):
         view.permissible_value_parent("not_a_pv", "not_an_enum")
 
     for en, e in view.all_enums().items():
@@ -1515,7 +1565,7 @@ def test_schemaview(schema_view_no_imports: SchemaView) -> None:
 
     # -- TEST CLASS SLOTS --
 
-    assert set(view.class_slots("Person")) == {
+    assert set(view.class_slots(PERSON)) == {
         "id",
         "name",
         "has employment history",
@@ -1527,7 +1577,7 @@ def test_schemaview(schema_view_no_imports: SchemaView) -> None:
         "reason_for_happiness",
         "aliases",
     }
-    assert view.class_slots("Person") == view.class_slots("Adult")
+    assert view.class_slots(PERSON) == view.class_slots(ADULT)
     assert set(view.class_slots(COMPANY)) == {"id", "name", "ceo", "aliases"}
 
     assert view.get_class(AGENT).class_uri == "prov:Agent"
@@ -1585,56 +1635,61 @@ def test_schemaview(schema_view_no_imports: SchemaView) -> None:
     assert set(view.get_mappings(ACTIVITY)["exact"]) == {"prov:Activity"}
     assert set(view.get_mappings(ACTIVITY, expand=True)["exact"]) == {"http://www.w3.org/ns/prov#Activity"}
 
+
+def test_schema_usage(schema_view_no_imports: SchemaView) -> None:
+    """Test usage_index method and SchemaUsage objects."""
+    view = schema_view_no_imports
     u = view.usage_index()
     for k, v in u.items():
         logger.debug(f" {k} = {v}")
 
-        assert (
-            SchemaUsage(
-                used_by="FamilialRelationship", slot=RELATED_TO, metaslot="range", used="Person", inferred=False
-            )
-            in u["Person"]
-        )
-        assert [
-            SchemaUsage(
-                used_by="Person",
-                slot="reason_for_happiness",
-                metaslot="any_of[range]",
-                used="MarriageEvent",
-                inferred=True,
-            ),
-            SchemaUsage(
-                used_by="Adult",
-                slot="reason_for_happiness",
-                metaslot="any_of[range]",
-                used="MarriageEvent",
-                inferred=False,
-            ),
-        ] == u["MarriageEvent"]
-        assert [
-            SchemaUsage(
-                used_by="Person", slot="has employment history", metaslot="range", used="EmploymentEvent", inferred=True
-            ),
-            SchemaUsage(
-                used_by="Person",
-                slot="reason_for_happiness",
-                metaslot="any_of[range]",
-                used="EmploymentEvent",
-                inferred=True,
-            ),
-            SchemaUsage(
-                used_by="Adult", slot="has employment history", metaslot="range", used="EmploymentEvent", inferred=False
-            ),
-            SchemaUsage(
-                used_by="Adult",
-                slot="reason_for_happiness",
-                metaslot="any_of[range]",
-                used="EmploymentEvent",
-                inferred=False,
-            ),
-        ] == u["EmploymentEvent"]
+    assert (
+        SchemaUsage(used_by="FamilialRelationship", slot=RELATED_TO, metaslot="range", used=PERSON, inferred=False)
+        in u[PERSON]
+    )
+    assert [
+        SchemaUsage(
+            used_by=PERSON,
+            slot="reason_for_happiness",
+            metaslot="any_of[range]",
+            used="MarriageEvent",
+            inferred=True,
+        ),
+        SchemaUsage(
+            used_by=ADULT,
+            slot="reason_for_happiness",
+            metaslot="any_of[range]",
+            used="MarriageEvent",
+            inferred=False,
+        ),
+    ] == u["MarriageEvent"]
+    assert [
+        SchemaUsage(
+            used_by=PERSON, slot="has employment history", metaslot="range", used="EmploymentEvent", inferred=True
+        ),
+        SchemaUsage(
+            used_by=PERSON,
+            slot="reason_for_happiness",
+            metaslot="any_of[range]",
+            used="EmploymentEvent",
+            inferred=True,
+        ),
+        SchemaUsage(
+            used_by=ADULT, slot="has employment history", metaslot="range", used="EmploymentEvent", inferred=False
+        ),
+        SchemaUsage(
+            used_by=ADULT,
+            slot="reason_for_happiness",
+            metaslot="any_of[range]",
+            used="EmploymentEvent",
+            inferred=False,
+        ),
+    ] == u["EmploymentEvent"]
 
-    # test methods also work for attributes
+
+def test_attributes(schema_view_no_imports: SchemaView) -> None:
+    """Test slot methods also work for attributes."""
+    view = schema_view_no_imports
     leaves = view.class_leaves()
     logger.debug(f"LEAVES={leaves}")
     assert "MedicalEvent" in leaves
@@ -1688,9 +1743,9 @@ def test_rollup_rolldown(schema_view_no_imports: SchemaView) -> None:
         logger.debug(f"  {element_name} SLOTS(i) = {view.class_slots(element_name)}")
         logger.debug(f"  {element_name} SLOTS(d) = {view.class_slots(element_name, direct=True)}")
         assert len(view.class_slots(element_name)) == len(view.class_slots(element_name, direct=True))
-        assert "Thing" not in view.all_classes()
-        assert "Person" not in view.all_classes()
-        assert "Adult" in view.all_classes()
+        assert THING not in view.all_classes()
+        assert PERSON not in view.all_classes()
+        assert ADULT in view.all_classes()
 
 
 def test_caching() -> None:
@@ -1739,19 +1794,16 @@ def test_traversal() -> None:
     view.add_class(ClassDefinition("BY", is_a="RootMixin", mixin=True))
     view.add_class(ClassDefinition("CX", is_a="RootMixin", mixin=True))
 
-    def check(ancs, expected):
-        assert ancs == expected
+    # class ancestors, depth first order
+    anc_df = ["C", "Cm1", "Cm2", "CX", "B", "Bm1", "Bm2", "BY", "A", "Am1", "Am2", "AZ", "Root", "RootMixin"]
+    assert view.class_ancestors("C", depth_first=True) == anc_df
 
-    check(
-        view.class_ancestors("C", depth_first=True),
-        ["C", "Cm1", "Cm2", "CX", "B", "Bm1", "Bm2", "BY", "A", "Am1", "Am2", "AZ", "Root", "RootMixin"],
-    )
-    check(
-        view.class_ancestors("C", depth_first=False),
-        ["C", "Cm1", "Cm2", "CX", "B", "Bm1", "Bm2", "RootMixin", "BY", "A", "Am1", "Am2", "AZ", "Root"],
-    )
-    check(view.class_ancestors("C", mixins=False), ["C", "B", "A", "Root"])
-    check(view.class_ancestors("C", is_a=False), ["C", "Cm1", "Cm2", "CX"])
+    # class ancestors, not in depth first order
+    anc_not_df = ["C", "Cm1", "Cm2", "CX", "B", "Bm1", "Bm2", "RootMixin", "BY", "A", "Am1", "Am2", "AZ", "Root"]
+    assert view.class_ancestors("C", depth_first=False) == anc_not_df
+
+    assert view.class_ancestors("C", mixins=False) == ["C", "B", "A", "Root"]
+    assert view.class_ancestors("C", is_a=False) == ["C", "Cm1", "Cm2", "CX"]
 
 
 def test_slot_inheritance() -> None:
@@ -1789,11 +1841,11 @@ def test_slot_inheritance() -> None:
 
     # Test dangling
     view.add_slot(SlotDefinition("s5", is_a="does-not-exist"))
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match='No such slot: "does-not-exist"'):
         view.slot_ancestors("s5")
 
 
-def test_induced_slots(sv_induced_slots: SchemaView) -> None:
+def test_induced_slot(sv_induced_slots: SchemaView) -> None:
     """Test induced slots and load order of mixins and is_a.
 
     See https://github.com/linkml/linkml/issues/479 and
@@ -1896,11 +1948,11 @@ def test_get_classes_by_slot(schema_view_with_imports: SchemaView) -> None:
     view = schema_view_with_imports
     slot = view.get_slot(AGE_IN_YEARS)
     actual_result = view.get_classes_by_slot(slot)
-    expected_result = ["Person"]
+    expected_result = [PERSON]
     assert sorted(actual_result) == sorted(expected_result)
 
     actual_result = view.get_classes_by_slot(slot, include_induced=True)
-    expected_result = ["Person", "Adult"]
+    expected_result = [PERSON, ADULT]
     assert sorted(actual_result) == sorted(expected_result)
 
 
