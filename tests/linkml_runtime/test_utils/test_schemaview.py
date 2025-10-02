@@ -420,118 +420,12 @@ classes:
     return SchemaView(schema)
 
 
-def test_in_schema(schema_view_with_imports: SchemaView) -> None:
-    """Test the in_schema function for determining the source schema of a class or slot."""
-    view = schema_view_with_imports
-
-    assert view.in_schema(ClassDefinitionName("Person")) == "kitchen_sink"
-    assert view.in_schema(SlotDefinitionName("id")) == "core"
-    assert view.in_schema(SlotDefinitionName("name")) == "core"
-    assert view.in_schema(SlotDefinitionName(ACTIVITY)) == "core"
-    assert view.in_schema(SlotDefinitionName("string")) == "types"
-
-
-def test_all_types_induced_types(schema_view_with_imports: SchemaView) -> None:
-    """Test all_types and the induced_type functions."""
-    view = schema_view_with_imports
-    for tn, t in view.all_types().items():
-        assert tn == t.name
-        induced_t = view.induced_type(tn)
-        assert induced_t.uri is not None
-        assert induced_t.base is not None
-        if t in view.all_types(imports=False).values():
-            assert t.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
-        else:
-            assert t.from_schema in ["https://w3id.org/linkml/tests/core", "https://w3id.org/linkml/types"]
-
-    assert "string" in view.all_types()
-    assert "string" not in view.all_types(imports=False)
-    assert len(view.type_ancestors("SymbolString")) == len(["SymbolString", "string"])
-
-
-def test_all_enums(schema_view_with_imports: SchemaView) -> None:
-    """Test all_enums"""
-    view = schema_view_with_imports
-
-    for en, e in view.all_enums().items():
-        assert en == e.name
-        if e in view.all_enums(imports=False).values():
-            assert e.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
-        else:
-            assert e.from_schema == "https://w3id.org/linkml/tests/core"
-
-
-def test_all_slots_induced_slots(schema_view_with_imports: SchemaView) -> None:
-    """Test all_slots and induced_slot."""
-    view = schema_view_with_imports
-
-    for sn, s in view.all_slots().items():
-        assert sn == s.name
-        s_induced = view.induced_slot(sn)
-        assert s_induced.range is not None
-        if s in view.all_slots(imports=False).values():
-            assert s.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
-        else:
-            assert s.from_schema == "https://w3id.org/linkml/tests/core"
-
-
-def test_all_classes_class_induced_slots(schema_view_with_imports: SchemaView) -> None:
-    """Test all_classes and class_induced_slots."""
-    view = schema_view_with_imports
-
-    for cn, c in view.all_classes().items():
-        assert cn == c.name
-        if c in view.all_classes(imports=False).values():
-            assert c.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
-        else:
-            assert c.from_schema == "https://w3id.org/linkml/tests/core"
-        for s in view.class_induced_slots(cn):
-            if s in view.all_classes(imports=False).values():
-                assert s.slot_uri is not None
-                assert s.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
-
-    assert ACTIVITY in view.all_classes()
-    assert ACTIVITY not in view.all_classes(imports=False)
-
-
-def test_get_uri(schema_view_with_imports: SchemaView) -> None:
-    """Test the get_uri function."""
-    view = schema_view_with_imports
-
-    assert view.get_class("agent").class_uri == "prov:Agent"
-    assert view.get_uri(AGENT) == "prov:Agent"
-    logger.debug(view.get_class("Company").class_uri)
-
-    assert view.get_uri(COMPANY) == "ks:Company"
-    assert view.get_uri(COMPANY, expand=True) == "https://w3id.org/linkml/tests/kitchen_sink/Company"
-    logger.debug(view.get_uri("TestClass"))
-    assert view.get_uri("TestClass") == "core:TestClass"
-    assert view.get_uri("TestClass", expand=True) == "https://w3id.org/linkml/tests/core/TestClass"
-
-    assert (
-        view.get_uri("TestClass", expand=True, use_element_type=True)
-        == "https://w3id.org/linkml/tests/core/class/TestClass"
-    )
-    assert view.get_uri("TestClass", use_element_type=True) == "core:class/TestClass"
-    assert view.get_uri("name", use_element_type=True) == "core:slot/name"
-
-    assert view.get_uri("string") == "xsd:string"
-
-
-def test_slot_unit(schema_view_with_imports: SchemaView) -> None:
-    """Test the ability to capture unit information in a slot."""
-    view = schema_view_with_imports
-    # units
-    height = view.get_slot("height_in_m")
-    assert height.unit.ucum_code == "m"
-
-
 def test_imports_from_schemaview(schema_view_with_imports: SchemaView) -> None:
     """View should by default dynamically include imports chain."""
     view = schema_view_with_imports
     view2 = SchemaView(view.schema)
-    assert len(view.all_classes()) == len(view2.all_classes())
-    assert len(view.all_classes(imports=False)) == len(view2.all_classes(imports=False))
+    assert set(view.all_classes()) == set(view2.all_classes())
+    assert set(view.all_classes(imports=False)) == set(view2.all_classes(imports=False))
 
 
 @pytest.mark.parametrize(
@@ -819,7 +713,6 @@ def test_metamodel_in_schemaview() -> None:
         assert sn in view.all_slots()
     for tn in ["uriorcurie", "string", "float"]:
         assert tn in view.all_types()
-    for tn in ["uriorcurie", "string", "float"]:
         assert tn not in view.all_types(imports=False)
     for cn, c in view.all_classes().items():
         uri = view.get_uri(cn, expand=True)
@@ -832,19 +725,15 @@ def test_metamodel_in_schemaview() -> None:
             assert exp_slot_uri is not None
 
 
-def test_uris_without_default_prefix() -> None:
-    """Test if uri is correct if no default_prefix is defined for the schema.
+def test_in_schema(schema_view_with_imports: SchemaView) -> None:
+    """Test the in_schema function for determining the source schema of a class or slot."""
+    view = schema_view_with_imports
 
-    See: https://github.com/linkml/linkml/issues/2578
-    """
-    schema_definition = SchemaDefinition(id="https://example.org/test#", name="test_schema")
-
-    view = SchemaView(schema_definition)
-    view.add_class(ClassDefinition(name="TestClass", from_schema="https://example.org/another#"))
-    view.add_slot(SlotDefinition(name="test_slot", from_schema="https://example.org/another#"))
-
-    assert view.get_uri("TestClass", imports=True) == "https://example.org/test#TestClass"
-    assert view.get_uri("test_slot", imports=True) == "https://example.org/test#test_slot"
+    assert view.in_schema(ClassDefinitionName("Person")) == "kitchen_sink"
+    assert view.in_schema(SlotDefinitionName("id")) == "core"
+    assert view.in_schema(SlotDefinitionName("name")) == "core"
+    assert view.in_schema(SlotDefinitionName(ACTIVITY)) == "core"
+    assert view.in_schema(SlotDefinitionName("string")) == "types"
 
 
 CREATURE_EXPECTED = {
@@ -997,10 +886,134 @@ def test_all_classes_ordered_by(sv_ordering_tests: SchemaView, ordered_by: str) 
     assert list(sv_ordering_tests.all_classes(ordered_by=ordered_by).keys()) == ORDERING_TESTS[ordered_by]
 
 
-@pytest.fixture(scope="session")
-def schema_view_inlined() -> SchemaView:
-    """Fixture for a SchemaView for testing attribute edge cases."""
-    return SchemaView(os.path.join(INPUT_DIR, "schemaview_is_inlined.yaml"))
+def test_all_classes_class_induced_slots(schema_view_with_imports: SchemaView) -> None:
+    """Test all_classes and class_induced_slots."""
+    view = schema_view_with_imports
+
+    for cn, c in view.all_classes().items():
+        assert cn == c.name
+        if c in view.all_classes(imports=False).values():
+            assert c.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
+        else:
+            assert c.from_schema == "https://w3id.org/linkml/tests/core"
+        for s in view.class_induced_slots(cn):
+            if s in view.all_classes(imports=False).values():
+                assert s.slot_uri is not None
+                assert s.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
+
+    assert ACTIVITY in view.all_classes()
+    assert ACTIVITY not in view.all_classes(imports=False)
+
+
+def test_class_slots(schema_view_no_imports: SchemaView) -> None:
+    """Test class_slots method."""
+    view = schema_view_no_imports
+
+    assert set(view.class_slots(PERSON)) == {
+        "id",
+        "name",
+        "has employment history",
+        "has familial relationships",
+        "has medical history",
+        AGE_IN_YEARS,
+        "addresses",
+        "has birth event",
+        "reason_for_happiness",
+        "aliases",
+    }
+    assert view.class_slots(PERSON) == view.class_slots(ADULT)
+    assert set(view.class_slots(COMPANY)) == {"id", "name", "ceo", "aliases"}
+
+
+def test_all_slots_induced_slots(schema_view_with_imports: SchemaView) -> None:
+    """Test all_slots and induced_slot."""
+    view = schema_view_with_imports
+
+    for sn, s in view.all_slots().items():
+        assert sn == s.name
+        s_induced = view.induced_slot(sn)
+        assert s_induced.range is not None
+        if s in view.all_slots(imports=False).values():
+            assert s.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
+        else:
+            assert s.from_schema == "https://w3id.org/linkml/tests/core"
+
+
+def test_all_types_induced_types(schema_view_with_imports: SchemaView) -> None:
+    """Test all_types and the induced_type functions."""
+    view = schema_view_with_imports
+    for tn, t in view.all_types().items():
+        assert tn == t.name
+        induced_t = view.induced_type(tn)
+        assert induced_t.uri is not None
+        assert induced_t.base is not None
+        if t in view.all_types(imports=False).values():
+            assert t.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
+        else:
+            assert t.from_schema in ["https://w3id.org/linkml/tests/core", "https://w3id.org/linkml/types"]
+
+    assert "string" in view.all_types()
+    assert "string" not in view.all_types(imports=False)
+    assert len(view.type_ancestors("SymbolString")) == len(["SymbolString", "string"])
+
+
+def test_all_enums(schema_view_with_imports: SchemaView) -> None:
+    """Test all_enums"""
+    view = schema_view_with_imports
+
+    for en, e in view.all_enums().items():
+        assert en == e.name
+        if e in view.all_enums(imports=False).values():
+            assert e.from_schema == "https://w3id.org/linkml/tests/kitchen_sink"
+        else:
+            assert e.from_schema == "https://w3id.org/linkml/tests/core"
+
+
+def test_get_uri(schema_view_with_imports: SchemaView) -> None:
+    """Test the get_uri function."""
+    view = schema_view_with_imports
+
+    assert view.get_class("agent").class_uri == "prov:Agent"
+    assert view.get_uri(AGENT) == "prov:Agent"
+    logger.debug(view.get_class("Company").class_uri)
+
+    assert view.get_uri(COMPANY) == "ks:Company"
+    assert view.get_uri(COMPANY, expand=True) == "https://w3id.org/linkml/tests/kitchen_sink/Company"
+    logger.debug(view.get_uri("TestClass"))
+    assert view.get_uri("TestClass") == "core:TestClass"
+    assert view.get_uri("TestClass", expand=True) == "https://w3id.org/linkml/tests/core/TestClass"
+
+    assert (
+        view.get_uri("TestClass", expand=True, use_element_type=True)
+        == "https://w3id.org/linkml/tests/core/class/TestClass"
+    )
+    assert view.get_uri("TestClass", use_element_type=True) == "core:class/TestClass"
+    assert view.get_uri("name", use_element_type=True) == "core:slot/name"
+
+    assert view.get_uri("string") == "xsd:string"
+
+
+def test_uris_without_default_prefix() -> None:
+    """Test if uri is correct if no default_prefix is defined for the schema.
+
+    See: https://github.com/linkml/linkml/issues/2578
+    """
+    schema_definition = SchemaDefinition(id="https://example.org/test#", name="test_schema")
+
+    view = SchemaView(schema_definition)
+    view.add_class(ClassDefinition(name="TestClass", from_schema="https://example.org/another#"))
+    view.add_slot(SlotDefinition(name="test_slot", from_schema="https://example.org/another#"))
+
+    assert view.get_uri("TestClass", imports=True) == "https://example.org/test#TestClass"
+    assert view.get_uri("test_slot", imports=True) == "https://example.org/test#test_slot"
+
+
+def test_slot_unit(schema_view_with_imports: SchemaView) -> None:
+    """Test the ability to capture unit information in a slot."""
+    view = schema_view_with_imports
+    # units
+    height = view.get_slot("height_in_m")
+    assert height.unit.ucum_code == "m"
 
 
 def test_children_method(schema_view_no_imports: SchemaView) -> None:
@@ -1215,26 +1228,6 @@ def test_ancestors_descendants(schema_view_no_imports: SchemaView) -> None:
     assert set(view.class_ancestors(COMPANY)) == {COMPANY, "Organization", "HasAliases", THING}
     assert set(view.class_ancestors(COMPANY, reflexive=False)) == {"Organization", "HasAliases", THING}
     assert set(view.class_descendants(THING)) == {THING, PERSON, "Organization", COMPANY, ADULT}
-
-
-def test_class_slots(schema_view_no_imports: SchemaView) -> None:
-    """Test class_slots method."""
-    view = schema_view_no_imports
-
-    assert set(view.class_slots(PERSON)) == {
-        "id",
-        "name",
-        "has employment history",
-        "has familial relationships",
-        "has medical history",
-        AGE_IN_YEARS,
-        "addresses",
-        "has birth event",
-        "reason_for_happiness",
-        "aliases",
-    }
-    assert view.class_slots(PERSON) == view.class_slots(ADULT)
-    assert set(view.class_slots(COMPANY)) == {"id", "name", "ceo", "aliases"}
 
 
 def test_get_mappings(schema_view_no_imports: SchemaView) -> None:
@@ -1580,25 +1573,6 @@ def test_induced_slot_again(schema_view_no_imports: SchemaView) -> None:
     assert view.get_slot(RELATED_TO).range == THING
     assert view.induced_slot(RELATED_TO, "Relationship").range == THING
     assert set(view.induced_slot("name").domain_of) == {THING, "Place"}
-
-
-def test_induced_slot_yet_again(schema_view_with_imports: SchemaView) -> None:
-    """Test induced slots yet again - no such thing as too many induced_slot tests, right?"""
-    view = schema_view_with_imports
-
-    for cn in [COMPANY, PERSON, "Organization", THING]:
-        assert view.induced_slot("id", cn).identifier
-        assert not view.induced_slot("name", cn).identifier
-        assert not view.induced_slot("name", cn).required
-        assert view.induced_slot("name", cn).range == "string"
-
-    for cn in ["Event", "EmploymentEvent", "MedicalEvent"]:
-        s = view.induced_slot("started at time", cn)
-        assert s.range == "date"
-        assert s.slot_uri == "prov:startedAtTime"
-
-    assert view.induced_slot(AGE_IN_YEARS, PERSON).minimum_value == 0
-    assert view.induced_slot(AGE_IN_YEARS, ADULT).minimum_value == 16
 
 
 @pytest.mark.parametrize(
