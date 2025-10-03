@@ -73,6 +73,11 @@ DEPRECATED = "[DEPRECATED: only used in legacy mode]"
     type=click.Path(exists=True, dir_okay=False, file_okay=True, resolve_path=True, path_type=Path),
 )
 @click.option(
+    "-r",
+    "--schema-remote",
+    help="A remote Schema file to validate data against",
+)
+@click.option(
     "-C",
     "--target-class",
     help="Class within the schema to validate data against",
@@ -122,6 +127,7 @@ DEPRECATED = "[DEPRECATED: only used in legacy mode]"
 def cli(
     context: click.Context,
     schema: Optional[Path],
+    schema_remote: Optional[str],
     target_class: Optional[str],
     config: Optional[str],
     data_sources: tuple[str],
@@ -171,7 +177,7 @@ def cli(
         )
 
     config_args = {
-        "schema": schema,
+        "schema": schema if schema is not None else schema_remote,
         "target_class": target_class,
         "data_sources": data_sources,
     }
@@ -183,8 +189,10 @@ def cli(
     if config_args.get("schema") is None:
         raise click.ClickException(
             "No schema specified. Path to schema must be specified by either "
-            "the -s/--schema option or in a config file."
+            "the -s/--schema option or the -r/--schema-remote option "
+            "as an argument or in a config file."
         )
+    
     config = Config(**config_args)
 
     plugins = _resolve_plugins(config.plugins) if config.plugins else []
