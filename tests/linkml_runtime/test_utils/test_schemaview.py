@@ -70,6 +70,10 @@ ACTIVITY = "activity"
 RELATED_TO = "related to"
 AGE_IN_YEARS = "age in years"
 
+EMPTY = ""
+ID = "identifier"
+KEY = "key"
+
 ALL_ELEMENTS = [PREFIXES, *SCHEMA_ELEMENTS]
 EXPECTED = {
     PREFIXES: {"sc1p1", "sc2p1"},
@@ -1629,6 +1633,125 @@ def test_type_and_slot_with_same_name() -> None:
     view.add_type(TypeDefinition(name="test", from_schema="https://example.org/imported#"))
 
     assert view.get_uri("test", imports=True) == "ex:test"
+
+
+@pytest.fixture(scope="module")
+def identifier_key_schema() -> str:
+    """Return a schema that defines a set of slots with identifiers and keys, and a test class to populate."""
+    return """
+# yaml-language-server: $schema=https://linkml.io/linkml-model/linkml_model/jsonschema/meta.schema.json
+id: https://w3id.org/linkml/examples/identifiers
+title: Identifiers and Keys
+name: identifiers
+description: Schema for testing identifiers and keys
+slots:
+  slot_a:
+  slot_b:
+  id_slot_a:
+    identifier: true
+  id_slot_b:
+    identifier: true
+  id_slot_false:
+    identifier: false
+  key_slot_a:
+    key: true
+  key_slot_b:
+    key: true
+  key_slot_false:
+    key: false
+
+classes:
+  TestClass:
+    slots:
+      - slot_a
+      - slot_b
+"""
+
+
+@pytest.mark.parametrize("id_slot_a", [EMPTY, "id_slot_a"])
+@pytest.mark.parametrize("id_slot_b", [EMPTY, "id_slot_b"])
+@pytest.mark.parametrize("id_slot_false", [EMPTY, "id_slot_false"])
+@pytest.mark.parametrize("key_slot_a", [EMPTY, "key_slot_a"])
+@pytest.mark.parametrize("key_slot_b", [EMPTY, "key_slot_b"])
+@pytest.mark.parametrize("key_slot_false", [EMPTY, "key_slot_false"])
+def test_get_identifier_get_key_slot(
+    identifier_key_schema: str,
+    id_slot_a: str,
+    id_slot_b: str,
+    id_slot_false: str,
+    key_slot_a: str,
+    key_slot_b: str,
+    key_slot_false: str,
+) -> None:
+    """Test the retrieval of "identifier" and "key" slots in classes in the schema.
+
+    The parameters represent the slots to be added to the test class; if the value of the parameter is EMPTY,
+    the slot is not added. If the parameter is a string, that slot is added to the test class.
+
+    For example, given the following set of parameters:
+
+    id_slot_a: "id_slot_a"
+    id_slot_b: EMPTY
+    id_slot_false: "id_slot_false"
+    key_slot_a: EMPTY
+    key_slot_b: EMPTY
+    key_slot_false: "key_slot_false"
+
+    The following lines would be added to the bottom of the identifier_key_schema:
+
+          - id_slot_a
+          - id_slot_false
+          - key_slot_false
+
+    resulting in the following structure for `TestClass`:
+
+    classes:
+      TestClass:
+        slots:
+          - slot_a
+          - slot_b
+          - id_slot_a
+          - id_slot_false
+          - key_slot_false
+
+    This allows the testing of a large number of combinations without having to generate all 2^^6 (64) manually.
+    """
+    all_id_slots = [id_slot_a, id_slot_b, id_slot_false]
+    all_key_slots = [key_slot_a, key_slot_b, key_slot_false]
+
+    for k in [*all_id_slots, *all_key_slots]:
+        if k:
+            identifier_key_schema += f"      - {k}\n"
+
+    sv = SchemaView(identifier_key_schema)
+    test_class_slots = sv.class_slots("TestClass")
+    # ensure that the correct slots are in the schema
+    assert set(test_class_slots) == {"slot_a", "slot_b", *[s for s in [*all_id_slots, *all_key_slots] if s]}
+
+    # Generate the expected slots to be returned by `get_***_slot` for identifiers and keys.
+    # Note that id_slot_false and key_slot_false have `identifier` and `key` set to `false`,
+    # so we would not expect `get_identifier_slot` or `get_key_slot` to return these slots.
+    # If the value from the parameters is EMPTY, the attribute is not present.
+    expected = {
+        # expected result of get_identifier_slot
+        ID: id_slot_a or id_slot_b,
+        # expected result of get_identifier_slot, falling back on get_key_slot
+        f"{ID}_or_{KEY}": id_slot_a or id_slot_b or key_slot_a or key_slot_b,
+        # expected result of get_key_slot
+        KEY: key_slot_a or key_slot_b,
+    }
+
+    got = {
+        ID: sv.get_identifier_slot("TestClass", use_key=False),
+        f"{ID}_or_{KEY}": sv.get_identifier_slot("TestClass", use_key=True),
+        KEY: sv.get_key_slot("TestClass"),
+    }
+
+    for id_key, exp in expected.items():
+        if exp:
+            assert got[id_key].name == exp
+        else:
+            assert got[id_key] is None
 
 
 """
