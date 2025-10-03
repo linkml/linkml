@@ -176,6 +176,12 @@ def cli(
             fg="yellow",
         )
 
+    if schema is not None and schema_remote is not None :
+        raise click.ClickException(
+            "Both a remote and a local schema were provided. Please use either the -s/--schema "
+            "option or the -r/--schema-remote option to define a schema, not both."
+        )
+
     config_args = {
         "schema": schema if schema is not None else schema_remote,
         "target_class": target_class,

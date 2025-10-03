@@ -10,6 +10,7 @@ from linkml.validator.cli import cli
 VALID_PERSON_1 = {"id": "id:1", "name": "John Doe", "age": 35}
 VALID_PERSON_2 = {"id": "id:2", "name": "Jane Smith", "age": 25, "telephone": "555-555-5550"}
 PERSONINFO_SCHEMA = str(Path(__file__).parent / "input/personinfo.yaml")
+REMOTE_SCHEMA = "hhttps://w3id.org/linkml/meta.yaml"
 
 
 @pytest.fixture
@@ -78,6 +79,13 @@ def test_no_schema_provided(cli_runner):
 
     result = cli_runner.invoke(cli, [])
     assert "No schema specified" in result.output
+    assert result.exit_code == 1
+
+def test_two_schema_provided(cli_runner):
+    """Verify a useful message is emitted when both a local and a remote schema were specified via options or config"""
+
+    result = cli_runner.invoke(cli, ['-s', PERSONINFO_SCHEMA, '-r', REMOTE_SCHEMA])
+    assert "Both a remote and a local" in result.output
     assert result.exit_code == 1
 
 
