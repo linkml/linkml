@@ -1,9 +1,11 @@
+import ast
 import importlib
 import os
 import subprocess
 import sys
 import zipfile
 from pathlib import Path
+from typing import Optional
 
 import pytest
 from linkml_runtime.utils.introspection import package_schemaview
@@ -15,7 +17,7 @@ pytestmark = [
 ]
 
 
-def _generate_rust_crate(schema_input, out_dir: Path) -> Path:
+def _generate_rust_crate(schema_input, out_dir: Path, *, handwritten_lib: bool = False) -> Path:
     """
     Generate a Rust crate with PyO3 bindings for the given schema input
     into the provided output directory and perform basic sanity checks.
@@ -23,7 +25,14 @@ def _generate_rust_crate(schema_input, out_dir: Path) -> Path:
     Returns the output directory.
     """
     out_dir.mkdir(parents=True, exist_ok=True)
-    gen = RustGenerator(schema_input, mode="crate", pyo3=True, serde=True, output=str(out_dir))
+    gen = RustGenerator(
+        schema_input,
+        mode="crate",
+        pyo3=True,
+        serde=True,
+        output=str(out_dir),
+        handwritten_lib=handwritten_lib,
+    )
     gen.serialize(force=True)
 
     cargo_toml = out_dir / "Cargo.toml"
@@ -57,6 +66,28 @@ def _build_rust_crate(out_dir: Path, context: str = "") -> list[Path]:
     wheels = list(wheels_dir.glob("*.whl"))
     assert wheels, f"no wheel produced by maturin{(' for ' + context) if context else ''}"
     return wheels
+
+
+def _run_stubgen_binary(out_dir: Path, extra_args: Optional[list[str]] = None, context: str = "") -> None:
+    """Run the generated stub_gen binary to (re)generate or validate PyO3 stubs."""
+
+    cmd = ["cargo", "run", "--bin", "stub_gen", "--features", "stubgen"]
+    if extra_args:
+        cmd.append("--")
+        cmd.extend(extra_args)
+
+    env = os.environ.copy()
+    env["RUST_BACKTRACE"] = "1"
+    result = subprocess.run(cmd, cwd=out_dir, capture_output=True, text=True, env=env)
+    if result.returncode != 0:
+        prefix = f" for {context}" if context else ""
+        pytest.fail(
+            f"cargo run stub_gen failed{prefix}. See output below for diagnostics.\n\n"
+            f"cmd: {' '.join(cmd)}\n"
+            f"exit: {result.returncode}\n"
+            f"stdout:\n{result.stdout}\n"
+            f"stderr:\n{result.stderr}\n"
+        )
 
 
 def _import_built_wheel(out_dir: Path, module_name: str):
@@ -142,6 +173,44 @@ def test_rustgen_personschema_maturin(temp_dir):
     assert person.name == "P. One"
 
 
+def test_rustgen_personschema_stubgen(temp_dir):
+    """Run the generated stub_gen binary and sanity-check emitted stub files."""
+
+    schema_path = Path(__file__).resolve().parents[2] / "examples" / "PersonSchema" / "personinfo.yaml"
+    assert schema_path.exists(), f"Schema not found at {schema_path}"
+    out_dir = _generate_rust_crate(str(schema_path), Path(temp_dir) / "personinfo_stubgen")
+
+    _run_stubgen_binary(out_dir, context="personschema stub generation")
+
+    stub_files = list(out_dir.rglob("*.pyi"))
+    assert stub_files, "stub_gen did not materialize any .pyi files under target/"
+
+    class_signature_found = False
+    for stub_file in stub_files:
+        text = stub_file.read_text(encoding="utf-8")
+        try:
+            ast.parse(text)
+        except SyntaxError as exc:  # pragma: no cover - executed only on failure
+            pytest.fail(f"Generated stub {stub_file} contains invalid Python syntax: {exc}")
+        if "class Person" in text:
+            class_signature_found = True
+
+    assert class_signature_found, "Generated stubs do not contain expected 'class Person' definition"
+
+    _run_stubgen_binary(out_dir, extra_args=["--check"], context="personschema stub check")
+
+    handwritten_dir = _generate_rust_crate(
+        str(schema_path), Path(temp_dir) / "personinfo_handwritten", handwritten_lib=True
+    )
+    shim_path = handwritten_dir / "src" / "lib.rs"
+    generated_mod = handwritten_dir / "src" / "generated" / "mod.rs"
+    assert shim_path.exists(), "handwritten shim lib.rs not generated"
+    assert generated_mod.exists(), "generated module not created under src/generated"
+    shim_text = shim_path.read_text(encoding="utf-8")
+    assert "load_yaml_container" in shim_text
+    assert "#[pyfunction" in shim_text
+
+
 def test_rustgen_metamodel_maturin(temp_dir):
     """
     Generate a Rust crate from the LinkML metamodel (via package_schemaview)
@@ -169,3 +238,22 @@ def test_rustgen_metamodel_maturin(temp_dir):
     ext = mod.Extension("test:tag", "hello-any", None)
     assert isinstance(ext.extension_value, str)
     assert ext.extension_value == "hello-any"
+
+
+def test_rustgen_file_mode_generation(temp_dir):
+    schema_path = Path(__file__).resolve().parents[2] / "examples" / "PersonSchema" / "personinfo.yaml"
+    out_file = Path(temp_dir) / "personinfo.rs"
+    gen = RustGenerator(
+        str(schema_path),
+        mode="file",
+        pyo3=True,
+        serde=True,
+        output=str(out_file),
+    )
+    gen.serialize(force=True)
+
+    assert out_file.exists(), "file mode did not create the expected .rs file"
+    contents = out_file.read_text(encoding="utf-8")
+    assert "define_stub_info_gatherer!(stub_info);" in contents
+    assert "#[pymodule]" in contents
+    assert "pub fn register_pymodule" not in contents

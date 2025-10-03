@@ -40,6 +40,14 @@ from linkml.utils.generator import shared_arguments
         "this flag only enables the crate feature by default."
     ),
 )
+@click.option(
+    "--handwritten-lib/--no-handwritten-lib",
+    default=False,
+    help=(
+        "When enabled, place generated sources under src/generated and create a shim lib.rs for handwritten code. "
+        "The shim is only created on first run and left untouched on subsequent regenerations."
+    ),
+)
 @click.option("-n", "--crate-name", type=str, default=None, help="Name of the generated crate/module")
 @click.option(
     "-o",
@@ -56,10 +64,20 @@ def cli(
     pyo3: bool = False,
     serde: bool = False,
     crate_name: Optional[str] = None,
+    handwritten_lib: bool = False,
     output: Optional[Path] = None,
     **kwargs,
 ):
-    gen = RustGenerator(yamlfile, mode=mode, pyo3=pyo3, serde=serde, output=output, crate_name=crate_name, **kwargs)
+    gen = RustGenerator(
+        yamlfile,
+        mode=mode,
+        pyo3=pyo3,
+        serde=serde,
+        output=output,
+        crate_name=crate_name,
+        handwritten_lib=handwritten_lib,
+        **kwargs,
+    )
     serialized = gen.serialize(force=force)
     if output is None:
         print(serialized)
