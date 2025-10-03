@@ -8,7 +8,7 @@ import sys
 import uuid
 import warnings
 from collections import defaultdict, deque
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from copy import copy, deepcopy
 from dataclasses import dataclass
 from enum import Enum
@@ -92,7 +92,13 @@ class OrderedBy(Enum):
     """
 
 
-def _closure(f, x, reflexive: bool = True, depth_first: bool = True, **kwargs: dict[str, Any] | None) -> list:  # noqa: ARG001
+def _closure(
+    f: Callable,
+    x,
+    reflexive: bool = True,
+    depth_first: bool = True,
+    **kwargs: dict[str, Any] | None,  # noqa: ARG001
+) -> list[str | ElementName | ClassDefinitionName | EnumDefinitionName | SlotDefinitionName | TypeDefinitionName]:
     rv = [x] if reflexive else []
     visited = []
     todo = [x]
@@ -686,7 +692,7 @@ class SchemaView:
     @lru_cache(None)
     def element_by_schema_map(self) -> dict[ElementName, SchemaDefinitionName]:
         ix = {}
-        schemas = self.all_schema(True)
+        schemas = self.all_schema(imports=True)
         for schema in schemas:
             for type_key in SCHEMA_ELEMENTS:
                 for k in getattr(schema, type_key, {}):
@@ -697,7 +703,7 @@ class SchemaView:
         return ix
 
     @lru_cache(None)
-    def get_class(self, class_name: CLASS_NAME, imports: bool = True, strict: bool = False) -> ClassDefinition:
+    def get_class(self, class_name: CLASS_NAME, imports: bool = True, strict: bool = False) -> ClassDefinition | None:
         """Retrieve a class from the schema.
 
         :param class_name: name of the class to be retrieved
@@ -713,7 +719,7 @@ class SchemaView:
     @lru_cache(None)
     def get_slot(
         self, slot_name: SLOT_NAME, imports: bool = True, attributes: bool = True, strict: bool = False
-    ) -> SlotDefinition:
+    ) -> SlotDefinition | None:
         """Retrieve a slot from the schema.
 
         :param slot_name: name of the slot to be retrieved
@@ -738,7 +744,9 @@ class SchemaView:
         return slot
 
     @lru_cache(None)
-    def get_subset(self, subset_name: SUBSET_NAME, imports: bool = True, strict: bool = False) -> SubsetDefinition:
+    def get_subset(
+        self, subset_name: SUBSET_NAME, imports: bool = True, strict: bool = False
+    ) -> SubsetDefinition | None:
         """Retrieve a subset from the schema.
 
         :param subset_name: name of the subsey to be retrieved
@@ -752,7 +760,7 @@ class SchemaView:
         return s
 
     @lru_cache(None)
-    def get_enum(self, enum_name: ENUM_NAME, imports: bool = True, strict: bool = False) -> EnumDefinition:
+    def get_enum(self, enum_name: ENUM_NAME, imports: bool = True, strict: bool = False) -> EnumDefinition | None:
         """Retrieve an enum from the schema.
 
         :param enum_name: name of the enum to be retrieved
@@ -766,7 +774,7 @@ class SchemaView:
         return e
 
     @lru_cache(None)
-    def get_type(self, type_name: TYPE_NAME, imports: bool = True, strict: bool = False) -> TypeDefinition:
+    def get_type(self, type_name: TYPE_NAME, imports: bool = True, strict: bool = False) -> TypeDefinition | None:
         """Retrieve a type from the schema.
 
         :param type_name: name of the type to be retrieved
@@ -812,7 +820,7 @@ class SchemaView:
     @lru_cache(None)
     def permissible_value_parent(
         self, permissible_value: str, enum_name: ENUM_NAME
-    ) -> str | PermissibleValueText | None | ValueError:
+    ) -> list[str | PermissibleValueText] | None:
         """:param enum_name: child enum name
         :param permissible_value: permissible value
         :return: all direct parent enum names (is_a)
@@ -829,7 +837,7 @@ class SchemaView:
     @lru_cache(None)
     def permissible_value_children(
         self, permissible_value: str, enum_name: ENUM_NAME
-    ) -> str | PermissibleValueText | None | ValueError:
+    ) -> list[str | PermissibleValueText] | None:
         """:param enum_name: parent enum name
         :param permissible_value: permissible value
         :return: all direct child permissible values (is_a)
@@ -1019,7 +1027,7 @@ class SchemaView:
 
     @lru_cache(None)
     def type_ancestors(
-        self, type_name: TYPES, imports: bool = True, reflexive: bool = True, depth_first: bool = True
+        self, type_name: TYPE_NAME, imports: bool = True, reflexive: bool = True, depth_first: bool = True
     ) -> list[TypeDefinitionName]:
         """Return all ancestors of a type via typeof.
 
@@ -1172,7 +1180,7 @@ class SchemaView:
         msg = 'property to introspect must be of type "boolean"'
         raise ValueError(msg)
 
-    def get_element(self, element: ElementName | Element, imports: bool = True) -> Element:
+    def get_element(self, element: ElementName | Element | str, imports: bool = True) -> Element | None:
         """Fetch an element by name.
 
         :param element: query element
@@ -1181,16 +1189,14 @@ class SchemaView:
         """
         if isinstance(element, Element):
             return element
-        e = self.get_class(element, imports=imports)
-        if e is None:
-            e = self.get_slot(element, imports=imports)
-        if e is None:
-            e = self.get_type(element, imports=imports)
-        if e is None:
-            e = self.get_enum(element, imports=imports)
-        if e is None:
-            e = self.get_subset(element, imports=imports)
-        return e
+
+        return (
+            self.get_class(element, imports=imports)
+            or self.get_slot(element, imports=imports)
+            or self.get_type(element, imports=imports)
+            or self.get_enum(element, imports=imports)
+            or self.get_subset(element, imports=imports)
+        )
 
     def get_uri(
         self,
@@ -1700,11 +1706,10 @@ class SchemaView:
                 return True
 
             id_slot = self.get_identifier_slot(slot_range, imports=imports)
-            if id_slot is None:
-                # must be inlined as has no identifier
-                return True
-            # not explicitly declared inline and has an identifier: assume is ref, not inlined
-            return False
+            # if slot_id is None, it must be inlined as has no identifier
+            # if slot_id is defined, not explicitly declared inline, and has an identifier:
+            # assume it is a ref, not inlined
+            return id_slot is None
         return False
 
     def slot_applicable_range_elements(self, slot: SlotDefinition) -> list[ClassDefinitionName]:
@@ -1712,10 +1717,10 @@ class SchemaView:
 
         (metamodel class names returned: class_definition, enum_definition, type_definition)
 
-        Typically any given slot has exactly one range, and one metamodel element type,
-        but a proposed feature in LinkML 1.2 is range expressions, where ranges can be defined as unions
+        Typically any given slot has exactly one range, and one metamodel element type.
+        Starting at LinkML 1.2, ranges can be defined as unions of multiple types.
 
-        Additionally, if linkml:Any is a class_uri then this maps to the any element
+        Additionally, if linkml:Any is a class_uri then this maps to the "Any" element
 
         :param slot:
         :return: list of element types
@@ -1740,8 +1745,8 @@ class SchemaView:
     def slot_range_as_union(self, slot: SlotDefinition) -> list[ElementName]:
         """Retrieve all applicable ranges for a slot.
 
-        Typically, any given slot has exactly one range, and one metamodel element type,
-        but a proposed feature in LinkML 1.2 is range expressions, where ranges can be defined as unions
+        Typically, any given slot has exactly one range, and one metamodel element type.
+        LinkML 1.2 allows the use of range expressions, where ranges can be defined as unions.
 
         :param slot:
         :return: list of ranges
@@ -1832,24 +1837,27 @@ class SchemaView:
 
         :return: dictionary of SchemaUsages keyed by used elements
         """
-        roles = ["domain", "range", "any_of", "exactly_one_of", "none_of", "all_of"]
+        attrs = ["domain", "range", "any_of", "exactly_one_of", "none_of", "all_of"]
         ix = defaultdict(list)
         for cn, c in self.all_classes().items():
             direct_slots = c.slots
             for sn in self.class_slots(cn):
-                s = self.induced_slot(sn, cn)
-                for k in roles:
-                    v = getattr(s, k)
-                    vl = v if isinstance(v, list) else [v]
-                    for x in vl:
-                        if x is not None:
-                            if isinstance(x, AnonymousSlotExpression):
-                                x = x.range
-                                k = f"{k}[range]"
-                            k = k.split("[")[0] + "[range]" if "[range]" in k else k
-                            u = SchemaUsage(used_by=cn, slot=sn, metaslot=k, used=x)
-                            u.inferred = sn in direct_slots
-                            ix[x].append(u)
+                slot = self.induced_slot(sn, cn)
+                for attr in attrs:
+                    attr_value = getattr(slot, attr)
+                    value_list = attr_value if isinstance(attr_value, list) else [attr_value]
+                    for a_value in value_list:
+                        if a_value is not None:
+                            attr_name = attr
+                            real_a_value = a_value
+                            if isinstance(a_value, AnonymousSlotExpression):
+                                real_a_value = a_value.range
+                                attr_name = f"{attr_name}[range]"
+                            if "[range]" in attr_name:
+                                attr_name = attr_name.split("[")[0] + "[range]"
+                            usage = SchemaUsage(used_by=cn, slot=sn, metaslot=attr_name, used=real_a_value)
+                            usage.inferred = sn in direct_slots
+                            ix[real_a_value].append(usage)
         return ix
 
     # MUTATION OPERATIONS

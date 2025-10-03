@@ -901,6 +901,9 @@ def test_creature_schema_entities_with_without_imports(
         for entity_name in CREATURE_EXPECTED[entity][src]:
             e = getattr(creature_view, f"get_{entity}")(entity_name, imports=True)
             assert e.from_schema == f"{CREATURE_SCHEMA_BASE_URL}/{src}"
+            # N.b. this may fail in schemas where there are different types
+            # of element with the same name
+            assert e == creature_view.get_element(entity_name)
 
 
 @pytest.mark.parametrize("entity", CREATURE_EXPECTED.keys())
@@ -914,12 +917,15 @@ def test_get_entities_with_without_imports(creature_view: SchemaView, entity: st
                 # if the source is the main schema, we can use the method directly
                 e = getattr(creature_view, get_fn)(entity_name, imports=False)
                 assert e.name == entity_name
+                assert e == creature_view.get_element(entity_name, imports=False)
                 # N.b. BUG: due to caching and how the `from_schema` element is generated,
                 # we cannot know whether it will be populated.
                 # assert e.from_schema is None
             else:
                 # if the source is an imported schema, we expect None without imports
                 assert getattr(creature_view, get_fn)(entity_name, imports=False) is None
+                assert creature_view.get_element(entity_name, imports=False) is None
+
                 if entity != "element":
                     # in strict mode, we expect an error if the entity does not exist
                     with pytest.raises(ValueError, match=f'No such {entity}: "{entity_name}"'):
@@ -928,6 +934,7 @@ def test_get_entities_with_without_imports(creature_view: SchemaView, entity: st
             # turn on imports
             e = getattr(creature_view, f"get_{entity}")(entity_name, imports=True)
             assert e.from_schema == f"{CREATURE_SCHEMA_BASE_URL}/{src}"
+            assert e == creature_view.get_element(entity_name, imports=True)
 
 
 @pytest.mark.parametrize("entity", argvalues=[e for e in CREATURE_EXPECTED if e != "element"])
@@ -937,6 +944,7 @@ def test_get_entity_does_not_exist(creature_view: SchemaView, entity: str) -> No
 
     # returns None unless the `strict` flag is passed
     assert getattr(creature_view, get_fn)("does_not_exist") is None
+    assert creature_view.get_element("does_not_exist") is None
 
     # raises an error with `strict` flag on
     with pytest.raises(ValueError, match=f'No such {entity}: "does_not_exist"'):
@@ -1374,14 +1382,18 @@ ranges_no_defaults = {
         {"RangeEnum", "RangeClass", "string"},
         {CD, ED, TD},
     ],
+    # invalid - can't have both any_of and exactly_one_of
     "any_of_and_exactly_one_of_range": [
         "AnyOldRange",
         {"AnyOldRange", "RangeEnum", "RangeClass", "string", "range_string"},
         {"RangeEnum", "RangeClass", "string", "range_string"},
         {CD, ED, TD},
     ],
+    # invalid: linkml:Any not specified
     "invalid_any_range_no_linkml_any": [None, {"string", "range_string"}, set(), {TD}],
+    # invalid: RangeEnum instead of linkml:Any
     "invalid_any_range_enum": ["RangeEnum", {"RangeEnum", "string", "range_string"}, {"RangeEnum"}, {ED, TD}],
+    # invalid: RangeClass instead of linkml:Any
     "invalid_any_range_class": ["RangeClass", {"RangeClass", "string", "range_string"}, {"RangeClass"}, {CD, TD}],
 }
 
