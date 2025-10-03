@@ -319,6 +319,43 @@ class RootTypeChecks(LinterRule):
                 yield LinterProblem(f"Root type '{t}' is missing the required 'uri' attribute")
 
 
+class OnePerClass(LinterRule):
+    """Ensures that there is only one slot with the specified attribute per class."""
+
+    id = "one_per_class"
+
+    def _check(self, schema_view: SchemaView, attr_name: str) -> Iterable[LinterProblem]:
+        for cn in schema_view.all_classes():
+            slots_with_attr = [
+                slot
+                for slot in schema_view.class_induced_slots(cn)
+                if hasattr(slot, attr_name) and getattr(slot, attr_name)
+            ]
+            if len(slots_with_attr) > 1:
+                naughty_slots = ", ".join(sorted([slot.name for slot in slots_with_attr]))
+                yield LinterProblem(f"Class '{cn}' has more than one '{attr_name}' slot: {naughty_slots}")
+
+
+class OneIdentifierPerClass(OnePerClass):
+    """Ensure that there is only one slot with the `identifier` attribute set to True per class."""
+
+    id = "one_identifier_per_class"
+
+    def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
+        """Run the one_identifier_per_class check."""
+        return self._check(schema_view, "identifier")
+
+
+class OneKeyPerClass(OnePerClass):
+    """Ensure that there is only one slot with the `key` attribute set to True per class."""
+
+    id = "one_key_per_class"
+
+    def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
+        """Run the one_key_per_class check."""
+        return self._check(schema_view, "key")
+
+
 class StandardNamingRule(LinterRule):
     id = "standard_naming"
 
