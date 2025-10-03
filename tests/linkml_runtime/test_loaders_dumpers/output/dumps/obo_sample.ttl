@@ -1,0 +1,25 @@
+@prefix ncit: <http://purl.obolibrary.org/obo/NCI_> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix termci: <https://hotecosystem.org/termci/> .
+
+ncit:C147796 skos:broader ncit:C147557 ;
+    skos:definition "Trauma Symptom Checklist for Young Children (TSCYC) Please indicate how often the child has done, felt, or experienced each of the following things in the last month: Being frightened of men." ;
+    skos:inScheme <http://purl.obolibrary.org/obo/> ;
+    skos:notation "C147796" ;
+    skos:prefLabel "TSCYC - Being Frightened of Men" ;
+    skos:seeAlso "http://purl.obolibrary.org/obo/NCI_C147796" .
+
+ncit:C147557 skos:broader ncit:C91102 ;
+    skos:definition "A question associated with the TSCYC questionnaire." ;
+    skos:inScheme <http://purl.obolibrary.org/obo/> ;
+    skos:notation "C147557" ;
+    skos:prefLabel "TSCYC Questionnaire Question" .
+
+<http://purl.obolibrary.org/obo/> skos:hasConcept ncit:C147557,
+        ncit:C147796 ;
+    sh:prefix "OBO" .
+
+[] a termci:dict ;
+    termci:system <http://purl.obolibrary.org/obo/> .
+

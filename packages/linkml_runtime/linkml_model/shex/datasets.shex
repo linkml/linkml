@@ -1,0 +1,111 @@
+# metamodel_version: 1.7.0
+BASE <https://w3id.org/linkml/report/>
+PREFIX csvw: <http://www.w3.org/ns/csvw#>
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX void: <http://rdfs.org/ns/void#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX linkml: <https://w3id.org/linkml/>
+PREFIX datasets: <https://w3id.org/linkml/report>
+PREFIX pav: <http://purl.org/pav/>
+
+
+linkml:String xsd:string
+
+linkml:Integer xsd:integer
+
+linkml:Boolean xsd:boolean
+
+linkml:Float xsd:float
+
+linkml:Double xsd:double
+
+linkml:Decimal xsd:decimal
+
+linkml:Time xsd:dateTime
+
+linkml:Date xsd:date
+
+linkml:Datetime xsd:dateTime
+
+linkml:DateOrDatetime linkml:DateOrDatetime
+
+linkml:Uriorcurie IRI
+
+linkml:Uri IRI
+
+linkml:Ncname xsd:string
+
+linkml:Objectidentifier IRI
+
+linkml:Nodeidentifier NONLITERAL
+
+datasets:DataPackage CLOSED {
+    (  $datasets:DataPackage_tes (  &datasets:Information_tes ;
+          rdf:type [ datasets:Information ] ? ;
+          dcat:distribution @datasets:DataResource *
+       ) ;
+       rdf:type [ void:Dataset ]
+    )
+}
+
+datasets:DataResource CLOSED {
+    (  $datasets:DataResource_tes (  &datasets:Information_tes ;
+          rdf:type [ datasets:Information ] ? ;
+          datasets:path @linkml:String ? ;
+          dcterms:format @datasets:FormatEnum ? ;
+          dcat:mediaType @linkml:String ? ;
+          datasets:encoding @linkml:String ? ;
+          dcat:byteSize @linkml:Integer ? ;
+          datasets:hash @linkml:String ? ;
+          datasets:md5 @linkml:String ? ;
+          datasets:sha256 @linkml:String ? ;
+          csvw:dialect @linkml:String ?
+       ) ;
+       rdf:type [ dcat:Distribution ]
+    )
+}
+
+datasets:FormatDialect CLOSED {
+    (  $datasets:FormatDialect_tes (  datasets:comment_prefix @linkml:String ? ;
+          datasets:delimiter @linkml:String ? ;
+          datasets:double_quote @linkml:String ? ;
+          datasets:header @linkml:String ? ;
+          datasets:quote_char @linkml:String ?
+       ) ;
+       rdf:type [ datasets:FormatDialect ] ?
+    )
+}
+
+datasets:Information  (
+    @datasets:DataPackage OR @datasets:DataResource
+)
+
+datasets:Information_struct {
+    (  $datasets:Information_tes (  dcat:downloadURL @linkml:Uri ? ;
+          dcterms:license @linkml:String ? ;
+          dcterms:title @linkml:String ? ;
+          dcterms:description @linkml:String ? ;
+          dcterms:conformsTo @linkml:Uriorcurie ? ;
+          datasets:conforms_to_schema @linkml:Uriorcurie ? ;
+          datasets:conforms_to_class @linkml:Uriorcurie ? ;
+          pav:version @linkml:String ? ;
+          datasets:language @linkml:String ? ;
+          dcterms:publisher @linkml:Uriorcurie ? ;
+          dcat:keyword @linkml:String * ;
+          dcterms:issued @linkml:Datetime ? ;
+          pav:createdBy @linkml:Uriorcurie ? ;
+          pav:createdOn @linkml:Datetime ? ;
+          datasets:compression @linkml:String ? ;
+          prov:wasDerivedFrom @linkml:String ? ;
+          dcat:landingPage @linkml:String ? ;
+          datasets:test_roles @datasets:TestRole *
+       ) ;
+       rdf:type [ datasets:Information ]
+    )
+}
+
+
+

@@ -1,0 +1,13 @@
+{
+   "$defs": {},
+   "$id": "https://w3id.org/linkml/types",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": true,
+   "metamodel_version": "1.7.0",
+   "properties": {},
+   "required": [],
+   "title": "types",
+   "type": "object",
+   "version": "2.0.0"
+}
+

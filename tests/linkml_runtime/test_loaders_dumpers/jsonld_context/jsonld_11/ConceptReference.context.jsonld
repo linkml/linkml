@@ -1,0 +1,30 @@
+{
+  "@context": {
+    "@import": "termci_namespaces.context.jsonld",
+    "uri": "@id",
+    "code": {
+      "@id": "skos:notation"
+    },
+    "designation": {
+      "@id": "skos:prefLabel"
+    },
+    "definition": {
+      "@id": "skos:definition"
+    },
+    "reference": {
+      "@id": "skos:seeAlso",
+      "@container": "@set"
+    },
+    "defined_in": {
+      "@type": "@id",
+      "@id": "skos:inScheme",
+      "@context": "ConceptSystem.context.jsonld"
+    },
+    "narrower_than": {
+      "@type": "@id",
+      "@id": "skos:broader",
+      "@container": "@set",
+      "@context": "ConceptReference.context.jsonld"
+    }
+  }
+}

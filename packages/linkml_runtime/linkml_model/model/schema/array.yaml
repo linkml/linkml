@@ -1,0 +1,180 @@
+id: https://w3id.org/linkml/lib/arrays
+name: arrays
+title: LinkML Arrays
+description: >-
+  LinkML templates for storing one-dimensional series, two-dimensional arrays,
+  and arrays of higher dimensionality.
+
+  Status: Experimental
+
+  Note that this model is not intended to be imported directly. Instead,
+  use `implements` to denote conformance.
+
+status: testing
+ contributors:
+  - github:rly
+  - github:oruebel
+  - github:sneakers-the-rat
+  - github:jmchandonia
+  - github:realmarcin
+  - github:mavaylon1
+  - github:ialarmedalien
+  - github:cmungall
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  github: https://github.com/
+  gom: https://w3id.org/gom#
+
+default_prefix: linkml
+default_range: string
+
+imports:
+  - linkml:types
+
+classes:
+
+  Any:
+    class_uri: linkml:Any
+
+  DataStructure:
+    abstract: true
+
+  Array:
+    description: >-
+      a data structure consisting of a collection of *elements*, each identified by at least one array index tuple.
+    abstract: true
+    is_a: DataStructure
+    slots:
+      - dimensions
+      - elements
+      - array_linearization_order
+    slot_usage:
+      elements:
+        description: >-
+          the collection of values that make up the array. The elements have a *direct* representation which is
+          an ordered sequence of values. The elements also have an *array interpretation*, where each
+          element has a unique index which is determined by array_linearization_order
+
+  DataArray:
+    description: >-
+      a data structure containing an NDArray and a set of one-dimensional series that are used to label
+      the elements of the array
+    is_a: DataStructure
+    slots:
+      - axis
+      - array
+    see_also:
+      - https://docs.xarray.dev/en/stable/generated/xarray.DataArray.html
+
+  GroupingByArrayOrder:
+    mixin: true
+    description: >-
+      A mixin that describes an array whose elements are mapped from a linear sequence to an array index
+      via a specified mapping
+
+  ColumnOrderedArray:
+    mixin: true
+    is_a: GroupingByArrayOrder
+    description: >-
+      An array ordering that is column-order
+    slots:
+      - array_linearization_order
+    slot_usage:
+      array_linearization_order:
+        equals_string: COLUMN_MAJOR_ARRAY_ORDER
+
+  RowOrderedArray:
+    mixin: true
+    is_a: GroupingByArrayOrder
+    description: >-
+      An array ordering that is row-order or generalizations thereof
+    slots:
+      - array_linearization_order
+    slot_usage:
+      array_linearization_order:
+        equals_string: ROW_MAJOR_ARRAY_ORDER
+
+slots:
+  dimensions:
+    description: >-
+      The number of elements in the tuple used to access elements of an array
+    aliases:
+      - rank
+      - dimensionality
+      - number of axes
+      - number of elements
+    range: integer
+  axis:
+    range: NDArray
+    slot_usage:
+      dimensions:
+        equals_number: 1
+    aliases:
+      - dimension
+    description: >-
+      A one-dimensional series that contains elements that form one part of a tuple used to access an array
+    required: true
+  axis_index:
+    range: integer
+    description: >-
+      The position of an axis in a tuple used to access an array
+  array:
+    range: NDArray
+    description: >-
+      An array that is labeled by a set of one-dimensional series
+    required: true
+  elements:
+    # this will be serialized as one big long list that should be interpreted as a 2D array
+    range: Any
+    aliases:
+      - values
+    required: true
+    multivalued: true
+    description: >-
+      A collection of values that make up the contents of an array. These elements may be interpreted
+      as a contiguous linear sequence (direct representation) or as elements to be accessed via an
+      array index
+  series_label:  # the row label
+    key: true
+    description: >-
+      A name that uniquely identifiers a series
+  length:
+    description: >-
+      The number of elements in the array
+    range: integer
+    equals_expression: "length(elements)"
+  array_linearization_order:
+    range: ArrayLinearizationOrderOptions
+    ifabsent: "string(ROW_MAJOR_ARRAY_ORDER)"
+
+  specified_input:
+    range: DataStructure
+    multivalued: true
+  specified_output:
+    range: DataStructure
+    multivalued: true
+  operation_parameters:
+    range: Any
+    multivalued: true
+
+enums:
+  ArrayLinearizationOrderOptions:
+    description: >-
+      Determines how a linear contiguous representation of the elements of an array map
+      to array indices
+    permissible_values:
+      COLUMN_MAJOR_ARRAY_ORDER:
+        meaning: gom:columnMajorArray
+        description: >-
+          An array layout option in which the elements in each column is stored in consecutive positions,
+          or any generalization thereof to dimensionality greater than 2
+        aliases:
+          - F order
+      ROW_MAJOR_ARRAY_ORDER:
+        meaning: gom:rowMajorArray
+        description: >-
+          An array layout option in which the elements in each row is stored in consecutive positions,
+          or any generalization thereof to dimensionality greater than 2
+        aliases:
+          - C order

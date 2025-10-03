@@ -1,0 +1,13 @@
+id: L1_1_0/index
+name: index
+title: index
+imports:
+  - ./L2_1_0_0/index
+  - ./L2_1_0_1/index
+classes:
+  L110Index:
+    description: "A class from an index!"
+    attributes:
+      value:
+        range: string
+        ifabsent: "L110Index"
