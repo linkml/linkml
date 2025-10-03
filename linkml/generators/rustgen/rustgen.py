@@ -44,6 +44,7 @@ from linkml.generators.rustgen.template import (
     RustEnum,
     RustEnumItem,
     RustFile,
+    RustLibShim,
     RustProperty,
     RustPyProject,
     RustRange,
@@ -53,6 +54,7 @@ from linkml.generators.rustgen.template import (
     RustTypeAlias,
     SerdeUtilsFile,
     SlotRangeAsUnion,
+    StubGenBin,
 )
 from linkml.utils.generator import Generator
 
@@ -140,6 +142,22 @@ PYTHON_IMPORTS = Imports(
             features=["chrono"],
         ),
         # Import(module="serde_pyobject", version="0.6.1", objects=[], feature_flag="pyo3", features=[]),
+    ]
+)
+
+STUBGEN_IMPORTS = Imports(
+    imports=[
+        Import(
+            module="pyo3-stub-gen",
+            version="0.13.1",
+            objects=[
+                ObjectImport(name="define_stub_info_gatherer"),
+                ObjectImport(name="derive::gen_stub_pyclass"),
+                ObjectImport(name="derive::gen_stub_pymethods"),
+            ],
+            feature_flag="stubgen",
+            feature_dependencies=["pyo3"],
+        ),
     ]
 )
 
@@ -369,6 +387,10 @@ class RustGenerator(Generator, LifecycleMixin):
     pyo3_version: str = ">=0.21.1"
     serde: bool = True
     """Generate serde derive serialization/deserialization attributes"""
+    stubgen: bool = True
+    """Generate pyo3-stub-gen instrumentation alongside PyO3 bindings"""
+    handwritten_lib: bool = False
+    """Place generated sources under src/generated and leave src/lib.rs for user code"""
     mode: RUST_MODES = "crate"
     """Generate a cargo.toml file"""
     output: Optional[Path] = None
@@ -386,12 +408,33 @@ class RustGenerator(Generator, LifecycleMixin):
         self.schemaview: SchemaView = SchemaView(self.schema)
         super().__post_init__()
 
+    def _select_root_class(self, class_defs: list[ClassDefinition]) -> Optional[ClassDefinition]:
+        """Return the schema-local class marked ``tree_root`` if present."""
+
+        schema_id = getattr(self.schemaview.schema, "id", None)
+
+        def is_local(cls: ClassDefinition) -> bool:
+            if schema_id is None:
+                return cls.from_schema is None
+            return cls.from_schema == schema_id
+
+        local_classes = [cls for cls in class_defs if is_local(cls) and not getattr(cls, "mixin", False)]
+
+        for cls in local_classes:
+            if getattr(cls, "tree_root", False):
+                return cls
+
+        return None
+
     def generate_type(self, type_: TypeDefinition) -> TypeResult:
         type_ = self.before_generate_type(type_, self.schemaview)
         res = TypeResult(
             source=type_,
             type_=RustTypeAlias(
-                name=get_name(type_), type_=get_rust_type(type_.base, self.schemaview, self.pyo3), pyo3=self.pyo3
+                name=get_name(type_),
+                type_=get_rust_type(type_.base, self.schemaview, self.pyo3),
+                pyo3=self.pyo3,
+                stubgen=self.stubgen,
             ),
             imports=self.get_imports(type_),
         )
@@ -414,6 +457,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 items=items,
                 pyo3=self.pyo3,
                 serde=self.serde,
+                stubgen=self.stubgen,
             ),
         )
         res = self.after_generate_enum(res, self.schemaview)
@@ -435,6 +479,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 multivalued=slot.multivalued,
                 pyo3=self.pyo3,
                 class_range=class_range,
+                stubgen=self.stubgen,
             ),
             imports=self.get_imports(slot),
         )
@@ -466,6 +511,7 @@ class RustGenerator(Generator, LifecycleMixin):
                     SlotRangeAsUnion(
                         slot_name=get_name(a),
                         ranges=[get_rust_type(r, self.schemaview, True) for r in ranges],
+                        stubgen=self.stubgen,
                     )
                 )
 
@@ -473,6 +519,7 @@ class RustGenerator(Generator, LifecycleMixin):
             class_name=get_name(cls),
             class_name_snakecase=underscore(uncamelcase(cls.name)),
             slot_ranges=slot_range_unions,
+            stubgen=self.stubgen,
         )
 
         attributes = [self.generate_attribute(attr, cls) for attr in induced_attrs]
@@ -489,6 +536,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 unsendable=unsendable,
                 pyo3=self.pyo3,
                 serde=self.serde,
+                stubgen=self.stubgen,
                 as_key_value=self.generate_class_as_key_value(cls),
                 struct_or_subtype_enum=self.gen_struct_or_subtype_enum(cls),
                 class_module=cls_mod,
@@ -525,6 +573,7 @@ class RustGenerator(Generator, LifecycleMixin):
         key_attr = None
         value_attrs = []
         value_args_no_default = []
+        non_key_attrs = []
 
         for attr in induced_attrs:
             if attr.identifier:
@@ -538,6 +587,7 @@ class RustGenerator(Generator, LifecycleMixin):
                     return None
                 key_attr = attr
             else:
+                non_key_attrs.append(attr)
                 if not attr.multivalued:
                     value_attrs.append(attr)
                     if attr.required:
@@ -547,16 +597,27 @@ class RustGenerator(Generator, LifecycleMixin):
             # attribute to serve as the value, do not treat this as a key/value class.
             if len(value_attrs) == 0:
                 return None
+            value_attr = value_attrs[0]
+            simple_dict_possible = (
+                len(non_key_attrs) == 1
+                and not value_attr.multivalued
+                and (
+                    value_attr.range not in self.schemaview.all_classes()
+                    or not bool(getattr(value_attr, "inlined", False))
+                )
+            )
             return AsKeyValue(
                 name=get_name(cls),
                 key_property_name=get_name(key_attr),
                 key_property_type=get_rust_type(key_attr.range, self.schemaview, self.pyo3),
-                value_property_name=get_name(value_attrs[0]),
-                value_property_type=get_rust_type(value_attrs[0].range, self.schemaview, self.pyo3),
-                can_convert_from_primitive=len(value_args_no_default) <= 1,
+                value_property_name=get_name(value_attr),
+                value_property_type=get_rust_type(value_attr.range, self.schemaview, self.pyo3),
+                can_convert_from_primitive=simple_dict_possible,
                 can_convert_from_empty=len(value_args_no_default) == 0,
+                value_property_optional=not bool(value_attr.required),
                 serde=self.serde,
                 pyo3=self.pyo3,
+                stubgen=self.stubgen,
             )
         return None
 
@@ -583,6 +644,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 and self.generate_class_as_key_value(self.schemaview.get_class(attr.range)) is not None,
                 pyo3=self.pyo3,
                 serde=self.serde,
+                stubgen=self.stubgen,
             ),
             imports=self.get_imports(attr),
         )
@@ -602,6 +664,7 @@ class RustGenerator(Generator, LifecycleMixin):
             pyo3_version=self.pyo3_version,
             pyo3=self.pyo3,
             serde=self.serde,
+            stubgen=self.stubgen,
         )
 
     def generate_pyproject(self) -> RustPyProject:
@@ -658,7 +721,10 @@ class RustGenerator(Generator, LifecycleMixin):
         slots = self.after_generate_slots(slots, sv)
 
         need_merge_crate = False
-        classes = list(sv.induced_class(c) for c in sv.all_classes(ordered_by=OrderedBy.INHERITANCE))
+        class_defs = [sv.induced_class(c) for c in sv.all_classes(ordered_by=OrderedBy.INHERITANCE)]
+        root_class_def = self._select_root_class(class_defs)
+        root_struct_name = get_name(root_class_def) if root_class_def is not None else None
+        classes = class_defs
         for c in classes:
             if MERGE_ANNOTATION in c.annotations:
                 need_merge_crate = True
@@ -673,6 +739,8 @@ class RustGenerator(Generator, LifecycleMixin):
         imports = DEFAULT_IMPORTS.model_copy()
         imports += PYTHON_IMPORTS
         imports += SERDE_IMPORTS
+        if self.stubgen:
+            imports += STUBGEN_IMPORTS
         if need_merge_crate:
             imports += MERGE_IMPORTS
         for result in [*enums, *slots, *classes]:
@@ -687,6 +755,9 @@ class RustGenerator(Generator, LifecycleMixin):
             structs=[c.cls for c in classes],
             pyo3=self.pyo3,
             serde=self.serde,
+            stubgen=self.stubgen,
+            handwritten_lib=self.handwritten_lib,
+            root_struct_name=root_struct_name,
         )
 
         if mode == "crate":
@@ -696,7 +767,17 @@ class RustGenerator(Generator, LifecycleMixin):
             extra_files["poly_containers"] = PolyContainersFile()
             cargo = self.generate_cargo(imports)
             pyproject = self.generate_pyproject()
-            res = CrateResult(cargo=cargo, file=file, pyproject=pyproject, source=sv.schema, extra_files=extra_files)
+            bin_files = {}
+            if self.stubgen:
+                bin_files["bin/stub_gen"] = StubGenBin(crate_name=cargo.name, stubgen=self.stubgen)
+            res = CrateResult(
+                cargo=cargo,
+                file=file,
+                pyproject=pyproject,
+                source=sv.schema,
+                extra_files=extra_files,
+                bin_files=bin_files,
+            )
             return res
         else:
             # Single file: inline serde utils, and skip poly modules
@@ -989,7 +1070,13 @@ class RustGenerator(Generator, LifecycleMixin):
         rust_file = rust_file.rstrip("\n") + "\n"
         src_dir = output / "src"
         src_dir.mkdir(exist_ok=True)
-        lib_file = src_dir / "lib.rs"
+        if self.handwritten_lib:
+            generated_dir = src_dir / "generated"
+            generated_dir.mkdir(exist_ok=True)
+            lib_file = generated_dir / "mod.rs"
+        else:
+            generated_dir = src_dir
+            lib_file = src_dir / "lib.rs"
         with open(lib_file, "w") as lfile:
             lfile.write(rust_file)
 
@@ -997,9 +1084,37 @@ class RustGenerator(Generator, LifecycleMixin):
             extra_file = f.render(self.template_environment)
             extra_file = extra_file.rstrip("\n") + "\n"
             extra_file_name = f"{k}.rs"
-            extra_file_path = src_dir / extra_file_name
+            extra_file_path = generated_dir / extra_file_name
             with open(extra_file_path, "w") as ef:
                 ef.write(extra_file)
+
+        if getattr(rendered, "bin_files", None):
+            for rel_path, template in rendered.bin_files.items():
+                rendered_bin = template.render(self.template_environment)
+                rendered_bin = rendered_bin.rstrip("\n") + "\n"
+                bin_path = (src_dir / rel_path).with_suffix(".rs")
+                bin_path.parent.mkdir(exist_ok=True, parents=True)
+                with open(bin_path, "w") as bf:
+                    bf.write(rendered_bin)
+
+        if self.handwritten_lib:
+            shim_path = src_dir / "lib.rs"
+            if not shim_path.exists():
+                root_struct_name = getattr(rendered.file, "root_struct_name", None)
+                root_struct_fn_snake = underscore(uncamelcase(root_struct_name)) if root_struct_name else None
+                shim_template = RustLibShim(
+                    module_name=rendered.file.name,
+                    pyo3=self.pyo3,
+                    serde=self.serde,
+                    stubgen=self.stubgen,
+                    handwritten_lib=self.handwritten_lib,
+                    root_struct_name=root_struct_name,
+                    root_struct_fn_snake=root_struct_fn_snake,
+                )
+                shim = shim_template.render(self.template_environment)
+                shim = shim.rstrip("\n") + "\n"
+                with open(shim_path, "w") as shim_file:
+                    shim_file.write(shim)
 
         return rust_file
 
