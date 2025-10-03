@@ -1458,31 +1458,6 @@ class SchemaView:
         return {k: v.value for k, v in e.annotations.items()}
 
     @lru_cache(None)
-    def class_slots(
-        self, class_name: CLASS_NAME, imports: bool = True, direct: bool = False, attributes: bool = True
-    ) -> list[SlotDefinitionName]:
-        """Return all slots for a class.
-
-        :param class_name:
-        :param imports: include imports closure
-        :param direct: only returns slots directly associated with a class (default is False)
-        :param attributes: include attribute declarations as well as slots (default is True)
-        :return: all slot names applicable for a class
-        """
-        ancs = [class_name] if direct else self.class_ancestors(class_name, imports=imports)
-        slots = []
-        for an in ancs:
-            a = self.get_class(an, imports)
-            slots += a.slots
-            if attributes:
-                slots += a.attributes.keys()
-        slots_nr = []
-        for s in slots:
-            if s not in slots_nr:
-                slots_nr.append(s)
-        return slots_nr
-
-    @lru_cache(None)
     def induced_slot(
         self,
         slot_name: SLOT_NAME,
@@ -1594,6 +1569,31 @@ class SchemaView:
         return vars(fake_slot).keys()
 
     @lru_cache(None)
+    def class_slots(
+        self, class_name: CLASS_NAME, imports: bool = True, direct: bool = False, attributes: bool = True
+    ) -> list[SlotDefinitionName]:
+        """Return all slots for a class.
+
+        :param class_name:
+        :param imports: include imports closure
+        :param direct: only returns slots directly associated with a class (default is False)
+        :param attributes: include attribute declarations as well as slots (default is True)
+        :return: all slot names applicable for a class
+        """
+        ancs = [class_name] if direct else self.class_ancestors(class_name, imports=imports)
+        slots = []
+        for an in ancs:
+            a = self.get_class(an, imports)
+            slots += a.slots
+            if attributes and a.attributes:
+                slots += a.attributes.keys()
+        slots_nr = []
+        for s in slots:
+            if s not in slots_nr:
+                slots_nr.append(s)
+        return slots_nr
+
+    @lru_cache(None)
     def class_induced_slots(self, class_name: CLASS_NAME | None = None, imports: bool = True) -> list[SlotDefinition]:
         """Retrieve all slots that are asserted or inferred for a class, with their inferred semantics.
 
@@ -1657,7 +1657,7 @@ class SchemaView:
         :param imports:
         :return: slot that acts as identifier, if present
         """
-        for sn in self.class_slots(cn, imports=imports):
+        for sn in sorted(self.class_slots(cn, imports=imports)):
             s = self.induced_slot(sn, cn, imports=imports)
             if s.identifier:
                 return s
@@ -1673,7 +1673,7 @@ class SchemaView:
         :param imports:
         :return: slot that acts as key, if present
         """
-        for sn in self.class_slots(cn, imports=imports):
+        for sn in sorted(self.class_slots(cn, imports=imports)):
             s = self.induced_slot(sn, cn, imports=imports)
             if s.key:
                 return s
