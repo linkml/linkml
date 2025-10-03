@@ -1,0 +1,660 @@
+{
+  "name": "units",
+  "description": "Units datamodel",
+  "id": "https://w3id.org/linkml/units",
+  "imports": [
+    "linkml:types",
+    "linkml:extensions",
+    "linkml:annotations",
+    "linkml:mappings"
+  ],
+  "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "prefixes": [
+    {
+      "prefix_prefix": "linkml",
+      "prefix_reference": "https://w3id.org/linkml/"
+    },
+    {
+      "prefix_prefix": "qudt",
+      "prefix_reference": "http://qudt.org/schema/qudt/"
+    }
+  ],
+  "emit_prefixes": [
+    "linkml"
+  ],
+  "default_prefix": "linkml",
+  "default_range": "string",
+  "types": [
+    {
+      "name": "string",
+      "definition_uri": "https://w3id.org/linkml/String",
+      "description": "A character string",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "integer",
+      "definition_uri": "https://w3id.org/linkml/Integer",
+      "description": "An integer",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "int",
+      "uri": "http://www.w3.org/2001/XMLSchema#integer",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "boolean",
+      "definition_uri": "https://w3id.org/linkml/Boolean",
+      "description": "A binary (true or false) value",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "Bool",
+      "uri": "http://www.w3.org/2001/XMLSchema#boolean",
+      "repr": "bool",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "float",
+      "definition_uri": "https://w3id.org/linkml/Float",
+      "description": "A real number that conforms to the xsd:float specification",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "float",
+      "uri": "http://www.w3.org/2001/XMLSchema#float",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "double",
+      "definition_uri": "https://w3id.org/linkml/Double",
+      "description": "A real number that conforms to the xsd:double specification",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "float",
+      "uri": "http://www.w3.org/2001/XMLSchema#double",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "decimal",
+      "definition_uri": "https://w3id.org/linkml/Decimal",
+      "description": "A real number with arbitrary precision that conforms to the xsd:decimal specification",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "Decimal",
+      "uri": "http://www.w3.org/2001/XMLSchema#decimal",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "time",
+      "definition_uri": "https://w3id.org/linkml/Time",
+      "description": "A time object represents a (local) time of day, independent of any particular day",
+      "notes": [
+        "URI is dateTime because OWL reasoners don't work with straight date or time"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "XSDTime",
+      "uri": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "date",
+      "definition_uri": "https://w3id.org/linkml/Date",
+      "description": "a date (year, month and day) in an idealized calendar",
+      "notes": [
+        "URI is dateTime because OWL reasoners don't work with straight date or time"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "XSDDate",
+      "uri": "http://www.w3.org/2001/XMLSchema#date",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "datetime",
+      "definition_uri": "https://w3id.org/linkml/Datetime",
+      "description": "The combination of a date and time",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "XSDDateTime",
+      "uri": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "date_or_datetime",
+      "definition_uri": "https://w3id.org/linkml/DateOrDatetime",
+      "description": "Either a date or a datetime",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "https://w3id.org/linkml/DateOrDatetime",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "uriorcurie",
+      "definition_uri": "https://w3id.org/linkml/Uriorcurie",
+      "description": "a URI or a CURIE",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "URIorCURIE",
+      "uri": "http://www.w3.org/2001/XMLSchema#anyURI",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "uri",
+      "definition_uri": "https://w3id.org/linkml/Uri",
+      "description": "a complete URI",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "URI",
+      "uri": "http://www.w3.org/2001/XMLSchema#anyURI",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "ncname",
+      "definition_uri": "https://w3id.org/linkml/Ncname",
+      "description": "Prefix part of CURIE",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "NCName",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "objectidentifier",
+      "definition_uri": "https://w3id.org/linkml/Objectidentifier",
+      "description": "A URI or CURIE that represents an object in the model.",
+      "comments": [
+        "Used for inheritance and type checking"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "ElementIdentifier",
+      "uri": "http://www.w3.org/ns/shex#iri",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "nodeidentifier",
+      "definition_uri": "https://w3id.org/linkml/Nodeidentifier",
+      "description": "A URI, CURIE or BNODE that represents a node in a model.",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "NodeIdentifier",
+      "uri": "http://www.w3.org/ns/shex#nonLiteral",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    }
+  ],
+  "slots": [
+    {
+      "name": "unit",
+      "definition_uri": "https://w3id.org/linkml/unit",
+      "description": "an encoding of a unit",
+      "from_schema": "https://w3id.org/linkml/units",
+      "mappings": [
+        "http://qudt.org/schema/qudt/unit"
+      ],
+      "slot_uri": "http://qudt.org/schema/qudt/unit",
+      "range": "UnitOfMeasure",
+      "inlined": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "ucum_code",
+      "definition_uri": "https://w3id.org/linkml/ucum_code",
+      "description": "associates a QUDT unit with its UCUM code (case-sensitive).",
+      "from_schema": "https://w3id.org/linkml/units",
+      "mappings": [
+        "http://qudt.org/schema/qudt/ucumCode"
+      ],
+      "domain": "UnitOfMeasure",
+      "slot_uri": "http://qudt.org/schema/qudt/ucumCode",
+      "owner": "UnitOfMeasure",
+      "domain_of": [
+        "UnitOfMeasure"
+      ],
+      "range": "string",
+      "recommended": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "derivation",
+      "definition_uri": "https://w3id.org/linkml/derivation",
+      "description": "Expression for deriving this unit from other units",
+      "from_schema": "https://w3id.org/linkml/units",
+      "slot_uri": "https://w3id.org/linkml/derivation",
+      "owner": "UnitOfMeasure",
+      "domain_of": [
+        "UnitOfMeasure"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "has_quantity_kind",
+      "definition_uri": "https://w3id.org/linkml/has_quantity_kind",
+      "description": "Concept in a vocabulary or ontology that denotes the kind of quantity being measured, e.g. length",
+      "comments": [
+        "Potential ontologies include but are not limited to PATO, NCIT, OBOE, qudt.quantityKind"
+      ],
+      "from_schema": "https://w3id.org/linkml/units",
+      "mappings": [
+        "http://qudt.org/schema/qudt/hasQuantityKind"
+      ],
+      "slot_uri": "http://qudt.org/schema/qudt/hasQuantityKind",
+      "owner": "UnitOfMeasure",
+      "domain_of": [
+        "UnitOfMeasure"
+      ],
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "iec61360code",
+      "definition_uri": "https://w3id.org/linkml/iec61360code",
+      "from_schema": "https://w3id.org/linkml/units",
+      "mappings": [
+        "http://qudt.org/schema/qudt/iec61360Code"
+      ],
+      "slot_uri": "http://qudt.org/schema/qudt/iec61360Code",
+      "owner": "UnitOfMeasure",
+      "domain_of": [
+        "UnitOfMeasure"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "symbol",
+      "definition_uri": "https://w3id.org/linkml/symbol",
+      "description": "name of the unit encoded as a symbol",
+      "from_schema": "https://w3id.org/linkml/units",
+      "mappings": [
+        "http://qudt.org/schema/qudt/symbol"
+      ],
+      "slot_uri": "http://qudt.org/schema/qudt/symbol",
+      "owner": "UnitOfMeasure",
+      "domain_of": [
+        "UnitOfMeasure"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "extensions",
+      "definition_uri": "https://w3id.org/linkml/extensions",
+      "description": "a tag/text tuple attached to an arbitrary element",
+      "from_schema": "https://w3id.org/linkml/extensions",
+      "imported_from": "linkml:extensions",
+      "domain": "Extensible",
+      "slot_uri": "https://w3id.org/linkml/extensions",
+      "multivalued": true,
+      "owner": "Extensible",
+      "domain_of": [
+        "Extension",
+        "Extensible"
+      ],
+      "range": "Extension",
+      "inlined": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "extension_tag",
+      "definition_uri": "https://w3id.org/linkml/extension_tag",
+      "description": "a tag associated with an extension",
+      "from_schema": "https://w3id.org/linkml/extensions",
+      "imported_from": "linkml:extensions",
+      "domain": "Extension",
+      "slot_uri": "https://w3id.org/linkml/tag",
+      "key": true,
+      "alias": "tag",
+      "owner": "Extension",
+      "domain_of": [
+        "Extension"
+      ],
+      "range": "uriorcurie",
+      "required": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "extension_value",
+      "definition_uri": "https://w3id.org/linkml/extension_value",
+      "description": "the actual annotation",
+      "from_schema": "https://w3id.org/linkml/extensions",
+      "imported_from": "linkml:extensions",
+      "domain": "Extension",
+      "slot_uri": "https://w3id.org/linkml/value",
+      "alias": "value",
+      "owner": "Extension",
+      "domain_of": [
+        "Extension"
+      ],
+      "range": "string",
+      "required": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "annotations",
+      "definition_uri": "https://w3id.org/linkml/annotations",
+      "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
+      "from_schema": "https://w3id.org/linkml/annotations",
+      "imported_from": "linkml:annotations",
+      "is_a": "extensions",
+      "domain": "Annotatable",
+      "slot_uri": "https://w3id.org/linkml/annotations",
+      "multivalued": true,
+      "owner": "Annotation",
+      "domain_of": [
+        "Annotatable",
+        "Annotation"
+      ],
+      "range": "Annotation",
+      "inlined": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "mappings",
+      "definition_uri": "https://w3id.org/linkml/mappings",
+      "description": "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.",
+      "from_schema": "https://w3id.org/linkml/mappings",
+      "imported_from": "linkml:mappings",
+      "aliases": [
+        "xrefs",
+        "identifiers",
+        "alternate identifiers",
+        "alternate ids"
+      ],
+      "mappings": [
+        "http://www.w3.org/2004/02/skos/core#mappingRelation"
+      ],
+      "slot_uri": "http://www.w3.org/2004/02/skos/core#mappingRelation",
+      "multivalued": true,
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "exact_mappings",
+      "definition_uri": "https://w3id.org/linkml/exact_mappings",
+      "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
+      "from_schema": "https://w3id.org/linkml/mappings",
+      "imported_from": "linkml:mappings",
+      "mappings": [
+        "http://www.w3.org/2004/02/skos/core#exactMatch"
+      ],
+      "is_a": "mappings",
+      "slot_uri": "http://www.w3.org/2004/02/skos/core#exactMatch",
+      "multivalued": true,
+      "owner": "UnitOfMeasure",
+      "domain_of": [
+        "UnitOfMeasure"
+      ],
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "close_mappings",
+      "definition_uri": "https://w3id.org/linkml/close_mappings",
+      "description": "A list of terms from different schemas or terminology systems that have close meaning.",
+      "from_schema": "https://w3id.org/linkml/mappings",
+      "imported_from": "linkml:mappings",
+      "mappings": [
+        "http://www.w3.org/2004/02/skos/core#closeMatch"
+      ],
+      "is_a": "mappings",
+      "slot_uri": "http://www.w3.org/2004/02/skos/core#closeMatch",
+      "multivalued": true,
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "related_mappings",
+      "definition_uri": "https://w3id.org/linkml/related_mappings",
+      "description": "A list of terms from different schemas or terminology systems that have related meaning.",
+      "from_schema": "https://w3id.org/linkml/mappings",
+      "imported_from": "linkml:mappings",
+      "mappings": [
+        "http://www.w3.org/2004/02/skos/core#relatedMatch"
+      ],
+      "is_a": "mappings",
+      "slot_uri": "http://www.w3.org/2004/02/skos/core#relatedMatch",
+      "multivalued": true,
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "narrow_mappings",
+      "definition_uri": "https://w3id.org/linkml/narrow_mappings",
+      "description": "A list of terms from different schemas or terminology systems that have narrower meaning.",
+      "from_schema": "https://w3id.org/linkml/mappings",
+      "imported_from": "linkml:mappings",
+      "mappings": [
+        "http://www.w3.org/2004/02/skos/core#narrowMatch"
+      ],
+      "is_a": "mappings",
+      "slot_uri": "http://www.w3.org/2004/02/skos/core#narrowMatch",
+      "multivalued": true,
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "broad_mappings",
+      "definition_uri": "https://w3id.org/linkml/broad_mappings",
+      "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
+      "from_schema": "https://w3id.org/linkml/mappings",
+      "imported_from": "linkml:mappings",
+      "mappings": [
+        "http://www.w3.org/2004/02/skos/core#broadMatch"
+      ],
+      "is_a": "mappings",
+      "slot_uri": "http://www.w3.org/2004/02/skos/core#broadMatch",
+      "multivalued": true,
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "deprecated_element_has_exact_replacement",
+      "definition_uri": "https://w3id.org/linkml/deprecated_element_has_exact_replacement",
+      "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
+      "from_schema": "https://w3id.org/linkml/mappings",
+      "imported_from": "linkml:mappings",
+      "mappings": [
+        "http://purl.obolibrary.org/obo/IAO_0100001"
+      ],
+      "slot_uri": "https://w3id.org/linkml/deprecated_element_has_exact_replacement",
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "deprecated_element_has_possible_replacement",
+      "definition_uri": "https://w3id.org/linkml/deprecated_element_has_possible_replacement",
+      "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
+      "from_schema": "https://w3id.org/linkml/mappings",
+      "imported_from": "linkml:mappings",
+      "mappings": [
+        "http://www.geneontology.org/formats/oboInOwl#consider"
+      ],
+      "slot_uri": "https://w3id.org/linkml/deprecated_element_has_possible_replacement",
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "UnitOfMeasure_exact_mappings",
+      "definition_uri": "https://w3id.org/linkml/exact_mappings",
+      "description": "Used to link a unit to equivalent concepts in ontologies such as UO, SNOMED, OEM, OBOE, NCIT",
+      "comments": [
+        "Do not use this to encode mappings to systems for which a dedicated field exists"
+      ],
+      "from_schema": "https://w3id.org/linkml/mappings",
+      "imported_from": "linkml:mappings",
+      "mappings": [
+        "http://www.w3.org/2004/02/skos/core#exactMatch"
+      ],
+      "is_a": "exact_mappings",
+      "domain": "UnitOfMeasure",
+      "slot_uri": "http://www.w3.org/2004/02/skos/core#exactMatch",
+      "multivalued": true,
+      "alias": "exact mappings",
+      "owner": "UnitOfMeasure",
+      "domain_of": [
+        "UnitOfMeasure"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "exact mappings",
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    }
+  ],
+  "classes": [
+    {
+      "name": "UnitOfMeasure",
+      "definition_uri": "https://w3id.org/linkml/UnitOfMeasure",
+      "description": "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension).",
+      "from_schema": "https://w3id.org/linkml/units",
+      "mappings": [
+        "qudt:Unit"
+      ],
+      "slots": [
+        "symbol",
+        "UnitOfMeasure_exact_mappings",
+        "ucum_code",
+        "derivation",
+        "has_quantity_kind",
+        "iec61360code"
+      ],
+      "slot_usage": {},
+      "class_uri": "http://qudt.org/schema/qudt/Unit",
+      "any_of": [
+        {
+          "slot_conditions": [
+            {
+              "name": "ucum_code",
+              "required": true,
+              "@type": "SlotDefinition"
+            }
+          ],
+          "@type": "AnonymousClassExpression"
+        },
+        {
+          "slot_conditions": [
+            {
+              "name": "iec61360code",
+              "required": true,
+              "@type": "SlotDefinition"
+            }
+          ],
+          "@type": "AnonymousClassExpression"
+        },
+        {
+          "slot_conditions": [
+            {
+              "name": "symbol",
+              "required": true,
+              "@type": "SlotDefinition"
+            }
+          ],
+          "@type": "AnonymousClassExpression"
+        },
+        {
+          "slot_conditions": [
+            {
+              "name": "exact_mappings",
+              "required": true,
+              "@type": "SlotDefinition"
+            }
+          ],
+          "@type": "AnonymousClassExpression"
+        }
+      ],
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "Extension",
+      "definition_uri": "https://w3id.org/linkml/Extension",
+      "description": "a tag/value pair used to add non-model information to an entry",
+      "from_schema": "https://w3id.org/linkml/extensions",
+      "imported_from": "linkml:extensions",
+      "slots": [
+        "extension_tag",
+        "extension_value",
+        "extensions"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/Extension",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "Extensible",
+      "definition_uri": "https://w3id.org/linkml/Extensible",
+      "description": "mixin for classes that support extension",
+      "from_schema": "https://w3id.org/linkml/extensions",
+      "imported_from": "linkml:extensions",
+      "mixin": true,
+      "slots": [
+        "extensions"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/Extensible",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "Annotatable",
+      "definition_uri": "https://w3id.org/linkml/Annotatable",
+      "description": "mixin for classes that support annotations",
+      "from_schema": "https://w3id.org/linkml/annotations",
+      "imported_from": "linkml:annotations",
+      "mixin": true,
+      "slots": [
+        "annotations"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/Annotatable",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "Annotation",
+      "definition_uri": "https://w3id.org/linkml/Annotation",
+      "description": "a tag/value pair with the semantics of OWL Annotation",
+      "from_schema": "https://w3id.org/linkml/annotations",
+      "imported_from": "linkml:annotations",
+      "is_a": "Extension",
+      "mixins": [
+        "Annotatable"
+      ],
+      "slots": [
+        "extension_tag",
+        "extension_value",
+        "extensions",
+        "annotations"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/Annotation",
+      "@type": "ClassDefinition"
+    }
+  ],
+  "metamodel_version": "1.7.0",
+  "source_file": "units.yaml",
+  "source_file_date": "2022-07-14T00:55:10",
+  "source_file_size": 2178,
+  "generation_date": "2022-07-14T00:55:59",
+  "@type": "SchemaDefinition",
+  "@context": [
+    "https://w3id.org/linkml/types.context.jsonld",
+    "https://w3id.org/linkml/extensions.context.jsonld",
+    "https://w3id.org/linkml/annotations.context.jsonld",
+    "https://w3id.org/linkml/mappings.context.jsonld",
+    {
+      "@base": "https://w3id.org/linkml/"
+    }
+  ]
+}
+

@@ -1,0 +1,342 @@
+{
+  "name": "mappings",
+  "description": "LinkML model for mappings",
+  "title": "LinkML Schema Mappings",
+  "id": "https://w3id.org/linkml/mappings",
+  "version": "2.0.0",
+  "imports": [
+    "linkml:types"
+  ],
+  "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "prefixes": [
+    {
+      "prefix_prefix": "linkml",
+      "prefix_reference": "https://w3id.org/linkml/"
+    },
+    {
+      "prefix_prefix": "skos",
+      "prefix_reference": "http://www.w3.org/2004/02/skos/core#"
+    },
+    {
+      "prefix_prefix": "OIO",
+      "prefix_reference": "http://www.geneontology.org/formats/oboInOwl#"
+    },
+    {
+      "prefix_prefix": "IAO",
+      "prefix_reference": "http://purl.obolibrary.org/obo/IAO_"
+    }
+  ],
+  "emit_prefixes": [
+    "linkml",
+    "rdf",
+    "rdfs",
+    "xsd",
+    "skos",
+    "OIO",
+    "IAO"
+  ],
+  "default_curi_maps": [
+    "semweb_context"
+  ],
+  "default_prefix": "linkml",
+  "default_range": "string",
+  "types": [
+    {
+      "name": "string",
+      "definition_uri": "https://w3id.org/linkml/String",
+      "description": "A character string",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "integer",
+      "definition_uri": "https://w3id.org/linkml/Integer",
+      "description": "An integer",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "int",
+      "uri": "http://www.w3.org/2001/XMLSchema#integer",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "boolean",
+      "definition_uri": "https://w3id.org/linkml/Boolean",
+      "description": "A binary (true or false) value",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "Bool",
+      "uri": "http://www.w3.org/2001/XMLSchema#boolean",
+      "repr": "bool",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "float",
+      "definition_uri": "https://w3id.org/linkml/Float",
+      "description": "A real number that conforms to the xsd:float specification",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "float",
+      "uri": "http://www.w3.org/2001/XMLSchema#float",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "double",
+      "definition_uri": "https://w3id.org/linkml/Double",
+      "description": "A real number that conforms to the xsd:double specification",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "float",
+      "uri": "http://www.w3.org/2001/XMLSchema#double",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "decimal",
+      "definition_uri": "https://w3id.org/linkml/Decimal",
+      "description": "A real number with arbitrary precision that conforms to the xsd:decimal specification",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "Decimal",
+      "uri": "http://www.w3.org/2001/XMLSchema#decimal",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "time",
+      "definition_uri": "https://w3id.org/linkml/Time",
+      "description": "A time object represents a (local) time of day, independent of any particular day",
+      "notes": [
+        "URI is dateTime because OWL reasoners don't work with straight date or time"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "XSDTime",
+      "uri": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "date",
+      "definition_uri": "https://w3id.org/linkml/Date",
+      "description": "a date (year, month and day) in an idealized calendar",
+      "notes": [
+        "URI is dateTime because OWL reasoners don't work with straight date or time"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "XSDDate",
+      "uri": "http://www.w3.org/2001/XMLSchema#date",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "datetime",
+      "definition_uri": "https://w3id.org/linkml/Datetime",
+      "description": "The combination of a date and time",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "XSDDateTime",
+      "uri": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "date_or_datetime",
+      "definition_uri": "https://w3id.org/linkml/DateOrDatetime",
+      "description": "Either a date or a datetime",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "https://w3id.org/linkml/DateOrDatetime",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "uriorcurie",
+      "definition_uri": "https://w3id.org/linkml/Uriorcurie",
+      "description": "a URI or a CURIE",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "URIorCURIE",
+      "uri": "http://www.w3.org/2001/XMLSchema#anyURI",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "uri",
+      "definition_uri": "https://w3id.org/linkml/Uri",
+      "description": "a complete URI",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "URI",
+      "uri": "http://www.w3.org/2001/XMLSchema#anyURI",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "ncname",
+      "definition_uri": "https://w3id.org/linkml/Ncname",
+      "description": "Prefix part of CURIE",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "NCName",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "objectidentifier",
+      "definition_uri": "https://w3id.org/linkml/Objectidentifier",
+      "description": "A URI or CURIE that represents an object in the model.",
+      "comments": [
+        "Used for inheritance and type checking"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "ElementIdentifier",
+      "uri": "http://www.w3.org/ns/shex#iri",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "nodeidentifier",
+      "definition_uri": "https://w3id.org/linkml/Nodeidentifier",
+      "description": "A URI, CURIE or BNODE that represents a node in a model.",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "NodeIdentifier",
+      "uri": "http://www.w3.org/ns/shex#nonLiteral",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    }
+  ],
+  "slots": [
+    {
+      "name": "mappings",
+      "definition_uri": "https://w3id.org/linkml/mappings",
+      "description": "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.",
+      "from_schema": "https://w3id.org/linkml/mappings",
+      "aliases": [
+        "xrefs",
+        "identifiers",
+        "alternate identifiers",
+        "alternate ids"
+      ],
+      "mappings": [
+        "http://www.w3.org/2004/02/skos/core#mappingRelation"
+      ],
+      "slot_uri": "http://www.w3.org/2004/02/skos/core#mappingRelation",
+      "multivalued": true,
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "exact_mappings",
+      "definition_uri": "https://w3id.org/linkml/exact_mappings",
+      "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
+      "from_schema": "https://w3id.org/linkml/mappings",
+      "mappings": [
+        "http://www.w3.org/2004/02/skos/core#exactMatch"
+      ],
+      "is_a": "mappings",
+      "slot_uri": "http://www.w3.org/2004/02/skos/core#exactMatch",
+      "multivalued": true,
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "close_mappings",
+      "definition_uri": "https://w3id.org/linkml/close_mappings",
+      "description": "A list of terms from different schemas or terminology systems that have close meaning.",
+      "from_schema": "https://w3id.org/linkml/mappings",
+      "mappings": [
+        "http://www.w3.org/2004/02/skos/core#closeMatch"
+      ],
+      "is_a": "mappings",
+      "slot_uri": "http://www.w3.org/2004/02/skos/core#closeMatch",
+      "multivalued": true,
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "related_mappings",
+      "definition_uri": "https://w3id.org/linkml/related_mappings",
+      "description": "A list of terms from different schemas or terminology systems that have related meaning.",
+      "from_schema": "https://w3id.org/linkml/mappings",
+      "mappings": [
+        "http://www.w3.org/2004/02/skos/core#relatedMatch"
+      ],
+      "is_a": "mappings",
+      "slot_uri": "http://www.w3.org/2004/02/skos/core#relatedMatch",
+      "multivalued": true,
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "narrow_mappings",
+      "definition_uri": "https://w3id.org/linkml/narrow_mappings",
+      "description": "A list of terms from different schemas or terminology systems that have narrower meaning.",
+      "from_schema": "https://w3id.org/linkml/mappings",
+      "mappings": [
+        "http://www.w3.org/2004/02/skos/core#narrowMatch"
+      ],
+      "is_a": "mappings",
+      "slot_uri": "http://www.w3.org/2004/02/skos/core#narrowMatch",
+      "multivalued": true,
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "broad_mappings",
+      "definition_uri": "https://w3id.org/linkml/broad_mappings",
+      "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
+      "from_schema": "https://w3id.org/linkml/mappings",
+      "mappings": [
+        "http://www.w3.org/2004/02/skos/core#broadMatch"
+      ],
+      "is_a": "mappings",
+      "slot_uri": "http://www.w3.org/2004/02/skos/core#broadMatch",
+      "multivalued": true,
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "deprecated_element_has_exact_replacement",
+      "definition_uri": "https://w3id.org/linkml/deprecated_element_has_exact_replacement",
+      "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
+      "from_schema": "https://w3id.org/linkml/mappings",
+      "mappings": [
+        "http://purl.obolibrary.org/obo/IAO_0100001"
+      ],
+      "slot_uri": "https://w3id.org/linkml/deprecated_element_has_exact_replacement",
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "deprecated_element_has_possible_replacement",
+      "definition_uri": "https://w3id.org/linkml/deprecated_element_has_possible_replacement",
+      "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
+      "from_schema": "https://w3id.org/linkml/mappings",
+      "mappings": [
+        "http://www.geneontology.org/formats/oboInOwl#consider"
+      ],
+      "slot_uri": "https://w3id.org/linkml/deprecated_element_has_possible_replacement",
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    }
+  ],
+  "metamodel_version": "1.7.0",
+  "source_file": "mappings.yaml",
+  "source_file_date": "2022-07-14T00:55:10",
+  "source_file_size": 2755,
+  "generation_date": "2022-07-14T00:56:07",
+  "@type": "SchemaDefinition",
+  "@context": [
+    "https://w3id.org/linkml/types.context.jsonld",
+    {
+      "@base": "https://w3id.org/linkml/"
+    }
+  ]
+}
+

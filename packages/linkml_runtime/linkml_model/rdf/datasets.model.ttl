@@ -1,0 +1,747 @@
+@prefix : <https://w3id.org/linkml/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix linkml: <https://w3id.org/linkml/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+linkml:datasets a linkml:SchemaDefinition ;
+    dcterms:description "A datamodel for datasets" ;
+    dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
+    dcterms:title "LinkML Datasets Datamodel" ;
+    linkml:classes [ a linkml:ClassDefinition ;
+            dcterms:description "Grouping for datasets and data files" ;
+            linkml:abstract true ;
+            linkml:class_uri "https://w3id.org/linkml/reportInformation" ;
+            linkml:close_mappings "schema:CreativeWork" ;
+            linkml:definition_uri "https://w3id.org/linkml/reportInformation" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:name "Information" ;
+            linkml:slot_usage [ ] ;
+            linkml:slots "compression",
+                "conforms_to",
+                "conforms_to_class",
+                "conforms_to_schema",
+                "created_by",
+                "created_on",
+                "description",
+                "download_url",
+                "id",
+                "issued",
+                "keywords",
+                "language",
+                "license",
+                "page",
+                "publisher",
+                "test_roles",
+                "title",
+                "version",
+                "was_derived_from" ],
+        [ a linkml:ClassDefinition ;
+            dcterms:description "A collection of data resources" ;
+            linkml:aliases "data resource collection",
+                "dataset",
+                "file collection" ;
+            linkml:class_uri "http://rdfs.org/ns/void#Dataset" ;
+            linkml:close_mappings "dcat:Catalog" ;
+            linkml:definition_uri "https://w3id.org/linkml/reportDataPackage" ;
+            linkml:exact_mappings "dcat:Dataset" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:is_a "Information" ;
+            linkml:mappings "void:Dataset" ;
+            linkml:name "DataPackage" ;
+            linkml:see_also "https://specs.frictionlessdata.io/data-package" ;
+            linkml:slot_usage [ ] ;
+            linkml:slots "compression",
+                "conforms_to",
+                "conforms_to_class",
+                "conforms_to_schema",
+                "created_by",
+                "created_on",
+                "description",
+                "download_url",
+                "id",
+                "issued",
+                "keywords",
+                "language",
+                "license",
+                "page",
+                "publisher",
+                "resources",
+                "test_roles",
+                "title",
+                "version",
+                "was_derived_from" ],
+        [ a linkml:ClassDefinition ;
+            dcterms:description "Additional format information for a file" ;
+            linkml:attributes [ a linkml:SlotDefinition ;
+                    linkml:name "header" ],
+                [ a linkml:SlotDefinition ;
+                    linkml:name "delimiter" ],
+                [ a linkml:SlotDefinition ;
+                    linkml:name "quote_char" ],
+                [ a linkml:SlotDefinition ;
+                    linkml:name "comment_prefix" ],
+                [ a linkml:SlotDefinition ;
+                    linkml:name "double_quote" ] ;
+            linkml:class_uri "https://w3id.org/linkml/reportFormatDialect" ;
+            linkml:definition_uri "https://w3id.org/linkml/reportFormatDialect" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:name "FormatDialect" ;
+            linkml:slot_usage [ ] ;
+            linkml:slots "formatDialect__comment_prefix",
+                "formatDialect__delimiter",
+                "formatDialect__double_quote",
+                "formatDialect__header",
+                "formatDialect__quote_char" ],
+        [ a linkml:ClassDefinition ;
+            dcterms:description "An individual file or table" ;
+            linkml:class_uri "http://www.w3.org/ns/dcat#Distribution" ;
+            linkml:definition_uri "https://w3id.org/linkml/reportDataResource" ;
+            linkml:exact_mappings "schema:DataDownload" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:is_a "Information" ;
+            linkml:mappings "dcat:Distribution" ;
+            linkml:name "DataResource" ;
+            linkml:see_also "https://specs.frictionlessdata.io/data-resource" ;
+            linkml:slot_usage [ ] ;
+            linkml:slots "bytes",
+                "compression",
+                "conforms_to",
+                "conforms_to_class",
+                "conforms_to_schema",
+                "created_by",
+                "created_on",
+                "description",
+                "dialect",
+                "download_url",
+                "encoding",
+                "format",
+                "hash",
+                "id",
+                "issued",
+                "keywords",
+                "language",
+                "license",
+                "md5",
+                "media_type",
+                "page",
+                "path",
+                "publisher",
+                "sha256",
+                "test_roles",
+                "title",
+                "version",
+                "was_derived_from" ] ;
+    linkml:default_curi_maps "semweb_context" ;
+    linkml:default_prefix "datasets" ;
+    linkml:default_range "string" ;
+    linkml:emit_prefixes "linkml",
+        "owl",
+        "rdf",
+        "rdfs",
+        "xsd" ;
+    linkml:enums [ linkml:definition_uri "https://w3id.org/linkml/reportFormatEnum" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:name "FormatEnum" ;
+            linkml:permissible_values [ linkml:meaning "formats:JSON-LD" ;
+                    linkml:text "JSON-LD" ],
+                [ linkml:meaning "formats:N-Triples" ;
+                    linkml:text "N-Triples" ],
+                [ linkml:meaning "formats:Turtle" ;
+                    linkml:text "Turtle" ],
+                [ linkml:meaning "formats:RDF_JSON" ;
+                    linkml:text "RDF/JSON" ],
+                [ linkml:meaning "formats:RDFa" ;
+                    linkml:text "RDFa" ],
+                [ linkml:meaning "formats:SPARQL_Results_CSV" ;
+                    linkml:text "SPARQL%20Results%20in%20CSV" ],
+                [ linkml:meaning "formats:RIF_XML" ;
+                    linkml:text "RIF%20XML%20Syntax" ],
+                [ linkml:meaning "formats:SPARQL_Results_TSV" ;
+                    linkml:text "SPARQL%20Results%20in%20TSV" ],
+                [ linkml:meaning "formats:microdata" ;
+                    linkml:text "Microdata" ],
+                [ linkml:meaning "formats:POWDER-S" ;
+                    linkml:text "POWDER-S" ],
+                [ linkml:meaning "formats:OWL_Manchester" ;
+                    linkml:text "OWL%20Manchester%20Syntax" ],
+                [ linkml:meaning "formats:PROV-N" ;
+                    linkml:text "PROV-N" ],
+                [ linkml:meaning "formats:POWDER" ;
+                    linkml:text "POWDER" ],
+                [ linkml:meaning "formats:SPARQL_Results_JSON" ;
+                    linkml:text "SPARQL%20Results%20in%20JSON" ],
+                [ linkml:meaning "formats:N-Quads" ;
+                    linkml:text "N-Quads" ],
+                [ linkml:meaning "formats:TriG" ;
+                    linkml:text "TriG" ],
+                [ linkml:meaning "formats:OWL_Functional" ;
+                    linkml:text "OWL%20Functional%20Syntax" ],
+                [ linkml:meaning "formats:N3" ;
+                    linkml:text "N3" ],
+                [ linkml:meaning "formats:LD_Patch" ;
+                    linkml:text "LD%20Patch" ],
+                [ linkml:text "YAML" ],
+                [ linkml:meaning "formats:OWL_XML" ;
+                    linkml:text "OWL%20XML%20Serialization" ],
+                [ linkml:text "JSON" ],
+                [ linkml:meaning "formats:RDF_XML" ;
+                    linkml:text "RDF/XML" ],
+                [ linkml:meaning "formats:PROV-XML" ;
+                    linkml:text "PROV-XML" ],
+                [ linkml:meaning "formats:SPARQL_Results_XML" ;
+                    linkml:text "SPARQL%20Results%20in%20XML" ] ],
+        [ linkml:definition_uri "https://w3id.org/linkml/reportTestRole" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:name "TestRole" ;
+            linkml:permissible_values [ linkml:text "CounterExample" ],
+                [ linkml:text "Example" ] ],
+        [ linkml:definition_uri "https://w3id.org/linkml/reportMediaTypeEnum" ;
+            linkml:exact_mappings "dcterms:MediaType" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:name "MediaTypeEnum" ;
+            linkml:permissible_values [ linkml:meaning "mediatypes:application/rdf+xml" ;
+                    linkml:text "rdf-xml" ],
+                [ linkml:meaning "mediatypes:text/csv" ;
+                    linkml:text "csv" ] ] ;
+    linkml:generation_date "2022-07-14T00:57:10" ;
+    linkml:imports "linkml:types" ;
+    linkml:metamodel_version "1.7.0" ;
+    linkml:name "datasets" ;
+    linkml:prefixes [ linkml:prefix_prefix "schema" ;
+            linkml:prefix_reference "http://schema.org/" ],
+        [ linkml:prefix_prefix "datasets" ;
+            linkml:prefix_reference "https://w3id.org/linkml/report" ],
+        [ linkml:prefix_prefix "void" ;
+            linkml:prefix_reference "http://rdfs.org/ns/void#" ],
+        [ linkml:prefix_prefix "csvw" ;
+            linkml:prefix_reference "http://www.w3.org/ns/csvw#" ],
+        [ linkml:prefix_prefix "frictionless" ;
+            linkml:prefix_reference "https://specs.frictionlessdata.io/" ],
+        [ linkml:prefix_prefix "skos" ;
+            linkml:prefix_reference "http://www.w3.org/2004/02/skos/core#" ],
+        [ linkml:prefix_prefix "sh" ;
+            linkml:prefix_reference "https://w3id.org/shacl/" ],
+        [ linkml:prefix_prefix "linkml" ;
+            linkml:prefix_reference "https://w3id.org/linkml/" ],
+        [ linkml:prefix_prefix "formats" ;
+            linkml:prefix_reference "http://www.w3.org/ns/formats/" ],
+        [ linkml:prefix_prefix "dcat" ;
+            linkml:prefix_reference "http://www.w3.org/ns/dcat#" ],
+        [ linkml:prefix_prefix "mediatypes" ;
+            linkml:prefix_reference "https://www.iana.org/assignments/media-types/" ],
+        [ linkml:prefix_prefix "pav" ;
+            linkml:prefix_reference "http://purl.org/pav/" ] ;
+    linkml:see_also "https://specs.frictionlessdata.io/data-resource",
+        "https://www.w3.org/TR/hcls-dataset/",
+        "https://www.w3.org/TR/void/" ;
+    linkml:slots [ a linkml:SlotDefinition ;
+            dcterms:description "language in which the information is expressed" ;
+            linkml:definition_uri "https://w3id.org/linkml/reportlanguage" ;
+            linkml:domain_of "Information" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:name "language" ;
+            linkml:owner "Information" ;
+            linkml:range "string" ;
+            linkml:slot_uri "https://w3id.org/linkml/reportlanguage" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/reportdialect" ;
+            linkml:domain_of "DataResource" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://www.w3.org/ns/csvw#dialect" ;
+            linkml:name "dialect" ;
+            linkml:owner "DataResource" ;
+            linkml:range "string" ;
+            linkml:slot_uri "http://www.w3.org/ns/csvw#dialect" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/reportbytes" ;
+            linkml:domain_of "DataResource" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://www.w3.org/ns/dcat#byteSize" ;
+            linkml:name "bytes" ;
+            linkml:owner "DataResource" ;
+            linkml:range "integer" ;
+            linkml:slot_uri "http://www.w3.org/ns/dcat#byteSize" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/reportresources" ;
+            linkml:domain_of "DataPackage" ;
+            linkml:exact_mappings "http://schema.org/distribution" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://www.w3.org/ns/dcat#distribution" ;
+            linkml:multivalued true ;
+            linkml:name "resources" ;
+            linkml:owner "DataPackage" ;
+            linkml:range "DataResource" ;
+            linkml:slot_uri "http://www.w3.org/ns/dcat#distribution" ],
+        [ a linkml:SlotDefinition ;
+            dcterms:description "particular version of schema" ;
+            linkml:definition_uri "https://w3id.org/linkml/reportversion" ;
+            linkml:domain_of "Information" ;
+            linkml:exact_mappings "http://purl.org/dc/terms/hasVersion",
+                "http://schema.org/version" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://purl.org/pav/version" ;
+            linkml:name "version" ;
+            linkml:owner "Information" ;
+            linkml:range "string" ;
+            linkml:slot_uri "http://purl.org/pav/version" ],
+        [ a linkml:SlotDefinition ;
+            linkml:alias "quote_char" ;
+            linkml:domain_of "FormatDialect" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:name "formatDialect__quote_char" ;
+            linkml:owner "FormatDialect" ;
+            linkml:range "string" ;
+            linkml:slot_uri "https://w3id.org/linkml/reportquote_char" ],
+        [ a linkml:SlotDefinition ;
+            linkml:alias "comment_prefix" ;
+            linkml:domain_of "FormatDialect" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:name "formatDialect__comment_prefix" ;
+            linkml:owner "FormatDialect" ;
+            linkml:range "string" ;
+            linkml:slot_uri "https://w3id.org/linkml/reportcomment_prefix" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/reportpublisher" ;
+            linkml:domain_of "Information" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://purl.org/dc/terms/publisher" ;
+            linkml:name "publisher" ;
+            linkml:owner "Information" ;
+            linkml:range "uriorcurie" ;
+            linkml:slot_uri "http://purl.org/dc/terms/publisher" ],
+        [ a linkml:SlotDefinition ;
+            dcterms:description "human readable description of the information" ;
+            linkml:definition_uri "https://w3id.org/linkml/reportdescription" ;
+            linkml:domain_of "DataResource",
+                "Information" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://purl.org/dc/terms/description" ;
+            linkml:name "description" ;
+            linkml:owner "DataResource" ;
+            linkml:range "string" ;
+            linkml:slot_uri "http://purl.org/dc/terms/description" ],
+        [ a linkml:SlotDefinition ;
+            dcterms:description "agent that created the element" ;
+            linkml:definition_uri "https://w3id.org/linkml/reportcreated_by" ;
+            linkml:domain_of "Information" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://purl.org/pav/createdBy" ;
+            linkml:name "created_by" ;
+            linkml:owner "Information" ;
+            linkml:range "uriorcurie" ;
+            linkml:slot_uri "http://purl.org/pav/createdBy" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/reportformat" ;
+            linkml:domain_of "DataResource" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://purl.org/dc/terms/format" ;
+            linkml:name "format" ;
+            linkml:owner "DataResource" ;
+            linkml:range "FormatEnum" ;
+            linkml:slot_uri "http://purl.org/dc/terms/format" ],
+        [ a linkml:SlotDefinition ;
+            linkml:alias "header" ;
+            linkml:domain_of "FormatDialect" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:name "formatDialect__header" ;
+            linkml:owner "FormatDialect" ;
+            linkml:range "string" ;
+            linkml:slot_uri "https://w3id.org/linkml/reportheader" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/reportprofile" ;
+            linkml:exact_mappings "https://specs.frictionlessdata.io/profiles" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:name "profile" ;
+            linkml:range "uriorcurie" ;
+            linkml:slot_uri "https://w3id.org/linkml/reportprofile" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/reportcompression" ;
+            linkml:domain_of "Information" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:name "compression" ;
+            linkml:owner "Information" ;
+            linkml:range "string" ;
+            linkml:slot_uri "https://w3id.org/linkml/reportcompression" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/reportsha256" ;
+            linkml:domain_of "DataResource" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:is_a "hash" ;
+            linkml:name "sha256" ;
+            linkml:owner "DataResource" ;
+            linkml:range "string" ;
+            linkml:slot_uri "https://w3id.org/linkml/reportsha256" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/reporttest_roles" ;
+            linkml:domain_of "Information" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:multivalued true ;
+            linkml:name "test_roles" ;
+            linkml:owner "Information" ;
+            linkml:range "TestRole" ;
+            linkml:slot_uri "https://w3id.org/linkml/reporttest_roles" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/reportthemes" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://www.w3.org/ns/dcat#theme" ;
+            linkml:multivalued true ;
+            linkml:name "themes" ;
+            linkml:range "uriorcurie" ;
+            linkml:singular_name "theme" ;
+            linkml:slot_uri "http://www.w3.org/ns/dcat#theme" ],
+        [ a linkml:SlotDefinition ;
+            dcterms:description "agent that modified the element" ;
+            linkml:definition_uri "https://w3id.org/linkml/reportmodified_by" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://example.org/UNKNOWN/oslc/modifiedBy" ;
+            linkml:name "modified_by" ;
+            linkml:range "uriorcurie" ;
+            linkml:slot_uri "http://example.org/UNKNOWN/oslc/modifiedBy" ],
+        [ a linkml:SlotDefinition ;
+            linkml:alias "double_quote" ;
+            linkml:domain_of "FormatDialect" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:name "formatDialect__double_quote" ;
+            linkml:owner "FormatDialect" ;
+            linkml:range "string" ;
+            linkml:slot_uri "https://w3id.org/linkml/reportdouble_quote" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/reportmedia_type" ;
+            linkml:domain_of "DataResource" ;
+            linkml:exact_mappings "http://schema.org/encodingFormat",
+                "https://specs.frictionlessdata.io/mediatype" ;
+            linkml:examples [ a linkml:Example ;
+                    linkml:value "application/json" ],
+                [ a linkml:Example ;
+                    linkml:value "text/csv" ] ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://www.w3.org/ns/dcat#mediaType" ;
+            linkml:name "media_type" ;
+            linkml:owner "DataResource" ;
+            linkml:range "string" ;
+            linkml:slot_uri "http://www.w3.org/ns/dcat#mediaType" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/reportencoding" ;
+            linkml:domain_of "DataResource" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:name "encoding" ;
+            linkml:owner "DataResource" ;
+            linkml:range "string" ;
+            linkml:slot_uri "https://w3id.org/linkml/reportencoding" ],
+        [ a linkml:SlotDefinition ;
+            dcterms:description "A derivation is a transformation of an entity into another, an update of an entity resulting in a new one, or the construction of a new entity based on a pre-existing entity.@en" ;
+            linkml:definition_uri "https://w3id.org/linkml/reportwas_derived_from" ;
+            linkml:domain_of "Information" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://www.w3.org/ns/prov#wasDerivedFrom" ;
+            linkml:name "was_derived_from" ;
+            linkml:owner "Information" ;
+            linkml:range "string" ;
+            linkml:slot_uri "http://www.w3.org/ns/prov#wasDerivedFrom" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/reporthash" ;
+            linkml:domain_of "DataResource" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:name "hash" ;
+            linkml:notes "we recommend using a more specific slot such as sha256 or md5" ;
+            linkml:owner "DataResource" ;
+            linkml:range "string" ;
+            linkml:slot_uri "https://w3id.org/linkml/reporthash" ],
+        [ a linkml:SlotDefinition ;
+            dcterms:description "time at which the element was created" ;
+            linkml:definition_uri "https://w3id.org/linkml/reportcreated_on" ;
+            linkml:domain_of "Information" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://purl.org/pav/createdOn" ;
+            linkml:name "created_on" ;
+            linkml:owner "Information" ;
+            linkml:range "datetime" ;
+            linkml:slot_uri "http://purl.org/pav/createdOn" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/reportkeywords" ;
+            linkml:domain_of "Information" ;
+            linkml:exact_mappings "http://schema.org/keywords" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://www.w3.org/ns/dcat#keyword" ;
+            linkml:multivalued true ;
+            linkml:name "keywords" ;
+            linkml:owner "Information" ;
+            linkml:range "string" ;
+            linkml:singular_name "keyword" ;
+            linkml:slot_uri "http://www.w3.org/ns/dcat#keyword" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/reportpage" ;
+            linkml:domain_of "Information" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://www.w3.org/ns/dcat#landingPage" ;
+            linkml:name "page" ;
+            linkml:owner "Information" ;
+            linkml:range "string" ;
+            linkml:slot_uri "http://www.w3.org/ns/dcat#landingPage" ],
+        [ a linkml:SlotDefinition ;
+            dcterms:description "the official title of the element" ;
+            linkml:definition_uri "https://w3id.org/linkml/reporttitle" ;
+            linkml:domain_of "DataResource",
+                "Information" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://purl.org/dc/terms/title" ;
+            linkml:name "title" ;
+            linkml:owner "DataResource" ;
+            linkml:range "string" ;
+            linkml:slot_uri "http://purl.org/dc/terms/title" ],
+        [ a linkml:SlotDefinition ;
+            linkml:close_mappings "https://specs.frictionlessdata.io/path" ;
+            linkml:definition_uri "https://w3id.org/linkml/reportpath" ;
+            linkml:domain_of "DataResource" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:name "path" ;
+            linkml:owner "DataResource" ;
+            linkml:range "string" ;
+            linkml:slot_uri "https://w3id.org/linkml/reportpath" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/reportissued" ;
+            linkml:domain_of "Information" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://purl.org/dc/terms/issued" ;
+            linkml:name "issued" ;
+            linkml:owner "Information" ;
+            linkml:range "datetime" ;
+            linkml:slot_uri "http://purl.org/dc/terms/issued" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/reportconforms_to_schema" ;
+            linkml:domain_of "Information" ;
+            linkml:exact_mappings "https://specs.frictionlessdata.io/schema" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:is_a "conforms_to" ;
+            linkml:name "conforms_to_schema" ;
+            linkml:owner "Information" ;
+            linkml:range "uriorcurie" ;
+            linkml:slot_uri "https://w3id.org/linkml/reportconforms_to_schema" ],
+        [ a linkml:SlotDefinition ;
+            dcterms:description "time at which the element was last updated" ;
+            linkml:definition_uri "https://w3id.org/linkml/reportlast_updated_on" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://purl.org/pav/lastUpdatedOn" ;
+            linkml:name "last_updated_on" ;
+            linkml:range "datetime" ;
+            linkml:slot_uri "http://purl.org/pav/lastUpdatedOn" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/reportmd5" ;
+            linkml:domain_of "DataResource" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:is_a "hash" ;
+            linkml:name "md5" ;
+            linkml:owner "DataResource" ;
+            linkml:range "string" ;
+            linkml:slot_uri "https://w3id.org/linkml/reportmd5" ],
+        [ a linkml:SlotDefinition ;
+            linkml:close_mappings "https://specs.frictionlessdata.io/path" ;
+            linkml:definition_uri "https://w3id.org/linkml/reportdownload_url" ;
+            linkml:domain_of "Information" ;
+            linkml:exact_mappings "http://schema.org/url" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://www.w3.org/ns/dcat#downloadURL" ;
+            linkml:name "download_url" ;
+            linkml:owner "Information" ;
+            linkml:range "uri" ;
+            linkml:slot_uri "http://www.w3.org/ns/dcat#downloadURL" ],
+        [ a linkml:SlotDefinition ;
+            dcterms:description "status of the element" ;
+            linkml:definition_uri "https://w3id.org/linkml/reportstatus" ;
+            linkml:examples [ a linkml:Example ;
+                    linkml:value "bibo:draft" ] ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://example.org/UNKNOWN/bibo/status" ;
+            linkml:name "status" ;
+            linkml:range "uriorcurie" ;
+            linkml:slot_uri "http://example.org/UNKNOWN/bibo/status" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/reportconforms_to" ;
+            linkml:domain_of "Information" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://purl.org/dc/terms/conformsTo" ;
+            linkml:name "conforms_to" ;
+            linkml:owner "Information" ;
+            linkml:range "uriorcurie" ;
+            linkml:slot_uri "http://purl.org/dc/terms/conformsTo" ],
+        [ a linkml:SlotDefinition ;
+            linkml:alias "delimiter" ;
+            linkml:domain_of "FormatDialect" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:name "formatDialect__delimiter" ;
+            linkml:owner "FormatDialect" ;
+            linkml:range "string" ;
+            linkml:slot_uri "https://w3id.org/linkml/reportdelimiter" ],
+        [ a linkml:SlotDefinition ;
+            dcterms:description "class in schema which the data object instantiates" ;
+            linkml:definition_uri "https://w3id.org/linkml/reportconforms_to_class" ;
+            linkml:domain_of "Information" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:is_a "conforms_to" ;
+            linkml:name "conforms_to_class" ;
+            linkml:owner "Information" ;
+            linkml:range "uriorcurie" ;
+            linkml:slot_uri "https://w3id.org/linkml/reportconforms_to_class" ],
+        [ a linkml:SlotDefinition ;
+            dcterms:description "the unique name of th dataset" ;
+            linkml:definition_uri "https://w3id.org/linkml/reportid" ;
+            linkml:domain_of "Information" ;
+            linkml:exact_mappings "http://schema.org/name" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:identifier true ;
+            linkml:mappings "http://purl.org/dc/terms/identifier" ;
+            linkml:name "id" ;
+            linkml:owner "Information" ;
+            linkml:range "string" ;
+            linkml:required true ;
+            linkml:slot_uri "http://purl.org/dc/terms/identifier" ],
+        [ a linkml:SlotDefinition ;
+            dcterms:description "license for the data" ;
+            linkml:definition_uri "https://w3id.org/linkml/reportlicense" ;
+            linkml:domain_of "Information" ;
+            linkml:exact_mappings "https://specs.frictionlessdata.io/licenses" ;
+            linkml:from_schema "https://w3id.org/linkml/datasets" ;
+            linkml:mappings "http://purl.org/dc/terms/license" ;
+            linkml:name "license" ;
+            linkml:owner "Information" ;
+            linkml:range "string" ;
+            linkml:slot_uri "http://purl.org/dc/terms/license" ] ;
+    linkml:source_file "datasets.yaml" ;
+    linkml:source_file_date "2022-07-14T00:55:10" ;
+    linkml:source_file_size 7804 ;
+    linkml:types [ a linkml:TypeDefinition ;
+            dcterms:description "a complete URI" ;
+            linkml:base "URI" ;
+            linkml:definition_uri "https://w3id.org/linkml/Uri" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "uri" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI" ],
+        [ a linkml:TypeDefinition ;
+            dcterms:description "A real number that conforms to the xsd:float specification" ;
+            linkml:base "float" ;
+            linkml:definition_uri "https://w3id.org/linkml/Float" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "float" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#float" ],
+        [ a linkml:TypeDefinition ;
+            dcterms:description "A time object represents a (local) time of day, independent of any particular day" ;
+            linkml:base "XSDTime" ;
+            linkml:definition_uri "https://w3id.org/linkml/Time" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "time" ;
+            linkml:notes "URI is dateTime because OWL reasoners don't work with straight date or time" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#dateTime" ],
+        [ a linkml:TypeDefinition ;
+            dcterms:description "A real number that conforms to the xsd:double specification" ;
+            linkml:base "float" ;
+            linkml:definition_uri "https://w3id.org/linkml/Double" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "double" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#double" ],
+        [ a linkml:TypeDefinition ;
+            dcterms:description "A URI or CURIE that represents an object in the model." ;
+            linkml:base "ElementIdentifier" ;
+            linkml:comments "Used for inheritance and type checking" ;
+            linkml:definition_uri "https://w3id.org/linkml/Objectidentifier" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "objectidentifier" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/ns/shex#iri" ],
+        [ a linkml:TypeDefinition ;
+            dcterms:description "Prefix part of CURIE" ;
+            linkml:base "NCName" ;
+            linkml:definition_uri "https://w3id.org/linkml/Ncname" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "ncname" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#string" ],
+        [ a linkml:TypeDefinition ;
+            dcterms:description "A URI, CURIE or BNODE that represents a node in a model." ;
+            linkml:base "NodeIdentifier" ;
+            linkml:definition_uri "https://w3id.org/linkml/Nodeidentifier" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "nodeidentifier" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/ns/shex#nonLiteral" ],
+        [ a linkml:TypeDefinition ;
+            dcterms:description "A real number with arbitrary precision that conforms to the xsd:decimal specification" ;
+            linkml:base "Decimal" ;
+            linkml:definition_uri "https://w3id.org/linkml/Decimal" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "decimal" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#decimal" ],
+        [ a linkml:TypeDefinition ;
+            dcterms:description "a URI or a CURIE" ;
+            linkml:base "URIorCURIE" ;
+            linkml:definition_uri "https://w3id.org/linkml/Uriorcurie" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "uriorcurie" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI" ],
+        [ a linkml:TypeDefinition ;
+            dcterms:description "Either a date or a datetime" ;
+            linkml:base "str" ;
+            linkml:definition_uri "https://w3id.org/linkml/DateOrDatetime" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "date_or_datetime" ;
+            linkml:repr "str" ;
+            linkml:uri "https://w3id.org/linkml/DateOrDatetime" ],
+        [ a linkml:TypeDefinition ;
+            dcterms:description "An integer" ;
+            linkml:base "int" ;
+            linkml:definition_uri "https://w3id.org/linkml/Integer" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "integer" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#integer" ],
+        [ a linkml:TypeDefinition ;
+            dcterms:description "A character string" ;
+            linkml:base "str" ;
+            linkml:definition_uri "https://w3id.org/linkml/String" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "string" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#string" ],
+        [ a linkml:TypeDefinition ;
+            dcterms:description "A binary (true or false) value" ;
+            linkml:base "Bool" ;
+            linkml:definition_uri "https://w3id.org/linkml/Boolean" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "boolean" ;
+            linkml:repr "bool" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#boolean" ],
+        [ a linkml:TypeDefinition ;
+            dcterms:description "The combination of a date and time" ;
+            linkml:base "XSDDateTime" ;
+            linkml:definition_uri "https://w3id.org/linkml/Datetime" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "datetime" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#dateTime" ],
+        [ a linkml:TypeDefinition ;
+            dcterms:description "a date (year, month and day) in an idealized calendar" ;
+            linkml:base "XSDDate" ;
+            linkml:definition_uri "https://w3id.org/linkml/Date" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "date" ;
+            linkml:notes "URI is dateTime because OWL reasoners don't work with straight date or time" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#date" ] .
+
+
+

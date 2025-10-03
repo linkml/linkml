@@ -1,0 +1,86 @@
+# metamodel_version: 1.7.0
+BASE <https://w3id.org/linkml/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+
+
+<String> xsd:string
+
+<Integer> xsd:integer
+
+<Boolean> xsd:boolean
+
+<Float> xsd:float
+
+<Double> xsd:double
+
+<Decimal> xsd:decimal
+
+<Time> xsd:dateTime
+
+<Date> xsd:date
+
+<Datetime> xsd:dateTime
+
+<DateOrDatetime> <DateOrDatetime>
+
+<Uriorcurie> IRI
+
+<Uri> IRI
+
+<Ncname> xsd:string
+
+<Objectidentifier> IRI
+
+<Nodeidentifier> NONLITERAL
+
+<Annotatable> {
+    (  $<Annotatable_tes> <annotations> @<Annotation> * ;
+       rdf:type [ <Annotatable> ] ?
+    )
+}
+
+<Annotation> CLOSED {
+    (  $<Annotation_tes> (  &<Extension_tes> ;
+          rdf:type [ <Extension> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          <annotations> @<Annotation> *
+       ) ;
+       rdf:type [ <Annotation> ]
+    )
+}
+
+<Extensible> {
+    (  $<Extensible_tes> <extensions> @<Extension> * ;
+       rdf:type [ <Extensible> ] ?
+    )
+}
+
+<Extension>  (
+    CLOSED {
+       (  $<Extension_tes> (  <tag> @<Uriorcurie> ;
+             <value> @<String> ;
+             <extensions> @<Extension> *
+          ) ;
+          rdf:type [ <Extension> ]
+       )
+    } OR @<Annotation>
+)
+
+<UnitOfMeasure> CLOSED {
+    (  $<UnitOfMeasure_tes> (  qudt:symbol @<String> ? ;
+          skos:exactMatch @<Uriorcurie> * ;
+          qudt:ucumCode @<String> ? ;
+          <derivation> @<String> ? ;
+          qudt:hasQuantityKind @<Uriorcurie> ? ;
+          qudt:iec61360Code @<String> ?
+       ) ;
+       rdf:type [ qudt:Unit ] ?
+    )
+}
+
+
+

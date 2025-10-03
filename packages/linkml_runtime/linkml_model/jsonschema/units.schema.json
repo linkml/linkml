@@ -1,0 +1,163 @@
+{
+   "$defs": {
+      "Annotation": {
+         "additionalProperties": false,
+         "description": "a tag/value pair with the semantics of OWL Annotation",
+         "properties": {
+            "annotations": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
+               },
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
+            },
+            "extensions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
+               },
+               "description": "a tag/text tuple attached to an arbitrary element"
+            },
+            "tag": {
+               "description": "a tag associated with an extension",
+               "type": "string"
+            },
+            "value": {
+               "description": "the actual annotation",
+               "type": "string"
+            }
+         },
+         "required": [
+            "tag",
+            "value"
+         ],
+         "title": "Annotation",
+         "type": "object"
+      },
+      "Annotation__identifier_optional": {
+         "additionalProperties": false,
+         "description": "a tag/value pair with the semantics of OWL Annotation",
+         "properties": {
+            "annotations": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
+               },
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
+            },
+            "extensions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
+               },
+               "description": "a tag/text tuple attached to an arbitrary element"
+            },
+            "tag": {
+               "description": "a tag associated with an extension",
+               "type": "string"
+            },
+            "value": {
+               "description": "the actual annotation",
+               "type": "string"
+            }
+         },
+         "required": [
+            "value"
+         ],
+         "title": "Annotation",
+         "type": "object"
+      },
+      "Extension": {
+         "additionalProperties": false,
+         "description": "a tag/value pair used to add non-model information to an entry",
+         "properties": {
+            "extensions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
+               },
+               "description": "a tag/text tuple attached to an arbitrary element"
+            },
+            "tag": {
+               "description": "a tag associated with an extension",
+               "type": "string"
+            },
+            "value": {
+               "description": "the actual annotation",
+               "type": "string"
+            }
+         },
+         "required": [
+            "tag",
+            "value"
+         ],
+         "title": "Extension",
+         "type": "object"
+      },
+      "Extension__identifier_optional": {
+         "additionalProperties": false,
+         "description": "a tag/value pair used to add non-model information to an entry",
+         "properties": {
+            "extensions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
+               },
+               "description": "a tag/text tuple attached to an arbitrary element"
+            },
+            "tag": {
+               "description": "a tag associated with an extension",
+               "type": "string"
+            },
+            "value": {
+               "description": "the actual annotation",
+               "type": "string"
+            }
+         },
+         "required": [
+            "value"
+         ],
+         "title": "Extension",
+         "type": "object"
+      },
+      "UnitOfMeasure": {
+         "additionalProperties": false,
+         "description": "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension).",
+         "properties": {
+            "derivation": {
+               "description": "Expression for deriving this unit from other units",
+               "type": "string"
+            },
+            "exact_mappings": {
+               "description": "Used to link a unit to equivalent concepts in ontologies such as UO, SNOMED, OEM, OBOE, NCIT",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "has_quantity_kind": {
+               "description": "Concept in a vocabulary or ontology that denotes the kind of quantity being measured, e.g. length",
+               "type": "string"
+            },
+            "iec61360code": {
+               "type": "string"
+            },
+            "symbol": {
+               "description": "name of the unit encoded as a symbol",
+               "type": "string"
+            },
+            "ucum_code": {
+               "description": "associates a QUDT unit with its UCUM code (case-sensitive).",
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "UnitOfMeasure",
+         "type": "object"
+      }
+   },
+   "$id": "https://w3id.org/linkml/units",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": true,
+   "metamodel_version": "1.7.0",
+   "properties": {},
+   "required": [],
+   "title": "units",
+   "type": "object",
+   "version": null
+}
+
