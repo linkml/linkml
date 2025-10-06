@@ -102,19 +102,13 @@ def _closure(
     rv = [x] if reflexive else []
     visited = []
     todo = [x]
-    while len(todo) > 0:
-        if depth_first:
-            i = todo.pop()
-        else:
-            i = todo[0]
-            todo = todo[1:]
+    while todo:
+        i = todo.pop() if depth_first else todo.pop(0)
         visited.append(i)
-        vals = f(i)
-        if vals is not None:
-            for v in vals:
-                if v not in visited and v not in rv:
-                    todo.append(v)
-                    rv.append(v)
+        for v in f(i) or []:
+            if v not in visited and v not in rv:
+                todo.append(v)
+                rv.append(v)
     return rv
 
 
@@ -846,6 +840,7 @@ class SchemaView:
         reflexive: bool = True,
         is_a: bool = True,
         depth_first: bool = True,
+        **kwargs: dict[str, Any] | None,
     ) -> list[ClassDefinitionName]:
         """Return the closure of class_parents method.
 
@@ -862,6 +857,7 @@ class SchemaView:
             class_name,
             reflexive=reflexive,
             depth_first=depth_first,
+            **kwargs,
         )
 
     @lru_cache(None)
@@ -872,6 +868,7 @@ class SchemaView:
         mixins: bool = True,
         reflexive: bool = True,
         is_a: bool = True,
+        **kwargs: dict[str, Any] | None,
     ) -> list[ClassDefinitionName]:
         """Return the closure of class_children method.
 
@@ -883,7 +880,10 @@ class SchemaView:
         :return: descendants class names
         """
         return _closure(
-            lambda x: self.class_children(x, imports=imports, mixins=mixins, is_a=is_a), class_name, reflexive=reflexive
+            lambda x: self.class_children(x, imports=imports, mixins=mixins, is_a=is_a),
+            class_name,
+            reflexive=reflexive,
+            **kwargs,
         )
 
     @lru_cache(None)
@@ -949,7 +949,13 @@ class SchemaView:
 
     @lru_cache(None)
     def slot_ancestors(
-        self, slot_name: SLOT_NAME, imports: bool = True, mixins: bool = True, reflexive: bool = True, is_a: bool = True
+        self,
+        slot_name: SLOT_NAME,
+        imports: bool = True,
+        mixins: bool = True,
+        reflexive: bool = True,
+        is_a: bool = True,
+        **kwargs: dict[str, Any] | None,
     ) -> list[SlotDefinitionName]:
         """Return the closure of slot_parents method.
 
@@ -961,12 +967,21 @@ class SchemaView:
         :return: ancestor slot names
         """
         return _closure(
-            lambda x: self.slot_parents(x, imports=imports, mixins=mixins, is_a=is_a), slot_name, reflexive=reflexive
+            lambda x: self.slot_parents(x, imports=imports, mixins=mixins, is_a=is_a),
+            slot_name,
+            reflexive=reflexive,
+            **kwargs,
         )
 
     @lru_cache(None)
     def slot_descendants(
-        self, slot_name: SLOT_NAME, imports: bool = True, mixins: bool = True, reflexive: bool = True, is_a: bool = True
+        self,
+        slot_name: SLOT_NAME,
+        imports: bool = True,
+        mixins: bool = True,
+        reflexive: bool = True,
+        is_a: bool = True,
+        **kwargs: dict[str, Any] | None,
     ) -> list[SlotDefinitionName]:
         """Return the closure of slot_children method.
 
@@ -978,7 +993,10 @@ class SchemaView:
         :return: descendants slot names
         """
         return _closure(
-            lambda x: self.slot_children(x, imports=imports, mixins=mixins, is_a=is_a), slot_name, reflexive=reflexive
+            lambda x: self.slot_children(x, imports=imports, mixins=mixins, is_a=is_a),
+            slot_name,
+            reflexive=reflexive,
+            **kwargs,
         )
 
     @lru_cache(None)
@@ -1020,7 +1038,12 @@ class SchemaView:
 
     @lru_cache(None)
     def type_ancestors(
-        self, type_name: TYPE_NAME, imports: bool = True, reflexive: bool = True, depth_first: bool = True
+        self,
+        type_name: TYPE_NAME,
+        imports: bool = True,
+        reflexive: bool = True,
+        depth_first: bool = True,
+        **kwargs: dict[str, Any] | None,
     ) -> list[TypeDefinitionName]:
         """Return all ancestors of a type via typeof.
 
@@ -1031,7 +1054,11 @@ class SchemaView:
         :return: ancestor class names
         """
         return _closure(
-            lambda x: self.type_parents(x, imports=imports), type_name, reflexive=reflexive, depth_first=depth_first
+            lambda x: self.type_parents(x, imports=imports),
+            type_name,
+            reflexive=reflexive,
+            depth_first=depth_first,
+            **kwargs,
         )
 
     @lru_cache(None)
@@ -1055,6 +1082,7 @@ class SchemaView:
         reflexive: bool = True,
         is_a: bool = True,
         depth_first: bool = True,
+        **kwargs: dict[str, Any] | None,
     ) -> list[EnumDefinitionName]:
         """Return the closure of enum_parents method.
 
@@ -1071,6 +1099,7 @@ class SchemaView:
             enum_name,
             reflexive=reflexive,
             depth_first=depth_first,
+            **kwargs,
         )
 
     @lru_cache(None)
@@ -1114,7 +1143,12 @@ class SchemaView:
 
     @lru_cache(None)
     def permissible_value_ancestors(
-        self, permissible_value_text: str, enum_name: ENUM_NAME, reflexive: bool = True, depth_first: bool = True
+        self,
+        permissible_value_text: str,
+        enum_name: ENUM_NAME,
+        reflexive: bool = True,
+        depth_first: bool = True,
+        **kwargs: dict[str, Any] | None,
     ) -> list[str]:
         """Return the closure of permissible_value_parents method.
 
@@ -1134,11 +1168,17 @@ class SchemaView:
             permissible_value_text,
             reflexive=reflexive,
             depth_first=depth_first,
+            **kwargs,
         )
 
     @lru_cache(None)
     def permissible_value_descendants(
-        self, permissible_value_text: str, enum_name: ENUM_NAME, reflexive: bool = True, depth_first: bool = True
+        self,
+        permissible_value_text: str,
+        enum_name: ENUM_NAME,
+        reflexive: bool = True,
+        depth_first: bool = True,
+        **kwargs: dict[str, Any] | None,
     ) -> list[str]:
         """Return the closure of permissible_value_children method.
 
@@ -1149,6 +1189,7 @@ class SchemaView:
             permissible_value_text,
             reflexive=reflexive,
             depth_first=depth_first,
+            **kwargs,
         )
 
     @lru_cache(None)
