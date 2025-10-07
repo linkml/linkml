@@ -850,6 +850,228 @@ def test_get_entity_does_not_exist(creature_view: SchemaView, entity: str) -> No
         getattr(creature_view, get_fn)("does_not_exist", strict=True)
 
 
+# creature schema ancestry
+def test_get_class_roots_class_leaves(creature_view: SchemaView) -> None:
+    """Test the retrieval of class roots and leaves in the creature schema."""
+
+    # roots are classes with no is_a parents and no mixins
+    assert set(creature_view.class_roots()) == {"CreatureAttribute", "Entity", "Location", "MagicalAbility"}
+    # leaves are classes with no subclasses and not used as mixins
+    assert set(creature_view.class_leaves()) == {"Dragon", "Phoenix", "Unicorn", "Location", "MagicalAbility"}
+
+    for fn in ["class_leaves", "class_roots"]:
+        # disabling both mixins and is_a destroys all links between classes
+        assert set(getattr(creature_view, fn)(mixins=False, is_a=False)) == set(creature_view.all_classes())
+
+
+""" Relationship tests, courtesy of the mythical creatures schema.
+
+    Creature schema basics:
+
+    is_a relationships:
+    Entity
+    [i] Creature --mixin-- HasHabitat
+        [i] MythicalCreature --mixin-- HasMagic
+            [i] Dragon
+            [i] Phoenix
+            [i] Unicorn
+
+    CreatureAttribute
+    [i] HasHabitat
+    [i] HasMagic
+
+    Mixins:
+    Creature: mixin HasHabitat
+    MythicalCreature: mixin HasMagic
+
+    Classes used as a range, with no relationships to other classes
+    - Location
+    - MagicalAbility
+"""
+
+
+def test_class_is_a_children_descendants(creature_view: SchemaView) -> None:
+    """Tests for retrieving is_a child classes and descendant classes."""
+    # subclasses of 'Entity'
+    assert set(creature_view.class_children("Entity")) == {"Creature"}
+    assert set(creature_view.class_children("Creature")) == {"MythicalCreature"}
+    assert set(creature_view.class_children("MythicalCreature")) == {"Dragon", "Phoenix", "Unicorn"}
+
+    entity_descendants = set(creature_view.class_descendants("Entity"))
+    assert entity_descendants == {
+        "Entity",
+        "Creature",
+        "MythicalCreature",
+        "Dragon",
+        "Phoenix",
+        "Unicorn",
+    }
+    # all are is_a relationships
+    assert entity_descendants == set(creature_view.class_descendants("Entity", mixins=False))
+    # no is_a relationships ==> no descendants
+    assert creature_view.class_descendants("Entity", is_a=False) == ["Entity"]
+
+    # direct children of "CreatureAttribute"
+    assert set(creature_view.class_children("CreatureAttribute")) == {"HasHabitat", "HasMagic"}
+    # no is_a => no children
+    assert creature_view.class_children("CreatureAttribute", is_a=False) == []
+    # is_a descendants of "CreatureAttribute"
+    assert set(creature_view.class_descendants("CreatureAttribute", mixins=False)) == {
+        "CreatureAttribute",
+        "HasHabitat",
+        "HasMagic",
+    }
+
+
+def test_class_mixin_children_descendants(creature_view: SchemaView) -> None:
+    """Tests for retrieving mixin child classes and descendant classes."""
+    # mixins
+    for mixin, mixed_into in [("HasHabitat", "Creature"), ("HasMagic", "MythicalCreature")]:
+        assert creature_view.class_children(mixin) == [mixed_into]
+        assert creature_view.class_children(mixin, is_a=False) == [mixed_into]
+        assert creature_view.class_children(mixin, mixins=False) == []
+
+
+def test_class_is_a_mixin_children_descendants(creature_view: SchemaView) -> None:
+    """Tests for retrieving is_a AND mixin child classes and descendant classes."""
+    # HasHabitat is a mixin of Creature (see prev test)
+    assert set(creature_view.class_descendants("HasHabitat", is_a=False)) == {"HasHabitat", "Creature"}
+    # Creature has subclasses, so with is_a relationships turned on,
+    # HasHabitat gains these as descendants
+    assert set(creature_view.class_descendants("HasHabitat")) == {
+        "HasHabitat",
+        "Creature",
+        "MythicalCreature",
+        "Dragon",
+        "Phoenix",
+        "Unicorn",
+    }
+    # without the mixin relationship, HasHabitat has descendants (except itself)
+    assert creature_view.class_descendants("HasHabitat", mixins=False) == ["HasHabitat"]
+
+    # Similar case for HasMagic, a mixin for MythicalCreature
+    assert set(creature_view.class_descendants("HasMagic", is_a=False)) == {"HasMagic", "MythicalCreature"}
+    assert set(creature_view.class_descendants("HasMagic")) == {
+        "HasMagic",
+        "MythicalCreature",
+        "Dragon",
+        "Phoenix",
+        "Unicorn",
+    }
+    assert creature_view.class_descendants("HasMagic", mixins=False) == ["HasMagic"]
+
+    # HasMagic and HasHabitat are both is_a children of CreatureAttribute
+    assert set(creature_view.class_children("CreatureAttribute")) == {"HasHabitat", "HasMagic"}
+    assert creature_view.class_children("CreatureAttribute", is_a=False) == []
+    assert set(creature_view.class_descendants("CreatureAttribute")) == {
+        "CreatureAttribute",
+        "HasHabitat",
+        "HasMagic",
+        "Creature",
+        "MythicalCreature",
+        "Dragon",
+        "Phoenix",
+        "Unicorn",
+    }
+    assert set(creature_view.class_descendants("CreatureAttribute", mixins=False)) == {
+        "CreatureAttribute",
+        "HasHabitat",
+        "HasMagic",
+    }
+    assert set(creature_view.class_descendants("CreatureAttribute", is_a=False)) == {"CreatureAttribute"}
+
+    # The two "CreatureAttribute" subclasses are mixins to classes
+    # in the "Creature" hierarchy, so the full descendant list includes
+    # "Creature" and its subclasses
+    assert set(creature_view.class_descendants("CreatureAttribute")) == {
+        "CreatureAttribute",
+        "HasHabitat",
+        "HasMagic",
+        "Creature",
+        "MythicalCreature",
+        "Dragon",
+        "Phoenix",
+        "Unicorn",
+    }
+    # with mixins disabled, only the is_a descendants of CreatureAttribute are returned
+    assert set(creature_view.class_descendants("CreatureAttribute", mixins=False)) == {
+        "CreatureAttribute",
+        "HasHabitat",
+        "HasMagic",
+    }
+    assert creature_view.class_descendants("CreatureAttribute", is_a=False) == ["CreatureAttribute"]
+
+
+def test_class_relatives_no_neighbours(creature_view: SchemaView) -> None:
+    """Test relationships for classes with no relationships!"""
+    # lonesome classes
+    for cn in ["Location", "MagicalAbility"]:
+        assert creature_view.class_children(cn) == []
+        assert creature_view.class_descendants(cn) == [cn]
+        assert creature_view.class_descendants(cn, reflexive=False) == []
+        assert creature_view.class_parents(cn) == []
+        assert creature_view.class_ancestors(cn) == [cn]
+        assert creature_view.class_ancestors(cn, reflexive=False) == []
+
+
+def test_class_parents_ancestors(creature_view: SchemaView) -> None:
+    """Test class parentage and ancestry, creature-style!"""
+    # Creature is_a Entity and mixes in HasHabitat
+    assert creature_view.class_parents("Creature", mixins=False) == ["Entity"]
+    assert creature_view.class_parents("Creature", is_a=False) == ["HasHabitat"]
+
+    # MythicalCreature is_a Creature and mixes in HasMagic
+    assert creature_view.class_parents("MythicalCreature", mixins=False) == ["Creature"]
+    assert creature_view.class_parents("MythicalCreature", is_a=False) == ["HasMagic"]
+
+    # HasHabitat and HasMagic are both is_a children of CreatureAttribute
+    for attr in ["HasHabitat", "HasMagic"]:
+        assert creature_view.class_parents(attr) == ["CreatureAttribute"]
+        assert creature_view.class_parents(attr, is_a=False) == []
+        assert set(creature_view.class_ancestors(attr)) == {attr, "CreatureAttribute"}
+
+    # Creature ancestry
+    assert set(creature_view.class_ancestors("Creature")) == {"Creature", "Entity", "HasHabitat", "CreatureAttribute"}
+    # mixins only
+    assert set(creature_view.class_ancestors("Creature", is_a=False)) == {"Creature", "HasHabitat"}
+    # is_a only
+    assert set(creature_view.class_ancestors("Creature", mixins=False)) == {"Creature", "Entity"}
+
+    # MythicalCreature ancestry
+    assert set(creature_view.class_ancestors("MythicalCreature")) == {
+        "MythicalCreature",
+        "HasMagic",
+        "Creature",
+        "HasHabitat",
+        "Entity",
+        "CreatureAttribute",
+    }
+    assert set(creature_view.class_ancestors("MythicalCreature", is_a=False)) == {"MythicalCreature", "HasMagic"}
+    assert set(creature_view.class_ancestors("MythicalCreature", mixins=False)) == {
+        "MythicalCreature",
+        "Creature",
+        "Entity",
+    }
+
+    # Dragon, Phoenix, and Unicorn are subclasses of MythicalCreature,
+    # Creature, and Entity
+    for mc in ["Dragon", "Phoenix", "Unicorn"]:
+        assert set(creature_view.class_parents(mc, mixins=False)) == {"MythicalCreature"}
+        assert set(creature_view.class_ancestors(mc, mixins=False)) == {mc, "MythicalCreature", "Creature", "Entity"}
+        # no direct mixins
+        assert creature_view.class_ancestors(mc, is_a=False) == [mc]
+        # all ancestors
+        assert set(creature_view.class_ancestors(mc)) == {
+            mc,
+            "HasMagic",
+            "Creature",
+            "CreatureAttribute",
+            "HasHabitat",
+            "MythicalCreature",
+            "Entity",
+        }
+
+
 ORDERING_TESTS = {
     # Bassoon and Abacus are unranked, so appear at the end of the list.
     "rank": ["wind instrument", "instrument", "Didgeridoo", "counting instrument", "Clarinet", "Bassoon", "Abacus"],
