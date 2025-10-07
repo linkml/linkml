@@ -957,6 +957,64 @@ def test_all_types_induced_types(schema_view_with_imports: SchemaView) -> None:
     assert len(view.type_ancestors("SymbolString")) == len(["SymbolString", "string"])
 
 
+@pytest.mark.parametrize(
+    ("schema", "type_roots"),
+    [
+        (
+            """
+  string:
+    uri: xsd:string
+    base: str
+  integer:
+    uri: xsd:integer
+    base: int
+  boolean:
+    uri: xsd:boolean
+    base: Bool
+""",
+            {"string", "integer", "boolean"},
+        ),
+        (
+            """
+  string:
+    uri: xsd:string
+    base: str
+  acronym:
+    typeof: string
+  TLA:
+    typeof: acronym
+  even_number:
+    typeof: integer
+  integer:
+    uri: xsd:integer
+    base: int
+""",
+            {"string", "integer"},
+        ),
+        (
+            """
+  circular_type:
+    uri: xsd:Circle
+    typeof: type_circle
+
+  type_circle:
+    typeof: circular_type
+
+  semi_circular_type:
+    typeof: circular_type
+""",
+            set(),
+        ),
+    ],
+)
+def test_type_roots(schema: str, type_roots: set[str]) -> None:
+    """Test the retrieval of types with no parent type."""
+    schema_head = "id: https://w3id.org/linkml/tests/types\nname: types\ntypes:\n"
+
+    sv = SchemaView(f"{schema_head}\n{schema}")
+    assert set(sv.type_roots()) == type_roots
+
+
 def test_all_enums(schema_view_with_imports: SchemaView) -> None:
     """Test all_enums"""
     view = schema_view_with_imports
