@@ -1328,8 +1328,12 @@ def test_alias_slot(schema_view_no_imports: SchemaView) -> None:
     assert postal_code_slot.alias == "zip"  # Assert alias is 'zip'
 
 
-def test_enums_and_enum_relationships(schema_view_no_imports: SchemaView) -> None:
-    """Test various aspects of Enum representation.
+def test_permissible_value_relationships(schema_view_no_imports: SchemaView) -> None:
+    """Test relationships between permissible values.
+
+    These tests use valid permissible_value / enum combinations.
+
+    See test_permissible_value_relationships_fail for invalid enum-PV pairings.
 
     CAT:
     LION:
@@ -1344,10 +1348,6 @@ def test_enums_and_enum_relationships(schema_view_no_imports: SchemaView) -> Non
     """
     view = schema_view_no_imports
 
-    # Test for ValueError when passing incorrect parameters
-    with pytest.raises(ValueError, match='No such enum: "not_an_enum"'):
-        view.permissible_value_parent("not_a_pv", "not_an_enum")
-
     animals = "Animals"
     animal_enum = view.get_enum(animals)
     assert animal_enum.name == animals
@@ -1355,7 +1355,7 @@ def test_enums_and_enum_relationships(schema_view_no_imports: SchemaView) -> Non
     pv_cat = animal_enum.permissible_values["CAT"]
     assert pv_cat.text == "CAT"
     assert pv_cat.is_a is None
-    assert view.permissible_value_parent("CAT", animals) is None
+    assert view.permissible_value_parent("CAT", animals) == []
     assert view.permissible_value_ancestors("CAT", animals) == ["CAT"]
     assert set(view.permissible_value_children("CAT", animals)) == {"LION", "TABBY"}
     assert set(view.permissible_value_descendants("CAT", animals)) == {"CAT", "LION", "ANGRY_LION", "TABBY"}
@@ -1380,6 +1380,19 @@ def test_enums_and_enum_relationships(schema_view_no_imports: SchemaView) -> Non
     assert view.permissible_value_ancestors("ANGRY_LION", animals) == ["ANGRY_LION", "LION", "CAT"]
     assert view.permissible_value_children("ANGRY_LION", animals) == []
     assert view.permissible_value_descendants("ANGRY_LION", animals) == ["ANGRY_LION"]
+
+
+@pytest.mark.parametrize("fn", ["parent", "children", "ancestors", "descendants"])
+def test_permissible_value_relationships_fail(schema_view_no_imports: SchemaView, fn: str) -> None:
+    """Test permissible_value relationships with incorrect enum/PV pairs."""
+    method_name = f"permissible_value_{fn}"
+    # invalid enum
+    with pytest.raises(ValueError, match='No such enum: "invalid_enum"'):
+        getattr(schema_view_no_imports, method_name)("invalid_pv", "invalid_enum")
+
+    # invalid pv, valid enum
+    with pytest.raises(ValueError, match='"invalid_pv" is not a permissible value of the enum "Animals"'):
+        getattr(schema_view_no_imports, method_name)("invalid_pv", "Animals")
 
 
 # FIXME: improve testing of dynamic enums
