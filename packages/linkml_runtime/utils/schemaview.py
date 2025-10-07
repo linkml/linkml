@@ -102,19 +102,13 @@ def _closure(
     rv = [x] if reflexive else []
     visited = []
     todo = [x]
-    while len(todo) > 0:
-        if depth_first:
-            i = todo.pop()
-        else:
-            i = todo[0]
-            todo = todo[1:]
+    while todo:
+        i = todo.pop() if depth_first else todo.pop(0)
         visited.append(i)
-        vals = f(i)
-        if vals is not None:
-            for v in vals:
-                if v not in visited and v not in rv:
-                    todo.append(v)
-                    rv.append(v)
+        for v in f(i) or []:
+            if v not in visited and v not in rv:
+                todo.append(v)
+                rv.append(v)
     return rv
 
 
@@ -787,6 +781,23 @@ class SchemaView:
             raise ValueError(msg)
         return t
 
+    @lru_cache(None)
+    def get_children(self, name: str, mixin: bool = True) -> list[str]:
+        """Get the children of an element (any class, slot, enum, type).
+
+        :param name: name of the parent element
+        :param mixin: include mixins
+        :return: list of child element
+        """
+        children = []
+        for el in self.all_elements().values():
+            if isinstance(el, (ClassDefinition, SlotDefinition, EnumDefinition)):
+                if el.is_a and el.is_a == name:
+                    children.append(el.name)
+                if mixin and el.mixins and name in el.mixins:
+                    children.append(el.name)
+        return children
+
     def _parents(self, e: Element, imports: bool = True, mixins: bool = True, is_a: bool = True) -> list[ElementName]:
         parents = copy(e.mixins) if mixins else []
         if e.is_a is not None and is_a:
@@ -806,6 +817,251 @@ class SchemaView:
         return self._parents(cls, imports, mixins, is_a)
 
     @lru_cache(None)
+    def class_children(
+        self, class_name: CLASS_NAME, imports: bool = True, mixins: bool = True, is_a: bool = True
+    ) -> list[ClassDefinitionName]:
+        """Return class children.
+
+        :param class_name: parent class name
+        :param imports: include import closure
+        :param mixins: include mixins (default is True)
+        :param is_a: include is_a parents (default is True)
+        :return: all direct child class names (is_a and mixins)
+        """
+        elts = [self.get_class(x) for x in self.all_classes(imports=imports)]
+        return [x.name for x in elts if (x.is_a == class_name and is_a) or (mixins and class_name in x.mixins)]
+
+    @lru_cache(None)
+    def class_ancestors(
+        self,
+        class_name: CLASS_NAME,
+        imports: bool = True,
+        mixins: bool = True,
+        reflexive: bool = True,
+        is_a: bool = True,
+        depth_first: bool = True,
+        **kwargs: dict[str, Any] | None,
+    ) -> list[ClassDefinitionName]:
+        """Return the closure of class_parents method.
+
+        :param class_name: query class
+        :param imports: include import closure
+        :param mixins: include mixins (default is True)
+        :param is_a: include is_a parents (default is True)
+        :param reflexive: include self in set of ancestors
+        :param depth_first:
+        :return: ancestor class names
+        """
+        return _closure(
+            lambda x: self.class_parents(x, imports=imports, mixins=mixins, is_a=is_a),
+            class_name,
+            reflexive=reflexive,
+            depth_first=depth_first,
+            **kwargs,
+        )
+
+    @lru_cache(None)
+    def class_descendants(
+        self,
+        class_name: CLASS_NAME,
+        imports: bool = True,
+        mixins: bool = True,
+        reflexive: bool = True,
+        is_a: bool = True,
+        **kwargs: dict[str, Any] | None,
+    ) -> list[ClassDefinitionName]:
+        """Return the closure of class_children method.
+
+        :param class_name: query class
+        :param imports: include import closure
+        :param mixins: include mixins (default is True)
+        :param is_a: include is_a parents (default is True)
+        :param reflexive: include self in set of descendants
+        :return: descendants class names
+        """
+        return _closure(
+            lambda x: self.class_children(x, imports=imports, mixins=mixins, is_a=is_a),
+            class_name,
+            reflexive=reflexive,
+            **kwargs,
+        )
+
+    @lru_cache(None)
+    def class_roots(self, imports: bool = True, mixins: bool = True, is_a: bool = True) -> list[ClassDefinitionName]:
+        """Return all classes that have no parents.
+
+        :param imports:
+        :param mixins:
+        :param is_a: include is_a parents (default is True)
+        :return:
+        """
+        return [
+            c
+            for c in self.all_classes(imports=imports)
+            if self.class_parents(c, mixins=mixins, is_a=is_a, imports=imports) == []
+        ]
+
+    @lru_cache(None)
+    def class_leaves(self, imports: bool = True, mixins: bool = True, is_a: bool = True) -> list[ClassDefinitionName]:
+        """Return all classes that have no children.
+
+        :param imports:
+        :param mixins:
+        :param is_a: include is_a parents (default is True)
+        :return:
+        """
+        return [
+            c
+            for c in self.all_classes(imports=imports)
+            if self.class_children(c, mixins=mixins, is_a=is_a, imports=imports) == []
+        ]
+
+    @lru_cache(None)
+    def slot_parents(
+        self, slot_name: SLOT_NAME, imports: bool = True, mixins: bool = True, is_a: bool = True
+    ) -> list[SlotDefinitionName]:
+        """Return the parent of a slot, if it exists.
+
+        :param slot_name: child slot name
+        :param imports: include import closure
+        :param mixins: include mixins (default is True)
+        :return: all direct parent slot names (is_a and mixins)
+        """
+        s = self.get_slot(slot_name, imports, strict=True)
+        if s:
+            return self._parents(s, imports, mixins, is_a)
+        return []
+
+    @lru_cache(None)
+    def slot_children(
+        self, slot_name: SLOT_NAME, imports: bool = True, mixins: bool = True, is_a: bool = True
+    ) -> list[SlotDefinitionName]:
+        """Return slot children.
+
+        :param slot_name: parent slot name
+        :param imports: include import closure
+        :param mixins: include mixins (default is True)
+        :param is_a: include is_a parents (default is True)
+        :return: all direct child slot names (is_a and mixins)
+        """
+        elts = [self.get_slot(x) for x in self.all_slots(imports=imports)]
+        return [x.name for x in elts if (x.is_a == slot_name and is_a) or (mixins and slot_name in x.mixins)]
+
+    @lru_cache(None)
+    def slot_ancestors(
+        self,
+        slot_name: SLOT_NAME,
+        imports: bool = True,
+        mixins: bool = True,
+        reflexive: bool = True,
+        is_a: bool = True,
+        **kwargs: dict[str, Any] | None,
+    ) -> list[SlotDefinitionName]:
+        """Return the closure of slot_parents method.
+
+        :param slot_name: query slot
+        :param imports: include import closure
+        :param mixins: include mixins (default is True)
+        :param is_a: include is_a parents (default is True)
+        :param reflexive: include self in set of ancestors
+        :return: ancestor slot names
+        """
+        return _closure(
+            lambda x: self.slot_parents(x, imports=imports, mixins=mixins, is_a=is_a),
+            slot_name,
+            reflexive=reflexive,
+            **kwargs,
+        )
+
+    @lru_cache(None)
+    def slot_descendants(
+        self,
+        slot_name: SLOT_NAME,
+        imports: bool = True,
+        mixins: bool = True,
+        reflexive: bool = True,
+        is_a: bool = True,
+        **kwargs: dict[str, Any] | None,
+    ) -> list[SlotDefinitionName]:
+        """Return the closure of slot_children method.
+
+        :param slot_name: query slot
+        :param imports: include import closure
+        :param mixins: include mixins (default is True)
+        :param is_a: include is_a parents (default is True)
+        :param reflexive: include self in set of descendants
+        :return: descendants slot names
+        """
+        return _closure(
+            lambda x: self.slot_children(x, imports=imports, mixins=mixins, is_a=is_a),
+            slot_name,
+            reflexive=reflexive,
+            **kwargs,
+        )
+
+    @lru_cache(None)
+    def slot_roots(self, imports: bool = True, mixins: bool = True) -> list[SlotDefinitionName]:
+        """Return all slots that have no parents.
+
+        :param imports:
+        :param mixins:
+        :return:
+        """
+        return [
+            c for c in self.all_slots(imports=imports) if self.slot_parents(c, mixins=mixins, imports=imports) == []
+        ]
+
+    @lru_cache(None)
+    def slot_leaves(self, imports: bool = True, mixins: bool = True) -> list[SlotDefinitionName]:
+        """Return all slots that have no children.
+
+        :param imports:
+        :param mixins:
+        :return:
+        """
+        return [
+            c for c in self.all_slots(imports=imports) if self.slot_children(c, mixins=mixins, imports=imports) == []
+        ]
+
+    @lru_cache(None)
+    def type_parents(self, type_name: TYPE_NAME, imports: bool = True) -> list[TypeDefinitionName]:
+        """Return the parent of a type, if it exists.
+
+        :param type_name: child type name
+        :param imports: include import closure
+        :return: all direct parent enum names (is_a and mixins)
+        """
+        typ = self.get_type(type_name, imports, strict=True)
+        if typ.typeof:
+            return [typ.typeof]
+        return []
+
+    @lru_cache(None)
+    def type_ancestors(
+        self,
+        type_name: TYPE_NAME,
+        imports: bool = True,
+        reflexive: bool = True,
+        depth_first: bool = True,
+        **kwargs: dict[str, Any] | None,
+    ) -> list[TypeDefinitionName]:
+        """Return all ancestors of a type via typeof.
+
+        :param type_name: query type
+        :param imports: include import closure
+        :param reflexive: include self in set of ancestors
+        :param depth_first:
+        :return: ancestor class names
+        """
+        return _closure(
+            lambda x: self.type_parents(x, imports=imports),
+            type_name,
+            reflexive=reflexive,
+            depth_first=depth_first,
+            **kwargs,
+        )
+
+    @lru_cache(None)
     def enum_parents(
         self, enum_name: ENUM_NAME, imports: bool = False, mixins: bool = False, is_a: bool = True
     ) -> list[EnumDefinitionName]:
@@ -816,6 +1072,35 @@ class SchemaView:
         """
         e = self.get_enum(enum_name, strict=True)
         return self._parents(e, imports, mixins, is_a=is_a)
+
+    @lru_cache(None)
+    def enum_ancestors(
+        self,
+        enum_name: ENUM_NAME,
+        imports: bool = True,
+        mixins: bool = True,
+        reflexive: bool = True,
+        is_a: bool = True,
+        depth_first: bool = True,
+        **kwargs: dict[str, Any] | None,
+    ) -> list[EnumDefinitionName]:
+        """Return the closure of enum_parents method.
+
+        :param enum_name: query enum
+        :param imports: include import closure
+        :param mixins: include mixins (default is True)
+        :param is_a: include is_a parents (default is True)
+        :param reflexive: include self in set of ancestors
+        :param depth_first:
+        :return: ancestor enum names
+        """
+        return _closure(
+            lambda x: self.enum_parents(x, imports=imports, mixins=mixins, is_a=is_a),
+            enum_name,
+            reflexive=reflexive,
+            depth_first=depth_first,
+            **kwargs,
+        )
 
     @lru_cache(None)
     def permissible_value_parent(
@@ -853,111 +1138,13 @@ class SchemaView:
         ]
 
     @lru_cache(None)
-    def slot_parents(
-        self, slot_name: SLOT_NAME, imports: bool = True, mixins: bool = True, is_a: bool = True
-    ) -> list[SlotDefinitionName]:
-        """Return the parent of a slot, if it exists.
-
-        :param slot_name: child slot name
-        :param imports: include import closure
-        :param mixins: include mixins (default is True)
-        :return: all direct parent slot names (is_a and mixins)
-        """
-        s = self.get_slot(slot_name, imports, strict=True)
-        if s:
-            return self._parents(s, imports, mixins, is_a)
-        return []
-
-    @lru_cache(None)
-    def type_parents(self, type_name: TYPE_NAME, imports: bool = True) -> list[TypeDefinitionName]:
-        """Return the parent of a type, if it exists.
-
-        :param type_name: child type name
-        :param imports: include import closure
-        :return: all direct parent enum names (is_a and mixins)
-        """
-        typ = self.get_type(type_name, imports, strict=True)
-        if typ.typeof:
-            return [typ.typeof]
-        return []
-
-    @lru_cache(None)
-    def get_children(self, name: str, mixin: bool = True) -> list[str]:
-        """Get the children of an element (any class, slot, enum, type).
-
-        :param name: name of the parent element
-        :param mixin: include mixins
-        :return: list of child element
-        """
-        children = []
-        for el in self.all_elements().values():
-            if isinstance(el, (ClassDefinition, SlotDefinition, EnumDefinition)):
-                if el.is_a and el.is_a == name:
-                    children.append(el.name)
-                if mixin and el.mixins and name in el.mixins:
-                    children.append(el.name)
-        return children
-
-    @lru_cache(None)
-    def class_children(
-        self, class_name: CLASS_NAME, imports: bool = True, mixins: bool = True, is_a: bool = True
-    ) -> list[ClassDefinitionName]:
-        """Return class children.
-
-        :param class_name: parent class name
-        :param imports: include import closure
-        :param mixins: include mixins (default is True)
-        :param is_a: include is_a parents (default is True)
-        :return: all direct child class names (is_a and mixins)
-        """
-        elts = [self.get_class(x) for x in self.all_classes(imports=imports)]
-        return [x.name for x in elts if (x.is_a == class_name and is_a) or (mixins and class_name in x.mixins)]
-
-    @lru_cache(None)
-    def slot_children(
-        self, slot_name: SLOT_NAME, imports: bool = True, mixins: bool = True, is_a: bool = True
-    ) -> list[SlotDefinitionName]:
-        """Return slot children.
-
-        :param slot_name: parent slot name
-        :param imports: include import closure
-        :param mixins: include mixins (default is True)
-        :param is_a: include is_a parents (default is True)
-        :return: all direct child slot names (is_a and mixins)
-        """
-        elts = [self.get_slot(x) for x in self.all_slots(imports=imports)]
-        return [x.name for x in elts if (x.is_a == slot_name and is_a) or (mixins and slot_name in x.mixins)]
-
-    @lru_cache(None)
-    def class_ancestors(
-        self,
-        class_name: CLASS_NAME,
-        imports: bool = True,
-        mixins: bool = True,
-        reflexive: bool = True,
-        is_a: bool = True,
-        depth_first: bool = True,
-    ) -> list[ClassDefinitionName]:
-        """Return the closure of class_parents method.
-
-        :param class_name: query class
-        :param imports: include import closure
-        :param mixins: include mixins (default is True)
-        :param is_a: include is_a parents (default is True)
-        :param reflexive: include self in set of ancestors
-        :param depth_first:
-        :return: ancestor class names
-        """
-        return _closure(
-            lambda x: self.class_parents(x, imports=imports, mixins=mixins, is_a=is_a),
-            class_name,
-            reflexive=reflexive,
-            depth_first=depth_first,
-        )
-
-    @lru_cache(None)
     def permissible_value_ancestors(
-        self, permissible_value_text: str, enum_name: ENUM_NAME, reflexive: bool = True, depth_first: bool = True
+        self,
+        permissible_value_text: str,
+        enum_name: ENUM_NAME,
+        reflexive: bool = True,
+        depth_first: bool = True,
+        **kwargs: dict[str, Any] | None,
     ) -> list[str]:
         """Return the closure of permissible_value_parents method.
 
@@ -977,11 +1164,17 @@ class SchemaView:
             permissible_value_text,
             reflexive=reflexive,
             depth_first=depth_first,
+            **kwargs,
         )
 
     @lru_cache(None)
     def permissible_value_descendants(
-        self, permissible_value_text: str, enum_name: ENUM_NAME, reflexive: bool = True, depth_first: bool = True
+        self,
+        permissible_value_text: str,
+        enum_name: ENUM_NAME,
+        reflexive: bool = True,
+        depth_first: bool = True,
+        **kwargs: dict[str, Any] | None,
     ) -> list[str]:
         """Return the closure of permissible_value_children method.
 
@@ -992,160 +1185,8 @@ class SchemaView:
             permissible_value_text,
             reflexive=reflexive,
             depth_first=depth_first,
+            **kwargs,
         )
-
-    @lru_cache(None)
-    def enum_ancestors(
-        self,
-        enum_name: ENUM_NAME,
-        imports: bool = True,
-        mixins: bool = True,
-        reflexive: bool = True,
-        is_a: bool = True,
-        depth_first: bool = True,
-    ) -> list[EnumDefinitionName]:
-        """Return the closure of enum_parents method.
-
-        :param enum_name: query enum
-        :param imports: include import closure
-        :param mixins: include mixins (default is True)
-        :param is_a: include is_a parents (default is True)
-        :param reflexive: include self in set of ancestors
-        :param depth_first:
-        :return: ancestor enum names
-        """
-        return _closure(
-            lambda x: self.enum_parents(x, imports=imports, mixins=mixins, is_a=is_a),
-            enum_name,
-            reflexive=reflexive,
-            depth_first=depth_first,
-        )
-
-    @lru_cache(None)
-    def type_ancestors(
-        self, type_name: TYPE_NAME, imports: bool = True, reflexive: bool = True, depth_first: bool = True
-    ) -> list[TypeDefinitionName]:
-        """Return all ancestors of a type via typeof.
-
-        :param type_name: query type
-        :param imports: include import closure
-        :param reflexive: include self in set of ancestors
-        :param depth_first:
-        :return: ancestor class names
-        """
-        return _closure(
-            lambda x: self.type_parents(x, imports=imports), type_name, reflexive=reflexive, depth_first=depth_first
-        )
-
-    @lru_cache(None)
-    def slot_ancestors(
-        self, slot_name: SLOT_NAME, imports: bool = True, mixins: bool = True, reflexive: bool = True, is_a: bool = True
-    ) -> list[SlotDefinitionName]:
-        """Return the closure of slot_parents method.
-
-        :param slot_name: query slot
-        :param imports: include import closure
-        :param mixins: include mixins (default is True)
-        :param is_a: include is_a parents (default is True)
-        :param reflexive: include self in set of ancestors
-        :return: ancestor slot names
-        """
-        return _closure(
-            lambda x: self.slot_parents(x, imports=imports, mixins=mixins, is_a=is_a), slot_name, reflexive=reflexive
-        )
-
-    @lru_cache(None)
-    def class_descendants(
-        self,
-        class_name: CLASS_NAME,
-        imports: bool = True,
-        mixins: bool = True,
-        reflexive: bool = True,
-        is_a: bool = True,
-    ) -> list[ClassDefinitionName]:
-        """Return the closure of class_children method.
-
-        :param class_name: query class
-        :param imports: include import closure
-        :param mixins: include mixins (default is True)
-        :param is_a: include is_a parents (default is True)
-        :param reflexive: include self in set of descendants
-        :return: descendants class names
-        """
-        return _closure(
-            lambda x: self.class_children(x, imports=imports, mixins=mixins, is_a=is_a), class_name, reflexive=reflexive
-        )
-
-    @lru_cache(None)
-    def slot_descendants(
-        self, slot_name: SLOT_NAME, imports: bool = True, mixins: bool = True, reflexive: bool = True, is_a: bool = True
-    ) -> list[SlotDefinitionName]:
-        """Return the closure of slot_children method.
-
-        :param slot_name: query slot
-        :param imports: include import closure
-        :param mixins: include mixins (default is True)
-        :param is_a: include is_a parents (default is True)
-        :param reflexive: include self in set of descendants
-        :return: descendants slot names
-        """
-        return _closure(
-            lambda x: self.slot_children(x, imports=imports, mixins=mixins, is_a=is_a), slot_name, reflexive=reflexive
-        )
-
-    @lru_cache(None)
-    def class_roots(self, imports: bool = True, mixins: bool = True, is_a: bool = True) -> list[ClassDefinitionName]:
-        """Return all classes that have no parents.
-
-        :param imports:
-        :param mixins:
-        :param is_a: include is_a parents (default is True)
-        :return:
-        """
-        return [
-            c
-            for c in self.all_classes(imports=imports)
-            if self.class_parents(c, mixins=mixins, is_a=is_a, imports=imports) == []
-        ]
-
-    @lru_cache(None)
-    def class_leaves(self, imports: bool = True, mixins: bool = True, is_a: bool = True) -> list[ClassDefinitionName]:
-        """Return all classes that have no children.
-
-        :param imports:
-        :param mixins:
-        :param is_a: include is_a parents (default is True)
-        :return:
-        """
-        return [
-            c
-            for c in self.all_classes(imports=imports)
-            if self.class_children(c, mixins=mixins, is_a=is_a, imports=imports) == []
-        ]
-
-    @lru_cache(None)
-    def slot_roots(self, imports: bool = True, mixins: bool = True) -> list[SlotDefinitionName]:
-        """Return all slots that have no parents.
-
-        :param imports:
-        :param mixins:
-        :return:
-        """
-        return [
-            c for c in self.all_slots(imports=imports) if self.slot_parents(c, mixins=mixins, imports=imports) == []
-        ]
-
-    @lru_cache(None)
-    def slot_leaves(self, imports: bool = True, mixins: bool = True) -> list[SlotDefinitionName]:
-        """Return all slots that have no children.
-
-        :param imports:
-        :param mixins:
-        :return:
-        """
-        return [
-            c for c in self.all_slots(imports=imports) if self.slot_children(c, mixins=mixins, imports=imports) == []
-        ]
 
     @lru_cache(None)
     def type_roots(self, imports: bool = True) -> list[TypeDefinitionName]:
