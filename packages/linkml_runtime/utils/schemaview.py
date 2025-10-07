@@ -1105,41 +1105,37 @@ class SchemaView:
     @lru_cache(None)
     def permissible_value_parent(
         self, permissible_value: str, enum_name: ENUM_NAME
-    ) -> list[str | PermissibleValueText] | None:
+    ) -> list[str | PermissibleValueText]:
         """:param enum_name: child enum name
         :param permissible_value: permissible value
         :return: all direct parent enum names (is_a)
         """
         enum = self.get_enum(enum_name, strict=True)
-        if enum:
-            if permissible_value in enum.permissible_values:
-                pv = enum.permissible_values[permissible_value]
-                if pv.is_a:
-                    return [pv.is_a]
-            return None
-        return []
+        pv = enum.permissible_values.get(permissible_value)
+        if not pv:
+            err_msg = f'"{permissible_value}" is not a permissible value of the enum "{enum_name}".'
+            raise ValueError(err_msg)
+        return [pv.is_a] if pv.is_a else []
 
     @lru_cache(None)
     def permissible_value_children(
         self, permissible_value: str, enum_name: ENUM_NAME
-    ) -> list[str | PermissibleValueText] | None:
+    ) -> list[str | PermissibleValueText]:
         """:param enum_name: parent enum name
         :param permissible_value: permissible value
         :return: all direct child permissible values (is_a)
         """
         enum = self.get_enum(enum_name, strict=True)
-        children = []
-        if enum:
-            if permissible_value in enum.permissible_values:
-                pv = enum.permissible_values[permissible_value]
-                for isapv in enum.permissible_values:
-                    isapv_entity = enum.permissible_values[isapv]
-                    if isapv_entity.is_a and pv.text == isapv_entity.is_a:
-                        children.append(isapv)
-                return children
-            return None
-        msg = f'No such enum as "{enum_name}"'
-        raise ValueError(msg)
+        pv = enum.permissible_values.get(permissible_value)
+        if not pv:
+            err_msg = f'"{permissible_value}" is not a permissible value of the enum "{enum_name}".'
+            raise ValueError(err_msg)
+
+        return [
+            isa_pv
+            for isa_pv, isa_pv_entity in enum.permissible_values.items()
+            if isa_pv_entity.is_a and pv.text == isa_pv_entity.is_a
+        ]
 
     @lru_cache(None)
     def permissible_value_ancestors(
