@@ -2293,7 +2293,8 @@ def sv_cycles_schema() -> SchemaView:
 
 CYCLES = {
     TYPES: {
-        # these types are all involved in cycles, either directly or via ancestors
+        # types in cycles, either directly or via ancestors
+        # key: type, value: node where the cycle starts
         0: {
             "curve_type": "circular_type",
             "semi_circular_type": "circular_type",
@@ -2302,7 +2303,8 @@ CYCLES = {
             "circle": "circle",
             "circle_of_life": "circle",
         },
-        # type_ancestors of types not involved in cycles
+        # types not involved in cycles
+        # key: the type, value: ancestors of the type
         1: {
             "supreme_string": {"supreme_string", "super_string", "string"},
             "super_string": {"super_string", "string"},
@@ -2313,6 +2315,7 @@ CYCLES = {
     },
     CLASSES: {
         # classes involved in cycles
+        # key: class name, value: node where the cycle starts
         0: {
             "ClassA": "ClassA",
             "ClassB": "ClassB",
@@ -2326,6 +2329,7 @@ CYCLES = {
             "MixedClass": "Mixin2",
         },
         # class ancestors for classes not in cycles
+        # key: class name, value: class ancestors
         1: {
             "BaseClass": {"BaseClass"},
             "MixinA": {"MixinA"},
