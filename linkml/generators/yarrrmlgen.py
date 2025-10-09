@@ -32,13 +32,23 @@ class YarrrmlGenerator(Generator):
     visit_all_class_slots = False
 
     def __init__(self, schema: str | TextIO | SchemaDefinition, format: str = "yml", **kwargs):
+        # выкусываем свои аргументы, чтобы не улетели в базовый Generator
+        src = kwargs.pop("source", None)
+        it = kwargs.pop("iterator_template", None)
+
+        # инициализация базового генератора
         super().__init__(schema, **kwargs)
+
+        # schemaview и сама схема
         self.schemaview = SchemaView(schema)
         self.schema: SchemaDefinition = self.schemaview.schema
+
+        # формат
         self.format = format
+
         # runtime options
-        self.source: str = kwargs.get("source") or DEFAULT_SOURCE_JSON
-        self.iterator_template: str = kwargs.get("iterator_template") or DEFAULT_ITERATOR
+        self.source: str = src or DEFAULT_SOURCE_JSON
+        self.iterator_template: str = it or DEFAULT_ITERATOR
 
     # public
     def serialize(self, **args) -> str:
@@ -53,16 +63,22 @@ class YarrrmlGenerator(Generator):
 
     def as_dict(self) -> dict[str, Any]:
         sv = self.schemaview
-        mappings: dict[str, Any] = {}
+        mappings = {}
         for cls in sv.all_classes().values():
-            mapping: dict[str, Any] = {
-                "sources": [self.source],
+            if not (sv.get_identifier_slot(cls.name) or sv.get_key_slot(cls.name)):
+                continue
+
+            mapping = {
                 "s": self._subject_template_for_class(cls),
                 "po": self._po_list_for_class(cls),
             }
             if self._is_json_source():
-                mapping["iterator"] = self._iterator_for_class(cls)
+                mapping["sources"] = [[self.source, self._iterator_for_class(cls)]]
+            else:
+                mapping["sources"] = [self.source]
+
             mappings[str(cls.name)] = mapping
+
         return {"prefixes": self._prefixes(), "mappings": mappings}
 
     # helpers
@@ -93,21 +109,31 @@ class YarrrmlGenerator(Generator):
             return f"{default_prefix}:$({key_slot.name})"
         return f"{default_prefix}:{c.name}/$(subject_id)"  # safe fallback
 
-    def _po_list_for_class(self, c: ClassDefinition) -> list[dict[str, str]]:
+    def _po_list_for_class(self, c: ClassDefinition) -> list[dict[str, Any]]:
         sv = self.schemaview
-        po: list[dict[str, str]] = []
-        # rdf:type as CURIE
+        po = []
         class_curie = sv.get_uri(c, expand=False)
         if class_curie:
             po.append({"p": "rdf:type", "o": str(class_curie)})
+
         default_prefix = sv.schema.default_prefix or "ex"
+
         for s in sv.class_induced_slots(c.name):
             pred = sv.get_uri(s, expand=False) or f"{default_prefix}:{s.name}"
-            # prefer alias from declared slot
             decl = sv.get_slot(s.name)
             alias = decl.alias if decl and decl.alias else s.alias
-            obj = f"$({alias or s.name})"
-            po.append({"p": pred, "o": obj})
+            var = alias or s.name
+
+            is_obj = sv.get_class(s.range) is not None if s.range else False
+            if is_obj:
+                inlined = None
+                if decl and decl.inlined is not None:
+                    inlined = decl.inlined
+                if inlined is False:
+                    po.append({"p": pred, "o": {"value": f"$({var})", "type": "iri"}})
+                continue
+
+            po.append({"p": pred, "o": f"$({var})"})
         return po
 
 
