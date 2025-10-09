@@ -27,8 +27,9 @@ The generator produces YARRRML like:
 
    mappings:
      Person:
-       sources: [data.json~jsonpath]
-       iterator: $.items[*]
+       sources:
+         - - data.json~jsonpath
+           - $.items[*]
        s: ex:$(id)
        po:
          - p: rdf:type
@@ -44,7 +45,7 @@ Overview
 - subject from identifier slot (else key; else safe fallback)
 - ``po`` for class-induced slots (slot aliases respected)
 - emits ``rdf:type`` as a CURIE (e.g., ``ex:Person``)
-- JSON by default: ``sources: [data.json~jsonpath]`` and ``iterator: $.items[*]``
+- JSON by default: ``sources: [[data.json~jsonpath, $.items[*]]]``
 
 Command Line
 ------------
@@ -80,6 +81,8 @@ Limitations
 
 - JSON-first by default
 - One source per mapping
+- Classes without an identifier are skipped
+- Object slots: ``inlined: false`` → IRI; ``inlined: true`` → not materialized
 - Iterators not derived from JSON Schema
 - No per-slot JSONPath overrides
 - CSV supported via --source

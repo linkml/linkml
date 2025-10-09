@@ -32,21 +32,16 @@ class YarrrmlGenerator(Generator):
     visit_all_class_slots = False
 
     def __init__(self, schema: str | TextIO | SchemaDefinition, format: str = "yml", **kwargs):
-        # выкусываем свои аргументы, чтобы не улетели в базовый Generator
         src = kwargs.pop("source", None)
         it = kwargs.pop("iterator_template", None)
 
-        # инициализация базового генератора
         super().__init__(schema, **kwargs)
 
-        # schemaview и сама схема
         self.schemaview = SchemaView(schema)
         self.schema: SchemaDefinition = self.schemaview.schema
 
-        # формат
         self.format = format
 
-        # runtime options
         self.source: str = src or DEFAULT_SOURCE_JSON
         self.iterator_template: str = it or DEFAULT_ITERATOR
 
