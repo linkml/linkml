@@ -182,7 +182,7 @@ def test_index_sqlddl():
     assert 'CREATE INDEX "ix_Class_With_Id_identifier_slot" ON "Class_With_Id" (identifier_slot, name);' not in ddl
 
 
-def test_cli_index(schema: str)-> None:
+def test_cli_index(schema: str) -> None:
     runner = CliRunner()
     result = runner.invoke(
         cli,
