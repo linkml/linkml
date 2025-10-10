@@ -81,7 +81,7 @@ tests = [
   { include-group = "lint" },
   { include-group = "typing" },
   { include-group = "shacl" },
-  "morph-kgc"
+  "morph-kgc >= 2.9.0; python_version >= '3.10'"
 ]
 dev = [
   {include-group = "tests" },

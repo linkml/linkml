@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-import pytest
+import sys, pytest
 import yaml
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
@@ -11,7 +11,14 @@ from linkml.generators.yarrrmlgen import YarrrmlGenerator
 jsonschema = pytest.importorskip("jsonschema")
 rdflib = pytest.importorskip("rdflib")
 pyshacl = pytest.importorskip("pyshacl")
-morph_kgc = pytest.importorskip("morph_kgc")
+
+pytestmark = pytest.mark.skipif(
+    sys.version_info < (3, 10),
+    reason="YARRRML e2e require Morph-KGC (Python >= 3.10)"
+)
+
+if sys.version_info >= (3, 10):
+    morph_kgc = pytest.importorskip("morph_kgc")
 
 
 def _materialize_with_morph(tmp_path: Path, yarrrml: dict) -> rdflib.Graph:
