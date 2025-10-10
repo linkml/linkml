@@ -265,6 +265,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../generators/shex.html">ShEx</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/shacl.html">SHACL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/owl.html">OWL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/yarrrml.html">YARRRML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/markdown.html">Markdown</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/docgen.html">Documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/erdiagram.html">ER Diagrams</a></li>
@@ -629,6 +630,12 @@ or run <code class="docutils literal notranslate"><span class="pre">linkml</span
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">yaml</span></span></dt>
 <dd><p>Validate input and produce fully resolved…</p>
+</dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">yarrrml</span></span></dt>
+<dd><p>Generate YARRRML mappings from a LinkML…</p>
 </dd></dl>
 
 <dl class="object">
@@ -5224,6 +5231,118 @@ is conformant to the same LinkML schema.</p>
 </dd></dl>
 
 </section>
+<section id="linkml-generate-full-yarrrml">
+<h4>yarrrml<a class="headerlink" href="#linkml-generate-full-yarrrml" title="Link to this heading">¶</a></h4>
+<p>Generate YARRRML mappings from a LinkML schema.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>linkml<span class="w"> </span>generate<span class="w"> </span><span class="o">(</span>full<span class="o">)</span><span class="w"> </span>yarrrml<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-yarrrml-source">
+<span class="sig-name descname"><span class="pre">--source</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;source&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-yarrrml-source" title="Link to this definition">¶</a></dt>
+<dd><p>YARRRML source shorthand, e.g., data.json~jsonpath or data.csv~csv</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-yarrrml-iterator-template">
+<span class="sig-name descname"><span class="pre">--iterator-template</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;iterator_template&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-yarrrml-iterator-template" title="Link to this definition">¶</a></dt>
+<dd><p>JSONPath iterator template; supports {Class}, default: “$.items[*]”</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-yarrrml-V">
+<span id="cmdoption-linkml-generate-full-yarrrml-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-yarrrml-V" title="Link to this definition">¶</a></dt>
+<dd><p>Show the version and exit.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-yarrrml-f">
+<span id="cmdoption-linkml-generate-full-yarrrml-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-yarrrml-f" title="Link to this definition">¶</a></dt>
+<dd><p>Output format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'yml'</span></code></p>
+</dd>
+<dt class="field-even">Options<span class="colon">:</span></dt>
+<dd class="field-even"><p>yml | yaml</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-yarrrml-metadata">
+<span id="cmdoption-linkml-generate-full-yarrrml-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-yarrrml-metadata" title="Link to this definition">¶</a></dt>
+<dd><p>Include metadata in output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-yarrrml-useuris">
+<span id="cmdoption-linkml-generate-full-yarrrml-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-yarrrml-useuris" title="Link to this definition">¶</a></dt>
+<dd><p>Use class and slot URIs over model uris</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-yarrrml-im">
+<span id="cmdoption-linkml-generate-full-yarrrml-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-yarrrml-im" title="Link to this definition">¶</a></dt>
+<dd><p>Import mapping file</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-yarrrml-log_level">
+<span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-yarrrml-log_level" title="Link to this definition">¶</a></dt>
+<dd><p>Logging level</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'WARNING'</span></code></p>
+</dd>
+<dt class="field-even">Options<span class="colon">:</span></dt>
+<dd class="field-even"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-yarrrml-v">
+<span id="cmdoption-linkml-generate-full-yarrrml-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-yarrrml-v" title="Link to this definition">¶</a></dt>
+<dd><p>Verbosity. Takes precedence over –log_level.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-yarrrml-mergeimports">
+<span id="cmdoption-linkml-generate-full-yarrrml-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-yarrrml-mergeimports" title="Link to this definition">¶</a></dt>
+<dd><p>Merge imports into source file (default=mergeimports)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-yarrrml-stacktrace">
+<span id="cmdoption-linkml-generate-full-yarrrml-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-yarrrml-stacktrace" title="Link to this definition">¶</a></dt>
+<dd><p>Print a stack trace when an error occurs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-yarrrml-arg-YAMLFILE">
+<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-yarrrml-arg-YAMLFILE" title="Link to this definition">¶</a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</section>
 <section id="linkml-generate-full-yuml">
 <h4>yuml<a class="headerlink" href="#linkml-generate-full-yuml" title="Link to this heading">¶</a></h4>
 <p>Generate a yUML representation of a LinkML model</p>
@@ -5442,6 +5561,7 @@ is conformant to the same LinkML schema.</p>
 <li><a class="reference internal" href="#linkml-generate-full-summary">summary</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-terminusdb">terminusdb</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-yaml">yaml</a></li>
+<li><a class="reference internal" href="#linkml-generate-full-yarrrml">yarrrml</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-yuml">yuml</a></li>
 </ul>
 </li>
