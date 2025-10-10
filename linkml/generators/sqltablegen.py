@@ -445,6 +445,11 @@ def cli(
     **args,
 ):
     """Generate SQL DDL representation."""
+    args.update({
+        'autogenerate_pk_index': args['autogenerate_index'],
+        'autogenerate_fk_index': args['autogenerate_index'] and use_foreign_keys,
+    })
+    del args['autogenerate_index']
     if relmodel_output:
         sv = SchemaView(yamlfile)
         rtr = RelationalModelTransformer(sv)
