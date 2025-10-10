@@ -9,6 +9,10 @@ rules:
     level: error
   no_undeclared_ranges:
     level: error
+  one_identifier_per_class:
+    level: error
+  one_key_per_class:
+    level: error
   root_type_checks:
     level: error
   standard_naming:
