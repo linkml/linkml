@@ -1,0 +1,9 @@
+id: banana
+name: banana
+title: banana
+classes:
+  Banana:
+    attributes:
+      value:
+        range: string
+        ifabsent: "Banana"

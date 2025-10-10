@@ -1,0 +1,20 @@
+id: S001
+name: Lord of the Rings
+genres:
+- fantasy
+creator:
+  name: JRR Tolkien
+  from_country: England
+books:
+- id: S001.1
+  name: Fellowship of the Ring
+  summary: Hobbits
+  price: 5.99
+- id: S001.2
+  name: The Two Towers
+  summary: More hobbits
+  price: 5.99
+- id: S001.3
+  name: Return of the King
+  summary: Yet more hobbits
+  price: 6.99

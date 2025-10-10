@@ -1,0 +1,138 @@
+{
+   "_comments": "Auto generated from datasets.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-07-14T00:56:28\n    Schema: datasets\n    metamodel version: 1.7.0\n    model version: None\n    \n    id: https://w3id.org/linkml/datasets\n    description: A datamodel for datasets\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "@context": {
+      "bibo": "http://example.org/UNKNOWN/bibo/",
+      "csvw": "http://www.w3.org/ns/csvw#",
+      "datasets": {
+         "@id": "https://w3id.org/linkml/report",
+         "@prefix": true
+      },
+      "dcat": "http://www.w3.org/ns/dcat#",
+      "dcterms": "http://purl.org/dc/terms/",
+      "formats": "http://www.w3.org/ns/formats/",
+      "frictionless": "https://specs.frictionlessdata.io/",
+      "linkml": "https://w3id.org/linkml/",
+      "mediatypes": "https://www.iana.org/assignments/media-types/",
+      "oslc": "http://example.org/UNKNOWN/oslc/",
+      "owl": "http://www.w3.org/2002/07/owl#",
+      "pav": "http://purl.org/pav/",
+      "prov": "http://www.w3.org/ns/prov#",
+      "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+      "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+      "schema": "http://schema.org/",
+      "sh": "https://w3id.org/shacl/",
+      "skos": "http://www.w3.org/2004/02/skos/core#",
+      "void": "http://rdfs.org/ns/void#",
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "@vocab": "https://w3id.org/linkml/report",
+      "bytes": {
+         "@type": "xsd:integer",
+         "@id": "dcat:byteSize"
+      },
+      "conforms_to": {
+         "@type": "@id",
+         "@id": "dcterms:conformsTo"
+      },
+      "conforms_to_class": {
+         "@type": "@id"
+      },
+      "conforms_to_schema": {
+         "@type": "@id"
+      },
+      "created_by": {
+         "@type": "@id",
+         "@id": "pav:createdBy"
+      },
+      "created_on": {
+         "@type": "xsd:dateTime",
+         "@id": "pav:createdOn"
+      },
+      "description": {
+         "@id": "dcterms:description"
+      },
+      "dialect": {
+         "@id": "csvw:dialect"
+      },
+      "download_url": {
+         "@type": "@id",
+         "@id": "dcat:downloadURL"
+      },
+      "format": {
+         "@context": {
+            "@vocab": "@null",
+            "text": "skos:notation",
+            "description": "skos:prefLabel",
+            "meaning": "@id"
+         },
+         "@id": "dcterms:format"
+      },
+      "id": "@id",
+      "issued": {
+         "@type": "xsd:dateTime",
+         "@id": "dcterms:issued"
+      },
+      "keywords": {
+         "@id": "dcat:keyword"
+      },
+      "last_updated_on": {
+         "@type": "xsd:dateTime",
+         "@id": "pav:lastUpdatedOn"
+      },
+      "license": {
+         "@id": "dcterms:license"
+      },
+      "media_type": {
+         "@id": "dcat:mediaType"
+      },
+      "modified_by": {
+         "@type": "@id",
+         "@id": "oslc:modifiedBy"
+      },
+      "page": {
+         "@id": "dcat:landingPage"
+      },
+      "profile": {
+         "@type": "@id"
+      },
+      "publisher": {
+         "@type": "@id",
+         "@id": "dcterms:publisher"
+      },
+      "resources": {
+         "@type": "@id",
+         "@id": "dcat:distribution"
+      },
+      "status": {
+         "@type": "@id",
+         "@id": "bibo:status"
+      },
+      "test_roles": {
+         "@context": {
+            "@vocab": "@null",
+            "text": "skos:notation",
+            "description": "skos:prefLabel",
+            "meaning": "@id"
+         }
+      },
+      "themes": {
+         "@type": "@id",
+         "@id": "dcat:theme"
+      },
+      "title": {
+         "@id": "dcterms:title"
+      },
+      "version": {
+         "@id": "pav:version"
+      },
+      "was_derived_from": {
+         "@id": "prov:wasDerivedFrom"
+      },
+      "DataPackage": {
+         "@id": "void:Dataset"
+      },
+      "DataResource": {
+         "@id": "dcat:Distribution"
+      }
+   }
+}
+

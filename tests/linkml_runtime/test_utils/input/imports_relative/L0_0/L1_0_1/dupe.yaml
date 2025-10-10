@@ -1,0 +1,11 @@
+id: dupe
+name: dupe
+title: dupe
+description: A Duplicate schema that is imported from multiple places (but should only actually be imported once)
+classes:
+  Dupe:
+    description: "A class from the duplicated import!"
+    attributes:
+      value:
+        range: string
+        ifabsent: "Dupe"

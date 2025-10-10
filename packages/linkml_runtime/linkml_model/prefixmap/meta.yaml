@@ -1,0 +1,31 @@
+{
+   "IAO": "http://purl.obolibrary.org/obo/IAO_",
+   "NCIT": "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#",
+   "OIO": "http://www.geneontology.org/formats/oboInOwl#",
+   "SIO": "http://semanticscience.org/resource/SIO_",
+   "bibo": "http://purl.org/ontology/bibo/",
+   "cdisc": "http://rdf.cdisc.org/mms#",
+   "dcterms": "http://purl.org/dc/terms/",
+   "linkml": "https://w3id.org/linkml/",
+   "oslc": "http://open-services.net/ns/core#",
+   "owl": "http://www.w3.org/2002/07/owl#",
+   "pav": "http://purl.org/pav/",
+   "prov": "http://www.w3.org/ns/prov#",
+   "qb": "http://purl.org/linked-data/cube#",
+   "qudt": "http://qudt.org/schema/qudt/",
+   "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+   "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+   "schema": "http://schema.org/",
+   "sh": "http://www.w3.org/ns/shacl#",
+   "skos": "http://www.w3.org/2004/02/skos/core#",
+   "skosxl": "http://www.w3.org/2008/05/skos-xl#",
+   "swrl": "http://www.w3.org/2003/11/swrl#",
+   "vann": "https://vocab.org/vann/",
+   "xsd": "http://www.w3.org/2001/XMLSchema#",
+   "StructuredAlias": {
+      "@id": "skosxl:Label"
+   },
+   "UnitOfMeasure": {
+      "@id": "qudt:Unit"
+   }
+}
