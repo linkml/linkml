@@ -7,6 +7,7 @@ from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
 from sqlalchemy.dialects.oracle import VARCHAR2
 from sqlalchemy.sql.sqltypes import Boolean, Date, DateTime, Enum, Float, Integer, Text, Time
+from click.testing import CliRunner
 
 from linkml.generators.sqltablegen import ORACLE_MAX_VARCHAR_LENGTH, SQLTableGenerator
 from linkml.utils.schema_builder import SchemaBuilder
@@ -179,7 +180,10 @@ def test_index_sqlddl():
     assert 'CREATE INDEX "ix_Class_With_Nowt_id" ON "Class_With_Nowt" (id)' in ddl
     # Tests to ensure the duplicate index name isn't created
     assert 'CREATE INDEX "ix_Class_With_Id_identifier_slot" ON "Class_With_Id" (identifier_slot, name);' not in ddl
+'''
+def test_cli_index(schema: str)-> None:
 
+'''
 
 @pytest.mark.parametrize(
     ("slot_range", "ddl_type"),
