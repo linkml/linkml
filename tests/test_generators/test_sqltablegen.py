@@ -9,7 +9,7 @@ from sqlalchemy.dialects.oracle import VARCHAR2
 from sqlalchemy.sql.sqltypes import Boolean, Date, DateTime, Enum, Float, Integer, Text, Time
 from click.testing import CliRunner
 
-from linkml.generators.sqltablegen import ORACLE_MAX_VARCHAR_LENGTH, SQLTableGenerator
+from linkml.generators.sqltablegen import ORACLE_MAX_VARCHAR_LENGTH, SQLTableGenerator, cli
 from linkml.utils.schema_builder import SchemaBuilder
 
 # from tests.test_generators.environment import env
@@ -180,10 +180,27 @@ def test_index_sqlddl():
     assert 'CREATE INDEX "ix_Class_With_Nowt_id" ON "Class_With_Nowt" (id)' in ddl
     # Tests to ensure the duplicate index name isn't created
     assert 'CREATE INDEX "ix_Class_With_Id_identifier_slot" ON "Class_With_Id" (identifier_slot, name);' not in ddl
-'''
-def test_cli_index(schema: str)-> None:
 
-'''
+def test_cli_index(schema: str, capsys)-> None:
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        args=[
+            schema,
+            "--autogenerate_index",
+            "True"
+        ]
+    )
+    assert result.exit_code == 0, f"CLI failed: {result.output}"
+    output = result.output
+    with capsys.disabled():
+        print(output)
+    # Basic sanity check that index statements are present
+    assert "CREATE INDEX" in output.upper(), "No CREATE INDEX statements found in output"
+
+    # Check that at least one expected index is present
+    assert 'ix_Person_id' in output or 'ix_person_id' in output or 'ix_Person_name' in output
+
 
 @pytest.mark.parametrize(
     ("slot_range", "ddl_type"),
