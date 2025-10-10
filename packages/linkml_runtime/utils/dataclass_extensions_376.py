@@ -1,6 +1,5 @@
-import sys
-import warnings
 import dataclasses
+import warnings
 
 warnings.warn(
     "The LinkML dataclass extension patch is deprecated and will be removed in a future release.\n"
@@ -8,7 +7,7 @@ warnings.warn(
     "  • Upgrade your LinkML tooling to version >= 1.9.0 (which no longer needs this patch), OR\n"
     "  • Migrate to Pydantic models if you're using LinkML's generated classes at runtime.\n",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
 dataclasses_init_fn_with_kwargs = dataclasses._init_fn

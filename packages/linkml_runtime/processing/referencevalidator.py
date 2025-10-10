@@ -5,54 +5,55 @@ See:
 - `Part 5<https://w3id.org/linkml/specification/05validation>`_ of LinkML specification
 - `Part 6<https://w3id.org/linkml/specification/06mapping>`_ of LinkML specification
 """
+
+import datetime
 import decimal
 import re
 import sys
+from collections.abc import Iterator
 from copy import copy
 from dataclasses import dataclass, field
-import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Optional, Union, TextIO
-from collections.abc import Iterator
+from typing import Any, Optional, TextIO, Union
 
 import click
 import yaml
 
-from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import (
-    SlotDefinition,
     ClassDefinition,
-    EnumDefinition,
-    TypeDefinition,
     Element,
+    EnumDefinition,
     SchemaDefinition,
+    SlotDefinition,
     SlotDefinitionName,
+    TypeDefinition,
 )
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
     AnonymousSlotExpression,
-    ClassRule,
     ClassDefinitionName,
+    ClassRule,
 )
 from linkml_runtime.processing.validation_datamodel import (
     ConstraintType,
-    ValidationResult, ValidationConfiguration,
+    ValidationConfiguration,
+    ValidationResult,
 )
 from linkml_runtime.utils import yamlutils
 from linkml_runtime.utils.eval_utils import eval_expr
 from linkml_runtime.utils.metamodelcore import (
-    XSDTime,
-    Bool,
-    XSDDate,
-    URIorCURIE,
     URI,
-    NCName,
+    Bool,
     ElementIdentifier,
+    NCName,
     NodeIdentifier,
+    URIorCURIE,
+    XSDDate,
+    XSDTime,
 )
-
+from linkml_runtime.utils.schemaview import SchemaView
 
 # Mapping from either XSD types or LinkML type.base fields to Python types;
 # (the coerced type is the last element of the tuple, the others are
@@ -140,6 +141,7 @@ def _linearize_nested_list_column_order(nested_list):
 
     return result
 
+
 class CollectionForm(Enum):
     """Form of a schema element.
     See Part 6 of the LinkML specification"""
@@ -164,6 +166,7 @@ class Normalization:
 @dataclass
 class CollectionFormNormalization(Normalization):
     """A normalization that maps from one collection form to another"""
+
     input_form: CollectionForm = None
     output_form: CollectionForm = None
 
@@ -383,9 +386,7 @@ class ReferenceValidator:
             report = Report()
         return self.normalize_slot_value(input_object, parent_slot, report)
 
-    def _create_index_slot(
-        self, target: Optional[str] = None, input_object: Any = None
-    ) -> SlotDefinition:
+    def _create_index_slot(self, target: Optional[str] = None, input_object: Any = None) -> SlotDefinition:
         """
         Create a parent slot that points at the target element.
 
@@ -403,9 +404,7 @@ class ReferenceValidator:
             slot.multivalued = True
         return slot
 
-    def _schema_root(
-        self, target: Optional[str] = None
-    ) -> Optional[ClassDefinitionName]:
+    def _schema_root(self, target: Optional[str] = None) -> Optional[ClassDefinitionName]:
         if target is not None:
             return ClassDefinitionName(target)
         roots = [r.name for r in self.derived_schema.classes.values() if r.tree_root]
@@ -413,9 +412,7 @@ class ReferenceValidator:
             raise ValueError(f"Cannot normalize: {len(roots)} roots found")
         return roots[0]
 
-    def normalize_slot_value(
-        self, input_object: Any, parent_slot: SlotDefinition, report: Report
-    ) -> Any:
+    def normalize_slot_value(self, input_object: Any, parent_slot: SlotDefinition, report: Report) -> Any:
         pk_slot_name = None
         range_element = self._slot_range_element(parent_slot)
         # Infer collection form, and normalize to this form, if necessary
@@ -429,9 +426,7 @@ class ReferenceValidator:
         # Validate
         new_report = Report()
         if parent_slot.required and not normalized_object:
-            report.add_problem(
-                ConstraintType.RequiredConstraint, parent_slot.range, str(input_object)
-            )
+            report.add_problem(ConstraintType.RequiredConstraint, parent_slot.range, str(input_object))
         if parent_slot.recommended and not normalized_object:
             report.add_problem(
                 ConstraintType.RecommendedConstraint,
@@ -442,8 +437,7 @@ class ReferenceValidator:
         if isinstance(normalized_object, dict) and parent_slot.multivalued:
             if not simple_dict_value_slot:
                 output_object = {
-                    k: self.normalize_instance(v, parent_slot, new_report)
-                    for k, v in normalized_object.items()
+                    k: self.normalize_instance(v, parent_slot, new_report) for k, v in normalized_object.items()
                 }
             else:
                 output_object = {
@@ -453,21 +447,14 @@ class ReferenceValidator:
         elif _is_list_of_lists(normalized_object):
             raise NotImplementedError(f"List of Lists: {normalized_object}")
         elif isinstance(normalized_object, list):
-            output_object = [
-                self.normalize_instance(v, parent_slot, new_report)
-                for v in normalized_object
-            ]
+            output_object = [self.normalize_instance(v, parent_slot, new_report) for v in normalized_object]
         else:
             # normalize an instance
-            output_object = self.normalize_instance(
-                normalized_object, parent_slot, new_report
-            )
+            output_object = self.normalize_instance(normalized_object, parent_slot, new_report)
         report.combine(new_report)
         return output_object
 
-    def _is_dict_collection(
-        self, input_object: Any, parent_slot: SlotDefinition
-    ) -> bool:
+    def _is_dict_collection(self, input_object: Any, parent_slot: SlotDefinition) -> bool:
         if not isinstance(input_object, dict):
             return False
         if not parent_slot.multivalued:
@@ -495,10 +482,7 @@ class ReferenceValidator:
         if simple_dict_value_slot:
             return CollectionForm.SimpleDict
         # TODO: provide direct metamodel method
-        if (
-            "expanded" in parent_slot.annotations
-            and parent_slot.annotations["expanded"].value
-        ):
+        if "expanded" in parent_slot.annotations and parent_slot.annotations["expanded"].value:
             return CollectionForm.ExpandedDict
         return CollectionForm.CompactDict
 
@@ -623,9 +607,7 @@ class ReferenceValidator:
         if isinstance(input_object, dict):
             simple_dict_value_slot = self._slot_as_simple_dict_value_slot(parent_slot)
             if simple_dict_value_slot and any(
-                v
-                for v in input_object.values()
-                if v is not None and not isinstance(v, dict)
+                v for v in input_object.values() if v is not None and not isinstance(v, dict)
             ):
                 # SimpleDict -> ExpandedDict
                 report.add_collection_form_normalization(
@@ -634,9 +616,7 @@ class ReferenceValidator:
                     CollectionForm.ExpandedDict,
                 )
                 return {
-                    k: _add_pk(
-                        _simple_to_dict(v, simple_dict_value_slot.name), pk_slot_name, k
-                    )
+                    k: _add_pk(_simple_to_dict(v, simple_dict_value_slot.name), pk_slot_name, k)
                     for k, v in input_object.items()
                 }
             else:
@@ -657,14 +637,10 @@ class ReferenceValidator:
                 CollectionForm.List,
                 CollectionForm.CompactDict,
             )
-            return {
-                v.get(pk_slot_name): _remove_pk(v, pk_slot_name) for v in input_object
-            }
+            return {v.get(pk_slot_name): _remove_pk(v, pk_slot_name) for v in input_object}
         elif isinstance(input_object, dict):
             if pk_slot_name and any(
-                v
-                for k, v in input_object.items()
-                if isinstance(v, dict) and v.get(pk_slot_name, None) is not None
+                v for k, v in input_object.items() if isinstance(v, dict) and v.get(pk_slot_name, None) is not None
             ):
                 report.add_collection_form_normalization(
                     ConstraintType.DictCollectionFormConstraint,
@@ -691,9 +667,7 @@ class ReferenceValidator:
     ) -> Any:
         simple_dict_value_slot = self._slot_as_simple_dict_value_slot(parent_slot)
         if not simple_dict_value_slot:
-            raise AssertionError(
-                f"Should have simple dict slot valie: {parent_slot.name}"
-            )
+            raise AssertionError(f"Should have simple dict slot value: {parent_slot.name}")
         normalized_object = input_object
         if isinstance(input_object, list):
             normalized_object = {v[pk_slot_name]: v for v in input_object}
@@ -725,9 +699,7 @@ class ReferenceValidator:
             )
         return normalized_object
 
-    def normalize_instance(
-        self, input_object: Any, parent_slot: SlotDefinition, report: Report
-    ) -> Any:
+    def normalize_instance(self, input_object: Any, parent_slot: SlotDefinition, report: Report) -> Any:
         range_element = self._slot_range_element(parent_slot)
         if input_object is None:
             return None
@@ -752,43 +724,27 @@ class ReferenceValidator:
         else:
             return input_object
 
-    def normalize_reference(
-        self, input_object: dict, target: ClassDefinition, report: Report
-    ) -> dict:
+    def normalize_reference(self, input_object: dict, target: ClassDefinition, report: Report) -> dict:
         pk_slot = self._identifier_slot(target)
         if pk_slot is None:
             raise AssertionError(f"Cannot normalize: no primary key for {target.name}")
-        return self.normalize_type(
-            input_object, self.derived_schema.types.get(pk_slot.range, None), report
-        )
+        return self.normalize_type(input_object, self.derived_schema.types.get(pk_slot.range, None), report)
 
-    def normalize_object(
-        self, input_object: dict, target: ClassDefinition, report: Report
-    ) -> dict:
+    def normalize_object(self, input_object: dict, target: ClassDefinition, report: Report) -> dict:
         if not isinstance(input_object, dict):
-            raise AssertionError(
-                f"Cannot normalize: expected dict, got {type(input_object)} for {input_object}"
-            )
+            raise AssertionError(f"Cannot normalize: expected dict, got {type(input_object)} for {input_object}")
         output_object = {}
         # Induced slot
         for slot in target.attributes.values():
             # TODO: required slots MUST be present UNLESS this is a CompactDict
-            if (
-                slot.required
-                and slot.alias not in input_object
-                and not (slot.identifier or slot.key)
-            ):
+            if slot.required and slot.alias not in input_object and not (slot.identifier or slot.key):
                 report.add_problem(
                     ConstraintType.RequiredConstraint,
                     slot.name,
                     input_object,
                     predicate=target.name,
                 )
-            if (
-                slot.recommended
-                and slot.alias not in input_object
-                and not (slot.identifier or slot.key)
-            ):
+            if slot.recommended and slot.alias not in input_object and not (slot.identifier or slot.key):
                 report.add_problem(
                     ConstraintType.RecommendedConstraint,
                     slot.name,
@@ -796,9 +752,7 @@ class ReferenceValidator:
                     predicate=target.name,
                 )
             if slot.designates_type and slot.name in input_object:
-                induced_class_name = self._class_name_from_value(
-                    input_object[slot.name], slot.range
-                )
+                induced_class_name = self._class_name_from_value(input_object[slot.name], slot.range)
                 new_target = self.derived_schema.classes[induced_class_name]
                 if not self.subsumes(target, new_target):
                     report.add_problem(
@@ -837,20 +791,14 @@ class ReferenceValidator:
             slot = target.attributes[actual_k]
             output_object[k] = self.normalize_slot_value(v, slot, report)
             if not self._matches_slot_expression(output_object[k], slot, output_object):
-                report.add_problem(
-                    ConstraintType.ExpressionConstraint, target.name, output_object[k]
-                )
+                report.add_problem(ConstraintType.ExpressionConstraint, target.name, output_object[k])
         for rule in target.rules:
             self.evaluate_rule(output_object, rule, report)
         return output_object
 
-    def normalize_enum(
-        self, input_object: Any, target: EnumDefinition, report: Report
-    ) -> Any:
+    def normalize_enum(self, input_object: Any, target: EnumDefinition, report: Report) -> Any:
         if input_object not in target.permissible_values:
-            report.add_problem(
-                ConstraintType.PermissibleValueConstraint, target.name, input_object
-            )
+            report.add_problem(ConstraintType.PermissibleValueConstraint, target.name, input_object)
         return input_object
 
     def normalize_type(
@@ -863,16 +811,14 @@ class ReferenceValidator:
         if input_object is None:
             return None
         if target is None:
-           return input_object
+            return input_object
         output_value = input_object
         if target.base in XSD_OR_BASE_TO_PYTHON:
             expected_python_type = XSD_OR_BASE_TO_PYTHON[target.base]
         elif target.uri in XSD_OR_BASE_TO_PYTHON:
             expected_python_type = XSD_OR_BASE_TO_PYTHON[target.uri]
         else:
-            report.add_problem(
-                ConstraintType.UnmappedTypeConstraint, target.name, input_object
-            )
+            report.add_problem(ConstraintType.UnmappedTypeConstraint, target.name, input_object)
             return output_value
         current_python_type = type(input_object)
         if isinstance(expected_python_type, tuple):
@@ -900,9 +846,7 @@ class ReferenceValidator:
                 output_value = normalize_func(input_object)
                 if cast_func is not None:
                     output_value = cast_func(output_value)
-                report.add_type_normalization(
-                    current_python_type.__name__, expected_python_types[0].__name__
-                )
+                report.add_type_normalization(current_python_type.__name__, expected_python_types[0].__name__)
             except (ValueError, decimal.InvalidOperation) as e:
                 problem = ValidationResult(
                     ConstraintType.TypeConstraint,
@@ -913,51 +857,29 @@ class ReferenceValidator:
                 report.results.append(problem)
         # validation
         if parent_slot:
-            if (
-                parent_slot.maximum_value is not None
-                and output_value > parent_slot.maximum_value
-            ):
-                report.add_problem(
-                    ConstraintType.MaximumValueConstraint, target.name, input_object
-                )
-            if (
-                parent_slot.minimum_value is not None
-                and output_value < parent_slot.minimum_value
-            ):
-                report.add_problem(
-                    ConstraintType.MinimumValueConstraint, target.name, input_object
-                )
+            if parent_slot.maximum_value is not None and output_value > parent_slot.maximum_value:
+                report.add_problem(ConstraintType.MaximumValueConstraint, target.name, input_object)
+            if parent_slot.minimum_value is not None and output_value < parent_slot.minimum_value:
+                report.add_problem(ConstraintType.MinimumValueConstraint, target.name, input_object)
             if parent_slot.pattern is not None:
                 if not re.match(parent_slot.pattern, output_value):
-                    report.add_problem(
-                        ConstraintType.PatternConstraint, target.name, input_object
-                    )
+                    report.add_problem(ConstraintType.PatternConstraint, target.name, input_object)
             if parent_slot.equals_string is not None:
                 if output_value != parent_slot.equals_string:
-                    report.add_problem(
-                        ConstraintType.ExpressionConstraint, target.name, input_object
-                    )
+                    report.add_problem(ConstraintType.ExpressionConstraint, target.name, input_object)
         return output_value
 
-    def evaluate_rule(
-        self, input_object: dict, rule: ClassRule, report: Report
-    ) -> None:
+    def evaluate_rule(self, input_object: dict, rule: ClassRule, report: Report) -> None:
         for cond in rule.preconditions:
-            if not self._matches_class_expression(
-                input_object.get(cond.slot, None), cond, input_object
-            ):
+            if not self._matches_class_expression(input_object.get(cond.slot, None), cond, input_object):
                 return
         for cond in rule.postconditions:
-            if not self._matches_class_expression(
-                input_object.get(cond.slot, None), cond, input_object
-            ):
+            if not self._matches_class_expression(input_object.get(cond.slot, None), cond, input_object):
                 report.add_problem(ConstraintType.RuleViolation, rule.name)
                 return
 
     def subsumes(self, parent: ClassDefinition, child: ClassDefinition):
-        return parent.name in self.schemaview.class_ancestors(
-            child.name, reflexive=True
-        )
+        return parent.name in self.schemaview.class_ancestors(child.name, reflexive=True)
 
     def _slot_range_element(self, slot: SlotDefinition) -> Optional[Element]:
         ds = self.derived_schema
@@ -997,24 +919,16 @@ class ReferenceValidator:
         # TODO: make this configurable
         return True
 
-    def _slot_as_simple_dict_value_slot(
-        self, slot: SlotDefinition
-    ) -> Optional[SlotDefinition]:
+    def _slot_as_simple_dict_value_slot(self, slot: SlotDefinition) -> Optional[SlotDefinition]:
         if not slot.inlined or slot.inlined_as_list:
             return False
         range_element = self._slot_range_element(slot)
         if isinstance(range_element, ClassDefinition):
-            non_pk_atts = [
-                s
-                for s in range_element.attributes.values()
-                if not s.identifier and not s.key
-            ]
+            non_pk_atts = [s for s in range_element.attributes.values() if not s.identifier and not s.key]
             if len(non_pk_atts) == 1:
                 return non_pk_atts[0]
 
-    def _identifier_slot_name(
-        self, cls: ClassDefinition
-    ) -> Optional[SlotDefinitionName]:
+    def _identifier_slot_name(self, cls: ClassDefinition) -> Optional[SlotDefinitionName]:
         for slot in cls.attributes.values():
             if slot.identifier:
                 return slot.name
@@ -1043,9 +957,7 @@ class ReferenceValidator:
         expr: AnonymousClassExpression,
     ) -> bool:
         if expr.is_a:
-            if expr.is_a not in self.schemaview.class_ancestors(
-                target.name, reflexive=True
-            ):
+            if expr.is_a not in self.schemaview.class_ancestors(target.name, reflexive=True):
                 return False
             for slot_name, slot_expression in expr.slot_conditions.items():
                 v = input_object.get(slot_name, None)
@@ -1063,19 +975,11 @@ class ReferenceValidator:
             if self._matches_slot_expression(slot_value, x, input_object):
                 return False
         if expr.exactly_one_of:
-            vals = [
-                x
-                for x in expr.exactly_one_of
-                if self._matches_slot_expression(slot_value, x, input_object)
-            ]
+            vals = [x for x in expr.exactly_one_of if self._matches_slot_expression(slot_value, x, input_object)]
             if len(vals) != 1:
                 return False
         if expr.any_of:
-            vals = [
-                x
-                for x in expr.any_of
-                if self._matches_slot_expression(slot_value, x, input_object)
-            ]
+            vals = [x for x in expr.any_of if self._matches_slot_expression(slot_value, x, input_object)]
             if not vals:
                 return False
         for x in expr.all_of:
@@ -1094,16 +998,13 @@ class ReferenceValidator:
 
 
 @click.command
-@click.option("--schema", "-s", required=True,
-              help="Path to LinkML schema")
-@click.option("--target", "-C",
-              help="name of target class or element to normalize/validate against")
-@click.option("--report-file", "-R", type=click.File("w"), default=sys.stderr,
-              show_default=True,
-              help="path to file for reports")
+@click.option("--schema", "-s", required=True, help="Path to LinkML schema")
+@click.option("--target", "-C", help="name of target class or element to normalize/validate against")
+@click.option(
+    "--report-file", "-R", type=click.File("w"), default=sys.stderr, show_default=True, help="path to file for reports"
+)
 @click.option("--output", "-o", type=click.File("w"), default=sys.stdout)
-@click.option("--expand-all/--no-expand-all",
-              help="If True, expand all Dicts to ExpandedDicts")
+@click.option("--expand-all/--no-expand-all", help="If True, expand all Dicts to ExpandedDicts")
 @click.argument("input")
 def cli(schema: str, target: str, input: str, report_file: TextIO, output: TextIO, **kwargs) -> None:
     """

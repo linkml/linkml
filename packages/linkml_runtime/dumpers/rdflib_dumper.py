@@ -1,17 +1,16 @@
 import logging
 import urllib
-from typing import Optional, Any, Union
-from pydantic import BaseModel
+from typing import Any, Optional, Union
 
 from curies import Converter
-from rdflib import Graph, URIRef, XSD
-from rdflib.term import Node, BNode, Literal
+from pydantic import BaseModel
+from rdflib import XSD, Graph, URIRef
 from rdflib.namespace import RDF
-
+from rdflib.term import BNode, Literal, Node
 
 from linkml_runtime.dumpers.dumper_root import Dumper
-from linkml_runtime.linkml_model import SlotDefinition
-from linkml_runtime.utils.schemaview import SchemaView, ElementName, PermissibleValue, PermissibleValueText
+from linkml_runtime.linkml_model import ElementName, PermissibleValue, PermissibleValueText, SlotDefinition
+from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 logger = logging.getLogger(__name__)
@@ -26,6 +25,7 @@ class RDFLibDumper(Dumper):
     This requires a SchemaView object
 
     """
+
     def as_rdf_graph(
         self,
         element: Union[BaseModel, YAMLRoot],
@@ -45,7 +45,7 @@ class RDFLibDumper(Dumper):
         if isinstance(prefix_map, Converter):
             # TODO replace with `prefix_map = prefix_map.bimap` after making minimum requirement on python 3.8
             prefix_map = {record.prefix: record.uri_prefix for record in prefix_map.records}
-        logger.debug(f'PREFIXMAP={prefix_map}')
+        logger.debug(f"PREFIXMAP={prefix_map}")
         namespaces = schemaview.namespaces()
         if prefix_map:
             for k, v in prefix_map.items():
@@ -69,7 +69,9 @@ class RDFLibDumper(Dumper):
         self.inject_triples(element, schemaview, g)
         return g
 
-    def inject_triples(self, element: Any, schemaview: SchemaView, graph: Graph, target_type: ElementName = None) -> Node:
+    def inject_triples(
+        self, element: Any, schemaview: SchemaView, graph: Graph, target_type: ElementName = None
+    ) -> Node:
         """
         Inject triples from conversion of element into a Graph
 
@@ -81,7 +83,7 @@ class RDFLibDumper(Dumper):
         """
         namespaces = schemaview.namespaces()
         slot_name_map = schemaview.slot_name_mappings()
-        logger.debug(f'CONVERT: {element} // {type(element)} // {target_type}')
+        logger.debug(f"CONVERT: {element} // {type(element)} // {target_type}")
         if target_type in schemaview.all_enums():
             if isinstance(element, PermissibleValueText):
                 e = schemaview.get_enum(target_type)
@@ -97,22 +99,22 @@ class RDFLibDumper(Dumper):
             t = schemaview.get_type(target_type)
             dt_uri = t.uri
             if dt_uri:
-                if dt_uri == 'rdfs:Resource':
+                if dt_uri == "rdfs:Resource":
                     return URIRef(schemaview.expand_curie(element))
-                elif dt_uri == 'xsd:string':
+                elif dt_uri == "xsd:string":
                     return Literal(element)
                 else:
                     if "xsd" not in namespaces:
                         namespaces["xsd"] = XSD
                     return Literal(element, datatype=namespaces.uri_for(dt_uri))
             else:
-                logger.warning(f'No datatype specified for : {t.name}, using plain Literal')
+                logger.warning(f"No datatype specified for : {t.name}, using plain Literal")
                 return Literal(element)
-        element_vars = {k: v for k, v in vars(element).items() if not k.startswith('_')}
+        element_vars = {k: v for k, v in vars(element).items() if not k.startswith("_")}
         if len(element_vars) == 0:
             id_slot = schemaview.get_identifier_slot(target_type)
             return self._as_uri(element, id_slot, schemaview)
-            #return URIRef(schemaview.expand_curie(str(element)))
+            # return URIRef(schemaview.expand_curie(str(element)))
         element_type = type(element)
         cn = element_type.class_name
         id_slot = schemaview.get_identifier_slot(cn)
@@ -135,7 +137,7 @@ class RDFLibDumper(Dumper):
                 if k in slot_name_map:
                     k = slot_name_map[k].name
                 else:
-                    logger.error(f'Slot {k} not in name map')
+                    logger.error(f"Slot {k} not in name map")
                 slot = schemaview.induced_slot(k, cn)
                 if not slot.identifier:
                     slot_uri = URIRef(schemaview.get_uri(slot, expand=True))
@@ -152,7 +154,7 @@ class RDFLibDumper(Dumper):
         element: Union[BaseModel, YAMLRoot],
         to_file: str,
         schemaview: SchemaView = None,
-        fmt: str = 'turtle',
+        fmt: str = "turtle",
         prefix_map: Union[dict[str, str], Converter, None] = None,
         **args,
     ) -> None:
@@ -172,7 +174,7 @@ class RDFLibDumper(Dumper):
         self,
         element: Union[BaseModel, YAMLRoot],
         schemaview: SchemaView = None,
-        fmt: Optional[str] = 'turtle',
+        fmt: Optional[str] = "turtle",
         prefix_map: Union[dict[str, str], Converter, None] = None,
     ) -> str:
         """
@@ -184,12 +186,10 @@ class RDFLibDumper(Dumper):
         :param prefix_map:
         :return: serialization of rdflib Graph containing element
         """
-        return self.as_rdf_graph(element, schemaview, prefix_map=prefix_map).\
-            serialize(format=fmt)
+        return self.as_rdf_graph(element, schemaview, prefix_map=prefix_map).serialize(format=fmt)
 
     def _as_uri(self, element_id: str, id_slot: Optional[SlotDefinition], schemaview: SchemaView) -> URIRef:
         if id_slot and schemaview.is_slot_percent_encoded(id_slot):
             return URIRef(urllib.parse.quote(element_id))
         else:
             return schemaview.namespaces().uri_for(element_id)
-

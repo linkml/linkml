@@ -1,13 +1,13 @@
+import re
+import textwrap
 from copy import copy
 from json import JSONDecoder
-from typing import Union, Any, Optional, Callable
 from pprint import pformat
-import textwrap
-import re
+from typing import Any, Callable, Optional, Union
 
 import yaml
 from deprecated.classic import deprecated
-from jsonasobj2 import JsonObj, as_json, as_dict, JsonObjTypes, items
+from jsonasobj2 import JsonObj, JsonObjTypes, as_dict, as_json, items
 from rdflib import Graph, URIRef
 from yaml.constructor import ConstructorError
 
@@ -25,31 +25,32 @@ except ImportError:
 class YAMLMark(yaml.error.Mark):
     def __str__(self):
         snippet = self.get_snippet()
-        where = f"\nFile \"{self.name}\", line {self.line+1}, column {self.column+1}"
+        where = f'\nFile "{self.name}", line {self.line + 1}, column {self.column + 1}'
         if snippet is not None:
-            where += ":\n"+snippet
+            where += ":\n" + snippet
         return where
+
 
 class YAMLRoot(JsonObj):
     """
     The root object for all python YAML representations
     """
 
-    def __post_init__(self, *args: list[str],  **kwargs):
+    def __post_init__(self, *args: list[str], **kwargs):
         if args or kwargs:
             messages: list[str] = []
             for v in args:
-                v = repr(v)[:40].replace('\n', '\\n')
+                v = repr(v)[:40].replace("\n", "\\n")
                 messages.append(f"Unknown positional argument: {v}")
             for k in kwargs.keys():
-                v = repr(kwargs[k])[:40].replace('\n', '\\n')
+                v = repr(kwargs[k])[:40].replace("\n", "\\n")
                 messages.append(f"{TypedNode.yaml_loc(k)} Unknown argument: {k} = {v}")
             msg = f"Unknown arguments for: {self}\n"
             msg += '\n'.join(messages)
             raise ValueError(msg)
 
     def _default(self, obj, filtr: Callable[[dict], dict] = None):
-        """ JSON serializer callback.
+        """JSON serializer callback.
         1) Filter out empty values (None, {}, [] and False) and mangle the names
         2) Add ID entries for dictionary entries
 
@@ -64,10 +65,14 @@ class YAMLRoot(JsonObj):
                 is_classvar = k.startswith("type_") and hasattr(type(obj), k)
                 if is_classvar:
                     print(f"***** {k} is classvar ")
-                if not is_classvar and not k.startswith('_') and v is not None and\
-                        (not isinstance(v, (dict, list, bool)) or v):
-
+                if (
+                    not is_classvar
+                    and not k.startswith("_")
+                    and v is not None
+                    and (not isinstance(v, (dict, list, bool)) or v)
+                ):
                     from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+
                     if isinstance(v, dict):
                         itemslist = []
                         for vk, vv in v.items():
@@ -86,8 +91,9 @@ class YAMLRoot(JsonObj):
                         rval[k] = v
             return rval
         else:
-            return obj._default(obj) if hasattr(obj, '_default') and callable(obj._default) else\
-                JSONDecoder().decode(obj)
+            return (
+                obj._default(obj) if hasattr(obj, "_default") and callable(obj._default) else JSONDecoder().decode(obj)
+            )
 
     @staticmethod
     def _is_empty(v: Any) -> bool:
@@ -100,8 +106,7 @@ class YAMLRoot(JsonObj):
     def _normalize_inlined_as_dict(self, slot_name: str, slot_type: type, key_name: str, keyed: bool) -> None:
         self._normalize_inlined(slot_name, slot_type, key_name, keyed, False)
 
-    def _normalize_inlined(self, slot_name: str, slot_type: type, key_name: str, keyed: bool, is_list: bool) \
-            -> None:
+    def _normalize_inlined(self, slot_name: str, slot_type: type, key_name: str, keyed: bool, is_list: bool) -> None:
         """
          __post_init__ function for a list of inlined keyed or identified classes.
 
@@ -123,11 +128,12 @@ class YAMLRoot(JsonObj):
         cooked_keys = set()
 
         def order_up(key: Any, cooked_entry: YAMLRoot) -> None:
-            """ A cooked entry is ready to be added to the return slot """
+            """A cooked entry is ready to be added to the return slot"""
             if cooked_entry[key_name] != key:
                 raise ValueError(
-                    f"Slot: {loc(slot_name)} - attribute {loc(key_name)} " \
-                    f"value ({loc(cooked_entry[key_name])}) does not match key ({loc(key)})")
+                    f"Slot: {loc(slot_name)} - attribute {loc(key_name)} "
+                    f"value ({loc(cooked_entry[key_name])}) does not match key ({loc(key)})"
+                )
             if keyed and key in cooked_keys:
                 raise ValueError(f"{loc(key)}: duplicate key")
             cooked_keys.add(key)
@@ -137,13 +143,13 @@ class YAMLRoot(JsonObj):
                 cooked_slot[key] = cooked_entry
 
         def loc(s):
-            loc_str = TypedNode.yaml_loc(s) if isinstance(s, TypedNode) else ''
-            if loc_str == ': ':
-                loc_str = ''
+            loc_str = TypedNode.yaml_loc(s) if isinstance(s, TypedNode) else ""
+            if loc_str == ": ":
+                loc_str = ""
             return loc_str + str(s)
 
         def form_1(entries: dict[Any, Optional[Union[dict, JsonObj]]]) -> None:
-            """ A dictionary of key:dict entries where key is the identifier and dict is an instance of slot_type """
+            """A dictionary of key:dict entries where key is the identifier and dict is an instance of slot_type"""
             for key, raw_obj in items(entries):
                 if raw_obj is None:
                     raw_obj = {}
@@ -172,7 +178,7 @@ class YAMLRoot(JsonObj):
                             if lek == key_name and not isinstance(lev, (list, dict, JsonObj)):
                                 # key_name:value
                                 order_up(list_entry[lek], slot_type(list_entry))
-                                break   # Not strictly necessary, but
+                                break  # Not strictly necessary, but
                             elif not isinstance(lev, (list, dict, JsonObj)):
                                 # key: value --> slot_type(key, value)
                                 order_up(lek, slot_type(lek, lev))
@@ -191,8 +197,11 @@ class YAMLRoot(JsonObj):
                     order_up(list_entry, slot_type(**{key_name: list_entry}))
         else:
             # We have a dictionary
-            if key_name in raw_slot and raw_slot[key_name] is not None \
-                    and not isinstance(raw_slot[key_name], (list, dict, JsonObj)):
+            if (
+                key_name in raw_slot
+                and raw_slot[key_name] is not None
+                and not isinstance(raw_slot[key_name], (list, dict, JsonObj))
+            ):
                 # Vanilla dictionary - {key: v11, s12: v12, ...}
                 order_up(raw_slot[key_name], slot_type(**as_dict(raw_slot)))
             else:
@@ -210,8 +219,9 @@ class YAMLRoot(JsonObj):
                         raise ValueError(f"Unrecognized entry: {loc(k)}: {str(v)}")
         self[slot_name] = cooked_slot
 
-    def _normalize_inlined_slot(self, slot_name: str, slot_type: type, key_name: Optional[str],
-                                inlined_as_list: Optional[bool], keyed: bool) -> None:
+    def _normalize_inlined_slot(
+        self, slot_name: str, slot_type: type, key_name: Optional[str], inlined_as_list: Optional[bool], keyed: bool
+    ) -> None:
         """
         A deprecated entry point to slot normalization. Used for models generated prior to the linkml-runtime split.
 
@@ -246,7 +256,7 @@ class YAMLRoot(JsonObj):
 
     @classmethod
     def _class_for(cls, attribute: str, uri_or_curie: Union[str, URIRef]) -> Optional[type["YAMLRoot"]]:
-        """ Locate self or descendant class that has attribute == uri_or_curie """
+        """Locate self or descendant class that has attribute == uri_or_curie"""
         if getattr(cls, attribute, None) == uri_or_curie:
             return cls
         for subclass in cls.__subclasses__():
@@ -260,17 +270,17 @@ class YAMLRoot(JsonObj):
         """
         Return the self or descendant of self having with a matching class uri
         """
-        return cls._class_for('class_model_uri' if use_model_uri else 'class_class_uri', URIRef(uri))
+        return cls._class_for("class_model_uri" if use_model_uri else "class_class_uri", URIRef(uri))
 
     @classmethod
     def _class_for_curie(cls: type["YAMLRoot"], curie: str) -> Optional[type["YAMLRoot"]]:
-        return cls._class_for('class_class_curie', curie)
+        return cls._class_for("class_class_curie", curie)
 
     # ==================
     # Error intercepts
     # ==================
     def MissingRequiredField(self, field_name: str) -> None:
-        """ Generic loader error handler """
+        """Generic loader error handler"""
         raise ValueError(f"{field_name} must be supplied")
 
     def __repr__(self):
@@ -279,7 +289,8 @@ class YAMLRoot(JsonObj):
     def __str__(self):
         return repr(self)
 
-def _pformat(fields:dict, cls_name:str, indent:str = '  ') -> str:
+
+def _pformat(fields: dict, cls_name: str, indent: str = "  ") -> str:
     """
     pretty format the fields of the items of a ``YAMLRoot`` object without the wonky indentation of pformat.
     see ``YAMLRoot.__repr__``.
@@ -296,7 +307,7 @@ def _pformat(fields:dict, cls_name:str, indent:str = '  ') -> str:
         # use it to split lines and as the thing of last resort, but otherwise indent = 0, we'll do that
         val_str = pformat(val, indent=0, compact=True, sort_dicts=False)
         # now we indent everything except the first line by indenting and then using regex to remove just the first indent
-        val_str = re.sub(rf'\A{re.escape(indent)}', '', textwrap.indent(val_str, indent))
+        val_str = re.sub(rf"\A{re.escape(indent)}", "", textwrap.indent(val_str, indent))
         # now recombine with the key in a format that can be re-eval'd into an object if indent is just whitespace
         val_str = f"'{key}': " + val_str
 
@@ -305,18 +316,18 @@ def _pformat(fields:dict, cls_name:str, indent:str = '  ') -> str:
         res.append(val_str)
 
     if total_len > 80:
-        inside = ',\n'.join(res)
+        inside = ",\n".join(res)
         # we indent twice - once for the inner contents of every inner object, and one to
         # offset from the root element. that keeps us from needing to be recursive except for the
         # single pformat call
         inside = textwrap.indent(inside, indent)
-        return cls_name + '({\n' + inside + '\n})'
+        return cls_name + "({\n" + inside + "\n})"
     else:
-        return cls_name + '({' + ', '.join(res) + '})'
+        return cls_name + "({" + ", ".join(res) + "})"
 
 
 def root_representer(dumper: yaml.Dumper, data: YAMLRoot):
-    """ YAML callback -- used to filter out empty values (None, {}, [] and false)
+    """YAML callback -- used to filter out empty values (None, {}, [] and false)
 
     @param dumper: data dumper
     @param data: data to be dumped
@@ -325,11 +336,12 @@ def root_representer(dumper: yaml.Dumper, data: YAMLRoot):
     # TODO: Figure out how to import EnumDefinition here
     # elif isinstance(v, EnumDefinition):
     from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+
     if isinstance(data, EnumDefinitionImpl):
         data = data.code
     rval = dict()
     for k, v in data.__dict__.items():
-        if not k.startswith('_') and v is not None and (not isinstance(v, (dict, list)) or v):
+        if not k.startswith("_") and v is not None and (not isinstance(v, (dict, list)) or v):
             rval[k] = v
     return dumper.represent_data(rval)
 
@@ -350,20 +362,25 @@ def as_yaml(element: YAMLRoot) -> str:
     return yaml.dump(element, Dumper=yaml.SafeDumper, sort_keys=False)
 
 
-def as_json_object(element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, inject_type = True) -> JsonObj:
+def as_json_object(
+    element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, inject_type=True, element_type=None
+) -> JsonObj:
     """
     Return the representation of element as a JsonObj object
     :param element: element to return
     :param contexts: context(s) to include in the output
     :param inject_type: if True (default), add a @type at the top level
+    :param element_type: if provided, use this as the @type value instead of the element's class name
     :return: JsonObj representation of element
     """
     rval = copy(element)
     if inject_type:
-        rval['@type'] = element.__class__.__name__
+        if element_type is None:
+            element_type = element.__class__.__name__
+        rval["@type"] = element_type
     context_element = merge_contexts(contexts)
     if context_element:
-        rval['@context'] = context_element['@context']
+        rval["@context"] = context_element["@context"]
     return rval
 
 
@@ -383,18 +400,21 @@ class TypedNode:
         return self._loc()
 
     def _loc(self) -> str:
-        return f'File "{self._s.name}", line {self._s.line + 1}, col {self._s.column + 1}' if self._s else ''
+        return f'File "{self._s.name}", line {self._s.line + 1}, col {self._s.column + 1}' if self._s else ""
 
     @staticmethod
     def yaml_loc(loc_str: Optional[Union["TypedNode", str]] = None, suffix: Optional[str] = ": ") -> str:
-        """ Return the yaml file and location of loc_str if it exists """
-        return '' if loc_str is None or not hasattr(loc_str, "_loc" or not callable(loc_str._loc)) else\
-            (loc_str._loc() + suffix)
+        """Return the yaml file and location of loc_str if it exists"""
+        return (
+            ""
+            if loc_str is None or not hasattr(loc_str, "_loc" or not callable(loc_str._loc))
+            else (loc_str._loc() + suffix)
+        )
 
 
 class extended_str(str, TypedNode):
     def concat(self, *items) -> "extended_str":
-        rval = extended_str(str(self) + ''.join([str(item) for item in items]))
+        rval = extended_str(str(self) + "".join([str(item) for item in items]))
         for item in items[::-1]:
             if isinstance(item, TypedNode):
                 rval._s = item._s
@@ -420,9 +440,9 @@ class DupCheckYamlLoader(SafeLoader):
         super().__init__(*args, **kwargs)
         self.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, DupCheckYamlLoader.map_constructor)
         self.add_constructor(yaml.resolver.BaseResolver.DEFAULT_SEQUENCE_TAG, DupCheckYamlLoader.seq_constructor)
-        self.add_constructor('tag:yaml.org,2002:str', DupCheckYamlLoader.construct_yaml_str)
-        self.add_constructor('tag:yaml.org,2002:int', DupCheckYamlLoader.construct_yaml_int)
-        self.add_constructor('tag:yaml.org,2002:float', DupCheckYamlLoader.construct_yaml_float)
+        self.add_constructor("tag:yaml.org,2002:str", DupCheckYamlLoader.construct_yaml_str)
+        self.add_constructor("tag:yaml.org,2002:int", DupCheckYamlLoader.construct_yaml_int)
+        self.add_constructor("tag:yaml.org,2002:float", DupCheckYamlLoader.construct_yaml_float)
 
     def get_mark(self):
         if self.stream is None:
@@ -431,22 +451,20 @@ class DupCheckYamlLoader(SafeLoader):
             return YAMLMark(self.name, self.index, self.line, self.column, None, None)
 
     def construct_yaml_int(self, node):
-        """ Scalar constructor that returns the node information as the value """
+        """Scalar constructor that returns the node information as the value"""
         return extended_int(super().construct_yaml_int(node)).add_node(node)
 
     def construct_yaml_str(self, node):
-        """ Scalar constructor that returns the node information as the value """
+        """Scalar constructor that returns the node information as the value"""
         return extended_str(super().construct_yaml_str(node)).add_node(node)
 
     def construct_yaml_float(self, node):
-        """ Scalar constructor that returns the node information as the value """
+        """Scalar constructor that returns the node information as the value"""
         return extended_float(super().construct_yaml_float(node)).add_node(node)
 
     @staticmethod
-    def map_constructor(loader,  node, deep=False):
-        """ Duplicate of constructor.construct_mapping w/ exception that we check for dups
-
-        """
+    def map_constructor(loader, node, deep=False):
+        """Duplicate of constructor.construct_mapping w/ exception that we check for dups"""
         if not isinstance(node, yaml.MappingNode):
             raise ConstructorError(None, None, f"expected a mapping node, but found {node.id}", node.start_mark)
         mapping = {}
@@ -454,21 +472,18 @@ class DupCheckYamlLoader(SafeLoader):
             key = loader.construct_object(key_node, deep=deep)
             value = loader.construct_object(value_node, deep=deep)
             if key in mapping:
-                raise ValueError(f"Duplicate key: \"{key}\"")
+                raise ValueError(f'Duplicate key: "{key}"')
             mapping[key] = value
         return mapping
 
     @staticmethod
     def seq_constructor(loader, node, deep=False):
         if not isinstance(node, yaml.SequenceNode):
-            raise ConstructorError(None, None,
-                                   f"expected a sequence node, but found {node.id}",
-                                   node.start_mark)
+            raise ConstructorError(None, None, f"expected a sequence node, but found {node.id}", node.start_mark)
         for child in node.value:
             if not child.value:
                 raise ConstructorError(None, None, "Empty list elements are not allowed", node.start_mark)
-        return [loader.construct_object(child, deep=deep)
-                for child in node.value]
+        return [loader.construct_object(child, deep=deep) for child in node.value]
 
 
 yaml.SafeDumper.add_multi_representer(YAMLRoot, root_representer)

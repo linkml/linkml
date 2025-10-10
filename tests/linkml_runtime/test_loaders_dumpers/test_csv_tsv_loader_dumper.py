@@ -1,16 +1,14 @@
-import os
-import unittest
 import json
 import logging
+import os
 
+import pytest
 from jsonasobj2 import as_json_obj
 
-from linkml_runtime.dumpers import json_dumper, yaml_dumper
-from linkml_runtime.loaders import yaml_loader
+from linkml_runtime.dumpers import csv_dumper, json_dumper, tsv_dumper, yaml_dumper
+from linkml_runtime.loaders import csv_loader, tsv_loader, yaml_loader
 from linkml_runtime.utils.formatutils import remove_empty_items
 from linkml_runtime.utils.schemaview import SchemaView
-from linkml_runtime.dumpers import csv_dumper, tsv_dumper
-from linkml_runtime.loaders import csv_loader, tsv_loader
 from linkml_runtime.utils.yamlutils import as_json_object
 from tests.test_loaders_dumpers.models.books_normalized import Author, Review, Shop, Book, GenreEnum, BookSeries
 from tests.test_loaders_dumpers.models.table import Table, Row
@@ -19,15 +17,16 @@ logger = logging.getLogger(__name__)
 
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
-INPUT_DIR = os.path.join(ROOT, 'input')
-OUTPUT_DIR = os.path.join(ROOT, 'output')
-MODEL_DIR = os.path.join(ROOT, 'models')
+INPUT_DIR = os.path.join(ROOT, "input")
+OUTPUT_DIR = os.path.join(ROOT, "output")
+MODEL_DIR = os.path.join(ROOT, "models")
 
-SCHEMA = os.path.join(MODEL_DIR, 'books_normalized.yaml')
-DATA = os.path.join(INPUT_DIR, 'books_normalized_01.yaml')
-DATA2 = os.path.join(INPUT_DIR, 'books_normalized_02.yaml')
-OUTPUT = os.path.join(OUTPUT_DIR, 'books_flattened.tsv')
-OUTPUT2 = os.path.join(OUTPUT_DIR, 'books_flattened_02.tsv')
+SCHEMA = os.path.join(MODEL_DIR, "books_normalized.yaml")
+DATA = os.path.join(INPUT_DIR, "books_normalized_01.yaml")
+DATA2 = os.path.join(INPUT_DIR, "books_normalized_02.yaml")
+OUTPUT = os.path.join(OUTPUT_DIR, "books_flattened.tsv")
+OUTPUT2 = os.path.join(OUTPUT_DIR, "books_flattened_02.tsv")
+
 
 TABLE_SCHEMA = os.path.join(MODEL_DIR, 'table.yaml')
 TABLE_DATA_JSON = os.path.join(INPUT_DIR, 'table-json.tsv')

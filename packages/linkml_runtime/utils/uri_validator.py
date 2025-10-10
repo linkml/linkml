@@ -157,7 +157,7 @@ port = rf"(?P<port> ( {DIGIT} )* )"
 #
 
 #   authority     = [ userinfo "@" ] host [ ":" port ]
-#authority = rf"""(?: (?P<userinfo> {userinfo} ) @)?
+# authority = rf"""(?: (?P<userinfo> {userinfo} ) @)?
 authority = rf"""(?P<authority>
                     (?: {userinfo} @)?
                     {host}
@@ -326,7 +326,7 @@ safe_CURIE = rf"""(?P<safe_CURIE>
 
 uri_validator = re.compile(f"^{URI}$", re.VERBOSE)
 
-#uri_ref_validator = re.compile(f"^{URI_reference}$", re.VERBOSE)
+# uri_ref_validator = re.compile(f"^{URI_reference}$", re.VERBOSE)
 
 uri_relative_ref_validator = re.compile(f"^{relative_ref}$", re.VERBOSE)
 
@@ -358,4 +358,3 @@ def validate_uri_reference(input):
 
 def validate_curie(input):
     return curie_validator.match(input)
-

@@ -1,30 +1,30 @@
-[tool.poetry]
+[build-system]
+requires = ["hatchling", "uv-dynamic-versioning"]
+build-backend = "hatchling.build"
+
+[project]
 name = "linkml-runtime"
-version = "0.0.0"
 description = "Runtime environment for LinkML, the Linked open data modeling language"
 authors = [
-    "Chris Mungall <cjmungall@lbl.gov>",
-    "Harold Solbrig <solbrig@jhu.edu>",
-    "Sierra Moxon <smoxon@lbl.gov>",
-    "Bill Duncan <wdduncan@gmail.com>",
-    "Harshad Hegde <hhegde@lbl.gov>"
+  {name = "Chris Mungall", email = "cjmungall@lbl.gov"},
+  {name = "Harold Solbrig", email = "solbrig@jhu.edu"},
+  {name = "Sierra Moxon", email = "smoxon@lbl.gov"},
+  {name = "Bill Duncan", email = "wdduncan@gmail.com"},
+  {name = "Harshad Hegde", email = "hhegde@lbl.gov"},
 ]
-
-readme = "README.md"
-
+license = "CC0-1.0"
+license-files = ["LICENSE"]
 homepage = "https://github.com/linkml/linkml-runtime"
 repository = "https://github.com/linkml/linkml-runtime"
 documentation = "https://github.com/linkml/linkml-runtime"
-
+readme = "README.md"
 keywords = ["linkml", "metamodel", "schema visualization", "rdf", "owl", "yaml"]
-
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Intended Audience :: Healthcare Industry",
-    "License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -32,58 +32,210 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
-
-packages = [
-    { include = "linkml_runtime" }
+include = ["linkml_runtime"]
+requires-python = ">=3.9"
+dynamic = ["version"]
+dependencies = [
+    "click",
+    "deprecated",
+    "hbreader",
+    "json-flattener >=0.1.9",
+    "jsonasobj2 ==1.*,>=1.0.0,>=1.0.4",
+    "jsonschema >=3.2.0",
+    "prefixcommons >=0.1.12",
+    "pyyaml",
+    "rdflib >=6.0.0",
+    "requests",
+    "prefixmaps >=0.1.4",
+    "curies >=0.5.4",
+    "pydantic >=1.10.2, <3.0.0",
+    "isodate >=0.7.2, <1.0.0; python_version < '3.11'",
 ]
 
-[tool.poetry-dynamic-versioning]
-enable = true
-vcs = "git"
-style = "pep440"
+[dependency-groups]
+dev = [
+    "coverage >=6.2",
+    "requests-cache >=1.2.0",
+]
 
-[tool.poetry.scripts]
+[project.scripts]
 comparefiles = "linkml_runtime.utils.comparefiles:cli"
 linkml-normalize = "linkml_runtime.processing.referencevalidator:cli"
 
-[tool.poetry.dependencies]
-python = "^3.8.1"
-click = "*"
-deprecated = "*"
-hbreader = "*"
-json-flattener = ">=0.1.9"
-jsonasobj2 = "==1.*,>=1.0.0,>=1.0.4"
-jsonschema = ">=3.2.0"
-prefixcommons = ">=0.1.12"
-pyyaml = "*"
-rdflib = ">=6.0.0"
-requests = "*"
-prefixmaps = ">=0.1.4"
-curies = ">=0.5.4"
-pydantic = ">=1.10.2, <3.0.0"
-isodate = "^0.7.2"
+[project.optional-dependencies]
+dev = [
+    "coverage",
+    "requests-cache",
+]
 
+[tool.codespell]
+skip = [
+  ".git", "*.pdf", "*.svg", "*.dill",
+  "uv.lock",
+]
+# Ignore table where words could be split across rows
+ignore-regex = '(\|.*\|.*\|.*\||\[[A-Z][a-z]\][a-z][a-z])'
+ignore-words-list = [
+  "CrossReference",
+  "ND",
+  "MILIARY",
+  "Miliary",
+  # The two below are from metamodel upstream, should be
+  # dropped when upstream is fixed
+  "GENERARE",
+  "re-used",
+  "ot",
+  "VRSATILE",
+  "vrsatile"
+]
+quiet-level = 3
+# https://docs.astral.sh/ruff/settings/
 [tool.ruff]
+extend-exclude = []
+force-exclude = true
 line-length = 120
+# Assume Python 3.9
 target-version = "py39"
 
 [tool.ruff.lint]
+
 select = [
-    "F401",
-    "UP"
+    "E",  # pycodestyle errors
+    "F",  # Pyflakes
+    "I", # isort
+    "W", # pycodestyle warnings
+    "C90", # mccabe +
+    "N", # pep8-naming
+    # "D", # pydocstyle
+    "UP", # pyupgrade
+    # extensions
+    # "YTT", # flake8-2020
+    # "ANN", # flake8-annotations
+    # "ASYNC", # flake8-async
+    # "S", # flake8-bandit
+    # "BLE", # flake8-blind-except
+    # "FBT", # flake8-boolean-trap
+    # "B", # flake8-bugbear
+    # "A", # flake8-builtins
+    # "COM", # flake8-commas
+    # "CPY", # flake8-copyright
+    # "C4", # flake8-comprehensions
+    # "DTZ", # flake8-datetimez
+    # "T10", # flake8-debugger
+    # "DJ", # flake8-django
+    # "EM", # flake8-errmsg
+    # "EXE", # flake8-executable
+    # "FA", # flake8-future-annotations
+    # "ISC", # flake8-implicit-str-concat
+    # "ICN", # flake8-import-conventions
+    # "G", # flake8-logging-format
+    # "INP", # flake8-no-pep420
+    # "PIE", # flake8-pie
+    # "T20", # flake8-print
+    # "PYI", # flake8-pyi
+    # "PT", # flake8-pytest-style
+    # "Q", # flake8-quotes
+    # "RSE", # flake8-raise
+    # "RET", # flake8-return
+    # "SLF", # flake8-self
+    # "SLOT", # flake8-slots
+    # "SIM", # flake8-simplify
+    # "TID", # flake8-tidy-imports
+    # "TCH", # flake8-type-checking
+    # "INT", # flake8-gettext
+    # "ARG", # flake8-unused-arguments
+    # "PTH", # flake8-use-pathlib
+    # "TD", # flake8-todos
+    # "FIX", # flake8-fixme
+    # "ERA", # eradicate
+    # "PD", # pandas-vet
+    # "PGH", # pygrep-hooks
+    # "PL", # Pylint
+    # "TRY", # tryceratops
+    # "FLY", # flynt
+    # "NPY", # NumPy-specific rules
+    # "AIR", # Airflow
+    # "PERF", # Perflint
+    # "FURB", # refurb
+    # "LOG", # flake8-logging
+    # "RUF", # Ruff-specific rules
 ]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+# D203: one-blank-line-before-class (conflicts with D211)
+# D212: multi-line-summary-first-line (conflicts with D213)
+# E203: whitespace before ',', ';', or ':'
+# E501: line length
+# ISC001: conflicts with Ruff's formatter
 ignore = [
-    # Until 3.9 is dropped
-    "UP007",
+    "D203",
+    "D213",
+    "E203",
+    "E501",
+    "ISC001",
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["F401"] # unused imports
+"tests/**/*.py" = ["S101"] # use of assert
 
-[tool.poetry.dev-dependencies]
-coverage = "^6.2"
-requests-cache = "^1.2.0"
+[tool.ruff.lint.mccabe]
+# Flag errors (`C901`) whenever the complexity level exceeds 15.
+max-complexity = 15
 
-[build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
-build-backend = "poetry_dynamic_versioning.backend"
+[tool.tox]
+requires = ["tox>=4"]
+env_list = ["lint", "py{39,310,311,312,313}"]
+
+[tool.tox.env_run_base]
+allowlist_externals = ["uv"]
+deps = ["pytest"]
+commands = [
+  ["uv", "sync", "--all-extras", "--dev"],
+  ["uv", "run", "pytest", "{posargs}"],
+]
+
+[tool.tox.env.codespell]
+description = "Run spell checkers."
+skip_install = true
+deps = [
+  "codespell",
+  "tomli", # required for getting config from pyproject.toml
+]
+commands = [
+  ["codespell", "{posargs}"]
+]
+
+[tool.tox.env.format]
+description = "Run ruff code formatter."
+skip_install = true
+deps = ["ruff==0.11.13"]
+commands = [
+  ["ruff", "format", "{posargs:.}"],
+]
+
+[tool.tox.env.format_check]
+description = "Check that code is correctly formatted by ruff."
+skip_install = true
+deps = ["ruff==0.11.13"]
+commands = [
+  ["ruff", "format", "--check", "{posargs:.}"],
+]
+
+[tool.tox.env.lint]
+description = "Run code linter and formatter (no fixes)."
+skip_install = true
+deps = ["ruff==0.11.13"]
+commands = [
+  ["ruff", "check", "{posargs:.}"],
+]
+
+[tool.uv-dynamic-versioning]
+vcs = "git"
+style = "pep440"
+fallback-version = "0.0.0"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"

@@ -21,4 +21,3 @@
 
 [] ns2:system <http://purl.obolibrary.org/obo/> ;
     a ns2:Package.
-

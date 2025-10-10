@@ -1,13 +1,14 @@
 import logging
-from dataclasses import field, dataclass
+from dataclasses import dataclass, field
 from enum import Enum
-from typing import Union, Optional, Any, Callable
+from typing import Any, Callable, Optional, Union
+
 from jsonasobj2 import JsonObj, items
 
-from linkml_runtime import SchemaView
-from linkml_runtime.linkml_model import SlotDefinitionName, PermissibleValue, ClassDefinitionName
+from linkml_runtime.linkml_model import ClassDefinitionName, PermissibleValue, SlotDefinitionName
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.eval_utils import eval_expr
+from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.walker_utils import traverse_object_tree
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -15,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 RESOLVE_FUNC = Callable[[str, Any], Any]
+
 
 def obj_as_dict_nonrecursive(obj: YAMLRoot, resolve_function: RESOLVE_FUNC = None) -> dict[str, Any]:
     """
@@ -29,6 +31,7 @@ def obj_as_dict_nonrecursive(obj: YAMLRoot, resolve_function: RESOLVE_FUNC = Non
     else:
         return {k: v for k, v in vars(obj).items()}
 
+
 @dataclass
 class Config:
     """
@@ -37,6 +40,7 @@ class Config:
     - slot.string_serialization
     - slot.equals_expression
     """
+
     use_string_serialization: bool = field(default_factory=lambda: True)
     parse_string_serialization: bool = field(default_factory=lambda: False)
     use_rules: bool = field(default_factory=lambda: False)
@@ -48,14 +52,19 @@ class Policy(Enum):
     """
     Policy for when inferred values differ from already set values
     """
+
     STRICT = "strict"
     OVERRIDE = "override"
     KEEP = "keep"
 
 
-def generate_slot_value(obj: YAMLRoot, slot_name: Union[str, SlotDefinitionName], schemaview: SchemaView,
-                        class_name: Union[str, ClassDefinitionName] = None,
-                        config: Config = Config()) -> Optional[Any]:
+def generate_slot_value(
+    obj: YAMLRoot,
+    slot_name: Union[str, SlotDefinitionName],
+    schemaview: SchemaView,
+    class_name: Union[str, ClassDefinitionName] = None,
+    config: Config = Config(),
+) -> Optional[Any]:
     """
     Infer the value of a slot for a given object
 
@@ -76,7 +85,7 @@ def generate_slot_value(obj: YAMLRoot, slot_name: Union[str, SlotDefinitionName]
     mapped_slot = schemaview.slot_name_mappings()[slot_name]
     slot_name = mapped_slot.name
     slot = schemaview.induced_slot(slot_name, class_name)
-    logger.debug(f'   CONF={config}')
+    logger.debug(f"   CONF={config}")
     if config.use_string_serialization:
         if slot.string_serialization:
             if isinstance(obj, JsonObj):
@@ -88,13 +97,18 @@ def generate_slot_value(obj: YAMLRoot, slot_name: Union[str, SlotDefinitionName]
             if isinstance(obj, JsonObj):
                 return eval_expr(slot.equals_expression, **obj_as_dict_nonrecursive(obj, config.resolve_function))
     if config.use_rules:
-        raise NotImplementedError(f'Rules not implemented for {config}')
+        raise NotImplementedError(f"Rules not implemented for {config}")
     return None
 
 
-def infer_slot_value(obj: YAMLRoot, slot_name: Union[str, SlotDefinitionName], schemaview: SchemaView,
-                     class_name: Union[str, ClassDefinitionName] = None,
-                     policy: Policy = Policy.STRICT, config: Config = Config()):
+def infer_slot_value(
+    obj: YAMLRoot,
+    slot_name: Union[str, SlotDefinitionName],
+    schemaview: SchemaView,
+    class_name: Union[str, ClassDefinitionName] = None,
+    policy: Policy = Policy.STRICT,
+    config: Config = Config(),
+):
     """
     Infer the value of a slot for an object
 
@@ -109,24 +123,28 @@ def infer_slot_value(obj: YAMLRoot, slot_name: Union[str, SlotDefinitionName], s
     if v is not None and policy == Policy.KEEP:
         return v
     new_v = generate_slot_value(obj, slot_name, schemaview, class_name=class_name, config=config)
-    logger.debug(f'SETTING {slot_name} = {new_v} // current={v}, {policy}')
+    logger.debug(f"SETTING {slot_name} = {new_v} // current={v}, {policy}")
     if new_v:
         # check if new value is different; not str check is necessary as enums may not be converted
         if v is not None and new_v != v and str(new_v) != str(v):
             if policy == Policy.STRICT:
-                raise ValueError(f'Inconsistent value {v} != {new_v} for {slot_name} for {obj}')
+                raise ValueError(f"Inconsistent value {v} != {new_v} for {slot_name} for {obj}")
             elif policy == Policy.OVERRIDE:
                 setattr(obj, slot_name, new_v)
                 obj.__post_init__()
         else:
             setattr(obj, slot_name, new_v)
-            #print(f'CALLING POST INIT ON {obj} from {slot_name} = {new_v}')
+            # print(f'CALLING POST INIT ON {obj} from {slot_name} = {new_v}')
             obj.__post_init__()
 
 
-def infer_all_slot_values(obj: YAMLRoot, schemaview: SchemaView,
-                          class_name: Union[str, ClassDefinitionName] = None,
-                          policy: Policy = Policy.STRICT, config: Config = Config()):
+def infer_all_slot_values(
+    obj: YAMLRoot,
+    schemaview: SchemaView,
+    class_name: Union[str, ClassDefinitionName] = None,
+    policy: Policy = Policy.STRICT,
+    config: Config = Config(),
+):
     """
     Walks object tree inferring all slot values.
 
@@ -140,13 +158,17 @@ def infer_all_slot_values(obj: YAMLRoot, schemaview: SchemaView,
     :param config:
     :return:
     """
+
     def infer(in_obj: YAMLRoot):
-        logger.debug(f'INFER={in_obj}')
-        if isinstance(in_obj, YAMLRoot) and not isinstance(in_obj, EnumDefinitionImpl) and not isinstance(in_obj, PermissibleValue):
+        logger.debug(f"INFER={in_obj}")
+        if (
+            isinstance(in_obj, YAMLRoot)
+            and not isinstance(in_obj, EnumDefinitionImpl)
+            and not isinstance(in_obj, PermissibleValue)
+        ):
             for k, v in vars(in_obj).items():
-                #print(f'  ISV={k} curr={v} policy={policy} in_obj={type(in_obj)}')
+                # print(f'  ISV={k} curr={v} policy={policy} in_obj={type(in_obj)}')
                 infer_slot_value(in_obj, k, schemaview, class_name=class_name, policy=policy, config=config)
         return in_obj
+
     traverse_object_tree(obj, infer)
-
-

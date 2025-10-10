@@ -1,6 +1,8 @@
 from pathlib import Path
+
 import pytest
 import requests_cache
+
 
 @pytest.fixture(scope="session", autouse=True)
 def patch_requests_cache(pytestconfig):

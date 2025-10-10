@@ -6,37 +6,35 @@
 # description: This demonstrates the use of inference
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
-from jsonasobj2 import as_dict
-from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
-from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
+from typing import Any, ClassVar, Optional, Union
 
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list
-from linkml_runtime.utils.yamlutils import YAMLRoot
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from jsonasobj2 import as_dict
 from rdflib import URIRef
-from linkml_runtime.utils.curienamespace import CurieNamespace
+
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
 from linkml_runtime.linkml_model.types import Decimal
-from linkml_runtime.utils.metamodelcore import Bool, Decimal
+from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.metamodelcore import Bool, Decimal, empty_list
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.yamlutils import YAMLRoot
 
 metamodel_version = "1.7.0"
 
 # Namespaces
-EX = CurieNamespace('ex', 'https://w3id.org/linkml/examples/inference/')
-LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
-PAV = CurieNamespace('pav', 'http://purl.org/pav/')
-SCHEMA = CurieNamespace('schema', 'http://schema.org/')
-SH = CurieNamespace('sh', 'https://w3id.org/shacl/')
-SKOS = CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#')
+EX = CurieNamespace("ex", "https://w3id.org/linkml/examples/inference/")
+LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
+PAV = CurieNamespace("pav", "http://purl.org/pav/")
+SCHEMA = CurieNamespace("schema", "http://schema.org/")
+SH = CurieNamespace("sh", "https://w3id.org/shacl/")
+SKOS = CurieNamespace("skos", "http://www.w3.org/2004/02/skos/core#")
 DEFAULT_ = EX
 
 
 # Types
 
 # Class references
-
 
 
 @dataclass
@@ -231,7 +229,6 @@ class Container(YAMLRoot):
 
 # Enumerations
 class AgeEnum(EnumDefinitionImpl):
-
     infant = PermissibleValue(text="infant")
     juvenile = PermissibleValue(text="juvenile")
     adult = PermissibleValue(text="adult")
@@ -240,90 +237,229 @@ class AgeEnum(EnumDefinitionImpl):
         name="AgeEnum",
     )
 
+
 # Slots
 class slots:
     pass
 
-slots.id = Slot(uri=EX.id, name="id", curie=EX.curie('id'),
-                   model_uri=EX.id, domain=None, range=Optional[str])
 
-slots.name = Slot(uri=EX.name, name="name", curie=EX.curie('name'),
-                   model_uri=EX.name, domain=None, range=Optional[str])
+slots.id = Slot(uri=EX.id, name="id", curie=EX.curie("id"), model_uri=EX.id, domain=None, range=Optional[str])
 
-slots.synonyms = Slot(uri=EX.synonyms, name="synonyms", curie=EX.curie('synonyms'),
-                   model_uri=EX.synonyms, domain=None, range=Optional[Union[str, list[str]]])
+slots.name = Slot(uri=EX.name, name="name", curie=EX.curie("name"), model_uri=EX.name, domain=None, range=Optional[str])
 
-slots.full_name = Slot(uri=EX.full_name, name="full_name", curie=EX.curie('full_name'),
-                   model_uri=EX.full_name, domain=None, range=Optional[str])
+slots.synonyms = Slot(
+    uri=EX.synonyms,
+    name="synonyms",
+    curie=EX.curie("synonyms"),
+    model_uri=EX.synonyms,
+    domain=None,
+    range=Optional[Union[str, list[str]]],
+)
 
-slots.first_name = Slot(uri=EX.first_name, name="first_name", curie=EX.curie('first_name'),
-                   model_uri=EX.first_name, domain=None, range=Optional[str])
+slots.full_name = Slot(
+    uri=EX.full_name,
+    name="full_name",
+    curie=EX.curie("full_name"),
+    model_uri=EX.full_name,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.last_name = Slot(uri=EX.last_name, name="last_name", curie=EX.curie('last_name'),
-                   model_uri=EX.last_name, domain=None, range=Optional[str])
+slots.first_name = Slot(
+    uri=EX.first_name,
+    name="first_name",
+    curie=EX.curie("first_name"),
+    model_uri=EX.first_name,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.age_in_years = Slot(uri=EX.age_in_years, name="age_in_years", curie=EX.curie('age_in_years'),
-                   model_uri=EX.age_in_years, domain=None, range=Optional[Decimal])
+slots.last_name = Slot(
+    uri=EX.last_name,
+    name="last_name",
+    curie=EX.curie("last_name"),
+    model_uri=EX.last_name,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.age_in_months = Slot(uri=EX.age_in_months, name="age_in_months", curie=EX.curie('age_in_months'),
-                   model_uri=EX.age_in_months, domain=None, range=Optional[Decimal])
+slots.age_in_years = Slot(
+    uri=EX.age_in_years,
+    name="age_in_years",
+    curie=EX.curie("age_in_years"),
+    model_uri=EX.age_in_years,
+    domain=None,
+    range=Optional[Decimal],
+)
 
-slots.is_juvenile = Slot(uri=EX.is_juvenile, name="is_juvenile", curie=EX.curie('is_juvenile'),
-                   model_uri=EX.is_juvenile, domain=None, range=Optional[Union[bool, Bool]])
+slots.age_in_months = Slot(
+    uri=EX.age_in_months,
+    name="age_in_months",
+    curie=EX.curie("age_in_months"),
+    model_uri=EX.age_in_months,
+    domain=None,
+    range=Optional[Decimal],
+)
 
-slots.age_category = Slot(uri=EX.age_category, name="age_category", curie=EX.curie('age_category'),
-                   model_uri=EX.age_category, domain=None, range=Optional[Union[str, "AgeEnum"]])
+slots.is_juvenile = Slot(
+    uri=EX.is_juvenile,
+    name="is_juvenile",
+    curie=EX.curie("is_juvenile"),
+    model_uri=EX.is_juvenile,
+    domain=None,
+    range=Optional[Union[bool, Bool]],
+)
 
-slots.prohibited = Slot(uri=EX.prohibited, name="prohibited", curie=EX.curie('prohibited'),
-                   model_uri=EX.prohibited, domain=None, range=Optional[str])
+slots.age_category = Slot(
+    uri=EX.age_category,
+    name="age_category",
+    curie=EX.curie("age_category"),
+    model_uri=EX.age_category,
+    domain=None,
+    range=Optional[Union[str, "AgeEnum"]],
+)
 
-slots.street = Slot(uri=EX.street, name="street", curie=EX.curie('street'),
-                   model_uri=EX.street, domain=None, range=Optional[str])
+slots.prohibited = Slot(
+    uri=EX.prohibited,
+    name="prohibited",
+    curie=EX.curie("prohibited"),
+    model_uri=EX.prohibited,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.city = Slot(uri=EX.city, name="city", curie=EX.curie('city'),
-                   model_uri=EX.city, domain=None, range=Optional[str])
+slots.street = Slot(
+    uri=EX.street, name="street", curie=EX.curie("street"), model_uri=EX.street, domain=None, range=Optional[str]
+)
 
-slots.verbatim = Slot(uri=EX.verbatim, name="verbatim", curie=EX.curie('verbatim'),
-                   model_uri=EX.verbatim, domain=None, range=Optional[str])
+slots.city = Slot(uri=EX.city, name="city", curie=EX.curie("city"), model_uri=EX.city, domain=None, range=Optional[str])
 
-slots.primary_address = Slot(uri=EX.primary_address, name="primary_address", curie=EX.curie('primary_address'),
-                   model_uri=EX.primary_address, domain=None, range=Optional[Union[dict, Address]])
+slots.verbatim = Slot(
+    uri=EX.verbatim,
+    name="verbatim",
+    curie=EX.curie("verbatim"),
+    model_uri=EX.verbatim,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.description = Slot(uri=EX.description, name="description", curie=EX.curie('description'),
-                   model_uri=EX.description, domain=None, range=Optional[str])
+slots.primary_address = Slot(
+    uri=EX.primary_address,
+    name="primary_address",
+    curie=EX.curie("primary_address"),
+    model_uri=EX.primary_address,
+    domain=None,
+    range=Optional[Union[dict, Address]],
+)
 
-slots.summary = Slot(uri=EX.summary, name="summary", curie=EX.curie('summary'),
-                   model_uri=EX.summary, domain=None, range=Optional[str])
+slots.description = Slot(
+    uri=EX.description,
+    name="description",
+    curie=EX.curie("description"),
+    model_uri=EX.description,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.slot_with_spaces = Slot(uri=EX.slot_with_spaces, name="slot with spaces", curie=EX.curie('slot_with_spaces'),
-                   model_uri=EX.slot_with_spaces, domain=None, range=Optional[str])
+slots.summary = Slot(
+    uri=EX.summary, name="summary", curie=EX.curie("summary"), model_uri=EX.summary, domain=None, range=Optional[str]
+)
 
-slots.derived_slot_with_spaces = Slot(uri=EX.derived_slot_with_spaces, name="derived slot with spaces", curie=EX.curie('derived_slot_with_spaces'),
-                   model_uri=EX.derived_slot_with_spaces, domain=None, range=Optional[str])
+slots.slot_with_spaces = Slot(
+    uri=EX.slot_with_spaces,
+    name="slot with spaces",
+    curie=EX.curie("slot_with_spaces"),
+    model_uri=EX.slot_with_spaces,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.derived_expression_from_spaces = Slot(uri=EX.derived_expression_from_spaces, name="derived expression from spaces", curie=EX.curie('derived_expression_from_spaces'),
-                   model_uri=EX.derived_expression_from_spaces, domain=None, range=Optional[str])
+slots.derived_slot_with_spaces = Slot(
+    uri=EX.derived_slot_with_spaces,
+    name="derived slot with spaces",
+    curie=EX.curie("derived_slot_with_spaces"),
+    model_uri=EX.derived_slot_with_spaces,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.relationship__person1 = Slot(uri=EX.person1, name="relationship__person1", curie=EX.curie('person1'),
-                   model_uri=EX.relationship__person1, domain=None, range=Optional[Union[dict, Person]])
+slots.derived_expression_from_spaces = Slot(
+    uri=EX.derived_expression_from_spaces,
+    name="derived expression from spaces",
+    curie=EX.curie("derived_expression_from_spaces"),
+    model_uri=EX.derived_expression_from_spaces,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.relationship__person2 = Slot(uri=EX.person2, name="relationship__person2", curie=EX.curie('person2'),
-                   model_uri=EX.relationship__person2, domain=None, range=Optional[Union[dict, Person]])
+slots.relationship__person1 = Slot(
+    uri=EX.person1,
+    name="relationship__person1",
+    curie=EX.curie("person1"),
+    model_uri=EX.relationship__person1,
+    domain=None,
+    range=Optional[Union[dict, Person]],
+)
 
-slots.relationship__type = Slot(uri=EX.type, name="relationship__type", curie=EX.curie('type'),
-                   model_uri=EX.relationship__type, domain=None, range=Optional[str])
+slots.relationship__person2 = Slot(
+    uri=EX.person2,
+    name="relationship__person2",
+    curie=EX.curie("person2"),
+    model_uri=EX.relationship__person2,
+    domain=None,
+    range=Optional[Union[dict, Person]],
+)
 
-slots.relationship__description = Slot(uri=EX.description, name="relationship__description", curie=EX.curie('description'),
-                   model_uri=EX.relationship__description, domain=None, range=Optional[str])
+slots.relationship__type = Slot(
+    uri=EX.type,
+    name="relationship__type",
+    curie=EX.curie("type"),
+    model_uri=EX.relationship__type,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.relationship__description2 = Slot(uri=EX.description2, name="relationship__description2", curie=EX.curie('description2'),
-                   model_uri=EX.relationship__description2, domain=None, range=Optional[str])
+slots.relationship__description = Slot(
+    uri=EX.description,
+    name="relationship__description",
+    curie=EX.curie("description"),
+    model_uri=EX.relationship__description,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.container__persons = Slot(uri=EX.persons, name="container__persons", curie=EX.curie('persons'),
-                   model_uri=EX.container__persons, domain=None, range=Optional[Union[Union[dict, Person], list[Union[dict, Person]]]])
+slots.relationship__description2 = Slot(
+    uri=EX.description2,
+    name="relationship__description2",
+    curie=EX.curie("description2"),
+    model_uri=EX.relationship__description2,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.Person_description = Slot(uri=EX.description, name="Person_description", curie=EX.curie('description'),
-                   model_uri=EX.Person_description, domain=Person, range=Optional[str])
+slots.container__persons = Slot(
+    uri=EX.persons,
+    name="container__persons",
+    curie=EX.curie("persons"),
+    model_uri=EX.container__persons,
+    domain=None,
+    range=Optional[Union[Union[dict, Person], list[Union[dict, Person]]]],
+)
 
-slots.Person_summary = Slot(uri=EX.summary, name="Person_summary", curie=EX.curie('summary'),
-                   model_uri=EX.Person_summary, domain=Person, range=Optional[str])
+slots.Person_description = Slot(
+    uri=EX.description,
+    name="Person_description",
+    curie=EX.curie("description"),
+    model_uri=EX.Person_description,
+    domain=Person,
+    range=Optional[str],
+)
+
+slots.Person_summary = Slot(
+    uri=EX.summary,
+    name="Person_summary",
+    curie=EX.curie("summary"),
+    model_uri=EX.Person_summary,
+    domain=Person,
+    range=Optional[str],
+)
