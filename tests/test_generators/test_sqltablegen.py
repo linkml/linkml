@@ -181,7 +181,7 @@ def test_index_sqlddl():
     # Tests to ensure the duplicate index name isn't created
     assert 'CREATE INDEX "ix_Class_With_Id_identifier_slot" ON "Class_With_Id" (identifier_slot, name);' not in ddl
 
-def test_cli_index(schema: str, capsys)-> None:
+def test_cli_index(schema: str)-> None:
     runner = CliRunner()
     result = runner.invoke(
         cli,
@@ -218,12 +218,6 @@ def test_cli_index(schema: str, capsys)-> None:
 
     # Check for the multi-column index still being present
     assert 'CREATE INDEX birth_date_index ON "Person" (birth_date, gender)' in output_false
-
-def test_cli_index_false(schema: str, capsys)-> None:
-
-
-
-
 
 @pytest.mark.parametrize(
     ("slot_range", "ddl_type"),
