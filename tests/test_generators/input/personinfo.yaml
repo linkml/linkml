@@ -92,7 +92,7 @@ classes:
     annotations:
       index:
         tag: index
-        value: 
+        value:
           birth_date_index:
             - birth_date
             - gender
