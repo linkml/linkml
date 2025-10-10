@@ -80,7 +80,8 @@ shacl = [
 tests = [
   { include-group = "lint" },
   { include-group = "typing" },
-  { include-group = "shacl" }
+  { include-group = "shacl" },
+  "morph-kgc >= 2.9.0; python_version >= '3.10'"
 ]
 dev = [
   {include-group = "tests" },
@@ -275,7 +276,8 @@ markers = [
   "sqlddlgen: Tests for SQL DDL generator",
   "sqlddlpostgresgen: Tests for SQL DDL postgres generator",
   "owlgen: Tests for OWL generator",
-  "yamlgen: Tests for the YAML generator"
+  "yamlgen: Tests for the YAML generator",
+  "yarrrml: End-to-end tests for the YARRRML generator"
 ]
 
 # https://docs.astral.sh/ruff/settings/
