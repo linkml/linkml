@@ -271,4 +271,72 @@ classes:
     runner = CliRunner()
     result = runner.invoke(jsonld_context_cli, [str(schema), "--emit-frame"])
     assert result.exit_code != 0
-    assert "--emit-frame requires --output" in result.output
+    assert "requires --output" in result.output
+    assert "--emit-frame" in result.output
+
+
+def test_cli_embed_context_in_frame_writes_single_file(tmp_path):
+    schema = tmp_path / "mini_cli_embed.yaml"
+    schema.write_text(
+        """
+id: ex
+name: mini_cli_embed
+default_prefix: ex
+imports:
+  - linkml:types
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: http://example.org/
+  xsd: http://www.w3.org/2001/XMLSchema#
+classes:
+  Person:
+    tree_root: true
+    attributes:
+      id: {identifier: true, range: string}
+      friend: {range: Person, inlined: true}
+""",
+        encoding="utf-8",
+    )
+
+    runner = CliRunner()
+    out_base = tmp_path / "mini_cli_embed.jsonld"
+    result = runner.invoke(
+        jsonld_context_cli,
+        [str(schema), "--embed-context-in-frame", "--output", str(out_base)],
+    )
+    assert result.exit_code == 0
+
+    frame_path = out_base.with_suffix(".frame.jsonld")
+    assert frame_path.exists()
+    assert not out_base.exists()
+
+    jfrm = json.loads(frame_path.read_text(encoding="utf-8"))
+    assert "@context" in jfrm
+    assert jfrm["friend"]["@embed"] == "@always"
+
+
+def test_cli_embed_context_in_frame_requires_output(tmp_path):
+    schema = tmp_path / "mini_cli_embed2.yaml"
+    schema.write_text(
+        """
+id: ex
+name: mini_cli_embed2
+default_prefix: ex
+imports:
+  - linkml:types
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: http://example.org/
+  xsd: http://www.w3.org/2001/XMLSchema#
+classes:
+  Person:
+    attributes:
+      id: {identifier: true, range: string}
+""",
+        encoding="utf-8",
+    )
+
+    runner = CliRunner()
+    result = runner.invoke(jsonld_context_cli, [str(schema), "--embed-context-in-frame"])
+    assert result.exit_code != 0
+    assert "requires --output" in result.output

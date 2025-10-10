@@ -221,6 +221,15 @@ This produces two files:
 * ``schema.context.jsonld`` – the JSON-LD context
 * ``schema.frame.jsonld`` – the JSON-LD frame with `@embed` rules
 
+Alternatively, you can use the ``--embed-context-in-frame`` option to produce
+a single file with both the context and the frame embedded:
+
+    gen-jsonld-context schema.yaml --output schema.jsonld --embed-context-in-frame
+
+This produces one file:
+
+* ``schema.frame.jsonld`` – the JSON-LD frame with the full ``@context`` embedded
+
 The root class for the frame is taken from a class marked with ``tree_root: true``,
 or defaults to the first class in the schema if none is explicitly marked.
 
