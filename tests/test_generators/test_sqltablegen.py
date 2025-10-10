@@ -220,6 +220,7 @@ def test_cli_index(schema: str) -> None:
     # Check for the multi-column index still being present
     assert 'CREATE INDEX birth_date_index ON "Person" (birth_date, gender)' in output_false
 
+
 @pytest.mark.parametrize(
     ("slot_range", "ddl_type"),
     [
