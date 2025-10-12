@@ -32,7 +32,18 @@ class YarrrmlGenerator(Generator):
     visit_all_class_slots = False
 
     def __init__(self, schema: str | TextIO | SchemaDefinition, format: str = "yml", **kwargs):
-        src = kwargs.pop("source", None)
+        def _infer_source_suffix(path: str) -> str:
+            p = (path or "").lower()
+            if "~" in p:
+                return path  # already has ~jsonpath or ~csv
+            if p.endswith(".json"):
+                return f"{path}~jsonpath"
+            if p.endswith(".csv") or p.endswith(".tsv"):
+                return f"{path}~csv"
+            return path
+
+        # in __init__ right after you read src:
+        raw_src = kwargs.pop("source", None)
         it = kwargs.pop("iterator_template", None)
 
         super().__init__(schema, **kwargs)
@@ -42,7 +53,12 @@ class YarrrmlGenerator(Generator):
 
         self.format = format
 
-        self.source: str = src or DEFAULT_SOURCE_JSON
+        # normalize source: if user passed file without "~csv/~jsonpath", infer it
+        if raw_src:
+            self.source = _infer_source_suffix(raw_src)
+        else:
+            self.source = DEFAULT_SOURCE_JSON
+
         self.iterator_template: str = it or DEFAULT_ITERATOR
 
     # public
@@ -70,7 +86,7 @@ class YarrrmlGenerator(Generator):
             if self._is_json_source():
                 mapping["sources"] = [[self.source, self._iterator_for_class(cls)]]
             else:
-                mapping["sources"] = [self.source]
+                mapping["sources"] = [[self.source]]
 
             mappings[str(cls.name)] = mapping
 
@@ -136,7 +152,7 @@ class YarrrmlGenerator(Generator):
 @click.command(name="yarrrml")
 @click.option(
     "--source",
-    help="YARRRML source shorthand, e.g., data.json~jsonpath or data.csv~csv",
+    help="YARRRML source shorthand, e.g., data.json~jsonpath or data.csv~csv (TSV works too)",
 )
 @click.option(
     "--iterator-template",

@@ -383,3 +383,95 @@ def test_yarrrml_e2e_missing_target_instances(tmp_path: Path):
 
     conforms, results_text = _validate_with_shacl(schema_path, g)
     assert conforms, f"Expected SHACL failure but got:\n{results_text}"
+
+
+@pytest.mark.yarrrml
+def test_yarrrml_e2e_basic_csv_morph_shacl(tmp_path: Path):
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(SCHEMA_BASIC, encoding="utf-8")
+
+    csv_path = tmp_path / "people.csv"
+    csv_path.write_text(
+        "person_id,name,employer,org_id,org_name\n"
+        "P1,WorkerA,https://ex.org/mini#O1,O1,Org_A\n"
+        "P2,WorkerB,https://ex.org/mini#O2,O2,Org_B\n",
+        encoding="utf-8",
+    )
+
+    yg = YarrrmlGenerator(str(schema_path), source=str(csv_path.resolve()) + "~csv")
+    yarrrml = yaml.safe_load(yg.serialize())
+
+    for m in yarrrml["mappings"].values():
+        assert isinstance(m["sources"][0], list), "CSV source must be list-wrapped (['...~csv'])"
+        assert "~csv" in m["sources"][0][0], "CSV source must carry ~csv formulation"
+
+    g = _materialize_with_morph(tmp_path, yarrrml)
+
+    EX, RDF = rdflib.Namespace("https://ex.org/mini#"), rdflib.RDF
+    assert (EX.P1, RDF.type, EX.Person) in g
+    assert (EX.P1, rdflib.URIRef("https://ex.org/mini#name"), rdflib.Literal("WorkerA")) in g
+    assert (EX.P2, rdflib.URIRef("https://ex.org/mini#name"), rdflib.Literal("WorkerB")) in g
+    assert (EX.P1, rdflib.URIRef("https://ex.org/mini#employer"), rdflib.URIRef("https://ex.org/mini#O1")) in g
+    assert (EX.O1, RDF.type, EX.Organization) in g
+    assert (EX.O1, rdflib.URIRef("https://ex.org/mini#org_name"), rdflib.Literal("Org_A")) in g
+
+    conforms, results_text = _validate_with_shacl(schema_path, g)
+    assert conforms, f"SHACL validation failed for CSV:\n{results_text}"
+
+
+@pytest.mark.yarrrml
+def test_yarrrml_e2e_basic_tsv_morph_shacl(tmp_path: Path):
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(SCHEMA_BASIC, encoding="utf-8")
+
+    tsv_path = tmp_path / "people.tsv"
+    tsv_path.write_text(
+        "person_id\tname\temployer\torg_id\torg_name\n"
+        "P1\tWorkerA\thttps://ex.org/mini#O1\tO1\tOrg_A\n"
+        "P2\tWorkerB\thttps://ex.org/mini#O2\tO2\tOrg_B\n",
+        encoding="utf-8",
+    )
+
+    yg = YarrrmlGenerator(str(schema_path), source=str(tsv_path.resolve()) + "~csv")
+    yarrrml = yaml.safe_load(yg.serialize())
+
+    for m in yarrrml["mappings"].values():
+        assert isinstance(m["sources"][0], list)
+        assert m["sources"][0][0].endswith("~csv")
+
+    g = _materialize_with_morph(tmp_path, yarrrml)
+
+    EX, RDF = rdflib.Namespace("https://ex.org/mini#"), rdflib.RDF
+    assert (EX.P1, RDF.type, EX.Person) in g
+    assert (EX.O2, RDF.type, EX.Organization) in g
+
+    conforms, results_text = _validate_with_shacl(schema_path, g)
+    assert conforms, f"SHACL validation failed for TSV:\n{results_text}"
+
+
+@pytest.mark.yarrrml
+def test_yarrrml_e2e_csv_source_suffix_inference(tmp_path: Path):
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(SCHEMA_BASIC, encoding="utf-8")
+
+    csv_path = tmp_path / "minimal.csv"
+    csv_path.write_text(
+        "person_id,name,employer,org_id,org_name\n"
+        "P9,UserZ,https://ex.org/mini#O9,O9,Org_Z\n",
+        encoding="utf-8",
+    )
+
+    yg = YarrrmlGenerator(str(schema_path), source=str(csv_path.resolve()))
+    yarrrml = yaml.safe_load(yg.serialize())
+
+    for m in yarrrml["mappings"].values():
+        assert isinstance(m["sources"][0], list)
+        assert m["sources"][0][0].endswith("~csv")
+
+    g = _materialize_with_morph(tmp_path, yarrrml)
+    EX, RDF = rdflib.Namespace("https://ex.org/mini#"), rdflib.RDF
+    assert (EX.P9, RDF.type, EX.Person) in g
+
+    conforms, results_text = _validate_with_shacl(schema_path, g)
+    assert conforms, f"SHACL validation failed for suffix inference:\n{results_text}"
+
