@@ -456,8 +456,7 @@ def test_yarrrml_e2e_csv_source_suffix_inference(tmp_path: Path):
 
     csv_path = tmp_path / "minimal.csv"
     csv_path.write_text(
-        "person_id,name,employer,org_id,org_name\n"
-        "P9,UserZ,https://ex.org/mini#O9,O9,Org_Z\n",
+        "person_id,name,employer,org_id,org_name\nP9,UserZ,https://ex.org/mini#O9,O9,Org_Z\n",
         encoding="utf-8",
     )
 
@@ -474,4 +473,3 @@ def test_yarrrml_e2e_csv_source_suffix_inference(tmp_path: Path):
 
     conforms, results_text = _validate_with_shacl(schema_path, g)
     assert conforms, f"SHACL validation failed for suffix inference:\n{results_text}"
-
