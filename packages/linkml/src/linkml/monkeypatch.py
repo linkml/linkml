@@ -13,7 +13,7 @@ from linkml_runtime.linkml_model import meta
 @dataclass
 class ExtraSlotsExpression(meta.Expression):
     allowed: Optional[bool] = None
-    range_expression: meta.AnonymousSlotExpression | None = None
+    range_expression: Optional[meta.AnonymousSlotExpression] = None
 
     def __post_init__(self, **kwargs):
         if self.range_expression and not isinstance(self.range_expression, meta.AnonymousSlotExpression):
