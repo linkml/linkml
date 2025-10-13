@@ -16,10 +16,10 @@ class CsvUtilTestCase(TestEnvironmentTestCase):
         # assert 'Index slot or schema not specified' in caplog.text
 
     def test_get_configmap(self):
-        fname = env.input_path('kitchen_sink.yaml')
+        fname = env.input_path("kitchen_sink.yaml")
         schema = SchemaView(fname)
         get_configmap(schema, "unknown")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

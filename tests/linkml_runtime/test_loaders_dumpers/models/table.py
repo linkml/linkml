@@ -32,12 +32,13 @@ version = None
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
-LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
-TABLE = CurieNamespace('table', 'https://w3id.org/linkml/examples/table/')
+LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
+TABLE = CurieNamespace("table", "https://w3id.org/linkml/examples/table/")
 DEFAULT_ = TABLE
 
 
 # Types
+
 
 # Class references
 class RowColumnA(URIorCURIE):
@@ -49,6 +50,7 @@ class Object(YAMLRoot):
     """
     An object (bnode) which needs embedding in a single row
     """
+
     _inherited_slots: ClassVar[List[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TABLE.Object
@@ -74,6 +76,7 @@ class Row(YAMLRoot):
     """
     A single data point made up of columns.
     """
+
     _inherited_slots: ClassVar[List[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TABLE.Row
@@ -105,6 +108,7 @@ class Table(YAMLRoot):
     """
     Container of rows.
     """
+
     _inherited_slots: ClassVar[List[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TABLE.Table
@@ -127,20 +131,42 @@ class Table(YAMLRoot):
 class slots:
     pass
 
-slots.rows = Slot(uri=TABLE.rows, name="rows", curie=TABLE.curie('rows'),
-                   model_uri=TABLE.rows, domain=None, range=Optional[Union[Dict[Union[str, RowColumnA], Union[dict, Row]], List[Union[dict, Row]]]])
 
-slots.columnA = Slot(uri=TABLE.columnA, name="columnA", curie=TABLE.curie('columnA'),
-                   model_uri=TABLE.columnA, domain=None, range=URIRef)
+slots.rows = Slot(
+    uri=TABLE.rows,
+    name="rows",
+    curie=TABLE.curie("rows"),
+    model_uri=TABLE.rows,
+    domain=None,
+    range=Optional[Union[Dict[Union[str, RowColumnA], Union[dict, Row]], List[Union[dict, Row]]]],
+)
 
-slots.objectB = Slot(uri=TABLE.objectB, name="objectB", curie=TABLE.curie('objectB'),
-                   model_uri=TABLE.objectB, domain=None, range=Optional[Union[dict, Object]])
+slots.columnA = Slot(
+    uri=TABLE.columnA, name="columnA", curie=TABLE.curie("columnA"), model_uri=TABLE.columnA, domain=None, range=URIRef
+)
 
-slots.columnC = Slot(uri=TABLE.columnC, name="columnC", curie=TABLE.curie('columnC'),
-                   model_uri=TABLE.columnC, domain=None, range=Optional[str])
+slots.objectB = Slot(
+    uri=TABLE.objectB,
+    name="objectB",
+    curie=TABLE.curie("objectB"),
+    model_uri=TABLE.objectB,
+    domain=None,
+    range=Optional[Union[dict, Object]],
+)
 
-slots.name = Slot(uri=TABLE.name, name="name", curie=TABLE.curie('name'),
-                   model_uri=TABLE.name, domain=None, range=Optional[str])
+slots.columnC = Slot(
+    uri=TABLE.columnC,
+    name="columnC",
+    curie=TABLE.curie("columnC"),
+    model_uri=TABLE.columnC,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.value = Slot(uri=TABLE.value, name="value", curie=TABLE.curie('value'),
-                   model_uri=TABLE.value, domain=None, range=Optional[str])
+slots.name = Slot(
+    uri=TABLE.name, name="name", curie=TABLE.curie("name"), model_uri=TABLE.name, domain=None, range=Optional[str]
+)
+
+slots.value = Slot(
+    uri=TABLE.value, name="value", curie=TABLE.curie("value"), model_uri=TABLE.value, domain=None, range=Optional[str]
+)

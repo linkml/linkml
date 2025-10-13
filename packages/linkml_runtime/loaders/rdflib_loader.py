@@ -165,7 +165,7 @@ class RDFLibLoader(Loader):
                             for enum_name in enum_names:
                                 e = schemaview.get_enum(enum_name)
                                 if e is None:
-                                    raise ValueError(f'no enum found for {slot.range}: {o} (ns={v})')
+                                    raise ValueError(f"no enum found for {slot.range}: {o} (ns={v})")
                                 for pv in e.permissible_values.values():
                                     if v == pv.meaning or str(o) == pv.meaning:
                                         v = pv.text
@@ -210,7 +210,7 @@ class RDFLibLoader(Loader):
             if isinstance(v, Pointer):
                 v2 = obj_map.get(v.obj)
                 if v2 is None:
-                    msg = f'No mapping for pointer {v}. Triples:'
+                    msg = f"No mapping for pointer {v}. Triples:"
                     for s, p, o in graph.triples((None, None, v.obj)):
                         for s2, p2, o2 in graph.triples((None, None, s)):
                             msg += f"\n{s2} {p2} {o2}."
@@ -246,7 +246,7 @@ class RDFLibLoader(Loader):
         id_slot = schemaview.get_identifier_slot(cn)
         if not isinstance(node, BNode):
             if id_slot is None:
-                raise Exception(f'no slot found for {cn}: bnode={node}')
+                raise Exception(f"no slot found for {cn}: bnode={node}")
             id_val = self._uri_to_id(node, id_slot, schemaview)
             # id_val = schemaview.namespaces().curie_for(node)
             if id_val is None:
