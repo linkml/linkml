@@ -2949,7 +2949,7 @@ def test_detect_type_cycles_no_cycles(sv_cycles_schema: SchemaView, target: str,
 
 
 @pytest.mark.parametrize(("target", "cycle_start_node"), list(CYCLES[CLASSES][0].items()))
-@pytest.mark.parametrize("fn", ["detect_cycles", "graph_closure", "type_ancestors"])
+@pytest.mark.parametrize("fn", ["detect_cycles", "graph_closure", "class_ancestors"])
 def test_detect_class_cycles_error(sv_cycles_schema: SchemaView, target: str, cycle_start_node: str, fn: str) -> None:
     """Test detection of class cycles in the cycles schema."""
     if fn == "detect_cycles":
