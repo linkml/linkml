@@ -738,6 +738,9 @@ def test_in_schema(schema_view_with_imports: SchemaView) -> None:
     assert view.in_schema(SlotDefinitionName("string")) == "types"
 
 
+# Prefixes, curi_maps, and imports to add to a schema
+# The lines to add are under the "text" key
+# The prefix-URL pairs are under the "exp" key
 prefixes_to_add = {
     None: {"exp": {}},
     "short": {
@@ -820,6 +823,7 @@ curi_maps_to_add = {
         },
     },
 }
+# Prefixes from imports only show up if a function that generates the imports closure is run.
 imports_to_add = {
     None: {"exp": {}, "imported": {}},
     "linkml_types": {
@@ -846,6 +850,8 @@ def test_namespaces(prefix: str | None, curi_map: str | None, imports: str | Non
     the existing value is the same as the incoming value; the incoming value always overwrites any existing value.
     To test this, the RDFS URL is "http://" in the "semweb_context" mapping and "https://" in the "prefixes" section.
     Whenever the prefixes section is present, it will override the value from semweb_context.
+
+    The `run_imports` parameter indicates whether or not schemas referenced under 'imports' should be imported; if not, none of the prefixes from imported schemas will be registered as `namespaces`.
     """
     schema = """
 id: https://w3id.org/linkml/examples/personinfo
@@ -2958,7 +2964,7 @@ def test_detect_class_cycles_error(sv_cycles_schema: SchemaView, target: str, cy
             sv_cycles_schema.class_ancestors(target, detect_cycles=True)
 
 
-@pytest.mark.parametrize(("target", "expected"), [(k, v) for k, v in CYCLES[CLASSES][1].items()])
+@pytest.mark.parametrize(("target", "expected"), list(CYCLES[CLASSES][1].items()))
 @pytest.mark.parametrize("fn", ["detect_cycles", "graph_closure", "class_ancestors"])
 def test_detect_class_cycles_no_cycles(sv_cycles_schema: SchemaView, target: str, expected: set[str], fn: str) -> None:
     """Ensure that classes without cycles in their ancestry do not throw an error."""
