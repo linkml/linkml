@@ -1962,35 +1962,71 @@ def test_dynamic_enum(schema_view_with_imports: SchemaView) -> None:
     assert set(e.include[0].reachable_from.source_nodes) == {"GO:0007049", "GO:0022403"}
 
 
+# dictionary mapping class name to id_prefixes
+KS_PREFIXES_BY_CLASS = {PERSON: {"orcid", "doi", "zfin", "wb"}, ORGANIZATION: {"pmid", "zfin", "wb"}}
+
+
 def test_get_elements_applicable_by_prefix(schema_view_no_imports: SchemaView) -> None:
     """Test get_elements_applicable_by_prefix method."""
     view = schema_view_no_imports
     # create a dictionary mapping class name to id_prefixes
     prefixes = {el: set(view.get_element(el).id_prefixes) for el in [PERSON, ORGANIZATION]}
 
-    assert prefixes[PERSON] == {"ORCID", "DOI", "ZFIN", "WB"}
-    assert prefixes[ORGANIZATION] == {"PMID", "ZFIN", "WB"}
+    for el in [PERSON, ORGANIZATION]:
+        assert prefixes[el] == {prfx.upper() for prfx in KS_PREFIXES_BY_CLASS[el]}
 
     for prefix in ["ORCID", "DOI", "ZFIN", "PMID", "WB"]:
         els_applicable_by_prefix = view.get_elements_applicable_by_prefix(prefix)
         for el in [PERSON, ORGANIZATION]:
-            if prefix in prefixes[el]:
+            if prefix.lower() in KS_PREFIXES_BY_CLASS[el]:
                 assert el in els_applicable_by_prefix
             else:
                 assert el not in els_applicable_by_prefix
 
 
-def test_get_elements_applicable_by_identifier(schema_view_no_imports: SchemaView) -> None:
+@pytest.mark.parametrize("prefix", ["ORCID", "DOI", "ZFIN", "PMID", "WB", "Pmid", "TEST", "rdfs", "some_crap"])
+def test_get_elements_applicable_by_identifier(schema_view_no_imports: SchemaView, prefix: str) -> None:
     """Test get_elements_applicable_by_identifier method."""
     view = schema_view_no_imports
-    elements = view.get_elements_applicable_by_identifier("ORCID:1234")
-    assert PERSON in elements
-    elements = view.get_elements_applicable_by_identifier("PMID:1234")
-    assert ORGANIZATION in elements
-    elements = view.get_elements_applicable_by_identifier("http://www.ncbi.nlm.nih.gov/pubmed/1234")
-    assert ORGANIZATION in elements
-    elements = view.get_elements_applicable_by_identifier("TEST:1234")
-    assert "anatomical entity" not in elements
+    # make sure imports are loaded
+    view.all_schema()
+
+    elements = view.get_elements_applicable_by_identifier(f"{prefix}:1234-5678-90")
+    # check in KS_PREFIXES_BY_CLASS to see whether we expect PERSON or ORGANIZATION to have this prefix
+    for el in [PERSON, ORGANIZATION]:
+        if prefix.lower() in KS_PREFIXES_BY_CLASS[el]:
+            assert el in elements
+        else:
+            assert el not in elements
+
+    no_els = False
+    if prefix.lower() not in {*KS_PREFIXES_BY_CLASS[PERSON], *KS_PREFIXES_BY_CLASS[ORGANIZATION]}:
+        assert elements == []
+        no_els = True
+
+    # Prefix => URL mapping; some URLs are valid, others are made up.
+    prefix_to_url = {
+        "DOI": "http://dx.doi.org/",  # valid
+        "PMID": "http://www.ncbi.nlm.nih.gov/pubmed/",  # valid
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",  # valid
+        "ZFIN": "http://zfin.org/",  # valid
+        # made up URLs
+        "WB": "https://www.wormbase.org/get?name=",
+        "TEST": "https://www.test.com/id=",
+        "Pmid": "http://www.ncbi.nlm.nih.gov/pubmed/",
+        "ORCID": "http://orcids-r-us.com/orcid/",
+        "some_crap": "https://whatev.er/",
+    }
+    # These URLs are defined in the schema prefixes section
+    valid_urls = {"doi", "pmid", "rdfs", "zfin"}
+
+    # Get element by URL
+    # This will only successfully retrieve the element if the URL is in `valid_urls`
+    url_els = view.get_elements_applicable_by_identifier(f"{prefix_to_url[prefix]}1234-5678-90")
+    if no_els or prefix.lower() not in valid_urls:
+        assert url_els == []
+    else:
+        assert url_els == elements
 
 
 # FIXME: improve test to actually test the annotations
