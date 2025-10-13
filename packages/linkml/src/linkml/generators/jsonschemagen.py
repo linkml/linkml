@@ -697,14 +697,16 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             type_value = get_type_designator_value(self.schemaview, slot, cls)
             prop["enum"] = [type_value]
 
-    def get_additional_properties(self, cls: ClassDefinition) -> bool | JsonSchema:
+    def get_additional_properties(self, cls: ClassDefinition) -> Union[bool, JsonSchema]:
         """
         Implements the `extra_slots` metamodel slot.
 
         References:
             https://github.com/linkml/linkml-model/pull/205
         """
-        if not cls.extra_slots:
+        if self.is_class_unconstrained(cls):
+            return True
+        elif not cls.extra_slots:
             return False
         elif cls.extra_slots.allowed is not None:
             return cls.extra_slots.allowed
