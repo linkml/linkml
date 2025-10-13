@@ -1,0 +1,76 @@
+id: extra_slots
+name: extra_slots
+title: extra_slots
+description: |
+  Test cases for `extra_slots`
+imports:
+  - linkml:types
+
+
+classes:
+  Base:
+    attributes:
+      x:
+        range: integer
+
+  Other:
+    attributes:
+      y:
+        range: string
+
+  ExtraAllowed:
+    is_a: Base
+    extra_slots:
+      allowed: true
+
+  ExtraNotAllowed:
+    is_a: Base
+    extra_slots:
+      allowed: false
+
+  ExtraString:
+    is_a: Base
+    description: "Only extra fields that are strings are valid"
+    extra_slots:
+      range_expression:
+        range: string
+
+  ExtraClass:
+    is_a: Base
+    description: "Only extra fields that match a class are valid"
+    extra_slots:
+      range_expression:
+        range: Other
+
+  ExtraAnyOf:
+    is_a: Base
+    description: "Union of allowed types"
+    extra_slots:
+      range_expression:
+        any_of:
+          - range: string
+          - range: integer
+
+  ExtraCardinality:
+    is_a: Base
+    description: "Limit cardinality of multivalued extra slots"
+    extra_slots:
+      range_expression:
+        range: integer
+        multivalued: true
+        maximum_cardinality: 5
+
+  Container:
+    attributes:
+      allowed:
+        range: ExtraAllowed
+      not_allowed:
+        range: ExtraNotAllowed
+      extra_string:
+        range: ExtraString
+      extra_class:
+        range: ExtraClass
+      extra_anyof:
+        range: ExtraAnyOf
+      extra_cardinality:
+        range: ExtraCardinality
