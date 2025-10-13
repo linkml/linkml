@@ -60,6 +60,10 @@ classes:
         multivalued: true
         maximum_cardinality: 5
 
+  AnyClass:
+    class_uri: linkml:Any
+    description: "The Any type implicitly allows any extra slots"
+
   Container:
     attributes:
       allowed:
@@ -74,3 +78,5 @@ classes:
         range: ExtraAnyOf
       extra_cardinality:
         range: ExtraCardinality
+      any_class:
+        range: AnyClass

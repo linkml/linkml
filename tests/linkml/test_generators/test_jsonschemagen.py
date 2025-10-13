@@ -428,12 +428,13 @@ def test_extra_slots_false(input_path):
         jsonschema.validate(invalid_data, generated)
 
 
-def test_extra_slots_true(input_path):
+@pytest.mark.parametrize("test_model", ["allowed", "any_class"])
+def test_extra_slots_true(input_path, test_model: str):
     """
     Extra slots allowed
     """
     valid_data = {
-        "allowed": {"x": 1, "whatever": "else", "we": {"want": ["in", "here", True]}},
+        test_model: {"x": 1, "whatever": "else", "we": {"want": ["in", "here", True]}},
     }
     schema = input_path("extra_slots.yaml")
     generator = JsonSchemaGenerator(schema, top_class="Container", mergeimports=True)

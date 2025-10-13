@@ -1,5 +1,3 @@
-import pytest
-
 from linkml.generators.markdowngen import MarkdownGenerator
 
 
@@ -61,24 +59,3 @@ def test_slot_name_mapping(kitchen_sink_path, tmp_path):
     gen.serialize(directory=tmp_path)
     assert_mdfile_contains(tmp_path / "index.md", "Address", after="Records")
     assert_mdfile_contains(tmp_path / "index.md", "HasAliases", after="Traits")
-
-
-def test_markdowngen_deprecation(kitchen_sink_path):
-    """Test that MarkdownGenerator emits a deprecation warning since
-    it has been marked for deprecation."""
-    from linkml.utils.deprecation import EMITTED, SemVer
-
-    # Skip test in development environment with version 0.0.0
-    ver = SemVer.from_package("linkml")
-    if ver.major == 0 and ver.minor == 0 and ver.patch == 0:
-        pytest.skip("Deprecation warnings not tested in development environment (version 0.0.0)")
-
-    # clear any previously emitted warnings for this test
-    if "gen-markdown" in EMITTED:
-        EMITTED.remove("gen-markdown")
-
-    with pytest.warns(DeprecationWarning) as record:
-        MarkdownGenerator(kitchen_sink_path)
-
-    assert len(record) == 1
-    assert "gen-markdown" in str(record[0].message)

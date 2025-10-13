@@ -25,7 +25,7 @@ class ExtraSlotsExpression(meta.Expression):
 
 
 @dataclass
-class ClassDefinition_(meta.ClassDefinition):
+class ClassDefinition(meta.ClassDefinition):
     extra_slots: Optional[ExtraSlotsExpression] = field(default=None)
 
     def __post_init__(self, **kwargs):
@@ -35,5 +35,5 @@ class ClassDefinition_(meta.ClassDefinition):
 
 
 def monkeypatch_classdef():
-    meta.ClassDefinition = ClassDefinition_
+    meta.ClassDefinition = ClassDefinition
     meta.ExtraSlotsExpression = ExtraSlotsExpression
