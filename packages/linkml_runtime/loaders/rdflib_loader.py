@@ -164,6 +164,8 @@ class RDFLibLoader(Loader):
                             v = namespaces.curie_for(o)
                             for enum_name in enum_names:
                                 e = schemaview.get_enum(enum_name)
+                                if e is None:
+                                    raise ValueError(f"no enum found for {slot.range}: {o} (ns={v})")
                                 for pv in e.permissible_values.values():
                                     if v == pv.meaning or str(o) == pv.meaning:
                                         v = pv.text
@@ -206,9 +208,16 @@ class RDFLibLoader(Loader):
         # Step 2: replace inline pointers with object dicts
         def repl(v):
             if isinstance(v, Pointer):
-                v2 = obj_map[v.obj]
+                v2 = obj_map.get(v.obj)
                 if v2 is None:
-                    raise Exception(f"No mapping for pointer {v}")
+                    msg = f"No mapping for pointer {v}. Triples:"
+                    for s, p, o in graph.triples((None, None, v.obj)):
+                        for s2, p2, o2 in graph.triples((None, None, s)):
+                            msg += f"\n{s2} {p2} {o2}."
+                        msg += f"\n{s} {p} {o}."
+                    for s, p, o in graph.triples((v.obj, None, None)):
+                        msg += f"\n{s} {p} {o}."
+                    raise Exception(msg)
                 return v2
             else:
                 return v
@@ -236,6 +245,8 @@ class RDFLibLoader(Loader):
     def _get_id_dict(self, node: VALID_SUBJECT, schemaview: SchemaView, cn: ClassDefinitionName) -> ANYDICT:
         id_slot = schemaview.get_identifier_slot(cn)
         if not isinstance(node, BNode):
+            if id_slot is None:
+                raise Exception(f"no slot found for {cn}: bnode={node}")
             id_val = self._uri_to_id(node, id_slot, schemaview)
             # id_val = schemaview.namespaces().curie_for(node)
             if id_val is None:
