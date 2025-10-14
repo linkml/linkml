@@ -3,6 +3,7 @@ import logging
 import os
 
 import pytest
+import unittest
 from jsonasobj2 import as_json_obj
 
 from linkml_runtime.dumpers import csv_dumper, json_dumper, tsv_dumper, yaml_dumper
@@ -113,6 +114,7 @@ class CsvAndTsvGenTestCase(unittest.TestCase):
         logger.debug(json_dumper.dumps(roundtrip))
         assert roundtrip == data
 
+    @pytest.mark.skip(reason="json_flattener list bug in unflatten_from_csv()")
     def test_table_model(self):
         schemaview = SchemaView(SCHEMA)
         table_json = csv_loader.load(TABLE_DATA_JSON, target_class=Table, index_slot="rows", schemaview=schemaview)
