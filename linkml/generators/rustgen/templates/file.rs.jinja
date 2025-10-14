@@ -11,6 +11,10 @@ mod serde_utils;
 pub mod poly;
 pub mod poly_containers;
 {% endif %}
+{% if stubgen %}
+#[cfg(feature = "stubgen")]
+pub mod stub_utils;
+{% endif %}
 
 {{ imports }}
 

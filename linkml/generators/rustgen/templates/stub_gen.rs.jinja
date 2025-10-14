@@ -1,4 +1,7 @@
 #[cfg(feature = "stubgen")]
+use {{ crate_module }}::stub_utils;
+
+#[cfg(feature = "stubgen")]
 fn main() -> pyo3_stub_gen::Result<()> {
     let check_only = std::env::args().skip(1).any(|arg| arg == "--check");
     let stub = {{ crate_name }}::stub_info()?;
@@ -18,13 +21,13 @@ fn check_stubs(stub: &pyo3_stub_gen::StubInfo) -> pyo3_stub_gen::Result<()> {
     let mut issues = Vec::new();
 
     for (name, module) in &stub.modules {
-        let normalized_name = name.replace('-', "_");
-        let path = normalized_name.replace('.', "/");
-        let dest = if module.submodules.is_empty() {
-            stub.python_root.join(format!("{path}.pyi"))
+        let module_path = stub_utils::normalize_stub_module(name)?;
+        let mut dest = stub.python_root.join(&module_path);
+        if module.submodules.is_empty() {
+            dest.set_extension("pyi");
         } else {
-            stub.python_root.join(&path).join("__init__.pyi")
-        };
+            dest.push("__init__.pyi");
+        }
 
         let expected = module.to_string();
         match fs::read_to_string(&dest) {

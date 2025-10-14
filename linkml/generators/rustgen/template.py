@@ -527,11 +527,24 @@ class SerdeUtilsFile(RustTemplateModel):
     template: ClassVar[str] = "serde_utils.rs.jinja"
 
 
+class StubUtilsFile(RustTemplateModel):
+    """Helper utilities shared by stub generation code."""
+
+    template: ClassVar[str] = "stub_utils.rs.jinja"
+
+
 class StubGenBin(RustTemplateModel):
     """Binary entry point to orchestrate stub generation checks."""
 
     template: ClassVar[str] = "stub_gen.rs.jinja"
     crate_name: str
+    stubgen: bool
+
+    @computed_field
+    def crate_module(self) -> str:
+        """Crate identifier usable in Rust source."""
+
+        return self.crate_name.replace("-", "_")
 
 
 class PolyTraitProperty(RustTemplateModel):

@@ -55,6 +55,7 @@ from linkml.generators.rustgen.template import (
     SerdeUtilsFile,
     SlotRangeAsUnion,
     StubGenBin,
+    StubUtilsFile,
 )
 from linkml.utils.generator import Generator
 
@@ -753,6 +754,8 @@ class RustGenerator(Generator, LifecycleMixin):
             extra_files["serde_utils"] = SerdeUtilsFile()
             extra_files["poly"] = PolyFile(imports=imports, traits=poly_traits)
             extra_files["poly_containers"] = PolyContainersFile()
+            if self.stubgen:
+                extra_files["stub_utils"] = StubUtilsFile()
             cargo = self.generate_cargo(imports)
             pyproject = self.generate_pyproject()
             bin_files = {}
@@ -1042,20 +1045,14 @@ class RustGenerator(Generator, LifecycleMixin):
             rendered = self.render(mode="crate")
 
         cargo = rendered.cargo.render(self.template_environment)
-        # Normalize EOF: exactly one trailing newline
-        cargo = cargo.rstrip("\n") + "\n"
         cargo_file = output / "Cargo.toml"
-        with open(cargo_file, "w") as cfile:
-            cfile.write(cargo)
+        self._write_text_file(cargo_file, cargo, crate_root=output)
 
         pyproject = rendered.pyproject.render(self.template_environment)
-        pyproject = pyproject.rstrip("\n") + "\n"
         pyproject_file = output / "pyproject.toml"
-        with open(pyproject_file, "w") as pyfile:
-            pyfile.write(pyproject)
+        self._write_text_file(pyproject_file, pyproject, crate_root=output)
 
         rust_file = rendered.file.render(self.template_environment)
-        rust_file = rust_file.rstrip("\n") + "\n"
         src_dir = output / "src"
         src_dir.mkdir(exist_ok=True)
         if self.handwritten_lib:
@@ -1065,25 +1062,20 @@ class RustGenerator(Generator, LifecycleMixin):
         else:
             generated_dir = src_dir
             lib_file = src_dir / "lib.rs"
-        with open(lib_file, "w") as lfile:
-            lfile.write(rust_file)
+        self._write_text_file(lib_file, rust_file, crate_root=output)
 
         for k, f in rendered.extra_files.items():
             extra_file = f.render(self.template_environment)
-            extra_file = extra_file.rstrip("\n") + "\n"
             extra_file_name = f"{k}.rs"
-            extra_file_path = generated_dir / extra_file_name
-            with open(extra_file_path, "w") as ef:
-                ef.write(extra_file)
+            extra_file_path = self._safe_subpath(generated_dir, extra_file_name)
+            self._write_text_file(extra_file_path, extra_file, crate_root=output)
 
         if getattr(rendered, "bin_files", None):
             for rel_path, template in rendered.bin_files.items():
                 rendered_bin = template.render(self.template_environment)
-                rendered_bin = rendered_bin.rstrip("\n") + "\n"
-                bin_path = (src_dir / rel_path).with_suffix(".rs")
-                bin_path.parent.mkdir(exist_ok=True, parents=True)
-                with open(bin_path, "w") as bf:
-                    bf.write(rendered_bin)
+                safe_bin_base = self._safe_subpath(src_dir, rel_path)
+                bin_path = safe_bin_base.with_suffix(".rs")
+                self._write_text_file(bin_path, rendered_bin, crate_root=output)
 
         if self.handwritten_lib:
             shim_path = src_dir / "lib.rs"
@@ -1100,9 +1092,7 @@ class RustGenerator(Generator, LifecycleMixin):
                     root_struct_fn_snake=root_struct_fn_snake,
                 )
                 shim = shim_template.render(self.template_environment)
-                shim = shim.rstrip("\n") + "\n"
-                with open(shim_path, "w") as shim_file:
-                    shim_file.write(shim)
+                self._write_text_file(shim_path, shim, crate_root=output)
 
         return rust_file
 
@@ -1133,6 +1123,44 @@ class RustGenerator(Generator, LifecycleMixin):
             raise ValueError(f"Invalid generation mode: {mode}")
 
         return output
+
+    def _safe_subpath(self, base: Path, relative: Union[str, Path]) -> Path:
+        """Return a path nested under base, validating it does not escape."""
+
+        rel_path = Path(relative)
+        if rel_path.is_absolute():
+            raise ValueError(f"Relative path expected, got absolute path: {relative}")
+
+        if not rel_path.parts:
+            raise ValueError("Relative path must contain at least one segment")
+
+        for part in rel_path.parts:
+            if part in (".", ".."):
+                raise ValueError(f"Invalid path segment: {part}")
+            if "/" in part or "\\" in part:
+                raise ValueError(f"Path segment must not contain separators: {part}")
+
+        candidate = base / rel_path
+        base_resolved = base.resolve()
+        try:
+            candidate.resolve().relative_to(base_resolved)
+        except ValueError as exc:  # pragma: no cover - defensive
+            raise ValueError(f"Path {candidate} escapes base directory {base}") from exc
+
+        return candidate
+
+    def _write_text_file(self, path: Path, content: str, *, crate_root: Path) -> None:
+        """Normalize trailing newline, ensure parent dirs, and write text."""
+
+        base_resolved = crate_root.resolve()
+        try:
+            path.resolve().relative_to(base_resolved)
+        except ValueError as exc:
+            raise ValueError(f"Path {path} escapes crate root {crate_root}") from exc
+
+        normalized = content.rstrip("\n") + "\n"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(normalized)
 
     @property
     def template_environment(self) -> Environment:

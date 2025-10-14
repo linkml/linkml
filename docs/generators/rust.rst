@@ -37,6 +37,9 @@ It is possible to generate a Rust Crate from a linkml schema complete with pytho
 The steps below walk through producing a PyO3-enabled crate from a LinkML schema and installing it in a Python
 environment. The commands were exercised against ``examples/PersonSchema/personinfo.yaml`` to verify they work end-to-end.
 
+To build a rust crate as a python lib, you need ``maturin``. Maturin can easily be installed using pip.
+A convenient way to build pip packages for multiple python versions and libc alternatives is the ``manylinux`` docker image.
+
 #. **Generate the crate** using the main ``linkml`` CLI. The ``--mode crate`` option is the default; ``--pyo3`` and
    ``--serde`` ensure the generated ``Cargo.toml`` enables those features by default. Add ``--handwritten-lib`` when you
    want a regeneration-friendly layout: generated sources land under ``src/generated`` while ``src/lib.rs`` becomes a shim
@@ -52,10 +55,10 @@ environment. The commands were exercised against ``examples/PersonSchema/personi
 
    The output directory contains ``Cargo.toml`` (with ``[lib]`` configured for both ``cdylib`` and ``rlib`` when PyO3 is
    requested), ``pyproject.toml`` with a ``maturin`` build-system section, and a ``src/generated`` tree that houses the
-   regenerated code. A small ``src/lib.rs`` shim is emitted on the first run only and re-exported functions from
+   regenerated code. A small ``src/lib.rs`` file is emitted on the first run only and re-exported functions from
    ``generated`` so you can regenerate safely.
 
-#. **Adjust what is exposed to Python** in ``src/lib.rs``. The shim declares the PyO3 module and calls
+#. **Adjust what is exposed to Python** in ``src/lib.rs``. The file declares the PyO3 module and calls
    ``generated::register_pymodule``; edit it to add your own functions/classes. Because the shim is only created on the
    first run, later regenerations leave your changes intact.
 
@@ -79,8 +82,8 @@ environment. The commands were exercised against ``examples/PersonSchema/personi
 
       import personinfo
       # Update the path below to point at your data file.
-      container = personinfo.load_yaml_container("path/to/data.yaml")
-      print(container.persons)
+      container = personinfo.load_yaml_container("examples/PersonSchema/data/example_personinfo_data.yaml")
+      print(container.persons[0].name)
 
 When repeating the process, pass ``--force`` (as above) or delete the output directory to avoid collisions with previous
 runs.
