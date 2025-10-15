@@ -56,6 +56,8 @@ dependencies = [
 dev = [
     "coverage >=6.2",
     "requests-cache >=1.2.0",
+    "tox>=4",
+    "ruff==0.11.13",
 ]
 
 [project.scripts]
