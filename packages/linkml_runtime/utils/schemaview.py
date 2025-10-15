@@ -1876,12 +1876,61 @@ class SchemaView:
         :param slot:
         :return: list of ranges
         """
-        r = slot.range
-        range_union_of = [r]
-        for x in slot.exactly_one_of + slot.any_of:
-            if x.range:
-                range_union_of.append(x.range)
-        return range_union_of
+        return list({y.range for y in [slot, *[x for x in [*slot.exactly_one_of, *slot.any_of] if x.range]]})
+
+    def induced_slot_range(self, slot: SlotDefinition, strict: bool = False) -> set[str | ElementName]:  # noqa: FBT001, FBT002
+        """Retrieve all applicable ranges for a slot, falling back to the default if necessary.
+
+        Performs several validation checks if `strict` is True:
+        - ensures that the slot has a range specified
+        - requires the slot range to be set to a class with CURIE `linkml:Any` if one of the boolean specifiers is used for the range
+        - ensures that only one of `any_of` and `exactly_one_of` is used if the range is `linkml:Any`
+
+        :param slot: the slot to be investigated
+        :type slot: SlotDefinition
+        :param strict: whether or not to throw errors if there are validation issues with the schema, defaults to False
+        :type strict: bool, optional
+        :return: set of ranges
+        :rtype: set[str | ElementName]
+        """
+
+        slot_range = slot.range
+        any_of_range = {x.range for x in slot.any_of if x.range}
+        exactly_one_of_range = {x.range for x in slot.exactly_one_of if x.range}
+
+        is_any = False
+        if slot_range:
+            range_class = self.get_class(slot_range)
+            if range_class and range_class.class_uri == "linkml:Any":
+                is_any = True
+
+        if strict:
+            # no range specified and no schema default
+            if not (any_of_range or exactly_one_of_range or slot_range):
+                err_msg = f"{slot.owner} slot {slot.name} has no range specified"
+                raise ValueError(err_msg)
+
+            # ensure that only one of any_of and exactly_one_of is specified
+            if any_of_range and exactly_one_of_range:
+                err_msg = f"{slot.owner} slot {slot.name} has range specified in both `exactly_one_of` and `any_of`"
+                raise ValueError(err_msg)
+
+            # if any_of or exactly_one_of is set, the slot range should be linkml:Any
+            if (any_of_range or exactly_one_of_range) and not (slot_range and is_any):
+                err_msg = f"{slot.owner} slot {slot.name} has range specified in `exactly_one_of` or `any_of` but the slot range is not linkml:Any"
+                raise ValueError(err_msg)
+
+        # if the range is linkml:Any and one/both of these ranges is set, return them
+        if is_any and (any_of_range or exactly_one_of_range):
+            return {*any_of_range, *exactly_one_of_range}
+
+        # return the slot range (if set)
+        if slot_range:
+            return {slot_range}
+
+        # return empty set (not {None})
+        # note: this is only returned when strict mode is False
+        return set()
 
     def get_classes_by_slot(self, slot: SlotDefinition, include_induced: bool = False) -> list[ClassDefinitionName]:
         """Get all classes that use a given slot, either as a direct or induced slot.

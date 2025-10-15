@@ -1826,6 +1826,13 @@ ranges_replaced_by_defaults["invalid_any_range_no_linkml_any"] = {
     for key, value in ranges_replaced_by_defaults["none_range"].items()
 }
 
+induced_range_strict_errors = {
+    "any_of_and_exactly_one_of_range": "ClassWithRanges slot any_of_and_exactly_one_of_range has range specified in both `exactly_one_of` and `any_of`",
+    "invalid_any_range_no_linkml_any": "ClassWithRanges slot invalid_any_range_no_linkml_any has range specified in `exactly_one_of` or `any_of` but the slot range is not linkml:Any",
+    "invalid_any_range_enum": "ClassWithRanges slot invalid_any_range_enum has range specified in `exactly_one_of` or `any_of` but the slot range is not linkml:Any",
+    "invalid_any_range_class": "ClassWithRanges slot invalid_any_range_class has range specified in `exactly_one_of` or `any_of` but the slot range is not linkml:Any",
+}
+
 
 def test_generated_range_schema(sv_range_riid_gen: tuple[SchemaView, tuple[str, str | None, str | None]]) -> None:
     """Tests for generation of range schemas.
@@ -1842,8 +1849,17 @@ def test_generated_range_schema(sv_range_riid_gen: tuple[SchemaView, tuple[str, 
     assert isinstance(sv_range, SchemaView)
 
 
-@pytest.mark.parametrize("range_function", ["slot_range", "slot_range_as_union", "slot_applicable_range_elements"])
 @pytest.mark.parametrize("slot_name", ranges_no_defaults.keys())
+@pytest.mark.parametrize(
+    "range_function",
+    [
+        "slot_range",
+        "slot_range_as_union",
+        "induced_slot_range",
+        "induced_range_strict",
+        "slot_applicable_range_elements",
+    ],
+)
 def test_slot_range(
     range_function: str,
     slot_name: str,
@@ -1859,25 +1875,37 @@ def test_slot_range(
     :type sv_range_riid_gen: tuple[SchemaView, tuple[str, str | None, str | None]]
     """
     (sv_range, range_tuple) = sv_range_riid_gen
-
-    slots_by_name = {s.name: s for s in sv_range.class_induced_slots("ClassWithRanges")}
+    slot_object = sv_range.induced_slot(slot_name, "ClassWithRanges")
     expected = ranges_no_defaults[slot_name]
+
     if slot_name in ranges_replaced_by_defaults:
         expected = ranges_replaced_by_defaults[slot_name][range_tuple]
+
     if range_function == "slot_range":
-        assert slots_by_name[slot_name].range == expected[0]
+        assert slot_object.range == expected[0]
     elif range_function == "slot_range_as_union":
-        assert set(sv_range.slot_range_as_union(slots_by_name[slot_name])) == expected[1]
+        assert set(sv_range.slot_range_as_union(slot_object)) == expected[1]
     elif range_function == "induced_slot_range":
-        assert sv_range.induced_slot_range(slots_by_name[slot_name]) == expected[2]
+        assert sv_range.induced_slot_range(slot_object) == expected[2]
+    elif range_function == "induced_range_strict":
+        # err_msg will be None if there is no error in the slot range specification
+        err_msg = induced_range_strict_errors.get(slot_name)
+        if not err_msg and expected[2] == set():
+            err_msg = f"ClassWithRanges slot {slot_name} has no range specified"
+
+        if err_msg:
+            with pytest.raises(ValueError, match=err_msg):
+                sv_range.induced_slot_range(slot_object, strict=True)
+        else:
+            assert sv_range.induced_slot_range(slot_object, strict=True) == expected[2]
     elif range_function == "slot_applicable_range_elements":
         if slot_name in ranges_replaced_by_defaults and len(expected) < 4:
             expected = ranges_no_defaults[slot_name]
         if isinstance(expected[3], set):
-            assert set(sv_range.slot_applicable_range_elements(slots_by_name[slot_name])) == expected[3]
+            assert set(sv_range.slot_applicable_range_elements(slot_object)) == expected[3]
         else:
             with pytest.raises(expected[3], match="Unrecognized range: None"):
-                sv_range.slot_applicable_range_elements(slots_by_name[slot_name])
+                sv_range.slot_applicable_range_elements(slot_object)
     else:
         pytest.fail(f"Unexpected range_function value: {range_function}")
 
