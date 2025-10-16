@@ -54,6 +54,7 @@
     skos:prefLabel "a" ;
     linkml:domain_of <https://example.org/this/C3> ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner <https://example.org/this/C3> ;
     linkml:range <https://example.org/this/C1> ;
     linkml:slot_uri <https://example.org/other/a> .
