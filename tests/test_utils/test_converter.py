@@ -4,7 +4,7 @@ import pytest
 from click.testing import CliRunner
 from rdflib import Graph
 
-from linkml.utils.converter import cli
+from linkml.converter.cli import cli
 
 
 @pytest.fixture
