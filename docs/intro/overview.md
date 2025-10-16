@@ -13,7 +13,7 @@ to developers such as JSON.
 - Quick links: [
     [Schemas](../schemas/index) |
     [Spec](../specifications/linkml-spec.md) |
-    [Slides](https://www.slideshare.net/cmungall/linkml-intro-july-2022pptx) |
+    [Slides](https://zenodo.org/records/7778641) |
     [Notebooks](https://github.com/linkml/linkml/blob/main/notebooks) |
     [SchemaSheets](https://linkml.io/schemasheets/) |
     [Schema Automator](https://linkml.io/schema-automator/) |

@@ -2,7 +2,6 @@ JSON-LD Contexts
 ================
 
 .. note ::
-
     When run with ``--emit-frame``, the generator writes a ``.frame.jsonld`` with ``@embed`` directives
     derived from slot ``inlined`` settings (``@always`` / ``@never``).
 
@@ -15,7 +14,15 @@ JSON-LD Contexts
     * ``schema.context.jsonld`` – the JSON-LD context
     * ``schema.frame.jsonld`` – the JSON-LD frame (only if @embed rules are present)
 
-    ``--emit-frame`` requires ``--output``.
+    Alternatively, you can embed the context directly into the frame and produce a single file::
+
+        gen-jsonld-context schema.yaml --output schema.jsonld --embed-context-in-frame
+
+    This produces one file:
+
+    * ``schema.frame.jsonld`` – the JSON-LD frame with the full ``@context`` embedded
+
+    ``--emit-frame`` and ``--embed-context-in-frame`` require ``--output``.
 
 .. warning ::
 

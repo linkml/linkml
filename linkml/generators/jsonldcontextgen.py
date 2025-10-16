@@ -53,6 +53,7 @@ class ContextGenerator(Generator):
 
     # Framing (opt-in via CLI flag)
     emit_frame: bool = False
+    embed_context_in_frame: bool = False
     frame_body: dict = field(default_factory=lambda: dict())
     frame_root: Optional[str] = None
 
@@ -127,7 +128,7 @@ class ContextGenerator(Generator):
             for k, v in self.slot_class_maps.items():
                 context_content[k] = v
         context["@context"] = context_content
-        if output:
+        if output and not self.embed_context_in_frame:
             with open(output, "w", encoding="UTF-8") as outf:
                 outf.write(as_json(context))
 
@@ -140,10 +141,16 @@ class ContextGenerator(Generator):
             if root_name is None and self.schema.classes:
                 root_name = next(iter(self.schema.classes))
 
-            frame = {
-                "@context": Path(output).name,
-                "@omitGraph": True,
-            }
+            if self.embed_context_in_frame:
+                frame = {
+                    "@context": context["@context"],
+                    "@omitGraph": True,
+                }
+            else:
+                frame = {
+                    "@context": Path(output).name,
+                    "@omitGraph": True,
+                }
             if root_name:
                 root_cls = self.schema.classes[root_name]
                 frame["@type"] = root_cls.class_uri or root_cls.name
@@ -180,13 +187,7 @@ class ContextGenerator(Generator):
             slot_def = {}
             if not slot.usage_slot_name:
                 any_of_ranges = [any_of_el.range for any_of_el in slot.any_of]
-                if slot.range in self.schema.classes:
-                    range_class_uri = self.schema.classes[slot.range].class_uri
-                    if range_class_uri and slot.inlined:
-                        slot_def["@type"] = range_class_uri
-                    else:
-                        slot_def["@type"] = "@id"
-                elif any(rng in self.schema.classes for rng in any_of_ranges):
+                if slot.range in self.schema.classes or any(rng in self.schema.classes for rng in any_of_ranges):
                     slot_def["@type"] = "@id"
                 elif slot.range in self.schema.enums:
                     slot_def["@context"] = ENUM_CONTEXT
@@ -273,18 +274,28 @@ class ContextGenerator(Generator):
     help="Also emit a <schema>.frame.jsonld file with @embed rules for framing",
 )
 @click.option(
+    "--embed-context-in-frame/--no-embed-context-in-frame",
+    default=False,
+    show_default=True,
+    help="Emit a <schema>.frame.jsonld file with @context embedded directly (single file)",
+)
+@click.option(
     "-o",
     "--output",
     type=click.Path(),
     help="Output file name",
 )
 @click.version_option(__version__, "-V", "--version")
-def cli(yamlfile, emit_frame, output, **args):
+def cli(yamlfile, emit_frame, embed_context_in_frame, output, **args):
     """Generate jsonld @context definition from LinkML model"""
-    if emit_frame and not output:
-        raise click.UsageError("--emit-frame requires --output")
+    if (emit_frame or embed_context_in_frame) and not output:
+        raise click.UsageError("--emit-frame/--embed-context-in-frame requires --output")
     gen = ContextGenerator(yamlfile, **args)
-    gen.emit_frame = emit_frame
+    if embed_context_in_frame:
+        gen.emit_frame = True
+        gen.embed_context_in_frame = True
+    else:
+        gen.emit_frame = emit_frame
     print(gen.serialize(output=output, **args))
 
 

@@ -45,8 +45,7 @@ def get_metamodel_validator() -> Validator:
     meta_json_gen = JsonSchemaGenerator(LOCAL_METAMODEL_YAML_FILE, not_closed=False)
     meta_json_schema = meta_json_gen.generate()
     validator_cls = jsonschema.validators.validator_for(meta_json_schema, default=jsonschema.Draft7Validator)
-    validator = validator_cls(meta_json_schema, format_checker=validator_cls.FORMAT_CHECKER)
-    return validator
+    return validator_cls(meta_json_schema, format_checker=validator_cls.FORMAT_CHECKER)
 
 
 def merge_configs(original: dict, other: dict):

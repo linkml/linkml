@@ -1,9 +1,15 @@
 import sys
 from importlib.util import find_spec
+from keyword import iskeyword
 from typing import Any, ClassVar, Literal, Optional, Union, get_args
 
+try:
+    from typing import Self
+except ImportError:
+    from typing_extensions import Self
+
 from jinja2 import Environment, PackageLoader
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml.generators.common.template import (
@@ -124,8 +130,18 @@ class EnumValue(BaseModel):
     """
 
     label: str
+    alias: Optional[str] = None
     value: str
     description: Optional[str] = None
+
+    @model_validator(mode="after")
+    def alias_python_keywords(self) -> Self:
+        """Mask Python keywords used for `label` by appending `_`"""
+        if iskeyword(self.label):
+            if self.alias is None:
+                self.alias = self.label
+            self.label = self.label + "_"
+        return self
 
 
 class PydanticEnum(PydanticTemplateModel):
@@ -212,7 +228,18 @@ class PydanticAttribute(PydanticTemplateModel):
         elif self.required or self.identifier or self.key:
             return "..."
         else:
+            if self.range and self.range.startswith("Optional[list"):
+                return "[]"
             return "None"
+
+    @model_validator(mode="after")
+    def alias_python_keywords(self) -> Self:
+        """Mask Python keywords used for `name` by appending `_`"""
+        if iskeyword(self.name):
+            if self.alias is None:
+                self.alias = self.name
+            self.name = self.name + "_"
+        return self
 
 
 class PydanticValidator(PydanticAttribute):
