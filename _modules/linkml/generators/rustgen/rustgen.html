@@ -439,6 +439,7 @@
     <span class="n">RustEnum</span><span class="p">,</span>
     <span class="n">RustEnumItem</span><span class="p">,</span>
     <span class="n">RustFile</span><span class="p">,</span>
+    <span class="n">RustLibShim</span><span class="p">,</span>
     <span class="n">RustProperty</span><span class="p">,</span>
     <span class="n">RustPyProject</span><span class="p">,</span>
     <span class="n">RustRange</span><span class="p">,</span>
@@ -448,6 +449,8 @@
     <span class="n">RustTypeAlias</span><span class="p">,</span>
     <span class="n">SerdeUtilsFile</span><span class="p">,</span>
     <span class="n">SlotRangeAsUnion</span><span class="p">,</span>
+    <span class="n">StubGenBin</span><span class="p">,</span>
+    <span class="n">StubUtilsFile</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
 
@@ -535,6 +538,22 @@
             <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;chrono&quot;</span><span class="p">],</span>
         <span class="p">),</span>
         <span class="c1"># Import(module=&quot;serde_pyobject&quot;, version=&quot;0.6.1&quot;, objects=[], feature_flag=&quot;pyo3&quot;, features=[]),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">STUBGEN_IMPORTS</span> <span class="o">=</span> <span class="n">Imports</span><span class="p">(</span>
+    <span class="n">imports</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Import</span><span class="p">(</span>
+            <span class="n">module</span><span class="o">=</span><span class="s2">&quot;pyo3-stub-gen&quot;</span><span class="p">,</span>
+            <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.13.1&quot;</span><span class="p">,</span>
+            <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;define_stub_info_gatherer&quot;</span><span class="p">),</span>
+                <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;derive::gen_stub_pyclass&quot;</span><span class="p">),</span>
+                <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;derive::gen_stub_pymethods&quot;</span><span class="p">),</span>
+            <span class="p">],</span>
+            <span class="n">feature_flag</span><span class="o">=</span><span class="s2">&quot;stubgen&quot;</span><span class="p">,</span>
+            <span class="n">feature_dependencies</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;pyo3&quot;</span><span class="p">],</span>
+        <span class="p">),</span>
     <span class="p">]</span>
 <span class="p">)</span>
 
@@ -766,6 +785,10 @@
     <span class="n">pyo3_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&gt;=0.21.1&quot;</span>
     <span class="n">serde</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate serde derive serialization/deserialization attributes&quot;&quot;&quot;</span>
+    <span class="n">stubgen</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate pyo3-stub-gen instrumentation alongside PyO3 bindings&quot;&quot;&quot;</span>
+    <span class="n">handwritten_lib</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Place generated sources under src/generated and leave src/lib.rs for user code&quot;&quot;&quot;</span>
     <span class="n">mode</span><span class="p">:</span> <span class="n">RUST_MODES</span> <span class="o">=</span> <span class="s2">&quot;crate&quot;</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a cargo.toml file&quot;&quot;&quot;</span>
     <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -783,12 +806,33 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_select_root_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_defs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the schema-local class marked ``tree_root`` if present.&quot;&quot;&quot;</span>
+
+        <span class="n">schema_id</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_local</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">schema_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_schema</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_schema</span> <span class="o">==</span> <span class="n">schema_id</span>
+
+        <span class="n">local_classes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">cls</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">class_defs</span> <span class="k">if</span> <span class="n">is_local</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;mixin&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)]</span>
+
+        <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">local_classes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;tree_root&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">cls</span>
+
+        <span class="k">return</span> <span class="kc">None</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">:</span> <span class="n">TypeDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeResult</span><span class="p">:</span>
         <span class="n">type_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_generate_type</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">TypeResult</span><span class="p">(</span>
             <span class="n">source</span><span class="o">=</span><span class="n">type_</span><span class="p">,</span>
             <span class="n">type_</span><span class="o">=</span><span class="n">RustTypeAlias</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="n">get_name</span><span class="p">(</span><span class="n">type_</span><span class="p">),</span> <span class="n">type_</span><span class="o">=</span><span class="n">get_rust_type</span><span class="p">(</span><span class="n">type_</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pyo3</span><span class="p">),</span> <span class="n">pyo3</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pyo3</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">get_name</span><span class="p">(</span><span class="n">type_</span><span class="p">),</span>
+                <span class="n">type_</span><span class="o">=</span><span class="n">get_rust_type</span><span class="p">(</span><span class="n">type_</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pyo3</span><span class="p">),</span>
+                <span class="n">pyo3</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pyo3</span><span class="p">,</span>
+                <span class="n">stubgen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stubgen</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_imports</span><span class="p">(</span><span class="n">type_</span><span class="p">),</span>
         <span class="p">)</span>
@@ -811,6 +855,7 @@
                 <span class="n">items</span><span class="o">=</span><span class="n">items</span><span class="p">,</span>
                 <span class="n">pyo3</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pyo3</span><span class="p">,</span>
                 <span class="n">serde</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">serde</span><span class="p">,</span>
+                <span class="n">stubgen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stubgen</span><span class="p">,</span>
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">after_generate_enum</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
@@ -834,6 +879,7 @@
                 <span class="n">multivalued</span><span class="o">=</span><span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span><span class="p">,</span>
                 <span class="n">pyo3</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pyo3</span><span class="p">,</span>
                 <span class="n">class_range</span><span class="o">=</span><span class="n">class_range</span><span class="p">,</span>
+                <span class="n">stubgen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stubgen</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_imports</span><span class="p">(</span><span class="n">slot</span><span class="p">),</span>
         <span class="p">)</span>
@@ -868,6 +914,7 @@
                     <span class="n">SlotRangeAsUnion</span><span class="p">(</span>
                         <span class="n">slot_name</span><span class="o">=</span><span class="n">get_name</span><span class="p">(</span><span class="n">a</span><span class="p">),</span>
                         <span class="n">ranges</span><span class="o">=</span><span class="p">[</span><span class="n">get_rust_type</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">],</span>
+                        <span class="n">stubgen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stubgen</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
 
@@ -875,6 +922,7 @@
             <span class="n">class_name</span><span class="o">=</span><span class="n">get_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">),</span>
             <span class="n">class_name_snakecase</span><span class="o">=</span><span class="n">underscore</span><span class="p">(</span><span class="n">uncamelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)),</span>
             <span class="n">slot_ranges</span><span class="o">=</span><span class="n">slot_range_unions</span><span class="p">,</span>
+            <span class="n">stubgen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stubgen</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">induced_attrs</span><span class="p">]</span>
@@ -891,6 +939,7 @@
                 <span class="n">unsendable</span><span class="o">=</span><span class="n">unsendable</span><span class="p">,</span>
                 <span class="n">pyo3</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pyo3</span><span class="p">,</span>
                 <span class="n">serde</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">serde</span><span class="p">,</span>
+                <span class="n">stubgen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stubgen</span><span class="p">,</span>
                 <span class="n">as_key_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_class_as_key_value</span><span class="p">(</span><span class="bp">cls</span><span class="p">),</span>
                 <span class="n">struct_or_subtype_enum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_struct_or_subtype_enum</span><span class="p">(</span><span class="bp">cls</span><span class="p">),</span>
                 <span class="n">class_module</span><span class="o">=</span><span class="n">cls_mod</span><span class="p">,</span>
@@ -960,6 +1009,7 @@
                 <span class="n">can_convert_from_empty</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">value_args_no_default</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
                 <span class="n">serde</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">serde</span><span class="p">,</span>
                 <span class="n">pyo3</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pyo3</span><span class="p">,</span>
+                <span class="n">stubgen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stubgen</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
@@ -988,6 +1038,7 @@
                 <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_class_as_key_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">range</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">pyo3</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pyo3</span><span class="p">,</span>
                 <span class="n">serde</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">serde</span><span class="p">,</span>
+                <span class="n">stubgen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stubgen</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_imports</span><span class="p">(</span><span class="n">attr</span><span class="p">),</span>
         <span class="p">)</span>
@@ -1010,6 +1061,7 @@
             <span class="n">pyo3_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pyo3_version</span><span class="p">,</span>
             <span class="n">pyo3</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pyo3</span><span class="p">,</span>
             <span class="n">serde</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">serde</span><span class="p">,</span>
+            <span class="n">stubgen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stubgen</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -1072,7 +1124,10 @@
         <span class="n">slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">after_generate_slots</span><span class="p">(</span><span class="n">slots</span><span class="p">,</span> <span class="n">sv</span><span class="p">)</span>
 
         <span class="n">need_merge_crate</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">classes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">induced_class</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">ordered_by</span><span class="o">=</span><span class="n">OrderedBy</span><span class="o">.</span><span class="n">INHERITANCE</span><span class="p">))</span>
+        <span class="n">class_defs</span> <span class="o">=</span> <span class="p">[</span><span class="n">sv</span><span class="o">.</span><span class="n">induced_class</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">ordered_by</span><span class="o">=</span><span class="n">OrderedBy</span><span class="o">.</span><span class="n">INHERITANCE</span><span class="p">)]</span>
+        <span class="n">root_class_def</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_root_class</span><span class="p">(</span><span class="n">class_defs</span><span class="p">)</span>
+        <span class="n">root_struct_name</span> <span class="o">=</span> <span class="n">get_name</span><span class="p">(</span><span class="n">root_class_def</span><span class="p">)</span> <span class="k">if</span> <span class="n">root_class_def</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">classes</span> <span class="o">=</span> <span class="n">class_defs</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">classes</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">MERGE_ANNOTATION</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">annotations</span><span class="p">:</span>
                 <span class="n">need_merge_crate</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1087,6 +1142,8 @@
         <span class="n">imports</span> <span class="o">=</span> <span class="n">DEFAULT_IMPORTS</span><span class="o">.</span><span class="n">model_copy</span><span class="p">()</span>
         <span class="n">imports</span> <span class="o">+=</span> <span class="n">PYTHON_IMPORTS</span>
         <span class="n">imports</span> <span class="o">+=</span> <span class="n">SERDE_IMPORTS</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stubgen</span><span class="p">:</span>
+            <span class="n">imports</span> <span class="o">+=</span> <span class="n">STUBGEN_IMPORTS</span>
         <span class="k">if</span> <span class="n">need_merge_crate</span><span class="p">:</span>
             <span class="n">imports</span> <span class="o">+=</span> <span class="n">MERGE_IMPORTS</span>
         <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="p">[</span><span class="o">*</span><span class="n">enums</span><span class="p">,</span> <span class="o">*</span><span class="n">slots</span><span class="p">,</span> <span class="o">*</span><span class="n">classes</span><span class="p">]:</span>
@@ -1101,6 +1158,9 @@
             <span class="n">structs</span><span class="o">=</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">cls</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">classes</span><span class="p">],</span>
             <span class="n">pyo3</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pyo3</span><span class="p">,</span>
             <span class="n">serde</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">serde</span><span class="p">,</span>
+            <span class="n">stubgen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stubgen</span><span class="p">,</span>
+            <span class="n">handwritten_lib</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">handwritten_lib</span><span class="p">,</span>
+            <span class="n">root_struct_name</span><span class="o">=</span><span class="n">root_struct_name</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;crate&quot;</span><span class="p">:</span>
@@ -1108,9 +1168,21 @@
             <span class="n">extra_files</span><span class="p">[</span><span class="s2">&quot;serde_utils&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SerdeUtilsFile</span><span class="p">()</span>
             <span class="n">extra_files</span><span class="p">[</span><span class="s2">&quot;poly&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PolyFile</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">,</span> <span class="n">traits</span><span class="o">=</span><span class="n">poly_traits</span><span class="p">)</span>
             <span class="n">extra_files</span><span class="p">[</span><span class="s2">&quot;poly_containers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PolyContainersFile</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stubgen</span><span class="p">:</span>
+                <span class="n">extra_files</span><span class="p">[</span><span class="s2">&quot;stub_utils&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">StubUtilsFile</span><span class="p">()</span>
             <span class="n">cargo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_cargo</span><span class="p">(</span><span class="n">imports</span><span class="p">)</span>
             <span class="n">pyproject</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_pyproject</span><span class="p">()</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="n">CrateResult</span><span class="p">(</span><span class="n">cargo</span><span class="o">=</span><span class="n">cargo</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span> <span class="n">pyproject</span><span class="o">=</span><span class="n">pyproject</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">extra_files</span><span class="o">=</span><span class="n">extra_files</span><span class="p">)</span>
+            <span class="n">bin_files</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stubgen</span><span class="p">:</span>
+                <span class="n">bin_files</span><span class="p">[</span><span class="s2">&quot;bin/stub_gen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">StubGenBin</span><span class="p">(</span><span class="n">crate_name</span><span class="o">=</span><span class="n">cargo</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">stubgen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stubgen</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">CrateResult</span><span class="p">(</span>
+                <span class="n">cargo</span><span class="o">=</span><span class="n">cargo</span><span class="p">,</span>
+                <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
+                <span class="n">pyproject</span><span class="o">=</span><span class="n">pyproject</span><span class="p">,</span>
+                <span class="n">source</span><span class="o">=</span><span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span>
+                <span class="n">extra_files</span><span class="o">=</span><span class="n">extra_files</span><span class="p">,</span>
+                <span class="n">bin_files</span><span class="o">=</span><span class="n">bin_files</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="n">res</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Single file: inline serde utils, and skip poly modules</span>
@@ -1394,33 +1466,54 @@
             <span class="n">rendered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;crate&quot;</span><span class="p">)</span>
 
         <span class="n">cargo</span> <span class="o">=</span> <span class="n">rendered</span><span class="o">.</span><span class="n">cargo</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template_environment</span><span class="p">)</span>
-        <span class="c1"># Normalize EOF: exactly one trailing newline</span>
-        <span class="n">cargo</span> <span class="o">=</span> <span class="n">cargo</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">cargo_file</span> <span class="o">=</span> <span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;Cargo.toml&quot;</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cargo_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cfile</span><span class="p">:</span>
-            <span class="n">cfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">cargo</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_text_file</span><span class="p">(</span><span class="n">cargo_file</span><span class="p">,</span> <span class="n">cargo</span><span class="p">,</span> <span class="n">crate_root</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
 
         <span class="n">pyproject</span> <span class="o">=</span> <span class="n">rendered</span><span class="o">.</span><span class="n">pyproject</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template_environment</span><span class="p">)</span>
-        <span class="n">pyproject</span> <span class="o">=</span> <span class="n">pyproject</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">pyproject_file</span> <span class="o">=</span> <span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;pyproject.toml&quot;</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pyproject_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pyfile</span><span class="p">:</span>
-            <span class="n">pyfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pyproject</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_text_file</span><span class="p">(</span><span class="n">pyproject_file</span><span class="p">,</span> <span class="n">pyproject</span><span class="p">,</span> <span class="n">crate_root</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
 
         <span class="n">rust_file</span> <span class="o">=</span> <span class="n">rendered</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template_environment</span><span class="p">)</span>
-        <span class="n">rust_file</span> <span class="o">=</span> <span class="n">rust_file</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">src_dir</span> <span class="o">=</span> <span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;src&quot;</span>
         <span class="n">src_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">lib_file</span> <span class="o">=</span> <span class="n">src_dir</span> <span class="o">/</span> <span class="s2">&quot;lib.rs&quot;</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">lib_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">lfile</span><span class="p">:</span>
-            <span class="n">lfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">rust_file</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">handwritten_lib</span><span class="p">:</span>
+            <span class="n">generated_dir</span> <span class="o">=</span> <span class="n">src_dir</span> <span class="o">/</span> <span class="s2">&quot;generated&quot;</span>
+            <span class="n">generated_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">lib_file</span> <span class="o">=</span> <span class="n">generated_dir</span> <span class="o">/</span> <span class="s2">&quot;mod.rs&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">generated_dir</span> <span class="o">=</span> <span class="n">src_dir</span>
+            <span class="n">lib_file</span> <span class="o">=</span> <span class="n">src_dir</span> <span class="o">/</span> <span class="s2">&quot;lib.rs&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_text_file</span><span class="p">(</span><span class="n">lib_file</span><span class="p">,</span> <span class="n">rust_file</span><span class="p">,</span> <span class="n">crate_root</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">rendered</span><span class="o">.</span><span class="n">extra_files</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">extra_file</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template_environment</span><span class="p">)</span>
-            <span class="n">extra_file</span> <span class="o">=</span> <span class="n">extra_file</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="n">extra_file_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">.rs&quot;</span>
-            <span class="n">extra_file_path</span> <span class="o">=</span> <span class="n">src_dir</span> <span class="o">/</span> <span class="n">extra_file_name</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">extra_file_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ef</span><span class="p">:</span>
-                <span class="n">ef</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">extra_file</span><span class="p">)</span>
+            <span class="n">extra_file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_safe_subpath</span><span class="p">(</span><span class="n">generated_dir</span><span class="p">,</span> <span class="n">extra_file_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_text_file</span><span class="p">(</span><span class="n">extra_file_path</span><span class="p">,</span> <span class="n">extra_file</span><span class="p">,</span> <span class="n">crate_root</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">rendered</span><span class="p">,</span> <span class="s2">&quot;bin_files&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">rendered</span><span class="o">.</span><span class="n">bin_files</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">rendered_bin</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template_environment</span><span class="p">)</span>
+                <span class="n">safe_bin_base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_safe_subpath</span><span class="p">(</span><span class="n">src_dir</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">)</span>
+                <span class="n">bin_path</span> <span class="o">=</span> <span class="n">safe_bin_base</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.rs&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_text_file</span><span class="p">(</span><span class="n">bin_path</span><span class="p">,</span> <span class="n">rendered_bin</span><span class="p">,</span> <span class="n">crate_root</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">handwritten_lib</span><span class="p">:</span>
+            <span class="n">shim_path</span> <span class="o">=</span> <span class="n">src_dir</span> <span class="o">/</span> <span class="s2">&quot;lib.rs&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">shim_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="n">root_struct_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">rendered</span><span class="o">.</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;root_struct_name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">root_struct_fn_snake</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">uncamelcase</span><span class="p">(</span><span class="n">root_struct_name</span><span class="p">))</span> <span class="k">if</span> <span class="n">root_struct_name</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="n">shim_template</span> <span class="o">=</span> <span class="n">RustLibShim</span><span class="p">(</span>
+                    <span class="n">module_name</span><span class="o">=</span><span class="n">rendered</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">pyo3</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pyo3</span><span class="p">,</span>
+                    <span class="n">serde</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">serde</span><span class="p">,</span>
+                    <span class="n">stubgen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stubgen</span><span class="p">,</span>
+                    <span class="n">handwritten_lib</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">handwritten_lib</span><span class="p">,</span>
+                    <span class="n">root_struct_name</span><span class="o">=</span><span class="n">root_struct_name</span><span class="p">,</span>
+                    <span class="n">root_struct_fn_snake</span><span class="o">=</span><span class="n">root_struct_fn_snake</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">shim</span> <span class="o">=</span> <span class="n">shim_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template_environment</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_text_file</span><span class="p">(</span><span class="n">shim_path</span><span class="p">,</span> <span class="n">shim</span><span class="p">,</span> <span class="n">crate_root</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">rust_file</span>
 
@@ -1451,6 +1544,44 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid generation mode: </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">output</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_safe_subpath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">relative</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a path nested under base, validating it does not escape.&quot;&quot;&quot;</span>
+
+        <span class="n">rel_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">relative</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rel_path</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Relative path expected, got absolute path: </span><span class="si">{</span><span class="n">relative</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rel_path</span><span class="o">.</span><span class="n">parts</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Relative path must contain at least one segment&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">rel_path</span><span class="o">.</span><span class="n">parts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">part</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid path segment: </span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">part</span> <span class="ow">or</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">part</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Path segment must not contain separators: </span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">base</span> <span class="o">/</span> <span class="n">rel_path</span>
+        <span class="n">base_resolved</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">candidate</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">base_resolved</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>  <span class="c1"># pragma: no cover - defensive</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Path </span><span class="si">{</span><span class="n">candidate</span><span class="si">}</span><span class="s2"> escapes base directory </span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+
+        <span class="k">return</span> <span class="n">candidate</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_text_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">crate_root</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Normalize trailing newline, ensure parent dirs, and write text.&quot;&quot;&quot;</span>
+
+        <span class="n">base_resolved</span> <span class="o">=</span> <span class="n">crate_root</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">base_resolved</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Path </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> escapes crate root </span><span class="si">{</span><span class="n">crate_root</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+
+        <span class="n">normalized</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">normalized</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">template_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Environment</span><span class="p">:</span>

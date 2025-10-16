@@ -4021,6 +4021,12 @@ if an override is not found</p>
 </dd></dl>
 
 <dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-rust-handwritten-lib">
+<span id="cmdoption-linkml-generate-full-rust-no-handwritten-lib"></span><span class="sig-name descname"><span class="pre">--handwritten-lib</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-handwritten-lib</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-rust-handwritten-lib" title="Link to this definition">¶</a></dt>
+<dd><p>When enabled, place generated sources under src/generated and create a shim lib.rs for handwritten code. The shim is only created on first run and left untouched on subsequent regenerations.</p>
+</dd></dl>
+
+<dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-rust-s">
 <span id="cmdoption-linkml-generate-full-rust-serde"></span><span class="sig-name descname"><span class="pre">-s</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--serde</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-rust-s" title="Link to this definition">¶</a></dt>
 <dd><p>Add ‘serde’ to Cargo.toml default features. Source always includes #[cfg(feature=”serde”)] derives/attrs; this flag only enables the crate feature by default.</p>
