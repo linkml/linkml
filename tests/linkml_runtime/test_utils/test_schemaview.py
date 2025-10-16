@@ -725,6 +725,56 @@ def test_metamodel_in_schemaview() -> None:
             assert exp_slot_uri is not None
 
 
+def test_eq_true_false() -> None:
+    """Test that __eq__ returns True or False appropriately."""
+    schema = SchemaDefinition(id="test-schema", name="TestSchema")
+    view = SchemaView(schema)
+
+    # Create a new SchemaView with the same schema
+    view_copy = SchemaView(schema)
+    assert view.schema.id == view_copy.schema.id
+    assert view.modifications == view_copy.modifications
+    # the new schema will have a unique UUID
+    assert view.uuid != view_copy.uuid
+    # the two schemas will therefore not be equal
+    assert view != view_copy
+
+    # copy over the uuid and modifications from the original schema
+    view_copy.uuid = view.uuid
+    view_copy.modifications = view.modifications
+
+    # the schemas are now equal. Hurrah!
+    assert view == view_copy
+
+    # alter the modification count
+    view_copy.modifications += 1
+    assert view != view_copy
+
+    # Create a new SchemaView with a different schema
+    diff_schema = SchemaDefinition(id="different-schema", name="DifferentSchema")
+    diff_view = SchemaView(diff_schema)
+    assert view != diff_view
+
+    # copy over the UUID and modifications from the original schema
+    diff_view.uuid = view.uuid
+    diff_view.modifications = view.modifications
+
+    # schemas have different IDs so will still be different
+    assert diff_view != view
+
+
+def test_eq_not_implemented() -> None:
+    """Test that __eq__ returns NotImplemented for non-SchemaView objects."""
+    schema = SchemaDefinition(id="test-schema", name="TestSchema")
+    view = SchemaView(schema)
+
+    # Compare with a string
+    assert view.__eq__("not-a-schemaview") is NotImplemented
+
+    # Compare with a different object
+    assert view.__eq__(object()) is NotImplemented
+
+
 def test_in_schema(schema_view_with_imports: SchemaView) -> None:
     """Test the in_schema function for determining the source schema of a class or slot."""
     view = schema_view_with_imports
