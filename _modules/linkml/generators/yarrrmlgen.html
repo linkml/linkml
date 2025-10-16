@@ -429,7 +429,18 @@
     <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;yml&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">src</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_infer_source_suffix</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="n">path</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s2">&quot;~&quot;</span> <span class="ow">in</span> <span class="n">p</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">path</span>  <span class="c1"># already has ~jsonpath or ~csv</span>
+            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">~jsonpath&quot;</span>
+            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.csv&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">p</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.tsv&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">~csv&quot;</span>
+            <span class="k">return</span> <span class="n">path</span>
+
+        <span class="c1"># in __init__ right after you read src:</span>
+        <span class="n">raw_src</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">it</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;iterator_template&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -439,7 +450,12 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="nb">format</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">src</span> <span class="ow">or</span> <span class="n">DEFAULT_SOURCE_JSON</span>
+        <span class="c1"># normalize source: if user passed file without &quot;~csv/~jsonpath&quot;, infer it</span>
+        <span class="k">if</span> <span class="n">raw_src</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">_infer_source_suffix</span><span class="p">(</span><span class="n">raw_src</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">DEFAULT_SOURCE_JSON</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">iterator_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">it</span> <span class="ow">or</span> <span class="n">DEFAULT_ITERATOR</span>
 
     <span class="c1"># public</span>
@@ -470,7 +486,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_json_source</span><span class="p">():</span>
                 <span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iterator_for_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)]]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">]</span>
+                <span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">]]</span>
 
             <span class="n">mappings</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">mapping</span>
 
@@ -537,7 +553,7 @@
 <span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;yarrrml&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--source&quot;</span><span class="p">,</span>
-    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;YARRRML source shorthand, e.g., data.json~jsonpath or data.csv~csv&quot;</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;YARRRML source shorthand, e.g., data.json~jsonpath or data.csv~csv (TSV works too)&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--iterator-template&quot;</span><span class="p">,</span>

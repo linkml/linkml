@@ -431,6 +431,57 @@
 </pre></div>
 </div>
 </section>
+<section id="csv-tsv-sources">
+<h2>CSV / TSV sources<a class="headerlink" href="#csv-tsv-sources" title="Link to this heading">¶</a></h2>
+<p>Besides JSON, CSV/TSV is supported. The key differences:</p>
+<ul>
+<li><p>No iterator is required for CSV/TSV (each row is a candidate).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sources</span></code> must be expressed as a <strong>list of lists</strong> for compatibility with common engines (e.g. Morph-KGC):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">mappings</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">sources</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;people.csv~csv&#39;</span><span class="p p-Indicator">]</span><span class="w">   </span><span class="c1"># note the inner list</span>
+<span class="w">    </span><span class="nt">s</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ex:$(id)</span>
+<span class="w">    </span><span class="nt">po</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdf:type</span>
+<span class="w">        </span><span class="nt">o</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ex:Person</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ex:name</span>
+<span class="w">        </span><span class="nt">o</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$(name)</span>
+</pre></div>
+</div>
+</li>
+<li><p>Values come from columns via <code class="docutils literal notranslate"><span class="pre">$(column_name)</span></code>. For object slots (non-inlined references), IRIs are emitted:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ex:employer</span>
+<span class="w">  </span><span class="nt">o</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$(employer)</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">iri</span>
+</pre></div>
+</div>
+</li>
+<li><p>TSV works via the same formulation (<code class="docutils literal notranslate"><span class="pre">~csv</span></code>). Most engines auto-detect the tab separator for <code class="docutils literal notranslate"><span class="pre">.tsv</span></code> files. If an engine requires explicit delimiter/CSVW options, that is currently out of scope and can be handled manually in post-editing.</p></li>
+</ul>
+</section>
+<section id="source-inference">
+<h2>Source inference<a class="headerlink" href="#source-inference" title="Link to this heading">¶</a></h2>
+<p>If you pass a file without a formulation suffix, the generator infers it:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">*.json</span></code> → <code class="docutils literal notranslate"><span class="pre">~jsonpath</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">*.csv</span></code> / <code class="docutils literal notranslate"><span class="pre">*.tsv</span></code> → <code class="docutils literal notranslate"><span class="pre">~csv</span></code></p></li>
+</ul>
+<p>Examples:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># JSON (iterator required)</span>
+linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class="w"> </span>schema.yaml<span class="w"> </span>&gt;<span class="w"> </span>mappings.yml
+linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class="w"> </span>schema.yaml<span class="w"> </span>--source<span class="w"> </span>data.json~jsonpath
+linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class="w"> </span>schema.yaml<span class="w"> </span>--source<span class="w"> </span>data.json~jsonpath<span class="w"> </span>--iterator-template<span class="w"> </span><span class="s2">&quot;</span>$<span class="s2">.{Class}[*]&quot;</span>
+
+<span class="c1"># CSV / TSV (no iterator)</span>
+linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class="w"> </span>schema.yaml<span class="w"> </span>--source<span class="w"> </span>people.csv
+<span class="c1"># or explicitly:</span>
+linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class="w"> </span>schema.yaml<span class="w"> </span>--source<span class="w"> </span>people.csv~csv
+linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class="w"> </span>schema.yaml<span class="w"> </span>--source<span class="w"> </span>people.tsv~csv
+</pre></div>
+</div>
+</section>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
 <ul class="simple">
@@ -440,6 +491,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">po</span></code> for class-induced slots (slot aliases respected)</p></li>
 <li><p>emits <code class="docutils literal notranslate"><span class="pre">rdf:type</span></code> as a CURIE (e.g., <code class="docutils literal notranslate"><span class="pre">ex:Person</span></code>)</p></li>
 <li><p>JSON by default: <code class="docutils literal notranslate"><span class="pre">sources:</span> <span class="pre">[[data.json~jsonpath,</span> <span class="pre">$.items[*]]]</span></code></p></li>
+<li><p>CSV/TSV: <code class="docutils literal notranslate"><span class="pre">sources:</span> <span class="pre">[[path~csv]]</span></code> (no iterator), values via <code class="docutils literal notranslate"><span class="pre">$(column)</span></code></p></li>
 </ul>
 </section>
 <section id="command-line">
@@ -447,7 +499,7 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class="w"> </span>path/to/schema.yaml<span class="w"> </span>&gt;<span class="w"> </span>mappings.yml
 <span class="c1"># CSV instead of JSON:</span>
 linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class="w"> </span>path/to/schema.yaml<span class="w"> </span>--source<span class="w"> </span>data.csv~csv
-<span class="c1"># class-based arrays:</span>
+<span class="c1"># class-based arrays (JSON):</span>
 linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class="w"> </span>path/to/schema.yaml<span class="w"> </span>--iterator-template<span class="w"> </span><span class="s2">&quot;</span>$<span class="s2">.{Class}[*]&quot;</span>
 </pre></div>
 </div>
@@ -466,7 +518,7 @@ linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-yarrrml-source">
 <span class="sig-name descname"><span class="pre">--source</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;source&gt;</span></span><a class="headerlink" href="#cmdoption-gen-yarrrml-source" title="Link to this definition">¶</a></dt>
-<dd><p>YARRRML source shorthand, e.g., data.json~jsonpath or data.csv~csv</p>
+<dd><p>YARRRML source shorthand, e.g., data.json~jsonpath or data.csv~csv (TSV works too)</p>
 </dd></dl>
 
 <dl class="std option">
@@ -601,8 +653,8 @@ linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class
 <li><p>Classes without an identifier are skipped</p></li>
 <li><p>Object slots: <code class="docutils literal notranslate"><span class="pre">inlined:</span> <span class="pre">false</span></code> → IRI; <code class="docutils literal notranslate"><span class="pre">inlined:</span> <span class="pre">true</span></code> → not materialized</p></li>
 <li><p>Iterators not derived from JSON Schema</p></li>
-<li><p>No per-slot JSONPath overrides</p></li>
-<li><p>CSV supported via –source</p></li>
+<li><p>No per-slot JSONPath/CSV expressions or functions</p></li>
+<li><p>CSV/TSV supported via <code class="docutils literal notranslate"><span class="pre">--source</span></code>; delimiter/custom CSVW options are not yet exposed</p></li>
 </ul>
 </section>
 </section>
@@ -664,6 +716,8 @@ linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class
             <ul>
 <li><a class="reference internal" href="#">YARRRML</a><ul>
 <li><a class="reference internal" href="#example-output">Example Output</a></li>
+<li><a class="reference internal" href="#csv-tsv-sources">CSV / TSV sources</a></li>
+<li><a class="reference internal" href="#source-inference">Source inference</a></li>
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#command-line">Command Line</a></li>
 <li><a class="reference internal" href="#docs">Docs</a><ul>
