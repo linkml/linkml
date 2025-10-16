@@ -1,0 +1,71 @@
+#[cfg(feature = "stubgen")]
+use {{ crate_module }}::stub_utils;
+
+#[cfg(feature = "stubgen")]
+fn main() -> pyo3_stub_gen::Result<()> {
+    let check_only = std::env::args().skip(1).any(|arg| arg == "--check");
+    let stub = {{ crate_name }}::stub_info()?;
+
+    if check_only {
+        check_stubs(&stub)
+    } else {
+        stub.generate()
+    }
+}
+
+#[cfg(feature = "stubgen")]
+fn check_stubs(stub: &pyo3_stub_gen::StubInfo) -> pyo3_stub_gen::Result<()> {
+    use std::fs;
+    use std::io::ErrorKind;
+
+    let mut issues = Vec::new();
+
+    for (name, module) in &stub.modules {
+        let module_path = stub_utils::normalize_stub_module(name)?;
+        let mut dest = stub.python_root.join(&module_path);
+        if module.submodules.is_empty() {
+            dest.set_extension("pyi");
+        } else {
+            dest.push("__init__.pyi");
+        }
+
+        let expected = module.to_string();
+        match fs::read_to_string(&dest) {
+            Ok(actual) => {
+                if actual != expected {
+                    issues.push(format!(
+                        "updated content differs for `{}` (module `{name}`)",
+                        dest.display()
+                    ));
+                }
+            }
+            Err(err) if err.kind() == ErrorKind::NotFound => {
+                issues.push(format!(
+                    "missing stub file `{}` for module `{name}`",
+                    dest.display()
+                ));
+            }
+            Err(err) => return Err(err.into()),
+        }
+    }
+
+    if issues.is_empty() {
+        Ok(())
+    } else {
+        let mut msg = String::from("Stub files are out of date:\n");
+        for issue in issues {
+            msg.push_str("  - ");
+            msg.push_str(&issue);
+            msg.push('\n');
+        }
+        msg.push_str("Run `cargo run --bin stub_gen --features stubgen` to regenerate.");
+        Err(std::io::Error::new(ErrorKind::Other, msg).into())
+    }
+}
+
+#[cfg(not(feature = "stubgen"))]
+fn main() {
+    eprintln!(
+        "Enable the `stubgen` feature (alongside `pyo3`) to run this generator."
+    );
+}

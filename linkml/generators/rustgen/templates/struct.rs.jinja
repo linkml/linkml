@@ -8,6 +8,9 @@ pub type AnyValue = Anything;
 {% endif %}
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+{% if stubgen %}
+#[cfg_attr(feature = "stubgen", gen_stub_pyclass)]
+{% endif %}
 #[cfg_attr(feature = "pyo3", pyclass(subclass, get_all, set_all))]
 {% if generate_merge %}
 #[derive(Merge)]
@@ -22,6 +25,9 @@ pub struct {{ name }} {
 }
 {% if properties | length > 0 %}
 #[cfg(feature = "pyo3")]
+{% if stubgen %}
+#[cfg_attr(feature = "stubgen", gen_stub_pymethods)]
+{% endif %}
 #[pymethods]
 impl {{ name }} {
     #[new]

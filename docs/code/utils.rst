@@ -1,14 +1,6 @@
 Utils
 =====
 
-linkml.utils.converter module
------------------------------
-
-.. automodule:: linkml.utils.converter
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 linkml.utils.datautils module
 -----------------------------
 

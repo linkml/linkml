@@ -121,8 +121,8 @@ python classes
 Command Line
 ------------
 
-.. currentmodule:: linkml.utils.converter
+.. currentmodule:: linkml.converter.cli
 
-.. click:: linkml.utils.converter:cli
+.. click:: linkml.converter.cli:cli
     :prog: linkml-convert
     :nested: full

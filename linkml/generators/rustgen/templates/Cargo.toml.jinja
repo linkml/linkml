@@ -6,7 +6,7 @@ edition = "{{ edition }}"
 [lib]
 name = "{{ name }}"
 {% if pyo3 %}
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 {% else %}
 crate-type = ["lib"]
 {% endif %}
@@ -38,5 +38,5 @@ default = ["serde"]
 default = []
 {% endif %}
 {% for k,v in cratefeatures.items() %}
-{{ k }} = [{% for i in v %}"dep:{{ i }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+{{ k }} = [{% for i in v %}"{{ i }}"{% if not loop.last %}, {% endif %}{% endfor %}]
 {% endfor %}

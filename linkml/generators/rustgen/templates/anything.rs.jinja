@@ -5,6 +5,14 @@ pub struct Anything(
 );
 
 
+#[cfg(feature = "stubgen")]
+impl ::pyo3_stub_gen::PyStubType for Anything {
+    fn type_output() -> ::pyo3_stub_gen::TypeInfo {
+        ::pyo3_stub_gen::TypeInfo::any()
+    }
+}
+
+
 #[cfg(feature = "serde")]
 impl Serialize for Anything {
     fn serialize<S>(&self, to_ser: S) -> Result<S::Ok, S::Error>
@@ -91,7 +99,6 @@ impl<'py> IntoPyObject<'py> for Anything {
 
     fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
         use pyo3::types::{PyAny, PyDict, PyList, PyString};
-        use pyo3::PyObject;
         use serde_value::Value;
 
         fn value_to_py<'py>(py: Python<'py>, v: &Value) -> pyo3::PyResult<Bound<'py, PyAny>> {
