@@ -9,6 +9,8 @@ from .list_dict_model_transform import ListDictModelTransform
 from .model_transform import ModelTransform
 from .nested_struct_model_transform import NestedStructModelTransform
 from .simple_dict_model_transform import SimpleDictModelTransform
+from .collection_dict_loader import CollectionDictLoader
+from .simple_dict_loader import SimpleDictLoader
 
 __all__ = [
     "ModelTransform",
@@ -16,4 +18,6 @@ __all__ = [
     "CollectionDictModelTransform",
     "ListDictModelTransform",
     "NestedStructModelTransform",
+    "SimpleDictLoader",
+    "CollectionDictLoader",
 ]
