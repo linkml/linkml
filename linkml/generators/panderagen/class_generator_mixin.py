@@ -1,4 +1,3 @@
-from linkml_runtime.linkml_model import ClassDefinitionName
 from .dependency_sorter import DependencySorter
 
 
