@@ -25,6 +25,7 @@ from linkml_runtime.linkml_model import (
 )
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.introspection import package_schemaview
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 from linkml_runtime.utils.schemaops import roll_down, roll_up
 from linkml_runtime.utils.schemaview import (
     CLASSES,
@@ -2919,3 +2920,59 @@ def test_detect_class_as_range_cycles(sv_cycles_schema: SchemaView, target: str)
 
     else:
         detect_cycles(lambda x: check_recursive_id_slots(x), target)
+
+
+@pytest.mark.parametrize(
+    ("entity_type", "entity_name", "type_for_methods", "get_all_method"),
+    [
+        (ClassDefinition, "ToDeleteClass", "class", "all_classes"),
+        (SlotDefinition, "ToDeleteSlot", "slot", "all_slots"),
+        (EnumDefinition, "ToDeleteEnum", "enum", "all_enums"),
+        (TypeDefinition, "ToDeleteType", "type", "all_types"),
+        (SubsetDefinition, "ToDeleteSubset", "subset", "all_subsets"),
+    ],
+)
+def test_add_delete_get_entity(
+    entity_type: ClassDefinition | SlotDefinition | EnumDefinition | TypeDefinition | SubsetDefinition,
+    entity_name: str,
+    type_for_methods: str,
+    get_all_method: str,
+) -> None:
+    """Test that entities can be added and deleted from a schema."""
+    # method for adding an entity, e.g. view.add_class(...)
+    add_method = f"add_{type_for_methods}"
+    # method for deleting an entity, e.g. view.delete_subset(...)
+    delete_method = f"delete_{type_for_methods}"
+    # method for getting a specific entity, e.g. view.get_enum(...)
+    get_method = f"get_{type_for_methods}"
+
+    # Build the schema
+    builder = SchemaBuilder(name="test_schema", id="test_schema")
+    schema = builder.schema
+    view = SchemaView(schema)
+
+    assert view.modifications == 0
+    # create the entity definition object, e.g. ClassDefinition
+    entity = entity_type(name=entity_name)
+    # add the entity to the schemaview, e.g. view.add_class(...)
+    getattr(view, add_method)(entity)
+
+    # check that the entity is returned when running the get all command, e.g. view.all_classes(...)
+    assert {entity_name} == set(getattr(view, get_all_method)())
+    assert view.modifications == 1
+
+    # retrieve the individual class, e.g. view.get_class(...)
+    just_added_entity = getattr(view, get_method)(entity_name)
+    assert isinstance(just_added_entity, entity_type)
+
+    # delete the entity from the schema , e.g. view.delete_class(...)
+    getattr(view, delete_method)(entity_name)
+    assert getattr(view, get_all_method)() == {}
+    assert view.modifications == 2
+
+    # try to retrieve the entity again using get_{type_for_methods}, e.g. view.get_class(...)
+    assert getattr(view, get_method)(entity_name, strict=False) is None
+
+    # expect that retrieving the entity will return an error if strict mode is on
+    with pytest.raises(ValueError, match=f"No such {type_for_methods}"):
+        getattr(view, get_method)(entity_name, strict=True)
