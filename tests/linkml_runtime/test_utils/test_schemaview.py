@@ -784,6 +784,8 @@ def test_in_schema(schema_view_with_imports: SchemaView) -> None:
     assert view.in_schema(SlotDefinitionName("name")) == "core"
     assert view.in_schema(SlotDefinitionName(ACTIVITY)) == "core"
     assert view.in_schema(SlotDefinitionName("string")) == "types"
+    with pytest.raises(ValueError, match="Element fake_element not in any schema"):
+        view.in_schema("fake_element")
 
 
 CREATURE_EXPECTED = {
@@ -1156,6 +1158,12 @@ ORDERING_TESTS = {
 def test_all_classes_ordered_by(sv_ordering_tests: SchemaView, ordered_by: str) -> None:
     """Test the ordered_by method."""
     assert list(sv_ordering_tests.all_classes(ordered_by=ordered_by).keys()) == ORDERING_TESTS[ordered_by]
+
+
+def test_all_classes_ordered_by_error(sv_ordering_tests: SchemaView) -> None:
+    """Test the ordered_by method throws an error when appropriate."""
+    with pytest.raises(ValueError, match="ordered_by must be in OrderedBy or None, got whatever"):
+        sv_ordering_tests.all_classes(ordered_by="whatever")
 
 
 def test_all_classes_class_induced_slots(schema_view_with_imports: SchemaView) -> None:
