@@ -299,6 +299,16 @@ impl<T> PyValue<T> {
     }
 }
 
+#[cfg(all(feature = "pyo3", feature = "stubgen"))]
+impl<T> ::pyo3_stub_gen::PyStubType for PyValue<T>
+where
+    T: ::pyo3_stub_gen::PyStubType,
+{
+    fn type_output() -> ::pyo3_stub_gen::TypeInfo {
+        T::type_output()
+    }
+}
+
 #[cfg(all(feature = "pyo3", feature = "serde"))]
 impl<'py, T> FromPyObject<'py> for PyValue<T>
 where
