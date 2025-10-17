@@ -79,6 +79,8 @@ class PanderaGenerator(OOCodeGenerator):
     genmeta: bool = False
     emit_metadata: bool = True
     coerce: bool = False
+    backing_form: str = "serialization"
+    """specific storage format that may differ from specified inlined flags"""
 
     def default_value_for_type(self, typ: str) -> str:
         """Allow underlying framework to handle default if not specified."""
