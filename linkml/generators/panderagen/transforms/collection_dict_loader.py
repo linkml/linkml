@@ -4,7 +4,7 @@ import polars as pl
 class CollectionDictLoader:
     def __init__(self, struct_schema, id_col="id", nested_tx=lambda x: x):
         """
-        struct_schema: 
+        struct_schema:
             the schema of the nested range not including the collection
         id_col: name of column in struct to hold collection key
         nested_tx: transformation to apply to nested dicts
