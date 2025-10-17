@@ -1266,7 +1266,7 @@ class {enum_name}(EnumDefinitionImpl):
 
 @shared_arguments(PythonGenerator)
 @click.command(name="python")
-@click.option("--head/--no-head", show_default=True, help="Emit metadata heading")
+@click.option("--head/--no-head", default=None, help="Emit metadata heading")
 @click.option(
     "--genmeta/--no-genmeta",
     default=False,
