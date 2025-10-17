@@ -1,6 +1,5 @@
 import logging
-from typing import Optional
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinition
 
@@ -14,7 +13,7 @@ from .dataframe_field import DataframeField
 logger = logging.getLogger(__file__)
 
 
-class SlotHandlerBase():
+class SlotHandlerBase:
     """
     Prior to rendering the dataframe schema, this class provides
     and adapter between the LinkML model and schema view
@@ -82,9 +81,7 @@ class SlotHandlerBase():
         is_multivalued = self.is_multivalued(slot)
         internal_inlined_form_key = ((slot.inlined is True), (slot.inlined_as_list is True), is_multivalued)
         logger.info(f"Inlined form key: {internal_inlined_form_key}")
-        internal_inlined_form = self._INTERNAL_INLINED_FORM.get(
-            internal_inlined_form_key, SlotHandlerBase.FORM_ERROR
-        )
+        internal_inlined_form = self._INTERNAL_INLINED_FORM.get(internal_inlined_form_key, SlotHandlerBase.FORM_ERROR)
 
         if internal_inlined_form == SlotHandlerBase.FORM_INLINED_COLLECTION_DICT:
             if self.get_identifier_or_key_slot(slot.range) is None:
@@ -170,7 +167,9 @@ class SlotHandlerBase():
     def handle_enum_slot(self, slot, range: str) -> str:
         enum_definition = self.generator.schemaview.all_enums().get(range)
         range = SlotHandlerBase.ENUM_RANGE_STRING
-        slot.annotations["permissible_values"] = self.generator.enum_handler.get_enum_permissible_values(enum_definition)
+        slot.annotations["permissible_values"] = self.generator.enum_handler.get_enum_permissible_values(
+            enum_definition
+        )
 
         return range
 

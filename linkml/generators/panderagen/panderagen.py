@@ -207,7 +207,6 @@ class PanderaGenerator(OOCodeGenerator):
         self.class_handler = ClassHandlerBase(self)
 
 
-
 @click.option("--package", help="Package name where relevant for generated class files")
 @click.option("--template-path", help="Optional jinja2 template directory within module")
 @click.option("--template-file", help="Optional jinja2 template to use for class generation")
