@@ -16,10 +16,10 @@ from linkml_runtime.utils.schemaview import SchemaView
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator
 
-from .render_adapters import DataframeDocument
 from .class_handler_base import ClassHandlerBase
-from .render_adapters.dataframe_class import DataframeClass
 from .enum_handler_base import EnumHandlerBase
+from .render_adapters import DataframeDocument
+from .render_adapters.dataframe_class import DataframeClass
 from .slot_handler_base import SlotHandlerBase
 
 logger = logging.getLogger(__name__)
@@ -79,6 +79,8 @@ class PanderaGenerator(OOCodeGenerator):
     genmeta: bool = False
     emit_metadata: bool = True
     coerce: bool = False
+    backing_form: str = "serialization"
+    """specific storage format that may differ from specified inlined flags"""
 
     def default_value_for_type(self, typ: str) -> str:
         """Allow underlying framework to handle default if not specified."""
@@ -206,7 +208,6 @@ class PanderaGenerator(OOCodeGenerator):
         self.slot_handler = SlotHandlerBase(self)
         self.enum_handler = EnumHandlerBase(self)
         self.class_handler = ClassHandlerBase(self)
-
 
 
 @click.option("--package", help="Package name where relevant for generated class files")
