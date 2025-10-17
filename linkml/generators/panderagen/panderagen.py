@@ -16,10 +16,10 @@ from linkml_runtime.utils.schemaview import SchemaView
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator
 
-from .render_adapters import DataframeDocument
 from .class_handler_base import ClassHandlerBase
-from .render_adapters.dataframe_class import DataframeClass
 from .enum_handler_base import EnumHandlerBase
+from .render_adapters import DataframeDocument
+from .render_adapters.dataframe_class import DataframeClass
 from .slot_handler_base import SlotHandlerBase
 
 logger = logging.getLogger(__name__)
