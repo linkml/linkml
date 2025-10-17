@@ -24,39 +24,38 @@ class DataframeField(OOField):
         reference_class: str = None,
         inline_form: str = None,
         permissible_values: list[str] = None,
-
     ):
-        """information about schema fileds for rendering in jinja2 template.
-        
-           name: str
-               as rendered in target convention
-           range:
-           default_value: string
-               target form of default
-           annotations:
-               deprecated
-           source_slot:
-               additional information
-           inline_id_column_name:
-               for inlined as simple dict form
-           inline_id_other_name:
-               for inlined as simple dict form
-           inline_other_range:
-               for inlined as simple dict form
-           permissible values:
-               for enums as rendered
-           inline_form: str
-               which style of inlining is used for a slot
-           permissible_values: list[str]
-               rendered form of enum values
+        """information about schema fields for rendering in jinja2 template.
+
+        name: str
+            as rendered in target convention
+        range:
+        default_value: string
+            target form of default
+        annotations:
+            deprecated
+        source_slot:
+            additional information
+        inline_id_column_name:
+            for inlined as simple dict form
+        inline_id_other_name:
+            for inlined as simple dict form
+        inline_other_range:
+            for inlined as simple dict form
+        permissible values:
+            for enums as rendered
+        inline_form: str
+            which style of inlining is used for a slot
+        permissible_values: list[str]
+            rendered form of enum values
         """
         super().__init__(name, range, default_value, annotations, source_slot)
         self.inline_id_column_name = inline_id_column_name
         self.inline_id_other_name = inline_id_other_name
         self.inline_other_range = inline_other_range
         # to be uncommented in a later commit.
-        #self.reference_class = reference_class
-        #self.inline_form = inline_form
+        # self.reference_class = reference_class
+        # self.inline_form = inline_form
         self._permissible_values = permissible_values
 
     @property
