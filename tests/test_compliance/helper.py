@@ -100,7 +100,7 @@ GENERATORS: dict[FRAMEWORK, Union[type[Generator], tuple[type[Generator], dict[s
         generators.SQLAlchemyGenerator,
         {"template": sqlalchemygen.TemplateEnum.DECLARATIVE},
     ),
-    PANDERA_POLARS_CLASS: generators.PanderaGenerator,
+    PANDERA_POLARS_CLASS: (generators.PanderaDataframeGenerator, {"backing_form": "loaded"}),
     SQL_DDL_SQLITE: (generators.SQLTableGenerator, {"dialect": "sqlite"}),
     SQL_DDL_POSTGRES: (generators.SQLTableGenerator, {"dialect": "postgresql"}),
     OWL: (
