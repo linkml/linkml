@@ -25,6 +25,7 @@ from linkml_runtime.linkml_model import (
 )
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.introspection import package_schemaview
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 from linkml_runtime.utils.schemaops import roll_down, roll_up
 from linkml_runtime.utils.schemaview import (
     CLASSES,
@@ -727,6 +728,56 @@ def test_metamodel_in_schemaview() -> None:
             assert exp_slot_uri is not None
 
 
+def test_eq_true_false() -> None:
+    """Test that __eq__ returns True or False appropriately."""
+    schema = SchemaDefinition(id="test-schema", name="TestSchema")
+    view = SchemaView(schema)
+
+    # Create a new SchemaView with the same schema
+    view_copy = SchemaView(schema)
+    assert view.schema.id == view_copy.schema.id
+    assert view.modifications == view_copy.modifications
+    # the new schema will have a unique UUID
+    assert view.uuid != view_copy.uuid
+    # the two schemas will therefore not be equal
+    assert view != view_copy
+
+    # copy over the uuid and modifications from the original schema
+    view_copy.uuid = view.uuid
+    view_copy.modifications = view.modifications
+
+    # the schemas are now equal. Hurrah!
+    assert view == view_copy
+
+    # alter the modification count
+    view_copy.modifications += 1
+    assert view != view_copy
+
+    # Create a new SchemaView with a different schema
+    diff_schema = SchemaDefinition(id="different-schema", name="DifferentSchema")
+    diff_view = SchemaView(diff_schema)
+    assert view != diff_view
+
+    # copy over the UUID and modifications from the original schema
+    diff_view.uuid = view.uuid
+    diff_view.modifications = view.modifications
+
+    # schemas have different IDs so will still be different
+    assert diff_view != view
+
+
+def test_eq_not_implemented() -> None:
+    """Test that __eq__ returns NotImplemented for non-SchemaView objects."""
+    schema = SchemaDefinition(id="test-schema", name="TestSchema")
+    view = SchemaView(schema)
+
+    # Compare with a string
+    assert view.__eq__("not-a-schemaview") is NotImplemented
+
+    # Compare with a different object
+    assert view.__eq__(object()) is NotImplemented
+
+
 def test_in_schema(schema_view_with_imports: SchemaView) -> None:
     """Test the in_schema function for determining the source schema of a class or slot."""
     view = schema_view_with_imports
@@ -736,6 +787,8 @@ def test_in_schema(schema_view_with_imports: SchemaView) -> None:
     assert view.in_schema(SlotDefinitionName("name")) == "core"
     assert view.in_schema(SlotDefinitionName(ACTIVITY)) == "core"
     assert view.in_schema(SlotDefinitionName("string")) == "types"
+    with pytest.raises(ValueError, match="Element fake_element not in any schema"):
+        view.in_schema("fake_element")
 
 
 # Prefixes, curi_maps, and imports to add to a schema
@@ -1252,6 +1305,12 @@ ORDERING_TESTS = {
 def test_all_classes_ordered_by(sv_ordering_tests: SchemaView, ordered_by: str) -> None:
     """Test the ordered_by method."""
     assert list(sv_ordering_tests.all_classes(ordered_by=ordered_by).keys()) == ORDERING_TESTS[ordered_by]
+
+
+def test_all_classes_ordered_by_error(sv_ordering_tests: SchemaView) -> None:
+    """Test the ordered_by method throws an error when appropriate."""
+    with pytest.raises(ValueError, match="ordered_by must be in OrderedBy or None, got whatever"):
+        sv_ordering_tests.all_classes(ordered_by="whatever")
 
 
 def test_all_classes_class_induced_slots(schema_view_with_imports: SchemaView) -> None:
@@ -3061,3 +3120,59 @@ def test_detect_class_as_range_cycles(sv_cycles_schema: SchemaView, target: str)
 
     else:
         detect_cycles(lambda x: check_recursive_id_slots(x), target)
+
+
+@pytest.mark.parametrize(
+    ("entity_type", "entity_name", "type_for_methods", "get_all_method"),
+    [
+        (ClassDefinition, "ToDeleteClass", "class", "all_classes"),
+        (SlotDefinition, "ToDeleteSlot", "slot", "all_slots"),
+        (EnumDefinition, "ToDeleteEnum", "enum", "all_enums"),
+        (TypeDefinition, "ToDeleteType", "type", "all_types"),
+        (SubsetDefinition, "ToDeleteSubset", "subset", "all_subsets"),
+    ],
+)
+def test_add_delete_get_entity(
+    entity_type: ClassDefinition | SlotDefinition | EnumDefinition | TypeDefinition | SubsetDefinition,
+    entity_name: str,
+    type_for_methods: str,
+    get_all_method: str,
+) -> None:
+    """Test that entities can be added and deleted from a schema."""
+    # method for adding an entity, e.g. view.add_class(...)
+    add_method = f"add_{type_for_methods}"
+    # method for deleting an entity, e.g. view.delete_subset(...)
+    delete_method = f"delete_{type_for_methods}"
+    # method for getting a specific entity, e.g. view.get_enum(...)
+    get_method = f"get_{type_for_methods}"
+
+    # Build the schema
+    builder = SchemaBuilder(name="test_schema", id="test_schema")
+    schema = builder.schema
+    view = SchemaView(schema)
+
+    assert view.modifications == 0
+    # create the entity definition object, e.g. ClassDefinition
+    entity = entity_type(name=entity_name)
+    # add the entity to the schemaview, e.g. view.add_class(...)
+    getattr(view, add_method)(entity)
+
+    # check that the entity is returned when running the get all command, e.g. view.all_classes(...)
+    assert {entity_name} == set(getattr(view, get_all_method)())
+    assert view.modifications == 1
+
+    # retrieve the individual class, e.g. view.get_class(...)
+    just_added_entity = getattr(view, get_method)(entity_name)
+    assert isinstance(just_added_entity, entity_type)
+
+    # delete the entity from the schema , e.g. view.delete_class(...)
+    getattr(view, delete_method)(entity_name)
+    assert getattr(view, get_all_method)() == {}
+    assert view.modifications == 2
+
+    # try to retrieve the entity again using get_{type_for_methods}, e.g. view.get_class(...)
+    assert getattr(view, get_method)(entity_name, strict=False) is None
+
+    # expect that retrieving the entity will return an error if strict mode is on
+    with pytest.raises(ValueError, match=f"No such {type_for_methods}"):
+        getattr(view, get_method)(entity_name, strict=True)
