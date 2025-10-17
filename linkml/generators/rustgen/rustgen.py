@@ -560,12 +560,17 @@ class RustGenerator(Generator, LifecycleMixin):
                 values = get_accepted_type_designator_values(self.schemaview, td, d_class)
                 td_mapping[d] = values
         if len(descendants) > 0:
+            key_type = "String"
+            key_slot = get_key_or_identifier_slot(cls, self.schemaview)
+            if key_slot is not None:
+                key_type = get_rust_type(key_slot.range, self.schemaview, self.pyo3)
             return RustStructOrSubtypeEnum(
                 enum_name=get_name(cls) + "OrSubtype",
                 struct_names=[get_name(self.schemaview.get_class(d)) for d in descendants],
                 type_designator_name=get_name(td) if td else None,
                 as_key_value=get_key_or_identifier_slot(cls, self.schemaview) is not None,
                 type_designators=td_mapping,
+                key_property_type=key_type,
             )
         return None
 
@@ -574,6 +579,7 @@ class RustGenerator(Generator, LifecycleMixin):
         key_attr = None
         value_attrs = []
         value_args_no_default = []
+        non_key_attrs = []
 
         for attr in induced_attrs:
             if attr.identifier:
@@ -587,6 +593,7 @@ class RustGenerator(Generator, LifecycleMixin):
                     return None
                 key_attr = attr
             else:
+                non_key_attrs.append(attr)
                 if not attr.multivalued:
                     value_attrs.append(attr)
                     if attr.required:
@@ -596,14 +603,24 @@ class RustGenerator(Generator, LifecycleMixin):
             # attribute to serve as the value, do not treat this as a key/value class.
             if len(value_attrs) == 0:
                 return None
+            value_attr = value_attrs[0]
+            simple_dict_possible = (
+                len(non_key_attrs) == 1
+                and not value_attr.multivalued
+                and (
+                    value_attr.range not in self.schemaview.all_classes()
+                    or not bool(getattr(value_attr, "inlined", False))
+                )
+            )
             return AsKeyValue(
                 name=get_name(cls),
                 key_property_name=get_name(key_attr),
                 key_property_type=get_rust_type(key_attr.range, self.schemaview, self.pyo3),
-                value_property_name=get_name(value_attrs[0]),
-                value_property_type=get_rust_type(value_attrs[0].range, self.schemaview, self.pyo3),
-                can_convert_from_primitive=len(value_args_no_default) <= 1,
+                value_property_name=get_name(value_attr),
+                value_property_type=get_rust_type(value_attr.range, self.schemaview, self.pyo3),
+                can_convert_from_primitive=simple_dict_possible,
                 can_convert_from_empty=len(value_args_no_default) == 0,
+                value_property_optional=not bool(value_attr.required),
                 serde=self.serde,
                 pyo3=self.pyo3,
                 stubgen=self.stubgen,

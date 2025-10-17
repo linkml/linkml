@@ -370,6 +370,7 @@ class AsKeyValue(RustTemplateModel):
     value_property_type: str
     can_convert_from_primitive: bool = False
     can_convert_from_empty: bool = False
+    value_property_optional: bool = False
 
 
 class RustStructOrSubtypeEnum(RustTemplateModel):
@@ -379,6 +380,7 @@ class RustStructOrSubtypeEnum(RustTemplateModel):
     as_key_value: bool = False
     type_designator_field: Optional[str] = None
     type_designators: dict[str, str]
+    key_property_type: str = "String"
 
 
 class SlotRangeAsUnion(RustTemplateModel):

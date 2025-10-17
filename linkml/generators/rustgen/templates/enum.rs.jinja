@@ -58,7 +58,7 @@ impl ::pyo3_stub_gen::PyStubType for {{ name }} {
     fn type_output() -> ::pyo3_stub_gen::TypeInfo {
         {% set literal_values = items | map(attribute='text_literal') | list %}
         {% set escaped_values = literal_values | map('replace', "'", "\\'" ) | list %}
-        {% if escaped_values and escaped_values|length > 0 %}
+        {% if escaped_values %}
         ::pyo3_stub_gen::TypeInfo::with_module(
             "typing.Literal['{{ escaped_values | join("', '") }}']",
             "typing".into(),
