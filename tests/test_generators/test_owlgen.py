@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Union
 
 import pytest
 from linkml_runtime.linkml_model import SlotDefinition
@@ -255,7 +256,7 @@ class PermissibleValueURIMixture(Enum):
 @pytest.mark.parametrize("permissible_value_uri_mixture", [x for x in PermissibleValueURIMixture])
 def test_permissible_values(
     default_permissible_value_type: str,
-    pv_implements: str | None | tuple[str, str],
+    pv_implements: Union[str, None, tuple[str, str]],
     permissible_value_uri_mixture: PermissibleValueURIMixture,
 ):
     """
@@ -278,7 +279,7 @@ def test_permissible_values(
         - rdfs:Literal: PVs become RDF literals, enum is owl:oneOf
         - owl:NamedIndividual: PVs become named individuals, enum is owl:oneOf
 
-    pv_implements : str | None | tuple[str, str]
+    pv_implements : Union[str, None, tuple[str, str]]
         Override type mapping per permissible value.
         - None: Use default_permissible_value_type for all PVs
         - str: Apply this type to all PVs (overrides default)
