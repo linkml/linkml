@@ -241,15 +241,16 @@ def test_definition_uris(
             # check not using the default metadata profile
             assert list(g.objects(c, SKOS.definition)) == []
 
+
 class PermissibleValueURIMixture(Enum):
     USE_URIS = "use_uris"
     NO_URIS = "no_uris"
     MIXTURE = "mixture"
 
+
 @pytest.mark.parametrize("default_permissible_value_type", ["owl:Class", "rdfs:Literal", "owl:NamedIndividual"])
 @pytest.mark.parametrize(
-    "pv_implements",
-    [None, "owl:Class", "rdfs:Literal", "owl:NamedIndividual", ("owl:Class", "rdfs:Literal")]
+    "pv_implements", [None, "owl:Class", "rdfs:Literal", "owl:NamedIndividual", ("owl:Class", "rdfs:Literal")]
 )
 @pytest.mark.parametrize("permissible_value_uri_mixture", [x for x in PermissibleValueURIMixture])
 def test_permissible_values(
@@ -319,10 +320,10 @@ def test_permissible_values(
     - Some combinations (mixed URI/literal) are skipped as undefined behavior
     """
     sb = SchemaBuilder()
-    permissible_values=[
-            PermissibleValue(text="1", description="pv 1"),
-            PermissibleValue(text="2", description="pv 2"),
-        ]
+    permissible_values = [
+        PermissibleValue(text="1", description="pv 1"),
+        PermissibleValue(text="2", description="pv 2"),
+    ]
     if permissible_value_uri_mixture != PermissibleValueURIMixture.NO_URIS:
         permissible_values[0].meaning = "ex:value1"
         if permissible_value_uri_mixture == PermissibleValueURIMixture.USE_URIS:
@@ -363,6 +364,7 @@ def test_permissible_values(
         if p in (OWL.oneOf, OWL.unionOf):
             # translate `o` from rdf list into python list
             from rdflib.collection import Collection
+
             disj_list = list(Collection(g, o))
             print(f"## ZZZZZZ {p} => {disj_list}")
             assert p not in disjunction_targets
@@ -373,7 +375,7 @@ def test_permissible_values(
     disj_pred, disj_list = tuple(list(disjunction_targets.items())[0])
     assert len(disj_list) == 2
     from rdflib import Literal
-    
+
     for pv in disj_list:
         expected_permissible_value_type = default_permissible_value_type
         if pv_implements:
@@ -382,7 +384,7 @@ def test_permissible_values(
             assert disj_pred == OWL.unionOf
             assert not isinstance(pv, Literal)
             assert isinstance(pv, URIRef)
-            #assert isinstance(pv, OWL.Class)
+            # assert isinstance(pv, OWL.Class)
         elif expected_permissible_value_type == "rdfs:Literal":
             assert disj_pred == OWL.oneOf
             assert isinstance(pv, Literal)
@@ -394,6 +396,3 @@ def test_permissible_values(
             assert isinstance(pv, URIRef) or isinstance(pv, Literal)
         else:
             raise AssertionError("all combinations must be accounted for")
-
-
-
