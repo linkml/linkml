@@ -20,8 +20,8 @@
 -#}
     _NESTED_RANGES = {
     {%- for field in cls.fields -%}
-        {%- if field.reference_class() %}
-        "{{ field.name }}": "{{ field.reference_class() }}",
+        {%- if field.reference_class is not none %}
+        "{{ field.name }}": "{{ field.reference_class }}",
 {% endif -%}
     {%- endfor %}
     }

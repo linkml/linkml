@@ -1,6 +1,6 @@
 import logging
-from typing import Optional
-from typing import TYPE_CHECKING
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Optional
 
 from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinition
 
@@ -14,11 +14,10 @@ from .render_adapters.dataframe_field import DataframeField
 logger = logging.getLogger(__file__)
 
 
-class SlotHandlerBase():
+class SlotHandlerBase(ABC):
     """
-    Prior to rendering the dataframe schema, this class provides
-    and adapter between the LinkML model and schema view
-    and the rendering engine.
+    An abstract base class providing a template for classes that generate
+    dataframe fields from LinkML models.
     """
 
     def __init__(self, generator: "DataframeGenerator"):
@@ -26,49 +25,118 @@ class SlotHandlerBase():
 
     LINKML_ANY_CURIE = "linkml:Any"
 
-    # constants used to render the schema
-    # these will be moved to a dialect-specific place
-    ANY_RANGE_STRING = "Object"
-    CLASS_RANGE_STRING = "Struct"
-    SIMPLE_DICT_RANGE_STRING = "Struct"
-    ENUM_RANGE_STRING = "Enum"
-
-    # association form flags used for rendering decisions
-    FORM_INLINED_DICT = "inlined_dict"
-    FORM_INLINED_LIST_DICT = "inlined_list_dict"
+    # decision flags used to understand the schema
+    FORM_INLINED_DICT = "inline_dict"
+    FORM_INLINED_LIST_DICT = "inline_list_dict"
     FORM_INLINED_COLLECTION_DICT = "inline_collection_dict"
     FORM_INLINED_SIMPLE_DICT = "simple_dict"
     FORM_MULTIVALUED_FOREIGN_KEY = "list_foreign_key"
     FORM_FOREIGN_KEY = "foreign_key"
     FORM_ERROR = "error"
 
-    # When nested inlining is done, the Pandera validator needs a specific range
-    INLINED_FORM_RANGE_PANDERA = {
-        FORM_INLINED_SIMPLE_DICT: SIMPLE_DICT_RANGE_STRING,
-        FORM_INLINED_LIST_DICT: CLASS_RANGE_STRING,
-        FORM_INLINED_COLLECTION_DICT: CLASS_RANGE_STRING,
-        FORM_INLINED_DICT: CLASS_RANGE_STRING,
-        FORM_ERROR: None,
-    }
+    def backing_inlined_form(self, inlined_form: str) -> str:
+        loaded_form = {
+            SlotHandlerBase.FORM_INLINED_SIMPLE_DICT: SlotHandlerBase.FORM_INLINED_LIST_DICT,
+            SlotHandlerBase.FORM_INLINED_COLLECTION_DICT: SlotHandlerBase.FORM_INLINED_LIST_DICT,
+        }
+
+        if self.generator.backing_form in ["serialization", "transform"]:
+            return inlined_form
+        elif self.generator.backing_form in ["loaded"]:
+            return loaded_form.get(inlined_form, inlined_form)
+
+        logger.warning(f"Unknown backing form: {self.generator.backing_form}")
+        return inlined_form
 
     def is_multivalued(self, slot):
         return "multivalued" in slot and slot.multivalued is True
 
-    _INTERNAL_INLINED_FORM = {
-        # INLINED, INLINED_AS_LIST, MULTIVALUED,
-        (False, False, False): FORM_FOREIGN_KEY,
-        (False, False, True): FORM_MULTIVALUED_FOREIGN_KEY,
-        (False, True, False): FORM_INLINED_LIST_DICT,
-        (False, True, True): FORM_INLINED_LIST_DICT,
-        (True, False, False): FORM_INLINED_DICT,
-        (True, False, True): FORM_INLINED_COLLECTION_DICT,
-        (True, None, True): FORM_INLINED_DICT,
-        (True, True, False): FORM_INLINED_DICT,
-        (True, True, True): FORM_INLINED_LIST_DICT,
+    def is_inlined(self, slot):
+        """Handles the default None case when inlined is not explicitly set in the model"""
+        return slot.inlined is True
+
+    def is_inlined_as_list(self, slot):
+        """Handles the default None case when inlined_as_list is not explicitly set in the model."""
+        return slot.inlined_as_list is True
+
+    def range_id_type(self, slot):
+        """Get the identifier type for the range of the given slot."""
+        slot_id = self.get_identifier_or_key_slot(slot.range)
+
+        if slot_id is None:
+            return None
+
+        slot_id_range = self.generator.schemaview.all_types().get(slot_id.range)
+
+        return self.generator.map_type(slot_id_range)
+
+    def range_has_identifier_or_key(self, slot):
+        """Determine if the slot range has an identifier or key."""
+        return self.get_identifier_or_key_slot(slot.range) is not None
+
+    def range_meets_simple_dict_conditions(self, slot):
+        """Determine if the slot range meets the conditions for simple dict form."""
+        return self.calculate_simple_dict(slot) is not None
+
+    def inlined_form_key(self, slot):
+        """Create a tuple that can be used to look up a line in INTERNAL_INLINED_FORM"""
+        return (
+            self.range_meets_simple_dict_conditions(slot),
+            self.range_has_identifier_or_key(slot),
+            self.is_inlined(slot),
+            self.is_inlined_as_list(slot),
+            self.is_multivalued(slot),
+        )
+
+    # meets_simple_dict_conditions, has_identifier is True, inlined is True, inlined_as_list is True, is_multivalued
+    INTERNAL_INLINED_FORM = {
+        ## Simple dict conditions not met
+        # Range does not have identifier
+        (False, False, False, False, False): FORM_INLINED_DICT,  # 'COERCED'
+        (False, False, False, False, True): FORM_INLINED_LIST_DICT,  # 'COERCED'
+        (False, False, False, True, False): FORM_INLINED_DICT,
+        (False, False, False, True, True): FORM_INLINED_LIST_DICT,
+        (False, False, True, False, False): FORM_INLINED_DICT,
+        (False, False, True, False, True): FORM_INLINED_LIST_DICT,  # 'COERCED'
+        (False, False, True, True, False): FORM_INLINED_DICT,
+        (False, False, True, True, True): FORM_INLINED_LIST_DICT,
+        # Range has identifier
+        (False, True, False, False, False): FORM_FOREIGN_KEY,
+        (False, True, False, False, True): FORM_MULTIVALUED_FOREIGN_KEY,
+        (False, True, False, True, False): FORM_INLINED_DICT,
+        (False, True, False, True, True): FORM_INLINED_LIST_DICT,
+        (False, True, True, False, False): FORM_INLINED_DICT,
+        (False, True, True, False, True): FORM_INLINED_COLLECTION_DICT,
+        (False, True, True, True, False): FORM_INLINED_DICT,
+        (False, True, True, True, True): FORM_INLINED_LIST_DICT,
+        ## Simple dict conditions met
+        # Range does not have identifier
+        (True, False, False, False, False): FORM_INLINED_DICT,  # 'COERCED'
+        (True, False, False, False, True): FORM_INLINED_LIST_DICT,  # 'COERCED'
+        (True, False, False, True, False): FORM_INLINED_LIST_DICT,
+        (True, False, False, True, True): FORM_INLINED_LIST_DICT,
+        (True, False, True, False, False): FORM_INLINED_DICT,
+        (True, False, True, False, True): FORM_INLINED_LIST_DICT,  # 'COERCED'
+        (True, False, True, True, False): FORM_INLINED_DICT,
+        (True, False, True, True, True): FORM_INLINED_LIST_DICT,
+        # Range has identifier
+        (True, True, False, False, False): FORM_FOREIGN_KEY,
+        (True, True, False, False, True): FORM_MULTIVALUED_FOREIGN_KEY,
+        (True, True, False, True, False): FORM_INLINED_LIST_DICT,
+        (True, True, False, True, True): FORM_INLINED_LIST_DICT,
+        (True, True, True, False, False): FORM_INLINED_DICT,
+        (True, True, True, False, True): FORM_INLINED_SIMPLE_DICT,
+        (True, True, True, True, False): FORM_INLINED_DICT,
+        (True, True, True, True, True): FORM_INLINED_LIST_DICT,
     }
 
     def get_identifier_or_key_slot(self, cn: ClassDefinitionName) -> Optional[SlotDefinition]:
         sv = self.generator.schemaview
+
+        if cn not in sv.all_classes():
+            logger.warning(f"Name {cn} not found in schema classes.")
+            return None
+
         id_slot = sv.get_identifier_slot(cn)
         if id_slot:
             return id_slot
@@ -79,21 +147,18 @@ class SlotHandlerBase():
             return None
 
     def calculate_inlined_form(self, slot: SlotDefinition) -> str:
-        is_multivalued = self.is_multivalued(slot)
-        internal_inlined_form_key = ((slot.inlined is True), (slot.inlined_as_list is True), is_multivalued)
-        logger.info(f"Inlined form key: {internal_inlined_form_key}")
-        internal_inlined_form = self._INTERNAL_INLINED_FORM.get(
-            internal_inlined_form_key, SlotHandlerBase.FORM_ERROR
-        )
+        """Based on entries in the slot definition, do a table lookup
+        to determine a summarized form for association handling."""
+        inline_form_key = self.inlined_form_key(slot)
+        logger.info(f"Inline form key {slot.name}: {inline_form_key}")
+        inline_form = self.INTERNAL_INLINED_FORM.get(inline_form_key, SlotHandlerBase.FORM_ERROR)
+        logger.info(f"Inline form {slot.name}: {inline_form}")
 
-        if internal_inlined_form == SlotHandlerBase.FORM_INLINED_COLLECTION_DICT:
-            if self.get_identifier_or_key_slot(slot.range) is None:
-                internal_inlined_form = SlotHandlerBase.FORM_INLINED_LIST_DICT
+        # to be removed
+        if inline_form == "simple_dict":
+            self.set_simple_dict_inline_details_annotation(slot)
 
-        if self.calculate_simple_dict(slot) is not None:
-            return SlotHandlerBase.FORM_INLINED_SIMPLE_DICT
-
-        return internal_inlined_form
+        return inline_form
 
     def calculate_simple_dict(self, slot: SlotDefinition):
         """slot is the container for the simple dict slot"""
@@ -102,48 +167,94 @@ class SlotHandlerBase():
 
         return range_simple_dict_value_slot
 
-    def handle_none_slot(self, slot) -> str:
+    @abstractmethod
+    def handle_class_slot(self, slot, field) -> None:
+        pass
+
+    def get_enum_definition(self, range: str):
+        return self.generator.schemaview.all_enums().get(range)
+
+    @abstractmethod
+    def handle_enum_slot(self, slot, field) -> None:
+        pass
+
+    def handle_multivalued_slot(self, slot, range: str) -> str:
+        """Use this for non-class slots only for now"""
+        if (slot.inlined_as_list is True and self.is_multivalued(slot)) or (
+            slot.inlined is True and slot.inlined_as_list is True and self.is_multivalued(slot)
+        ):
+            range = self.generator.make_multivalued(range)
+
+        return range
+
+    def handle_slot(self, cn: str, sn: str) -> DataframeField:
+        safe_sn = self.generator.get_slot_name(sn)
+        slot = self.generator.schemaview.induced_slot(sn, cn)
+        logger.info(safe_sn)
+
+        if slot.alias is not None:
+            safe_sn = self.generator.get_slot_name(slot.alias)
+
+        field = DataframeField(name=safe_sn, source_slot=slot)
+
+        range = slot.range
+
+        if range is None:
+            self.handle_none_slot(slot, field)
+        elif range in self.generator.schemaview.all_classes():
+            self.handle_class_slot(slot, field)
+        elif range in self.generator.schemaview.all_types():
+            self.handle_type_slot(slot, field)
+        elif range in self.generator.schemaview.all_enums():
+            range = self.handle_enum_slot(slot, field)
+        else:
+            raise Exception(f"Unknown range {range}")
+
+        return field
+
+    def set_simple_dict_inline_details(self, slot, field) -> None:
+        """Extra metadata is to help with the simple dict case"""
+        (range_id_slot, range_simple_dict_value_slot, _) = get_range_associated_slots(  # range_required_slots,
+            self.generator.schemaview, slot.range
+        )
+
+        field.inline_id_column_name = range_id_slot.name
+        field.inline_other_column_name = range_simple_dict_value_slot.name
+
+        other_range = range_simple_dict_value_slot.range
+
+        if other_range in self.generator.schemaview.all_enums():
+            field.inline_other_range = self.generator.get_enum_name(other_range)
+        elif other_range in self.generator.schemaview.all_types():
+            field.inline_other_range = self.generator.map_type(self.generator.schemaview.all_types().get(other_range))
+        elif other_range in self.generator.schemaview.all_classes():
+            field.inline_other_range = self.generator.get_class_name(other_range)
+        else:
+            raise ValueError(f"Cannot find range {other_range} for simple dict slot {slot.name}")
+
+    def handle_non_inlined_class_slot(self, slot, field) -> None:
+        """non-inlined class slots have been temporarily removed but this will be needed to support them"""
+        # TODO: resolve this earlier
+        range = slot.range
+        field.range = f"ID_TYPES['{self.generator.get_class_name(range)}']"
+
+    def handle_none_slot(self, slot, field: DataframeField) -> None:
+        del slot  # unused for now
         range = self.generator.schema.default_range  # need to figure this out, set at the beginning?
+
         if range is None:
             range = "str"
 
-        return range
+        field.range = range
 
-    def handle_class_slot(self, slot, range: str) -> str:
-        range_info = self.generator.schemaview.all_classes().get(range)
+    def handle_type_slot(self, slot, field) -> None:
+        t = self.generator.schemaview.all_types().get(slot.range)
+        range = self.generator.map_type(t)
 
-        if range_info["class_uri"] == SlotHandlerBase.LINKML_ANY_CURIE:
-            range = SlotHandlerBase.ANY_RANGE_STRING
-        else:
-            inlined_form = self.calculate_inlined_form(slot)
+        if self.is_multivalued(slot):
+            range = self.handle_multivalued_slot(slot, range)
 
-            if inlined_form == SlotHandlerBase.FORM_INLINED_COLLECTION_DICT:
-                logger.warning(
-                    f"Slot {slot.name} uses inlined dictionary form,"
-                    "which may be less efficient than inlined as list form with the current implementation."
-                )
-            elif inlined_form == SlotHandlerBase.FORM_INLINED_SIMPLE_DICT:
-                logger.warning(
-                    f"Slot {slot.name} uses inlined simple dictionary form. Support is incomplete "
-                    "and performance is less efficient than inlined as list form with the current implementation."
-                )
-
-            if inlined_form in (SlotHandlerBase.FORM_MULTIVALUED_FOREIGN_KEY, SlotHandlerBase.FORM_FOREIGN_KEY):
-                logger.warning(f"Foreign key not implemented for slot {slot.name}")
-                range = f"ID_TYPES['{self.generator.get_class_name(range)}']"
-            else:
-                # TODO: make these setters
-                slot.annotations["reference_class"] = self.generator.get_class_name(range)
-                slot.annotations["inline_form"] = inlined_form
-
-                range = SlotHandlerBase.INLINED_FORM_RANGE_PANDERA[inlined_form]
-
-                if inlined_form == SlotHandlerBase.FORM_INLINED_SIMPLE_DICT:
-                    self.set_simple_dict_inline_details_annotation(slot)
-                elif inlined_form in [SlotHandlerBase.FORM_INLINED_LIST_DICT]:
-                    range = self.generator.make_multivalued(range)
-
-        return range
+        field.range = range
 
     def set_simple_dict_inline_details_annotation(self, slot):
         """Extra metadata is to help with the simple dict case"""
@@ -154,58 +265,3 @@ class SlotHandlerBase():
         simple_dict_id = range_id_slot.name
         other_slot = range_simple_dict_value_slot.name
         slot.annotations["inline_details"] = {"id": simple_dict_id, "other": other_slot}
-
-    def handle_non_inlined_class_slot(self, slot, range: str) -> str:
-        """non-inlined class slots have been temporarily removed but this will be needed to support them"""
-        return f"ID_TYPES['{self.generator.get_class_name(range)}']"
-
-    def handle_type_slot(self, slot, range: str) -> str:
-        del slot  # unused for now
-
-        t = self.generator.schemaview.all_types().get(range)
-        range = self.generator.map_type(t)
-
-        return range
-
-    def handle_enum_slot(self, slot, range: str) -> str:
-        enum_definition = self.generator.schemaview.all_enums().get(range)
-        range = SlotHandlerBase.ENUM_RANGE_STRING
-        slot.annotations["permissible_values"] = self.generator.enum_handler.get_enum_permissible_values(enum_definition)
-
-        return range
-
-    def handle_multivalued_slot(self, slot, range: str) -> str:
-        if (slot.inlined_as_list is True and self.is_multivalued(slot)) or (
-            slot.inlined is True and slot.inlined_as_list is True and self.is_multivalued(slot)
-        ):
-            range = self.generator.make_multivalued(range)
-
-        return range
-
-    def handle_slot(self, cn: str, sn: str):
-        safe_sn = self.generator.get_slot_name(sn)
-        slot = self.generator.schemaview.induced_slot(sn, cn)
-        range = slot.range
-
-        if slot.alias is not None:
-            safe_sn = self.generator.get_slot_name(slot.alias)
-
-        if range is None:
-            range = self.handle_none_slot(slot)
-        elif range in self.generator.schemaview.all_classes():
-            range = self.handle_class_slot(slot, range)
-        elif range in self.generator.schemaview.all_types():
-            range = self.handle_type_slot(slot, range)
-            if self.is_multivalued(slot):
-                range = self.generator.make_multivalued(range)
-        elif range in self.generator.schemaview.all_enums():
-            range = self.handle_enum_slot(slot, range)
-            range = self.handle_multivalued_slot(slot, range)
-        else:
-            raise Exception(f"Unknown range {range}")
-
-        return DataframeField(
-            name=safe_sn,
-            source_slot=slot,
-            range=range,
-        )
