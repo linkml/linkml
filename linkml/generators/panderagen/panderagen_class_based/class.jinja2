@@ -33,8 +33,8 @@
 -#}
     _INLINE_FORM = {
     {%- for field in cls.fields -%}
-        {%- if field.inline_form() %}
-        "{{ field.name }}": "{{ field.inline_form() }}",
+        {%- if field.inline_form is not none %}
+        "{{ field.name }}": "{{ field.inline_form }}",
 {% endif -%}
     {%- endfor %}
     }
