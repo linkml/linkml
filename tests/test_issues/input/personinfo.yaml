@@ -276,6 +276,7 @@ slots:
     range: Address
   age_in_years:
     range: integer
+    alias: age
     minimum_value: 0
     maximum_value: 999
   score:
