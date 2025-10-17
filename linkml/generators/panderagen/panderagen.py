@@ -14,10 +14,11 @@ from linkml_runtime.utils.formatutils import camelcase
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__
-from linkml.generators.oocodegen import OOCodeGenerator, OODocument
+from linkml.generators.oocodegen import OOCodeGenerator
 
+from .render_adapters import DataframeDocument
 from .class_handler_base import ClassHandlerBase
-from .dataframe_class import DataframeClass
+from .render_adapters.dataframe_class import DataframeClass
 from .enum_handler_base import EnumHandlerBase
 from .slot_handler_base import SlotHandlerBase
 
@@ -124,7 +125,7 @@ class PanderaGenerator(OOCodeGenerator):
 
         return compile_python(pandera_code)
 
-    def serialize(self, rendered_module: Optional[OODocument] = None) -> str:
+    def serialize(self, rendered_module: Optional[DataframeDocument] = None) -> str:
         """
         Serialize the schema to a Pandera module as a string
         """
@@ -153,7 +154,7 @@ class PanderaGenerator(OOCodeGenerator):
         )
         return code
 
-    def render(self) -> OODocument:
+    def render(self) -> DataframeDocument:
         """
         Create a data structure ready to pass to the serialization templates.
         """
@@ -161,7 +162,7 @@ class PanderaGenerator(OOCodeGenerator):
 
         module_name = camelcase(sv.schema.name)
 
-        oodoc = OODocument(name=module_name, package=self.package, source_schema=sv.schema)
+        doc = DataframeDocument(name=module_name, package=self.package, source_schema=sv.schema)
 
         classes = []
 
@@ -196,9 +197,9 @@ class PanderaGenerator(OOCodeGenerator):
                     ooclass.fields.append(oofield)
                 ooclass.all_fields.append(oofield)
 
-        oodoc.classes = classes
+        doc.classes = classes
 
-        return oodoc
+        return doc
 
     def __post_init__(self):
         super().__post_init__()
