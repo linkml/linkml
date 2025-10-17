@@ -529,13 +529,15 @@ class SchemaView:
     def namespaces(self) -> Namespaces:
         """Return the namespaces present in a schema.
 
+        Note: the output of this function will differ, depending on whether any functions that process imports have been run.
+
         :return: namespaces
         :rtype: Namespaces
         """
         namespaces = Namespaces()
+        for cmap in self.schema.default_curi_maps:
+            namespaces.add_prefixmap(cmap, include_defaults=False)
         for s in self.schema_map.values():
-            for cmap in self.schema.default_curi_maps:
-                namespaces.add_prefixmap(cmap, include_defaults=False)
             for prefix in s.prefixes.values():
                 namespaces[prefix.prefix_prefix] = prefix.prefix_reference
         return namespaces
@@ -1429,13 +1431,12 @@ class SchemaView:
         :return: Optional[str]
 
         """
-        applicable_elements = []
         elements = self.all_elements()
-        for category_element in elements.values():
-            if hasattr(category_element, "id_prefixes") and prefix in category_element.id_prefixes:
-                applicable_elements.append(category_element.name)
-
-        return applicable_elements
+        return [
+            element.name
+            for element in elements.values()
+            if hasattr(element, "id_prefixes") and prefix in element.id_prefixes
+        ]
 
     @lru_cache(None)
     def all_aliases(self) -> list[str]:

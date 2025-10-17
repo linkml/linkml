@@ -62,16 +62,18 @@ CREATURE_SCHEMA_RAW_URL = (
 CREATURE_SCHEMA_BASE_PATH = INPUT_DIR_PATH / "mcc"
 
 yaml_loader = YAMLLoader()
-IS_CURRENT = "is current"
-EMPLOYED_AT = "employed at"
-COMPANY = "Company"
-PERSON = "Person"
-ADULT = "Adult"
-THING = "Thing"
-AGENT = "agent"
 ACTIVITY = "activity"
-RELATED_TO = "related to"
+ADULT = "Adult"
 AGE_IN_YEARS = "age in years"
+AGENT = "agent"
+COMPANY = "Company"
+EMPLOYED_AT = "employed at"
+IS_CURRENT = "is current"
+ORGANIZATION = "Organization"
+PERSON = "Person"
+RELATED_TO = "related to"
+THING = "Thing"
+
 EMPTY = ""
 ID = "identifier"
 KEY = "key"
@@ -787,6 +789,150 @@ def test_in_schema(schema_view_with_imports: SchemaView) -> None:
     assert view.in_schema(SlotDefinitionName("string")) == "types"
     with pytest.raises(ValueError, match="Element fake_element not in any schema"):
         view.in_schema("fake_element")
+
+
+# Prefixes, curi_maps, and imports to add to a schema
+# The lines to add are under the "text" key
+# The prefix-URL pairs are under the "exp" key
+prefixes_to_add = {
+    None: {"exp": {}},
+    "short": {
+        "text": """
+prefixes:
+  personinfo: https://w3id.org/linkml/examples/personinfo/
+""",
+        "exp": {"personinfo": "https://w3id.org/linkml/examples/personinfo/"},
+    },
+    "med": {
+        "text": """
+prefixes:
+  personinfo: https://w3id.org/linkml/examples/personinfo/
+  linkml: https://w3id.org/linkml/
+  schema: http://schema.org/
+  rdfs: https://www.w3.org/2000/01/rdf-schema#
+""",
+        "exp": {
+            "personinfo": "https://w3id.org/linkml/examples/personinfo/",
+            "linkml": "https://w3id.org/linkml/",
+            "schema": "http://schema.org/",
+            "rdfs": "https://www.w3.org/2000/01/rdf-schema#",
+        },
+    },
+    "long": {
+        "text": """
+prefixes:
+  personinfo: https://w3id.org/linkml/examples/personinfo/
+  linkml: https://w3id.org/linkml/
+  schema: http://schema.org/
+  rdfs: https://www.w3.org/2000/01/rdf-schema#
+  prov: http://www.w3.org/ns/prov#
+  GSSO: http://purl.obolibrary.org/obo/GSSO_
+  famrel: https://example.org/FamilialRelations#
+  bizcodes: https://example.org/bizcodes/
+  skos: http://www.w3.org/2004/02/skos/core#
+  P: http://example.org/P/
+  ROR: http://example.org/ror/
+  CODE: http://example.org/code/
+  GEO: http://example.org/geoloc/
+""",
+        "exp": {
+            "personinfo": "https://w3id.org/linkml/examples/personinfo/",
+            "linkml": "https://w3id.org/linkml/",
+            "schema": "http://schema.org/",
+            "rdfs": "https://www.w3.org/2000/01/rdf-schema#",
+            "prov": "http://www.w3.org/ns/prov#",
+            "GSSO": "http://purl.obolibrary.org/obo/GSSO_",
+            "famrel": "https://example.org/FamilialRelations#",
+            "bizcodes": "https://example.org/bizcodes/",
+            "skos": "http://www.w3.org/2004/02/skos/core#",
+            "P": "http://example.org/P/",
+            "ROR": "http://example.org/ror/",
+            "CODE": "http://example.org/code/",
+            "GEO": "http://example.org/geoloc/",
+        },
+    },
+}
+curi_maps_to_add = {
+    None: {
+        "exp": {},
+    },
+    "semweb_context": {
+        "text": "\ndefault_curi_maps:\n  - semweb_context\n",
+        "exp": {
+            "dc": "http://purl.org/dc/terms/",
+            "dcat": "http://www.w3.org/ns/dcat#",
+            "dcterms": "http://purl.org/dc/terms/",
+            "faldo": "http://biohackathon.org/resource/faldo#",
+            "foaf": "http://xmlns.com/foaf/0.1/",
+            "idot": "http://identifiers.org/",
+            "oa": "http://www.w3.org/ns/oa#",
+            "owl": "http://www.w3.org/2002/07/owl#",
+            "prov": "http://www.w3.org/ns/prov#",
+            "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+            "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+            "void": "http://rdfs.org/ns/void#",
+            "xsd": "http://www.w3.org/2001/XMLSchema#",
+            "oboInOwl": "http://www.geneontology.org/formats/oboInOwl#",
+        },
+    },
+}
+# Prefixes from imports only show up if a function that generates the imports closure is run.
+imports_to_add = {
+    None: {"exp": {}, "imported": {}},
+    "linkml_types": {
+        "text": "\nimports:\n  - linkml:types\n",
+        "exp": {},
+        "imported": {
+            "linkml": "https://w3id.org/linkml/",
+            "xsd": "http://www.w3.org/2001/XMLSchema#",
+            "shex": "http://www.w3.org/ns/shex#",
+            "schema": "http://schema.org/",
+        },
+    },
+}
+
+
+@pytest.mark.parametrize("prefix", prefixes_to_add.keys())
+@pytest.mark.parametrize("curi_map", curi_maps_to_add.keys())
+@pytest.mark.parametrize("imports", imports_to_add.keys())
+@pytest.mark.parametrize("run_imports", [True, False])
+def test_namespaces(prefix: str | None, curi_map: str | None, imports: str | None, run_imports: bool) -> None:
+    """Check that the `namespaces` function correctly loads the prefix <==> URL mapping.
+
+    Note: the `namespaces` function does not check whether a prefix already exists in the mapping and whether
+    the existing value is the same as the incoming value; the incoming value always overwrites any existing value.
+    To test this, the RDFS URL is "http://" in the "semweb_context" mapping and "https://" in the "prefixes" section.
+    Whenever the prefixes section is present, it will override the value from semweb_context.
+
+    The `run_imports` parameter indicates whether or not schemas referenced under 'imports' should be imported; if not, none of the prefixes from imported schemas will be registered as `namespaces`.
+    """
+    schema = """
+id: https://w3id.org/linkml/examples/personinfo
+name: personinfo
+"""
+    if curi_map:
+        schema += curi_maps_to_add[curi_map]["text"]
+    if prefix:
+        schema += prefixes_to_add[prefix]["text"]
+    if imports:
+        schema += imports_to_add[imports]["text"]
+
+    sv = SchemaView(schema)
+    if run_imports:
+        # execute a function that will import linked schemas
+        sv.all_schema()
+
+        assert sv.namespaces() == {
+            **curi_maps_to_add[curi_map]["exp"],
+            **prefixes_to_add[prefix]["exp"],
+            **imports_to_add[imports]["imported"],
+        }
+    else:
+        assert sv.namespaces() == {
+            **curi_maps_to_add[curi_map]["exp"],
+            **prefixes_to_add[prefix]["exp"],
+            **imports_to_add[imports]["exp"],
+        }
 
 
 CREATURE_EXPECTED = {
@@ -1903,17 +2049,71 @@ def test_dynamic_enum(schema_view_with_imports: SchemaView) -> None:
     assert set(e.include[0].reachable_from.source_nodes) == {"GO:0007049", "GO:0022403"}
 
 
-def test_get_elements_applicable_by_identifier(schema_view_no_imports: SchemaView) -> None:
+# dictionary mapping class name to id_prefixes
+KS_PREFIXES_BY_CLASS = {PERSON: {"orcid", "doi", "zfin", "wb"}, ORGANIZATION: {"pmid", "zfin", "wb"}}
+
+
+def test_get_elements_applicable_by_prefix(schema_view_no_imports: SchemaView) -> None:
+    """Test get_elements_applicable_by_prefix method."""
+    view = schema_view_no_imports
+    # create a dictionary mapping class name to id_prefixes
+    prefixes = {el: set(view.get_element(el).id_prefixes) for el in [PERSON, ORGANIZATION]}
+
+    for el in [PERSON, ORGANIZATION]:
+        assert prefixes[el] == {prfx.upper() for prfx in KS_PREFIXES_BY_CLASS[el]}
+
+    for prefix in ["ORCID", "DOI", "ZFIN", "PMID", "WB"]:
+        els_applicable_by_prefix = view.get_elements_applicable_by_prefix(prefix)
+        for el in [PERSON, ORGANIZATION]:
+            if prefix.lower() in KS_PREFIXES_BY_CLASS[el]:
+                assert el in els_applicable_by_prefix
+            else:
+                assert el not in els_applicable_by_prefix
+
+
+@pytest.mark.parametrize("prefix", ["ORCID", "DOI", "ZFIN", "PMID", "WB", "Pmid", "TEST", "rdfs", "some_crap"])
+def test_get_elements_applicable_by_identifier(schema_view_no_imports: SchemaView, prefix: str) -> None:
     """Test get_elements_applicable_by_identifier method."""
     view = schema_view_no_imports
-    elements = view.get_elements_applicable_by_identifier("ORCID:1234")
-    assert PERSON in elements
-    elements = view.get_elements_applicable_by_identifier("PMID:1234")
-    assert "Organization" in elements
-    elements = view.get_elements_applicable_by_identifier("http://www.ncbi.nlm.nih.gov/pubmed/1234")
-    assert "Organization" in elements
-    elements = view.get_elements_applicable_by_identifier("TEST:1234")
-    assert "anatomical entity" not in elements
+    # make sure imports are loaded
+    view.all_schema()
+
+    elements = view.get_elements_applicable_by_identifier(f"{prefix}:1234-5678-90")
+    # check in KS_PREFIXES_BY_CLASS to see whether we expect PERSON or ORGANIZATION to have this prefix
+    for el in [PERSON, ORGANIZATION]:
+        if prefix.lower() in KS_PREFIXES_BY_CLASS[el]:
+            assert el in elements
+        else:
+            assert el not in elements
+
+    no_els = False
+    if prefix.lower() not in {*KS_PREFIXES_BY_CLASS[PERSON], *KS_PREFIXES_BY_CLASS[ORGANIZATION]}:
+        assert elements == []
+        no_els = True
+
+    # Prefix => URL mapping; some URLs are valid, others are made up.
+    prefix_to_url = {
+        "DOI": "http://dx.doi.org/",  # valid
+        "PMID": "http://www.ncbi.nlm.nih.gov/pubmed/",  # valid
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",  # valid
+        "ZFIN": "http://zfin.org/",  # valid
+        # made up URLs
+        "WB": "https://www.wormbase.org/get?name=",
+        "TEST": "https://www.test.com/id=",
+        "Pmid": "http://www.ncbi.nlm.nih.gov/pubmed/",
+        "ORCID": "http://orcids-r-us.com/orcid/",
+        "some_crap": "https://whatev.er/",
+    }
+    # These URLs are defined in the schema prefixes section
+    valid_urls = {"doi", "pmid", "rdfs", "zfin"}
+
+    # Get element by URL
+    # This will only successfully retrieve the element if the URL is in `valid_urls`
+    url_els = view.get_elements_applicable_by_identifier(f"{prefix_to_url[prefix]}1234-5678-90")
+    if no_els or prefix.lower() not in valid_urls:
+        assert url_els == []
+    else:
+        assert url_els == elements
 
 
 # FIXME: improve test to actually test the annotations
@@ -2016,9 +2216,9 @@ def test_ancestors_descendants(schema_view_no_imports: SchemaView) -> None:
     view = schema_view_no_imports
 
     assert set(view.class_ancestors(ADULT)) == {ADULT, PERSON, "HasAliases", THING}
-    assert set(view.class_ancestors(COMPANY)) == {COMPANY, "Organization", "HasAliases", THING}
-    assert set(view.class_ancestors(COMPANY, reflexive=False)) == {"Organization", "HasAliases", THING}
-    assert set(view.class_descendants(THING)) == {THING, PERSON, "Organization", COMPANY, ADULT}
+    assert set(view.class_ancestors(COMPANY)) == {COMPANY, ORGANIZATION, "HasAliases", THING}
+    assert set(view.class_ancestors(COMPANY, reflexive=False)) == {ORGANIZATION, "HasAliases", THING}
+    assert set(view.class_descendants(THING)) == {THING, PERSON, ORGANIZATION, COMPANY, ADULT}
 
 
 def test_get_mappings(schema_view_no_imports: SchemaView) -> None:
@@ -2324,7 +2524,7 @@ def test_induced_slot_again(schema_view_no_imports: SchemaView) -> None:
         assert rng is not None
 
     # test induced slots
-    for cn in [COMPANY, PERSON, "Organization"]:
+    for cn in [COMPANY, PERSON, ORGANIZATION]:
         islot = view.induced_slot("aliases", cn)
         assert islot.multivalued is True
         assert islot.owner == cn
@@ -2334,7 +2534,7 @@ def test_induced_slot_again(schema_view_no_imports: SchemaView) -> None:
     assert view.get_identifier_slot(THING).name == "id"
     assert view.get_identifier_slot("FamilialRelationship") is None
 
-    for cn in [COMPANY, PERSON, "Organization", THING]:
+    for cn in [COMPANY, PERSON, ORGANIZATION, THING]:
         assert view.induced_slot("id", cn).identifier
         assert not view.induced_slot("name", cn).identifier
         assert not view.induced_slot("name", cn).required
@@ -2842,7 +3042,7 @@ CYCLES = {
 }
 
 
-@pytest.mark.parametrize(("target", "cycle_start_node"), [(k, v) for k, v in CYCLES[TYPES][0].items()])
+@pytest.mark.parametrize(("target", "cycle_start_node"), list(CYCLES[TYPES][0].items()))
 @pytest.mark.parametrize("fn", ["detect_cycles", "graph_closure", "type_ancestors"])
 def test_detect_type_cycles_error(sv_cycles_schema: SchemaView, target: str, cycle_start_node: str, fn: str) -> None:
     """Test detection of cycles in the types segment of the cycles schema."""
@@ -2857,7 +3057,7 @@ def test_detect_type_cycles_error(sv_cycles_schema: SchemaView, target: str, cyc
             sv_cycles_schema.type_ancestors(type_name=target, detect_cycles=True)
 
 
-@pytest.mark.parametrize(("target", "expected"), [(k, v) for k, v in CYCLES[TYPES][1].items()])
+@pytest.mark.parametrize(("target", "expected"), list(CYCLES[TYPES][1].items()))
 @pytest.mark.parametrize("fn", ["detect_cycles", "graph_closure", "type_ancestors"])
 def test_detect_type_cycles_no_cycles(sv_cycles_schema: SchemaView, target: str, expected: set[str], fn: str) -> None:
     """Ensure that types without cycles in their ancestry do not throw an error."""
@@ -2871,7 +3071,7 @@ def test_detect_type_cycles_no_cycles(sv_cycles_schema: SchemaView, target: str,
         assert set(got) == expected
 
 
-@pytest.mark.parametrize(("target", "cycle_start_node"), [(k, v) for k, v in CYCLES[CLASSES][0].items()])
+@pytest.mark.parametrize(("target", "cycle_start_node"), list(CYCLES[CLASSES][0].items()))
 @pytest.mark.parametrize("fn", ["detect_cycles", "graph_closure", "class_ancestors"])
 def test_detect_class_cycles_error(sv_cycles_schema: SchemaView, target: str, cycle_start_node: str, fn: str) -> None:
     """Test detection of class cycles in the cycles schema."""
@@ -2887,7 +3087,7 @@ def test_detect_class_cycles_error(sv_cycles_schema: SchemaView, target: str, cy
             sv_cycles_schema.class_ancestors(target, detect_cycles=True)
 
 
-@pytest.mark.parametrize(("target", "expected"), [(k, v) for k, v in CYCLES[CLASSES][1].items()])
+@pytest.mark.parametrize(("target", "expected"), list(CYCLES[CLASSES][1].items()))
 @pytest.mark.parametrize("fn", ["detect_cycles", "graph_closure", "class_ancestors"])
 def test_detect_class_cycles_no_cycles(sv_cycles_schema: SchemaView, target: str, expected: set[str], fn: str) -> None:
     """Ensure that classes without cycles in their ancestry do not throw an error."""
