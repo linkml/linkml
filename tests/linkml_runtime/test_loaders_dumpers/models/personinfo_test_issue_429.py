@@ -6,28 +6,29 @@
 # description:
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
-from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
+from typing import Any, ClassVar, Optional, Union
 
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_dict
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
 from rdflib import URIRef
+
 from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.metamodelcore import empty_dict
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-ORCID = CurieNamespace('ORCID', 'https://orcid.org/')
-LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
-PERSONINFO = CurieNamespace('personinfo', 'https://w3id.org/linkml/examples/personinfo/')
-SDO = CurieNamespace('sdo', 'http://schema.org/')
+ORCID = CurieNamespace("ORCID", "https://orcid.org/")
+LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
+PERSONINFO = CurieNamespace("personinfo", "https://w3id.org/linkml/examples/personinfo/")
+SDO = CurieNamespace("sdo", "http://schema.org/")
 DEFAULT_ = PERSONINFO
 
 
 # Types
+
 
 # Class references
 class PersonId(extended_str):
@@ -90,17 +91,43 @@ class Container(YAMLRoot):
 class slots:
     pass
 
-slots.id = Slot(uri=PERSONINFO.id, name="id", curie=PERSONINFO.curie('id'),
-                   model_uri=PERSONINFO.id, domain=None, range=URIRef)
 
-slots.full_name = Slot(uri=PERSONINFO.full_name, name="full_name", curie=PERSONINFO.curie('full_name'),
-                   model_uri=PERSONINFO.full_name, domain=None, range=Optional[str])
+slots.id = Slot(
+    uri=PERSONINFO.id, name="id", curie=PERSONINFO.curie("id"), model_uri=PERSONINFO.id, domain=None, range=URIRef
+)
 
-slots.age = Slot(uri=PERSONINFO.age, name="age", curie=PERSONINFO.curie('age'),
-                   model_uri=PERSONINFO.age, domain=None, range=Optional[str])
+slots.full_name = Slot(
+    uri=PERSONINFO.full_name,
+    name="full_name",
+    curie=PERSONINFO.curie("full_name"),
+    model_uri=PERSONINFO.full_name,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.phone = Slot(uri=PERSONINFO.phone, name="phone", curie=PERSONINFO.curie('phone'),
-                   model_uri=PERSONINFO.phone, domain=None, range=Optional[str])
+slots.age = Slot(
+    uri=PERSONINFO.age,
+    name="age",
+    curie=PERSONINFO.curie("age"),
+    model_uri=PERSONINFO.age,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.container__persons = Slot(uri=PERSONINFO.persons, name="container__persons", curie=PERSONINFO.curie('persons'),
-                   model_uri=PERSONINFO.container__persons, domain=None, range=Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]])
+slots.phone = Slot(
+    uri=PERSONINFO.phone,
+    name="phone",
+    curie=PERSONINFO.curie("phone"),
+    model_uri=PERSONINFO.phone,
+    domain=None,
+    range=Optional[str],
+)
+
+slots.container__persons = Slot(
+    uri=PERSONINFO.persons,
+    name="container__persons",
+    curie=PERSONINFO.curie("persons"),
+    model_uri=PERSONINFO.container__persons,
+    domain=None,
+    range=Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]],
+)

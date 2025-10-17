@@ -1,14 +1,14 @@
- 
-classes: 
-  Timestamp: 
-    attributes: 
-      nanos: 
-        annotations: 
+
+classes:
+  Timestamp:
+    attributes:
+      nanos:
+        annotations:
           rank: 2
         description: Non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanos values that count forward in time. Must be from 0 to 999,999,999 inclusive.
         range: integer
-      seconds: 
-        annotations: 
+      seconds:
+        annotations:
           rank: 1
         description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
         range: integer
@@ -18,10 +18,10 @@ description: "Automatic translation of phenopackets protobuf to LinkML. Status: 
 enums: {}
 
 id: https://w3id.org/linkml/phenopackets/timestamp
-imports: 
+imports:
   - linkml:types
 name: timestamp
-prefixes: 
+prefixes:
   GENO: http://purl.obolibrary.org/obo/GENO_
   HP: http://purl.obolibrary.org/obo/HP_
   LOINC: https://loinc.org/
@@ -34,4 +34,3 @@ prefixes:
   linkml: https://w3id.org/linkml/
   timestamp: https://w3id.org/linkml/phenopackets/timestamp/
 slots: {}
-

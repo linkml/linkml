@@ -10,7 +10,7 @@ def file_text(txt_or_fname: str) -> str:
     :param txt_or_fname:
     :return:
     """
-    if len(txt_or_fname) > 4 and '\n' not in txt_or_fname:
+    if len(txt_or_fname) > 4 and "\n" not in txt_or_fname:
         with open(txt_or_fname) as ef:
             return ef.read()
     return txt_or_fname
@@ -43,8 +43,10 @@ def compile_python(text_or_fn: str, package_path: str | None = None, module_name
                 break
         else:
             warning(f"There is no established path to {package_path} - compile_python may or may not work")
-            path_from_tests_parent = os.path.relpath(package_path, os.path.join(os.getcwd(), '..'))
-        module.__package__ = os.path.dirname(os.path.relpath(path_from_tests_parent, os.getcwd())).replace(os.path.sep, '.')
+            path_from_tests_parent = os.path.relpath(package_path, os.path.join(os.getcwd(), ".."))
+        module.__package__ = os.path.dirname(os.path.relpath(path_from_tests_parent, os.getcwd())).replace(
+            os.path.sep, "."
+        )
     sys.modules[module.__name__] = module
     exec(spec, module.__dict__)
     return module

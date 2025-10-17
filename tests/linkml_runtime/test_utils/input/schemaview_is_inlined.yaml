@@ -45,7 +45,7 @@ slots:
 
   an_integer:
     range: integer
-  
+
   # Pathological cases
   inlined_integer:
     range: integer

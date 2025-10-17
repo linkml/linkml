@@ -141,4 +141,3 @@ enums:
         value: LOINC:26515-7
     reachable_from:
       source_ontology: bioregistry:loinc
-

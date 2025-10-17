@@ -6,28 +6,26 @@
 # description:
 # license:
 
-import dataclasses
-from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
-from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
+from typing import Any, ClassVar, Optional, Union
 
+from rdflib import URIRef
+
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
+from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.yamlutils import YAMLRoot
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from rdflib import URIRef
-from linkml_runtime.utils.curienamespace import CurieNamespace
-
 
 metamodel_version = "1.7.0"
 
 # Namespaces
-DEFAULT_ = CurieNamespace('', 'https://example.org/enum_test/')
+DEFAULT_ = CurieNamespace("", "https://example.org/enum_test/")
 
 
 # Types
 
 # Class references
-
 
 
 @dataclass
@@ -50,7 +48,6 @@ class Organism(YAMLRoot):
 
 # Enumerations
 class StateEnum(EnumDefinitionImpl):
-
     LIVING = PermissibleValue(text="LIVING")
     DEAD = PermissibleValue(text="DEAD")
 
@@ -58,9 +55,17 @@ class StateEnum(EnumDefinitionImpl):
         name="StateEnum",
     )
 
+
 # Slots
 class slots:
     pass
 
-slots.state = Slot(uri=DEFAULT_.state, name="state", curie=DEFAULT_.curie('state'),
-                   model_uri=DEFAULT_.state, domain=None, range=Optional[Union[str, "StateEnum"]])
+
+slots.state = Slot(
+    uri=DEFAULT_.state,
+    name="state",
+    curie=DEFAULT_.curie("state"),
+    model_uri=DEFAULT_.state,
+    domain=None,
+    range=Optional[Union[str, "StateEnum"]],
+)

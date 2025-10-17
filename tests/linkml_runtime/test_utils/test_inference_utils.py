@@ -2,19 +2,23 @@ import os
 import unittest
 from decimal import Decimal
 
-from linkml_runtime.utils.inference_utils import infer_all_slot_values, generate_slot_value, infer_slot_value, Policy, \
-    Config
+from linkml_runtime.utils.inference_utils import (
+    Config,
+    Policy,
+    generate_slot_value,
+    infer_all_slot_values,
+    infer_slot_value,
+)
 from linkml_runtime.utils.schemaview import SchemaView
-
-from tests.test_utils.model.inference_example import Person, Container, Evil, Relationship, AgeEnum
 from tests.test_utils import INPUT_DIR
+from tests.test_utils.model.inference_example import AgeEnum, Container, Evil, Person, Relationship
 
-SCHEMA = os.path.join(INPUT_DIR, 'inference-example.yaml')
+SCHEMA = os.path.join(INPUT_DIR, "inference-example.yaml")
 
 AGE_IN_YEARS = 12
-FIRST, LAST = 'x', 'y'
-FULL = f'{FIRST} {LAST}'
-REPLACE_ME = 'REPLACE ME'
+FIRST, LAST = "x", "y"
+FULL = f"{FIRST} {LAST}"
+REPLACE_ME = "REPLACE ME"
 
 
 class InferenceUtilsTestCase(unittest.TestCase):
@@ -28,7 +32,7 @@ class InferenceUtilsTestCase(unittest.TestCase):
         """
         sv = SchemaView(SCHEMA)
         p = Person(first_name=FIRST, last_name=LAST)
-        v = generate_slot_value(p, 'full_name', sv)
+        v = generate_slot_value(p, "full_name", sv)
 
     def test_string_serialization(self):
         """
@@ -36,9 +40,9 @@ class InferenceUtilsTestCase(unittest.TestCase):
         """
         sv = SchemaView(SCHEMA)
         p = Person(first_name=FIRST, last_name=LAST)
-        v = generate_slot_value(p, 'full_name', sv)
+        v = generate_slot_value(p, "full_name", sv)
         self.assertEqual(v, FULL)
-        infer_slot_value(p, 'full_name', sv)
+        infer_slot_value(p, "full_name", sv)
         self.assertEqual(p.full_name, FULL)
         p = Person(first_name=FIRST, last_name=LAST)
         infer_all_slot_values(p, schemaview=sv)
@@ -110,12 +114,12 @@ class InferenceUtilsTestCase(unittest.TestCase):
         config = Config(use_expressions=True)
         infer_all_slot_values(p, schemaview=sv, config=config)
         assert p.is_juvenile
-        self.assertEqual(p.age_category, AgeEnum('juvenile'))
+        self.assertEqual(p.age_category, AgeEnum("juvenile"))
         self.assertEqual(p.age_category.code, AgeEnum.juvenile)
-        #e1 = AgeEnum('juvenile')
-        #e2 = AgeEnum.juvenile
-        #print(f'e1={e1} c={e1.code} t={type(e1)}')
-        #print(f'e2={e2} {type(e2)}')
+        # e1 = AgeEnum('juvenile')
+        # e2 = AgeEnum.juvenile
+        # print(f'e1={e1} c={e1.code} t={type(e1)}')
+        # print(f'e2={e2} {type(e2)}')
         # test slots with spaces
         p = Person(slot_with_spaces="test")
         infer_all_slot_values(p, schemaview=sv, config=config)
@@ -123,17 +127,17 @@ class InferenceUtilsTestCase(unittest.TestCase):
 
     def test_if_then(self):
         sv = SchemaView(SCHEMA)
-        p = Person(first_name='x', last_name='y', age_in_years=Decimal(AGE_IN_YEARS))
+        p = Person(first_name="x", last_name="y", age_in_years=Decimal(AGE_IN_YEARS))
         config = Config(use_expressions=True)
         infer_all_slot_values(p, schemaview=sv, config=config)
-        self.assertEqual(p.summary, f'xy AGE: {AGE_IN_YEARS}')
-        p = Person(first_name='x', last_name='y')
+        self.assertEqual(p.summary, f"xy AGE: {AGE_IN_YEARS}")
+        p = Person(first_name="x", last_name="y")
         infer_all_slot_values(p, schemaview=sv, config=config)
-        self.assertEqual(p.summary, 'xy NO AGE SPECIFIED')
+        self.assertEqual(p.summary, "xy NO AGE SPECIFIED")
 
     def test_custom_function(self):
         sv = SchemaView(SCHEMA)
-        p = Person(first_name='abc', last_name='def', age_in_years=Decimal(AGE_IN_YEARS))
+        p = Person(first_name="abc", last_name="def", age_in_years=Decimal(AGE_IN_YEARS))
         config = Config(resolve_function=lambda x, _: f'"{x.upper()}"' if isinstance(x, str) else x)
         infer_all_slot_values(p, schemaview=sv, config=config)
         self.assertEqual(p.full_name, '"ABC" "DEF"')
@@ -152,19 +156,18 @@ class InferenceUtilsTestCase(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             infer_all_slot_values(p, schemaview=sv, config=config, policy=policy)
 
-
     def test_nesting(self):
         """
         Tests use of nested variables
         """
         sv = SchemaView(SCHEMA)
-        p1 = Person(first_name='a', last_name='b')
-        p2 = Person(first_name='c', last_name='d')
-        r = Relationship(person1=p1, person2=p2, type='SIBLING_OF')
+        p1 = Person(first_name="a", last_name="b")
+        p2 = Person(first_name="c", last_name="d")
+        r = Relationship(person1=p1, person2=p2, type="SIBLING_OF")
         infer_all_slot_values(r, schemaview=sv)
         self.assertEqual('"b, a" IS SIBLING_OF "d, c"', r.description)
         self.assertEqual('"a b" IS SIBLING_OF "c d"', r.description2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

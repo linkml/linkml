@@ -1,10 +1,10 @@
 # Relative Imports test schemas
 
-This tests the ability for schemaview to follow chains of relative imports - ie. that it resolves 
+This tests the ability for schemaview to follow chains of relative imports - ie. that it resolves
 each schema's relative imports with respect to the *imported* schema rather than the *origin* schema.
 
 This test case handles resolving relative imports in both directions, as well as neighboring directories
-starting from `L0_0/L1_0_0/main.yaml` schema. Each directory is labeled with a "level" (`L{n}`) and a second number for 
+starting from `L0_0/L1_0_0/main.yaml` schema. Each directory is labeled with a "level" (`L{n}`) and a second number for
 the "column" of the directory - eg `L1_1_*` is within `L0_1`, and each subdirectory adds more children.
 
 Note that this does **not** test that overrides are parsed correctly, that is tested in the `imports` directory
@@ -28,8 +28,8 @@ L0_1/L1_1_0/index               --> L0_1/L1_1_0/L2_1_0_0/index
 L0_1/L1_1_0/index               --> L0_1/L1_1_0/L2_1_0_1/index
 L0_1/L1_1_0/L2_1_0_0/index      --> L0_1/L1_1_0/L2_1_0_0/apple
 L0_1/L1_1_0/L2_1_0_1/index      --> L0_1/L1_1_0/L2_1_0_1/banana
-L0_0/L1_0_0/L2_0_0_0/child      --> L0_0/L1_0_1/dupe 
-L0_0/L1_0_0/L2_0_0_1/child      --> L0_0/L1_0_1/dupe 
+L0_0/L1_0_0/L2_0_0_0/child      --> L0_0/L1_0_1/dupe
+L0_0/L1_0_0/L2_0_0_1/child      --> L0_0/L1_0_1/dupe
 
 ```
 

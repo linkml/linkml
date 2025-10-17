@@ -6,28 +6,28 @@
 # description: Units datamodel
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
+from typing import Any, ClassVar, Optional, Union
 
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list
-from linkml_runtime.utils.yamlutils import YAMLRoot
 from rdflib import URIRef
+
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.metamodelcore import URIorCURIE
+from linkml_runtime.utils.metamodelcore import URIorCURIE, empty_list
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.yamlutils import YAMLRoot
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-IAO = CurieNamespace('IAO', 'http://purl.obolibrary.org/obo/IAO_')
-OIO = CurieNamespace('OIO', 'http://www.geneontology.org/formats/oboInOwl#')
-LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
-QUDT = CurieNamespace('qudt', 'http://qudt.org/schema/qudt/')
-RDF = CurieNamespace('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
-RDFS = CurieNamespace('rdfs', 'http://www.w3.org/2000/01/rdf-schema#')
-SKOS = CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#')
-XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
+IAO = CurieNamespace("IAO", "http://purl.obolibrary.org/obo/IAO_")
+OIO = CurieNamespace("OIO", "http://www.geneontology.org/formats/oboInOwl#")
+LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
+QUDT = CurieNamespace("qudt", "http://qudt.org/schema/qudt/")
+RDF = CurieNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+RDFS = CurieNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#")
+SKOS = CurieNamespace("skos", "http://www.w3.org/2004/02/skos/core#")
+XSD = CurieNamespace("xsd", "http://www.w3.org/2001/XMLSchema#")
 DEFAULT_ = LINKML
 
 
@@ -36,13 +36,13 @@ DEFAULT_ = LINKML
 # Class references
 
 
-
 @dataclass
 class UnitOfMeasure(YAMLRoot):
     """
     A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other
     quantities the same kind (more generally of equivalent dimension).
     """
+
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = QUDT["Unit"]
@@ -95,26 +95,75 @@ class UnitOfMeasure(YAMLRoot):
 class slots:
     pass
 
-slots.unit = Slot(uri=QUDT.unit, name="unit", curie=QUDT.curie('unit'),
-                   model_uri=LINKML.unit, domain=None, range=Optional[Union[dict, UnitOfMeasure]])
 
-slots.ucum_code = Slot(uri=QUDT.ucumCode, name="ucum_code", curie=QUDT.curie('ucumCode'),
-                   model_uri=LINKML.ucum_code, domain=UnitOfMeasure, range=Optional[str])
+slots.unit = Slot(
+    uri=QUDT.unit,
+    name="unit",
+    curie=QUDT.curie("unit"),
+    model_uri=LINKML.unit,
+    domain=None,
+    range=Optional[Union[dict, UnitOfMeasure]],
+)
 
-slots.derivation = Slot(uri=LINKML.derivation, name="derivation", curie=LINKML.curie('derivation'),
-                   model_uri=LINKML.derivation, domain=None, range=Optional[str])
+slots.ucum_code = Slot(
+    uri=QUDT.ucumCode,
+    name="ucum_code",
+    curie=QUDT.curie("ucumCode"),
+    model_uri=LINKML.ucum_code,
+    domain=UnitOfMeasure,
+    range=Optional[str],
+)
 
-slots.has_quantity_kind = Slot(uri=QUDT.hasQuantityKind, name="has_quantity_kind", curie=QUDT.curie('hasQuantityKind'),
-                   model_uri=LINKML.has_quantity_kind, domain=None, range=Optional[Union[str, URIorCURIE]])
+slots.derivation = Slot(
+    uri=LINKML.derivation,
+    name="derivation",
+    curie=LINKML.curie("derivation"),
+    model_uri=LINKML.derivation,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.iec61360code = Slot(uri=QUDT.iec61360Code, name="iec61360code", curie=QUDT.curie('iec61360Code'),
-                   model_uri=LINKML.iec61360code, domain=None, range=Optional[str])
+slots.has_quantity_kind = Slot(
+    uri=QUDT.hasQuantityKind,
+    name="has_quantity_kind",
+    curie=QUDT.curie("hasQuantityKind"),
+    model_uri=LINKML.has_quantity_kind,
+    domain=None,
+    range=Optional[Union[str, URIorCURIE]],
+)
 
-slots.symbol = Slot(uri=QUDT.symbol, name="symbol", curie=QUDT.curie('symbol'),
-                   model_uri=LINKML.symbol, domain=None, range=Optional[str])
+slots.iec61360code = Slot(
+    uri=QUDT.iec61360Code,
+    name="iec61360code",
+    curie=QUDT.curie("iec61360Code"),
+    model_uri=LINKML.iec61360code,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.abbreviation = Slot(uri=QUDT.abbreviation, name="abbreviation", curie=QUDT.curie('abbreviation'),
-                   model_uri=LINKML.abbreviation, domain=None, range=Optional[str])
+slots.symbol = Slot(
+    uri=QUDT.symbol,
+    name="symbol",
+    curie=QUDT.curie("symbol"),
+    model_uri=LINKML.symbol,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.descriptive_name = Slot(uri=RDFS.label, name="descriptive_name", curie=RDFS.curie('label'),
-                   model_uri=LINKML.descriptive_name, domain=None, range=Optional[str])
+slots.abbreviation = Slot(
+    uri=QUDT.abbreviation,
+    name="abbreviation",
+    curie=QUDT.curie("abbreviation"),
+    model_uri=LINKML.abbreviation,
+    domain=None,
+    range=Optional[str],
+)
+
+slots.descriptive_name = Slot(
+    uri=RDFS.label,
+    name="descriptive_name",
+    curie=RDFS.curie("label"),
+    model_uri=LINKML.descriptive_name,
+    domain=None,
+    range=Optional[str],
+)

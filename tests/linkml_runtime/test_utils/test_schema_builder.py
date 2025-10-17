@@ -1,15 +1,15 @@
-from typing import Optional, Union, Any
 from dataclasses import fields
+from typing import Any, Optional, Union
 
 import pytest
 
-from linkml_runtime.utils.schema_builder import SchemaBuilder
 from linkml_runtime.linkml_model import (
     ClassDefinition,
-    SlotDefinition,
     EnumDefinition,
     PermissibleValue,
+    SlotDefinition,
 )
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 
 # === Tests for `SchemaBuilder.add_class` ===
@@ -49,9 +49,7 @@ def test_add_existing_class(replace_if_present):
     ],
 )
 @pytest.mark.parametrize("use_attributes", [True, False])
-def test_add_class_with_slot_additions(
-    slots: Optional[list[Union[str, SlotDefinition]]], use_attributes: bool
-):
+def test_add_class_with_slot_additions(slots: Optional[list[Union[str, SlotDefinition]]], use_attributes: bool):
     """
     Test adding a class with separate additional slots specification
     """
@@ -262,5 +260,6 @@ def test_add_enum_with_extra_kwargs(
         added_enum = builder.schema.enums[enum_name]
 
         assert added_enum == expected_added_enum
+
 
 # === Tests for `SchemaBuilder.add_enum` end ===
