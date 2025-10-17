@@ -1,7 +1,8 @@
 from enum import Enum
-from linkml_runtime.linkml_model.meta import PermissibleValue
+
 import pytest
 from linkml_runtime.linkml_model import SlotDefinition
+from linkml_runtime.linkml_model.meta import PermissibleValue
 from rdflib import RDFS, SKOS, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF
@@ -246,7 +247,10 @@ class PermissibleValueURIMixture(Enum):
     MIXTURE = "mixture"
 
 @pytest.mark.parametrize("default_permissible_value_type", ["owl:Class", "rdfs:Literal", "owl:NamedIndividual"])
-@pytest.mark.parametrize("pv_implements", [None, "owl:Class", "rdfs:Literal", "owl:NamedIndividual", ("owl:Class", "rdfs:Literal")])
+@pytest.mark.parametrize(
+    "pv_implements",
+    [None, "owl:Class", "rdfs:Literal", "owl:NamedIndividual", ("owl:Class", "rdfs:Literal")]
+)
 @pytest.mark.parametrize("permissible_value_uri_mixture", [x for x in PermissibleValueURIMixture])
 def test_permissible_values(
     default_permissible_value_type: str,
