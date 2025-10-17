@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 
 from linkml.utils.helpers import get_range_associated_slots
 
-from .dataframe_field import DataframeField
+from .render_adapters.dataframe_field import DataframeField
 
 logger = logging.getLogger(__file__)
 
