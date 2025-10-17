@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="CLI" href="../cli/index.html" /><link rel="prev" title="FAQ: Contributing" href="contributing.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Examples of use" href="../examples.html" /><link rel="prev" title="Using ontology terms as values in data" href="ontologies-as-values.html" />
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>FAQ: Tricky Choices - linkml documentation</title>
+        <title>How to implement skip logic in LinkML - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -295,35 +295,35 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of How-to Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/collaborative-development.html">How to run a collaborative data modeling project</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/recognize-structural-forms.html">How to recognize and work with different structural forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/using-jsonld.html">Using JSON-LD</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/model-measurements.html">How to model quantities and measurements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/multidimensional-arrays.html">Multidimensional Arrays</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/model-property-graphs.html">How to make a property graph schema</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/generate-ai-prompts.html">How to Generate AI prompts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/deprecating-elements.html">Deprecating elements while maintaining PURLs and other URIs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/ontologies-as-values.html">Using ontology terms as values in data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/skip-logic.html">How to implement skip logic in LinkML</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">How-to Guides</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of How-to Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collaborative-development.html">How to run a collaborative data modeling project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recognize-structural-forms.html">How to recognize and work with different structural forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="using-jsonld.html">Using JSON-LD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model-measurements.html">How to model quantities and measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="port-linkml.html">Porting LinkML tools to other programming languages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multidimensional-arrays.html">Multidimensional Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model-property-graphs.html">How to make a property graph schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generate-ai-prompts.html">How to Generate AI prompts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deprecating-elements.html">Deprecating elements while maintaining PURLs and other URIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ontologies-as-values.html">Using ontology terms as values in data</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">How to implement skip logic in LinkML</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing/contributing.html">Contribution Guidelines</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">FAQ</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of FAQ</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="general.html">FAQ: General</a></li>
-<li class="toctree-l2"><a class="reference internal" href="why-linkml.html">FAQ: Why LinkML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modeling.html">FAQ: Modeling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tools.html">FAQ: Tools</a></li>
-<li class="toctree-l2"><a class="reference internal" href="python.html">FAQ: Python</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting-help.html">FAQ: Getting Help</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html">FAQ: Contributing</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">FAQ: Tricky Choices</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of FAQ</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/general.html">FAQ: General</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/why-linkml.html">FAQ: Why LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/modeling.html">FAQ: Modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/tools.html">FAQ: Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/python.html">FAQ: Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/getting-help.html">FAQ: Getting Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/contributing.html">FAQ: Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/tricky_choices.html">FAQ: Tricky Choices</a></li>
 </ul>
 </li>
 </ul>
@@ -380,7 +380,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/faq/tricky_choices.md.txt" title="View this page">
+  <a class="muted-link" href="../_sources/howtos/skip-logic.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -400,17 +400,172 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="faq-tricky-choices">
-<span id="tricky-choices"></span><h1>FAQ: Tricky Choices<a class="headerlink" href="#faq-tricky-choices" title="Link to this heading">¶</a></h1>
-<p>Inspired by IPLD’s <a class="reference external" href="https://ipld.io/design/tricky-choices/">tricky choices</a> section,
-this page describes some of the challenging decisions that could have gone multiple ways,
-and the considerations we weighed to arrive at the form we did.</p>
-<section id="arrays">
-<h2>Arrays<a class="headerlink" href="#arrays" title="Link to this heading">¶</a></h2>
-<div class="admonition-todo admonition">
-<p class="admonition-title">TODO</p>
-<p>To be filled in before we finish labeled arrays.</p>
+          <section id="how-to-implement-skip-logic-in-linkml">
+<h1>How to implement skip logic in LinkML<a class="headerlink" href="#how-to-implement-skip-logic-in-linkml" title="Link to this heading">¶</a></h1>
+<p>This guide will show you how to implement skip logic in your LinkML schemas. Skip logic, also known as conditional branching or survey routing, is a feature that allows you to control which questions are shown to a user based on their previous answers. This is a common requirement in systems like REDCap, CEDAR, and other questionnaire-based data collection systems.</p>
+<section id="what-is-skip-logic">
+<h2>What is Skip Logic?<a class="headerlink" href="#what-is-skip-logic" title="Link to this heading">¶</a></h2>
+<p>In a questionnaire, some questions may only be relevant if a specific answer was given to a previous question. For example, a question about the due date of a pregnancy is only relevant if the respondent has indicated that they are pregnant. Skip logic allows you to hide or show questions based on these conditions, creating a more dynamic and user-friendly experience.</p>
+</section>
+<section id="modeling-questionnaires-in-linkml">
+<h2>Modeling Questionnaires in LinkML<a class="headerlink" href="#modeling-questionnaires-in-linkml" title="Link to this heading">¶</a></h2>
+<p>You can model a questionnaire in LinkML by defining a class for the questionnaire itself, and then adding slots for each question. For example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span>
+<span class="nt">prefixes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">linkml</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span>
+<span class="w">  </span><span class="nt">personinfo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo/</span>
+<span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span>
+
+<span class="nt">imports</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:types</span>
+
+<span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">is_pregnant</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">due_date</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_children</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number_of_children</span>
+</pre></div>
 </div>
+<p>In this schema, we have a <code class="docutils literal notranslate"><span class="pre">Person</span></code> class with four slots representing questions in a questionnaire.</p>
+</section>
+<section id="implementing-skip-logic-with-linkml-rules">
+<h2>Implementing Skip Logic with LinkML Rules<a class="headerlink" href="#implementing-skip-logic-with-linkml-rules" title="Link to this heading">¶</a></h2>
+<p>LinkML’s <code class="docutils literal notranslate"><span class="pre">rules</span></code> feature can be used to implement skip logic. Rules are composed of <code class="docutils literal notranslate"><span class="pre">preconditions</span></code> and <code class="docutils literal notranslate"><span class="pre">postconditions</span></code>. The <code class="docutils literal notranslate"><span class="pre">preconditions</span></code> define the conditions under which the rule applies, and the <code class="docutils literal notranslate"><span class="pre">postconditions</span></code> define the constraints that should be enforced when the preconditions are met.</p>
+<section id="pattern-1-making-a-field-inapplicable">
+<h3>Pattern 1: Making a field inapplicable<a class="headerlink" href="#pattern-1-making-a-field-inapplicable" title="Link to this heading">¶</a></h3>
+<p>In some cases, a question may not be applicable based on a previous answer. For example, if a person is not pregnant, the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> question is not applicable. We can model this by making the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> slot inapplicable if the <code class="docutils literal notranslate"><span class="pre">is_pregnant</span></code> slot is <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">is_pregnant</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">due_date</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_children</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number_of_children</span>
+<span class="w">    </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;If</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">person</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">not</span><span class="nv"> </span><span class="s">pregnant,</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">due</span><span class="nv"> </span><span class="s">date</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">not</span><span class="nv"> </span><span class="s">applicable.&quot;</span>
+<span class="w">        </span><span class="nt">preconditions</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">slot_conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">is_pregnant</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">equals_string</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;no&quot;</span>
+<span class="w">        </span><span class="nt">postconditions</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">slot_conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">due_date</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">inapplicable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>With this rule, if a user enters “no” for <code class="docutils literal notranslate"><span class="pre">is_pregnant</span></code>, any value entered for <code class="docutils literal notranslate"><span class="pre">due_date</span></code> will be considered a validation error. The data validation engine would expect the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> to be null or absent.</p>
+</section>
+<section id="pattern-2-making-a-field-conditionally-required">
+<h3>Pattern 2: Making a field conditionally required<a class="headerlink" href="#pattern-2-making-a-field-conditionally-required" title="Link to this heading">¶</a></h3>
+<p>Another common pattern is to make a field required only if a certain condition is met. For example, the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> should be required if the person is pregnant.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">is_pregnant</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">due_date</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_children</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number_of_children</span>
+<span class="w">    </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;If</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">person</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">pregnant,</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">due</span><span class="nv"> </span><span class="s">date</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">required.&quot;</span>
+<span class="w">        </span><span class="nt">preconditions</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">slot_conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">is_pregnant</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">equals_string</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;yes&quot;</span>
+<span class="w">        </span><span class="nt">postconditions</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">slot_conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">due_date</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>In this case, if <code class="docutils literal notranslate"><span class="pre">is_pregnant</span></code> is “yes”, the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> slot must have a value.</p>
+</section>
+<section id="combining-rules">
+<h3>Combining Rules<a class="headerlink" href="#combining-rules" title="Link to this heading">¶</a></h3>
+<p>You can combine these rules to create more complex logic. For example, we can combine the two rules above, and add similar logic for the <code class="docutils literal notranslate"><span class="pre">number_of_children</span></code> slot.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span>
+<span class="nt">prefixes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">linkml</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span>
+<span class="w">  </span><span class="nt">personinfo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo/</span>
+<span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span>
+
+<span class="nt">imports</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:types</span>
+
+<span class="nt">enums</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">YesNoEnum</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span>
+<span class="w">      </span><span class="s">&quot;yes&quot;</span><span class="p p-Indicator">:</span>
+<span class="w">      </span><span class="s">&quot;no&quot;</span><span class="p p-Indicator">:</span>
+
+<span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">is_pregnant</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">YesNoEnum</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Are</span><span class="nv"> </span><span class="s">you</span><span class="nv"> </span><span class="s">pregnant?&quot;</span>
+<span class="w">  </span><span class="nt">due_date</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">date</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;What</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">your</span><span class="nv"> </span><span class="s">due</span><span class="nv"> </span><span class="s">date?&quot;</span>
+<span class="w">  </span><span class="nt">has_children</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">YesNoEnum</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Do</span><span class="nv"> </span><span class="s">you</span><span class="nv"> </span><span class="s">have</span><span class="nv"> </span><span class="s">children?&quot;</span>
+<span class="w">  </span><span class="nt">number_of_children</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;How</span><span class="nv"> </span><span class="s">many</span><span class="nv"> </span><span class="s">children</span><span class="nv"> </span><span class="s">do</span><span class="nv"> </span><span class="s">you</span><span class="nv"> </span><span class="s">have?&quot;</span>
+
+<span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">is_pregnant</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">due_date</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_children</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number_of_children</span>
+<span class="w">    </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Due</span><span class="nv"> </span><span class="s">date</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">required</span><span class="nv"> </span><span class="s">if</span><span class="nv"> </span><span class="s">pregnant,</span><span class="nv"> </span><span class="s">otherwise</span><span class="nv"> </span><span class="s">it&#39;s</span><span class="nv"> </span><span class="s">inapplicable.&quot;</span>
+<span class="w">        </span><span class="nt">preconditions</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">slot_conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">is_pregnant</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">equals_enum</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">codeable_concept</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;yes&quot;</span>
+<span class="w">        </span><span class="nt">postconditions</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">slot_conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">due_date</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">preconditions</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">slot_conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">is_pregnant</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">equals_enum</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">codeable_concept</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;no&quot;</span>
+<span class="w">        </span><span class="nt">postconditions</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">slot_conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">due_date</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">inapplicable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Number</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">children</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">required</span><span class="nv"> </span><span class="s">if</span><span class="nv"> </span><span class="s">has_children</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">yes,</span><span class="nv"> </span><span class="s">otherwise</span><span class="nv"> </span><span class="s">it&#39;s</span><span class="nv"> </span><span class="s">inapplicable.&quot;</span>
+<span class="w">        </span><span class="nt">preconditions</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">slot_conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">has_children</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">equals_enum</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">codeable_concept</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;yes&quot;</span>
+<span class="w">        </span><span class="nt">postconditions</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">slot_conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">number_of_children</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">preconditions</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">slot_conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">has_children</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">equals_enum</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">codeable_concept</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;no&quot;</span>
+<span class="w">        </span><span class="nt">postconditions</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">slot_conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">number_of_children</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">inapplicable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>This complete example demonstrates how to use LinkML rules to implement skip logic in your schemas, ensuring that your data is valid and consistent. By using these patterns, you can create sophisticated and dynamic questionnaires that adapt to user input.</p>
+</section>
 </section>
 </section>
 
@@ -419,23 +574,23 @@ and the considerations we weighed to arrive at the form we did.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../cli/index.html">
+          <a class="next-page" href="../examples.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">CLI</div>
+                <div class="title">Examples of use</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="contributing.html">
+          <a class="prev-page" href="ontologies-as-values.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">FAQ: Contributing</div>
+                <div class="title">Using ontology terms as values in data</div>
                 
               </div>
             </a>
@@ -469,8 +624,15 @@ and the considerations we weighed to arrive at the form we did.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">FAQ: Tricky Choices</a><ul>
-<li><a class="reference internal" href="#arrays">Arrays</a></li>
+<li><a class="reference internal" href="#">How to implement skip logic in LinkML</a><ul>
+<li><a class="reference internal" href="#what-is-skip-logic">What is Skip Logic?</a></li>
+<li><a class="reference internal" href="#modeling-questionnaires-in-linkml">Modeling Questionnaires in LinkML</a></li>
+<li><a class="reference internal" href="#implementing-skip-logic-with-linkml-rules">Implementing Skip Logic with LinkML Rules</a><ul>
+<li><a class="reference internal" href="#pattern-1-making-a-field-inapplicable">Pattern 1: Making a field inapplicable</a></li>
+<li><a class="reference internal" href="#pattern-2-making-a-field-conditionally-required">Pattern 2: Making a field conditionally required</a></li>
+<li><a class="reference internal" href="#combining-rules">Combining Rules</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
