@@ -1,12 +1,20 @@
+from typing import TYPE_CHECKING
+
 from .dependency_sorter import DependencySorter
 
+if TYPE_CHECKING:
+    from .dataframe_generator import DataframeGenerator
 
-class ClassGeneratorMixin:
+
+class ClassHandlerBase:
+    def __init__(self, generator: "DataframeGenerator"):
+        self.generator = generator
+
     def enum_or_class(self, cn):
-        if cn in self.schemaview.all_enums():
-            return self.schemaview.get_enum(cn, strict=True)
-        elif cn in self.schemaview.all_classes():
-            return self.schemaview.get_class(cn, strict=True)
+        if cn in self.generator.schemaview.all_enums():
+            return self.generator.schemaview.get_enum(cn, strict=True)
+        elif cn in self.generator.schemaview.all_classes():
+            return self.generator.schemaview.get_class(cn, strict=True)
         else:
             raise Exception(f"Unknown class or enum {cn}")
 
@@ -25,7 +33,7 @@ class ClassGeneratorMixin:
         """
         Add dependencies based on class hierarchy.
         """
-        sv = self.schemaview
+        sv = self.generator.schemaview
 
         for cn in sv.all_classes():
             sorter.add_dependency(cn, None)
@@ -38,7 +46,7 @@ class ClassGeneratorMixin:
         """
         Add dependencies based on associations.
         """
-        sv = self.schemaview
+        sv = self.generator.schemaview
 
         for cn in sv.all_classes():
             for slot_name in sv.class_slots(cn):

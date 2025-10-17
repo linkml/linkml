@@ -16,10 +16,10 @@ from linkml_runtime.utils.schemaview import SchemaView
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator, OODocument
 
-from .class_generator_mixin import ClassGeneratorMixin
+from .class_generator_mixin import ClassHandlerBase
 from .dataframe_class import DataframeClass
-from .enum_generator_mixin import EnumGeneratorMixin
-from .slot_generator_mixin import SlotGeneratorMixin
+from .enum_generator_mixin import EnumHandlerBase
+from .slot_generator_mixin import SlotHandlerBase
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ class TemplateEnum(Enum):
 
 
 @dataclass
-class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin, SlotGeneratorMixin):
+class PanderaGenerator(OOCodeGenerator):
     """
     Generates Pandera python classes from a LinkML schema.
 
@@ -165,11 +165,11 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
 
         classes = []
 
-        for c in self.ordered_classes():
+        for c in self.class_handler.ordered_classes():
             cn = c.name
             safe_cn = camelcase(cn)
             annotations = {}
-            identifier_or_key_slot = self.get_identifier_or_key_slot(cn)
+            identifier_or_key_slot = self.slot_handler.get_identifier_or_key_slot(cn)
             if identifier_or_key_slot:
                 annotations["identifier_key_slot"] = identifier_or_key_slot.name
             ooclass = DataframeClass(
@@ -191,7 +191,7 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
             else:
                 parent_slots = []
             for sn in sv.class_slots(cn):
-                oofield = self.handle_slot(cn, sn)
+                oofield = self.slot_handler.handle_slot(cn, sn)
                 if sn not in parent_slots:
                     ooclass.fields.append(oofield)
                 ooclass.all_fields.append(oofield)
@@ -199,6 +199,13 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
         oodoc.classes = classes
 
         return oodoc
+
+    def __post_init__(self):
+        super().__post_init__()
+        self.slot_handler = SlotHandlerBase(self)
+        self.enum_handler = EnumHandlerBase(self)
+        self.class_handler = ClassHandlerBase(self)
+
 
 
 @click.option("--package", help="Package name where relevant for generated class files")
