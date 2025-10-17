@@ -113,7 +113,7 @@ def deprecated_fields(deprecated_map: dict[str, str]):
         # Add property accessors for deprecated fields
         for old_field, new_field in deprecated_map.items():
             # Create a property for the deprecated field using a closure
-            def make_property(old_name, new_name):
+            def make_property(new_name):
                 def getter(self):
                     deprecation_warning("metadata-flag")
                     return getattr(self, new_name)
@@ -125,7 +125,7 @@ def deprecated_fields(deprecated_map: dict[str, str]):
                 return property(getter, setter)
 
             # Add the property to the class
-            setattr(cls, old_field, make_property(old_field, new_field))
+            setattr(cls, old_field, make_property(new_field))
 
         return cls
 
