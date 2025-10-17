@@ -485,14 +485,13 @@ runs.</p>
 <li><p>Temporal scalars: <code class="docutils literal notranslate"><span class="pre">date</span></code> and <code class="docutils literal notranslate"><span class="pre">datetime</span></code> map to <code class="docutils literal notranslate"><span class="pre">chrono</span></code>’s <code class="docutils literal notranslate"><span class="pre">NaiveDate</span></code> and <code class="docutils literal notranslate"><span class="pre">NaiveDateTime</span></code> respectively.</p></li>
 <li><p>Traits for polymorphic access to class hierarchies, along with enums for class-or-subtype containers.</p></li>
 <li><p>PyO3 bindings for the generated structs (behind a Cargo feature flag).</p></li>
-<li><p>Basic <code class="docutils literal notranslate"><span class="pre">serde</span></code> deserialization (behind a Cargo feature flag).</p></li>
+<li><p>Basic <code class="docutils literal notranslate"><span class="pre">serde</span></code> deserialization and serialization, including normalisation (behind a Cargo feature flag).</p></li>
 </ul>
 </section>
 <section id="partially-supported">
 <h3>Partially Supported<a class="headerlink" href="#partially-supported" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Many scalar types (e.g. <code class="docutils literal notranslate"><span class="pre">time</span></code>, URI-related types) currently fall back to <code class="docutils literal notranslate"><span class="pre">String</span></code> representations.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">serde</span></code> deserialization works; serialization still lacks the normalisation, and will not always produce correct yaml.</p></li>
 <li><p>Testing covers unit-level behaviour with a dedicated Rust CI workflow; dynamic compilation and compliance suites are
 still pending.</p></li>
 </ul>
