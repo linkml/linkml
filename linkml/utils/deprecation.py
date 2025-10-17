@@ -262,7 +262,7 @@ DEPRECATIONS = (
     ),
     Deprecation(
         name="metadata-flag",
-        deprecated_in=SemVer.from_str("1.9.2"),
+        deprecated_in=SemVer.from_str("1.9.5"),
         removed_in=SemVer.from_str("1.10.0"),
         message=(
             "Use of flags `head` or `emit_metadata` to get a metadata header "
