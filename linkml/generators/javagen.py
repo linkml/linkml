@@ -9,6 +9,7 @@ from linkml_runtime.linkml_model.meta import TypeDefinition
 
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator
+from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.generator import deprecated_fields, shared_arguments
 
 default_template = """
@@ -82,7 +83,6 @@ class JavaGenerator(OOCodeGenerator):
     gen_classvars: bool = True
     gen_slots: bool = True
     genmeta: bool = False
-    emit_metadata: bool = True
 
     def default_value_for_type(self, typ: str) -> str:
         return TYPE_DEFAULTS.get(typ, "null")
@@ -154,20 +154,29 @@ def cli(
     package=None,
     template_file=None,
     generate_records=False,
-    head=True,
-    emit_metadata=False,
+    head=None,
+    emit_metadata=None,
     genmeta=False,
     classvars=True,
     slots=True,
     **args,
 ):
     """Generate java classes to represent a LinkML model"""
+    # default is adding metadata to the generated code
+    if "metadata" not in args.keys():
+        args["metadata"] = True
+    # deprecated arguments are replaced, head overwrites emit_metadata
+    if emit_metadata is not None:
+        deprecation_warning("metadata-flag")
+        args["metadata"] = emit_metadata
+    if head is not None:
+        deprecation_warning("metadata-flag")
+        args["metadata"] = head
     JavaGenerator(
         yamlfile,
         package=package,
         template_file=template_file,
         generate_records=generate_records,
-        emit_metadata=head,
         genmeta=genmeta,
         gen_classvars=classvars,
         gen_slots=slots,
