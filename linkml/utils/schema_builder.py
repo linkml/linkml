@@ -193,6 +193,8 @@ class SchemaBuilder:
                 if isinstance(pv, str):
                     pv = PermissibleValue(text=pv)
                     enum_def.permissible_values[pv.text] = pv
+                else:
+                    enum_def.permissible_values[pv.text] = pv
         return self
 
     def add_prefix(self, prefix: str, url: str, replace_if_present=False) -> "SchemaBuilder":
