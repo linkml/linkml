@@ -1,0 +1,7 @@
+{% for cls in doc.classes -%}
+{{ cls.name }} = "temp"
+{% endfor %}
+
+{% for cls in doc.enums -%}
+{{ cls.name }} == "temp"
+{% endfor %}
