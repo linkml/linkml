@@ -73,7 +73,7 @@ def compiled_polars_synthetic_schema_module(synthetic_flat_dataframe_model):
     polars_generator_cli = DataframeGeneratorCli(
         generator=generator, template_path="panderagen_polars_schema", template_file="polars_schema.jinja2"
     )
-    return polars_generator_cli.generator.compile_dataframe_model("pandera_test_module")
+    return polars_generator_cli.generator.compile_dataframe_model("polars_test_module")
 
 
 @pytest.mark.parametrize(
@@ -159,8 +159,17 @@ def compiled_polars_synthetic_schema_module(synthetic_flat_dataframe_model):
 )
 def test_stub(compiled_model, class_name, data):
     schema_class = getattr(compiled_model, class_name)
+    print(
+        "DIFF: "
+        + ", ".join(list(set(schema_class.keys()) - set(data.keys())))
+        + " / , ".join(list(set(data.keys()) - set(schema_class.keys())))
+    )
+    print(schema_class)
+    print(data)
 
-    assert schema_class == "temp"
+    df = pl.DataFrame(data, schema=schema_class)
+
+    assert df is not None
 
 
 def test_synthetic_dataframe(
@@ -177,8 +186,8 @@ def test_dump_synthetic_df(big_synthetic_dataframe):
 
 
 def test_enums(compiled_polars_synthetic_schema_module):
-    DemoEnum = compiled_polars_synthetic_schema_module.DemoEnum
-    DemoOntologyEnum = compiled_polars_synthetic_schema_module.DemoOntologyEnum
+    SyntheticEnum = compiled_polars_synthetic_schema_module.SyntheticEnum
+    SyntheticEnumOnt = compiled_polars_synthetic_schema_module.SyntheticEnumOnt
 
-    assert DemoEnum == "temp"
-    assert DemoOntologyEnum == "temp"
+    assert set(SyntheticEnum.categories) == {"ANIMAL", "VEGETABLE", "MINERAL"}
+    assert set(SyntheticEnumOnt.categories) == {"fiction", "non fiction"}
