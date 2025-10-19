@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 @pytest.fixture
 def test_inputs_dir():
-    return Path(__file__).parent / "input"
+    return Path(__file__).parent.parent / "input"
 
 
 @pytest.fixture
