@@ -1,5 +1,3 @@
-from contextlib import suppress
-
 from linkml.generators.oocodegen import OOField
 
 
@@ -53,16 +51,13 @@ class DataframeField(OOField):
         self.inline_id_column_name = inline_id_column_name
         self.inline_id_other_name = inline_id_other_name
         self.inline_other_range = inline_other_range
-        # to be uncommented in a later commit.
-        # self.reference_class = reference_class
-        # self.inline_form = inline_form
+        self.reference_class = reference_class
+        self.inline_form = inline_form
         self._permissible_values = permissible_values
 
     @property
     def permissible_values(self):
-        # will become a getter once setter is being called
-        # return self._permissible_values or []
-        return self.permissible_values_from_source_slot()
+        return self._permissible_values or []
 
     @permissible_values.setter
     def permissible_values(self, value):
@@ -85,19 +80,6 @@ class DataframeField(OOField):
 
     def maximum_cardinality(self):
         return self.source_slot.maximum_cardinality
-
-    def permissible_values_from_source_slot(self):
-        """to be removed"""
-        return self.source_slot.annotations._get("permissible_values", [])
-
-    @property
-    def inline_form(self):
-        return self.source_slot.annotations._get("inline_form", None)
-
-    def reference_class(self):
-        with suppress(AttributeError, KeyError):
-            return self.source_slot.annotations._get("reference_class", None)
-        return None
 
     def inline_details(self):
         return self.source_slot.annotations._get("inline_details", None)
