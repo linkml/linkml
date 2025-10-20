@@ -1,10 +1,10 @@
 import logging
+import sys
 
 import pytest
 import yaml
 
 from linkml.generators.panderagen.compile_python import compile_python
-
 from linkml.generators.panderagen.dict_compare import deep_compare_dicts
 
 _MIN_POLARS_VERSION = "1.29.0"
@@ -45,6 +45,8 @@ def check_data_pandera(
     schema, output, target_class, object_to_validate, coerced, expected_behavior, valid, polars_only=False
 ):
     apply_skip_list(schema["name"], _SKIP_LIST)
+    if sys.version_info < (3, 11):
+        pytest.skip("typing.Optional issue for polars generator in python < 3.11")
     pl = pytest.importorskip("polars", minversion=_MIN_POLARS_VERSION, reason="Polars >= 1.0 not installed")
 
     try:
