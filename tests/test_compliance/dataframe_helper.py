@@ -2,7 +2,8 @@ import logging
 
 import pytest
 import yaml
-from linkml_runtime.utils.compile_python import compile_python
+
+from linkml.generators.panderagen.compile_python import compile_python
 
 _MIN_POLARS_VERSION = "1.29.0"
 
