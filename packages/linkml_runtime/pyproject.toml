@@ -48,7 +48,7 @@ dependencies = [
     "requests",
     "prefixmaps >=0.1.4",
     "curies >=0.5.4",
-    "pydantic >=1.10.2, <3.0.0",
+    "pydantic >=2.0.0, <3.0.0",
     "isodate >=0.7.2, <1.0.0; python_version < '3.11'",
 ]
 
