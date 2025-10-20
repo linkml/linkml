@@ -10,13 +10,13 @@ from typing import Optional
 
 from jinja2 import Environment, PackageLoader
 from linkml_runtime.linkml_model.meta import TypeDefinition
-from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.generators.oocodegen import OOCodeGenerator, OODocument
 
 from .class_handler_base import ClassHandlerBase
+from .compile_python import compile_python
 from .enum_handler_base import EnumHandlerBase
 from .render_adapters.dataframe_class import DataframeClass
 
@@ -41,8 +41,8 @@ class DataframeGenerator(OOCodeGenerator, ABC):
     java_style = False
 
     # ObjectVars
-    template_file: str | None = None
-    template_path: str | None = None
+    template_file: str = None
+    template_path: str = None
 
     gen_classvars: bool = True
     gen_slots: bool = True
@@ -65,7 +65,7 @@ class DataframeGenerator(OOCodeGenerator, ABC):
         """Allow underlying framework to handle default if not specified."""
         return None
 
-    def map_type(self, t: TypeDefinition) -> str | None:
+    def map_type(self, t: TypeDefinition) -> str:
         logger.info(f"type_map definition: {t}")
 
         typ = None
@@ -150,7 +150,7 @@ class DataframeGenerator(OOCodeGenerator, ABC):
 
         return code
 
-    def compile_dataframe_model(self, module_name: str | None = None) -> ModuleType:
+    def compile_dataframe_model(self, module_name: str = None) -> ModuleType:
         """
         Generates and compiles Dataframe model.
 
