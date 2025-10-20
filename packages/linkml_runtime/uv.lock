@@ -471,7 +471,7 @@ requires-dist = [
     { name = "jsonschema", specifier = ">=3.2.0" },
     { name = "prefixcommons", specifier = ">=0.1.12" },
     { name = "prefixmaps", specifier = ">=0.1.4" },
-    { name = "pydantic", specifier = ">=1.10.2,<3.0.0" },
+    { name = "pydantic", specifier = ">=2.0.0,<3.0.0" },
     { name = "pyyaml" },
     { name = "rdflib", specifier = ">=6.0.0" },
     { name = "requests" },
