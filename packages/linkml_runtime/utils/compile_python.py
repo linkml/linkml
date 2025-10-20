@@ -23,7 +23,7 @@ def compile_python(text_or_fn: str, package_path: str = None, module_name: str =
 
     :param text_or_fn: Python text or file name that references python file
     :param package_path: Root package path. If omitted and we've got a python file, the package is the containing directory
-    :param module_name: Module name to be used in an import statement, default 'test'
+    :param module_name: Used in an import statement, default 'test'
     :return: Compiled module
     """
     if module_name is None:
