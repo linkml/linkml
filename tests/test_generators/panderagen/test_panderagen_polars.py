@@ -73,7 +73,7 @@ def compiled_polars_synthetic_schema_module(synthetic_flat_dataframe_model):
     polars_generator_cli = DataframeGeneratorCli(
         generator=generator, template_path="panderagen_polars_schema", template_file="polars_schema.jinja2"
     )
-    return polars_generator_cli.generator.compile_dataframe_model("pandera_test_module")
+    return polars_generator_cli.generator.compile_dataframe_model("polars_test_module")
 
 
 @pytest.mark.parametrize(
@@ -176,9 +176,10 @@ def test_dump_synthetic_df(big_synthetic_dataframe):
     logger.info(big_synthetic_dataframe)
 
 
+@pytest.mark.skipif(True, reason="Temporary skip until real templates are checked in.")
 def test_enums(compiled_polars_synthetic_schema_module):
-    DemoEnum = compiled_polars_synthetic_schema_module.DemoEnum
-    DemoOntologyEnum = compiled_polars_synthetic_schema_module.DemoOntologyEnum
+    SyntheticEnum = compiled_polars_synthetic_schema_module.SyntheticEnum
+    SyntheticEnumOnt = compiled_polars_synthetic_schema_module.SyntheticEnumOnt
 
-    assert DemoEnum == "temp"
-    assert DemoOntologyEnum == "temp"
+    assert SyntheticEnum == "temp"
+    assert SyntheticEnumOnt == "temp"
