@@ -6,29 +6,30 @@
 # description: Abstractions for working with RDF and RDFS triples
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
-from jsonasobj2 import as_dict
-from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
+from typing import Any, ClassVar, Optional, Union
 
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
+from jsonasobj2 import as_dict
 from rdflib import URIRef
+
 from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.metamodelcore import empty_list
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
 
 metamodel_version = "1.7.0"
 
 # Namespaces
-EX = CurieNamespace('ex', 'https://w3id.org/example/')
-LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
-RDF = CurieNamespace('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
-SH = CurieNamespace('sh', 'http://www.w3.org/ns/shacl#')
-SPARQLFUN = CurieNamespace('sparqlfun', 'https://w3id.org/sparqlfun/')
+EX = CurieNamespace("ex", "https://w3id.org/example/")
+LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
+RDF = CurieNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+SH = CurieNamespace("sh", "http://www.w3.org/ns/shacl#")
+SPARQLFUN = CurieNamespace("sparqlfun", "https://w3id.org/sparqlfun/")
 DEFAULT_ = EX
 
 
 # Types
+
 
 # Class references
 class NodeId(extended_str):
@@ -44,6 +45,7 @@ class Triple(YAMLRoot):
     """
     Represents an RDF triple
     """
+
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = RDF.Statement
@@ -120,23 +122,49 @@ class NodeObject(Node):
 class slots:
     pass
 
-slots.id = Slot(uri=EX.id, name="id", curie=EX.curie('id'),
-                   model_uri=EX.id, domain=None, range=URIRef)
 
-slots.subject = Slot(uri=RDF.subject, name="subject", curie=RDF.curie('subject'),
-                   model_uri=EX.subject, domain=None, range=Optional[Union[str, NodeId]])
+slots.id = Slot(uri=EX.id, name="id", curie=EX.curie("id"), model_uri=EX.id, domain=None, range=URIRef)
 
-slots.predicate = Slot(uri=RDF.predicate, name="predicate", curie=RDF.curie('predicate'),
-                   model_uri=EX.predicate, domain=None, range=Optional[Union[str, NodeId]])
+slots.subject = Slot(
+    uri=RDF.subject,
+    name="subject",
+    curie=RDF.curie("subject"),
+    model_uri=EX.subject,
+    domain=None,
+    range=Optional[Union[str, NodeId]],
+)
 
-slots.object = Slot(uri=RDF.object, name="object", curie=RDF.curie('object'),
-                   model_uri=EX.object, domain=None, range=Optional[str])
+slots.predicate = Slot(
+    uri=RDF.predicate,
+    name="predicate",
+    curie=RDF.curie("predicate"),
+    model_uri=EX.predicate,
+    domain=None,
+    range=Optional[Union[str, NodeId]],
+)
 
-slots.graph = Slot(uri=EX.graph, name="graph", curie=EX.curie('graph'),
-                   model_uri=EX.graph, domain=None, range=Optional[Union[str, NodeId]])
+slots.object = Slot(
+    uri=RDF.object, name="object", curie=RDF.curie("object"), model_uri=EX.object, domain=None, range=Optional[str]
+)
 
-slots.statements = Slot(uri=SPARQLFUN.statements, name="statements", curie=SPARQLFUN.curie('statements'),
-                   model_uri=EX.statements, domain=None, range=Optional[Union[Union[dict, Triple], list[Union[dict, Triple]]]])
+slots.graph = Slot(
+    uri=EX.graph,
+    name="graph",
+    curie=EX.curie("graph"),
+    model_uri=EX.graph,
+    domain=None,
+    range=Optional[Union[str, NodeId]],
+)
 
-slots.type = Slot(uri=EX.type, name="type", curie=EX.curie('type'),
-                   model_uri=EX.type, domain=None, range=Optional[Union[str, NodeId]])
+slots.statements = Slot(
+    uri=SPARQLFUN.statements,
+    name="statements",
+    curie=SPARQLFUN.curie("statements"),
+    model_uri=EX.statements,
+    domain=None,
+    range=Optional[Union[Union[dict, Triple], list[Union[dict, Triple]]]],
+)
+
+slots.type = Slot(
+    uri=EX.type, name="type", curie=EX.curie("type"), model_uri=EX.type, domain=None, range=Optional[Union[str, NodeId]]
+)

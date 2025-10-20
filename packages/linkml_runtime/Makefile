@@ -10,7 +10,7 @@ update_model:
 	cp -pr $(MODEL_DIR)/* linkml_runtime/linkml_model
 
 test:
-	poetry run pytest
+	uv run pytest
 
 
 # temporary measure until linkml-model is synced

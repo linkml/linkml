@@ -1,66 +1,66 @@
- 
-classes: 
-  Pedigree: 
-    attributes: 
-      persons: 
-        annotations: 
+
+classes:
+  Pedigree:
+    attributes:
+      persons:
+        annotations:
           rank: 1
         description: ''
         inlined: true
         multivalued: true
         range: Person
     description: https://software.broadinstitute.org/gatk/documentation/article?id=11016
-  Person: 
-    attributes: 
-      affectedStatus: 
-        annotations: 
+  Person:
+    attributes:
+      affectedStatus:
+        annotations:
           rank: 6
         description: ''
         range: AffectedStatus
-      familyId: 
-        annotations: 
+      familyId:
+        annotations:
           rank: 1
         description: ''
         range: string
-      individualId: 
-        annotations: 
+      individualId:
+        annotations:
           rank: 2
         description: ''
         range: string
-      maternalId: 
-        annotations: 
+      maternalId:
+        annotations:
           rank: 4
         description: ''
         range: string
-      paternalId: 
-        annotations: 
+      paternalId:
+        annotations:
           rank: 3
         description: ''
         range: string
-      sex: 
-        annotations: 
+      sex:
+        annotations:
           rank: 5
         description: ''
         range: Sex
     description: ''
 default_prefix: pedigree
 description: "Automatic translation of phenopackets protobuf to LinkML. Status: EXPERIMENTAL."
-enums: 
-  AffectedStatus: 
+enums:
+  AffectedStatus:
     description: ''
-    permissible_values: 
-      AFFECTED: 
+    permissible_values:
+      AFFECTED:
         description: ''
-      MISSING: 
+      MISSING:
         description: ''
-      UNAFFECTED: 
+      UNAFFECTED:
         description: ''
 id: https://w3id.org/linkml/phenopackets/pedigree
-imports: 
+imports:
   - linkml:types
   - individual
 name: pedigree
-prefixes: 
+prefixes:
   GENO: http://purl.obolibrary.org/obo/GENO_
   HP: http://purl.obolibrary.org/obo/HP_
   LOINC: https://loinc.org/
@@ -73,4 +73,3 @@ prefixes:
   linkml: https://w3id.org/linkml/
   pedigree: https://w3id.org/linkml/phenopackets/pedigree/
 slots: {}
-

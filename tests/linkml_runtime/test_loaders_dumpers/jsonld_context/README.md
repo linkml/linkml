@@ -12,7 +12,7 @@ This directory contains a variety of contexts for use with the JSON-LD module
   identifier for namespaces that end with a '_' (hand generated)
 * [tjsonld_11/ermci_schema_inlined.context.jsonld]() - Nested contexts inlined (generated using context_flattener.py starting
   with Package.context.jsonld)
-  
+
 ## Starting the docker web server
 ```bash
 > cd tests/test_loaders_dumpers/jsonld-context
@@ -22,8 +22,8 @@ Step 9/9 : EXPOSE 80 443
  ---> Using cache
  ---> 19c5600029ca
 Successfully built 19c5600029ca
-Successfully tagged context_server:latest   
-> ./dr.sh 
+Successfully tagged context_server:latest
+> ./dr.sh
 e98f7b5bf6cfa8f2d937724aec0723aa074e3d844a25933e0ba2692e9a3e5058
 >
 ```
@@ -55,7 +55,7 @@ To test that the server is running:
 ```
 After the testing is complete, the server can be stopped with
 ```bash
-> ./ds.sh 
+> ./ds.sh
 context_server
 >
 ```
@@ -65,4 +65,3 @@ ones above, you will need to edit [tests/test_loaders/__init__.py]() and change 
 HTTP_TEST_PORT = 8000
 HTTPS_TEST_PORT = 8443
 ```
-

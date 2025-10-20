@@ -4,78 +4,101 @@
 # https://github.com/codecov/codecov-action
 
 name: Build and test linkml-runtime
-
+env:
+  UV_VERSION: "0.7.13"
 on:
   push:
     branches:
-    - main
+      - main
   pull_request:
   workflow_dispatch:
 
 jobs:
+  quality-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6.8.0
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - uses: actions/setup-python@v6.0.0
+        with:
+          python-version: 3.13
+      - name: Install tox
+        run: python -m pip install tox
+      - name: Run codespell
+        run: tox -e codespell
+      - name: Run code format checks
+        run: tox -e format_check
+
   test:
+    needs:
+      - quality-checks
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        # Test on Windows with only the oldest and newest Python versions
         exclude:
-        - os: windows-latest
-          python-version: "3.10"
-        - os: windows-latest
-          python-version: "3.11"
-        - os: windows-latest
-          python-version: "3.12"
+          - os: windows-latest
+            python-version: "3.10"
+          - os: windows-latest
+            python-version: "3.11"
+          - os: windows-latest
+            python-version: "3.12"
+    # See https://github.com/snok/install-poetry#running-on-windows
+    defaults:
+      run:
+        shell: bash
 
     runs-on: ${{ matrix.os }}
 
     steps:
-
-      #----------------------------------------------
-      #          install poetry
-      #----------------------------------------------
-      - name: Install Poetry
-        run: |
-          pipx install poetry
-          pipx inject poetry poetry-dynamic-versioning
-
-      #----------------------------------------------
-      #       check-out repo and set-up python
-      #----------------------------------------------
       - name: Check out repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5.0.0
         with:
           fetch-depth: 0
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5.6.0
+      #----------------------------------------------
+      #          install uv
+      #----------------------------------------------
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6.8.0
         with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
           python-version: ${{ matrix.python-version }}
-          cache: 'poetry'
 
       #----------------------------------------------
-      #    install your root project, if required 
-      #----------------------------------------------      
-      - name: Install library
+      #    install your root project, if required
+      #----------------------------------------------
+      - name: Install dependencies
         run: |
-          poetry install --no-interaction
+          uv sync --group dev
+
+      - name: Verify uv.lock is up-to-date
+        run: uv lock --check
 
       #----------------------------------------------
-      #              coverage report   
+      #              coverage report
       #----------------------------------------------
       - name: Generate coverage results
         # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668
         shell: bash
         run: |
-          poetry run coverage run -m pytest
-          poetry run coverage xml
-          poetry run coverage report -m
+          uv run coverage run -m pytest
+          uv run coverage xml
+          uv run coverage report -m
 
       #----------------------------------------------
       #           upload coverage results
       #----------------------------------------------
       - name: Upload coverage report
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v5.5.1
         with:
           name: codecov-results-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}

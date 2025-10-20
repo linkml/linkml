@@ -1,23 +1,23 @@
 import json
-from datetime import datetime, date
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Union
-from pydantic import BaseModel
 
 from deprecated.classic import deprecated
+from jsonasobj2 import JsonObj
+from pydantic import BaseModel
 
 from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.utils import formatutils
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE
 from linkml_runtime.utils.formatutils import remove_empty_items
 from linkml_runtime.utils.yamlutils import YAMLRoot, as_json_object
-from jsonasobj2 import JsonObj
 
 
 class JSONDumper(Dumper):
-
-    def dump(self, element: Union[BaseModel, YAMLRoot], to_file: str, contexts: CONTEXTS_PARAM_TYPE = None,
-             **kwargs) -> None:
+    def dump(
+        self, element: Union[BaseModel, YAMLRoot], to_file: str, contexts: CONTEXTS_PARAM_TYPE = None, **kwargs
+    ) -> None:
         """
         Write element as json to to_file
         :param element: LinkML object to be serialized as YAML
@@ -61,12 +61,16 @@ class JSONDumper(Dumper):
                 return str(o)
             else:
                 return json.JSONDecoder().decode(o)
+
+        element_type = element.__class__.__name__
         if isinstance(element, BaseModel):
             element = element.model_dump()
-        return json.dumps(as_json_object(element, contexts, inject_type=inject_type),
-                          default=default,
-                          ensure_ascii=False,
-                          indent='  ')
+        return json.dumps(
+            as_json_object(element, contexts, inject_type=inject_type, element_type=element_type),
+            default=default,
+            ensure_ascii=False,
+            indent="  ",
+        )
 
     @staticmethod
     @deprecated("Use `utils/formatutils/remove_empty_items` instead")
@@ -78,8 +82,9 @@ class JSONDumper(Dumper):
         """
         return formatutils.remove_empty_items(obj, hide_protected_keys=True)
 
-    def to_json_object(self, element: Union[BaseModel, YAMLRoot], contexts: CONTEXTS_PARAM_TYPE = None,
-                       inject_type=True) -> JsonObj:
+    def to_json_object(
+        self, element: Union[BaseModel, YAMLRoot], contexts: CONTEXTS_PARAM_TYPE = None, inject_type=True
+    ) -> JsonObj:
         """
         As dumps(), except returns a JsonObj, not a string
 

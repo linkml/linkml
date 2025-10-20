@@ -2,32 +2,33 @@ import io
 import json
 from abc import ABC, abstractmethod
 from typing import Union
+
+from json_flattener import GlobalConfig, flatten_to_csv
 from pydantic import BaseModel
-from json_flattener import GlobalConfig
 
 from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.dumpers.json_dumper import JSONDumper
-from linkml_runtime.utils.yamlutils import YAMLRoot
-from linkml_runtime.linkml_model.meta import SlotDefinitionName, SchemaDefinition
-from linkml_runtime.utils.schemaview import SchemaView
-
+from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinitionName
 from linkml_runtime.utils.csvutils import get_configmap
-from json_flattener import flatten_to_csv
+from linkml_runtime.utils.schemaview import SchemaView
+from linkml_runtime.utils.yamlutils import YAMLRoot
 
 
 class DelimitedFileDumper(Dumper, ABC):
-
     @property
     @abstractmethod
     def delimiter(self):
         pass
 
-    def dumps(self, element: Union[BaseModel, YAMLRoot],
-              index_slot: SlotDefinitionName = None,
-              schema: SchemaDefinition = None,
-              schemaview: SchemaView = None,
-              **kwargs) -> str:
-        """ Return element formatted as CSV lines """
+    def dumps(
+        self,
+        element: Union[BaseModel, YAMLRoot],
+        index_slot: SlotDefinitionName = None,
+        schema: SchemaDefinition = None,
+        schemaview: SchemaView = None,
+        **kwargs,
+    ) -> str:
+        """Return element formatted as CSV lines"""
         json_dumper = JSONDumper()
         element_j = json.loads(json_dumper.dumps(element))
         objs = element_j[index_slot]

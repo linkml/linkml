@@ -4,7 +4,7 @@ all_book_series:
   genres:
     - fantasy
   creator:
-    name: JRR Tolkein
+    name: JRR Tolkien
     from_country: England
   books:
     - id: S001.1
@@ -70,4 +70,3 @@ all_book_series:
       - romance
       - scifi
       - fantasy
-

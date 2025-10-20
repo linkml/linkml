@@ -1,12 +1,49 @@
-from .types import String, Integer, Boolean, Float, Double, Decimal, Time, Date, Datetime, Uriorcurie, Uri, \
-    Ncname, Objectidentifier, Nodeidentifier
-from .extensions import Extension, Extensible
-from .annotations import Annotation, Annotatable
-from .meta import ElementName, SchemaDefinitionName, TypeDefinitionName, SubsetDefinitionName, DefinitionName, \
-    EnumDefinitionName, SlotDefinitionName, ClassDefinitionName, PrefixPrefixPrefix, LocalNameLocalNameSource, \
-    AltDescriptionSource, PermissibleValueText, Element, SchemaDefinition, TypeDefinition, SubsetDefinition, \
-    Definition, EnumDefinition, SlotDefinition, ClassDefinition, Prefix, LocalName, Example, AltDescription, \
-    PermissibleValue, PvFormulaOptions
+from .annotations import Annotatable, Annotation
+from .extensions import Extensible, Extension
+from .meta import (
+    AltDescription,
+    AltDescriptionSource,
+    ClassDefinition,
+    ClassDefinitionName,
+    Definition,
+    DefinitionName,
+    Element,
+    ElementName,
+    EnumDefinition,
+    EnumDefinitionName,
+    Example,
+    LocalName,
+    LocalNameLocalNameSource,
+    PermissibleValue,
+    PermissibleValueText,
+    Prefix,
+    PrefixPrefixPrefix,
+    PvFormulaOptions,
+    SchemaDefinition,
+    SchemaDefinitionName,
+    SlotDefinition,
+    SlotDefinitionName,
+    SubsetDefinition,
+    SubsetDefinitionName,
+    TypeDefinition,
+    TypeDefinitionName,
+)
+from .types import (
+    Boolean,
+    Date,
+    Datetime,
+    Decimal,
+    Double,
+    Float,
+    Integer,
+    Ncname,
+    Nodeidentifier,
+    Objectidentifier,
+    String,
+    Time,
+    Uri,
+    Uriorcurie,
+)
 
 __all__ = [
     "String",

@@ -6,26 +6,26 @@
 # description:
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
-from typing import Optional, Union, ClassVar, Any
 from dataclasses import dataclass
+from typing import Any, ClassVar, Optional, Union
 
-from linkml_runtime.utils.slot import Slot
 from rdflib import URIRef
+
 from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.slot import Slot
+
 from .issue_368_imports import ParentClass, SampleEnum
 
 metamodel_version = "1.7.0"
 
 # Namespaces
-LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
-DEFAULT_ = CurieNamespace('', 'https://microbiomedata/schema/')
+LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
+DEFAULT_ = CurieNamespace("", "https://microbiomedata/schema/")
 
 
 # Types
 
 # Class references
-
 
 
 @dataclass
@@ -53,5 +53,12 @@ class SampleClass(ParentClass):
 class slots:
     pass
 
-slots.slot_1 = Slot(uri=DEFAULT_.slot_1, name="slot_1", curie=DEFAULT_.curie('slot_1'),
-                   model_uri=DEFAULT_.slot_1, domain=None, range=Optional[Union[str, "SampleEnum"]])
+
+slots.slot_1 = Slot(
+    uri=DEFAULT_.slot_1,
+    name="slot_1",
+    curie=DEFAULT_.curie("slot_1"),
+    model_uri=DEFAULT_.slot_1,
+    domain=None,
+    range=Optional[Union[str, "SampleEnum"]],
+)

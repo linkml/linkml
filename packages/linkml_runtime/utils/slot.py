@@ -1,13 +1,14 @@
 from dataclasses import dataclass
-from typing import Optional, Any
 from re import Pattern
+from typing import Any, Optional
 
 from rdflib import URIRef
 
 
 @dataclass
 class Slot:
-    """ Runtime slot definition """
+    """Runtime slot definition"""
+
     uri: URIRef
     name: str
     curie: Optional[str]

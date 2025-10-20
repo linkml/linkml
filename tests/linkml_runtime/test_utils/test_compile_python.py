@@ -1,4 +1,5 @@
 import pytest
+
 from linkml_runtime.utils.compile_python import compile_python
 
 

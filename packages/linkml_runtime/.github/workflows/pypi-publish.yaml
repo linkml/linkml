@@ -1,6 +1,7 @@
 name: Publish Python Package
 # Upload to PyPI is triggered by creating & publishing a release in GitHub UI
-
+env:
+  UV_VERSION: "0.7.13"
 on:
   release:
     # Trigger the workflow only for real releases but not for draft releases
@@ -11,24 +12,25 @@ jobs:
     name: Build Python 🐍 distributions 📦 for publishing to PyPI
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4.2.2
+    - uses: actions/checkout@v5.0.0
       with:
         # Checkout the code including tags required for dynamic versioning
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v5.6.0
+      uses: actions/setup-python@v6.0.0
       with:
         python-version: 3.13
 
-    - name: Install Poetry
-      run: |
-        pipx install poetry
-        pipx inject poetry poetry-dynamic-versioning
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6.8.0
+      with:
+        enable-cache: true
+        version: ${{ env.UV_VERSION }}
 
     - name: Build source and wheel archives
       run: |
-        poetry build
+        uv build
 
     - name: Store built distribution
       uses: actions/upload-artifact@v4.6.2
@@ -48,13 +50,13 @@ jobs:
       id-token: write  # This permission is mandatory for trusted publishing.
     steps:
       - name: Download built distribution
-        uses: actions/download-artifact@v4.3.0
+        uses: actions/download-artifact@v5.0.0
         with:
           name: distribution-files
           path: dist
 
       - name: Publish package 📦 to PyPI
         if: github.event_name == 'release'
-        uses: pypa/gh-action-pypi-publish@v1.12.4
+        uses: pypa/gh-action-pypi-publish@v1.13.0
         with:
           verbose: true

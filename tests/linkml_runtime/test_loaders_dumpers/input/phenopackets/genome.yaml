@@ -1,4 +1,4 @@
- 
+
 classes: {}
 
 default_prefix: genome
@@ -6,10 +6,10 @@ description: "Automatic translation of phenopackets protobuf to LinkML. Status: 
 enums: {}
 
 id: https://w3id.org/linkml/phenopackets/genome
-imports: 
+imports:
   - linkml:types
 name: genome
-prefixes: 
+prefixes:
   GENO: http://purl.obolibrary.org/obo/GENO_
   HP: http://purl.obolibrary.org/obo/HP_
   LOINC: https://loinc.org/
@@ -22,4 +22,3 @@ prefixes:
   genome: https://w3id.org/linkml/phenopackets/genome/
   linkml: https://w3id.org/linkml/
 slots: {}
-
