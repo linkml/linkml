@@ -813,7 +813,7 @@ def check_data(
 
         elif isinstance(gen, JsonSchemaGenerator):
             plugins = [JsonschemaValidationPlugin(closed=True, include_range_class_descendants=False)]
-        elif isinstance(gen, GENERATORS[PANDERA_POLARS_CLASS]):
+        elif isinstance(gen, GENERATORS[PANDERA_POLARS_CLASS][0]):
             check_data_pandera(schema, output, target_class, object_to_validate, coerced, expected_behavior, valid)
         elif isinstance(gen, ContextGenerator):
             context_dir = _schema_out_path(schema) / "generated" / "jsonld_context.context.jsonld"
