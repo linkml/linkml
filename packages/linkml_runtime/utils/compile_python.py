@@ -7,8 +7,9 @@ from types import ModuleType
 def file_text(txt_or_fname: str) -> str:
     """
     Determine whether text_or_fname is a file name or a string and, if a file name, read it
-    :param txt_or_fname:
-    :return:
+    
+    :param txt_or_fname: Text content or filename to read
+    :return: File content as string
     """
     if len(txt_or_fname) > 4 and '\n' not in txt_or_fname:
         with open(txt_or_fname) as ef:
@@ -16,13 +17,14 @@ def file_text(txt_or_fname: str) -> str:
     return txt_or_fname
 
 
-def compile_python(text_or_fn: str, package_path: str | None = None, module_name: str | None = None) -> ModuleType:
+def compile_python(text_or_fn: str, package_path: str = None, module_name: str = None) -> ModuleType:
     """
     Compile the text or file and return the resulting module
-    @param text_or_fn: Python text or file name that references python file
-    @param package_path: Root package path.  If omitted and we've got a python file, the package is the containing directory
-    @param module_name: to be used in an import statement, default 'test'
-    @return: Compiled module
+    
+    :param text_or_fn: Python text or file name that references python file
+    :param package_path: Root package path. If omitted and we've got a python file, the package is the containing directory
+    :param module_name: Module name to be used in an import statement, default 'test'
+    :return: Compiled module
     """
     if module_name is None:
         module_name = "test"
