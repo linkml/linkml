@@ -21,3 +21,4 @@ Some of these guides are works in progress
    generate-ai-prompts
    deprecating-elements
    ontologies-as-values
+   skip-logic

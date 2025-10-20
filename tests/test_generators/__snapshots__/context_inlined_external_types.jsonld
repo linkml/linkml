@@ -12,11 +12,11 @@
     "@vocab": "https://example.org/external_type#",
     "id": "@id",
     "digestSRI": {
-      "@type": "cred:sriString",
+      "@type": "@id",
       "@id": "cred:digestSRI"
     },
     "credential": {
-      "@type": "cred:VerifiableCredential",
+      "@type": "@id",
       "@id": "credential"
     },
     "SriString": {

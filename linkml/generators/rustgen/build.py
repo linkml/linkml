@@ -1,3 +1,5 @@
+from pydantic import Field
+
 from linkml.generators.common.build import (
     BuildResult,
     SchemaResult,
@@ -84,6 +86,7 @@ class CrateResult(RustBuildResult, SchemaResult):
     file: RustFile
     extra_files: dict[str, RustTemplateModel]
     pyproject: RustPyProject
+    bin_files: dict[str, RustTemplateModel] = Field(default_factory=dict)
 
 
 class FileResult(RustBuildResult, SchemaResult):

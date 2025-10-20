@@ -89,6 +89,13 @@ classes:
         recommended: true
     in_subset:
       - basic_subset
+    annotations:
+      index:
+        tag: index
+        value:
+          birth_date_index:
+            - birth_date
+            - gender
 
   HasAliases:
     description: >-
