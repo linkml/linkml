@@ -1,4 +1,5 @@
 import logging
+import sys
 from pathlib import Path
 
 import pytest
@@ -157,7 +158,7 @@ def compiled_polars_synthetic_schema_module(synthetic_flat_dataframe_model):
         ),
     ],
 )
-@pytest.mark.skipif(True, reason="fails on Optional[DiagnosisConceptStruct]")
+@pytest.mark.skipif(sys.version_info < (3, 11), reason="typing.Optional error with structs in python < 3.11")
 def test_stub(compiled_model, class_name, data):
     schema_class = getattr(compiled_model, class_name)
     logger.info(
