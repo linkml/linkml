@@ -1,0 +1,26 @@
+{#-
+  Jinja2 Template for a PolaRS schema
+-#}
+{%- import 'slots.jinja2' as slot_macros -%}
+
+{%- macro schema_name(cls, generator) -%}
+{{ generator.get_class_name(cls.name) }}
+{%- endmacro -%}
+
+{%- macro render_schema(cls, generator) -%}
+    {{ schema_name(cls, generator) }}Dict = {{ '{' }}
+    {%- if generator.roll_up_slots %}
+    {%- set fields = cls.all_fields -%}
+    {%- else -%}
+    {%- set fields = cls.fields -%}
+    {%- endif -%}
+    {%- for field in fields %}
+    {{ slot_macros.render_slot(field, generator) }}
+    {%- endfor %}
+{{ '}' }}
+
+{{ schema_name(cls, generator) }}Struct = pl.Struct({{ schema_name(cls, generator) }}Dict)
+
+{{ schema_name(cls, generator) }} = pl.Schema({{ schema_name(cls, generator) }}Dict)
+
+{%- endmacro -%}
