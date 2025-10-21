@@ -482,13 +482,33 @@ Assumption, thus OWL reasoners enforce a weaker model</p></li>
 </section>
 <section id="enums-and-permissiblevalues">
 <h3>Enums and PermissibleValues<a class="headerlink" href="#enums-and-permissiblevalues" title="Link to this heading">¶</a></h3>
-<p>Enums and PermissibleValues are treated as <em>classes</em> by default. An enum has a <em>definition</em> added using
-an OWL <code class="docutils literal notranslate"><span class="pre">UnionOf</span></code> construct.</p>
+<p>Enums and PermissibleValues provide flexible OWL representation options. By default, permissible values
+are treated as <em>classes</em> and an enum has a <em>definition</em> added using an OWL <code class="docutils literal notranslate"><span class="pre">UnionOf</span></code> construct.</p>
+<section id="cli-options-for-controlling-enum-pv-generation">
+<h4>CLI Options for Controlling Enum/PV Generation<a class="headerlink" href="#cli-options-for-controlling-enum-pv-generation" title="Link to this heading">¶</a></h4>
 <ul class="simple">
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">--default-permissible-value-type</span></code> to change the default type</p></li>
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">--enum-iri-separator</span></code> to change the separator character in the enum IRI which is <code class="docutils literal notranslate"><span class="pre">#</span></code> by default</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--default-permissible-value-type</span></code> - Sets the default OWL type for permissible values</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">owl:Class</span></code> (default) - PVs become OWL classes, enum uses <code class="docutils literal notranslate"><span class="pre">owl:unionOf</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">owl:NamedIndividual</span></code> - PVs become named individuals, enum uses <code class="docutils literal notranslate"><span class="pre">owl:oneOf</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rdfs:Literal</span></code> - PVs become RDF literals, enum uses <code class="docutils literal notranslate"><span class="pre">owl:oneOf</span></code></p></li>
 </ul>
-<p>You can make an enum represent individuals by adding an <code class="docutils literal notranslate"><span class="pre">implements</span></code> slot assignment:</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--enum-iri-separator</span></code> - Changes the separator character in enum IRIs (default: <code class="docutils literal notranslate"><span class="pre">#</span></code>)</p></li>
+</ul>
+<p>Example CLI usage:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate enum PVs as named individuals</span>
+gen-owl<span class="w"> </span>--default-permissible-value-type<span class="w"> </span>owl:NamedIndividual<span class="w"> </span>schema.yaml
+
+<span class="c1"># Generate enum PVs as literals</span>
+gen-owl<span class="w"> </span>--default-permissible-value-type<span class="w"> </span>rdfs:Literal<span class="w"> </span>schema.yaml
+</pre></div>
+</div>
+</section>
+<section id="schema-annotations-for-fine-grained-control">
+<h4>Schema Annotations for Fine-Grained Control<a class="headerlink" href="#schema-annotations-for-fine-grained-control" title="Link to this heading">¶</a></h4>
+<p>You can control enum and permissible value representation directly in your schema using <code class="docutils literal notranslate"><span class="pre">implements</span></code> annotations.</p>
+<p><strong>Enum-level control</strong> - Apply to all permissible values in an enum:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enums</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">HomePlanetType</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">implements</span><span class="p">:</span>
@@ -496,9 +516,90 @@ an OWL <code class="docutils literal notranslate"><span class="pre">UnionOf</spa
 <span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">The type of home planet</span>
 <span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">Earth</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Third planet from the sun</span>
 <span class="w">      </span><span class="nt">Venus</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Second planet from the sun</span>
 </pre></div>
 </div>
+<p><strong>Per-permissible-value control</strong> - Override specific permissible values:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enums</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">MixedRepresentationType</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Enum with mixed PV representations</span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">concept_term</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A concept represented as a class</span>
+<span class="w">        </span><span class="nt">implements</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">owl:Class</span>
+<span class="w">      </span><span class="nt">instance_value</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A specific instance</span>
+<span class="w">        </span><span class="nt">implements</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">owl:NamedIndividual</span>
+<span class="w">      </span><span class="nt">literal_value</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A literal value</span>
+<span class="w">        </span><span class="nt">implements</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdfs:Literal</span>
+</pre></div>
+</div>
+<p><strong>Using URIs vs. text for permissible values:</strong></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enums</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">StatusEnum</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">active</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ex:ActiveStatus</span><span class="w">    </span><span class="c1"># Will use URI for OWL representation</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Currently active</span>
+<span class="w">      </span><span class="nt">inactive</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Not active</span><span class="w">     </span><span class="c1"># Will use text-based representation</span>
+</pre></div>
+</div>
+</section>
+<section id="owl-output-patterns">
+<h4>OWL Output Patterns<a class="headerlink" href="#owl-output-patterns" title="Link to this heading">¶</a></h4>
+<p>The choice of permissible value type affects the generated OWL structure:</p>
+<p><strong>owl:Class (default):</strong></p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="nt">StatusEnum</span> <span class="kt">a</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">Class</span> <span class="p">;</span>
+    <span class="nn">owl</span><span class="p">:</span><span class="nt">unionOf</span> <span class="p">(</span> <span class="p">:</span><span class="nt">active</span> <span class="p">:</span><span class="nt">inactive</span> <span class="p">)</span> <span class="p">.</span>
+<span class="p">:</span><span class="nt">active</span> <span class="kt">a</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">Class</span> <span class="p">.</span>
+<span class="p">:</span><span class="nt">inactive</span> <span class="kt">a</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">Class</span> <span class="p">.</span>
+</pre></div>
+</div>
+<p><strong>owl:NamedIndividual:</strong></p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="nt">StatusEnum</span> <span class="kt">a</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">Class</span> <span class="p">;</span>
+    <span class="nn">owl</span><span class="p">:</span><span class="nt">oneOf</span> <span class="p">(</span> <span class="p">:</span><span class="nt">active</span> <span class="p">:</span><span class="nt">inactive</span> <span class="p">)</span> <span class="p">.</span>
+<span class="p">:</span><span class="nt">active</span> <span class="kt">a</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">NamedIndividual</span> <span class="p">.</span>
+<span class="p">:</span><span class="nt">inactive</span> <span class="kt">a</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">NamedIndividual</span> <span class="p">.</span>
+</pre></div>
+</div>
+<p><strong>rdfs:Literal:</strong></p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="nt">StatusEnum</span> <span class="kt">a</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">Class</span> <span class="p">;</span>
+    <span class="nn">owl</span><span class="p">:</span><span class="nt">oneOf</span> <span class="p">(</span> <span class="s">&quot;active&quot;</span> <span class="s">&quot;inactive&quot;</span> <span class="p">)</span> <span class="p">.</span>
+</pre></div>
+</div>
+</section>
+<section id="mixed-types-in-one-enum">
+<h4>Mixed Types in One Enum<a class="headerlink" href="#mixed-types-in-one-enum" title="Link to this heading">¶</a></h4>
+<p>When permissible values in the same enum have different <code class="docutils literal notranslate"><span class="pre">implements</span></code> annotations,
+the behavior depends on the URI/meaning configuration:</p>
+<ul class="simple">
+<li><p><strong>All PVs have URIs</strong>: Mixed types are supported</p></li>
+<li><p><strong>Some PVs lack URIs</strong>: The enum may skip certain representation patterns that would be inconsistent</p></li>
+<li><p><strong>No PVs have URIs</strong>: All PVs use the same default type</p></li>
+</ul>
+</section>
+<section id="advanced-usage">
+<h4>Advanced Usage<a class="headerlink" href="#advanced-usage" title="Link to this heading">¶</a></h4>
+<p><strong>Using with different URI patterns:</strong></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enums</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ConceptEnum</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">term_a</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MONDO:0001234</span>
+<span class="w">        </span><span class="nt">implements</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">owl</span><span class="p p-Indicator">:</span><span class="nv">Class</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">term_b</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://example.org/TermB</span>
+<span class="w">        </span><span class="nt">implements</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">owl</span><span class="p p-Indicator">:</span><span class="nv">NamedIndividual</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="tips">
 <h3>Tips<a class="headerlink" href="#tips" title="Link to this heading">¶</a></h3>
@@ -931,7 +1032,14 @@ whereas LinkML is closed-world</p>
 <li><a class="reference internal" href="#example-output">Example Output</a></li>
 <li><a class="reference internal" href="#overview">Overview</a><ul>
 <li><a class="reference internal" href="#mapping">Mapping</a></li>
-<li><a class="reference internal" href="#enums-and-permissiblevalues">Enums and PermissibleValues</a></li>
+<li><a class="reference internal" href="#enums-and-permissiblevalues">Enums and PermissibleValues</a><ul>
+<li><a class="reference internal" href="#cli-options-for-controlling-enum-pv-generation">CLI Options for Controlling Enum/PV Generation</a></li>
+<li><a class="reference internal" href="#schema-annotations-for-fine-grained-control">Schema Annotations for Fine-Grained Control</a></li>
+<li><a class="reference internal" href="#owl-output-patterns">OWL Output Patterns</a></li>
+<li><a class="reference internal" href="#mixed-types-in-one-enum">Mixed Types in One Enum</a></li>
+<li><a class="reference internal" href="#advanced-usage">Advanced Usage</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#tips">Tips</a></li>
 <li><a class="reference internal" href="#semantics-of-mapping-from-linkml">Semantics of mapping from LinkML</a></li>
 <li><a class="reference internal" href="#pitfalls">Pitfalls</a></li>
