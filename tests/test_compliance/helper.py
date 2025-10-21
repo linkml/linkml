@@ -32,6 +32,8 @@ from pydantic import BaseModel, ConfigDict
 
 from linkml.transformers.logical_model_transformer import UnsatisfiableAttribute
 
+from .dataframe_helper import check_data_pandera
+
 try:
     from yaml import CSafeDumper as SafeDumper
 except ImportError:
@@ -78,6 +80,8 @@ JSONLD = "jsonld"
 SQL_ALCHEMY_IMPERATIVE = "sqlalchemy_imperative"
 SQL_ALCHEMY_DECLARATIVE = "sqlalchemy_declarative"
 PANDERA_POLARS_CLASS = "pandera_polars_class"
+DATAFRAME_POLARS_SCHEMA = "dataframe_polars_schema"
+POLARS_SCHEMA = "polars_schema"
 SQL_DDL_SQLITE = "sql_ddl_sqlite"
 SQL_DDL_POSTGRES = "sql_ddl_postgres"
 OWL = "owl"
@@ -98,7 +102,8 @@ GENERATORS: dict[FRAMEWORK, Union[type[Generator], tuple[type[Generator], dict[s
         generators.SQLAlchemyGenerator,
         {"template": sqlalchemygen.TemplateEnum.DECLARATIVE},
     ),
-    PANDERA_POLARS_CLASS: generators.PanderaGenerator,
+    PANDERA_POLARS_CLASS: (generators.PanderaDataframeGenerator, {"backing_form": "loaded"}),
+    DATAFRAME_POLARS_SCHEMA: generators.PolarsSchemaDataframeGenerator,
     SQL_DDL_SQLITE: (generators.SQLTableGenerator, {"dialect": "sqlite"}),
     SQL_DDL_POSTGRES: (generators.SQLTableGenerator, {"dialect": "postgresql"}),
     OWL: (
@@ -811,8 +816,12 @@ def check_data(
 
         elif isinstance(gen, JsonSchemaGenerator):
             plugins = [JsonschemaValidationPlugin(closed=True, include_range_class_descendants=False)]
-        elif isinstance(gen, GENERATORS[PANDERA_POLARS_CLASS]):
+        elif isinstance(gen, GENERATORS[PANDERA_POLARS_CLASS][0]):
             check_data_pandera(schema, output, target_class, object_to_validate, coerced, expected_behavior, valid)
+        elif isinstance(gen, GENERATORS[DATAFRAME_POLARS_SCHEMA]):
+            check_data_pandera(
+                schema, output, target_class, object_to_validate, coerced, expected_behavior, valid, polars_only=True
+            )
         elif isinstance(gen, ContextGenerator):
             context_dir = _schema_out_path(schema) / "generated" / "jsonld_context.context.jsonld"
             if not context_dir.exists() and tests.WITH_OUTPUT:
@@ -912,38 +921,6 @@ def check_data(
                 notes=str(notes),
             )
         )
-
-
-def check_data_pandera(schema, output, target_class, object_to_validate, coerced, expected_behavior, valid):
-    pl = pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
-
-    try:
-        mod = compile_python(output)
-        py_cls = getattr(mod, target_class)
-
-        logger.info(
-            f"Validating {target_class} against {object_to_validate} / {coerced} / {expected_behavior} / "
-            f"{valid}\n\n{yaml.dump(schema)}\n\n{output}"
-        )
-
-        dataframe_to_validate = pl.DataFrame([object_to_validate])
-
-        try:
-            schema_name = schema.get("name", "")
-            polars_schema = py_cls.generate_polars_schema(object_to_validate, parser=True)
-
-            if schema_name.startswith("test_date_types") or schema_name.startswith("test_enum_alias"):
-                dataframe_to_validate = pl.DataFrame(object_to_validate, schema=polars_schema, strict=False)
-            elif dataframe_to_validate.item() is None:
-                dataframe_to_validate = pl.DataFrame(object_to_validate, schema=polars_schema, strict=False)
-        except Exception:
-            pass
-
-        logger.info(dataframe_to_validate)
-        py_cls.validate(dataframe_to_validate, lazy=True)
-    except Exception as e:
-        if valid:
-            raise e
 
 
 def clean_null_terms(d):
