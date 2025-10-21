@@ -2,6 +2,7 @@ import importlib
 import logging
 import os
 import re
+import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import PurePosixPath
@@ -163,6 +164,99 @@ class DataframeGenerator(OOCodeGenerator, ABC):
             module_name = self.template_path
 
         return compile_python(dataframe_code, module_name=module_name)
+
+    @staticmethod
+    def compile_package_from_specification(
+        specification: list[tuple], package_name: str, schema: str, directory: str = None, **args
+    ):
+        """
+        Compile multiple generators from specification tuples as a package to support relative imports.
+
+        Args:
+            specification: List of (module_name, generator_class, template_dir, template_file, backing_form) tuples
+            package_name: Name of the package to create
+            schema: Schema YAML string or file path
+            directory: Optional directory to write files to
+            **args: Additional arguments to pass to generator constructors
+
+        Returns:
+            dict mapping module names to compiled modules if directory is None,
+            otherwise None (files written to directory)
+        """
+        generators = []
+
+        for module_name, generator_class, template_dir, template_file, backing_form in specification:
+            gen = generator_class(
+                schema=schema,
+                backing_form=backing_form,
+                **args,
+            )
+            gen.template_file = template_file
+            gen.template_path = template_dir
+
+            if directory is not None:
+                # File-only mode: generate and write to disk
+                oodoc = gen.render()
+                oodoc.name = module_name
+                code = gen.serialize(rendered_module=oodoc)
+
+                os.makedirs(directory, exist_ok=True)
+                filename = f"{module_name}.py"
+                filepath = os.path.join(directory, filename)
+                with open(filepath, "w") as f:
+                    f.write(code)
+            else:
+                # Memory-only mode: prepare for compilation
+                generators.append((module_name, gen))
+
+        # Only compile if not writing to directory
+        if directory is None:
+            return DataframeGenerator.compile_package(generators, package_name)
+        else:
+            return None
+
+    @staticmethod
+    def compile_package(generators: list[tuple], package_name: str) -> dict[str, ModuleType]:
+        """
+        Compile multiple generators as a package to support relative imports.
+
+        Args:
+            generators: List of (module_name, generator_instance) tuples
+            package_name: Name of the package to create
+
+        Returns:
+            dict mapping module names to compiled modules
+        """
+        # Create package in sys.modules
+        package_module = ModuleType(package_name)
+        package_module.__package__ = package_name
+        package_module.__path__ = []
+        sys.modules[package_name] = package_module
+
+        compiled_modules = {}
+
+        for module_name, generator in generators:
+            code = generator.serialize()
+            full_module_name = f"{package_name}.{module_name}"
+
+            # Compile with package context
+            module = compile_python(code, module_name=full_module_name)
+            module.__package__ = package_name
+
+            compiled_modules[module_name] = module
+
+        return compiled_modules
+
+    @staticmethod
+    def cleanup_package(package_name: str) -> None:
+        """
+        Remove temporary package and its modules from sys.modules.
+        """
+        modules_to_remove = [
+            name for name in sys.modules.keys() if name == package_name or name.startswith(f"{package_name}.")
+        ]
+        for module_name in modules_to_remove:
+            del sys.modules[module_name]
 
     def render(self) -> OODocument:
         """
