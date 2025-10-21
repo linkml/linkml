@@ -230,7 +230,6 @@ def test_definition_uris(
         assert_equivalent_classes=assert_equivalent_classes,
     )
     owl = gen.serialize()
-    print(owl)
     g = Graph()
     g.parse(data=owl)
     triples = list(g.triples((None, None, None)))
@@ -313,12 +312,6 @@ def test_permissible_values(
     --------------
     - https://github.com/linkml/linkml/issues/1841 - Complex enum constraints in OWL
     - TODOs in owlgen.py lines 668, 929, 1186, 1205 - Enum mapping improvements
-
-    Notes
-    -----
-    - Tests use SchemaBuilder to programmatically create test schemas
-    - Validates resulting RDF graph structure matches expected OWL patterns
-    - Some combinations (mixed URI/literal) are skipped as undefined behavior
     """
     sb = SchemaBuilder()
     permissible_values = [
@@ -352,11 +345,7 @@ def test_permissible_values(
         mergeimports=False,
         default_permissible_value_type=default_permissible_value_type,
     )
-    print(f"## default_permissible_value_type: {default_permissible_value_type}")
-    print(f"## mix: {permissible_value_uri_mixture}")
-    print(f"## pv_implements: {pv_implements}")
     owl = gen.serialize()
-    print(owl)
     g = Graph()
     g.parse(data=owl)
     triples = list(g.triples((None, None, None)))
@@ -367,7 +356,6 @@ def test_permissible_values(
             from rdflib.collection import Collection
 
             disj_list = list(Collection(g, o))
-            print(f"## ZZZZZZ {p} => {disj_list}")
             assert p not in disjunction_targets
             disjunction_targets[p] = disj_list
     if isinstance(pv_implements, tuple) and permissible_value_uri_mixture == PermissibleValueURIMixture.MIXTURE:
