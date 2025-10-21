@@ -42,7 +42,7 @@ from linkml.generators.pydanticgen.template import (
     PydanticModule,
     PydanticTemplateModel,
 )
-from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
+from linkml.generators.pydanticgen.pydantic_ifabsent_processor import PydanticIfAbsentProcessor
 from linkml.utils import deprecation_warning
 from linkml.utils.generator import shared_arguments
 
@@ -588,7 +588,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         """
         if self._predefined_slot_values is None:
             sv = self.schemaview
-            ifabsent_processor = PythonIfAbsentProcessor(sv)
+            ifabsent_processor = PydanticIfAbsentProcessor(sv)
             slot_values = defaultdict(dict)
             for class_def in sv.all_classes().values():
                 for slot_name in sv.class_slots(class_def.name):
