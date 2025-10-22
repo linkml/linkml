@@ -95,6 +95,8 @@ def test_no_metadata_flag():
     result = runner.invoke(cli, ["--no-metadata", KITCHEN_SINK_PATH])
     assert result.exit_code == 0
     assert result.output.splitlines()[0].startswith("# id: ")
+    for line in result.output.splitlines():
+        assert not line.startswith("# Auto generated from ")
 
 
 def test_head_deprecated():
