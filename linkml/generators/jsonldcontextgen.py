@@ -17,7 +17,8 @@ from linkml_runtime.utils.formatutils import camelcase, underscore
 from rdflib import SKOS, XSD, Namespace
 
 from linkml._version import __version__
-from linkml.utils.generator import Generator, deprecated_fields, shared_arguments
+from linkml.utils.deprecation import deprecated_fields
+from linkml.utils.generator import Generator, shared_arguments
 
 URI_RANGES = (SHEX.nonliteral, SHEX.bnode, SHEX.iri)
 

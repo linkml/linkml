@@ -16,11 +16,14 @@ To deprecate something:
 
 """
 
+import functools
 import re
 import warnings
 from dataclasses import dataclass
 from importlib.metadata import version
-from typing import Optional
+from typing import Optional, TypeVar
+
+METADATA_FLAG = "metadata-flag"
 
 # Stolen from https://github.com/pypa/packaging/blob/main/src/packaging/version.py
 # Updated to include major, minor, and patch versions
@@ -202,6 +205,60 @@ class Deprecation:
             # ensure filter has expected value
             warnings.filterwarnings("default", category=DeprecationWarning)
             warnings.warn(message=str(self), category=DeprecationWarning, stacklevel=3, **kwargs)
+
+
+T = TypeVar("T")
+
+
+def deprecated_fields(deprecated_map: dict[str, str]):
+    """
+    Decorator to handle deprecated fields in dataclasses.
+
+    :param deprecated_map: Mapping from old field names to new field names
+    """
+
+    def decorator(cls: type[T]) -> type[T]:
+        # Store the original __init__ method
+        original_init = cls.__init__
+
+        # Create a new __init__ that handles deprecated fields
+        @functools.wraps(original_init)
+        def new_init(self, *args, **kwargs):
+            # Process kwargs to handle deprecated fields
+            for old_field, new_field in deprecated_map.items():
+                if old_field in kwargs:
+                    deprecation_warning(METADATA_FLAG)
+                    if new_field not in kwargs:
+                        kwargs[new_field] = kwargs[old_field]
+                    # Remove the old field to prevent the "unexpected keyword argument" error
+                    del kwargs[old_field]
+
+            # Call the original __init__ with the processed kwargs
+            original_init(self, *args, **kwargs)
+
+        # Replace the __init__ method
+        cls.__init__ = new_init
+
+        # Add property accessors for deprecated fields
+        for old_field, new_field in deprecated_map.items():
+            # Create a property for the deprecated field using a closure
+            def make_property(new_name):
+                def getter(self):
+                    deprecation_warning(METADATA_FLAG)
+                    return getattr(self, new_name)
+
+                def setter(self, value):
+                    deprecation_warning(METADATA_FLAG)
+                    setattr(self, new_name, value)
+
+                return property(getter, setter)
+
+            # Add the property to the class
+            setattr(cls, old_field, make_property(new_field))
+
+        return cls
+
+    return decorator
 
 
 DEPRECATIONS = (

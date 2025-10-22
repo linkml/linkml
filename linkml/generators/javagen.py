@@ -9,8 +9,8 @@ from linkml_runtime.linkml_model.meta import TypeDefinition
 
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator
-from linkml.utils.deprecation import deprecation_warning
-from linkml.utils.generator import deprecated_fields, shared_arguments
+from linkml.utils.deprecation import deprecated_fields, deprecation_warning
+from linkml.utils.generator import shared_arguments
 
 default_template = """
 {#-
