@@ -1,12 +1,15 @@
 import warnings
 from copy import deepcopy
+from dataclasses import dataclass
 from operator import eq, ge, gt, le, lt
 from unittest.mock import patch
 
 import pytest
 
 from linkml.utils import deprecation as dep_mod
-from linkml.utils.deprecation import DEPRECATIONS, EMITTED, Deprecation, SemVer, deprecation_warning
+from linkml.utils.deprecation import DEPRECATIONS, EMITTED, Deprecation, SemVer, deprecated_fields, deprecation_warning
+
+# from linkml.utils.generator import Generator
 
 all_ops = {le, lt, gt, ge, eq}
 
@@ -244,3 +247,27 @@ def test_removed_are_removed():
     removed = [dep for dep in DEPRECATIONS if dep.removed and not dep.name.startswith("test-")]
     for removed in removed:
         assert removed.name not in EMITTED
+
+
+def test_dataclass_fields():
+    """
+    Test that deprecated dataclass fields are reported.
+    """
+
+    @deprecated_fields({"head": "metadata", "emit_metadata": "metadata"})
+    @dataclass
+    class ClassWithDeprecatedFields:
+        metadata: bool = True
+
+    with warnings.catch_warnings(record=True) as record:
+        warnings.simplefilter("always")
+        _ = ClassWithDeprecatedFields(head=True)
+        warning_deprecated_metadata_flag = False
+        for warning in record:
+            if (
+                warning.category is DeprecationWarning
+                and str(warning.message).splitlines()[0] == "[metadata-flag] DEPRECATED"
+            ):
+                warning_deprecated_metadata_flag = True
+                break
+        assert warning_deprecated_metadata_flag
