@@ -730,6 +730,7 @@
       "range": "Address",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -811,6 +812,7 @@
       ],
       "range": "BirthEvent",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -838,6 +840,7 @@
       ],
       "range": "AnyObject",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -1384,6 +1387,7 @@
       ],
       "range": "ClassWithSpaces",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {

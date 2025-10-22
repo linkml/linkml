@@ -2131,6 +2131,7 @@
       "range": "QuantityValue",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -4826,6 +4827,7 @@
       "range": "MacromolecularMachineMixin",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5630,6 +5632,7 @@
       "range": "GeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5669,6 +5672,7 @@
       "range": "GeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5708,6 +5712,7 @@
       "range": "GeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5747,6 +5752,7 @@
       "range": "GeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5786,6 +5792,7 @@
       "range": "GeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5825,6 +5832,7 @@
       "range": "GeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5864,6 +5872,7 @@
       "range": "GeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -6654,6 +6663,7 @@
       "range": "ChemicalEntityOrGeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -6673,6 +6683,7 @@
       "range": "ChemicalEntityOrGeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -6707,6 +6718,7 @@
       "range": "ChemicalEntityOrGeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -6725,6 +6737,7 @@
       "range": "ChemicalEntityOrGeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -6762,6 +6775,7 @@
       "range": "ChemicalEntityOrGeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -6780,6 +6794,7 @@
       "range": "ChemicalEntityOrGeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -6819,6 +6834,7 @@
       "range": "PhysicalEssenceOrOccurrent",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -6834,6 +6850,7 @@
       "range": "PhysicalEssenceOrOccurrent",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -6948,6 +6965,7 @@
       "range": "GeneProductMixin",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -7386,6 +7404,7 @@
       "range": "GeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -7418,6 +7437,7 @@
       "range": "GeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -7444,6 +7464,7 @@
       "range": "GeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -7786,6 +7807,7 @@
       "range": "ChemicalOrDrugOrTreatment",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -7841,6 +7863,7 @@
       "range": "ChemicalOrDrugOrTreatment",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -7888,6 +7911,7 @@
       "range": "ChemicalOrDrugOrTreatment",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -7937,6 +7961,7 @@
       "range": "ChemicalOrDrugOrTreatment",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -7995,6 +8020,7 @@
       "range": "ChemicalOrDrugOrTreatment",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -8089,6 +8115,7 @@
       "range": "ChemicalOrDrugOrTreatment",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -8166,6 +8193,7 @@
       "range": "ChemicalOrDrugOrTreatment",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -8184,6 +8212,7 @@
       "range": "ChemicalOrDrugOrTreatment",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -8202,6 +8231,7 @@
       "range": "ChemicalOrDrugOrTreatment",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -8279,6 +8309,7 @@
       "range": "ChemicalOrDrugOrTreatment",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -8333,6 +8364,7 @@
       "range": "ChemicalOrDrugOrTreatment",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -8381,6 +8413,7 @@
       "range": "ChemicalOrDrugOrTreatment",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -8527,6 +8560,7 @@
       "range": "GeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -8550,6 +8584,7 @@
       "range": "ChemicalEntityOrGeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -8644,6 +8679,7 @@
       "range": "GeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -9512,6 +9548,7 @@
       "range": "Occurrent",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -9551,6 +9588,7 @@
       "range": "Occurrent",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -9573,6 +9611,7 @@
       "range": "ChemicalEntityOrGeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -9588,6 +9627,7 @@
       "range": "ChemicalEntityOrGeneOrGeneProduct",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -9712,6 +9752,7 @@
       "range": "Occurrent",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -10317,6 +10358,7 @@
       "range": "Occurrent",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -10361,6 +10403,7 @@
       "range": "Occurrent",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -10391,6 +10434,7 @@
       "range": "Occurrent",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -10485,6 +10529,7 @@
       "range": "GenomicEntity",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -10525,6 +10570,7 @@
       "range": "GenomicEntity",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -10565,6 +10611,7 @@
       "range": "GenomicEntity",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -10608,6 +10655,7 @@
       "range": "GenomicEntity",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -10653,6 +10701,7 @@
       "range": "GenomicEntity",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -10698,6 +10747,7 @@
       "range": "GenomicEntity",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -10739,6 +10789,7 @@
       "range": "GenomicEntity",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -10783,6 +10834,7 @@
       "range": "GenomicEntity",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -10877,6 +10929,7 @@
       "range": "ChemicalOrDrugOrTreatment",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -10923,6 +10976,7 @@
       "range": "ChemicalOrDrugOrTreatment",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -10981,6 +11035,7 @@
       "range": "ChemicalOrDrugOrTreatment",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -11362,6 +11417,7 @@
       "range": "ThingWithTaxon",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -13751,6 +13807,7 @@
       "range": "MacromolecularMachineMixin",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -14880,6 +14937,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -14917,6 +14975,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -14954,6 +15013,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -15032,6 +15092,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -15517,6 +15578,7 @@
       "range": "ChemicalEntityOrGeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -15590,6 +15652,7 @@
       "range": "ChemicalEntityOrGeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -15735,6 +15798,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -15867,6 +15931,7 @@
       "range": "MacromolecularMachineMixin",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -16020,6 +16085,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -16471,6 +16537,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -16777,6 +16844,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -16856,6 +16924,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -17359,6 +17428,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -17629,6 +17699,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -18168,6 +18239,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -18439,6 +18511,7 @@
       "range": "Outcome",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -19263,6 +19336,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -19355,6 +19429,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -19535,6 +19610,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -19608,6 +19684,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -19681,6 +19758,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -19754,6 +19832,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -19827,6 +19906,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -20713,6 +20793,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -21038,6 +21119,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -21151,6 +21233,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -21403,6 +21486,7 @@
       "range": "MacromolecularMachineMixin",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -22166,6 +22250,7 @@
       "range": "GeneProductMixin",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -22356,6 +22441,7 @@
       "range": "ChemicalEntityOrGeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -22394,6 +22480,7 @@
       "range": "GeneOrGeneProduct",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
