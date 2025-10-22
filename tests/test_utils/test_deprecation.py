@@ -249,6 +249,17 @@ def test_removed_are_removed():
         assert removed.name not in EMITTED
 
 
+def test_deprecation_warning_visible():
+    with warnings.catch_warnings(record=True) as record:
+        warnings.simplefilter("always")
+        warnings.warn("Test DeprecationWarning", DeprecationWarning)
+        warning_deprecated = False
+        for warning in record:
+            if warning.category is DeprecationWarning:
+                warning_deprecated = True
+        assert warning_deprecated
+
+
 def test_dataclass_fields():
     """
     Test that deprecated dataclass fields are reported.
@@ -259,8 +270,8 @@ def test_dataclass_fields():
     class ClassWithDeprecatedFields:
         metadata: bool = True
 
-    warnings.resetwarnings()
     with warnings.catch_warnings(record=True) as record:
+        warnings.simplefilter("always")
         _ = ClassWithDeprecatedFields(head=True)
         warning_deprecated_metadata_flag = False
         for warning in record:
