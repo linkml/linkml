@@ -1153,6 +1153,17 @@ class SchemaView:
         )
 
     @lru_cache(None)
+    def type_roots(self, imports: bool = True) -> list[TypeDefinitionName]:
+        """Return all types that have no parents.
+
+        :param imports: whether or not to include imports, defaults to True
+        :type imports: bool, optional
+        :return: list of all root types
+        :rtype: list[TypeDefinitionName]
+        """
+        return [t for t in self.all_types(imports=imports) if not self.type_parents(t, imports=imports)]
+
+    @lru_cache(None)
     def enum_parents(
         self, enum_name: ENUM_NAME, imports: bool = False, mixins: bool = False, is_a: bool = True
     ) -> list[EnumDefinitionName]:
@@ -1278,17 +1289,6 @@ class SchemaView:
             depth_first=depth_first,
             **kwargs,
         )
-
-    @lru_cache(None)
-    def type_roots(self, imports: bool = True) -> list[TypeDefinitionName]:
-        """Return all types that have no parents.
-
-        :param imports: whether or not to include imports, defaults to True
-        :type imports: bool, optional
-        :return: list of all root types
-        :rtype: list[TypeDefinitionName]
-        """
-        return [t for t in self.all_types(imports=imports) if not self.type_parents(t, imports=imports)]
 
     @lru_cache(None)
     def is_multivalued(self, slot_name: SlotDefinition) -> bool:
