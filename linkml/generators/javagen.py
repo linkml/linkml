@@ -163,7 +163,7 @@ def cli(
 ):
     """Generate java classes to represent a LinkML model"""
     # default is adding metadata to the generated code
-    if "metadata" not in args.keys():
+    if "metadata" not in args:
         args["metadata"] = True
     # deprecated arguments are replaced, head overwrites emit_metadata
     if emit_metadata is not None:

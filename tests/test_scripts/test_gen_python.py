@@ -79,7 +79,7 @@ def test_gen_classvars_slots(input_path, snapshot):
 
 
 def test_metadata_flag():
-    "Test that metadata is generated, when flag active"
+    """Test that metadata is generated, when flag active"""
     runner = CliRunner()
     result = runner.invoke(cli, ["--metadata", KITCHEN_SINK_PATH])
     assert result.exit_code == 0

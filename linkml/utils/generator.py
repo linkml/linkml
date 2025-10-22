@@ -60,6 +60,8 @@ from linkml.utils.typereferences import References
 
 logger = logging.getLogger(__name__)
 
+METADATA_FLAG = "metadata-flag"
+
 
 @lru_cache
 def _resolved_metamodel(mergeimports):
@@ -98,7 +100,7 @@ def deprecated_fields(deprecated_map: dict[str, str]):
             # Process kwargs to handle deprecated fields
             for old_field, new_field in deprecated_map.items():
                 if old_field in kwargs:
-                    deprecation_warning("metadata-flag")
+                    deprecation_warning(METADATA_FLAG)
                     if new_field not in kwargs:
                         kwargs[new_field] = kwargs[old_field]
                     # Remove the old field to prevent the "unexpected keyword argument" error
@@ -115,11 +117,11 @@ def deprecated_fields(deprecated_map: dict[str, str]):
             # Create a property for the deprecated field using a closure
             def make_property(new_name):
                 def getter(self):
-                    deprecation_warning("metadata-flag")
+                    deprecation_warning(METADATA_FLAG)
                     return getattr(self, new_name)
 
                 def setter(self, value):
-                    deprecation_warning("metadata-flag")
+                    deprecation_warning(METADATA_FLAG)
                     setattr(self, new_name, value)
 
                 return property(getter, setter)
@@ -344,7 +346,7 @@ class Generator(metaclass=abc.ABCMeta):
         deprecation_map = {"emit_metadata": "metadata", "head": "metadata"}
         for flag in deprecation_map:
             if flag in kwargs:
-                deprecation_warning("metadata-flag")
+                deprecation_warning(METADATA_FLAG)
                 new_flag = deprecation_map[flag]
                 kwargs[new_flag] = flag
                 del kwargs[flag]
