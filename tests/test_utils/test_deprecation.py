@@ -1,3 +1,4 @@
+import sys
 import warnings
 from copy import deepcopy
 from dataclasses import dataclass
@@ -27,6 +28,24 @@ def linkml_version() -> SemVer:
         return SemVer.from_package("linkml")
     except "PackageNotFoundError":
         return SemVer.from_str("1.0.1")
+
+
+@pytest.fixture(autouse=True)
+def reset_warnings():
+    """Reset warnings before running test."""
+    # Clear warning registry
+    for module in sys.modules.values():
+        if hasattr(module, "__warningregistry__"):
+            del module.__warningregistry__
+
+    # Reset warning filters
+    warnings.resetwarnings()
+    warnings.simplefilter("always")
+
+    yield  # Run the test
+
+    # Cleanup after test (optional)
+    warnings.resetwarnings()
 
 
 @pytest.mark.parametrize(
