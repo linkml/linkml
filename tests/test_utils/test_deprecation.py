@@ -261,8 +261,6 @@ def test_dataclass_fields():
 
     warnings.resetwarnings()
     with warnings.catch_warnings(record=True) as record:
-        warnings.resetwarnings()
-        warnings.simplefilter("always")
         _ = ClassWithDeprecatedFields(head=True)
         warning_deprecated_metadata_flag = False
         for warning in record:
