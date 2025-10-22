@@ -85,13 +85,18 @@ def test_metadata_flag(flag: str) -> None:
     result = runner.invoke(cli, [f"--{flag}", KITCHEN_SINK_PATH])
     assert result.exit_code == 0
 
-    # metadata lines only present if flag active
-    for line_head in ["# Auto generated from ", "# Generation date: ", "# Schema: "]:
-        matched_lines = [True for line in result.output.splitlines() if line.startswith(line_head)]
-        if flag == "metadata":
-            assert matched_lines
-        else:
-            assert not matched_lines
+    lines = result.output.splitlines()
+    matched_lines = [
+        True
+        for line in lines
+        if line.startswith("# Auto generated from ")
+        or line.startswith("# Generation date: ")
+        or line.startswith("# Schema: ")
+    ]
+    if flag == "metadata":
+        assert matched_lines
+    else:
+        assert not matched_lines
 
 
 def test_head_deprecated():
