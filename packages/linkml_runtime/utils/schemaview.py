@@ -899,7 +899,9 @@ class SchemaView:
     def class_parents(
         self, class_name: CLASS_NAME, imports: bool = True, mixins: bool = True, is_a: bool = True
     ) -> list[ClassDefinitionName]:
-        """:param class_name: child class name
+        """Get the parents of a class.
+
+        :param class_name: child class name
         :param imports: include import closure
         :param mixins: include mixins (default is True)
         :return: all direct parent class names (is_a and mixins)
@@ -1167,7 +1169,9 @@ class SchemaView:
     def enum_parents(
         self, enum_name: ENUM_NAME, imports: bool = False, mixins: bool = False, is_a: bool = True
     ) -> list[EnumDefinitionName]:
-        """:param enum_name: child enum name
+        """Get the parents of an enum.
+
+        :param enum_name: child enum name
         :param imports: include import closure (False)
         :param mixins: include mixins (default is False)
         :return: all direct parent enum names (is_a and mixins)
@@ -1204,12 +1208,20 @@ class SchemaView:
             **kwargs,
         )
 
-    @lru_cache(None)
+    @deprecated("Use `permissible_value_parents` instead")
     def permissible_value_parent(
         self, permissible_value: str, enum_name: ENUM_NAME
     ) -> list[str | PermissibleValueText]:
-        """:param enum_name: child enum name
+        return self.permissible_value_parents(permissible_value, enum_name)
+
+    @lru_cache(None)
+    def permissible_value_parents(
+        self, permissible_value: str, enum_name: ENUM_NAME
+    ) -> list[str | PermissibleValueText]:
+        """Get the parents of a permissible value.
+
         :param permissible_value: permissible value
+        :param enum_name: enum for which this is a permissible value
         :return: all direct parent enum names (is_a)
         """
         enum = self.get_enum(enum_name, strict=True)
@@ -1223,8 +1235,10 @@ class SchemaView:
     def permissible_value_children(
         self, permissible_value: str, enum_name: ENUM_NAME
     ) -> list[str | PermissibleValueText]:
-        """:param enum_name: parent enum name
+        """Get the children of a permissible value.
+
         :param permissible_value: permissible value
+        :param enum_name: enum for which this is a permissible value
         :return: all direct child permissible values (is_a)
         """
         enum = self.get_enum(enum_name, strict=True)
@@ -1262,7 +1276,7 @@ class SchemaView:
         :rtype: list[str]
         """
         return _closure(
-            lambda x: self.permissible_value_parent(x, enum_name),
+            lambda x: self.permissible_value_parents(x, enum_name),
             permissible_value_text,
             reflexive=reflexive,
             depth_first=depth_first,

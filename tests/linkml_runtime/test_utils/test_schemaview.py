@@ -718,7 +718,7 @@ def test_metamodel_in_schemaview() -> None:
     for tn in ["uriorcurie", "string", "float"]:
         assert tn in view.all_types()
         assert tn not in view.all_types(imports=False)
-    for cn, c in view.all_classes().items():
+    for cn in view.all_classes():
         uri = view.get_uri(cn, expand=True)
         assert uri is not None
         if cn not in ["structured_alias", "UnitOfMeasure", "ValidationReport", "ValidationResult"]:
@@ -1598,7 +1598,7 @@ def test_type_roots(schema: str, type_roots: set[str]) -> None:
 
 
 def test_all_enums(schema_view_with_imports: SchemaView) -> None:
-    """Test all_enums"""
+    """Test all_enums."""
     view = schema_view_with_imports
 
     for en, e in view.all_enums().items():
@@ -1809,6 +1809,7 @@ def gen_schema_name(range_tuple: tuple[str, str | None, str | None]) -> str | No
 
 def gen_range_file_with_default(range_id: str, tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Generate a copy of the range file with a default_range added and return the path.
+
     Obviates the need for maintaining a copy with a default_range tagged to the end.
 
     :param range_id: the range file to use; must be one of RL, RI
@@ -2232,28 +2233,28 @@ def test_permissible_value_relationships(schema_view_no_imports: SchemaView) -> 
     pv_cat = animal_enum.permissible_values["CAT"]
     assert pv_cat.text == "CAT"
     assert pv_cat.is_a is None
-    assert view.permissible_value_parent("CAT", animals) == []
+    assert view.permissible_value_parents("CAT", animals) == []
     assert view.permissible_value_ancestors("CAT", animals) == ["CAT"]
     assert set(view.permissible_value_children("CAT", animals)) == {"LION", "TABBY"}
     assert set(view.permissible_value_descendants("CAT", animals)) == {"CAT", "LION", "ANGRY_LION", "TABBY"}
 
     pv_tabby = animal_enum.permissible_values["TABBY"]
     assert pv_tabby.is_a == "CAT"
-    assert view.permissible_value_parent("TABBY", animals) == ["CAT"]
+    assert view.permissible_value_parents("TABBY", animals) == ["CAT"]
     assert view.permissible_value_ancestors("TABBY", animals) == ["TABBY", "CAT"]
     assert view.permissible_value_children("TABBY", animals) == []
     assert view.permissible_value_descendants("TABBY", animals) == ["TABBY"]
 
     pv_lion = animal_enum.permissible_values["LION"]
     assert pv_lion.is_a == "CAT"
-    assert view.permissible_value_parent("LION", animals) == ["CAT"]
+    assert view.permissible_value_parents("LION", animals) == ["CAT"]
     assert view.permissible_value_ancestors("LION", animals) == ["LION", "CAT"]
     assert view.permissible_value_children("LION", animals) == ["ANGRY_LION"]
     assert view.permissible_value_descendants("LION", animals) == ["LION", "ANGRY_LION"]
 
     pv_angry_lion = animal_enum.permissible_values["ANGRY_LION"]
     assert pv_angry_lion.is_a == "LION"
-    assert view.permissible_value_parent("ANGRY_LION", animals) == ["LION"]
+    assert view.permissible_value_parents("ANGRY_LION", animals) == ["LION"]
     assert view.permissible_value_ancestors("ANGRY_LION", animals) == ["ANGRY_LION", "LION", "CAT"]
     assert view.permissible_value_children("ANGRY_LION", animals) == []
     assert view.permissible_value_descendants("ANGRY_LION", animals) == ["ANGRY_LION"]
