@@ -1831,6 +1831,33 @@ class SchemaView:
                 return s
         return None
 
+    @lru_cache(None)
+    def _get_string_type(self) -> TypeDefinition:
+        """Get the type used for representing strings.
+
+        This can be used for (e.g.) retrieving the appropriate type for a slot where the range is an enum.
+
+        The method assumes that the string type will either be called "string" or
+        will have the URI "xsd:string", as is the case for the "string" type in linkml:types.
+
+        This method throws an error if there is anything other than one type that fits the criteria.
+
+        :return: the "string" type object
+        :rtype: TypeDefinition
+        """
+        str_type = self.get_type("string")
+        if str_type:
+            return str_type
+
+        # if there isn't a type named "string", search for a type with the URI xsd:string
+        str_type_arr = [v for v in self.all_types().values() if v.uri == "xsd:string"]
+        if len(str_type_arr) == 1:
+            return str_type_arr[0]
+
+        # zero or more than one potential "string" type found
+        err_msg = f"Cannot find a suitable 'string' type: no types with name 'string' {'and more than one type with' if str_type_arr else 'or'} uri 'xsd:string'."
+        raise ValueError(err_msg)
+
     def is_inlined(self, slot: SlotDefinition, imports: bool = True) -> bool:
         """Return true if slot is inferred or asserted inline.
 

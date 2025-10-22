@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from contextlib import nullcontext
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
@@ -2124,6 +2125,84 @@ def test_slot_range(
 
 
 """End of range-related tests. Phew!"""
+
+
+@pytest.fixture(scope="module")
+def enum_string_type_schema() -> str:
+    """Fixture for testing Enum root types."""
+    return """
+id: https://example.com/induced_slot_range_root_types_enums
+name: enum_test
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+  linkml: https://www.w3.org/linkml
+
+slots:
+  slot_range_enum:
+    range: EnumRange
+
+  slot_range_multi_enum:
+    range: Any
+    exactly_one_of:
+    - range: EnumRange
+    - range: AnotherEnumRange
+    - range: EnumTheThirdRange
+
+classes:
+  Any:
+    class_uri: linkml:Any
+
+  TestClass:
+    slots:
+      - slot_range_enum
+      - slot_range_multi_enum
+
+enums:
+  EnumRange:
+  AnotherEnumRange:
+  EnumTheThirdRange:
+
+"""
+
+
+@pytest.mark.parametrize(
+    ("expected", "text_for_schema"),
+    [
+        (nullcontext("string"), "\ntypes:\n  string:\n    base: str\n"),
+        # retrieve the string using the type URI
+        (nullcontext("stringiformes"), "\ntypes:\n  stringiformes:\n    uri: xsd:string\n    base: str\n"),
+        # retrieve the string from the imported linkml:types "string"
+        (nullcontext("string"), "\nimports:\n  - linkml:types\n"),
+        # raise an error if there is no "string" type in the schema
+        (
+            pytest.raises(
+                ValueError,
+                match="Cannot find a suitable 'string' type: no types with name 'string' or uri 'xsd:string'.",
+            ),
+            "\ntypes:\n\n",
+        ),
+        # raise an error if there are several potential "string" types
+        (
+            pytest.raises(
+                ValueError,
+                match="Cannot find a suitable 'string' type: no types with name 'string' and more than one type with uri 'xsd:string'.",
+            ),
+            "types:\n  curie:\n    uri: xsd:string\n"
+            "\n  characters:\n    uri: xsd:string\n"
+            "\n  char_seq:\n    uri: xsd:string\n",
+        ),
+    ],
+)
+def test_induced_get_string_type(enum_string_type_schema: str, expected: Any, text_for_schema: str) -> None:
+    """Ensure that an appropriate string type exists in the schema.
+
+    Ensures that the appropriate error is thrown if there is no clear string type in a schema.
+    """
+    sv = SchemaView(enum_string_type_schema + text_for_schema)
+
+    with expected as e:
+        assert sv._get_string_type() == sv.get_type(e)
 
 
 def test_permissible_value_relationships(schema_view_no_imports: SchemaView) -> None:
