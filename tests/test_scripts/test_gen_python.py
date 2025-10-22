@@ -78,25 +78,20 @@ def test_gen_classvars_slots(input_path, snapshot):
     )
 
 
-def test_metadata_flag():
-    """Test that metadata is generated, when flag active"""
+@pytest.mark.parametrize("flag", ["metadata", "no-metadata"])
+def test_metadata_flag(flag: str) -> None:
+    """Test that metadata is only generated, when flag active"""
     runner = CliRunner()
-    result = runner.invoke(cli, ["--metadata", KITCHEN_SINK_PATH])
+    result = runner.invoke(cli, [f"--{flag}", KITCHEN_SINK_PATH])
     assert result.exit_code == 0
-    assert result.output.splitlines()[0].startswith("# Auto generated from ")
-    assert result.output.splitlines()[1].startswith("# Generation date: ")
-    assert result.output.splitlines()[2].startswith("# Schema: ")
-    assert result.output.splitlines()[4].startswith("# id: ")
 
-
-def test_no_metadata_flag():
-    "Test that metadata is generated, when flag inactive"
-    runner = CliRunner()
-    result = runner.invoke(cli, ["--no-metadata", KITCHEN_SINK_PATH])
-    assert result.exit_code == 0
-    assert result.output.splitlines()[0].startswith("# id: ")
-    for line in result.output.splitlines():
-        assert not line.startswith("# Auto generated from ")
+    # metadata lines only present if flag active
+    for line_head in ["# Auto generated from ", "# Generation date: ", "# Schema: "]:
+        matched_lines = [True for line in result.output.splitlines() if line.startswith(line_head)]
+        if flag == "metadata":
+            assert matched_lines
+        else:
+            assert not matched_lines
 
 
 def test_head_deprecated():
