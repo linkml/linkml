@@ -1,4 +1,3 @@
-import sys
 import warnings
 from copy import deepcopy
 from dataclasses import dataclass
@@ -30,37 +29,37 @@ def linkml_version() -> SemVer:
         return SemVer.from_str("1.0.1")
 
 
-@pytest.fixture(autouse=True)
-def debug_warnings():
-    """Debug which modules have warning registries."""
-
-    print("\n=== BEFORE TEST ===")
-    modules_with_registry = []
-    for name, module in sys.modules.items():
-        if hasattr(module, "__warningregistry__"):
-            registry = getattr(module, "__warningregistry__")
-            if registry:  # Only if registry has content
-                modules_with_registry.append((name, len(registry)))
-                print(f"Module {name} has {len(registry)} warning entries")
-
-    # Clear all registries
-    for module in sys.modules.values():
-        if hasattr(module, "__warningregistry__"):
-            del module.__warningregistry__
-
-    warnings.resetwarnings()
-    warnings.simplefilter("always")
-
-    yield
-
-    print("\n=== AFTER TEST ===")
-    for name, module in sys.modules.items():
-        if hasattr(module, "__warningregistry__"):
-            registry = getattr(module, "__warningregistry__")
-            if registry:
-                print(f"Module {name} has {len(registry)} warning entries after test")
-
-
+# @pytest.fixture(autouse=True)
+# def debug_warnings():
+#     """Debug which modules have warning registries."""
+#
+#     print("\n=== BEFORE TEST ===")
+#     modules_with_registry = []
+#     for name, module in sys.modules.items():
+#         if hasattr(module, "__warningregistry__"):
+#             registry = getattr(module, "__warningregistry__")
+#             if registry:  # Only if registry has content
+#                 modules_with_registry.append((name, len(registry)))
+#                 print(f"Module {name} has {len(registry)} warning entries")
+#
+#     # Clear all registries
+#     for module in sys.modules.values():
+#         if hasattr(module, "__warningregistry__"):
+#             del module.__warningregistry__
+#
+#     warnings.resetwarnings()
+#     warnings.simplefilter("always")
+#
+#     yield
+#
+#     print("\n=== AFTER TEST ===")
+#     for name, module in sys.modules.items():
+#         if hasattr(module, "__warningregistry__"):
+#             registry = getattr(module, "__warningregistry__")
+#             if registry:
+#                 print(f"Module {name} has {len(registry)} warning entries after test")
+#
+#
 # @pytest.fixture(autouse=True)
 # def reset_warnings():
 #     """Reset warnings before running test."""
@@ -309,6 +308,7 @@ def test_dataclass_fields():
     class ClassWithDeprecatedFields:
         metadata: bool = True
 
+    warnings.resetwarnings()
     with warnings.catch_warnings(record=True) as record:
         warnings.simplefilter("always")
         _ = ClassWithDeprecatedFields(head=True)
