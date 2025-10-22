@@ -2202,7 +2202,7 @@ def test_induced_get_string_type(enum_string_type_schema: str, expected: Any, te
     sv = SchemaView(enum_string_type_schema + text_for_schema)
 
     with expected as e:
-        assert sv.get_string_type() == sv.get_type(e)
+        assert sv._get_string_type() == sv.get_type(e)
 
 
 def test_permissible_value_relationships(schema_view_no_imports: SchemaView) -> None:

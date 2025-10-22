@@ -1832,7 +1832,7 @@ class SchemaView:
         return None
 
     @lru_cache(None)
-    def get_string_type(self) -> TypeDefinition:
+    def _get_string_type(self) -> TypeDefinition:
         """Get the type used for representing strings.
 
         This can be used for (e.g.) retrieving the appropriate type for a slot where the range is an enum.
