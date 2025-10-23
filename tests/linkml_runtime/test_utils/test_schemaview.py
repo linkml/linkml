@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from contextlib import nullcontext
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
@@ -717,7 +718,7 @@ def test_metamodel_in_schemaview() -> None:
     for tn in ["uriorcurie", "string", "float"]:
         assert tn in view.all_types()
         assert tn not in view.all_types(imports=False)
-    for cn, c in view.all_classes().items():
+    for cn in view.all_classes():
         uri = view.get_uri(cn, expand=True)
         assert uri is not None
         if cn not in ["structured_alias", "UnitOfMeasure", "ValidationReport", "ValidationResult"]:
@@ -1271,6 +1272,160 @@ def test_class_parents_ancestors(creature_view: SchemaView) -> None:
         }
 
 
+"""
+Tests of the detect_cycles function, which can identify cyclic relationships between classes, types, and other schema elements.
+"""
+
+
+@pytest.mark.parametrize("dodgy_input", [None, [], set(), {}, 12345, 123.45, "some string", ()])
+def test_detect_cycles_input_error(dodgy_input: Any) -> None:
+    """Ensure that `detect_cycles` throws an error if input is not supplied in the appropriate form."""
+    with pytest.raises(ValueError, match="detect_cycles requires a list of values to process"):
+        detect_cycles(lambda x: x, dodgy_input)
+
+
+@pytest.fixture(scope="module")
+def sv_cycles_schema() -> SchemaView:
+    """A schema containing cycles!"""
+    return SchemaView(INPUT_DIR_PATH / "cycles.yaml")
+
+
+# metadata for elements in the `sv_cycles_schema`
+CYCLES = {
+    TYPES: {
+        # types in cycles, either directly or via ancestors
+        # key: type, value: node where the cycle starts
+        0: {
+            "curve_type": "circular_type",
+            "semi_circular_type": "circular_type",
+            "circular_type": "circular_type",
+            "type_circular": "type_circular",
+            "circle": "circle",
+            "circle_of_life": "circle",
+        },
+        # types not involved in cycles
+        # key: the type, value: ancestors of the type
+        1: {
+            "supreme_string": {"supreme_string", "super_string", "string"},
+            "super_string": {"super_string", "string"},
+            "string": {"string"},
+            "integer": {"integer"},
+            "boolean": {"boolean"},
+        },
+    },
+    CLASSES: {
+        # classes involved in cycles
+        # key: class name, value: node where the cycle starts
+        0: {
+            "ClassA": "ClassA",
+            "ClassB": "ClassB",
+            "ClassC": "ClassC",
+            "ClassD": "ClassA",
+            "ClassE": "ClassA",
+            "ClassF": "ClassF",
+            "ClassG": "ClassF",
+            "Mixin1": "Mixin1",
+            "Mixin2": "Mixin2",
+            "MixedClass": "Mixin2",
+        },
+        # class ancestors for classes not in cycles
+        # key: class name, value: class ancestors
+        1: {
+            "BaseClass": {"BaseClass"},
+            "MixinA": {"MixinA"},  # no ID slot
+            "MixinB": {"MixinB"},  # no ID slot
+            "NonCycleClassA": {"NonCycleClassA", "BaseClass"},
+            "NonCycleClassB": {"MixinA", "NonCycleClassB", "NonCycleClassA", "BaseClass"},
+            "NonCycleClassC": {"MixinB", "NonCycleClassC", "NonCycleClassA", "BaseClass"},
+            "IdentifierCycleClassA": {"IdentifierCycleClassA"},
+            "IdentifierCycleClassB": {"IdentifierCycleClassB"},
+            "IdentifierCycleClassC": {"IdentifierCycleClassC"},
+            "IdentifierCycleClassD": {"IdentifierCycleClassD"},
+        },
+    },
+}
+
+
+@pytest.mark.parametrize(("target", "cycle_start_node"), list(CYCLES[TYPES][0].items()))
+@pytest.mark.parametrize("fn", ["detect_cycles", "graph_closure", "type_ancestors"])
+def test_detect_type_cycles_error(sv_cycles_schema: SchemaView, target: str, cycle_start_node: str, fn: str) -> None:
+    """Test detection of cycles in the types segment of the cycles schema."""
+    if fn == "detect_cycles":
+        with pytest.raises(ValueError, match=f"Cycle detected at node '{cycle_start_node}'"):
+            detect_cycles(sv_cycles_schema.type_parents, [target])
+    elif fn == "graph_closure":
+        with pytest.raises(ValueError, match=f"Cycle detected at node '{cycle_start_node}'"):
+            graph_closure(sv_cycles_schema.type_parents, target, detect_cycles=True)
+    else:
+        with pytest.raises(ValueError, match=f"Cycle detected at node '{cycle_start_node}'"):
+            sv_cycles_schema.type_ancestors(type_name=target, detect_cycles=True)
+
+
+@pytest.mark.parametrize(("target", "expected"), list(CYCLES[TYPES][1].items()))
+@pytest.mark.parametrize("fn", ["detect_cycles", "graph_closure", "type_ancestors"])
+def test_detect_type_cycles_no_cycles(sv_cycles_schema: SchemaView, target: str, expected: set[str], fn: str) -> None:
+    """Ensure that types without cycles in their ancestry do not throw an error."""
+    if fn == "detect_cycles":
+        detect_cycles(sv_cycles_schema.type_parents, [target])
+    elif fn == "graph_closure":
+        got = graph_closure(sv_cycles_schema.type_parents, target, detect_cycles=True)
+        assert set(got) == expected
+    else:
+        got = sv_cycles_schema.type_ancestors(target, detect_cycles=True)
+        assert set(got) == expected
+
+
+@pytest.mark.parametrize(("target", "cycle_start_node"), list(CYCLES[CLASSES][0].items()))
+@pytest.mark.parametrize("fn", ["detect_cycles", "graph_closure", "class_ancestors"])
+def test_detect_class_cycles_error(sv_cycles_schema: SchemaView, target: str, cycle_start_node: str, fn: str) -> None:
+    """Test detection of class cycles in the cycles schema."""
+    if fn == "detect_cycles":
+        with pytest.raises(ValueError, match=f"Cycle detected at node '{cycle_start_node}'"):
+            detect_cycles(sv_cycles_schema.class_parents, [target])
+
+    elif fn == "graph_closure":
+        with pytest.raises(ValueError, match=f"Cycle detected at node '{cycle_start_node}'"):
+            graph_closure(sv_cycles_schema.class_parents, target, detect_cycles=True)
+    else:
+        with pytest.raises(ValueError, match=f"Cycle detected at node '{cycle_start_node}'"):
+            sv_cycles_schema.class_ancestors(target, detect_cycles=True)
+
+
+@pytest.mark.parametrize(("target", "expected"), list(CYCLES[CLASSES][1].items()))
+@pytest.mark.parametrize("fn", ["detect_cycles", "graph_closure", "class_ancestors"])
+def test_detect_class_cycles_no_cycles(sv_cycles_schema: SchemaView, target: str, expected: set[str], fn: str) -> None:
+    """Ensure that classes without cycles in their ancestry do not throw an error."""
+    if fn == "detect_cycles":
+        detect_cycles(sv_cycles_schema.class_parents, [target])
+    elif fn == "graph_closure":
+        got = graph_closure(sv_cycles_schema.class_parents, target, detect_cycles=True)
+        assert set(got) == expected
+    else:
+        got = sv_cycles_schema.class_ancestors(target, detect_cycles=True)
+        assert set(got) == expected
+
+
+@pytest.mark.parametrize("target", CYCLES[CLASSES][1].keys())
+def test_detect_class_as_range_cycles(sv_cycles_schema: SchemaView, target: str) -> None:
+    """Test cycle detection in cases where a class is used as a range."""
+
+    def check_recursive_id_slots(class_name: str) -> list[str]:
+        """Given a class, retrieve any classes used as the range for the class identifier slot."""
+        id_slot = sv_cycles_schema.get_identifier_slot(class_name, use_key=True)
+        if not id_slot:
+            return []
+        ind_range = sv_cycles_schema.slot_range_as_union(id_slot)
+        return [sv_cycles_schema.get_class(x).name for x in ind_range if sv_cycles_schema.get_class(x)] or []
+
+    # classes with a cycle in the class identifier slot range are cunningly named
+    if "IdentifierCycle" in target:
+        with pytest.raises(ValueError, match="Cycle detected at node "):
+            detect_cycles(check_recursive_id_slots, [target])
+
+    else:
+        detect_cycles(check_recursive_id_slots, [target])
+
+
 ORDERING_TESTS = {
     # Bassoon and Abacus are unranked, so appear at the end of the list.
     "rank": ["wind instrument", "instrument", "Didgeridoo", "counting instrument", "Clarinet", "Bassoon", "Abacus"],
@@ -1443,7 +1598,7 @@ def test_type_roots(schema: str, type_roots: set[str]) -> None:
 
 
 def test_all_enums(schema_view_with_imports: SchemaView) -> None:
-    """Test all_enums"""
+    """Test all_enums."""
     view = schema_view_with_imports
 
     for en, e in view.all_enums().items():
@@ -1654,6 +1809,7 @@ def gen_schema_name(range_tuple: tuple[str, str | None, str | None]) -> str | No
 
 def gen_range_file_with_default(range_id: str, tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Generate a copy of the range file with a default_range added and return the path.
+
     Obviates the need for maintaining a copy with a default_range tagged to the end.
 
     :param range_id: the range file to use; must be one of RL, RI
@@ -1969,7 +2125,120 @@ def test_slot_range(
         pytest.fail(f"Unexpected range_function value: {range_function}")
 
 
+@pytest.mark.parametrize(
+    "slot_argument",
+    [
+        None,
+        "slot_name",
+        12345,
+        "",
+        set(),
+        {"this": "that"},
+        True,
+        False,
+        lambda x: f"slot {x}",
+        ClassDefinition(name="whatever"),
+        SlotDefinitionName("something"),
+    ],
+)
+@pytest.mark.parametrize(
+    ("range_function", "err_desc"),
+    [
+        ("slot_range_as_union", "slot range as union"),
+        ("induced_slot_range", "induced slot range"),
+        ("slot_applicable_range_elements", "slot applicable range elements"),
+    ],
+)
+def test_range_function_non_slot_input(
+    schema_view_core: SchemaView, slot_argument: Any, range_function: str, err_desc: str
+) -> None:
+    """Ensure that incorrect input to the range function generates an error message.
+
+    The schema content is not important as this is solely for testing errors when calling `range` functions with the wrong argument.
+    """
+    with pytest.raises(ValueError, match=f"A SlotDefinition must be provided to generate the {err_desc}."):
+        getattr(schema_view_core, range_function)(slot_argument)
+
+
 """End of range-related tests. Phew!"""
+
+
+@pytest.fixture(scope="module")
+def enum_string_type_schema() -> str:
+    """Fixture for testing Enum root types."""
+    return """
+id: https://example.com/induced_slot_range_root_types_enums
+name: enum_test
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+  linkml: https://www.w3.org/linkml
+
+slots:
+  slot_range_enum:
+    range: EnumRange
+
+  slot_range_multi_enum:
+    range: Any
+    exactly_one_of:
+    - range: EnumRange
+    - range: AnotherEnumRange
+    - range: EnumTheThirdRange
+
+classes:
+  Any:
+    class_uri: linkml:Any
+
+  TestClass:
+    slots:
+      - slot_range_enum
+      - slot_range_multi_enum
+
+enums:
+  EnumRange:
+  AnotherEnumRange:
+  EnumTheThirdRange:
+
+"""
+
+
+@pytest.mark.parametrize(
+    ("expected", "text_for_schema"),
+    [
+        (nullcontext("string"), "\ntypes:\n  string:\n    base: str\n"),
+        # retrieve the string using the type URI
+        (nullcontext("stringiformes"), "\ntypes:\n  stringiformes:\n    uri: xsd:string\n    base: str\n"),
+        # retrieve the string from the imported linkml:types "string"
+        (nullcontext("string"), "\nimports:\n  - linkml:types\n"),
+        # raise an error if there is no "string" type in the schema
+        (
+            pytest.raises(
+                ValueError,
+                match="Cannot find a suitable 'string' type: no types with name 'string' or uri 'xsd:string'.",
+            ),
+            "\ntypes:\n\n",
+        ),
+        # raise an error if there are several potential "string" types
+        (
+            pytest.raises(
+                ValueError,
+                match="Cannot find a suitable 'string' type: no types with name 'string' and more than one type with uri 'xsd:string'.",
+            ),
+            "types:\n  curie:\n    uri: xsd:string\n"
+            "\n  characters:\n    uri: xsd:string\n"
+            "\n  char_seq:\n    uri: xsd:string\n",
+        ),
+    ],
+)
+def test_induced_get_string_type(enum_string_type_schema: str, expected: Any, text_for_schema: str) -> None:
+    """Ensure that an appropriate string type exists in the schema.
+
+    Ensures that the appropriate error is thrown if there is no clear string type in a schema.
+    """
+    sv = SchemaView(enum_string_type_schema + text_for_schema)
+
+    with expected as e:
+        assert sv._get_string_type() == sv.get_type(e)
 
 
 def test_permissible_value_relationships(schema_view_no_imports: SchemaView) -> None:
@@ -1999,28 +2268,28 @@ def test_permissible_value_relationships(schema_view_no_imports: SchemaView) -> 
     pv_cat = animal_enum.permissible_values["CAT"]
     assert pv_cat.text == "CAT"
     assert pv_cat.is_a is None
-    assert view.permissible_value_parent("CAT", animals) == []
+    assert view.permissible_value_parents("CAT", animals) == []
     assert view.permissible_value_ancestors("CAT", animals) == ["CAT"]
     assert set(view.permissible_value_children("CAT", animals)) == {"LION", "TABBY"}
     assert set(view.permissible_value_descendants("CAT", animals)) == {"CAT", "LION", "ANGRY_LION", "TABBY"}
 
     pv_tabby = animal_enum.permissible_values["TABBY"]
     assert pv_tabby.is_a == "CAT"
-    assert view.permissible_value_parent("TABBY", animals) == ["CAT"]
+    assert view.permissible_value_parents("TABBY", animals) == ["CAT"]
     assert view.permissible_value_ancestors("TABBY", animals) == ["TABBY", "CAT"]
     assert view.permissible_value_children("TABBY", animals) == []
     assert view.permissible_value_descendants("TABBY", animals) == ["TABBY"]
 
     pv_lion = animal_enum.permissible_values["LION"]
     assert pv_lion.is_a == "CAT"
-    assert view.permissible_value_parent("LION", animals) == ["CAT"]
+    assert view.permissible_value_parents("LION", animals) == ["CAT"]
     assert view.permissible_value_ancestors("LION", animals) == ["LION", "CAT"]
     assert view.permissible_value_children("LION", animals) == ["ANGRY_LION"]
     assert view.permissible_value_descendants("LION", animals) == ["LION", "ANGRY_LION"]
 
     pv_angry_lion = animal_enum.permissible_values["ANGRY_LION"]
     assert pv_angry_lion.is_a == "LION"
-    assert view.permissible_value_parent("ANGRY_LION", animals) == ["LION"]
+    assert view.permissible_value_parents("ANGRY_LION", animals) == ["LION"]
     assert view.permissible_value_ancestors("ANGRY_LION", animals) == ["ANGRY_LION", "LION", "CAT"]
     assert view.permissible_value_children("ANGRY_LION", animals) == []
     assert view.permissible_value_descendants("ANGRY_LION", animals) == ["ANGRY_LION"]
@@ -2979,147 +3248,6 @@ def test_class_name_mappings() -> None:
     assert set(view.all_slots()) == set(slot_names)
     assert set(view.slot_name_mappings()) == set(slot_names.values())
     assert {snm_def.name: snm for snm, snm_def in view.slot_name_mappings().items()} == slot_names
-
-
-@pytest.fixture(scope="module")
-def sv_cycles_schema() -> SchemaView:
-    """A schema containing cycles!"""
-    return SchemaView(INPUT_DIR_PATH / "cycles.yaml")
-
-
-CYCLES = {
-    TYPES: {
-        # types in cycles, either directly or via ancestors
-        # key: type, value: node where the cycle starts
-        0: {
-            "curve_type": "circular_type",
-            "semi_circular_type": "circular_type",
-            "circular_type": "circular_type",
-            "type_circular": "type_circular",
-            "circle": "circle",
-            "circle_of_life": "circle",
-        },
-        # types not involved in cycles
-        # key: the type, value: ancestors of the type
-        1: {
-            "supreme_string": {"supreme_string", "super_string", "string"},
-            "super_string": {"super_string", "string"},
-            "string": {"string"},
-            "integer": {"integer"},
-            "boolean": {"boolean"},
-        },
-    },
-    CLASSES: {
-        # classes involved in cycles
-        # key: class name, value: node where the cycle starts
-        0: {
-            "ClassA": "ClassA",
-            "ClassB": "ClassB",
-            "ClassC": "ClassC",
-            "ClassD": "ClassA",
-            "ClassE": "ClassA",
-            "ClassF": "ClassF",
-            "ClassG": "ClassF",
-            "Mixin1": "Mixin1",
-            "Mixin2": "Mixin2",
-            "MixedClass": "Mixin2",
-        },
-        # class ancestors for classes not in cycles
-        # key: class name, value: class ancestors
-        1: {
-            "BaseClass": {"BaseClass"},
-            "MixinA": {"MixinA"},
-            "MixinB": {"MixinB"},
-            "NonCycleClassA": {"NonCycleClassA", "BaseClass"},
-            "NonCycleClassB": {"MixinA", "NonCycleClassB", "NonCycleClassA", "BaseClass"},
-            "NonCycleClassC": {"MixinB", "NonCycleClassC", "NonCycleClassA", "BaseClass"},
-            "IdentifierCycleClassA": {"IdentifierCycleClassA"},
-            "IdentifierCycleClassB": {"IdentifierCycleClassB"},
-            "IdentifierCycleClassC": {"IdentifierCycleClassC"},
-            "IdentifierCycleClassD": {"IdentifierCycleClassD"},
-        },
-    },
-}
-
-
-@pytest.mark.parametrize(("target", "cycle_start_node"), list(CYCLES[TYPES][0].items()))
-@pytest.mark.parametrize("fn", ["detect_cycles", "graph_closure", "type_ancestors"])
-def test_detect_type_cycles_error(sv_cycles_schema: SchemaView, target: str, cycle_start_node: str, fn: str) -> None:
-    """Test detection of cycles in the types segment of the cycles schema."""
-    if fn == "detect_cycles":
-        with pytest.raises(ValueError, match=f"Cycle detected at node '{cycle_start_node}'"):
-            detect_cycles(lambda x: sv_cycles_schema.type_parents(x), target)
-    elif fn == "graph_closure":
-        with pytest.raises(ValueError, match=f"Cycle detected at node '{cycle_start_node}'"):
-            graph_closure(lambda x: sv_cycles_schema.type_parents(x), target, detect_cycles=True)
-    else:
-        with pytest.raises(ValueError, match=f"Cycle detected at node '{cycle_start_node}'"):
-            sv_cycles_schema.type_ancestors(type_name=target, detect_cycles=True)
-
-
-@pytest.mark.parametrize(("target", "expected"), list(CYCLES[TYPES][1].items()))
-@pytest.mark.parametrize("fn", ["detect_cycles", "graph_closure", "type_ancestors"])
-def test_detect_type_cycles_no_cycles(sv_cycles_schema: SchemaView, target: str, expected: set[str], fn: str) -> None:
-    """Ensure that types without cycles in their ancestry do not throw an error."""
-    if fn == "detect_cycles":
-        detect_cycles(lambda x: sv_cycles_schema.type_parents(x), target)
-    elif fn == "graph_closure":
-        got = graph_closure(lambda x: sv_cycles_schema.type_parents(x), target, detect_cycles=True)
-        assert set(got) == expected
-    else:
-        got = sv_cycles_schema.type_ancestors(target, detect_cycles=True)
-        assert set(got) == expected
-
-
-@pytest.mark.parametrize(("target", "cycle_start_node"), list(CYCLES[CLASSES][0].items()))
-@pytest.mark.parametrize("fn", ["detect_cycles", "graph_closure", "class_ancestors"])
-def test_detect_class_cycles_error(sv_cycles_schema: SchemaView, target: str, cycle_start_node: str, fn: str) -> None:
-    """Test detection of class cycles in the cycles schema."""
-    if fn == "detect_cycles":
-        with pytest.raises(ValueError, match=f"Cycle detected at node '{cycle_start_node}'"):
-            detect_cycles(lambda x: sv_cycles_schema.class_parents(x), target)
-
-    elif fn == "graph_closure":
-        with pytest.raises(ValueError, match=f"Cycle detected at node '{cycle_start_node}'"):
-            graph_closure(lambda x: sv_cycles_schema.class_parents(x), target, detect_cycles=True)
-    else:
-        with pytest.raises(ValueError, match=f"Cycle detected at node '{cycle_start_node}'"):
-            sv_cycles_schema.class_ancestors(target, detect_cycles=True)
-
-
-@pytest.mark.parametrize(("target", "expected"), list(CYCLES[CLASSES][1].items()))
-@pytest.mark.parametrize("fn", ["detect_cycles", "graph_closure", "class_ancestors"])
-def test_detect_class_cycles_no_cycles(sv_cycles_schema: SchemaView, target: str, expected: set[str], fn: str) -> None:
-    """Ensure that classes without cycles in their ancestry do not throw an error."""
-    if fn == "detect_cycles":
-        detect_cycles(lambda x: sv_cycles_schema.class_parents(x), target)
-    elif fn == "graph_closure":
-        got = graph_closure(lambda x: sv_cycles_schema.class_parents(x), target, detect_cycles=True)
-        assert set(got) == expected
-    else:
-        got = sv_cycles_schema.class_ancestors(target, detect_cycles=True)
-        assert set(got) == expected
-
-
-@pytest.mark.parametrize("target", CYCLES[CLASSES][1].keys())
-def test_detect_class_as_range_cycles(sv_cycles_schema: SchemaView, target: str) -> None:
-    """Test cycle detection in cases where a class is used as a range."""
-
-    def check_recursive_id_slots(class_name: str) -> list[str]:
-        """Given a class, retrieve any classes used as the range for the class identifier slot."""
-        id_slot = sv_cycles_schema.get_identifier_slot(class_name, use_key=True)
-        if not id_slot:
-            return []
-        ind_range = sv_cycles_schema.slot_range_as_union(id_slot)
-        return [sv_cycles_schema.get_class(x).name for x in ind_range if sv_cycles_schema.get_class(x)] or []
-
-    # classes with a cycle in the class identifier slot range are cunningly named
-    if "IdentifierCycle" in target:
-        with pytest.raises(ValueError, match="Cycle detected at node "):
-            detect_cycles(lambda x: check_recursive_id_slots(x), target)
-
-    else:
-        detect_cycles(lambda x: check_recursive_id_slots(x), target)
 
 
 @pytest.mark.parametrize(
