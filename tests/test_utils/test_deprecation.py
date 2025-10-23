@@ -1,3 +1,4 @@
+import logging
 import warnings
 from copy import deepcopy
 from dataclasses import dataclass
@@ -9,7 +10,7 @@ import pytest
 from linkml.utils import deprecation as dep_mod
 from linkml.utils.deprecation import DEPRECATIONS, EMITTED, Deprecation, SemVer, deprecated_fields, deprecation_warning
 
-# from linkml.utils.generator import Generator
+logger = logging.getLogger(__name__)
 
 all_ops = {le, lt, gt, ge, eq}
 
@@ -263,7 +264,9 @@ def test_dataclass_fields():
         warnings.simplefilter("always")
         _ = ClassWithDeprecatedFields(head=True)
         warning_deprecated_metadata_flag = False
+        logger.info("Captured warnings:")
         for warning in record:
+            logger.info(warning)
             if (
                 warning.category is DeprecationWarning
                 and str(warning.message).splitlines()[0] == "[metadata-flag] DEPRECATED"
