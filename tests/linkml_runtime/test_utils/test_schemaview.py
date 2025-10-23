@@ -2125,6 +2125,41 @@ def test_slot_range(
         pytest.fail(f"Unexpected range_function value: {range_function}")
 
 
+@pytest.mark.parametrize(
+    "slot_argument",
+    [
+        None,
+        "slot_name",
+        12345,
+        "",
+        set(),
+        {"this": "that"},
+        True,
+        False,
+        lambda x: f"slot {x}",
+        ClassDefinition(name="whatever"),
+        SlotDefinitionName("something"),
+    ],
+)
+@pytest.mark.parametrize(
+    ("range_function", "err_desc"),
+    [
+        ("slot_range_as_union", "slot range as union"),
+        ("induced_slot_range", "induced slot range"),
+        ("slot_applicable_range_elements", "slot applicable range elements"),
+    ],
+)
+def test_range_function_non_slot_input(
+    schema_view_core: SchemaView, slot_argument: Any, range_function: str, err_desc: str
+) -> None:
+    """Ensure that incorrect input to the range function generates an error message.
+
+    The schema content is not important as this is solely for testing errors when calling `range` functions with the wrong argument.
+    """
+    with pytest.raises(ValueError, match=f"A SlotDefinition must be provided to generate the {err_desc}."):
+        getattr(schema_view_core, range_function)(slot_argument)
+
+
 """End of range-related tests. Phew!"""
 
 

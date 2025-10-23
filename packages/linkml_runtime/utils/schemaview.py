@@ -465,8 +465,7 @@ class SchemaView:
             # visit item
             sn = todo.pop()
             if sn not in self.schema_map:
-                imported_schema = self.load_import(sn)
-                self.schema_map[sn] = imported_schema
+                self.schema_map[sn] = self.load_import(sn)
 
             # resolve item's imports if it has not been visited already
             # we will get duplicates, but not cycles this way, and
@@ -1904,6 +1903,10 @@ class SchemaView:
         :param slot:
         :return: list of element types
         """
+        if not slot or not isinstance(slot, SlotDefinition):
+            err_msg = "A SlotDefinition must be provided to generate the slot applicable range elements."
+            raise ValueError(err_msg)
+
         is_any = False
         range_types = []
         for r in self.slot_range_as_union(slot):
@@ -1930,6 +1933,10 @@ class SchemaView:
         :param slot:
         :return: list of ranges
         """
+        if not slot or not isinstance(slot, SlotDefinition):
+            err_msg = "A SlotDefinition must be provided to generate the slot range as union."
+            raise ValueError(err_msg)
+
         return list({y.range for y in [slot, *[x for x in [*slot.exactly_one_of, *slot.any_of] if x.range]]})
 
     def induced_slot_range(self, slot: SlotDefinition, strict: bool = False) -> set[str | ElementName]:  # noqa: FBT001, FBT002
@@ -1947,6 +1954,9 @@ class SchemaView:
         :return: set of ranges
         :rtype: set[str | ElementName]
         """
+        if not slot or not isinstance(slot, SlotDefinition):
+            err_msg = "A SlotDefinition must be provided to generate the induced slot range."
+            raise ValueError(err_msg)
 
         slot_range = slot.range
         any_of_range = {x.range for x in slot.any_of if x.range}
