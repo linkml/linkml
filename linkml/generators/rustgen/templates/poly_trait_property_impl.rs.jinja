@@ -118,7 +118,9 @@
         return Some(&self.{{ name }});
         {% endif %}
 {% else %}
-        {% if is_copy %}
+        {% if ct == 'list' or ct == 'mapping' %}
+        return &self.{{ name }};
+        {% elif is_copy %}
         return self.{{ name }};
         {% elif type_getter == "&'a str" or type_getter == "&str" %}
         return &self.{{ name }}[..];

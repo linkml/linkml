@@ -11,6 +11,10 @@ mod serde_utils;
 pub mod poly;
 pub mod poly_containers;
 {% endif %}
+{% if stubgen %}
+#[cfg(feature = "stubgen")]
+pub mod stub_utils;
+{% endif %}
 
 {{ imports }}
 
@@ -48,12 +52,21 @@ fn overwrite_except_none<T>(left: &mut Option<T>, right: Option<T>) {
 }
 {% endif %}
 
+{% if stubgen %}
+#[cfg(feature = "stubgen")]
+define_stub_info_gatherer!(stub_info);
+{% endif %}
+
 
 {% if pyo3 %}
 #[cfg(feature = "pyo3")]
+{% if handwritten_lib %}
+pub fn register_pymodule(m: &Bound<'_, PyModule>) -> PyResult<()> {
+{% else %}
 #[pymodule]
 #[pyo3(name="{{ name }}")]
 fn {{ name }}(m: &Bound<'_, PyModule>) -> PyResult<()> {
+{% endif %}
     {% for s in pyclass_struct_names %}
     m.add_class::<{{ s }}>()?;
     {% endfor %}

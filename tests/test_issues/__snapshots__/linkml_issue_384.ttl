@@ -259,6 +259,7 @@
     linkml:domain <https://w3id.org/linkml/examples/personinfo/Organization> ;
     linkml:domain_of <https://w3id.org/linkml/examples/personinfo/Organization> ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a <https://w3id.org/linkml/examples/personinfo/parent> ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -274,6 +275,7 @@
     linkml:domain <https://w3id.org/linkml/examples/personinfo/Person> ;
     linkml:domain_of <https://w3id.org/linkml/examples/personinfo/Person> ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:is_a <https://w3id.org/linkml/examples/personinfo/parent> ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -304,6 +306,7 @@
     skos:prefLabel "age" ;
     linkml:domain_of <https://w3id.org/linkml/examples/personinfo/GeoObject> ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner <https://w3id.org/linkml/examples/personinfo/GeoObject> ;
     linkml:range <https://w3id.org/linkml/examples/personinfo/GeoAge> ;
     linkml:slot_uri <https://w3id.org/linkml/examples/personinfo/age> .
@@ -424,6 +427,7 @@
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
     linkml:definition_uri <https://w3id.org/linkml/examples/personinfo/parent> ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:multivalued true ;
     linkml:range <https://w3id.org/linkml/examples/personinfo/Thing> ;
     linkml:slot_uri <https://w3id.org/linkml/examples/personinfo/parent> .

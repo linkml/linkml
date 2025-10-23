@@ -37,6 +37,61 @@ The generator produces YARRRML like:
          - p: ex:name
            o: $(name)
 
+CSV / TSV sources
+-----------------
+
+Besides JSON, CSV/TSV is supported. The key differences:
+
+- No iterator is required for CSV/TSV (each row is a candidate).
+- ``sources`` must be expressed as a **list of lists** for compatibility with common engines (e.g. Morph-KGC):
+
+  .. code-block:: yaml
+
+     mappings:
+       Person:
+         sources:
+           - ['people.csv~csv']   # note the inner list
+         s: ex:$(id)
+         po:
+           - p: rdf:type
+             o: ex:Person
+           - p: ex:name
+             o: $(name)
+
+- Values come from columns via ``$(column_name)``. For object slots (non-inlined references), IRIs are emitted:
+
+  .. code-block:: yaml
+
+     - p: ex:employer
+       o:
+         value: $(employer)
+         type: iri
+
+- TSV works via the same formulation (``~csv``). Most engines auto-detect the tab separator for ``.tsv`` files. If an engine requires explicit delimiter/CSVW options, that is currently out of scope and can be handled manually in post-editing.
+
+Source inference
+----------------
+
+If you pass a file without a formulation suffix, the generator infers it:
+
+- ``*.json`` → ``~jsonpath``
+- ``*.csv`` / ``*.tsv`` → ``~csv``
+
+Examples:
+
+.. code:: bash
+
+   # JSON (iterator required)
+   linkml generate yarrrml schema.yaml > mappings.yml
+   linkml generate yarrrml schema.yaml --source data.json~jsonpath
+   linkml generate yarrrml schema.yaml --source data.json~jsonpath --iterator-template "$.{Class}[*]"
+
+   # CSV / TSV (no iterator)
+   linkml generate yarrrml schema.yaml --source people.csv
+   # or explicitly:
+   linkml generate yarrrml schema.yaml --source people.csv~csv
+   linkml generate yarrrml schema.yaml --source people.tsv~csv
+
 Overview
 --------
 
@@ -46,6 +101,7 @@ Overview
 - ``po`` for class-induced slots (slot aliases respected)
 - emits ``rdf:type`` as a CURIE (e.g., ``ex:Person``)
 - JSON by default: ``sources: [[data.json~jsonpath, $.items[*]]]``
+- CSV/TSV: ``sources: [[path~csv]]`` (no iterator), values via ``$(column)``
 
 Command Line
 ------------
@@ -55,7 +111,7 @@ Command Line
    linkml generate yarrrml path/to/schema.yaml > mappings.yml
    # CSV instead of JSON:
    linkml generate yarrrml path/to/schema.yaml --source data.csv~csv
-   # class-based arrays:
+   # class-based arrays (JSON):
    linkml generate yarrrml path/to/schema.yaml --iterator-template "$.{Class}[*]"
 
 Docs
@@ -84,5 +140,5 @@ Limitations
 - Classes without an identifier are skipped
 - Object slots: ``inlined: false`` → IRI; ``inlined: true`` → not materialized
 - Iterators not derived from JSON Schema
-- No per-slot JSONPath overrides
-- CSV supported via --source
+- No per-slot JSONPath/CSV expressions or functions
+- CSV/TSV supported via ``--source``; delimiter/custom CSVW options are not yet exposed

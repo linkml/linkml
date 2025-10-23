@@ -75,7 +75,7 @@ impl<'py> FromPyObject<'py> for Box<{{ enum_name }}> {
 {% if as_key_value %}
 #[cfg(feature = "serde")]
 impl serde_utils::InlinedPair for {{enum_name}} {
-    type Key       = String;
+    type Key       = {{ key_property_type }};
     type Value     = serde_value::Value;
     type Error     = String;
 
@@ -106,3 +106,6 @@ impl serde_utils::InlinedPair for {{enum_name}} {
     }
 }
 {% endif %}
+
+#[cfg(feature = "stubgen")]
+::pyo3_stub_gen::impl_stub_type!({{ enum_name }} = {{ struct_names | join(' | ') }});
