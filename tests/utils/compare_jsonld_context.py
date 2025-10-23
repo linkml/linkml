@@ -12,8 +12,9 @@ class CompareJsonldContext:
             actual = json.loads(jsonld_context)
             expected = json.loads(snapshot.read())
 
-            del actual["comments"]["generation_date"]
-            del expected["comments"]["generation_date"]
+            for context in [actual, expected]:
+                if context.get("comments", {}).get("generation_date"):
+                    del context["comments"]["generation_date"]
 
             logger.debug("JSON-LD Context comparison against snapshot")
             logger.debug(f"actual: {actual}")

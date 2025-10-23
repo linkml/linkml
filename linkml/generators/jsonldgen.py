@@ -25,9 +25,11 @@ from linkml_runtime.utils.yamlutils import YAMLRoot
 from linkml import METAMODEL_CONTEXT_URI
 from linkml._version import __version__
 from linkml.generators.jsonldcontextgen import ContextGenerator
+from linkml.utils.deprecation import deprecated_fields
 from linkml.utils.generator import Generator, shared_arguments
 
 
+@deprecated_fields({"emit_metadata": "metadata"})
 @dataclass
 class JSONLDGenerator(Generator):
     """
@@ -164,7 +166,7 @@ class JSONLDGenerator(Generator):
             # model_context = self.schema.source_file.replace('.yaml', '.prefixes.context.jsonld')
             # context = [METAMODEL_CONTEXT_URI, f'file://./{model_context}']
             # TODO: The _visit function above alters the schema in situ
-            add_prefixes = ContextGenerator(self.original_schema, model=False, emit_metadata=False).serialize()
+            add_prefixes = ContextGenerator(self.original_schema, model=False, metadata=False).serialize()
             add_prefixes_json = loads(add_prefixes)
             context = [METAMODEL_CONTEXT_URI, add_prefixes_json["@context"]]
         elif isinstance(context, str):  # Some of the older code doesn't do multiple contexts
